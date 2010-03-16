@@ -57,6 +57,7 @@
 
 
   <target name="war" depends="compile" description="--> Packages distributable war file">
+    <mkdir dir="${target.dir}"/>
     <war destfile="${target.dir}/mediator.war" webxml="${src.dir}/main/webapp/WEB-INF/web.xml">
       <fileset dir="${src.dir}/main/webapp" includes="**/*"/>
       <classes dir="${build.dir}" excludes="**/*Test.class"/>
