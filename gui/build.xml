@@ -61,7 +61,7 @@
     <war destfile="${target.dir}/gui.war" webxml="${src.dir}/main/webapp/WEB-INF/web.xml">
       <fileset dir="${src.dir}/main/webapp" includes="**/*"/>
       <classes dir="${build.dir}" excludes="**/*Test.class"/>
-      <lib dir="${lib.dir}"/>
+      <lib dir="${lib.dir}/runtime"/>
     </war>
   </target>
 
