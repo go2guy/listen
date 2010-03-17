@@ -1,0 +1,56 @@
+<?xml version = "1.0"?>
+<uia>
+    <iiLoader>
+        <TYPES></TYPES>
+        <PATH></PATH>
+        <SAVFILE></SAVFILE>
+    </iiLoader>
+
+    <install>
+        <pre>
+            <file state="noexist">/etc/sudoers.tmp</file>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.0.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+    </install>
+
+    <rollback>
+        <pre>
+            <file state="noexist">/etc/sudoers.tmp</file>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.0.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+    </rollback>
+
+    <uninstall>
+        <pre>
+            <file state="noexist">/etc/sudoers.tmp</file>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.0.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+    </uninstall>
+</uia>
