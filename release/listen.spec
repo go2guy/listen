@@ -8,7 +8,7 @@
 %endif
 
 Summary: Contains a full release of the Interact listen Software.
-Name: Invigorate
+Name: listen
 Version: %(echo ${VERSION})
 Release: %(echo ${RELEASE})
 License: Copyright (c) Interact Incorporated. All Rights Reserved.

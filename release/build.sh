@@ -26,7 +26,7 @@ cp  ../spotapps/ii_artifacts/*.uia $BUILDDIR/interact/packages/conf/
 # Move iiInstall and iiLoader config files into place
 if [ -f iiInstall.cfg ]
 then
-    cp /iiInstall.cfg $BUILDDIR/interact/packages/conf/
+    cp iiInstall.cfg $BUILDDIR/interact/packages/conf/
 fi
 
 if [ -f iiLoader.cfg ]
