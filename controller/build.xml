@@ -1,4 +1,4 @@
-<project name="com.interact.listen.mediator" default="war">
+<project name="listen-controller" default="war">
   <property name="src.dir"         value="${basedir}/src"/>
   <property name="build.dir"       value="${basedir}/build"/>
   <property name="lib.dir"         value="${basedir}/lib"/>
@@ -58,7 +58,7 @@
 
   <target name="war" depends="compile" description="--> Packages distributable war file">
     <mkdir dir="${target.dir}"/>
-    <war destfile="${target.dir}/mediator.war" webxml="${src.dir}/main/webapp/WEB-INF/web.xml">
+    <war destfile="${target.dir}/listen-controller.war" webxml="${src.dir}/main/webapp/WEB-INF/web.xml">
       <fileset dir="${src.dir}/main/webapp" includes="**/*"/>
       <classes dir="${build.dir}" excludes="**/*Test.class"/>
       <lib dir="${lib.dir}/runtime"/>
@@ -68,7 +68,7 @@
 
   <target name="deploy" depends="war" description="--> Deploys the application">
     <mkdir dir="${deploy.dir}"/>
-    <copy file="${target.dir}/mediator.war" todir="${deploy.dir}" verbose="true"/>
+    <copy file="${target.dir}/listen-controller.war" todir="${deploy.dir}" verbose="true"/>
   </target>
 
 
@@ -84,7 +84,7 @@
       <env key="VERSION" value="1.0"/>
       <env key="RELEASE" value="trunk"/>
       <env key="TOPDIR" value="${rpm.staging.dir}"/>
-      <arg line="-bb --buildroot ${rpm.staging.dir}/BUILD ${basedir}/mediator.spec"/>
+      <arg line="-bb --buildroot ${rpm.staging.dir}/BUILD ${basedir}/controller.spec"/>
     </exec>
 
     <copy todir="ii_artifacts" overwrite="true" flatten="true">

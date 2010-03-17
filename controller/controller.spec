@@ -1,5 +1,5 @@
 #######################################################################
-# gui.spec
+# controller.spec
 #######################################################################
 %define STARTDIR %(pwd)
 
@@ -8,8 +8,8 @@
 %define _arch i686
 %endif
 
-Summary: Interact Listen GUI
-Name: gui
+Summary: Interact Listen Controller
+Name: listen-controller
 Version: %(echo "${VERSION}")
 Release: %(echo "${RELEASE}")
 License: Copyright (c) Interact Incorporated. All Rights Reserved.
@@ -34,7 +34,7 @@ BuildRequires: jdk >= 1.6.0_00
 # this description.
 #######################################################################
 %description
-    This RPM will install/uninstall the Listen GUI server.
+    This RPM will install/uninstall the Listen Controller.
 
 #######################################################################
 # The prep command section is used to unpack the source code into a
