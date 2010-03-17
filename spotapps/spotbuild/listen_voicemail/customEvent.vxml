@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml"> <!-- Config: Set location of root document -->
+
+    <!-- Last Modified 10/20/2009 -->
+
+    <!--
+      /**
+       *   @Name   customEvent.vxml
+       *   @desc   Sends a customEvent to a session ID
+       */
+    -->
+
+    <var name="II_SB_assign_NxtOpt" expr="''"/>  <!-- Config: Assign Variable Next Option. Name of next file -->
+    <var name="II_SB_eventReceived"/>
+    <var name="II_SB_valueReceived"/>
+    <var name="II_SB_passValues"/>
+
+    <form id="beginDocument">
+        <block>
+            <log>INFO: Entered beginDocument</log>
+            <assign name="II_SB_eventReceived" expr="getNextElement(0,II_SB_passValues,'|')"/>
+            <assign name="II_SB_valueReceived" expr="getNextElement(1,II_SB_passValues,'|')"/>
+            <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
+
+
+            <if cond="II_SB_assign_NxtOpt != ''">
+				<goto expr="'file:' + II_SB_APP_PATH + II_SB_assign_NxtOpt + '.vxml'"/>
+			<else/>
+				<var name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set</log>
+				<!-- Exit to ccxml layer -->
+				<log>INFO: Status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+        </block>
+    </form>
+</vxml>
