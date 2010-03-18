@@ -5,6 +5,8 @@
   <property name="target.dir"      value="${basedir}/target"/>
   <property name="deploy.dir"      value="/interact/listen"/>
   <property name="rpm.staging.dir" value="${target.dir}/staging"/>
+  <property name="winstone.jar"    value="winstone-0.9.10.jar"/>
+  <property name="war.staging.dir" value="${target.dir}/war/staging"/>
 
   <path id="javac.classpath">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -16,6 +18,7 @@
     <delete dir="${build.dir}" failonerror="false"/>
     <delete dir="${target.dir}" failonerror="false"/>
     <delete dir="${rpm.staging.dir}" failonerror="false"/>
+    <delete dir="${war.staging.dir}" failonerror="false"/>
     <delete failonerror="false">
       <fileset dir="ii_artifacts" includes="**/*"/>
     </delete>
@@ -65,10 +68,20 @@
     </war>
   </target>
 
+  <target name="jar" depends="war" description="--> Creates an executable jar file with embedded winstone container">
+    <mkdir dir="${war.staging.dir}"/>
+    <unwar src="${lib.dir}/build/${winstone.jar}" dest="${war.staging.dir}"/>
+    <copy file="${target.dir}/listen-controller.war" tofile="${war.staging.dir}/embedded.war"/>
+    <jar destfile="${target.dir}/listen-controller.jar" manifest="${war.staging.dir}/META-INF/MANIFEST.MF">
+      <fileset dir="${war.staging.dir}" excludes="META-INF/**"/>
+    </jar>
+  </target>
 
-  <target name="deploy" depends="war" description="--> Deploys the application">
+
+  <target name="deploy" depends="jar" description="--> Deploys the application">
     <mkdir dir="${deploy.dir}"/>
     <copy file="${target.dir}/listen-controller.war" todir="${deploy.dir}" verbose="true"/>
+    <copy file="${target.dir}/listen-controller.jar" todir="${deploy.dir}" verbose="true"/>
   </target>
 
 
