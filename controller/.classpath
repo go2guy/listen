@@ -7,7 +7,17 @@
 	<classpathentry kind="lib" path="lib/build/junit-4.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/build/servlet-api-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/sqlitejdbc-v056.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/xstream-1.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/hibernate3.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/javassist-3.9.0.GA.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jta-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jpa-api-2.0-cr-1.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/slf4j-log4j12-1.5.11.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/commons-io-1.4.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>
