@@ -10,8 +10,10 @@
 
   <path id="javac.classpath">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
-    <pathelement path="${build.dir}"/>
+    <pathelement path="${build.dir}/main"/>
   </path>
+
+  <taskdef resource="tasks.properties" classpathref="javac.classpath"/>
 
 
   <target name="clean" description="--> Removes build artifacts created by this script">
@@ -26,10 +28,13 @@
 
 
   <target name="compile" description="--> Compiles source code into bytecode">
-    <mkdir dir="${build.dir}"/>
-    <javac destdir="${build.dir}"
+    <mkdir dir="${build.dir}/main"/>
+    <javac destdir="${build.dir}/main"
            failonerror="true"
-           includeAntRuntime="false">
+           includeAntRuntime="false"
+           debug="true"
+           source="6"
+           target="6">
        <src path="${src.dir}/main/java"/>
        <classpath refid="javac.classpath"/>
     </javac>
@@ -38,13 +43,36 @@
 
   <target name="test" depends="compile" description="--> Runs unit tests">
     <mkdir dir="${target.dir}/junit"/>
+    <mkdir dir="${build.dir}/test"/>
+
+    <delete dir="${build.dir}/cobertura" failonerror="false"/>
+    <mkdir dir="${build.dir}/cobertura"/>
+
+    <javac destdir="${build.dir}/test"
+           failonerror="true"
+           includeAntRuntime="false"
+           debug="true"
+           source="6"
+           target="6">
+      <src path="${src.dir}/test/java"/>
+      <classpath refid="javac.classpath"/>
+    </javac>
+
+    <cobertura-instrument todir="${build.dir}/cobertura">
+      <fileset dir="${build.dir}/main" includes="**/*.class"/>
+    </cobertura-instrument>
 
     <junit printsummary="on"
            fork="yes"
-           failureproperty="junit.failures"
+           forkmode="once"
            showoutput="true">
+      <sysproperty key="net.sourceforge.cobertura.datafile" file="${basedir}/cobertura.ser"/>
       <formatter type="xml"/>
-      <classpath refid="javac.classpath"/>
+      <classpath>
+        <path refid="javac.classpath"/>
+        <pathelement location="${build.dir}/test"/>
+        <pathelement location="${build.dir}/cobertura"/>
+      </classpath>
 
       <batchtest fork="yes"
                  todir="${target.dir}/junit">
@@ -56,6 +84,18 @@
       <fileset dir="${target.dir}/junit" includes="TEST-*.xml"/>
       <report format="frames" todir="${target.dir}/junit"/>
     </junitreport>
+
+    <mkdir dir="${target.dir}/cobertura"/>
+    <cobertura-report srcdir="${src.dir}/main/java"
+                      destdir="${target.dir}/cobertura"
+                      format="html"
+                      datafile="${basedir}/cobertura.ser"/>
+    <cobertura-report srcdir="${src.dir}/main/java"
+                      destdir="${target.dir}/cobertura"
+                      format="xml"
+                      datafile="${basedir}/cobertura.ser"/>
+    <delete file="${basedir}/cobertura.ser"/>
+    <delete dir="${build.dir}/cobertura"/>
   </target>
 
 
@@ -63,7 +103,7 @@
     <mkdir dir="${target.dir}"/>
     <war destfile="${target.dir}/listen-controller.war" webxml="${src.dir}/main/webapp/WEB-INF/web.xml">
       <fileset dir="${src.dir}/main/webapp" includes="**/*"/>
-      <classes dir="${build.dir}" excludes="**/*Test.class"/>
+      <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
       <lib dir="${lib.dir}/runtime"/>
     </war>
   </target>
