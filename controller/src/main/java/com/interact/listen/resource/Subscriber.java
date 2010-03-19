@@ -29,16 +29,26 @@ public class Subscriber implements Resource
         return id;
     }
 
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
+
     public Integer getVersion()
     {
         return version;
+    }
+
+    public void setVersion(Integer version)
+    {
+        this.version = version;
     }
 
     @Override
     public String toXml(boolean deep)
     {
         StringBuilder xml = new StringBuilder();
-        
+
         if(deep)
         {
             xml.append("<subscriber href=\"/subscribers/").append(id).append("\">");
@@ -63,18 +73,18 @@ public class Subscriber implements Resource
         {
             start = xml.indexOf("<id>");
             end = xml.indexOf("</id>");
-            if(start > 0 && end > 0 && end > start)
+            if(start > 0 && end > 0)
             {
-                String idString = xml.substring(start + "<id>".length() + 1, end);
+                String idString = xml.substring(start + "<id>".length(), end);
                 this.id = Long.parseLong(idString);
             }
         }
 
         start = xml.indexOf("<number>");
         end = xml.indexOf("</number>");
-        if(start > 0 && end > 0 && end > start)
+        if(start > 0 && end > 0)
         {
-            this.number = xml.substring(start + "<number>".length() + 1, end);
+            this.number = xml.substring(start + "<number>".length(), end);
         }
     }
 }
