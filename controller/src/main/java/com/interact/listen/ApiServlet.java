@@ -48,12 +48,20 @@ public class ApiServlet extends HttpServlet
 
                 StringBuilder xml = new StringBuilder();
                 xml.append(XML_TAG);
-                xml.append("<").append(attributes.name).append(" href=\"/").append(attributes.name).append("\">");
-                for(Resource resource : list)
+                
+                if(list.size() == 0)
                 {
-                    xml.append(resource.toXml());
+                    xml.append("<").append(attributes.name).append(" href=\"/").append(attributes.name).append("\"/>");
                 }
-                xml.append("</").append(attributes.name).append(">");
+                else
+                {
+                    xml.append("<").append(attributes.name).append(" href=\"/").append(attributes.name).append("\">");
+                    for(Resource resource : list)
+                    {
+                        xml.append(resource.toXml(false));
+                    }
+                    xml.append("</").append(attributes.name).append(">");
+                }
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
@@ -75,7 +83,7 @@ public class ApiServlet extends HttpServlet
 
                 StringBuilder xml = new StringBuilder();
                 xml.append(XML_TAG);
-                xml.append(resource.toXml());
+                xml.append(resource.toXml(true));
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
@@ -123,7 +131,7 @@ public class ApiServlet extends HttpServlet
 
             transaction.commit();
 
-            writeResponse(response, HttpServletResponse.SC_CREATED, XML_TAG + resource.toXml(), "application/xml");
+            writeResponse(response, HttpServletResponse.SC_CREATED, XML_TAG + resource.toXml(true), "application/xml");
         }
         catch(ClassNotFoundException e)
         {

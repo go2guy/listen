@@ -35,13 +35,21 @@ public class Subscriber implements Resource
     }
 
     @Override
-    public String toXml()
+    public String toXml(boolean deep)
     {
         StringBuilder xml = new StringBuilder();
-        xml.append("<subscriber href=\"/subscribers/").append(id).append("\">");
-        xml.append("<id>").append(id).append("</id>");
-        xml.append("<number>").append(number).append("</number>");
-        xml.append("</subscriber>");
+        
+        if(deep)
+        {
+            xml.append("<subscriber href=\"/subscribers/").append(id).append("\">");
+            xml.append("<id>").append(id).append("</id>");
+            xml.append("<number>").append(number).append("</number>");
+            xml.append("</subscriber>");
+        }
+        else
+        {
+            xml.append("<subscriber href=\"/subscribers/").append(id).append("\"/>");
+        }
         return xml.toString();
     }
 
