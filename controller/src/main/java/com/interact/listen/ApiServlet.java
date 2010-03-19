@@ -1,5 +1,7 @@
 package com.interact.listen;
 
+import com.interact.listen.resource.Resource;
+
 import java.io.*;
 import java.lang.InstantiationException;
 import java.util.List;

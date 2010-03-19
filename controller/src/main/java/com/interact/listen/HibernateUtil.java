@@ -1,5 +1,7 @@
 package com.interact.listen;
 
+import com.interact.listen.resource.Subscriber;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
