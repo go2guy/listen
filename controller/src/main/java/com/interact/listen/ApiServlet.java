@@ -236,7 +236,7 @@ public class ApiServlet extends HttpServlet
 
         // strip last character (it should be an "s")
         capitalized = capitalized.substring(0, capitalized.length() - 1);
-        String qualified = "com.interact.listen." + capitalized;
+        String qualified = "com.interact.listen.resource." + capitalized;
         return qualified;
     }
 
