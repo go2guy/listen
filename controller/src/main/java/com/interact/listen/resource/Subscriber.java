@@ -67,24 +67,10 @@ public class Subscriber implements Resource
     public void loadFromXml(String xml, boolean loadId)
     {
         // FIXME super-gross xml parsing until I get a decent xml binding framework in place
-        int start, end;
-
         if(loadId)
         {
-            start = xml.indexOf("<id>");
-            end = xml.indexOf("</id>");
-            if(start > 0 && end > 0)
-            {
-                String idString = xml.substring(start + "<id>".length(), end);
-                this.id = Long.parseLong(idString);
-            }
+            this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
         }
-
-        start = xml.indexOf("<number>");
-        end = xml.indexOf("</number>");
-        if(start > 0 && end > 0)
-        {
-            this.number = xml.substring(start + "<number>".length(), end);
-        }
+        this.number = XmlUtil.getTagContents("number", xml);
     }
 }
