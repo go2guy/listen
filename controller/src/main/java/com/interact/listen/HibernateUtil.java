@@ -1,6 +1,7 @@
 package com.interact.listen;
 
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.Voicemail;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
@@ -29,7 +30,9 @@ public class HibernateUtil
             config.setProperty("hibernate.current_session_context_class", "thread");
 
             // application classes
+            // TODO maybe make this use some reflection (grab all resources from com.interact.listen.resource)
             config.addAnnotatedClass(Subscriber.class);
+            config.addAnnotatedClass(Voicemail.class);
 
             sessionFactory = config.buildSessionFactory();
         }
