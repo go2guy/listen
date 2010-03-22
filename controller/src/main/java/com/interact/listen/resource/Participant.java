@@ -52,32 +52,32 @@ public class Participant implements Resource
 		this.sessionID = sessionID;
 	}
 
-	private boolean	getAdmin()
+	public boolean getIsAdmin()
 	{
 		return admin;
 	}
 
-	private void setAdmin(boolean admin)
+	public void setIsAdmin(boolean admin)
 	{
 		this.admin = admin;
 	}
 
-	private boolean	getHolding()
+	public boolean getIsHolding()
 	{
 		return holding;
 	}
 
-	private void setHolding(boolean holding)
+	public void setIsHolding(boolean holding)
 	{
 		this.holding = holding;
 	}
 
-	private boolean	getMuted()
+	public boolean getIsMuted()
 	{
 		return muted;
 	}
 
-	private void setMuted(boolean muted)
+	public void setIsMuted(boolean muted)
 	{
 		this.muted = muted;
 	}
