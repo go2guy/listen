@@ -140,18 +140,46 @@ public class Participant implements Resource
     public void loadFromXml(String xml, boolean loadId)
     {
         // FIXME super-gross xml parsing until I get a decent xml binding framework in place
-        if(loadId)
+        if(loadId && xml.contains("<id>"))
         {
-            String id = XmlUtil.getTagContents("id", xml);
-            if(id == null)
-            {
-                this.id = null;
-            }
-            else
-            {
-                this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
-            }
+            this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
         }
-        this.number = XmlUtil.getTagContents("number", xml);
+
+        if(xml.contains("<confId"))
+        {
+            this.confId = Long.parseLong(XmlUtil.getTagContents("confId", xml));
+        }
+
+        if(xml.contains("<sessionID"))
+        {
+            this.sessionID = XmlUtil.getTagContents("sessionID", xml);
+        }
+
+        if(xml.contains("<audioResource"))
+        {
+            this.audioResource = XmlUtil.getTagContents("audioResource", xml);
+        }
+
+
+        if(xml.contains("<number"))
+        {
+            this.number = XmlUtil.getTagContents("number", xml);
+        }
+
+        if(xml.contains("<admin>"))
+        {
+            this.admin = Boolean.parseBoolean(XmlUtil.getTagContents("admin", xml));
+        }
+
+        if(xml.contains("<holding>"))
+        {
+            this.holding = Boolean.parseBoolean(XmlUtil.getTagContents("holding", xml));
+        }
+
+        if(xml.contains("<muted>"))
+        {
+            this.muted = Boolean.parseBoolean(XmlUtil.getTagContents("muted", xml));
+        }
+
     }
 }
