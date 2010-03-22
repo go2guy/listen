@@ -22,7 +22,7 @@ public class Participant implements Resource
    
     
     @ManyToOne
-    private Conference confId;
+    private Conference conference;
 
     private boolean admin;
     private boolean holding;
@@ -105,14 +105,14 @@ public class Participant implements Resource
         return version;
     }
 
-    public void setConfId(Conference confId)
+    public void setConference(Conference conference)
     {
-        this.confId = confId;
+        this.conference = conference;
     }
 
-    public Conference getConfId()
+    public Conference getConference()
     {
-        return confId;
+        return conference;
     }
 
 
@@ -130,7 +130,7 @@ public class Participant implements Resource
         {
             xml.append("<participant href=\"/subscribers/").append(id).append("\">");
             xml.append("<id>").append(id).append("</id>");
-            xml.append(confId.toXml(false));
+            xml.append(conference.toXml(false));
             xml.append("<number>").append(number).append("</number>");
             xml.append("<muted>").append(muted).append("</muted>");
             xml.append("<holding>").append(holding).append("</holding>");
@@ -155,13 +155,13 @@ public class Participant implements Resource
             this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
         }
 
-        if(xml.contains("<confId"))
+        if(xml.contains("<conference"))
         {
-            String href = XmlUtil.getAttributeValue("confId", "href", xml);
+            String href = XmlUtil.getAttributeValue("conference", "href", xml);
             Long id = Long.parseLong(href.substring(href.lastIndexOf("/") + 1));
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
-            this.confId = (Conference)session.get(Conference.class, id);
+            this.conference = (Conference)session.get(Conference.class, id);
             transaction.commit();
         }
 
