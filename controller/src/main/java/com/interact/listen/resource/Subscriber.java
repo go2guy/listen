@@ -69,7 +69,15 @@ public class Subscriber implements Resource
         // FIXME super-gross xml parsing until I get a decent xml binding framework in place
         if(loadId)
         {
-            this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
+            String id = XmlUtil.getTagContents("id", xml);
+            if(id == null)
+            {
+                this.id = null;
+            }
+            else
+            {
+                this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
+            }
         }
         this.number = XmlUtil.getTagContents("number", xml);
     }
