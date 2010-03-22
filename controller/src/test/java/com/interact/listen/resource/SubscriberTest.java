@@ -116,7 +116,6 @@ public class SubscriberTest
     public void test_loadFromXml_withXmlMissingNumber_populatesSubscriberWithNullNumber()
     {
         final Long id = System.currentTimeMillis();
-        final String number = String.valueOf(System.currentTimeMillis()) + "foo";
 
         final String xml = "<subscriber href=\"/subscribers/" + id + "\"><id>" + id + "</id></subscriber>";
         subscriber.loadFromXml(xml, true);
