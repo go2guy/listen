@@ -1,6 +1,7 @@
 package com.interact.listen;
 
 import com.interact.listen.resource.Resource;
+import com.interact.listen.xml.Marshaller;
 
 import java.io.*;
 import java.lang.InstantiationException;
@@ -50,19 +51,19 @@ public class ApiServlet extends HttpServlet
 
                 StringBuilder xml = new StringBuilder();
                 xml.append(XML_TAG);
-                
+
                 if(list.size() == 0)
                 {
-                    xml.append("<").append(attributes.name).append(" href=\"/").append(attributes.name).append("\"/>");
+                    xml.append(Marshaller.marshalOpeningResourceTag(attributes.name, null, true));
                 }
                 else
                 {
-                    xml.append("<").append(attributes.name).append(" href=\"/").append(attributes.name).append("\">");
+                    xml.append(Marshaller.marshalOpeningResourceTag(attributes.name, "/" + attributes.name, false));
                     for(Resource resource : list)
                     {
-                        xml.append(resource.toXml(false));
+                        xml.append(Marshaller.marshalOpeningResourceTag(resource, true));
                     }
-                    xml.append("</").append(attributes.name).append(">");
+                    xml.append(Marshaller.marshalClosingResourceTag(attributes.name));
                 }
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
@@ -85,7 +86,7 @@ public class ApiServlet extends HttpServlet
 
                 StringBuilder xml = new StringBuilder();
                 xml.append(XML_TAG);
-                xml.append(resource.toXml(true));
+                xml.append(Marshaller.marshal(resource));
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
@@ -133,7 +134,7 @@ public class ApiServlet extends HttpServlet
 
             transaction.commit();
 
-            writeResponse(response, HttpServletResponse.SC_CREATED, XML_TAG + resource.toXml(true), "application/xml");
+            writeResponse(response, HttpServletResponse.SC_CREATED, XML_TAG + Marshaller.marshal(resource), "application/xml");
         }
         catch(ClassNotFoundException e)
         {

@@ -1,6 +1,7 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.xml.XmlUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,7 @@ public class Voicemail implements Resource
     private Date dateCreated = new Date();
     private Boolean isNew = Boolean.TRUE;
 
+    @Override
     public Long getId()
     {
         return id;
@@ -88,30 +90,6 @@ public class Voicemail implements Resource
     public void setIsNew(Boolean isNew)
     {
         this.isNew = isNew;
-    }
-
-    @Override
-    public String toXml(boolean deep)
-    {
-        StringBuilder xml = new StringBuilder();
-        if(deep)
-        {
-            xml.append("<voicemail href=\"/voicemails/").append(id).append("\">");
-            xml.append("<id>").append(id).append("</id>");
-            xml.append(subscriber.toXml(false));
-            xml.append("<fileLocation>").append(fileLocation).append("</fileLocation>");
-
-            String formattedDate = new SimpleDateFormat(DATE_CREATED_FORMAT).format(dateCreated);
-            xml.append("<dateCreated>").append(formattedDate).append("</dateCreated>");
-
-            xml.append("<isNew>").append(isNew).append("</isNew>");
-            xml.append("</voicemail>");
-        }
-        else
-        {
-            xml.append("<voicemail href=\"/voicemails/").append(id).append("\"/>");
-        }
-        return xml.toString();
     }
 
     @Override

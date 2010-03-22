@@ -51,30 +51,6 @@ public class SubscriberTest
     }
 
     @Test
-    public void test_toXml_withDeepFalseAndIdSet_returnsXml()
-    {
-        final Long id = System.currentTimeMillis();
-        subscriber.setId(id);
-
-        final String expected = "<subscriber href=\"/subscribers/" + id + "\"/>";
-        assertEquals(expected, subscriber.toXml(false));
-    }
-
-    @Test
-    public void test_toXml_withDeepTrueAndPropertiesSet_returnsXml()
-    {
-        final Long id = System.currentTimeMillis();
-        final String number = String.valueOf(System.currentTimeMillis()) + "foo";
-        subscriber.setId(id);
-        subscriber.setNumber(number);
-
-        // TODO get rid of the hard-coded xml and use a real parser for comparison (so order doesn't matter)
-        final String expected = "<subscriber href=\"/subscribers/" + id + "\"><id>" + id + "</id><number>" + number +
-                                "</number></subscriber>";
-        assertEquals(expected, subscriber.toXml(true));
-    }
-
-    @Test
     public void test_loadFromXml_withValidXmlAndLoadIdTrue_populatesSubscriber()
     {
         final Long id = System.currentTimeMillis();

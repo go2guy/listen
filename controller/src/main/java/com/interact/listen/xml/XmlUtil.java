@@ -1,4 +1,4 @@
-package com.interact.listen.resource;
+package com.interact.listen.xml;
 
 public class XmlUtil
 {

@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.xml.XmlUtil;
+
 import javax.persistence.*;
 
 @Entity
@@ -24,6 +26,7 @@ public class Subscriber implements Resource
         this.number = number;
     }
 
+    @Override
     public Long getId()
     {
         return id;
@@ -42,25 +45,6 @@ public class Subscriber implements Resource
     public void setVersion(Integer version)
     {
         this.version = version;
-    }
-
-    @Override
-    public String toXml(boolean deep)
-    {
-        StringBuilder xml = new StringBuilder();
-
-        if(deep)
-        {
-            xml.append("<subscriber href=\"/subscribers/").append(id).append("\">");
-            xml.append("<id>").append(id).append("</id>");
-            xml.append("<number>").append(number).append("</number>");
-            xml.append("</subscriber>");
-        }
-        else
-        {
-            xml.append("<subscriber href=\"/subscribers/").append(id).append("\"/>");
-        }
-        return xml.toString();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.xml.XmlUtil;
+
 import javax.persistence.*;
 
 import com.interact.listen.HibernateUtil;
@@ -121,32 +123,6 @@ public class Participant implements Resource
         this.version = version;
     }
 
-    @Override
-    public String toXml(boolean deep)
-    {
-        StringBuilder xml = new StringBuilder();
-
-        if(deep)
-        {
-            xml.append("<participant href=\"/subscribers/").append(id).append("\">");
-            xml.append("<id>").append(id).append("</id>");
-            xml.append(conference.toXml(false));
-            xml.append("<number>").append(number).append("</number>");
-            xml.append("<muted>").append(muted).append("</muted>");
-            xml.append("<holding>").append(holding).append("</holding>");
-            xml.append("<admin>").append(admin).append("</admin>");
-            xml.append("<audioResource>").append(audioResource).append("</audioResource>");
-            xml.append("<sessionID>").append(sessionID).append("</sessionID>");
-            xml.append("</participant>");
-        }
-        else
-        {
-            xml.append("<participant href=\"/subscribers/").append(id).append("\"/>");
-        }
-        return xml.toString();
-    }
-
-    @Override
     public void loadFromXml(String xml, boolean loadId)
     {
         // FIXME super-gross xml parsing until I get a decent xml binding framework in place
