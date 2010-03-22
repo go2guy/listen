@@ -2,6 +2,12 @@ package com.interact.listen.resource;
 
 import javax.persistence.*;
 
+import com.interact.listen.HibernateUtil;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+
 @Entity
 public class Participant implements Resource
 {
@@ -13,7 +19,11 @@ public class Participant implements Resource
     private Integer version = Integer.valueOf(0);
 
     private String number;
-    private Long confId;
+   
+    
+    @ManyToOne
+    private Conference confId;
+
     private boolean admin;
     private boolean holding;
 	private boolean muted;	 
@@ -95,12 +105,12 @@ public class Participant implements Resource
         return version;
     }
 
-    public void setConfId(Long confId)
+    public void setConfId(Conference confId)
     {
         this.confId = confId;
     }
 
-    public Long getConfId()
+    public Conference getConfId()
     {
         return confId;
     }
@@ -120,7 +130,7 @@ public class Participant implements Resource
         {
             xml.append("<participant href=\"/subscribers/").append(id).append("\">");
             xml.append("<id>").append(id).append("</id>");
-            xml.append("<confId>").append(confId).append("</confId>");
+            xml.append(confId.toXml(false));
             xml.append("<number>").append(number).append("</number>");
             xml.append("<muted>").append(muted).append("</muted>");
             xml.append("<holding>").append(holding).append("</holding>");
@@ -147,7 +157,12 @@ public class Participant implements Resource
 
         if(xml.contains("<confId"))
         {
-            this.confId = Long.parseLong(XmlUtil.getTagContents("confId", xml));
+            String href = XmlUtil.getAttributeValue("confId", "href", xml);
+            Long id = Long.parseLong(href.substring(href.lastIndexOf("/") + 1));
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Transaction transaction = session.beginTransaction();
+            this.confId = (Conference)session.get(Conference.class, id);
+            transaction.commit();
         }
 
         if(xml.contains("<sessionID"))
