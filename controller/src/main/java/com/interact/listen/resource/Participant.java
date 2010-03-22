@@ -13,6 +13,7 @@ public class Participant implements Resource
     private Integer version = Integer.valueOf(0);
 
     private String number;
+    private Long confId;
     private boolean admin;
     private boolean holding;
 	private boolean muted;	 
@@ -94,6 +95,17 @@ public class Participant implements Resource
         return version;
     }
 
+    public void setConfId(Long confId)
+    {
+        this.confId = confId;
+    }
+
+    public Long getConfId()
+    {
+        return confId;
+    }
+
+
     public void setVersion(Integer version)
     {
         this.version = version;
@@ -108,6 +120,7 @@ public class Participant implements Resource
         {
             xml.append("<participant href=\"/subscribers/").append(id).append("\">");
             xml.append("<id>").append(id).append("</id>");
+            xml.append("<confId>").append(confId).append("</confId>");
             xml.append("<number>").append(number).append("</number>");
             xml.append("<muted>").append(muted).append("</muted>");
             xml.append("<holding>").append(holding).append("</holding>");
