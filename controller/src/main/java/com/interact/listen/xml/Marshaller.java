@@ -34,9 +34,11 @@ public class Marshaller
     {
         // TODO maybe factor this out into a ConverterRegistry so it's only loaded once (not every time this is
         // constructed)
-        converters.put(String.class, StringConverter.class);
+        converters.put(Boolean.class, BooleanConverter.class);
+        converters.put(Date.class, Iso8601DateConverter.class);
         converters.put(Integer.class, IntegerConverter.class);
         converters.put(Long.class, LongConverter.class);
+        converters.put(String.class, StringConverter.class);
     }
 
     /**
@@ -47,46 +49,60 @@ public class Marshaller
      */
     public String marshal(Resource resource)
     {
-        StringBuilder xml = new StringBuilder();
-
-        // iterate over properties
-        Class<? extends Resource> clazz = resource.getClass();
-        Method[] methods = clazz.getMethods();
-        sortMethods(methods);
-
-        xml.append(marshalOpeningResourceTag(resource, false));
-
-        for(Method method : methods)
+        try
         {
-            if(!method.getName().startsWith("get"))
+            StringBuilder xml = new StringBuilder();
+
+            // iterate over properties
+            Class<? extends Resource> clazz = resource.getClass();
+            Method[] methods = clazz.getMethods();
+            sortMethods(methods);
+
+            xml.append(marshalOpeningResourceTag(resource, false));
+
+            for(Method method : methods)
             {
-                continue;
+                if(!method.getName().startsWith("get"))
+                {
+                    continue;
+                }
+
+                if(OMIT_METHODS.contains(method.getName()))
+                {
+                    continue;
+                }
+
+                Object result = invokeMethod(method, resource);
+                String propertyTag = getTagForMethod(method.getName());
+
+                Class<?> returnType = method.getReturnType();
+                if(Resource.class.isAssignableFrom(returnType))
+                {
+                    xml.append(marshalOpeningResourceTag((Resource)result, true));
+                }
+                else
+                {
+                    Class<? extends Converter> converterClass = getConverterClass(returnType);
+                    Converter converter = converterClass.newInstance();
+                    String resultString = converter.marshal(result);
+
+                    xml.append(marshalTag(propertyTag, resultString));
+                }
             }
 
-            if(OMIT_METHODS.contains(method.getName()))
-            {
-                continue;
-            }
+            String classTag = getTagForClass(clazz.getSimpleName());
+            xml.append("</").append(classTag).append(">");
 
-            Object result = invokeMethod(method, resource);
-            String propertyTag = getTagForMethod(method.getName());
-
-            // FIXME handle other class types here (e.g. Date)
-            Class<?> returnType = method.getReturnType();
-            if(Resource.class.isAssignableFrom(returnType))
-            {
-                xml.append(marshalOpeningResourceTag((Resource)result, true));
-            }
-            else
-            {
-                xml.append(marshalTag(propertyTag, result));
-            }
+            return xml.toString();
         }
-
-        String classTag = getTagForClass(clazz.getSimpleName());
-        xml.append("</").append(classTag).append(">");
-
-        return xml.toString();
+        catch(IllegalAccessException e)
+        {
+            throw new AssertionError("IllegalAccessException: " + e);
+        }
+        catch(InstantiationException e)
+        {
+            throw new AssertionError("InstantiationException: " + e);
+        }
     }
 
     /**

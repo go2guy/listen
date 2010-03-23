@@ -5,8 +5,10 @@ import static org.junit.Assert.assertEquals;
 import com.interact.listen.resource.ResourceStub;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
+import com.interact.listen.xml.converter.Iso8601DateConverter;
 
 import java.io.ByteArrayInputStream;
+import java.text.SimpleDateFormat;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -43,15 +45,19 @@ public class MarshallerTest
         voicemail.setId(System.currentTimeMillis());
         voicemail.setSubscriber(subscriber);
         voicemail.setFileLocation("/foo/bar/baz/" + System.currentTimeMillis());
+        voicemail.setVersion(0);
+
+        SimpleDateFormat sdf = new SimpleDateFormat(Iso8601DateConverter.ISO8601_FORMAT);
+        String formattedDate = sdf.format(voicemail.getDateCreated());
 
         StringBuilder expected = new StringBuilder();
         expected.append("<voicemail href=\"/voicemail/").append(voicemail.getId()).append("\">");
-        expected.append("<dateCreated>").append(voicemail.getDateCreated()).append("</dateCreated>");
+        expected.append("<dateCreated>").append(formattedDate).append("</dateCreated>");
         expected.append("<fileLocation>").append(voicemail.getFileLocation()).append("</fileLocation>");
         expected.append("<id>").append(voicemail.getId()).append("</id>");
         expected.append("<isNew>").append(voicemail.getIsNew()).append("</isNew>");
         expected.append("<subscriber href=\"/subscriber/").append(subscriber.getId()).append("\"/>");
-        expected.append("<version/>");
+        expected.append("<version>").append(voicemail.getVersion()).append("</version>");
         expected.append("</voicemail>");
 
         assertEquals(expected.toString(), marshaller.marshal(voicemail));

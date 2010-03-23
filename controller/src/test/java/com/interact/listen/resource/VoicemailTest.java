@@ -1,9 +1,7 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.junit.After;

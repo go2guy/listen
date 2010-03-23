@@ -33,7 +33,6 @@ public class SaxContentHandler extends DefaultHandler
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes)
     {
-        System.out.println("Started element [" + qName + "]");
         this.attributes = attributes;
 
         // resource not loaded yet, assume this is the first element
@@ -75,8 +74,6 @@ public class SaxContentHandler extends DefaultHandler
     @Override
     public void endElement(String uri, String localName, String qName)
     {
-        System.out.println("Ended element [" + qName + "]");
-
         if(!qName.equals(resourceElement))
         {
             // all of the regular elements
@@ -108,7 +105,6 @@ public class SaxContentHandler extends DefaultHandler
                     Converter converter = converterClass.newInstance();
 
                     Object convertedValue = converter.unmarshal(value);
-                    System.out.println("Invoking method [" + method + "] with argument [" + convertedValue + "]");
                     method.invoke(resource, convertedValue);
                 }
             }

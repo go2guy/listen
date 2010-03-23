@@ -7,8 +7,6 @@ import javax.persistence.*;
 @Entity
 public class Voicemail implements Resource
 {
-    public static final String DATE_CREATED_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
