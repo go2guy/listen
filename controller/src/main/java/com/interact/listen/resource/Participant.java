@@ -2,7 +2,6 @@ package com.interact.listen.resource;
 
 import javax.persistence.*;
 
-
 @Entity
 public class Participant implements Resource
 {
@@ -14,66 +13,65 @@ public class Participant implements Resource
     private Integer version = Integer.valueOf(0);
 
     private String number;
-   
-    
+
     @ManyToOne
     private Conference conference;
 
-    private Boolean admin;
-    private Boolean holding;
-	private Boolean muted;	 
+    private Boolean isAdmin;
+    private Boolean isHolding;
+    private Boolean isMuted;
     private String audioResource;
-    private String sessionID; 
+    private String sessionID;
 
-	public String getAudioResource()
-	{
-		return audioResource;
-	}
-	
-	public void setAudioResource(String audioResource)
-	{
-		this.audioResource = audioResource;
-	}
+    public String getAudioResource()
+    {
+        return audioResource;
+    }
 
-	public String getSessionID()
-	{
-		return sessionID;
-	}
-	
-	public void setSessionID(String sessionID)
-	{
-		this.sessionID = sessionID;
-	}
+    public void setAudioResource(String audioResource)
+    {
+        this.audioResource = audioResource;
+    }
 
-	public Boolean getIsAdmin()
-	{
-		return admin;
-	}
+    public String getSessionID()
+    {
+        return sessionID;
+    }
 
-	public void setIsAdmin(Boolean admin)
-	{
-		this.admin = admin;
-	}
+    public void setSessionID(String sessionID)
+    {
+        this.sessionID = sessionID;
+    }
 
-	public Boolean getIsHolding()
-	{
-		return holding;
-	}
+    public Boolean getIsAdmin()
+    {
+        return isAdmin;
+    }
 
-	public void setIsHolding(Boolean holding)
-	{
-		this.holding = holding;
-	}
+    public void setIsAdmin(Boolean admin)
+    {
+        this.isAdmin = admin;
+    }
 
-	public Boolean getIsMuted()
-	{
-		return muted;
-	}
+    public Boolean getIsHolding()
+    {
+        return isHolding;
+    }
 
-	public void setIsMuted(Boolean muted)
-	{
-		this.muted = muted;
-	}
+    public void setIsHolding(Boolean holding)
+    {
+        this.isHolding = holding;
+    }
+
+    public Boolean getIsMuted()
+    {
+        return isMuted;
+    }
+
+    public void setIsMuted(Boolean muted)
+    {
+        this.isMuted = muted;
+    }
 
     public String getNumber()
     {
@@ -114,10 +112,11 @@ public class Participant implements Resource
     {
         this.version = version;
     }
-    
+
+    @Override
     public boolean validate()
     {
-        //FIXME by actually implementing validation
+        // FIXME by actually implementing validation
         return true;
     }
 }
