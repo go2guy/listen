@@ -56,7 +56,7 @@ public class ApiServlet extends HttpServlet
 
                 if(list.size() == 0)
                 {
-                    xml.append(marshaller.marshalOpeningResourceTag(attributes.name, null, true));
+                    xml.append(marshaller.marshalOpeningResourceTag(attributes.name, "/" + attributes.name, true));
                 }
                 else
                 {

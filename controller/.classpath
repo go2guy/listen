@@ -19,5 +19,8 @@
 	<classpathentry kind="lib" path="lib/runtime/jpa-api-2.0-cr-1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/slf4j-log4j12-1.5.11.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/build/org.springframework.test-3.0.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/build/org.springframework.core-3.0.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/build/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>
