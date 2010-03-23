@@ -44,4 +44,10 @@ public class Subscriber implements Resource
     {
         this.version = version;
     }
+    
+    public boolean validate()
+    {
+        //FIXME by actually implementing validation
+        return true;
+    }
 }

@@ -12,14 +12,38 @@ public class Conference implements Resource
     @Version
     private Integer version = Integer.valueOf(0);
 
-    public Integer getVersion()
+    private Boolean isStarted;
+    private String adminPin;
+    private String number;
+
+    public Boolean getIsStarted()
     {
-        return version;
+        return isStarted;
     }
 
-    public void setVersion(Integer version)
+    public void setIsStarted(Boolean isStarted)
     {
-        this.version = version;
+        this.isStarted = isStarted;
+    }
+    
+    public String getAdminPin()
+    {
+        return adminPin;
+    }
+
+    public void setAdminPin(String adminPin)
+    {
+        this.adminPin = adminPin;
+    }
+    
+    public String getNumber()
+    {
+        return number;
+    }
+
+    public void setNumber(String number)
+    {
+        this.number = number;
     }
 
     public Long getId()
@@ -30,5 +54,26 @@ public class Conference implements Resource
     public void setId(Long id)
     {
         this.id = id;
+    }
+
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion(Integer version)
+    {
+        this.version = version;
+    }
+    
+    @Override
+    public boolean validate()
+    {
+        if(this.isStarted != null && this.adminPin != null && this.number != null)
+        {
+            return true;
+        }
+        
+        return false;
     }
 }

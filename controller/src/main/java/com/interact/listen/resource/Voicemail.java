@@ -81,4 +81,10 @@ public class Voicemail implements Resource
     {
         this.isNew = isNew;
     }
+    
+    public boolean validate()
+    {
+        //FIXME by actually implementing validation
+        return true;
+    }
 }

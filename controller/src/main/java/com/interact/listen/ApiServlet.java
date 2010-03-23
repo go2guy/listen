@@ -171,6 +171,72 @@ public class ApiServlet extends HttpServlet
                                "ms");
         }
     }
+    
+    @Override
+    public void doPut(HttpServletRequest request, HttpServletResponse response)
+    {
+        long start = System.currentTimeMillis();
+        
+        UriResourceAttributes attributes = getResourceAttributes(request);
+        
+        try
+        {
+            String className = getResourceClassName(attributes.name);
+            Class resourceClass = Class.forName(className);
+            
+            // id provided, request is looking for a specific resource
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Transaction transaction = session.beginTransaction();
+
+            // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
+            Resource currentResource = (Resource)session.get(resourceClass, Long.parseLong(attributes.id));
+            transaction.commit();
+            
+            if(currentResource == null)
+            {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
+            Resource updatedResource = marshaller.unmarshal(request.getInputStream());
+            
+            if(updatedResource.validate())
+            {
+                session = HibernateUtil.getSessionFactory().getCurrentSession();
+                transaction = session.beginTransaction();
+                session.update(updatedResource);
+
+                transaction.commit();
+            }
+            else
+            {
+                writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                              "Resource failed validation.  Re-query resource before modifying/sending again", "text/plain");
+            }
+        }
+        catch(ClassNotFoundException e)
+        {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error reading request body",
+                          "text/plain");
+            return;
+        }
+        catch(org.hibernate.StaleObjectStateException e)
+        {
+            writeResponse(response, HttpServletResponse.SC_CONFLICT,
+                          "Data in the reqest was stale.  Re-query resource before sending again", "text/plain");
+        }
+        finally
+        {
+            System.out.println("PUT " + request.getRequestURL() + " took " + (System.currentTimeMillis() - start) +
+                               "ms");
+        }
+    }
 
     /**
      * Given an {@link HttpServletRequest}, parses the path info from the URL and retrieves the relevant resource

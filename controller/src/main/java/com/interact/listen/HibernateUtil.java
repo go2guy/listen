@@ -1,9 +1,6 @@
 package com.interact.listen;
 
-import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.Voicemail;
-import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.Participant;
+import com.interact.listen.resource.*;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;

@@ -4,4 +4,5 @@ public interface Resource
 {
     public void setId(Long id);
     public Long getId();
+    public boolean validate();
 }
