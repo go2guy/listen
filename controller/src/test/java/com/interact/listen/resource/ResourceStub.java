@@ -14,4 +14,9 @@ public class ResourceStub implements Resource
     {
         this.id = id;
     }
+    
+    public boolean validate()
+    {
+        return true;
+    }
 }
