@@ -207,6 +207,9 @@ public class ApiServlet extends HttpServlet
                 session.update(updatedResource);
 
                 transaction.commit();
+                
+                writeResponse(response, HttpServletResponse.SC_OK, XML_TAG + marshaller.marshal(updatedResource),
+                "application/xml");
             }
             else
             {
