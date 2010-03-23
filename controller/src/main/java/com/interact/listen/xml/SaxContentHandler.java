@@ -45,7 +45,7 @@ public class SaxContentHandler extends DefaultHandler
                 Class resourceClass = Class.forName(className);
 
                 resource = (Resource)resourceClass.newInstance();
-                
+
                 String href = attributes.getValue("href");
                 resource.setId(getIdFromHref(href));
             }
@@ -76,7 +76,7 @@ public class SaxContentHandler extends DefaultHandler
     @Override
     public void endElement(String uri, String localName, String qName)
     {
-        if(!qName.equals(resourceElement))
+        if(!qName.equals(resourceElement) && value != null)
         {
             // all of the regular elements
             try
@@ -103,18 +103,14 @@ public class SaxContentHandler extends DefaultHandler
                         throw new AssertionError("No Converter configured for [" + parameterType +
                                                  "], you should probably write one");
                     }
-
+                    System.out.println("Using converter [" + converterClass + "] for field [" + qName +
+                                       "] with parameter type [" + parameterType + "]");
                     Converter converter = converterClass.newInstance();
 
                     Object convertedValue = converter.unmarshal(value);
                     method.invoke(resource, convertedValue);
                 }
             }
-            // catch(NoSuchMethodException e)
-            // {
-            // // FIXME
-            // throw new RuntimeException(e);
-            // }
             catch(InvocationTargetException e)
             {
                 // FIXME
@@ -131,6 +127,10 @@ public class SaxContentHandler extends DefaultHandler
                 // thrown by converterClass.newInstance()
                 // FIXME
                 throw new RuntimeException(e);
+            }
+            finally
+            {
+                value = null;
             }
         }
     }
