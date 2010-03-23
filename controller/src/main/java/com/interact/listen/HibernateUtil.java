@@ -32,6 +32,8 @@ public class HibernateUtil
             // application classes
             config.addAnnotatedClass(Subscriber.class);
             config.addAnnotatedClass(Voicemail.class);
+            config.addAnnotatedClass(Conference.class);
+            config.addAnnotatedClass(Participant.class);
 
             sessionFactory = config.buildSessionFactory();
         }
