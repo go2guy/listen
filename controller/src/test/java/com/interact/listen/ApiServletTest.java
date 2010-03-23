@@ -2,6 +2,8 @@ package com.interact.listen;
 
 import static org.junit.Assert.assertEquals;
 
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.xml.Marshaller;
 
@@ -43,6 +45,19 @@ public class ApiServletTest
 
         final String expectedMessage = "Welcome to the Listen Controller API";
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals("text/plain", response.getContentType());
+        assertEquals(expectedMessage, response.getContentAsString());
+    }
+
+    @Test
+    public void test_doDelete_anyResource_returns405WithPlainTextMessage() throws IOException, ServletException
+    {
+        request.setPathInfo("/subscriber");
+        request.setMethod("DELETE");
+        servlet.service(request, response);
+
+        final String expectedMessage = "DELETE requests are not allowed";
+        assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         assertEquals(expectedMessage, response.getContentAsString());
     }
@@ -112,5 +127,35 @@ public class ApiServletTest
 
     // participants
 
-    // TODO
+    @Test
+    public void test_doPost_validParticipant_returns201WithCreatedParticipantXml() throws IOException, ServletException
+    {
+        request.setPathInfo("/participants");
+        request.setMethod("POST");
+
+        Participant participant = new Participant();
+        participant.setId(System.currentTimeMillis());
+        participant.setNumber(String.valueOf(System.currentTimeMillis()));
+        participant.setConference(null);
+        participant.setIsAdmin(Boolean.FALSE);
+        participant.setIsHolding(Boolean.FALSE);
+        participant.setIsMuted(Boolean.FALSE);
+        participant.setAudioResource("/foo/bar/baz.wav");
+        participant.setSessionID(String.valueOf(System.currentTimeMillis()));
+
+        StringBuilder content = new StringBuilder();
+        content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        content.append(marshaller.marshal(participant));
+
+        InputStream stream = new ByteArrayInputStream(content.toString().getBytes());
+        DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
+        request.setInputStream(sstream);
+
+        servlet.service(request, response);
+
+        assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
+        assertEquals("application/xml", response.getContentType());
+        // TODO assert content
+        // TODO delete the participant?
+    }
 }

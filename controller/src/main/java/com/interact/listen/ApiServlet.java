@@ -171,19 +171,19 @@ public class ApiServlet extends HttpServlet
                                "ms");
         }
     }
-    
+
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response)
     {
         long start = System.currentTimeMillis();
-        
+
         UriResourceAttributes attributes = getResourceAttributes(request);
-        
+
         try
         {
             String className = getResourceClassName(attributes.name);
             Class resourceClass = Class.forName(className);
-            
+
             // id provided, request is looking for a specific resource
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
@@ -191,15 +191,15 @@ public class ApiServlet extends HttpServlet
             // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
             Resource currentResource = (Resource)session.get(resourceClass, Long.parseLong(attributes.id));
             transaction.commit();
-            
+
             if(currentResource == null)
             {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
-            
+
             Resource updatedResource = marshaller.unmarshal(request.getInputStream());
-            
+
             if(updatedResource.validate())
             {
                 session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -214,7 +214,8 @@ public class ApiServlet extends HttpServlet
             else
             {
                 writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                              "Resource failed validation.  Re-query resource before modifying/sending again", "text/plain");
+                              "Resource failed validation.  Re-query resource before modifying/sending again",
+                              "text/plain");
             }
         }
         catch(ClassNotFoundException e)
@@ -239,6 +240,13 @@ public class ApiServlet extends HttpServlet
             System.out.println("PUT " + request.getRequestURL() + " took " + (System.currentTimeMillis() - start) +
                                "ms");
         }
+    }
+
+    @Override
+    public void doDelete(HttpServletRequest request, HttpServletResponse response)
+    {
+        writeResponse(response, HttpServletResponse.SC_METHOD_NOT_ALLOWED, "DELETE requests are not allowed",
+                      "text/plain");
     }
 
     /**

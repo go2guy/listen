@@ -78,7 +78,14 @@ public class Marshaller
                 Class<?> returnType = method.getReturnType();
                 if(Resource.class.isAssignableFrom(returnType))
                 {
-                    xml.append(marshalOpeningResourceTag((Resource)result, true));
+                    if(result == null)
+                    {
+                        marshalTag(getTagForClass(returnType.getSimpleName()), null);
+                    }
+                    else
+                    {
+                        xml.append(marshalOpeningResourceTag((Resource)result, true));
+                    }
                 }
                 else
                 {
@@ -164,7 +171,7 @@ public class Marshaller
         StringBuilder xml = new StringBuilder();
         if(value == null)
         {
-            xml.append("<").append(tagName).append("/>");
+            xml.append("<").append(tagName).append(" xsi:nil=\"true\"/>");
         }
         else
         {
