@@ -1,7 +1,5 @@
 package com.interact.listen.resource;
 
-import com.interact.listen.xml.XmlUtil;
-
 import javax.persistence.*;
 
 @Entity
@@ -45,24 +43,5 @@ public class Subscriber implements Resource
     public void setVersion(Integer version)
     {
         this.version = version;
-    }
-
-    @Override
-    public void loadFromXml(String xml, boolean loadId)
-    {
-        // FIXME super-gross xml parsing until I get a decent xml binding framework in place
-        if(loadId)
-        {
-            String id = XmlUtil.getTagContents("id", xml);
-            if(id == null)
-            {
-                this.id = null;
-            }
-            else
-            {
-                this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
-            }
-        }
-        this.number = XmlUtil.getTagContents("number", xml);
     }
 }

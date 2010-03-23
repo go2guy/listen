@@ -1,15 +1,26 @@
 package com.interact.listen.xml;
 
 import com.interact.listen.resource.Resource;
+import com.interact.listen.xml.converter.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 public class Marshaller
 {
     /** Global names of methods that should be omitted when marshalling objects */
     private static final List<String> OMIT_METHODS = new ArrayList<String>();
+
+    /** Map of Converters that should be used when marshalling/unmarshalling certain data types */
+    private Map<Class<?>, Class<? extends Converter>> converters = new HashMap<Class<?>, Class<? extends Converter>>();
 
     static
     {
@@ -17,11 +28,15 @@ public class Marshaller
     }
 
     /**
-     * Private utility class constructor.
+     * Constructs a new {@code Marshaller}.
      */
-    private Marshaller()
+    public Marshaller()
     {
-        throw new AssertionError("Instantiation of " + this.getClass().getName() + " is disallowed");
+        // TODO maybe factor this out into a ConverterRegistry so it's only loaded once (not every time this is
+        // constructed)
+        converters.put(String.class, StringConverter.class);
+        converters.put(Integer.class, IntegerConverter.class);
+        converters.put(Long.class, LongConverter.class);
     }
 
     /**
@@ -30,7 +45,7 @@ public class Marshaller
      * @param resource {@code Resource} to marshal
      * @return XML string
      */
-    public static String marshal(Resource resource)
+    public String marshal(Resource resource)
     {
         StringBuilder xml = new StringBuilder();
 
@@ -81,7 +96,7 @@ public class Marshaller
      * @param selfClosing whether or not the tag should be self-closing
      * @return XML string
      */
-    public static String marshalOpeningResourceTag(Resource resource, boolean selfClosing)
+    public String marshalOpeningResourceTag(Resource resource, boolean selfClosing)
     {
         String classTag = getTagForClass(resource.getClass().getSimpleName());
         return marshalOpeningResourceTag(classTag, "/" + classTag + "/" + resource.getId(), selfClosing);
@@ -96,7 +111,7 @@ public class Marshaller
      * @param selfClosing whether or not the tag should be self-closing
      * @return XML string
      */
-    public static String marshalOpeningResourceTag(String resourceName, String href, boolean selfClosing)
+    public String marshalOpeningResourceTag(String resourceName, String href, boolean selfClosing)
     {
         StringBuilder xml = new StringBuilder();
         xml.append("<").append(resourceName).append(" ");
@@ -115,7 +130,7 @@ public class Marshaller
      * @param resourceName resource name
      * @return XML string
      */
-    public static String marshalClosingResourceTag(String resourceName)
+    public String marshalClosingResourceTag(String resourceName)
     {
         return "</" + resourceName + ">";
     }
@@ -128,7 +143,7 @@ public class Marshaller
      * @param value value
      * @return XML string
      */
-    public static String marshalTag(String tagName, Object value)
+    public String marshalTag(String tagName, Object value)
     {
         StringBuilder xml = new StringBuilder();
         if(value == null)
@@ -144,7 +159,7 @@ public class Marshaller
         return xml.toString();
     }
 
-    private static String getTagForClass(String className)
+    private String getTagForClass(String className)
     {
         return className.substring(0, 1).toLowerCase() + className.substring(1);
     }
@@ -155,13 +170,13 @@ public class Marshaller
      * @param methodName method name for which to derive field name
      * @return the field name that should be used as the XML tag
      */
-    private static String getTagForMethod(String methodName)
+    private String getTagForMethod(String methodName)
     {
         String withoutGet = methodName.substring("get".length());
         return withoutGet.substring(0, 1).toLowerCase() + withoutGet.substring(1);
     }
 
-    private static Object invokeMethod(Method method, Resource resource)
+    private Object invokeMethod(Method method, Resource resource)
     {
         try
         {
@@ -185,7 +200,7 @@ public class Marshaller
      * 
      * @param methods {@code Method} array to sort
      */
-    private static void sortMethods(Method[] methods)
+    private void sortMethods(Method[] methods)
     {
         Arrays.sort(methods, new Comparator<Method>()
         {
@@ -194,5 +209,36 @@ public class Marshaller
                 return a.getName().compareTo(b.getName());
             }
         });
+    }
+
+    public Resource unmarshal(InputStream inputStream)
+    {
+        try
+        {
+            XMLReader reader = XMLReaderFactory.createXMLReader();
+            SaxContentHandler contentHandler = new SaxContentHandler(this);
+            SaxErrorHandler errorHandler = new SaxErrorHandler();
+            reader.setContentHandler(contentHandler);
+            reader.setErrorHandler(errorHandler);
+
+            reader.parse(new InputSource(inputStream));
+
+            return contentHandler.getResource();
+        }
+        catch(SAXException e)
+        {
+            // FIXME
+            throw new RuntimeException(e);
+        }
+        catch(IOException e)
+        {
+            // FIXME
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Class<? extends Converter> getConverterClass(Class<?> forClass)
+    {
+        return converters.get(forClass);
     }
 }

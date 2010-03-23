@@ -6,10 +6,21 @@ import com.interact.listen.resource.ResourceStub;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
 
+import java.io.ByteArrayInputStream;
+
+import org.junit.Before;
 import org.junit.Test;
 
 public class MarshallerTest
 {
+    private Marshaller marshaller;
+
+    @Before
+    public void setUp()
+    {
+        marshaller = new Marshaller();
+    }
+
     @Test
     public void test_marshalShallow_withResourceStub_returnsShallowXml()
     {
@@ -18,7 +29,7 @@ public class MarshallerTest
         resource.setId(id);
 
         final String expected = "<resourceStub href=\"/resourceStub/" + id + "\"/>";
-        assertEquals(expected, Marshaller.marshalOpeningResourceTag(resource, true));
+        assertEquals(expected, marshaller.marshalOpeningResourceTag(resource, true));
     }
 
     @Test
@@ -43,6 +54,19 @@ public class MarshallerTest
         expected.append("<version/>");
         expected.append("</voicemail>");
 
-        assertEquals(expected.toString(), Marshaller.marshal(voicemail));
+        assertEquals(expected.toString(), marshaller.marshal(voicemail));
+    }
+
+    @Test
+    public void test_unmarshal()
+    {
+        Subscriber subscriber = new Subscriber();
+        subscriber.setId(System.currentTimeMillis());
+        subscriber.setNumber("foo" + System.currentTimeMillis());
+
+        String xml = marshaller.marshal(subscriber);
+        ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
+
+        marshaller.unmarshal(stream);
     }
 }

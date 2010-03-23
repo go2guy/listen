@@ -1,13 +1,6 @@
 package com.interact.listen.resource;
 
-import com.interact.listen.xml.XmlUtil;
-
 import javax.persistence.*;
-
-import com.interact.listen.HibernateUtil;
-
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 
 @Entity
@@ -121,56 +114,5 @@ public class Participant implements Resource
     public void setVersion(Integer version)
     {
         this.version = version;
-    }
-
-    public void loadFromXml(String xml, boolean loadId)
-    {
-        // FIXME super-gross xml parsing until I get a decent xml binding framework in place
-        if(loadId && xml.contains("<id>"))
-        {
-            this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
-        }
-
-        if(xml.contains("<conference"))
-        {
-            String href = XmlUtil.getAttributeValue("conference", "href", xml);
-            Long id = Long.parseLong(href.substring(href.lastIndexOf("/") + 1));
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Transaction transaction = session.beginTransaction();
-            this.conference = (Conference)session.get(Conference.class, id);
-            transaction.commit();
-        }
-
-        if(xml.contains("<sessionID"))
-        {
-            this.sessionID = XmlUtil.getTagContents("sessionID", xml);
-        }
-
-        if(xml.contains("<audioResource"))
-        {
-            this.audioResource = XmlUtil.getTagContents("audioResource", xml);
-        }
-
-
-        if(xml.contains("<number"))
-        {
-            this.number = XmlUtil.getTagContents("number", xml);
-        }
-
-        if(xml.contains("<admin>"))
-        {
-            this.admin = Boolean.parseBoolean(XmlUtil.getTagContents("admin", xml));
-        }
-
-        if(xml.contains("<holding>"))
-        {
-            this.holding = Boolean.parseBoolean(XmlUtil.getTagContents("holding", xml));
-        }
-
-        if(xml.contains("<muted>"))
-        {
-            this.muted = Boolean.parseBoolean(XmlUtil.getTagContents("muted", xml));
-        }
-
     }
 }

@@ -1,16 +1,8 @@
 package com.interact.listen.resource;
 
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.xml.XmlUtil;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.*;
-
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 @Entity
 public class Voicemail implements Resource
@@ -90,48 +82,5 @@ public class Voicemail implements Resource
     public void setIsNew(Boolean isNew)
     {
         this.isNew = isNew;
-    }
-
-    @Override
-    public void loadFromXml(String xml, boolean loadId)
-    {
-        if(loadId && xml.contains("<id>"))
-        {
-            this.id = Long.parseLong(XmlUtil.getTagContents("id", xml));
-        }
-
-        if(xml.contains("<subscriber"))
-        {
-            String href = XmlUtil.getAttributeValue("subscriber", "href", xml);
-            Long id = Long.parseLong(href.substring(href.lastIndexOf("/") + 1));
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Transaction transaction = session.beginTransaction();
-            this.subscriber = (Subscriber)session.get(Subscriber.class, id);
-            transaction.commit();
-        }
-
-        if(xml.contains("<fileLocation>"))
-        {
-            this.fileLocation = XmlUtil.getTagContents("fileLocation", xml);
-        }
-
-        if(xml.contains("<dateCreated>"))
-        {
-            try
-            {
-                Date date = new SimpleDateFormat(DATE_CREATED_FORMAT).parse(XmlUtil.getTagContents("dateCreated", xml));
-                this.dateCreated = date;
-            }
-            catch(ParseException e)
-            {
-                // TODO throw
-                e.printStackTrace();
-            }
-        }
-
-        if(xml.contains("<isNew>"))
-        {
-            this.isNew = Boolean.parseBoolean(XmlUtil.getTagContents("isNew", xml));
-        }
     }
 }

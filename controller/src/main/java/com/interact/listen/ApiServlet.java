@@ -21,6 +21,7 @@ public class ApiServlet extends HttpServlet
     public static final long serialVersionUID = 1L;
 
     private static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    private Marshaller marshaller = new Marshaller();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -54,16 +55,16 @@ public class ApiServlet extends HttpServlet
 
                 if(list.size() == 0)
                 {
-                    xml.append(Marshaller.marshalOpeningResourceTag(attributes.name, null, true));
+                    xml.append(marshaller.marshalOpeningResourceTag(attributes.name, null, true));
                 }
                 else
                 {
-                    xml.append(Marshaller.marshalOpeningResourceTag(attributes.name, "/" + attributes.name, false));
+                    xml.append(marshaller.marshalOpeningResourceTag(attributes.name, "/" + attributes.name, false));
                     for(Resource resource : list)
                     {
-                        xml.append(Marshaller.marshalOpeningResourceTag(resource, true));
+                        xml.append(marshaller.marshalOpeningResourceTag(resource, true));
                     }
-                    xml.append(Marshaller.marshalClosingResourceTag(attributes.name));
+                    xml.append(marshaller.marshalClosingResourceTag(attributes.name));
                 }
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
@@ -86,7 +87,7 @@ public class ApiServlet extends HttpServlet
 
                 StringBuilder xml = new StringBuilder();
                 xml.append(XML_TAG);
-                xml.append(Marshaller.marshal(resource));
+                xml.append(marshaller.marshal(resource));
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
@@ -122,10 +123,16 @@ public class ApiServlet extends HttpServlet
             String className = getResourceClassName(attributes.name);
             Class resourceClass = Class.forName(className);
 
-            Resource resource = (Resource)resourceClass.newInstance();
+            Resource resource = marshaller.unmarshal(request.getInputStream());
+            // Resource resource = (Resource)resourceClass.newInstance();
+            // String requestBody = this.readInputStreamContents(request.getInputStream());
+            // resource.loadFromXml(requestBody, false);
 
-            String requestBody = this.readInputStreamContents(request.getInputStream());
-            resource.loadFromXml(requestBody, false);
+            if(resourceClass != resource.getClass())
+            {
+                writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                              "Resource in request body did not match type in URI", "text/plain");
+            }
 
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
@@ -134,28 +141,13 @@ public class ApiServlet extends HttpServlet
 
             transaction.commit();
 
-            writeResponse(response, HttpServletResponse.SC_CREATED, XML_TAG + Marshaller.marshal(resource), "application/xml");
+            writeResponse(response, HttpServletResponse.SC_CREATED, XML_TAG + marshaller.marshal(resource),
+                          "application/xml");
         }
         catch(ClassNotFoundException e)
         {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        catch(IllegalAccessException e)
-        {
-            e.printStackTrace();
-            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                          "IllegalAccessException, the " + "Resource's default constructor is probably not accessible",
-                          "text/plain");
-            return;
-        }
-        catch(InstantiationException e)
-        {
-            e.printStackTrace();
-            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                          "InstantiationException, the "
-                              + "Resource probably doesn't have a public default constructor", "text/plain");
             return;
         }
         catch(IOException e)
@@ -258,13 +250,6 @@ public class ApiServlet extends HttpServlet
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentLength(0);
         }
-    }
-
-    private String readInputStreamContents(InputStream inputStream) throws IOException
-    {
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(inputStream, writer);
-        return writer.toString();
     }
 
     private class UriResourceAttributes
