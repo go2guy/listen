@@ -3,15 +3,14 @@ package com.interact.listen;
 import com.interact.listen.resource.Resource;
 import com.interact.listen.xml.Marshaller;
 
-import java.io.*;
-import java.lang.InstantiationException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -26,6 +25,8 @@ public class ApiServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     {
+        long start = System.currentTimeMillis();
+
         UriResourceAttributes attributes = getResourceAttributes(request);
 
         if(attributes.name == null)
@@ -97,11 +98,18 @@ public class ApiServlet extends HttpServlet
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+        finally
+        {
+            System.out.println("GET " + request.getRequestURL() + " took " + (System.currentTimeMillis() - start) +
+                               "ms");
+        }
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     {
+        long start = System.currentTimeMillis();
+
         UriResourceAttributes attributes = getResourceAttributes(request);
 
         if(attributes.name == null || attributes.name.trim().length() == 0)
@@ -156,6 +164,11 @@ public class ApiServlet extends HttpServlet
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error reading request body",
                           "text/plain");
             return;
+        }
+        finally
+        {
+            System.out.println("POST " + request.getRequestURL() + " took " + (System.currentTimeMillis() - start) +
+                               "ms");
         }
     }
 
