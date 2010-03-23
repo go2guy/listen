@@ -110,7 +110,6 @@ public class Participant implements Resource
         return conference;
     }
 
-
     public void setVersion(Integer version)
     {
         this.version = version;
