@@ -19,9 +19,9 @@ public class Participant implements Resource
     @ManyToOne
     private Conference conference;
 
-    private boolean admin;
-    private boolean holding;
-	private boolean muted;	 
+    private Boolean admin;
+    private Boolean holding;
+	private Boolean muted;	 
     private String audioResource;
     private String sessionID; 
 
@@ -45,32 +45,32 @@ public class Participant implements Resource
 		this.sessionID = sessionID;
 	}
 
-	public boolean getIsAdmin()
+	public Boolean getIsAdmin()
 	{
 		return admin;
 	}
 
-	public void setIsAdmin(boolean admin)
+	public void setIsAdmin(Boolean admin)
 	{
 		this.admin = admin;
 	}
 
-	public boolean getIsHolding()
+	public Boolean getIsHolding()
 	{
 		return holding;
 	}
 
-	public void setIsHolding(boolean holding)
+	public void setIsHolding(Boolean holding)
 	{
 		this.holding = holding;
 	}
 
-	public boolean getIsMuted()
+	public Boolean getIsMuted()
 	{
 		return muted;
 	}
 
-	public void setIsMuted(boolean muted)
+	public void setIsMuted(Boolean muted)
 	{
 		this.muted = muted;
 	}
