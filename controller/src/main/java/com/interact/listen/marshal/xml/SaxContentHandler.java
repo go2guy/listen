@@ -47,7 +47,12 @@ public class SaxContentHandler extends DefaultHandler
                 resource = (Resource)resourceClass.newInstance();
 
                 String href = attributes.getValue("href");
-                resource.setId(getIdFromHref(href));
+                
+                // no href on POST
+                if(href != null)
+                {
+                    resource.setId(getIdFromHref(href));
+                }
             }
             catch(ClassNotFoundException e)
             {

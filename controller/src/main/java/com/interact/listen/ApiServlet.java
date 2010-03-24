@@ -205,6 +205,8 @@ public class ApiServlet extends HttpServlet
             }
 
             Resource updatedResource = marshaller.unmarshal(request.getInputStream());
+            
+            updatedResource.setId(Long.parseLong(attributes.id));
 
             if(updatedResource.validate())
             {
