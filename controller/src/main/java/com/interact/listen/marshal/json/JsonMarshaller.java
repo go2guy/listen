@@ -1,6 +1,9 @@
 package com.interact.listen.marshal.json;
 
+import com.interact.listen.ListenRuntimeException;
+import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
+import com.interact.listen.marshal.converter.ConversionException;
 import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.resource.Resource;
 
@@ -30,9 +33,8 @@ public class JsonMarshaller extends Marshaller
 
             StringBuilder json = new StringBuilder();
             json.append("{");
-            // json.append(resourceTag);
-            // json.append(":{");
-            json.append("\"href\":").append("\"/").append(resourceTag).append("s/").append(resource.getId()).append("\",");
+            json.append("\"href\":").append("\"/").append(resourceTag).append("s/").append(resource.getId())
+                .append("\",");
 
             for(Method method : methods)
             {
@@ -56,7 +58,8 @@ public class JsonMarshaller extends Marshaller
                     {
                         String associatedTag = getTagForClass(returnType.getSimpleName());
                         json.append("{\"href\":");
-                        json.append("\"/").append(associatedTag).append("s/").append(((Resource)result).getId()).append("\"");
+                        json.append("\"/").append(associatedTag).append("s/").append(((Resource)result).getId())
+                            .append("\"");
                         json.append("}");
                     }
                 }
@@ -84,7 +87,6 @@ public class JsonMarshaller extends Marshaller
 
             // remove the last comma
             json.deleteCharAt(json.length() - 1);
-            // json.append("}");
             json.append("}");
 
             return json.toString();
@@ -123,7 +125,7 @@ public class JsonMarshaller extends Marshaller
     }
 
     @Override
-    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
+    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource) throws MalformedContentException
     {
         try
         {
@@ -186,32 +188,31 @@ public class JsonMarshaller extends Marshaller
         }
         catch(IllegalAccessException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
         catch(InstantiationException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
         catch(InvocationTargetException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
         catch(IOException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            throw new ListenRuntimeException(e);
         }
         catch(ParseException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            throw new MalformedContentException(e);
+        }
+        catch(ConversionException e)
+        {
+            throw new MalformedContentException(e.getMessage());
         }
     }
-    
-    private boolean isStringType(Class clazz)
+
+    private boolean isStringType(Class<?> clazz)
     {
         if(Boolean.class.isAssignableFrom(clazz))
         {

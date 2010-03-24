@@ -1,14 +1,16 @@
 package com.interact.listen.marshal.xml;
 
+import com.interact.listen.ListenRuntimeException;
+import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
-import com.interact.listen.marshal.converter.*;
+import com.interact.listen.marshal.converter.ConversionException;
+import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.resource.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.List;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -150,7 +152,7 @@ public class XmlMarshaller extends Marshaller
     }
 
     /**
-     * Marshals a single XML tag. If {@code value} is {@code null} a null element (e.g. {@code <foo/>}) is returned.
+     * Marshals a single XML tag. If {@code value} is {@code null} a null element (e.g. {@code <foo nil="true"/>}) is returned.
      * Otherwise the value is returned between XML tags.
      * 
      * @param tagName tag name
@@ -175,7 +177,7 @@ public class XmlMarshaller extends Marshaller
     }
 
     @Override
-    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
+    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource) throws MalformedContentException
     {
         try
         {
@@ -191,13 +193,15 @@ public class XmlMarshaller extends Marshaller
         }
         catch(SAXException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            if(e.getCause() instanceof ConversionException)
+            {
+                throw new MalformedContentException(e.getCause().getMessage());
+            }
+            throw new MalformedContentException(e);
         }
         catch(IOException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            throw new ListenRuntimeException(e);
         }
     }
 }

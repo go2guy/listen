@@ -1,6 +1,7 @@
 package com.interact.listen.marshal.xml;
 
 import com.interact.listen.marshal.Marshaller;
+import com.interact.listen.marshal.converter.ConversionException;
 import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.resource.Resource;
 
@@ -8,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class SaxContentHandler extends DefaultHandler
@@ -30,13 +32,11 @@ public class SaxContentHandler extends DefaultHandler
         }
         catch(IllegalAccessException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            throw new AssertionError("IllegalAccessException when instantiating [" + asResource + "]");
         }
         catch(InstantiationException e)
         {
-            // FIXME
-            throw new RuntimeException(e);
+            throw new AssertionError("InstantiationException when instantiating [" + asResource + "]");
         }
     }
 
@@ -48,6 +48,7 @@ public class SaxContentHandler extends DefaultHandler
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes)
     {
+        this.value = null;
         this.attributes = attributes;
 
         // resourceElement not loaded yet, assume this is the first element
@@ -71,13 +72,13 @@ public class SaxContentHandler extends DefaultHandler
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName)
+    public void endElement(String uri, String localName, String qName) throws SAXException
     {
         if(!qName.equals(resourceElement) && value != null)
         {
-            // all of the regular elements
             try
             {
+                // all of the regular elements
                 String methodName = "set";
                 methodName += qName.substring(0, 1).toUpperCase();
                 methodName += qName.substring(1);
@@ -89,7 +90,6 @@ public class SaxContentHandler extends DefaultHandler
                 {
                     Resource associatedResource = (Resource)parameterType.newInstance();
                     associatedResource.setId(Marshaller.getIdFromHref(attributes.getValue("href")));
-
                     method.invoke(resource, associatedResource);
                 }
                 else
@@ -100,31 +100,27 @@ public class SaxContentHandler extends DefaultHandler
                         throw new AssertionError("No Converter configured for [" + parameterType +
                                                  "], you should probably write one");
                     }
+
                     Converter converter = converterClass.newInstance();
                     Object convertedValue = converter.unmarshal(value);
                     method.invoke(resource, convertedValue);
                 }
             }
-            catch(InvocationTargetException e)
-            {
-                // FIXME
-                throw new RuntimeException(e);
-            }
             catch(IllegalAccessException e)
             {
-                // thrown by converterClass.newInstance() or method.invoke();
-                // FIXME
-                throw new RuntimeException(e);
+                throw new AssertionError(e);
             }
             catch(InstantiationException e)
             {
-                // thrown by converterClass.newInstance()
-                // FIXME
-                throw new RuntimeException(e);
+                throw new AssertionError(e);
             }
-            finally
+            catch(InvocationTargetException e)
             {
-                value = null;
+                throw new AssertionError(e);
+            }
+            catch(ConversionException e)
+            {
+                throw new SAXException(e);
             }
         }
     }

@@ -56,7 +56,8 @@ public abstract class Marshaller
      * @param asResource resource type to unmarshal as
      * @return unmarshalled {@link Resource}
      */
-    public abstract Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource);
+    public abstract Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
+        throws MalformedContentException;
 
     /**
      * Factory method for retrieving the correct {@code Marshaller} implementation for a given content type.
@@ -123,7 +124,7 @@ public abstract class Marshaller
         String withoutGet = methodName.substring("get".length());
         return withoutGet.substring(0, 1).toLowerCase() + withoutGet.substring(1);
     }
-    
+
     /**
      * Reflectively calls the provided {@code Method} on the provided {@code Resource}.
      * 

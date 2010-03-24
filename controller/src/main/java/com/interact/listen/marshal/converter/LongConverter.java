@@ -9,8 +9,15 @@ public class LongConverter implements Converter
     }
 
     @Override
-    public Object unmarshal(String value)
+    public Object unmarshal(String value) throws ConversionException
     {
-        return Long.parseLong(value);
+        try
+        {
+            return Long.parseLong(value);
+        }
+        catch(NumberFormatException e)
+        {
+            throw new ConversionException(value, "Long");
+        }
     }
 }

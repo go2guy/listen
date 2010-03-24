@@ -17,7 +17,7 @@ public class Iso8601DateConverter implements Converter
     }
 
     @Override
-    public Object unmarshal(String value)
+    public Object unmarshal(String value) throws ConversionException
     {
         SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
         try
@@ -26,8 +26,7 @@ public class Iso8601DateConverter implements Converter
         }
         catch(ParseException e)
         {
-            // FIXME create some sort of ConversionException
-            throw new RuntimeException(e);
+            throw new ConversionException(value, "Date");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.interact.listen;
 
+import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.MarshallerNotFoundException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
@@ -13,9 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 
 public class ApiServlet extends HttpServlet
 {
@@ -27,21 +26,19 @@ public class ApiServlet extends HttpServlet
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     {
         long start = System.currentTimeMillis();
-
-        UriResourceAttributes attributes = getResourceAttributes(request);
-
-        if(attributes.name == null)
-        {
-            writeResponse(response, HttpServletResponse.SC_OK, "Welcome to the Listen Controller API", "text/plain");
-            return;
-        }
-
-        Marshaller marshaller = getMarshaller(request.getHeader("Accept"));
-
         try
         {
+            UriResourceAttributes attributes = getResourceAttributes(request);
+            if(attributes.name == null)
+            {
+                writeResponse(response, HttpServletResponse.SC_OK, "Welcome to the Listen Controller API", "text/plain");
+                return;
+            }
+
+            Marshaller marshaller = getMarshaller(request.getHeader("Accept"));
+
             String className = getResourceClassName(attributes.name);
-            Class resourceClass = Class.forName(className);
+            Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
             if(attributes.id == null)
             {
@@ -51,7 +48,7 @@ public class ApiServlet extends HttpServlet
 
                 Criteria criteria = session.createCriteria(resourceClass);
                 criteria.setMaxResults(50);
-                List<Resource> list = criteria.list();
+                List<Resource> list = (List<Resource>)criteria.list();
                 transaction.commit();
 
                 StringBuilder xml = new StringBuilder();
@@ -91,7 +88,15 @@ public class ApiServlet extends HttpServlet
         }
         catch(ClassNotFoundException e)
         {
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                          "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
         }
         finally
@@ -122,10 +127,10 @@ public class ApiServlet extends HttpServlet
             return;
         }
 
-        Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
-
         try
         {
+            Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
+
             String className = getResourceClassName(attributes.name);
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
@@ -169,6 +174,20 @@ public class ApiServlet extends HttpServlet
                           "text/plain");
             return;
         }
+        catch(MalformedContentException e)
+        {
+            e.printStackTrace();
+            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                          "The content you provided was malformed, please fix it", "text/plain");
+            return;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                          "RUH ROH! Please contact the System Administrator", "text/plain");
+            return;
+        }
         finally
         {
             System.out.println("POST " + request.getRequestURL() + " took " + (System.currentTimeMillis() - start) +
@@ -183,10 +202,10 @@ public class ApiServlet extends HttpServlet
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
-        Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
-
         try
         {
+            Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
+
             String className = getResourceClassName(attributes.name);
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
@@ -205,7 +224,7 @@ public class ApiServlet extends HttpServlet
             }
 
             Resource updatedResource = marshaller.unmarshal(request.getInputStream(), resourceClass);
-            
+
             updatedResource.setId(Long.parseLong(attributes.id));
 
             if(updatedResource.validate())
@@ -243,10 +262,24 @@ public class ApiServlet extends HttpServlet
                           "text/plain");
             return;
         }
-        catch(org.hibernate.StaleObjectStateException e)
+        catch(StaleObjectStateException e)
         {
             writeResponse(response, HttpServletResponse.SC_CONFLICT,
                           "Data in the reqest was stale.  Re-query resource before sending again", "text/plain");
+        }
+        catch(MalformedContentException e)
+        {
+            e.printStackTrace();
+            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                          "The content you provided was malformed, please fix it", "text/plain");
+            return;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                          "RUH ROH! Please contact the System Administrator", "text/plain");
+            return;
         }
         finally
         {

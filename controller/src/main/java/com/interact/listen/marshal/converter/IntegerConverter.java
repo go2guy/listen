@@ -9,8 +9,15 @@ public class IntegerConverter implements Converter
     }
 
     @Override
-    public Object unmarshal(String value)
+    public Object unmarshal(String value) throws ConversionException
     {
-        return Integer.parseInt(value);
+        try
+        {
+            return Integer.parseInt(value);
+        }
+        catch(NumberFormatException e)
+        {
+            throw new ConversionException(value, "Integer");
+        }
     }
 }
