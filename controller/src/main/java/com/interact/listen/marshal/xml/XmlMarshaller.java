@@ -1,5 +1,6 @@
 package com.interact.listen.marshal.xml;
 
+import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.*;
 import com.interact.listen.resource.Resource;
 
@@ -14,39 +15,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class XmlMarshaller
+public class XmlMarshaller extends Marshaller
 {
-    /** Global names of methods that should be omitted when marshalling objects */
-    private static final List<String> OMIT_METHODS = new ArrayList<String>();
-
-    /** Map of Converters that should be used when marshalling/unmarshalling certain data types */
-    private Map<Class<?>, Class<? extends Converter>> converters = new HashMap<Class<?>, Class<? extends Converter>>();
-
-    static
-    {
-        OMIT_METHODS.add("getClass");
-    }
-
-    /**
-     * Constructs a new {@code Marshaller}.
-     */
-    public XmlMarshaller()
-    {
-        // TODO maybe factor this out into a ConverterRegistry so it's only loaded once (not every time this is
-        // constructed)
-        converters.put(Boolean.class, BooleanConverter.class);
-        converters.put(Date.class, Iso8601DateConverter.class);
-        converters.put(Integer.class, IntegerConverter.class);
-        converters.put(Long.class, LongConverter.class);
-        converters.put(String.class, StringConverter.class);
-    }
-
-    /**
-     * Marshals the provided {@link Resource} to XML.
-     * 
-     * @param resource {@code Resource} to marshal
-     * @return XML string
-     */
+    @Override
     public String marshal(Resource resource)
     {
         try
@@ -80,7 +51,7 @@ public class XmlMarshaller
                 {
                     if(result == null)
                     {
-                        marshalTag(getTagForClass(returnType.getSimpleName()), null);
+                        xml.append(marshalTag(getTagForClass(returnType.getSimpleName()), null));
                     }
                     else
                     {
@@ -112,6 +83,31 @@ public class XmlMarshaller
         }
     }
 
+    @Override
+    public String marshal(List<Resource> list, Class<? extends Resource> resourceClass)
+    {
+        if(list == null)
+        {
+            throw new IllegalArgumentException("List cannot be null");
+        }
+
+        String tag = getTagForClass(resourceClass.getSimpleName()) + "s"; // pluralize it for the list
+
+        if(list.size() == 0)
+        {
+            return marshalOpeningResourceTag(tag, "/" + tag, true);
+        }
+
+        StringBuilder xml = new StringBuilder();
+        xml.append(marshalOpeningResourceTag(tag, "/" + tag, false));
+        for(Resource resource : list)
+        {
+            xml.append(marshalOpeningResourceTag(resource, true));
+        }
+        xml.append(marshalClosingResourceTag(tag));
+        return xml.toString();
+    }
+
     /**
      * Marshals a single {@link Resource} as a shallow tag (i.e. only containing its {@code href}).
      * 
@@ -119,7 +115,7 @@ public class XmlMarshaller
      * @param selfClosing whether or not the tag should be self-closing
      * @return XML string
      */
-    public String marshalOpeningResourceTag(Resource resource, boolean selfClosing)
+    private String marshalOpeningResourceTag(Resource resource, boolean selfClosing)
     {
         String classTag = getTagForClass(resource.getClass().getSimpleName());
         return marshalOpeningResourceTag(classTag, "/" + classTag + "/" + resource.getId(), selfClosing);
@@ -134,7 +130,7 @@ public class XmlMarshaller
      * @param selfClosing whether or not the tag should be self-closing
      * @return XML string
      */
-    public String marshalOpeningResourceTag(String resourceName, String href, boolean selfClosing)
+    private String marshalOpeningResourceTag(String resourceName, String href, boolean selfClosing)
     {
         StringBuilder xml = new StringBuilder();
         xml.append("<").append(resourceName).append(" ");
@@ -153,7 +149,7 @@ public class XmlMarshaller
      * @param resourceName resource name
      * @return XML string
      */
-    public String marshalClosingResourceTag(String resourceName)
+    private String marshalClosingResourceTag(String resourceName)
     {
         return "</" + resourceName + ">";
     }
@@ -166,12 +162,13 @@ public class XmlMarshaller
      * @param value value
      * @return XML string
      */
-    public String marshalTag(String tagName, Object value)
+    private String marshalTag(String tagName, Object value)
     {
         StringBuilder xml = new StringBuilder();
         if(value == null)
         {
-            xml.append("<").append(tagName).append(" xsi:nil=\"true\"/>");
+            // FIXME make this xsi:nil="true" -> we need to define the namespace in the XML, though
+            xml.append("<").append(tagName).append(" nil=\"true\"/>");
         }
         else
         {
@@ -234,6 +231,7 @@ public class XmlMarshaller
         });
     }
 
+    @Override
     public Resource unmarshal(InputStream inputStream)
     {
         try

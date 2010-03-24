@@ -24,17 +24,6 @@ public class XmlMarshallerTest
     }
 
     @Test
-    public void test_marshalShallow_withResourceStub_returnsShallowXml()
-    {
-        Long id = System.currentTimeMillis();
-        ResourceStub resource = new ResourceStub();
-        resource.setId(id);
-
-        final String expected = "<resourceStub href=\"/resourceStub/" + id + "\"/>";
-        assertEquals(expected, marshaller.marshalOpeningResourceTag(resource, true));
-    }
-
-    @Test
     public void test_marshal_withCompleteVoicemailResource_returnsCorrectXml()
     {
         Subscriber subscriber = new Subscriber();

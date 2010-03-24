@@ -1,5 +1,7 @@
 package com.interact.listen;
 
+import com.interact.listen.marshal.Marshaller;
+import com.interact.listen.marshal.MarshallerNotFoundException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Resource;
 
@@ -20,7 +22,6 @@ public class ApiServlet extends HttpServlet
     public static final long serialVersionUID = 1L;
 
     private static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    private XmlMarshaller marshaller = new XmlMarshaller();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -34,6 +35,8 @@ public class ApiServlet extends HttpServlet
             writeResponse(response, HttpServletResponse.SC_OK, "Welcome to the Listen Controller API", "text/plain");
             return;
         }
+
+        Marshaller marshaller = getMarshaller(request);
 
         try
         {
@@ -52,21 +55,11 @@ public class ApiServlet extends HttpServlet
                 transaction.commit();
 
                 StringBuilder xml = new StringBuilder();
-                xml.append(XML_TAG);
-
-                if(list.size() == 0)
+                if(marshaller instanceof XmlMarshaller)
                 {
-                    xml.append(marshaller.marshalOpeningResourceTag(attributes.name, "/" + attributes.name, true));
+                    xml.append(XML_TAG);
                 }
-                else
-                {
-                    xml.append(marshaller.marshalOpeningResourceTag(attributes.name, "/" + attributes.name, false));
-                    for(Resource resource : list)
-                    {
-                        xml.append(marshaller.marshalOpeningResourceTag(resource, true));
-                    }
-                    xml.append(marshaller.marshalClosingResourceTag(attributes.name));
-                }
+                xml.append(marshaller.marshal(list, resourceClass));
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
@@ -87,7 +80,10 @@ public class ApiServlet extends HttpServlet
                 }
 
                 StringBuilder xml = new StringBuilder();
-                xml.append(XML_TAG);
+                if(marshaller instanceof XmlMarshaller)
+                {
+                    xml.append(XML_TAG);
+                }
                 xml.append(marshaller.marshal(resource));
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
@@ -126,6 +122,8 @@ public class ApiServlet extends HttpServlet
             return;
         }
 
+        Marshaller marshaller = getMarshaller(request);
+
         try
         {
             String className = getResourceClassName(attributes.name);
@@ -149,8 +147,14 @@ public class ApiServlet extends HttpServlet
 
             transaction.commit();
 
-            writeResponse(response, HttpServletResponse.SC_CREATED, XML_TAG + marshaller.marshal(resource),
-                          "application/xml");
+            StringBuilder xml = new StringBuilder();
+            if(marshaller instanceof XmlMarshaller)
+            {
+                xml.append(XML_TAG);
+            }
+            xml.append(marshaller.marshal(resource));
+
+            writeResponse(response, HttpServletResponse.SC_CREATED, xml.toString(), "application/xml");
         }
         catch(ClassNotFoundException e)
         {
@@ -178,6 +182,8 @@ public class ApiServlet extends HttpServlet
         long start = System.currentTimeMillis();
 
         UriResourceAttributes attributes = getResourceAttributes(request);
+
+        Marshaller marshaller = getMarshaller(request);
 
         try
         {
@@ -207,9 +213,14 @@ public class ApiServlet extends HttpServlet
                 session.update(updatedResource);
 
                 transaction.commit();
-                
-                writeResponse(response, HttpServletResponse.SC_OK, XML_TAG + marshaller.marshal(updatedResource),
-                "application/xml");
+
+                StringBuilder xml = new StringBuilder();
+                if(marshaller instanceof XmlMarshaller)
+                {
+                    xml.append(XML_TAG);
+                }
+                xml.append(marshaller.marshal(updatedResource));
+                writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
             else
             {
@@ -339,6 +350,26 @@ public class ApiServlet extends HttpServlet
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentLength(0);
+        }
+    }
+
+    /**
+     * Retrieves a {@link Marshaller} for the request.
+     * 
+     * @param request request
+     * @return {@code Marshaller}
+     */
+    private Marshaller getMarshaller(HttpServletRequest request)
+    {
+        try
+        {
+            System.out.println("Creatign Marshaller for 'Accept' content type of " + request.getHeader("Accept"));
+            return Marshaller.createMarshaller(request.getHeader("Accept"));
+        }
+        catch(MarshallerNotFoundException e)
+        {
+            System.out.println("Unrecognized content-type provided, assuming XML");
+            return new XmlMarshaller();
         }
     }
 
