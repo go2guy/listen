@@ -2,6 +2,7 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,6 +51,13 @@ public class SubscriberTest
         assertEquals(version, subscriber.getVersion());
     }
 
+    @Test
+    public void test_validate_validProperties_returnsTrue()
+    {
+        subscriber = getPopulatedSubscriber();
+        assertTrue(subscriber.validate());
+    }
+    
     @Test
     public void test_validate_nullNumber_returnsFalse()
     {
