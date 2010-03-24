@@ -1,4 +1,4 @@
-package com.interact.listen.xml;
+package com.interact.listen.marshal.xml;
 
 import org.xml.sax.helpers.DefaultHandler;
 

@@ -1,4 +1,4 @@
-package com.interact.listen.xml.converter;
+package com.interact.listen.marshal.converter;
 
 public class StringConverter implements Converter
 {

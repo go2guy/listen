@@ -1,6 +1,6 @@
-package com.interact.listen.xml.converter;
+package com.interact.listen.marshal.converter;
 
-public class IntegerConverter implements Converter
+public class LongConverter implements Converter
 {
     @Override
     public String marshal(Object value)
@@ -11,6 +11,6 @@ public class IntegerConverter implements Converter
     @Override
     public Object unmarshal(String value)
     {
-        return Integer.parseInt(value);
+        return Long.parseLong(value);
     }
 }

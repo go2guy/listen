@@ -1,7 +1,7 @@
-package com.interact.listen.xml;
+package com.interact.listen.marshal.xml;
 
+import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.resource.Resource;
-import com.interact.listen.xml.converter.Converter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,7 +11,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class SaxContentHandler extends DefaultHandler
 {
-    private Marshaller marshaller;
+    private XmlMarshaller marshaller;
 
     private Resource resource;
     private String resourceElement;
@@ -19,7 +19,7 @@ public class SaxContentHandler extends DefaultHandler
     private String value;
     private Attributes attributes;
 
-    public SaxContentHandler(Marshaller marshaller)
+    public SaxContentHandler(XmlMarshaller marshaller)
     {
         super();
         this.marshaller = marshaller;

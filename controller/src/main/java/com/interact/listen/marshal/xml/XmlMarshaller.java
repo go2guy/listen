@@ -1,7 +1,7 @@
-package com.interact.listen.xml;
+package com.interact.listen.marshal.xml;
 
+import com.interact.listen.marshal.converter.*;
 import com.interact.listen.resource.Resource;
-import com.interact.listen.xml.converter.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class Marshaller
+public class XmlMarshaller
 {
     /** Global names of methods that should be omitted when marshalling objects */
     private static final List<String> OMIT_METHODS = new ArrayList<String>();
@@ -30,7 +30,7 @@ public class Marshaller
     /**
      * Constructs a new {@code Marshaller}.
      */
-    public Marshaller()
+    public XmlMarshaller()
     {
         // TODO maybe factor this out into a ConverterRegistry so it's only loaded once (not every time this is
         // constructed)

@@ -1,7 +1,7 @@
 package com.interact.listen;
 
+import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Resource;
-import com.interact.listen.xml.Marshaller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +20,7 @@ public class ApiServlet extends HttpServlet
     public static final long serialVersionUID = 1L;
 
     private static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    private Marshaller marshaller = new Marshaller();
+    private XmlMarshaller marshaller = new XmlMarshaller();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)

@@ -1,4 +1,4 @@
-package com.interact.listen.xml.converter;
+package com.interact.listen.marshal.converter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
