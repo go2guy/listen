@@ -2,10 +2,9 @@ package com.interact.listen;
 
 import static org.junit.Assert.assertEquals;
 
-import com.interact.listen.resource.Conference;
+import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.xml.Marshaller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class ApiServletTest
     private InputStreamMockHttpServletRequest request;
     private MockHttpServletResponse response;
     private HttpServlet servlet = new ApiServlet();
-    private Marshaller marshaller = new Marshaller();
+    private XmlMarshaller marshaller = new XmlMarshaller();
 
     @Before
     public void setUp()

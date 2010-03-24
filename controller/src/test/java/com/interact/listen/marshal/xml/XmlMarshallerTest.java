@@ -1,11 +1,11 @@
-package com.interact.listen.xml;
+package com.interact.listen.marshal.xml;
 
 import static org.junit.Assert.assertEquals;
 
+import com.interact.listen.marshal.converter.Iso8601DateConverter;
 import com.interact.listen.resource.ResourceStub;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
-import com.interact.listen.xml.converter.Iso8601DateConverter;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
@@ -13,14 +13,14 @@ import java.text.SimpleDateFormat;
 import org.junit.Before;
 import org.junit.Test;
 
-public class MarshallerTest
+public class XmlMarshallerTest
 {
-    private Marshaller marshaller;
+    private XmlMarshaller marshaller;
 
     @Before
     public void setUp()
     {
-        marshaller = new Marshaller();
+        marshaller = new XmlMarshaller();
     }
 
     @Test
