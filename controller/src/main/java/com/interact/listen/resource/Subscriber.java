@@ -44,10 +44,15 @@ public class Subscriber implements Resource
     {
         this.version = version;
     }
-    
+
+    @Override
     public boolean validate()
     {
-        //FIXME by actually implementing validation
+        if(number == null || number.trim().equals(""))
+        {
+            return false;
+        }
+
         return true;
     }
 }

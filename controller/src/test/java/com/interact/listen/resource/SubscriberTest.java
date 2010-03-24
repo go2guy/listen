@@ -1,7 +1,7 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,5 +48,38 @@ public class SubscriberTest
         subscriber.setVersion(version);
 
         assertEquals(version, subscriber.getVersion());
+    }
+
+    @Test
+    public void test_validate_nullNumber_returnsFalse()
+    {
+        subscriber = getPopulatedSubscriber();
+        subscriber.setNumber(null);
+        assertFalse(subscriber.validate());
+    }
+
+    @Test
+    public void test_validate_blankNumber_returnsFalse()
+    {
+        subscriber = getPopulatedSubscriber();
+        subscriber.setNumber("");
+        assertFalse(subscriber.validate());
+    }
+
+    @Test
+    public void test_validate_whitespaceNumber_returnsFalse()
+    {
+        subscriber = getPopulatedSubscriber();
+        subscriber.setNumber(" ");
+        assertFalse(subscriber.validate());
+    }
+
+    private Subscriber getPopulatedSubscriber()
+    {
+        Subscriber s = new Subscriber();
+        s.setId(System.currentTimeMillis());
+        s.setVersion(1);
+        s.setNumber(String.valueOf(System.currentTimeMillis()));
+        return s;
     }
 }

@@ -94,7 +94,7 @@ public class VoicemailTest
     }
 
     @Test
-    public void test_validate_emptyFileLocation_returnsFalse()
+    public void test_validate_blankFileLocation_returnsFalse()
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setFileLocation("");
@@ -121,6 +121,7 @@ public class VoicemailTest
     {
         Subscriber s = new Subscriber();
         s.setId(System.currentTimeMillis());
+        s.setVersion(1);
         s.setNumber(String.valueOf(System.currentTimeMillis()));
 
         Voicemail v = new Voicemail();
