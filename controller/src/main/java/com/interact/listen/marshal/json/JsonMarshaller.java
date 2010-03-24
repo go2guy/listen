@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -67,7 +66,17 @@ public class JsonMarshaller extends Marshaller
                     Converter converter = converterClass.newInstance();
                     String resultString = converter.marshal(result);
 
-                    json.append("\"").append(resultString).append("\"");
+                    boolean useQuotes = resultString != null && isStringType(returnType);
+
+                    if(useQuotes)
+                    {
+                        json.append("\"");
+                    }
+                    json.append(resultString);
+                    if(useQuotes)
+                    {
+                        json.append("\"");
+                    }
                 }
 
                 json.append(",");
@@ -168,7 +177,7 @@ public class JsonMarshaller extends Marshaller
                                                  "], you should probably write one");
                     }
                     Converter converter = converterClass.newInstance();
-                    Object convertedValue = converter.unmarshal((String)json.get(key));
+                    Object convertedValue = converter.unmarshal(String.valueOf(json.get(key)));
                     method.invoke(resource, convertedValue);
                 }
             }
@@ -200,5 +209,20 @@ public class JsonMarshaller extends Marshaller
             // FIXME
             throw new RuntimeException(e);
         }
+    }
+    
+    private boolean isStringType(Class clazz)
+    {
+        if(Boolean.class.isAssignableFrom(clazz))
+        {
+            return false;
+        }
+
+        if(Number.class.isAssignableFrom(clazz))
+        {
+            return false;
+        }
+
+        return true;
     }
 }
