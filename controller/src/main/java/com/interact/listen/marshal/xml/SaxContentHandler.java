@@ -1,5 +1,6 @@
 package com.interact.listen.marshal.xml;
 
+import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.resource.Resource;
 
@@ -19,10 +20,24 @@ public class SaxContentHandler extends DefaultHandler
     private String value;
     private Attributes attributes;
 
-    public SaxContentHandler(XmlMarshaller marshaller)
+    public SaxContentHandler(XmlMarshaller marshaller, Class<? extends Resource> asResource)
     {
         super();
         this.marshaller = marshaller;
+        try
+        {
+            this.resource = (Resource)asResource.newInstance();
+        }
+        catch(IllegalAccessException e)
+        {
+            // FIXME
+            throw new RuntimeException(e);
+        }
+        catch(InstantiationException e)
+        {
+            // FIXME
+            throw new RuntimeException(e);
+        }
     }
 
     public Resource getResource()
@@ -35,39 +50,16 @@ public class SaxContentHandler extends DefaultHandler
     {
         this.attributes = attributes;
 
-        // resource not loaded yet, assume this is the first element
-        if(resource == null)
+        // resourceElement not loaded yet, assume this is the first element
+        if(resourceElement == null)
         {
             resourceElement = qName;
-            try
-            {
-                String className = getClassName(qName);
-                Class resourceClass = Class.forName(className);
 
-                resource = (Resource)resourceClass.newInstance();
-
-                String href = attributes.getValue("href");
-                
-                // no href on POST
-                if(href != null)
-                {
-                    resource.setId(getIdFromHref(href));
-                }
-            }
-            catch(ClassNotFoundException e)
+            String href = attributes.getValue("href");
+            // no href on POST
+            if(href != null)
             {
-                // FIXME
-                throw new RuntimeException(e);
-            }
-            catch(IllegalAccessException e)
-            {
-                // FIXME
-                throw new RuntimeException(e);
-            }
-            catch(InstantiationException e)
-            {
-                // FIXME
-                throw new RuntimeException(e);
+                resource.setId(Marshaller.getIdFromHref(href));
             }
         }
     }
@@ -90,13 +82,13 @@ public class SaxContentHandler extends DefaultHandler
                 methodName += qName.substring(0, 1).toUpperCase();
                 methodName += qName.substring(1);
 
-                Method method = findMethod(methodName, resource.getClass());
+                Method method = Marshaller.findMethod(methodName, resource.getClass());
                 Class<?> parameterType = method.getParameterTypes()[0]; // assume one parameter
 
                 if(Resource.class.isAssignableFrom(parameterType))
                 {
                     Resource associatedResource = (Resource)parameterType.newInstance();
-                    associatedResource.setId(getIdFromHref(attributes.getValue("href")));
+                    associatedResource.setId(Marshaller.getIdFromHref(attributes.getValue("href")));
 
                     method.invoke(resource, associatedResource);
                 }
@@ -108,10 +100,7 @@ public class SaxContentHandler extends DefaultHandler
                         throw new AssertionError("No Converter configured for [" + parameterType +
                                                  "], you should probably write one");
                     }
-                    System.out.println("Using converter [" + converterClass + "] for field [" + qName +
-                                       "] with parameter type [" + parameterType + "]");
                     Converter converter = converterClass.newInstance();
-
                     Object convertedValue = converter.unmarshal(value);
                     method.invoke(resource, convertedValue);
                 }
@@ -138,38 +127,5 @@ public class SaxContentHandler extends DefaultHandler
                 value = null;
             }
         }
-    }
-
-    private String getClassName(String elementName)
-    {
-        String capitalized = elementName.substring(0, 1).toUpperCase();
-        if(elementName.length() > 1)
-        {
-            capitalized += elementName.substring(1);
-        }
-
-        return "com.interact.listen.resource." + capitalized;
-    }
-
-    private Method findMethod(String name, Class clazz)
-    {
-        for(Method method : clazz.getMethods())
-        {
-            if(method.getName().equals(name))
-            {
-                return method;
-            }
-        }
-        return null;
-    }
-
-    private Long getIdFromHref(String href)
-    {
-        if(href != null)
-        {
-            Long id = Long.parseLong(href.substring(href.lastIndexOf("/") + 1));
-            return id;
-        }
-        return null;
     }
 }

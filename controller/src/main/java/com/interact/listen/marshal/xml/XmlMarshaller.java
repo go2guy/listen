@@ -33,12 +33,7 @@ public class XmlMarshaller extends Marshaller
 
             for(Method method : methods)
             {
-                if(!method.getName().startsWith("get"))
-                {
-                    continue;
-                }
-
-                if(OMIT_METHODS.contains(method.getName()))
+                if(!method.getName().startsWith("get") || OMIT_METHODS.contains(method.getName()))
                 {
                     continue;
                 }
@@ -179,65 +174,13 @@ public class XmlMarshaller extends Marshaller
         return xml.toString();
     }
 
-    private String getTagForClass(String className)
-    {
-        return className.substring(0, 1).toLowerCase() + className.substring(1);
-    }
-
-    /**
-     * Assumes {@code methodName} starts with "get", e.g. 'getFoo()'.
-     * 
-     * @param methodName method name for which to derive field name
-     * @return the field name that should be used as the XML tag
-     */
-    private String getTagForMethod(String methodName)
-    {
-        String withoutGet = methodName.substring("get".length());
-        return withoutGet.substring(0, 1).toLowerCase() + withoutGet.substring(1);
-    }
-
-    private Object invokeMethod(Method method, Resource resource)
-    {
-        try
-        {
-            return method.invoke(resource);
-        }
-        catch(InvocationTargetException e)
-        {
-            throw new AssertionError("InvocationTargetException when calling [" + method.getName() + "] of Resource [" +
-                                     resource.getClass().getName() + "]");
-        }
-        catch(IllegalAccessException e)
-        {
-            throw new AssertionError("IllegalAccessException when calling [" + method.getName() + "] of Resource [" +
-                                     resource.getClass().getName() + "]");
-        }
-    }
-
-    /**
-     * Sorts the provided array of {@link Method}s. Note that the array provided as an argument is modified as a result
-     * of this operation.
-     * 
-     * @param methods {@code Method} array to sort
-     */
-    private void sortMethods(Method[] methods)
-    {
-        Arrays.sort(methods, new Comparator<Method>()
-        {
-            public int compare(Method a, Method b)
-            {
-                return a.getName().compareTo(b.getName());
-            }
-        });
-    }
-
     @Override
-    public Resource unmarshal(InputStream inputStream)
+    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
     {
         try
         {
             XMLReader reader = XMLReaderFactory.createXMLReader();
-            SaxContentHandler contentHandler = new SaxContentHandler(this);
+            SaxContentHandler contentHandler = new SaxContentHandler(this, asResource);
             SaxErrorHandler errorHandler = new SaxErrorHandler();
             reader.setContentHandler(contentHandler);
             reader.setErrorHandler(errorHandler);
@@ -256,10 +199,5 @@ public class XmlMarshaller extends Marshaller
             // FIXME
             throw new RuntimeException(e);
         }
-    }
-
-    public Class<? extends Converter> getConverterClass(Class<?> forClass)
-    {
-        return converters.get(forClass);
     }
 }

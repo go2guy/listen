@@ -36,7 +36,7 @@ public class ApiServlet extends HttpServlet
             return;
         }
 
-        Marshaller marshaller = getMarshaller(request);
+        Marshaller marshaller = getMarshaller(request.getHeader("Accept"));
 
         try
         {
@@ -122,14 +122,14 @@ public class ApiServlet extends HttpServlet
             return;
         }
 
-        Marshaller marshaller = getMarshaller(request);
+        Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
 
         try
         {
             String className = getResourceClassName(attributes.name);
-            Class resourceClass = Class.forName(className);
+            Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
-            Resource resource = marshaller.unmarshal(request.getInputStream());
+            Resource resource = marshaller.unmarshal(request.getInputStream(), resourceClass);
             // Resource resource = (Resource)resourceClass.newInstance();
             // String requestBody = this.readInputStreamContents(request.getInputStream());
             // resource.loadFromXml(requestBody, false);
@@ -183,12 +183,12 @@ public class ApiServlet extends HttpServlet
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
-        Marshaller marshaller = getMarshaller(request);
+        Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
 
         try
         {
             String className = getResourceClassName(attributes.name);
-            Class resourceClass = Class.forName(className);
+            Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
             // id provided, request is looking for a specific resource
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -204,7 +204,7 @@ public class ApiServlet extends HttpServlet
                 return;
             }
 
-            Resource updatedResource = marshaller.unmarshal(request.getInputStream());
+            Resource updatedResource = marshaller.unmarshal(request.getInputStream(), resourceClass);
             
             updatedResource.setId(Long.parseLong(attributes.id));
 
@@ -361,12 +361,12 @@ public class ApiServlet extends HttpServlet
      * @param request request
      * @return {@code Marshaller}
      */
-    private Marshaller getMarshaller(HttpServletRequest request)
+    private Marshaller getMarshaller(String contentType)
     {
         try
         {
-            System.out.println("Creatign Marshaller for 'Accept' content type of " + request.getHeader("Accept"));
-            return Marshaller.createMarshaller(request.getHeader("Accept"));
+            System.out.println("Creatign Marshaller for 'Accept' content type of " + contentType);
+            return Marshaller.createMarshaller(contentType);
         }
         catch(MarshallerNotFoundException e)
         {
