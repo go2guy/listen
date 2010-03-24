@@ -81,10 +81,30 @@ public class Voicemail implements Resource
     {
         this.isNew = isNew;
     }
-    
+
+    @Override
     public boolean validate()
     {
-        //FIXME by actually implementing validation
+        if(subscriber == null)
+        {
+            return false;
+        }
+
+        if(fileLocation == null || fileLocation.trim().equals(""))
+        {
+            return false;
+        }
+
+        if(dateCreated == null)
+        {
+            return false;
+        }
+
+        if(isNew == null)
+        {
+            return false;
+        }
+
         return true;
     }
 }
