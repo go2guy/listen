@@ -62,6 +62,6 @@ public class XmlMarshallerTest
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
 
-        marshaller.unmarshal(stream);
+        marshaller.unmarshal(stream, Subscriber.class);
     }
 }
