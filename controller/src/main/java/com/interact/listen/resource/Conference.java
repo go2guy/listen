@@ -25,7 +25,7 @@ public class Conference implements Resource
     {
         this.isStarted = isStarted;
     }
-    
+
     public String getAdminPin()
     {
         return adminPin;
@@ -35,7 +35,7 @@ public class Conference implements Resource
     {
         this.adminPin = adminPin;
     }
-    
+
     public String getNumber()
     {
         return number;
@@ -65,15 +65,16 @@ public class Conference implements Resource
     {
         this.version = version;
     }
-    
+
     @Override
     public boolean validate()
     {
-        if(this.isStarted != null && this.adminPin != null && this.number != null)
+        if(isStarted != null && adminPin != null && !adminPin.trim().equals("") && number != null &&
+           !number.trim().equals(""))
         {
             return true;
         }
-        
+
         return false;
     }
 }
