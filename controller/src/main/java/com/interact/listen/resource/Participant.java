@@ -116,7 +116,41 @@ public class Participant implements Resource
     @Override
     public boolean validate()
     {
-        // FIXME by actually implementing validation
+        if(audioResource == null)
+        {
+            return false;
+        }
+
+        if(conference == null)
+        {
+            return false;
+        }
+
+        if(isAdmin == null)
+        {
+            return false;
+        }
+
+        if(isHolding == null)
+        {
+            return false;
+        }
+
+        if(isMuted == null)
+        {
+            return false;
+        }
+
+        if(number == null || number.trim().equals(""))
+        {
+            return false;
+        }
+
+        if(sessionID == null || sessionID.trim().equals(""))
+        {
+            return false;
+        }
+
         return true;
     }
 }
