@@ -2,6 +2,7 @@ package com.interact.listen.marshal.xml;
 
 import static org.junit.Assert.assertEquals;
 
+import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
 import com.interact.listen.resource.ResourceStub;
 import com.interact.listen.resource.Subscriber;
@@ -53,7 +54,7 @@ public class XmlMarshallerTest
     }
 
     @Test
-    public void test_unmarshal()
+    public void test_unmarshal() throws MalformedContentException
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
