@@ -139,12 +139,6 @@ public class ApiServlet extends HttpServlet
             // String requestBody = this.readInputStreamContents(request.getInputStream());
             // resource.loadFromXml(requestBody, false);
 
-            if(resourceClass != resource.getClass())
-            {
-                writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                              "Resource in request body did not match type in URI", "text/plain");
-            }
-
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
             Long id = (Long)session.save(resource);
@@ -178,7 +172,7 @@ public class ApiServlet extends HttpServlet
         {
             e.printStackTrace();
             writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                          "The content you provided was malformed, please fix it", "text/plain");
+                          "The content you provided was malformed, please fix it: " + e.getMessage(), "text/plain");
             return;
         }
         catch(Exception e)

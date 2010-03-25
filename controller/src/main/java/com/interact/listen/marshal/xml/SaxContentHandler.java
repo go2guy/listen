@@ -84,6 +84,13 @@ public class SaxContentHandler extends DefaultHandler
                 methodName += qName.substring(1);
 
                 Method method = Marshaller.findMethod(methodName, resource.getClass());
+
+                if(method == null)
+                {
+                    System.out.println("method " + methodName + " does not exist for resource " + resource);
+                    throw new SAXException("Cannot set property " + qName);
+                }
+
                 Class<?> parameterType = method.getParameterTypes()[0]; // assume one parameter
 
                 if(Resource.class.isAssignableFrom(parameterType))
