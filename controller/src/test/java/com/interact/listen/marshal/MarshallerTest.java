@@ -37,7 +37,7 @@ public class MarshallerTest
     public void test_createMarshaller_contentTypeStartsWithApplicationJson_returnsJsonMarshaller()
         throws MarshallerNotFoundException
     {
-        Marshaller marshaller = Marshaller.createMarshaller("application/xml");
+        Marshaller marshaller = Marshaller.createMarshaller("application/json");
         assertTrue(marshaller instanceof JsonMarshaller);
     }
 
