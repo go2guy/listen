@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
-import com.interact.listen.resource.ResourceStub;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
 
@@ -41,12 +40,12 @@ public class XmlMarshallerTest
         String formattedDate = sdf.format(voicemail.getDateCreated());
 
         StringBuilder expected = new StringBuilder();
-        expected.append("<voicemail href=\"/voicemail/").append(voicemail.getId()).append("\">");
+        expected.append("<voicemail href=\"/voicemails/").append(voicemail.getId()).append("\">");
         expected.append("<dateCreated>").append(formattedDate).append("</dateCreated>");
         expected.append("<fileLocation>").append(voicemail.getFileLocation()).append("</fileLocation>");
         expected.append("<id>").append(voicemail.getId()).append("</id>");
         expected.append("<isNew>").append(voicemail.getIsNew()).append("</isNew>");
-        expected.append("<subscriber href=\"/subscriber/").append(subscriber.getId()).append("\"/>");
+        expected.append("<subscriber href=\"/subscribers/").append(subscriber.getId()).append("\"/>");
         expected.append("<version>").append(voicemail.getVersion()).append("</version>");
         expected.append("</voicemail>");
 

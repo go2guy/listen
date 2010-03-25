@@ -115,7 +115,7 @@ public class XmlMarshaller extends Marshaller
     private String marshalOpeningResourceTag(Resource resource, boolean selfClosing)
     {
         String classTag = getTagForClass(resource.getClass().getSimpleName());
-        return marshalOpeningResourceTag(classTag, "/" + classTag + "/" + resource.getId(), selfClosing);
+        return marshalOpeningResourceTag(classTag, "/" + classTag + "s/" + resource.getId(), selfClosing);
     }
 
     /**

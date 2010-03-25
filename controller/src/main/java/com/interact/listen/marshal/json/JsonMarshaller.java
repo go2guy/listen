@@ -112,7 +112,9 @@ public class JsonMarshaller extends Marshaller
         String tag = getTagForClass(resourceClass.getSimpleName()) + "s";
 
         StringBuilder json = new StringBuilder();
-        json.append("[");
+        json.append("{");
+        json.append("\"href\":\"").append("/").append(tag).append("\",");
+        json.append("\"results\":[");
         for(Resource resource : list)
         {
             json.append("{");
@@ -120,6 +122,7 @@ public class JsonMarshaller extends Marshaller
             json.append("}");
         }
         json.append("]");
+        json.append("}");
 
         return json.toString();
     }
