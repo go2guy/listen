@@ -173,4 +173,22 @@ public abstract class Marshaller
         }
         return null;
     }
+
+    public static final String convert(Class<?> forClass, Object value)
+    {
+        try
+        {
+            Class<? extends Converter> converterClass = Marshaller.getConverterClass(forClass);
+            Converter converter = converterClass.newInstance();
+            return converter.marshal(value);
+        }
+        catch(IllegalAccessException e)
+        {
+            throw new AssertionError(e);
+        }
+        catch(InstantiationException e)
+        {
+            throw new AssertionError(e);
+        }
+    }
 }

@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,82 +23,67 @@ public class JsonMarshaller extends Marshaller
     @Override
     public String marshal(Resource resource)
     {
-        try
+        Class<? extends Resource> clazz = resource.getClass();
+        Method[] methods = clazz.getMethods();
+        sortMethods(methods);
+
+        String resourceTag = getTagForClass(clazz.getSimpleName());
+
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"href\":").append("\"/").append(resourceTag).append("s/").append(resource.getId()).append("\",");
+
+        for(Method method : methods)
         {
-            Class<? extends Resource> clazz = resource.getClass();
-            Method[] methods = clazz.getMethods();
-            sortMethods(methods);
-
-            String resourceTag = getTagForClass(clazz.getSimpleName());
-
-            StringBuilder json = new StringBuilder();
-            json.append("{");
-            json.append("\"href\":").append("\"/").append(resourceTag).append("s/").append(resource.getId())
-                .append("\",");
-
-            for(Method method : methods)
+            if(!method.getName().startsWith("get") || OMIT_METHODS.contains(method.getName()))
             {
-                if(!method.getName().startsWith("get") || OMIT_METHODS.contains(method.getName()))
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                String propertyTag = getTagForMethod(method.getName());
-                json.append("\"").append(propertyTag).append("\":");
+            String propertyTag = getTagForMethod(method.getName());
+            json.append("\"").append(propertyTag).append("\":");
 
-                Object result = invokeMethod(method, resource);
-                Class<?> returnType = method.getReturnType();
-                if(Resource.class.isAssignableFrom(returnType))
+            Object result = invokeMethod(method, resource);
+            Class<?> returnType = method.getReturnType();
+            if(Resource.class.isAssignableFrom(returnType))
+            {
+                if(result == null)
                 {
-                    if(result == null)
-                    {
-                        json.append("null");
-                    }
-                    else
-                    {
-                        String associatedTag = getTagForClass(returnType.getSimpleName());
-                        json.append("{\"href\":");
-                        json.append("\"/").append(associatedTag).append("s/").append(((Resource)result).getId())
-                            .append("\"");
-                        json.append("}");
-                    }
+                    json.append("null");
                 }
                 else
                 {
-                    Class<? extends Converter> converterClass = getConverterClass(returnType);
-                    Converter converter = converterClass.newInstance();
-                    String resultString = converter.marshal(result);
-
-                    boolean useQuotes = resultString != null && isStringType(returnType);
-
-                    if(useQuotes)
-                    {
-                        json.append("\"");
-                    }
-                    json.append(resultString);
-                    if(useQuotes)
-                    {
-                        json.append("\"");
-                    }
+                    String associatedTag = getTagForClass(returnType.getSimpleName());
+                    json.append("{\"href\":");
+                    json.append("\"/").append(associatedTag).append("s/").append(((Resource)result).getId())
+                        .append("\"");
+                    json.append("}");
                 }
+            }
+            else
+            {
+                String resultString = Marshaller.convert(returnType, result);
+                boolean useQuotes = resultString != null && isStringType(returnType);
 
-                json.append(",");
+                if(useQuotes)
+                {
+                    json.append("\"");
+                }
+                json.append(resultString);
+                if(useQuotes)
+                {
+                    json.append("\"");
+                }
             }
 
-            // remove the last comma
-            json.deleteCharAt(json.length() - 1);
-            json.append("}");
+            json.append(",");
+        }
 
-            return json.toString();
-        }
-        catch(IllegalAccessException e)
-        {
-            throw new AssertionError("IllegalAccessException: " + e);
-        }
-        catch(InstantiationException e)
-        {
-            throw new AssertionError("InstantiationException: " + e);
-        }
+        // remove the last comma
+        json.deleteCharAt(json.length() - 1);
+        json.append("}");
+
+        return json.toString();
     }
 
     @Override
@@ -134,8 +118,53 @@ public class JsonMarshaller extends Marshaller
         {
             json.append("{");
             json.append("\"href\":\"/").append(tag).append("/").append(resource.getId()).append("\"");
-            json.append("}");
+
+            for(String field : list.getFields())
+            {
+                String methodName = "get" + field.substring(0, 1).toUpperCase() + field.substring(1);
+                Method method = Marshaller.findMethod(methodName, resource.getClass());
+
+                if(method == null || OMIT_METHODS.contains(method.getName()))
+                {
+                    System.out.println("Method [" + methodName + "] not found, or method is explicitly omitted, for [" +
+                                       resource.getClass() + "] when marshalling list");
+                    continue;
+                }
+
+                Object result = invokeMethod(method, resource);
+                String propertyTag = getTagForMethod(method.getName());
+
+                json.append(",\"").append(propertyTag).append("\":");
+
+                Class<?> returnType = method.getReturnType();
+                if(Resource.class.isAssignableFrom(returnType))
+                {
+                    if(result == null)
+                    {
+                        json.append("null");
+                    }
+                    else
+                    {
+                        String associatedTag = getTagForClass(returnType.getSimpleName());
+                        json.append("{\"href\":\"/").append(associatedTag).append("s/")
+                            .append(((Resource)result).getId()).append("\"}");
+                    }
+                }
+                else
+                {
+                    String resultString = Marshaller.convert(returnType, result);
+                    json.append("\"").append(resultString).append("\"");
+                }
+            }
+
+            json.append("},");
         }
+
+        if(list.getList().size() > 0)
+        {
+            json.deleteCharAt(json.length() - 1);
+        }
+
         json.append("]");
         json.append("}");
 
@@ -143,7 +172,8 @@ public class JsonMarshaller extends Marshaller
     }
 
     @Override
-    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource) throws MalformedContentException
+    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
+        throws MalformedContentException
     {
         try
         {

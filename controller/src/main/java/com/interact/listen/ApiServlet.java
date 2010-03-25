@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.*;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 public class ApiServlet extends HttpServlet
@@ -497,11 +496,9 @@ public class ApiServlet extends HttpServlet
         Criteria criteria = session.createCriteria(resourceClass);
 
         int first = getFirst(queryParameters);
-        System.out.println("Criteria: [_first] = [" + first + "]");
         criteria.setFirstResult(first);
 
         int max = getMax(queryParameters);
-        System.out.println("Criteria: [_max] = [" + max + "]");
         criteria.setMaxResults(max);
 
         Map<String, String> searchProperties = getSearchProperties(queryParameters);
@@ -510,7 +507,6 @@ public class ApiServlet extends HttpServlet
             String key = entry.getKey();
             String value = entry.getValue();
 
-            System.out.println("Criteria: [" + key + "] = [" + value + "]");
             String getMethod = "get" + key.substring(0, 1).toUpperCase() + key.substring(1);
             Method method = Marshaller.findMethod(getMethod, resourceClass);
             if(method == null)

@@ -4,14 +4,12 @@ import com.interact.listen.ListenRuntimeException;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.ConversionException;
-import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.resource.Resource;
 import com.interact.listen.resource.ResourceList;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -23,62 +21,48 @@ public class XmlMarshaller extends Marshaller
     @Override
     public String marshal(Resource resource)
     {
-        try
+        StringBuilder xml = new StringBuilder();
+
+        // iterate over properties
+        Class<? extends Resource> clazz = resource.getClass();
+        Method[] methods = clazz.getMethods();
+        sortMethods(methods);
+
+        xml.append(marshalOpeningResourceTag(resource, false));
+
+        for(Method method : methods)
         {
-            StringBuilder xml = new StringBuilder();
-
-            // iterate over properties
-            Class<? extends Resource> clazz = resource.getClass();
-            Method[] methods = clazz.getMethods();
-            sortMethods(methods);
-
-            xml.append(marshalOpeningResourceTag(resource, false));
-
-            for(Method method : methods)
+            if(!method.getName().startsWith("get") || OMIT_METHODS.contains(method.getName()))
             {
-                if(!method.getName().startsWith("get") || OMIT_METHODS.contains(method.getName()))
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                Object result = invokeMethod(method, resource);
-                String propertyTag = getTagForMethod(method.getName());
+            Object result = invokeMethod(method, resource);
+            String propertyTag = getTagForMethod(method.getName());
 
-                Class<?> returnType = method.getReturnType();
-                if(Resource.class.isAssignableFrom(returnType))
+            Class<?> returnType = method.getReturnType();
+            if(Resource.class.isAssignableFrom(returnType))
+            {
+                if(result == null)
                 {
-                    if(result == null)
-                    {
-                        xml.append(marshalTag(getTagForClass(returnType.getSimpleName()), null));
-                    }
-                    else
-                    {
-                        xml.append(marshalOpeningResourceTag((Resource)result, true));
-                    }
+                    xml.append(marshalTag(getTagForClass(returnType.getSimpleName()), null));
                 }
                 else
                 {
-                    Class<? extends Converter> converterClass = getConverterClass(returnType);
-                    Converter converter = converterClass.newInstance();
-                    String resultString = converter.marshal(result);
-
-                    xml.append(marshalTag(propertyTag, resultString));
+                    xml.append(marshalOpeningResourceTag((Resource)result, true));
                 }
             }
+            else
+            {
+                String resultString = Marshaller.convert(returnType, result);
+                xml.append(marshalTag(propertyTag, resultString));
+            }
+        }
 
-            String classTag = getTagForClass(clazz.getSimpleName());
-            xml.append("</").append(classTag).append(">");
+        String classTag = getTagForClass(clazz.getSimpleName());
+        xml.append("</").append(classTag).append(">");
 
-            return xml.toString();
-        }
-        catch(IllegalAccessException e)
-        {
-            throw new AssertionError("IllegalAccessException: " + e);
-        }
-        catch(InstantiationException e)
-        {
-            throw new AssertionError("InstantiationException: " + e);
-        }
+        return xml.toString();
     }
 
     @Override
@@ -107,7 +91,7 @@ public class XmlMarshaller extends Marshaller
         }
         xml.append("\" ");
         xml.append("count=\"").append(list.getList().size()).append("\"");
-//        xml.append("total=\"").append(list.getTotal()).append("\"");
+        // xml.append("total=\"").append(list.getTotal()).append("\"");
 
         if(list.getList().size() == 0)
         {
@@ -120,9 +104,52 @@ public class XmlMarshaller extends Marshaller
 
         for(Resource resource : list.getList())
         {
-            xml.append(marshalOpeningResourceTag(resource, true));
+            String classTag = getTagForClass(resource.getClass().getSimpleName());
+            xml.append("<").append(classTag);
+            xml.append(" href=\"/").append(classTag).append("s/").append(resource.getId()).append("\"");
+
+            for(String field : list.getFields())
+            {
+                String methodName = "get" + field.substring(0, 1).toUpperCase() + field.substring(1);
+                Method method = Marshaller.findMethod(methodName, resource.getClass());
+
+                if(method == null || OMIT_METHODS.contains(method.getName()))
+                {
+                    System.out.println("Method [" + methodName + "] not found, or method is explicitly omitted, for [" +
+                                       resource.getClass() + "] when marshalling list");
+                    continue;
+                }
+
+                Object result = invokeMethod(method, resource);
+                String propertyTag = getTagForMethod(method.getName());
+
+                xml.append(" ").append(propertyTag).append("=\"");
+
+                Class<?> returnType = method.getReturnType();
+                if(Resource.class.isAssignableFrom(returnType))
+                {
+                    if(result == null)
+                    {
+                        xml.append("nil");
+                    }
+                    else
+                    {
+                        String associatedTag = getTagForClass(returnType.getSimpleName());
+                        xml.append("/").append(associatedTag).append("s/").append(((Resource)result).getId());
+                    }
+                }
+                else
+                {
+                    String resultString = Marshaller.convert(returnType, result);
+                    xml.append(resultString);
+                }
+
+                xml.append("\"");
+            }
+
+            xml.append("/>");
         }
-        
+
         if(list.getList().size() > 0)
         {
             xml.append(marshalClosingResourceTag(tag));
@@ -178,8 +205,8 @@ public class XmlMarshaller extends Marshaller
     }
 
     /**
-     * Marshals a single XML tag. If {@code value} is {@code null} a null element (e.g. {@code <foo nil="true"/>}) is returned.
-     * Otherwise the value is returned between XML tags.
+     * Marshals a single XML tag. If {@code value} is {@code null} a null element (e.g. {@code <foo nil="true"/>}) is
+     * returned. Otherwise the value is returned between XML tags.
      * 
      * @param tagName tag name
      * @param value value
@@ -203,7 +230,8 @@ public class XmlMarshaller extends Marshaller
     }
 
     @Override
-    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource) throws MalformedContentException
+    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
+        throws MalformedContentException
     {
         try
         {

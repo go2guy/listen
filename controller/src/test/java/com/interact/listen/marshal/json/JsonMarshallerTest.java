@@ -76,8 +76,8 @@ public class JsonMarshallerTest
         expected.append("\"href\":\"/subscribers?_first=0&_max=10\",");
         expected.append("\"count\":3,");
         expected.append("\"results\":[");
-        expected.append("{\"href\":\"/subscribers/" + s0.getId() + "\"}");
-        expected.append("{\"href\":\"/subscribers/" + s1.getId() + "\"}");
+        expected.append("{\"href\":\"/subscribers/" + s0.getId() + "\"},");
+        expected.append("{\"href\":\"/subscribers/" + s1.getId() + "\"},");
         expected.append("{\"href\":\"/subscribers/" + s2.getId() + "\"}");
         expected.append("]");
         expected.append("}");
