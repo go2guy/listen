@@ -7,6 +7,7 @@ import com.interact.listen.resource.Resource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -74,7 +75,7 @@ public class SaxContentHandler extends DefaultHandler
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException
     {
-        if(!qName.equals(resourceElement) && value != null)
+        if(!qName.equals(resourceElement) && (value != null || attributes.getValue("href") != null))
         {
             try
             {

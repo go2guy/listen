@@ -139,6 +139,13 @@ public class ApiServlet extends HttpServlet
             // String requestBody = this.readInputStreamContents(request.getInputStream());
             // resource.loadFromXml(requestBody, false);
 
+            if(!resource.validate())
+            {
+                writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                              "The resource you sent was invalid", "text/plain");
+                return;
+            }
+            
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
             Long id = (Long)session.save(resource);
