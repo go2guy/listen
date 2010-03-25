@@ -4,6 +4,7 @@ import com.interact.listen.marshal.converter.*;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Resource;
+import com.interact.listen.resource.ResourceList;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -16,15 +17,11 @@ public abstract class Marshaller
     protected static final List<String> OMIT_METHODS = new ArrayList<String>();
 
     /** Map of Converters that should be used when marshalling/unmarshalling certain data types */
-    private Map<Class<?>, Class<? extends Converter>> converters = new HashMap<Class<?>, Class<? extends Converter>>();
+    private static Map<Class<?>, Class<? extends Converter>> converters = new HashMap<Class<?>, Class<? extends Converter>>();
 
     static
     {
         OMIT_METHODS.add("getClass");
-    }
-
-    public Marshaller()
-    {
         converters.put(Boolean.class, BooleanConverter.class);
         converters.put(Date.class, Iso8601DateConverter.class);
         converters.put(Integer.class, IntegerConverter.class);
@@ -47,7 +44,7 @@ public abstract class Marshaller
      * @param resourceClass resource class that the list contains
      * @return marshalled string
      */
-    public abstract String marshal(List<Resource> list, Class<? extends Resource> resourceClass);
+    public abstract String marshal(ResourceList list, Class<? extends Resource> resourceClass);
 
     /**
      * Unmarshals the content of the provided {@code InputStream} into a resource.
@@ -150,7 +147,7 @@ public abstract class Marshaller
         }
     }
 
-    public final Class<? extends Converter> getConverterClass(Class<?> forClass)
+    public static final Class<? extends Converter> getConverterClass(Class<?> forClass)
     {
         return converters.get(forClass);
     }

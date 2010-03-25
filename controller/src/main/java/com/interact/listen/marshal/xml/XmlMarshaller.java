@@ -6,6 +6,7 @@ import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.ConversionException;
 import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.resource.Resource;
+import com.interact.listen.resource.ResourceList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,7 +82,7 @@ public class XmlMarshaller extends Marshaller
     }
 
     @Override
-    public String marshal(List<Resource> list, Class<? extends Resource> resourceClass)
+    public String marshal(ResourceList list, Class<? extends Resource> resourceClass)
     {
         if(list == null)
         {
@@ -90,18 +91,43 @@ public class XmlMarshaller extends Marshaller
 
         String tag = getTagForClass(resourceClass.getSimpleName()) + "s"; // pluralize it for the list
 
-        if(list.size() == 0)
+        StringBuilder xml = new StringBuilder();
+        xml.append("<").append(tag).append(" href=\"/").append(tag).append("?");
+        xml.append("_first=").append(list.getFirst()).append("&");
+        xml.append("_max=").append(list.getMax());
+        String fields = list.getFieldsForQuery();
+        if(fields.length() > 0)
         {
-            return marshalOpeningResourceTag(tag, "/" + tag, true);
+            xml.append("&").append("_fields=").append(list.getFieldsForQuery());
+        }
+        String properties = list.getSearchPropertiesForQuery();
+        if(properties.length() > 0)
+        {
+            xml.append("&").append(list.getSearchPropertiesForQuery());
+        }
+        xml.append("\" ");
+        xml.append("count=\"").append(list.getList().size()).append("\"");
+//        xml.append("total=\"").append(list.getTotal()).append("\"");
+
+        if(list.getList().size() == 0)
+        {
+            xml.append("/>");
+        }
+        else
+        {
+            xml.append(">");
         }
 
-        StringBuilder xml = new StringBuilder();
-        xml.append(marshalOpeningResourceTag(tag, "/" + tag, false));
-        for(Resource resource : list)
+        for(Resource resource : list.getList())
         {
             xml.append(marshalOpeningResourceTag(resource, true));
         }
-        xml.append(marshalClosingResourceTag(tag));
+        
+        if(list.getList().size() > 0)
+        {
+            xml.append(marshalClosingResourceTag(tag));
+        }
+
         return xml.toString();
     }
 

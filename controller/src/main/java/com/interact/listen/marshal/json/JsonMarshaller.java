@@ -6,6 +6,7 @@ import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.ConversionException;
 import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.resource.Resource;
+import com.interact.listen.resource.ResourceList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,7 +103,7 @@ public class JsonMarshaller extends Marshaller
     }
 
     @Override
-    public String marshal(List<Resource> list, Class<? extends Resource> resourceClass)
+    public String marshal(ResourceList list, Class<? extends Resource> resourceClass)
     {
         if(list == null)
         {
@@ -113,9 +114,23 @@ public class JsonMarshaller extends Marshaller
 
         StringBuilder json = new StringBuilder();
         json.append("{");
-        json.append("\"href\":\"").append("/").append(tag).append("\",");
+        json.append("\"href\":\"").append("/").append(tag).append("?");
+        json.append("_first=").append(list.getFirst()).append("&");
+        json.append("_max=").append(list.getMax());
+        String fields = list.getFieldsForQuery();
+        if(fields.length() > 0)
+        {
+            json.append("&").append("_fields=").append(list.getFieldsForQuery());
+        }
+        String properties = list.getSearchPropertiesForQuery();
+        if(properties.length() > 0)
+        {
+            json.append("&").append(list.getSearchPropertiesForQuery());
+        }
+        json.append("\",");
+        json.append("\"count\":").append(list.getList().size()).append(",");
         json.append("\"results\":[");
-        for(Resource resource : list)
+        for(Resource resource : list.getList())
         {
             json.append("{");
             json.append("\"href\":\"/").append(tag).append("/").append(resource.getId()).append("\"");
@@ -175,7 +190,7 @@ public class JsonMarshaller extends Marshaller
                 }
                 else
                 {
-                    Class<? extends Converter> converterClass = getConverterClass(parameterType);
+                    Class<? extends Converter> converterClass = Marshaller.getConverterClass(parameterType);
                     if(converterClass == null)
                     {
                         throw new AssertionError("No Converter configured for [" + parameterType +

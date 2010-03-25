@@ -3,9 +3,7 @@ package com.interact.listen.marshal.json;
 import static org.junit.Assert.assertEquals;
 
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
-import com.interact.listen.resource.Resource;
-import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.Voicemail;
+import com.interact.listen.resource.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,9 +66,15 @@ public class JsonMarshallerTest
         list.add(s1);
         list.add(s2);
 
+        ResourceList resourceList = new ResourceList();
+        resourceList.setList(list);
+        resourceList.setFirst(0);
+        resourceList.setMax(10);
+
         StringBuilder expected = new StringBuilder();
         expected.append("{");
-        expected.append("\"href\":\"/subscribers\",");
+        expected.append("\"href\":\"/subscribers?_first=0&_max=10\",");
+        expected.append("\"count\":3,");
         expected.append("\"results\":[");
         expected.append("{\"href\":\"/subscribers/" + s0.getId() + "\"}");
         expected.append("{\"href\":\"/subscribers/" + s1.getId() + "\"}");
@@ -78,6 +82,6 @@ public class JsonMarshallerTest
         expected.append("]");
         expected.append("}");
 
-        assertEquals(expected.toString(), marshaller.marshal(list, Subscriber.class));
+        assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
     }
 }

@@ -41,6 +41,7 @@ public class ApiServletTest
     {
         request.setPathInfo("/FAKE");
         request.setMethod("GET");
+        request.setQueryString("");
         servlet.service(request, response);
 
         assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
@@ -53,7 +54,6 @@ public class ApiServletTest
     {
         request.setPathInfo("/");
         request.setMethod("POST");
-
         servlet.service(request, response);
 
         assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
@@ -99,6 +99,7 @@ public class ApiServletTest
     {
         request.setPathInfo("/");
         request.setMethod("GET");
+        request.setQueryString("");
         servlet.service(request, response);
 
         final String expectedMessage = "Welcome to the Listen Controller API";
@@ -128,6 +129,7 @@ public class ApiServletTest
         final Long id = System.currentTimeMillis();
         request.setPathInfo("/subscribers/" + id);
         request.setMethod("GET");
+        request.setQueryString("");
         servlet.service(request, response);
 
         assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
@@ -141,9 +143,10 @@ public class ApiServletTest
         // we should probably delete all subscribers before running this test
         request.setPathInfo("/subscribers");
         request.setMethod("GET");
+        request.setQueryString("");
         servlet.service(request, response);
 
-        final String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><subscribers href=\"/subscribers\"/>";
+        final String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><subscribers href=\"/subscribers?_first=0&_max=100\" count=\"0\"/>";
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());
         assertEquals(expectedXml, response.getContentAsString());
@@ -187,6 +190,7 @@ public class ApiServletTest
         final Long id = System.currentTimeMillis();
         request.setPathInfo("/conferences/" + id);
         request.setMethod("GET");
+        request.setQueryString("");
         servlet.service(request, response);
 
         assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
@@ -200,9 +204,10 @@ public class ApiServletTest
         // we should probably delete all conferences before running this test
         request.setPathInfo("/conferences");
         request.setMethod("GET");
+        request.setQueryString("");
         servlet.service(request, response);
 
-        final String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><conferences href=\"/conferences\"/>";
+        final String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><conferences href=\"/conferences?_first=0&_max=100\" count=\"0\"/>";
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());
         assertEquals(expectedXml, response.getContentAsString());

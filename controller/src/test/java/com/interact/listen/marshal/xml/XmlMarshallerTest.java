@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
-import com.interact.listen.resource.Resource;
-import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.Voicemail;
+import com.interact.listen.resource.*;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
@@ -69,14 +67,19 @@ public class XmlMarshallerTest
         list.add(s1);
         list.add(s2);
 
+        ResourceList resourceList = new ResourceList();
+        resourceList.setList(list);
+        resourceList.setMax(10);
+        resourceList.setFirst(0);
+        
         StringBuilder expected = new StringBuilder();
-        expected.append("<subscribers href=\"/subscribers\">");
+        expected.append("<subscribers href=\"/subscribers?_first=0&_max=10\" count=\"3\">");
         expected.append("<subscriber href=\"/subscribers/").append(s0.getId()).append("\"/>");
         expected.append("<subscriber href=\"/subscribers/").append(s1.getId()).append("\"/>");
         expected.append("<subscriber href=\"/subscribers/").append(s2.getId()).append("\"/>");
         expected.append("</subscribers>");
 
-        assertEquals(expected.toString(), marshaller.marshal(list, Subscriber.class));
+        assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
     }
     
     @Test

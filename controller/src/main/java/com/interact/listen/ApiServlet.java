@@ -3,18 +3,26 @@ package com.interact.listen;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.MarshallerNotFoundException;
+import com.interact.listen.marshal.converter.ConversionException;
+import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Resource;
+import com.interact.listen.resource.ResourceList;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.net.URLDecoder;
+import java.util.*;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.*;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 public class ApiServlet extends HttpServlet
 {
@@ -43,12 +51,25 @@ public class ApiServlet extends HttpServlet
             if(attributes.id == null)
             {
                 // no id, request is for a list of resources
+
                 Session session = HibernateUtil.getSessionFactory().getCurrentSession();
                 Transaction transaction = session.beginTransaction();
 
-                Criteria criteria = session.createCriteria(resourceClass);
-                criteria.setMaxResults(50);
+                Map<String, String> query = getQueryParameters(request);
+                Criteria criteria = createCriteria(session, resourceClass, query);
                 List<Resource> list = (List<Resource>)criteria.list();
+
+                ResourceList resourceList = new ResourceList();
+                resourceList.setList(list);
+                resourceList.setMax(getMax(query));
+                resourceList.setFirst(getFirst(query));
+                resourceList.setSearchProperties(getSearchProperties(query));
+                resourceList.setFields(getFields(query));
+
+//                criteria.setProjection(Projections.rowCount());
+//                Long total = (Long)criteria.list().get(0);
+//                resourceList.setTotal(total);
+
                 transaction.commit();
 
                 StringBuilder xml = new StringBuilder();
@@ -56,7 +77,7 @@ public class ApiServlet extends HttpServlet
                 {
                     xml.append(XML_TAG);
                 }
-                xml.append(marshaller.marshal(list, resourceClass));
+                xml.append(marshaller.marshal(resourceList, resourceClass));
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
@@ -91,6 +112,11 @@ public class ApiServlet extends HttpServlet
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
+        }
+        catch(CriteriaCreationException e)
+        {
+            e.printStackTrace();
+            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
         }
         catch(Exception e)
         {
@@ -399,7 +425,7 @@ public class ApiServlet extends HttpServlet
     {
         try
         {
-            System.out.println("Creatign Marshaller for 'Accept' content type of " + contentType);
+            System.out.println("Creating Marshaller for 'Accept' content type of " + contentType);
             return Marshaller.createMarshaller(contentType);
         }
         catch(MarshallerNotFoundException e)
@@ -407,6 +433,173 @@ public class ApiServlet extends HttpServlet
             System.out.println("Unrecognized content-type provided, assuming XML");
             return new XmlMarshaller();
         }
+    }
+
+    private Map<String, String> getQueryParameters(HttpServletRequest request)
+    {
+        Map<String, String> map = new HashMap<String, String>();
+        String query = request.getQueryString();
+
+        if(query.trim().length() == 0)
+        {
+            return map;
+        }
+
+        String[] params = query.split("&", 0);
+        if(params.length == 0)
+        {
+            return map;
+        }
+
+        for(String param : params)
+        {
+            String[] pair = param.split("=", 0);
+            if(pair.length != 2)
+            {
+                System.out.println("Warning, pair [" + Arrays.toString(pair) + "] had a length of one, skipping");
+                continue;
+            }
+
+            try
+            {
+                String key = URLDecoder.decode(pair[0], "UTF-8");
+                String value = URLDecoder.decode(pair[1], "UTF-8");
+                map.put(key, value);
+            }
+            catch(UnsupportedEncodingException e)
+            {
+                throw new AssertionError(e);
+            }
+        }
+
+        return map;
+    }
+
+    /**
+     * Creates a {@link Criteria} from the provided query parameters.
+     * <p>
+     * Some query parameters are special and control the result list:
+     * <p>
+     * <ul>
+     * <li>"_first" - The index of the first result that should be retrieved</li>
+     * <li>"_max" - The maximum number of results</li>
+     * <li>"_fields" - Which fields to include in the embedded list elements</li>
+     * </ul>
+     * 
+     * @param session Hibernate session
+     * @param resourceClass class to create criteria for
+     * @param queryParameters query parameters from URL
+     * @return criteria that can be used to list results
+     */
+    private Criteria createCriteria(Session session, Class<? extends Resource> resourceClass,
+                                    Map<String, String> queryParameters) throws CriteriaCreationException
+    {
+        Criteria criteria = session.createCriteria(resourceClass);
+
+        int first = getFirst(queryParameters);
+        System.out.println("Criteria: [_first] = [" + first + "]");
+        criteria.setFirstResult(first);
+
+        int max = getMax(queryParameters);
+        System.out.println("Criteria: [_max] = [" + max + "]");
+        criteria.setMaxResults(max);
+
+        Map<String, String> searchProperties = getSearchProperties(queryParameters);
+        for(Map.Entry<String, String> entry : searchProperties.entrySet())
+        {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            System.out.println("Criteria: [" + key + "] = [" + value + "]");
+            String getMethod = "get" + key.substring(0, 1).toUpperCase() + key.substring(1);
+            Method method = Marshaller.findMethod(getMethod, resourceClass);
+            if(method == null)
+            {
+                System.out.println("Resource [" + resourceClass + "] does not have getter for [" + key +
+                                   "], continuing");
+                continue;
+            }
+
+            try
+            {
+                Class<? extends Converter> converterClass = Marshaller.getConverterClass(method.getReturnType());
+                Converter converter = converterClass.newInstance();
+                Object convertedValue = converter.unmarshal(value);
+
+                criteria.add(Restrictions.eq(key, convertedValue));
+            }
+            catch(IllegalAccessException e)
+            {
+                throw new AssertionError(e);
+            }
+            catch(java.lang.InstantiationException e)
+            {
+                throw new AssertionError(e);
+            }
+            catch(ConversionException e)
+            {
+                throw new CriteriaCreationException("Could not convert value [" + value + "] to type [" +
+                                                    method.getReturnType() + "] for finding by [" + key + "]");
+            }
+        }
+
+        return criteria;
+    }
+
+    private int getMax(Map<String, String> queryParameters)
+    {
+        int max = 100;
+        if(queryParameters.containsKey("_max"))
+        {
+            int param = Integer.parseInt(queryParameters.get("_max"));
+            if(param < max && param > 0)
+            {
+                max = param;
+            }
+        }
+        return max;
+    }
+
+    private int getFirst(Map<String, String> queryParameters)
+    {
+        int first = 0;
+        if(queryParameters.containsKey("_first"))
+        {
+            first = Integer.parseInt(queryParameters.get("_first"));
+        }
+        return first;
+    }
+
+    private Map<String, String> getSearchProperties(Map<String, String> queryParameters)
+    {
+        Map<String, String> searchProperties = new HashMap<String, String>();
+        for(String key : queryParameters.keySet())
+        {
+            if(key.startsWith("_"))
+            {
+                continue;
+            }
+            
+            searchProperties.put(key, queryParameters.get(key));
+        }
+        return searchProperties;
+    }
+
+    private Set<String> getFields(Map<String, String> queryParameters)
+    {
+        Set<String> fields = new HashSet<String>();
+        if(queryParameters.containsKey("_fields"))
+        {
+            String[] split = queryParameters.get("_fields").split(",");
+            for(String field : split)
+            {
+                if(!field.trim().equals(""))
+                {
+                    fields.add(field);
+                }
+            }
+        }
+        return fields;
     }
 
     private class UriResourceAttributes
