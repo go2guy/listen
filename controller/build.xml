@@ -173,5 +173,5 @@
     </antcall>
   </target>
 
-  <target name="hudson" depends="compile, hudson-plots" description="target for hudson"/>
+  <target name="hudson" depends="test, hudson-plots, rpm" description="target for hudson"/>
 </project>
