@@ -124,8 +124,10 @@
 
   <target name="deploy" depends="jar" description="--> Deploys the application">
     <mkdir dir="${deploy.dir}"/>
+    <mkdir dir="${deploy.dir}/logs"/>
     <copy file="${target.dir}/listen-controller.war" todir="${deploy.dir}/lib" verbose="true"/>
     <copy file="${target.dir}/listen-controller.jar" todir="${deploy.dir}/lib" verbose="true"/>
+    <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts/" verbose="true"/>
   </target>
 
 
