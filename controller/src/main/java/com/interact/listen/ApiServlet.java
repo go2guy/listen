@@ -32,7 +32,7 @@ public class ApiServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     {
-        long start = System.currentTimeMillis();
+        long start = time();
         try
         {
             UriResourceAttributes attributes = getResourceAttributes(request);
@@ -56,7 +56,10 @@ public class ApiServlet extends HttpServlet
 
                 Map<String, String> query = getQueryParameters(request);
                 Criteria criteria = createCriteria(session, resourceClass, query);
+
+                long s = time();
                 List<Resource> list = (List<Resource>)criteria.list();
+                System.out.println("TIMER: list() took " + (time() - s) + "ms");
 
                 ResourceList resourceList = new ResourceList();
                 resourceList.setList(list);
@@ -76,7 +79,10 @@ public class ApiServlet extends HttpServlet
                 {
                     xml.append(XML_TAG);
                 }
+
+                s = time();
                 xml.append(marshaller.marshal(resourceList, resourceClass));
+                System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
@@ -101,7 +107,10 @@ public class ApiServlet extends HttpServlet
                 {
                     xml.append(XML_TAG);
                 }
+
+                long s = time();
                 xml.append(marshaller.marshal(resource));
+                System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
 
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
@@ -126,15 +135,14 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: GET " + request.getRequestURL() + " took " +
-                               (System.currentTimeMillis() - start) + "ms");
+            System.out.println("TIMER: GET " + request.getRequestURL() + " took " + (time() - start) + "ms");
         }
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     {
-        long start = System.currentTimeMillis();
+        long start = time();
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
@@ -159,7 +167,10 @@ public class ApiServlet extends HttpServlet
             String className = getResourceClassName(attributes.name);
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
+            long s = time();
             Resource resource = marshaller.unmarshal(request.getInputStream(), resourceClass);
+            System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
+
             // Resource resource = (Resource)resourceClass.newInstance();
             // String requestBody = this.readInputStreamContents(request.getInputStream());
             // resource.loadFromXml(requestBody, false);
@@ -173,8 +184,14 @@ public class ApiServlet extends HttpServlet
 
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
+
+            s = time();
             Long id = (Long)session.save(resource);
+            System.out.println("TIMER: save() took " + (time() - s) + "ms");
+
+            s = time();
             resource = (Resource)session.get(resourceClass, id);
+            System.out.println("TIMER: get() took " + (time() - s) + "ms");
 
             transaction.commit();
 
@@ -183,7 +200,10 @@ public class ApiServlet extends HttpServlet
             {
                 xml.append(XML_TAG);
             }
+
+            s = time();
             xml.append(marshaller.marshal(resource));
+            System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
 
             writeResponse(response, HttpServletResponse.SC_CREATED, xml.toString(), "application/xml");
         }
@@ -216,15 +236,14 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: POST " + request.getRequestURL() + " took " +
-                               (System.currentTimeMillis() - start) + "ms");
+            System.out.println("TIMER: POST " + request.getRequestURL() + " took " + (time() - start) + "ms");
         }
     }
 
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response)
     {
-        long start = System.currentTimeMillis();
+        long start = time();
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
@@ -249,7 +268,9 @@ public class ApiServlet extends HttpServlet
                 return;
             }
 
+            long s = time();
             Resource updatedResource = marshaller.unmarshal(request.getInputStream(), resourceClass);
+            System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
 
             updatedResource.setId(Long.parseLong(attributes.id));
 
@@ -257,7 +278,10 @@ public class ApiServlet extends HttpServlet
             {
                 session = HibernateUtil.getSessionFactory().getCurrentSession();
                 transaction = session.beginTransaction();
+
+                s = time();
                 session.update(updatedResource);
+                System.out.println("TIMER: list() took " + (time() - s) + "ms");
 
                 transaction.commit();
 
@@ -266,7 +290,11 @@ public class ApiServlet extends HttpServlet
                 {
                     xml.append(XML_TAG);
                 }
+
+                s = time();
                 xml.append(marshaller.marshal(updatedResource));
+                System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
+
                 writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
             }
             else
@@ -309,8 +337,7 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: PUT " + request.getRequestURL() + " took " +
-                               (System.currentTimeMillis() - start) + "ms");
+            System.out.println("TIMER: PUT " + request.getRequestURL() + " took " + (time() - start) + "ms");
         }
     }
 
@@ -603,6 +630,11 @@ public class ApiServlet extends HttpServlet
             }
         }
         return fields;
+    }
+
+    private long time()
+    {
+        return System.currentTimeMillis();
     }
 
     private class UriResourceAttributes
