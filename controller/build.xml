@@ -30,7 +30,7 @@
 
   <taskdef resource="tasks.properties" classpathref="javac.classpath"/>
   <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${lib.dir}/build/ant-contrib-1.0b3.jar"/>
-  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${lib.dir}/build/findbugs-ant.jar"/>
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="src/build/findbugs-1.3.9/lib/findbugs-ant.jar"/>
   <taskdef resource="checkstyletask.properties" classpath="${lib.dir}/build/checkstyle-all-5.1.jar"/>
 
   <target name="clean" description="--> Removes build artifacts created by this script">

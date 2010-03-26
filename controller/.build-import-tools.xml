@@ -64,14 +64,15 @@
 	<!-- findbugs -->
 	<target name="findbugs" description="Generates a report of possible bugs using FindBugs">
         <mkdir dir="${target.dir}/findbugs"/>
-		<findbugs home="${lib.dir}/build/"
+		<findbugs home="src/build/findbugs-1.3.9"
               output="xml"
               outputFile="${target.dir}/findbugs/findbugs.xml"
               failonerror="true"
-              jvmargs="-Xmx512m">
-			<auxClassPath>
-				<path refid="javac.classpath"/>
-			</auxClassPath>
+              jvmargs="-Xmx512m"
+              effort="max">
+            <auxClassPath>
+              <path refid="javac.classpath"/>
+            </auxClassPath>
 			<sourcePath path="${src.dir}/main/java"/>
 			<class location="${build.dir}/main"/>
 		</findbugs>
