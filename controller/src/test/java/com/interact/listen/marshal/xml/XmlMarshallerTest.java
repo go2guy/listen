@@ -92,6 +92,9 @@ public class XmlMarshallerTest
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
 
-        marshaller.unmarshal(stream, Subscriber.class);
+        Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, Subscriber.class);
+
+        assertEquals(subscriber.getId(), unmarshalledSubscriber.getId());
+        assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
     }
 }

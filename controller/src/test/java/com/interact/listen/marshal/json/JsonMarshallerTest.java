@@ -2,9 +2,12 @@ package com.interact.listen.marshal.json;
 
 import static org.junit.Assert.assertEquals;
 
+import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
 import com.interact.listen.resource.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,5 +86,22 @@ public class JsonMarshallerTest
         expected.append("}");
 
         assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
+    }
+
+    @Test
+    public void test_unmarshal() throws MalformedContentException
+    {
+        Subscriber subscriber = new Subscriber();
+        subscriber.setId(System.currentTimeMillis());
+        subscriber.setNumber("foo" + System.currentTimeMillis());
+
+        String json = marshaller.marshal(subscriber);
+        InputStream stream = new ByteArrayInputStream(json.getBytes());
+
+        Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, Subscriber.class);
+
+        assertEquals(subscriber.getId(), unmarshalledSubscriber.getId());
+        assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
+
     }
 }
