@@ -136,7 +136,7 @@ def doPrep():
     
     
     print "removing old Interact packages"
-    goodpacks=['xvm-tools', 'iiserv', 'iiacs', 'iielndb', 'iixap', 'spotbuild', 'xmlsecurity', 'iidev']
+    goodpacks=['xvm-tools', 'iiserv', 'iiacs', 'iielndb', 'iixap', 'spotbuild', 'xmlsecurity', 'iidev', 'uia']
     nukelist = []
     packages=os.popen('rpm -qg Interact')
     for p in packages.readlines():
@@ -261,7 +261,7 @@ def doInstall():
     
     listenpackage = 'notfound'
     for item in pfiles:
-        if re.match("listen*.rpm",item):
+        if re.match("listen.*rpm",item):
             listenpackage=item
             print "found package %s" % listenpackage
     
@@ -277,12 +277,12 @@ def doInstall():
     
     startlist = []
     if hostname==spotserver:
-        doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm listen-spotapps")
+        doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm spotapps")
         # Installation successful.
         print "Listen-spotapps installation complete"
     
     if hostname==controlserver:
-        doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/Invig*.rpm listen-controller")
+        doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm controller")
         # perform the schema installs
         # this is a mess
         print "Controller installation complete."
@@ -290,7 +290,7 @@ def doInstall():
         startlist.append("/etc/init.d/listen-controller start")
     
     if hostname==webserver:
-        doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/Invig*.rpm listen-web")
+        doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm web")
         # Installation successful. Start appropriate processes
         print "WEB Installation complete."
         # Add web processes to list to start
@@ -311,5 +311,6 @@ def doPost():
     #postlist
     if hostname==controlserver: 
         #run automated tests here?
+        print "performing postinstall steps" 
 
 if __name__ == "__main__": main()
