@@ -118,19 +118,20 @@ public class ApiServlet extends HttpServlet
         catch(ClassNotFoundException e)
         {
             e.printStackTrace();
+            transaction.rollback();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         catch(CriteriaCreationException e)
         {
             e.printStackTrace();
+            transaction.rollback();
             writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
         }
         catch(Exception e)
         {
             e.printStackTrace();
             transaction.rollback();
-
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                           "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
@@ -212,12 +213,14 @@ public class ApiServlet extends HttpServlet
         catch(ClassNotFoundException e)
         {
             e.printStackTrace();
+            transaction.rollback();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         catch(IOException e)
         {
             e.printStackTrace();
+            transaction.rollback();
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error reading request body",
                           "text/plain");
             return;
@@ -225,6 +228,7 @@ public class ApiServlet extends HttpServlet
         catch(MalformedContentException e)
         {
             e.printStackTrace();
+            transaction.rollback();
             writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                           "The content you provided was malformed, please fix it: " + e.getMessage(), "text/plain");
             return;
@@ -233,7 +237,6 @@ public class ApiServlet extends HttpServlet
         {
             e.printStackTrace();
             transaction.rollback();
-
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                           "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
@@ -319,12 +322,15 @@ public class ApiServlet extends HttpServlet
         }
         catch(ClassNotFoundException e)
         {
+            e.printStackTrace();
+            transaction.rollback();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         catch(IOException e)
         {
             e.printStackTrace();
+            transaction.rollback();
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error reading request body",
                           "text/plain");
             return;
@@ -338,6 +344,7 @@ public class ApiServlet extends HttpServlet
         catch(MalformedContentException e)
         {
             e.printStackTrace();
+            transaction.rollback();
             writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                           "The content you provided was malformed, please fix it", "text/plain");
             return;
@@ -346,7 +353,6 @@ public class ApiServlet extends HttpServlet
         {
             e.printStackTrace();
             transaction.rollback();
-
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                           "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
@@ -360,8 +366,70 @@ public class ApiServlet extends HttpServlet
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response)
     {
-        writeResponse(response, HttpServletResponse.SC_METHOD_NOT_ALLOWED, "DELETE requests are not allowed",
-                      "text/plain");
+        long start = time();
+
+        UriResourceAttributes attributes = getResourceAttributes(request);
+
+        if(attributes.name == null || attributes.name.trim().length() == 0)
+        {
+            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" + attributes.name + "]",
+                          "text/plain");
+            return;
+        }
+
+        if(attributes.id == null)
+        {
+            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                          "DELETE must be on a specific resource, not the list [" + request.getPathInfo() + "]",
+                          "text/plain");
+            return;
+        }
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        try
+        {
+            String className = getResourceClassName(attributes.name);
+            Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
+
+            // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
+            long s = time();
+            Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.id));
+            System.out.println("TIMER: get() took " + (time() - s) + "ms");
+
+            if(resource == null)
+            {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+
+            s = time();
+            session.delete(resource);
+            System.out.println("TIMER: delete() took " + (time() - s) + "ms");
+
+            transaction.commit();
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        }
+        catch(ClassNotFoundException e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                          "RUH ROH! Please contact the System Administrator", "text/plain");
+            return;
+        }
+        finally
+        {
+            System.out.println("TIMER: DELETE took " + (time() - start) + "ms");
+        }
     }
 
     /**

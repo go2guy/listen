@@ -5,11 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Subscriber;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.DelegatingServletInputStream;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class ApiServletTest
@@ -33,9 +33,9 @@ public class ApiServletTest
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
     }
-    
+
     // non-existant resource type
-    
+
     @Test
     public void test_doGet_nonExistantResource_returns404() throws IOException, ServletException
     {
@@ -58,7 +58,7 @@ public class ApiServletTest
 
         assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     }
-    
+
     @Test
     public void test_doPost_sendId_returns400BadRequest() throws IOException, ServletException
     {
@@ -69,9 +69,10 @@ public class ApiServletTest
 
         assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     }
-    
+
     @Test
-    public void test_doPost_contentNotMatchRequestedResource_returns400BadRequest() throws IOException, ServletException
+    public void test_doPost_contentNotMatchRequestedResource_returns400BadRequest() throws IOException,
+        ServletException
     {
         request.setPathInfo("/conferences");
         request.setMethod("POST");
@@ -127,14 +128,27 @@ public class ApiServletTest
     }
 
     @Test
-    public void test_doDelete_anyResource_returns405WithPlainTextMessage() throws IOException, ServletException
+    public void test_doDelete_noAttributeName_returns400WithPlainTextMessag() throws IOException, ServletException
     {
-        request.setPathInfo("/subscriber");
+        request.setPathInfo("/");
         request.setMethod("DELETE");
         servlet.service(request, response);
 
-        final String expectedMessage = "DELETE requests are not allowed";
-        assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        final String expectedMessage = "Cannot DELETE [null]";
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        assertEquals("text/plain", response.getContentType());
+        assertEquals(expectedMessage, response.getContentAsString());
+    }
+
+    @Test
+    public void test_doDelete_noAttributeId_returns400WithPlainTextMessage() throws IOException, ServletException
+    {
+        request.setPathInfo("/subscribers");
+        request.setMethod("DELETE");
+        servlet.service(request, response);
+
+        final String expectedMessage = "DELETE must be on a specific resource, not the list [/subscribers]";
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         assertEquals(expectedMessage, response.getContentAsString());
     }
@@ -164,7 +178,8 @@ public class ApiServletTest
         request.setQueryString("");
         servlet.service(request, response);
 
-        final String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><subscribers href=\"/subscribers?_first=0&_max=100\" count=\"0\"/>";
+        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+        expectedXml += "<subscribers href=\"/subscribers?_first=0&_max=100\" count=\"0\"/>";
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());
         assertEquals(expectedXml, response.getContentAsString());
@@ -196,6 +211,47 @@ public class ApiServletTest
         // TODO delete the subscriber?
     }
 
+    @Test
+    public void test_doDelete_validSubscriber_returns204() throws MalformedContentException, IOException,
+        ServletException
+    {
+        // first add a subscriber to delete
+        request.setPathInfo("/subscribers");
+        request.setMethod("POST");
+
+        Subscriber subscriber = new Subscriber();
+        subscriber.setId(System.currentTimeMillis());
+        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+
+        StringBuilder content = new StringBuilder();
+        content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        content.append(marshaller.marshal(subscriber));
+
+        InputStream stream = new ByteArrayInputStream(content.toString().getBytes());
+        DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
+        request.setInputStream(sstream);
+
+        servlet.service(request, response);
+
+        assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
+        assertEquals("application/xml", response.getContentType());
+
+        // get the created subscriber's id
+        InputStream is = new ByteArrayInputStream(response.getContentAsByteArray());
+        subscriber = (Subscriber)marshaller.unmarshal(is, Subscriber.class);
+        Long id = subscriber.getId();
+
+        // now delete it
+        request = new InputStreamMockHttpServletRequest();
+        response = new MockHttpServletResponse();
+
+        request.setPathInfo("/subscribers/" + id);
+        request.setMethod("DELETE");
+        servlet.service(request, response);
+
+        assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+    }
+
     // voicemails
 
     // TODO
@@ -225,7 +281,9 @@ public class ApiServletTest
         request.setQueryString("");
         servlet.service(request, response);
 
-        final String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><conferences href=\"/conferences?_first=0&_max=100\" count=\"0\"/>";
+        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+        expectedXml += "<conferences href=\"/conferences?_first=0&_max=100\" count=\"0\"/>";
+
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());
         assertEquals(expectedXml, response.getContentAsString());
@@ -258,7 +316,7 @@ public class ApiServletTest
         // TODO assert content
         // TODO delete the conference?
     }
-    
+
     @Test
     public void test_doPut_validConference_returns200WithCreatedConferenceXml() throws IOException, ServletException,
         MalformedContentException
@@ -284,18 +342,19 @@ public class ApiServletTest
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertEquals("application/xml", response.getContentType());
-        
-        conference = (Conference)marshaller.unmarshal(new ByteArrayInputStream(
-                                                      response.getContentAsString().getBytes()), Conference.class);
-        
+
+        InputStream is = new ByteArrayInputStream(response.getContentAsByteArray());
+
+        conference = (Conference)marshaller.unmarshal(is, Conference.class);
+
         response = new MockHttpServletResponse();
-                
+
         request.setPathInfo("/conferences/" + conference.getId());
         request.setMethod("PUT");
-        
+
         // Change one attribute of the conference
         conference.setIsStarted(Boolean.TRUE);
-        
+
         content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         content.append(marshaller.marshal(conference));
@@ -305,7 +364,7 @@ public class ApiServletTest
         request.setInputStream(sstream);
 
         servlet.service(request, response);
-        
+
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());
         assertTrue(response.getContentAsString().contains("<isStarted>true</isStarted>"));
