@@ -64,7 +64,7 @@
 	<!-- findbugs -->
 	<target name="findbugs" description="Generates a report of possible bugs using FindBugs">
         <mkdir dir="${target.dir}/findbugs"/>
-		<findbugs home="${tools.dir}/findbugs-1.3.9"
+		<findbugs home="${lib.dir}/build/"
               output="xml"
               outputFile="${target.dir}/findbugs/findbugs.xml"
               failonerror="true"
