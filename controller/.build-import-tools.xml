@@ -1,0 +1,192 @@
+<project name="invigorate-smp.build-import-tools">
+	<!-- TODO the args with /home/java in these tasks need to send the cwd -->
+	<!-- TODO also, separate these tasks out.. plotting should be separate since it's specifically for hudson -->
+
+	<!-- plot-javancss -->
+	<target name="plot-javancss">
+		<taskdef name="javancss" classname="javancss.JavancssAntTask" classpath="${tools.dir}/javancss/lib/javancss.jar;${tools.dir}/javancss/lib/ccl.jar;${tools.dir}/javancss/lib/jhbasic.jar"/>
+		<mkdir dir="${build.dir}/javancss"/>
+		<javancss srcdir="."
+              includes="**/*.java"
+              excludes="iiLog4j/**/*,logica_smpp/**/*,SMPTools/**/*,tools/**/*,rateadmin/**/*"
+              classMetrics="false"
+              generateReport="true"
+              outputfile="${build.dir}/javancss/javancss-output.xml"
+              format="xml"/>
+		<javac srcdir="${tools.dir}/javancss"
+           destdir="${build.dir}/javancss"
+           fork="true"
+           includes="PlotJavancss.java"/>
+		<java classname="PlotJavancss"
+          classpath="${build.dir}/javancss"
+          fork="true">
+			<arg value="${basedir}/${build.dir}/javancss"/>
+		</java>
+	</target>
+
+	<!-- plot-codereview -->
+	<target name="plot-codereview">
+		<mkdir dir="${build.dir}/codereview"/>
+		<javac srcdir="${tools.dir}/codereview"
+           destdir="${build.dir}/codereview"
+           fork="true"
+           includes="PlotReviews.java"/>
+		<java classname="PlotReviews"
+          classpath="${build.dir}/codereview"
+          fork="true">
+			<arg value="${basedir}"/>
+		</java>
+	</target>
+
+	<!-- plot-wcloc -->
+	<target name="plot-wcloc">
+		<mkdir dir="${build.dir}/wcloc"/>
+		<exec executable="/bin/bash"
+          output="${build.dir}/wcloc/wcloc.properties"
+          failonerror="false"
+          failifexecutionfails="false"
+          resultproperty="wcloc.error">
+			<arg line="${tools.dir}/wcloc/wcloc.sh ${basedir} 1"/>
+		</exec>
+		<if>
+			<equals arg1="${wcloc.error}" arg2="0"/>
+			<else>
+				<echo message="WCLOC Warning: ${wcloc.error}"/>
+			</else>
+		</if>
+	</target>
+
+	<!-- plot-all: Creates plots for Hudson -->
+	<target name="plot-all" depends="plot-codereview, plot-wcloc, plot-javancss"/>
+
+	<!-- findbugs -->
+	<target name="findbugs" description="Generates a report of possible bugs using FindBugs">
+		<mkdir dir="SMP/tools/findbugs"/>
+		<mkdir dir="${build.dir}/findbugs"/>
+		<!-- TODO make the output file below go to ${build.dir} so it can be cleaned -->
+		<findbugs home="${tools.dir}/findbugs-1.3.6-rc2"
+              output="xml"
+              outputFile="SMP/tools/findbugs/findbugs.xml"
+              failonerror="true"
+              jvmargs="-Xmx512m">
+			<auxClassPath>
+				<path refid="javac.classpath"/>
+			</auxClassPath>
+			<sourcePath path="${src.dir.java}"/>
+			<class location="${build.dir.java}"/>
+		</findbugs>
+
+		<javac srcdir="SMP/tools/findbugs"
+           fork="true"
+           includes="FindBugsScanner.java"/>
+		<java classname="FindBugsScanner"
+          classpath="SMP/tools/findbugs"
+          fork="true"
+          resultproperty="findbugs.result">
+			<arg value="${basedir}/SMP/tools/findbugs"/>
+			<arg value="${basedir}/${build.dir}/findbugs"/>
+		</java>
+		<!-- TODO avoid this if statement -->
+		<if>
+			<equals arg1="${findbugs.result}" arg2="1"/>
+			<then>
+				<echo level="warning" message="Findbugs Warning: new issues found."/>
+			</then>
+		</if>
+	</target>
+
+	<!-- findbugs-reset -->
+	<target name="findbugs-reset">
+		<delete file="SMP/tools/findbugs/errorCount.tmp" verbose="${filesystem.verbose}" failonerror="false"/>
+	</target>
+
+	<!-- findbugs-loc -->
+	<target name="findbugs-loc" depends="findbugs, plot-javancss" description="Generates a report of possible bugs per line of code using FindBugs">
+		<javac srcdir="SMP/tools/findbugs" fork="true" includes="FindBugsLocScanner.java" />
+		<java classname="FindBugsLocScanner" classpath="SMP/tools/findbugs" fork="true" resultproperty="findbugsloc.result">
+			<arg value="${basedir}/SMP/tools/findbugs" />
+			<arg value="${basedir}/${build.dir}/javancss"/>
+		</java>
+		<!-- TODO avoid this if statement -->
+		<if>
+			<equals arg1="${findbugsloc.result}" arg2="1" />
+			<then>
+				<echo level="warning" message="FindbugsLOC Warning: new issues found." />
+			</then>
+		</if>
+	</target>
+
+	<!-- findbugs-LOC-reset -->
+	<target name="findbugs-LOC-reset">
+		<delete file="SMP/tools/findbugs/errorCount.tmp" verbose="${filesystem.verbose}" failonerror="false" />
+	</target>
+
+	<!-- checkstyle -->
+	<target name="checkstyle" description="Generates a report of code convention violations using CheckStyle">
+  		<mkdir dir="SMP/tools/checkstyle"/>
+  		<mkdir dir="${build.dir}/checkstyle"/>
+		<checkstyle config="SMP/buildfiles/javaGroupCheckstyleConfig.xml" failureProperty="checkstyle.failure" failOnViolation="false">
+			<formatter type="xml" tofile="SMP/tools/checkstyle/checkstyle-result.xml"/>
+			<fileset dir="${src.dir.java}" includes="**/*.java" excludes="**/test/**"/>
+		</checkstyle>
+
+		<!-- Check if current issue count is higher than the last build -->
+		<javac srcdir="SMP/tools/checkstyle"
+           fork="true"
+           includes="CheckstyleScanner.java"/>
+		<java classname="CheckstyleScanner"
+          classpath="SMP/tools/checkstyle"
+          fork="true"
+          resultproperty="checkstyle.result">
+			<arg value="SMP/tools/checkstyle"/>
+			<arg value="${basedir}/${build.dir}/checkstyle"/>
+		</java>
+		<if>
+			<!-- TODO avoid this if -->
+			<equals arg1="${checkstyle.result}" arg2="1"/>
+			<then>
+				<echo level="warning" message="Checkstyle Warning: new issues found."/>
+			</then>
+		</if>
+	</target>
+
+	<!-- checkstyle-reset -->
+	<target name="checkstyle-reset">
+		<delete file="SMP/tools/checkstyle/errorCount.tmp" verbose="${filesystem.verbose}"/>
+	</target>
+
+	<!-- checkstyle-loc -->
+	<target name="checkstyle-loc" depends="checkstyle, plot-javancss" description="Generates a report of code convention violations per line of code using CheckStyle">
+		<!-- Check if current issue count per line of code is higher than the last build -->
+		<javac srcdir="SMP/tools/checkstyle"
+	           fork="true"
+	           includes="CheckstyleLocScanner.java"/>
+		<java classname="CheckstyleLocScanner"
+	          classpath="SMP/tools/checkstyle"
+	          fork="true"
+	          resultproperty="checkstyleloc.result">
+			<arg value="SMP/tools/checkstyle"/>
+			<arg value="${basedir}/${build.dir}/javancss"/>
+		</java>
+		<if>
+			<!-- TODO avoid this if -->
+			<equals arg1="${checkstyleloc.result}" arg2="1"/>
+			<then>
+				<echo level="warning" message="CheckstyleLOC Warning: new issues found."/>
+			</then>
+		</if>
+	</target>
+
+	<!-- checkstyle-Loc-reset -->
+	<target name="checkstyle-LOC-reset">
+		<delete file="SMP/tools/checkstyle/errorCount.tmp" verbose="${filesystem.verbose}"/>
+	</target>
+
+
+    <!-- error-code-list -->
+    <target name="error-code-list" depends="compile" description="Outputs a list of application error codes as HTML">
+        <java classname="com.interact.tools.GetErrorCodeList"
+              classpath="${build.dir.java}"
+              output="${documentation.dir}/error-list.html"/>
+    </target>
+</project>
