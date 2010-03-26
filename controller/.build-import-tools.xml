@@ -59,7 +59,7 @@
 	</target>
 
 	<!-- plot-all: Creates plots for Hudson -->
-	<target name="plot-all" depends="plot-codereview, plot-wcloc, plot-javancss"/>
+	<target name="hudson-plots" depends="findbugs, checkstyle, plot-codereview, plot-wcloc, plot-javancss"/>
 
 	<!-- findbugs -->
 	<target name="findbugs" description="Generates a report of possible bugs using FindBugs">
