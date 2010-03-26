@@ -65,9 +65,9 @@ public class ApiServlet extends HttpServlet
                 resourceList.setSearchProperties(getSearchProperties(query));
                 resourceList.setFields(getFields(query));
 
-//                criteria.setProjection(Projections.rowCount());
-//                Long total = (Long)criteria.list().get(0);
-//                resourceList.setTotal(total);
+                // criteria.setProjection(Projections.rowCount());
+                // Long total = (Long)criteria.list().get(0);
+                // resourceList.setTotal(total);
 
                 transaction.commit();
 
@@ -126,8 +126,8 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("GET " + request.getRequestURL() + " took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            System.out.println("TIMER: GET " + request.getRequestURL() + " took " +
+                               (System.currentTimeMillis() - start) + "ms");
         }
     }
 
@@ -166,11 +166,11 @@ public class ApiServlet extends HttpServlet
 
             if(!resource.validate())
             {
-                writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                              "The resource you sent was invalid", "text/plain");
+                writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "The resource you sent was invalid",
+                              "text/plain");
                 return;
             }
-            
+
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
             Long id = (Long)session.save(resource);
@@ -216,8 +216,8 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("POST " + request.getRequestURL() + " took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            System.out.println("TIMER: POST " + request.getRequestURL() + " took " +
+                               (System.currentTimeMillis() - start) + "ms");
         }
     }
 
@@ -309,8 +309,8 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("PUT " + request.getRequestURL() + " took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            System.out.println("TIMER: PUT " + request.getRequestURL() + " took " +
+                               (System.currentTimeMillis() - start) + "ms");
         }
     }
 
@@ -439,7 +439,7 @@ public class ApiServlet extends HttpServlet
         Map<String, String> map = new HashMap<String, String>();
         String query = request.getQueryString();
 
-        if(query.trim().length() == 0)
+        if(query == null || query.trim().length() == 0)
         {
             return map;
         }
@@ -582,7 +582,7 @@ public class ApiServlet extends HttpServlet
             {
                 continue;
             }
-            
+
             searchProperties.put(key, queryParameters.get(key));
         }
         return searchProperties;
