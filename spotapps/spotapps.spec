@@ -5,7 +5,7 @@
 %define _arch noarch
 
 Summary: Interact Incorporated Listen SPOT Applications package
-Name: spotapps
+Name: listen-spotapps
 Version: %(if [ "${VERSION}" == "" ]; then echo "1.0"; else echo "${VERSION}"; fi;)
 Release: %(if [ "${RELEASE}" == "" ]; then date "+%Y%m%d%H%M"; else echo "${RELEASE}"; fi;)
 License: Copyright (c) Interact Incorporated. All Rights Reserved.
@@ -18,7 +18,6 @@ BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
 Requires: spotbuild-vip
 
 %define debug_package %{nil}
-%define _repackage_dir /interact/packages/bkup/
 
 # Set up topdir area.
 %define _topdir %{STARTDIR}
@@ -62,6 +61,7 @@ Requires: spotbuild-vip
     mkdir -p %{buildroot}/interact/apps/
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
 
+    rm -f ${buildroot}/interact/apps/spotbuild/SPOTbuild.ccxml
     rm -rf `find %{buildroot}/ -name ".svn" -type d`
 
 #######################################################################
@@ -103,15 +103,6 @@ Requires: spotbuild-vip
 #######################################################################
 %pre
 
-    # Variables to help identify if this is an install or an upgrade.
-    rpmexists=`rpm -q %{name} >/dev/null 2>/dev/null; echo $?`
-    numrpms=`rpm -q %{name} | wc | awk '{print $1}'`
-
-    #######################################################################
-    # This section will only be run when actually installing the package
-    # and will NOT be run when upgrading.
-    #######################################################################
-
 #######################################################################
 # The post section lists actions to be performed after installation
 #######################################################################
@@ -143,9 +134,6 @@ Requires: spotbuild-vip
 # un-installation
 #######################################################################
 %postun
-    # Variables to help identify if this is an install or an upgrade.
-    rpmexists=`rpm -q %{name} >/dev/null 2>/dev/null; echo $?`
-    numrpms=`rpm -q %{name} | wc | awk '{print $1}'`
 
     #######################################################################
     # This section will only be run when actually installing the package
