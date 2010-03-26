@@ -20,7 +20,7 @@ public class HibernateUtil
             config.setProperty("hibernate.connection.username", "sa");
             config.setProperty("hibernate.connection.password", "");
             config.setProperty("hibernate.connection.pool_size", "1");
-            config.setProperty("hibernate.connection.autocommit", "true");
+            config.setProperty("hibernate.connection.autocommit", "false");
             config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
             config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
             config.setProperty("hibernate.show_sql", "true");

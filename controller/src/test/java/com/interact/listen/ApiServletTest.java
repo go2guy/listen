@@ -46,9 +46,9 @@ public class ApiServletTest
 
         assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
     }
-    
+
     // POST with incorrect parameters
-    
+
     @Test
     public void test_doPost_nullAttributeName_returns400BadRequest() throws IOException, ServletException
     {
@@ -88,6 +88,24 @@ public class ApiServletTest
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
 
+        servlet.service(request, response);
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+    }
+
+    @Test
+    public void test_doPost_idPresentInHref_returns400BadRequest() throws IOException, ServletException
+    {
+        request.setPathInfo("/subscribers/1");
+        request.setMethod("POST");
+        servlet.service(request, response);
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+    }
+
+    @Test
+    public void test_doPut_idNotPresentInHref_returns400BadRequest() throws IOException, ServletException
+    {
+        request.setPathInfo("/subscribers");
+        request.setMethod("PUT");
         servlet.service(request, response);
         assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     }

@@ -33,6 +33,10 @@ public class ApiServlet extends HttpServlet
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     {
         long start = time();
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         try
         {
             UriResourceAttributes attributes = getResourceAttributes(request);
@@ -51,14 +55,12 @@ public class ApiServlet extends HttpServlet
             {
                 // no id, request is for a list of resources
 
-                Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-                Transaction transaction = session.beginTransaction();
-
                 Map<String, String> query = getQueryParameters(request);
                 Criteria criteria = createCriteria(session, resourceClass, query);
 
                 long s = time();
                 List<Resource> list = (List<Resource>)criteria.list();
+                transaction.commit();
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
 
                 ResourceList resourceList = new ResourceList();
@@ -71,8 +73,6 @@ public class ApiServlet extends HttpServlet
                 // criteria.setProjection(Projections.rowCount());
                 // Long total = (Long)criteria.list().get(0);
                 // resourceList.setTotal(total);
-
-                transaction.commit();
 
                 StringBuilder xml = new StringBuilder();
                 if(marshaller instanceof XmlMarshaller)
@@ -89,12 +89,12 @@ public class ApiServlet extends HttpServlet
             else
             {
                 // id provided, request is looking for a specific resource
-                Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-                Transaction transaction = session.beginTransaction();
 
                 // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
+                long s = time();
                 Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.id));
                 transaction.commit();
+                System.out.println("TIMER: list() took " + (time() - s) + "ms");
 
                 if(resource == null)
                 {
@@ -108,7 +108,7 @@ public class ApiServlet extends HttpServlet
                     xml.append(XML_TAG);
                 }
 
-                long s = time();
+                s = time();
                 xml.append(marshaller.marshal(resource));
                 System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
 
@@ -129,6 +129,8 @@ public class ApiServlet extends HttpServlet
         catch(Exception e)
         {
             e.printStackTrace();
+            transaction.rollback();
+
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                           "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
@@ -160,6 +162,9 @@ public class ApiServlet extends HttpServlet
             return;
         }
 
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         try
         {
             Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
@@ -181,9 +186,6 @@ public class ApiServlet extends HttpServlet
                               "text/plain");
                 return;
             }
-
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Transaction transaction = session.beginTransaction();
 
             s = time();
             Long id = (Long)session.save(resource);
@@ -230,6 +232,8 @@ public class ApiServlet extends HttpServlet
         catch(Exception e)
         {
             e.printStackTrace();
+            transaction.rollback();
+
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                           "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
@@ -247,6 +251,17 @@ public class ApiServlet extends HttpServlet
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
+        if(attributes.id == null)
+        {
+            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                          "PUT must be to a specific resource, not the list [" + request.getPathInfo() + "]",
+                          "text/plain");
+            return;
+        }
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         try
         {
             Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
@@ -254,13 +269,8 @@ public class ApiServlet extends HttpServlet
             String className = getResourceClassName(attributes.name);
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
-            // id provided, request is looking for a specific resource
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Transaction transaction = session.beginTransaction();
-
             // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
             Resource currentResource = (Resource)session.get(resourceClass, Long.parseLong(attributes.id));
-            transaction.commit();
 
             if(currentResource == null)
             {
@@ -268,23 +278,26 @@ public class ApiServlet extends HttpServlet
                 return;
             }
 
+            session.evict(currentResource);
+
             long s = time();
             Resource updatedResource = marshaller.unmarshal(request.getInputStream(), resourceClass);
             System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
 
             updatedResource.setId(Long.parseLong(attributes.id));
+            boolean isValid = updatedResource.validate();
 
-            if(updatedResource.validate())
+            if(isValid)
             {
-                session = HibernateUtil.getSessionFactory().getCurrentSession();
-                transaction = session.beginTransaction();
-
                 s = time();
                 session.update(updatedResource);
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
+            }
 
-                transaction.commit();
+            transaction.commit();
 
+            if(isValid)
+            {
                 StringBuilder xml = new StringBuilder();
                 if(marshaller instanceof XmlMarshaller)
                 {
@@ -318,6 +331,7 @@ public class ApiServlet extends HttpServlet
         }
         catch(StaleObjectStateException e)
         {
+            transaction.rollback();
             writeResponse(response, HttpServletResponse.SC_CONFLICT,
                           "Data in the reqest was stale.  Re-query resource before sending again", "text/plain");
         }
@@ -331,6 +345,8 @@ public class ApiServlet extends HttpServlet
         catch(Exception e)
         {
             e.printStackTrace();
+            transaction.rollback();
+
             writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                           "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
