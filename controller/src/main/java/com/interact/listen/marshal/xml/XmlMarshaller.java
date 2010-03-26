@@ -168,23 +168,10 @@ public class XmlMarshaller extends Marshaller
     private String marshalOpeningResourceTag(Resource resource, boolean selfClosing)
     {
         String classTag = getTagForClass(resource.getClass().getSimpleName());
-        return marshalOpeningResourceTag(classTag, "/" + classTag + "s/" + resource.getId(), selfClosing);
-    }
-
-    /**
-     * Marshals a resource tag from the provided name and href. This can be used for {@code Resource}s that may not have
-     * a defined class, like {@code Resource} lists.
-     * 
-     * @param name resource name
-     * @param href resource href
-     * @param selfClosing whether or not the tag should be self-closing
-     * @return XML string
-     */
-    private String marshalOpeningResourceTag(String resourceName, String href, boolean selfClosing)
-    {
+        
         StringBuilder xml = new StringBuilder();
-        xml.append("<").append(resourceName).append(" ");
-        xml.append("href=\"").append(href).append("\"");
+        xml.append("<").append(classTag).append(" ");
+        xml.append("href=\"/").append(classTag).append("s/").append(resource.getId()).append("\"");
         if(selfClosing)
         {
             xml.append("/");

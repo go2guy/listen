@@ -518,11 +518,18 @@ public class ApiServlet extends HttpServlet
 
             try
             {
-                Class<? extends Converter> converterClass = Marshaller.getConverterClass(method.getReturnType());
-                Converter converter = converterClass.newInstance();
-                Object convertedValue = converter.unmarshal(value);
-
-                criteria.add(Restrictions.eq(key, convertedValue));
+                if(Resource.class.isAssignableFrom(method.getReturnType()))
+                {
+                    Long id = Marshaller.getIdFromHref(value);
+                    criteria.createCriteria(key).add(Restrictions.idEq(id));
+                }
+                else
+                {
+                    Class<? extends Converter> converterClass = Marshaller.getConverterClass(method.getReturnType());
+                    Converter converter = converterClass.newInstance();
+                    Object convertedValue = converter.unmarshal(value);
+                    criteria.add(Restrictions.eq(key, convertedValue));
+                }
             }
             catch(IllegalAccessException e)
             {
