@@ -8,8 +8,6 @@
 
     <install>
         <pre>
-            <file state="noexist">/etc/sudoers.tmp</file>
-
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.0.0</version>
@@ -24,8 +22,6 @@
 
     <rollback>
         <pre>
-            <file state="noexist">/etc/sudoers.tmp</file>
-
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.0.0</version>
@@ -40,8 +36,6 @@
 
     <uninstall>
         <pre>
-            <file state="noexist">/etc/sudoers.tmp</file>
-
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.0.0</version>
