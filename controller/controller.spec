@@ -57,10 +57,11 @@ BuildRequires: jdk >= 1.6.0_00
 # The files section lists all files included in the RPM
 #######################################################################
 %files
-    %defattr(-,-,-)
+    %defattr(775, interact,operator)
 
     # Include everything in the /interact/listen directory
     /interact/listen
+
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
@@ -85,6 +86,8 @@ BuildRequires: jdk >= 1.6.0_00
 # The post section lists actions to be performed after installation
 #######################################################################
 %post
+ln -s /interact/listen/scripts/listen-controller /etc/init.d/listen-controller
+chkconfig --add listen-controller
 
 
 #######################################################################
@@ -92,6 +95,11 @@ BuildRequires: jdk >= 1.6.0_00
 # un-installation
 #######################################################################
 %preun
+if [ "$1" -le "0" ]; then
+  chkconfig --del listen-controller
+  rm -f /etc/init.d/listen-controller
+fi
+
 
 
 #######################################################################
