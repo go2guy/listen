@@ -1,6 +1,11 @@
 package com.interact.listen.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
+
+import org.hibernate.annotations.CollectionOfElements;
 
 @Entity
 public class Conference implements Resource
@@ -15,6 +20,9 @@ public class Conference implements Resource
     private Boolean isStarted;
     private String adminPin;
     private String number;
+
+    @CollectionOfElements
+    private List<Participant> participants = new ArrayList<Participant>();
 
     public Boolean getIsStarted()
     {
@@ -64,6 +72,16 @@ public class Conference implements Resource
     public void setVersion(Integer version)
     {
         this.version = version;
+    }
+
+    public List<Participant> getParticipants()
+    {
+        return participants;
+    }
+
+    public void setParticipants(List<Participant> participants)
+    {
+        this.participants = participants;
     }
 
     @Override

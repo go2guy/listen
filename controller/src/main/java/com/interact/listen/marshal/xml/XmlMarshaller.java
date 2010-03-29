@@ -10,6 +10,7 @@ import com.interact.listen.resource.ResourceList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -28,6 +29,8 @@ public class XmlMarshaller extends Marshaller
         Method[] methods = clazz.getMethods();
         sortMethods(methods);
 
+        String resourceTag = getTagForClass(resource.getClass().getSimpleName());
+        
         xml.append(marshalOpeningResourceTag(resource, false));
 
         for(Method method : methods)
@@ -51,6 +54,18 @@ public class XmlMarshaller extends Marshaller
                 {
                     xml.append(marshalOpeningResourceTag((Resource)result, true));
                 }
+            }
+            else if(java.util.Collection.class.isAssignableFrom(returnType))
+            {
+                String s = ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0].toString();
+                String name = s.substring(s.lastIndexOf(".") + 1);
+                String associatedTag = getTagForClass(name);
+
+                xml.append("<").append(propertyTag).append(" href=\"");
+                xml.append("/").append(associatedTag).append("s?");
+                xml.append(resourceTag).append("=");
+                xml.append("/").append(resourceTag).append("s/").append(resource.getId());
+                xml.append("\"/>");
             }
             else
             {
@@ -137,6 +152,16 @@ public class XmlMarshaller extends Marshaller
                         String associatedTag = getTagForClass(returnType.getSimpleName());
                         xml.append("/").append(associatedTag).append("s/").append(((Resource)result).getId());
                     }
+                }
+                else if(java.util.Collection.class.isAssignableFrom(returnType))
+                {
+                    String s = ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0].toString();
+                    String name = s.substring(s.lastIndexOf(".") + 1);
+                    String associatedTag = getTagForClass(name);
+
+                    xml.append("/").append(associatedTag).append("s?");
+                    xml.append(classTag).append("=");
+                    xml.append("/").append(classTag).append("/").append(resource.getId());
                 }
                 else
                 {

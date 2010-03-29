@@ -100,6 +100,10 @@ public class SaxContentHandler extends DefaultHandler
                     associatedResource.setId(Marshaller.getIdFromHref(attributes.getValue("href")));
                     method.invoke(resource, associatedResource);
                 }
+                else if(java.util.Collection.class.isAssignableFrom(parameterType))
+                {
+                    System.out.println("Skipping [" + qName + "] when unmarshalling, it is a Collection");
+                }
                 else
                 {
                     Class<? extends Converter> converterClass = marshaller.getConverterClass(parameterType);

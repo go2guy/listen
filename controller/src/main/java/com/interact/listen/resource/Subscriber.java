@@ -1,6 +1,11 @@
 package com.interact.listen.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
+
+import org.hibernate.annotations.CollectionOfElements;
 
 @Entity
 public class Subscriber implements Resource
@@ -13,6 +18,9 @@ public class Subscriber implements Resource
     private Integer version = Integer.valueOf(0);
 
     private String number;
+
+    @CollectionOfElements
+    private List<Voicemail> voicemails = new ArrayList<Voicemail>();
 
     public String getNumber()
     {
@@ -43,6 +51,16 @@ public class Subscriber implements Resource
     public void setVersion(Integer version)
     {
         this.version = version;
+    }
+
+    public List<Voicemail> getVoicemails()
+    {
+        return voicemails;
+    }
+
+    public void setVoicemails(List<Voicemail> voicemails)
+    {
+        this.voicemails = voicemails;
     }
 
     @Override

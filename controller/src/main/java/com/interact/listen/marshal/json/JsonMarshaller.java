@@ -11,9 +11,11 @@ import com.interact.listen.resource.ResourceList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
+import javassist.bytecode.SignatureAttribute.TypeParameter;
+
+import org.hibernate.mapping.Collection;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -28,10 +30,11 @@ public class JsonMarshaller extends Marshaller
         sortMethods(methods);
 
         String resourceTag = getTagForClass(clazz.getSimpleName());
+        String href = "/" + resourceTag + "s/" + resource.getId();
 
         StringBuilder json = new StringBuilder();
         json.append("{");
-        json.append("\"href\":").append("\"/").append(resourceTag).append("s/").append(resource.getId()).append("\",");
+        json.append("\"href\":").append("\"").append(href).append("\",");
 
         for(Method method : methods)
         {
@@ -45,6 +48,7 @@ public class JsonMarshaller extends Marshaller
 
             Object result = invokeMethod(method, resource);
             Class<?> returnType = method.getReturnType();
+            System.out.println("RTYPE: " + returnType);
             if(Resource.class.isAssignableFrom(returnType))
             {
                 if(result == null)
@@ -59,6 +63,17 @@ public class JsonMarshaller extends Marshaller
                         .append("\"");
                     json.append("}");
                 }
+            }
+            else if(java.util.Collection.class.isAssignableFrom(returnType))
+            {
+                String s = ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0].toString();
+                String name = s.substring(s.lastIndexOf(".") + 1);
+                String associatedTag = getTagForClass(name);
+
+                json.append("{\"href\":");
+                json.append("\"/").append(associatedTag).append("s?");
+                json.append(resourceTag).append("=").append(href);
+                json.append("\"}");
             }
             else
             {
@@ -94,11 +109,11 @@ public class JsonMarshaller extends Marshaller
             throw new IllegalArgumentException("List cannot be null");
         }
 
-        String tag = getTagForClass(resourceClass.getSimpleName()) + "s";
+        String tag = getTagForClass(resourceClass.getSimpleName());
 
         StringBuilder json = new StringBuilder();
         json.append("{");
-        json.append("\"href\":\"").append("/").append(tag).append("?");
+        json.append("\"href\":\"").append("/").append(tag).append("s?");
         json.append("_first=").append(list.getFirst()).append("&");
         json.append("_max=").append(list.getMax());
         String fields = list.getFieldsForQuery();
@@ -116,8 +131,10 @@ public class JsonMarshaller extends Marshaller
         json.append("\"results\":[");
         for(Resource resource : list.getList())
         {
+            String href = "/" + tag + "s/" + resource.getId();
+
             json.append("{");
-            json.append("\"href\":\"/").append(tag).append("/").append(resource.getId()).append("\"");
+            json.append("\"href\":\"").append(href).append("\"");
 
             for(String field : list.getFields())
             {
@@ -149,6 +166,17 @@ public class JsonMarshaller extends Marshaller
                         json.append("{\"href\":\"/").append(associatedTag).append("s/")
                             .append(((Resource)result).getId()).append("\"}");
                     }
+                }
+                else if(java.util.Collection.class.isAssignableFrom(returnType))
+                {
+                    String s = ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0].toString();
+                    String name = s.substring(s.lastIndexOf(".") + 1);
+                    String associatedTag = getTagForClass(name);
+
+                    json.append("{\"href\":");
+                    json.append("\"/").append(associatedTag).append("s?");
+                    json.append(tag).append("=").append(href);
+                    json.append("\"}");
                 }
                 else
                 {
@@ -200,7 +228,7 @@ public class JsonMarshaller extends Marshaller
                 methodName += key.substring(0, 1).toUpperCase();
                 methodName += key.substring(1);
 
-                Method method = findMethod(methodName, resource.getClass());
+                Method method = findMethod(methodName, resource.getClass());                
                 Class<?> parameterType = method.getParameterTypes()[0];
 
                 if(Resource.class.isAssignableFrom(parameterType))
@@ -217,6 +245,10 @@ public class JsonMarshaller extends Marshaller
                         associatedResource.setId(getIdFromHref((String)value.get("href")));
                     }
                     method.invoke(resource, associatedResource);
+                }
+                else if(java.util.Collection.class.isAssignableFrom(parameterType))
+                {
+                    System.out.println("Skipping [" + key + "] when unmarshalling, it is a Collection");
                 }
                 else
                 {
