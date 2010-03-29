@@ -29,11 +29,6 @@ public class ApiServlet extends HttpServlet
 
     private static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     
-    private ApiServlet()
-    {
-        throw new AssertionError("Cannot instantiate utility class " + this.getClass().getName());
-    }
-
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     {
