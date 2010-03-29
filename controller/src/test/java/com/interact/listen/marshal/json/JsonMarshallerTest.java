@@ -73,11 +73,49 @@ public class JsonMarshallerTest
         resourceList.setList(list);
         resourceList.setFirst(0);
         resourceList.setMax(10);
+        resourceList.setTotal(Long.valueOf(3));
 
         StringBuilder expected = new StringBuilder();
         expected.append("{");
         expected.append("\"href\":\"/subscribers?_first=0&_max=10\",");
         expected.append("\"count\":3,");
+        expected.append("\"total\":3,");
+        expected.append("\"results\":[");
+        expected.append("{\"href\":\"/subscribers/" + s0.getId() + "\"},");
+        expected.append("{\"href\":\"/subscribers/" + s1.getId() + "\"},");
+        expected.append("{\"href\":\"/subscribers/" + s2.getId() + "\"}");
+        expected.append("]");
+        expected.append("}");
+
+        assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
+    }
+
+    @Test
+    public void test_marshal_withSubscriberListAndPagedResults_returnsCorrectJsonWithPaging()
+    {
+        Subscriber s0 = new Subscriber();
+        s0.setId(System.currentTimeMillis());
+        Subscriber s1 = new Subscriber();
+        s1.setId(System.currentTimeMillis());
+        Subscriber s2 = new Subscriber();
+        s2.setId(System.currentTimeMillis());
+        List<Resource> list = new ArrayList<Resource>(3);
+        list.add(s0);
+        list.add(s1);
+        list.add(s2);
+
+        ResourceList resourceList = new ResourceList();
+        resourceList.setList(list);
+        resourceList.setFirst(0);
+        resourceList.setMax(3);
+        resourceList.setTotal(Long.valueOf(5));
+
+        StringBuilder expected = new StringBuilder();
+        expected.append("{");
+        expected.append("\"href\":\"/subscribers?_first=0&_max=3\",");
+        expected.append("\"count\":3,");
+        expected.append("\"total\":5,");
+        expected.append("\"next\":\"/subscribers?_first=3&_max=3\",");
         expected.append("\"results\":[");
         expected.append("{\"href\":\"/subscribers/" + s0.getId() + "\"},");
         expected.append("{\"href\":\"/subscribers/" + s1.getId() + "\"},");

@@ -45,7 +45,6 @@ public class JsonMarshaller extends Marshaller
 
             Object result = invokeMethod(method, resource);
             Class<?> returnType = method.getReturnType();
-            System.out.println("RTYPE: " + returnType);
             if(Resource.class.isAssignableFrom(returnType))
             {
                 if(result == null)
@@ -111,8 +110,8 @@ public class JsonMarshaller extends Marshaller
         StringBuilder json = new StringBuilder();
         json.append("{");
         json.append("\"href\":\"").append("/").append(tag).append("s?");
-        json.append("_first=").append(list.getFirst()).append("&");
-        json.append("_max=").append(list.getMax());
+        json.append("_first=").append(list.getFirst());
+        json.append("&_max=").append(list.getMax());
         String fields = list.getFieldsForQuery();
         if(fields.length() > 0)
         {
@@ -124,7 +123,34 @@ public class JsonMarshaller extends Marshaller
             json.append("&").append(list.getSearchPropertiesForQuery());
         }
         json.append("\",");
-        json.append("\"count\":").append(list.getList().size()).append(",");
+
+        int count = list.getList().size();
+
+        json.append("\"count\":").append(count).append(",");
+        json.append("\"total\":").append(list.getTotal()).append(",");
+        
+        if(count < list.getTotal())
+        {
+             if(list.getFirst() + list.getMax() < list.getTotal())
+             {
+                 
+                 json.append("\"next\":\"/").append(tag).append("s?");
+                 json.append("_first=").append(list.getMax() + list.getFirst());
+                 json.append("&_max=").append(list.getMax());
+                 fields = list.getFieldsForQuery();
+                 if(fields.length() > 0)
+                 {
+                     json.append("&").append("_fields=").append(list.getFieldsForQuery());
+                 }
+                 properties = list.getSearchPropertiesForQuery();
+                 if(properties.length() > 0)
+                 {
+                     json.append("&").append(list.getSearchPropertiesForQuery());
+                 }
+                 json.append("\",");
+             }
+        }
+
         json.append("\"results\":[");
         for(Resource resource : list.getList())
         {

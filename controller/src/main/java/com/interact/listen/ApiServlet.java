@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.*;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 public class ApiServlet extends HttpServlet
@@ -60,8 +61,12 @@ public class ApiServlet extends HttpServlet
 
                 long s = time();
                 List<Resource> list = (List<Resource>)criteria.list();
-                transaction.commit();
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
+
+                // reset criteria for counting
+                criteria.setFirstResult(0);
+                criteria.setProjection(Projections.rowCount());
+                Long total = (Long)criteria.list().get(0);
 
                 ResourceList resourceList = new ResourceList();
                 resourceList.setList(list);
@@ -69,6 +74,7 @@ public class ApiServlet extends HttpServlet
                 resourceList.setFirst(getFirst(query));
                 resourceList.setSearchProperties(getSearchProperties(query));
                 resourceList.setFields(getFields(query));
+                resourceList.setTotal(total);
 
                 // criteria.setProjection(Projections.rowCount());
                 // Long total = (Long)criteria.list().get(0);
@@ -79,6 +85,8 @@ public class ApiServlet extends HttpServlet
                 {
                     xml.append(XML_TAG);
                 }
+
+                transaction.commit();
 
                 s = time();
                 xml.append(marshaller.marshal(resourceList, resourceClass));

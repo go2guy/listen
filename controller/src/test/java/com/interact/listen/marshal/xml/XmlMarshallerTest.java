@@ -71,9 +71,40 @@ public class XmlMarshallerTest
         resourceList.setList(list);
         resourceList.setMax(10);
         resourceList.setFirst(0);
-        
+        resourceList.setTotal(Long.valueOf(3));
+
         StringBuilder expected = new StringBuilder();
-        expected.append("<subscribers href=\"/subscribers?_first=0&_max=10\" count=\"3\">");
+        expected.append("<subscribers href=\"/subscribers?_first=0&_max=10\" count=\"3\" total=\"3\">");
+        expected.append("<subscriber href=\"/subscribers/").append(s0.getId()).append("\"/>");
+        expected.append("<subscriber href=\"/subscribers/").append(s1.getId()).append("\"/>");
+        expected.append("<subscriber href=\"/subscribers/").append(s2.getId()).append("\"/>");
+        expected.append("</subscribers>");
+
+        assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
+    }
+    
+    @Test
+    public void test_marshal_withSubscriberListAndPagedResults_returnsCorrectXmlWithPaging()
+    {
+        Subscriber s0 = new Subscriber();
+        s0.setId(System.currentTimeMillis());
+        Subscriber s1 = new Subscriber();
+        s1.setId(System.currentTimeMillis());
+        Subscriber s2 = new Subscriber();
+        s2.setId(System.currentTimeMillis());
+        List<Resource> list = new ArrayList<Resource>(3);
+        list.add(s0);
+        list.add(s1);
+        list.add(s2);
+
+        ResourceList resourceList = new ResourceList();
+        resourceList.setList(list);
+        resourceList.setMax(3);
+        resourceList.setFirst(0);
+        resourceList.setTotal(Long.valueOf(5));
+
+        StringBuilder expected = new StringBuilder();
+        expected.append("<subscribers href=\"/subscribers?_first=0&_max=3\" count=\"3\" total=\"5\" next=\"/subscribers?_first=3&_max=3\">");
         expected.append("<subscriber href=\"/subscribers/").append(s0.getId()).append("\"/>");
         expected.append("<subscriber href=\"/subscribers/").append(s1.getId()).append("\"/>");
         expected.append("<subscriber href=\"/subscribers/").append(s2.getId()).append("\"/>");

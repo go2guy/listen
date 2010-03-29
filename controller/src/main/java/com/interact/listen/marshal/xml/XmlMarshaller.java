@@ -92,8 +92,8 @@ public class XmlMarshaller extends Marshaller
 
         StringBuilder xml = new StringBuilder();
         xml.append("<").append(tag).append(" href=\"/").append(tag).append("?");
-        xml.append("_first=").append(list.getFirst()).append("&");
-        xml.append("_max=").append(list.getMax());
+        xml.append("_first=").append(list.getFirst());
+        xml.append("&_max=").append(list.getMax());
         String fields = list.getFieldsForQuery();
         if(fields.length() > 0)
         {
@@ -104,10 +104,34 @@ public class XmlMarshaller extends Marshaller
         {
             xml.append("&").append(list.getSearchPropertiesForQuery());
         }
-        xml.append("\" ");
-        xml.append("count=\"").append(list.getList().size()).append("\"");
-        // xml.append("total=\"").append(list.getTotal()).append("\"");
+        xml.append("\"");
+        
+        int count = list.getList().size();
 
+        xml.append(" count=\"").append(count).append("\"");
+        xml.append(" total=\"").append(list.getTotal()).append("\"");
+
+        if(count < list.getTotal())
+        {
+             if(list.getFirst() + list.getMax() < list.getTotal())
+             {
+                 xml.append(" next=\"/").append(tag).append("?");
+                 xml.append("_first=").append(list.getMax() + list.getFirst());
+                 xml.append("&_max=").append(list.getMax());
+                 fields = list.getFieldsForQuery();
+                 if(fields.length() > 0)
+                 {
+                     xml.append("&").append("_fields=").append(list.getFieldsForQuery());
+                 }
+                 properties = list.getSearchPropertiesForQuery();
+                 if(properties.length() > 0)
+                 {
+                     xml.append("&").append(list.getSearchPropertiesForQuery());
+                 }
+                 xml.append("\"");
+             }
+        }
+        
         if(list.getList().size() == 0)
         {
             xml.append("/>");
