@@ -163,12 +163,12 @@ def doPrep():
         for pf in pfiles:
             nukelist.append(pf)
             if (pf.find('.rpm') > -1):
-                 # preserve rpm files
-                 nukelist.remove(pf)
+                # preserve rpm files
+                nukelist.remove(pf)
     
             if (pf.find('xtt') > -1):
-            # preserve xtt
-            nukelist.remove(pf)
+                # preserve xtt
+                nukelist.remove(pf)
     
         for pf in nukelist:
             removeify = "rm -rf /interact/listen/%s" % (pf)
