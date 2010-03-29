@@ -13,9 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.*;
 
-import javassist.bytecode.SignatureAttribute.TypeParameter;
-
-import org.hibernate.mapping.Collection;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

@@ -28,6 +28,11 @@ public class ApiServlet extends HttpServlet
     public static final long serialVersionUID = 1L;
 
     private static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    
+    private ApiServlet()
+    {
+        throw new AssertionError("Cannot instantiate utility class " + this.getClass().getName());
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -687,14 +692,14 @@ public class ApiServlet extends HttpServlet
     private Map<String, String> getSearchProperties(Map<String, String> queryParameters)
     {
         Map<String, String> searchProperties = new HashMap<String, String>();
-        for(String key : queryParameters.keySet())
+        for(Map.Entry<String, String> entry : queryParameters.entrySet())
         {
-            if(key.startsWith("_"))
+            if(entry.getKey().startsWith("_"))
             {
                 continue;
             }
 
-            searchProperties.put(key, queryParameters.get(key));
+            searchProperties.put(entry.getKey(), entry.getValue());
         }
         return searchProperties;
     }
@@ -721,7 +726,7 @@ public class ApiServlet extends HttpServlet
         return System.currentTimeMillis();
     }
 
-    private class UriResourceAttributes
+    private static class UriResourceAttributes
     {
         private String name;
         private String id;

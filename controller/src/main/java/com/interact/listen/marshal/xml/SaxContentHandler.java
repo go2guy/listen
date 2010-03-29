@@ -7,7 +7,6 @@ import com.interact.listen.resource.Resource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -47,17 +46,17 @@ public class SaxContentHandler extends DefaultHandler
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes)
+    public void startElement(String uri, String localName, String qName, Attributes theAttributes)
     {
         this.value = null;
-        this.attributes = attributes;
+        this.attributes = theAttributes;
 
         // resourceElement not loaded yet, assume this is the first element
         if(resourceElement == null)
         {
             resourceElement = qName;
 
-            String href = attributes.getValue("href");
+            String href = theAttributes.getValue("href");
             // no href on POST
             if(href != null)
             {

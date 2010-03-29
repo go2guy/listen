@@ -7,7 +7,12 @@ import org.hibernate.cfg.AnnotationConfiguration;
 
 public class HibernateUtil
 {
-    private static final SessionFactory sessionFactory;
+    private static final SessionFactory SESSION_FACTORY;
+    
+    private HibernateUtil()
+    {
+        throw new AssertionError("Cannot instantiate utility class " + this.getClass().getName());
+    }
 
     static
     {
@@ -34,17 +39,17 @@ public class HibernateUtil
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(Participant.class);
 
-            sessionFactory = config.buildSessionFactory();
+            SESSION_FACTORY = config.buildSessionFactory();
         }
-        catch(Throwable t)
+        catch(Exception e)
         {
-            System.err.println("SessionFactory creation failed: " + t);
-            throw new ExceptionInInitializerError(t);
+            System.err.println("SessionFactory creation failed: " + e);
+            throw new ExceptionInInitializerError(e);
         }
     }
 
     public static SessionFactory getSessionFactory()
     {
-        return sessionFactory;
+        return SESSION_FACTORY;
     }
 }
