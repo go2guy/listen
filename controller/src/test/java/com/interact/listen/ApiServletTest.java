@@ -179,7 +179,7 @@ public class ApiServletTest
         servlet.service(request, response);
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-        expectedXml += "<subscribers href=\"/subscribers?_first=0&_max=100\" count=\"0\"/>";
+        expectedXml += "<subscribers href=\"/subscribers?_first=0&_max=100\" count=\"0\" total=\"0\"/>";
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());
         assertEquals(expectedXml, response.getContentAsString());
@@ -282,7 +282,7 @@ public class ApiServletTest
         servlet.service(request, response);
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-        expectedXml += "<conferences href=\"/conferences?_first=0&_max=100\" count=\"0\"/>";
+        expectedXml += "<conferences href=\"/conferences?_first=0&_max=100\" count=\"0\" total=\"0\"/>";
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());
