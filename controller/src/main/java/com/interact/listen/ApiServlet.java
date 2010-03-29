@@ -40,7 +40,7 @@ public class ApiServlet extends HttpServlet
         try
         {
             UriResourceAttributes attributes = getResourceAttributes(request);
-            if(attributes.name == null)
+            if(attributes.getName() == null)
             {
                 writeResponse(response, HttpServletResponse.SC_OK, "Welcome to the Listen Controller API", "text/plain");
                 return;
@@ -48,10 +48,10 @@ public class ApiServlet extends HttpServlet
 
             Marshaller marshaller = getMarshaller(request.getHeader("Accept"));
 
-            String className = getResourceClassName(attributes.name);
+            String className = getResourceClassName(attributes.getName());
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
-            if(attributes.id == null)
+            if(attributes.getId() == null)
             {
                 // no id, request is for a list of resources
 
@@ -92,7 +92,7 @@ public class ApiServlet extends HttpServlet
 
                 // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
                 long s = time();
-                Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.id));
+                Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
                 transaction.commit();
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
 
@@ -149,14 +149,14 @@ public class ApiServlet extends HttpServlet
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
-        if(attributes.name == null || attributes.name.trim().length() == 0)
+        if(attributes.getName() == null || attributes.getName().trim().length() == 0)
         {
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to [" + attributes.name + "]",
+            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to [" + attributes.getName() + "]",
                           "text/plain");
             return;
         }
 
-        if(attributes.id != null)
+        if(attributes.getId() != null)
         {
             writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to specific resource [" +
                                                                         request.getPathInfo() + "]", "text/plain");
@@ -170,7 +170,7 @@ public class ApiServlet extends HttpServlet
         {
             Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
 
-            String className = getResourceClassName(attributes.name);
+            String className = getResourceClassName(attributes.getName());
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
             long s = time();
@@ -254,7 +254,7 @@ public class ApiServlet extends HttpServlet
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
-        if(attributes.id == null)
+        if(attributes.getId() == null)
         {
             writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                           "PUT must be to a specific resource, not the list [" + request.getPathInfo() + "]",
@@ -269,11 +269,11 @@ public class ApiServlet extends HttpServlet
         {
             Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
 
-            String className = getResourceClassName(attributes.name);
+            String className = getResourceClassName(attributes.getName());
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
             // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
-            Resource currentResource = (Resource)session.get(resourceClass, Long.parseLong(attributes.id));
+            Resource currentResource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
 
             if(currentResource == null)
             {
@@ -287,7 +287,7 @@ public class ApiServlet extends HttpServlet
             Resource updatedResource = marshaller.unmarshal(request.getInputStream(), resourceClass);
             System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
 
-            updatedResource.setId(Long.parseLong(attributes.id));
+            updatedResource.setId(Long.parseLong(attributes.getId()));
             boolean isValid = updatedResource.validate();
 
             if(isValid)
@@ -370,14 +370,14 @@ public class ApiServlet extends HttpServlet
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
-        if(attributes.name == null || attributes.name.trim().length() == 0)
+        if(attributes.getName() == null || attributes.getName().trim().length() == 0)
         {
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" + attributes.name + "]",
+            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" + attributes.getName() + "]",
                           "text/plain");
             return;
         }
 
-        if(attributes.id == null)
+        if(attributes.getId() == null)
         {
             writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                           "DELETE must be on a specific resource, not the list [" + request.getPathInfo() + "]",
@@ -390,12 +390,12 @@ public class ApiServlet extends HttpServlet
 
         try
         {
-            String className = getResourceClassName(attributes.name);
+            String className = getResourceClassName(attributes.getName());
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
             // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
             long s = time();
-            Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.id));
+            Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
             System.out.println("TIMER: get() took " + (time() - s) + "ms");
 
             if(resource == null)
@@ -451,10 +451,10 @@ public class ApiServlet extends HttpServlet
         String[] parts = pathInfo.split("/");
 
         UriResourceAttributes attributes = new UriResourceAttributes();
-        attributes.name = parts[0].toLowerCase();
+        attributes.setName(parts[0].toLowerCase());
         if(parts.length > 1)
         {
-            attributes.id = parts[1].toLowerCase();
+            attributes.setId(parts[1].toLowerCase());
         }
         return attributes;
     }
@@ -725,5 +725,25 @@ public class ApiServlet extends HttpServlet
     {
         private String name;
         private String id;
+        
+        public String getName()
+        {
+            return name;
+        }
+        
+        public String getId()
+        {
+            return id;
+        }
+        
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+        
+        public void setId(String id)
+        {
+            this.id = id;
+        }
     }
 }
