@@ -69,7 +69,7 @@ public class Voicemail implements Resource
 
     public void setDateCreated(Date dateCreated)
     {
-        this.dateCreated = (dateCreated == null ? null : new Date(dateCreated.getTime()));
+        this.dateCreated = dateCreated == null ? null : new Date(dateCreated.getTime());
     }
 
     public Boolean getIsNew()
