@@ -160,7 +160,6 @@ public abstract class Marshaller
         }
 
         boolean hasId = href.matches("\\/[^\\/]+\\/[^\\/]+");
-        System.out.println("Matches? " + (hasId ? "YES" : "NO"));
         if(!hasId)
         {
             return null;
