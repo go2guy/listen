@@ -154,12 +154,20 @@ public abstract class Marshaller
 
     public static final Long getIdFromHref(String href)
     {
-        if(href != null)
+        if(href == null)
         {
-            Long id = Long.parseLong(href.substring(href.lastIndexOf("/") + 1));
-            return id;
+           return null;
         }
-        return null;
+
+        boolean hasId = href.matches("\\/[^\\/]+\\/[^\\/]+");
+        System.out.println("Matches? " + (hasId ? "YES" : "NO"));
+        if(!hasId)
+        {
+            return null;
+        }
+
+        Long id = Long.parseLong(href.substring(href.lastIndexOf("/") + 1));
+        return id;
     }
 
     public static final Method findMethod(String name, Class clazz)
