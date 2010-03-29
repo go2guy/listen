@@ -157,23 +157,25 @@ def doPrep():
     
     # smack the hell out of the /interact/listen directory
     print "Cleaning /interact/listen directory"
-    pfiles = os.listdir('/interact/listen')
-    nukelist=[]
-    for pf in pfiles:
-        nukelist.append(pf)
-        if (pf.find('.rpm') > -1):
-            # preserve rpm files
-            nukelist.remove(pf)
+    try:
+        pfiles = os.listdir('/interact/listen')
+        nukelist=[]
+        for pf in pfiles:
+            nukelist.append(pf)
+            if (pf.find('.rpm') > -1):
+                 # preserve rpm files
+                 nukelist.remove(pf)
     
-        if (pf.find('xtt') > -1):
+            if (pf.find('xtt') > -1):
             # preserve xtt
             nukelist.remove(pf)
     
-    for pf in nukelist:
-        removeify = "rm -rf /interact/listen/%s" % (pf)
-        doCmd(removeify)
+        for pf in nukelist:
+            removeify = "rm -rf /interact/listen/%s" % (pf)
+            doCmd(removeify)
     
-    
+    except:
+        print "directory already empty"
 # script starts here and stuff
 # determine the basics and parse args
 def main():
