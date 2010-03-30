@@ -11,7 +11,9 @@
         <![CDATA[
             function II_SB_JS_function(ANI,subID)
             {
-	                var digits = new String();
+	                var dateObj = new Date();
+    var outStr = new String();
+    var digits = new String();
     var strObj =  new String(ANI);
     var loc1 = 0;
     var loc2 = ANI.length;
@@ -27,7 +29,16 @@
     if (strObj.indexOf(';')        != -1) {loc2 = strObj.indexOf(';')}
     if (strObj.indexOf('@')        != -1) {loc2 = strObj.indexOf('@')}
     digits = strObj.substring(loc1,loc2);
-    return digits + "_" + subID;
+
+    outStr = outStr.concat(dateObj.getFullYear());
+    outStr = outStr.concat((dateObj.getMonth() < 9 ? "0" : ""), (dateObj.getMonth()+1));
+    outStr = outStr.concat((dateObj.getDate() < 10 ? "0" : ""), dateObj.getDate());
+    outStr = outStr.concat((dateObj.getHours() < 10? "0" : ""),  dateObj.getHours());
+    outStr = outStr.concat((dateObj.getMinutes() < 10? "0" : ""), dateObj.getMinutes());
+    outStr = outStr.concat((dateObj.getSeconds() < 10? "0" : ""), dateObj.getSeconds());          
+
+    return digits + "_" + outStr + "_" + subID;
+
             }
         ]]>
     </script>
