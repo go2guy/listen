@@ -9,8 +9,7 @@ import com.interact.listen.resource.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -90,6 +89,43 @@ public class JsonMarshallerTest
         assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
     }
 
+    @Test
+    public void test_marshal_withSubscriberListSpecifyingNumberField_returnsCorrectJsonWithNumber()
+    {
+        Subscriber s0 = new Subscriber();
+        s0.setId(System.currentTimeMillis());
+        s0.setNumber("foo" + System.currentTimeMillis());
+        Subscriber s1 = new Subscriber();
+        s1.setId(System.currentTimeMillis());
+        s1.setNumber("foo" + System.currentTimeMillis());
+        List<Resource> list = new ArrayList<Resource>(3);
+        list.add(s0);
+        list.add(s1);
+
+        ResourceList resourceList = new ResourceList();
+        resourceList.setList(list);
+        resourceList.setFirst(0);
+        resourceList.setMax(10);
+        resourceList.setTotal(Long.valueOf(2));
+
+        Set<String> fields = new HashSet<String>(1);
+        fields.add("number");
+        resourceList.setFields(fields);
+
+        StringBuilder expected = new StringBuilder();
+        expected.append("{");
+        expected.append("\"href\":\"/subscribers?_first=0&_max=10&_fields=number\",");
+        expected.append("\"count\":2,");
+        expected.append("\"total\":2,");
+        expected.append("\"results\":[");
+        expected.append("{\"href\":\"/subscribers/" + s0.getId() + "\",\"number\":\"" + s0.getNumber() + "\"},");
+        expected.append("{\"href\":\"/subscribers/" + s1.getId() + "\",\"number\":\"" + s1.getNumber() + "\"}");
+        expected.append("]");
+        expected.append("}");
+
+        assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
+    }
+    
     @Test
     public void test_marshal_withSubscriberListAndPagedResults_returnsCorrectJsonWithPaging()
     {

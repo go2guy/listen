@@ -1,6 +1,7 @@
 package com.interact.listen.marshal.xml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
@@ -8,8 +9,7 @@ import com.interact.listen.resource.*;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +84,38 @@ public class XmlMarshallerTest
     }
     
     @Test
+    public void test_marshal_withSubscriberListSpecifyingNumberField_returnsListWithNumberAttribute()
+    {
+        Subscriber s0 = new Subscriber();
+        s0.setId(System.currentTimeMillis());
+        s0.setNumber("foo" + System.currentTimeMillis());
+        Subscriber s1 = new Subscriber();
+        s1.setId(System.currentTimeMillis());
+        s1.setNumber("foo" + System.currentTimeMillis());
+        List<Resource> list = new ArrayList<Resource>(3);
+        list.add(s0);
+        list.add(s1);
+
+        ResourceList resourceList = new ResourceList();
+        resourceList.setList(list);
+        resourceList.setMax(10);
+        resourceList.setFirst(0);
+        resourceList.setTotal(Long.valueOf(2));
+        
+        Set<String> fields = new HashSet<String>(1);
+        fields.add("number");
+        resourceList.setFields(fields);
+
+        StringBuilder expected = new StringBuilder();
+        expected.append("<subscribers href=\"/subscribers?_first=0&amp;_max=10&amp;_fields=number\" count=\"2\" total=\"2\">");
+        expected.append("<subscriber href=\"/subscribers/").append(s0.getId()).append("\" number=\"").append(s0.getNumber()).append("\"/>");
+        expected.append("<subscriber href=\"/subscribers/").append(s1.getId()).append("\" number=\"").append(s1.getNumber()).append("\"/>");
+        expected.append("</subscribers>");
+
+        assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
+    }
+    
+    @Test
     public void test_marshal_withSubscriberListAndPagedResults_returnsCorrectXmlWithPaging()
     {
         Subscriber s0 = new Subscriber();
@@ -111,6 +143,20 @@ public class XmlMarshallerTest
         expected.append("</subscribers>");
 
         assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
+    }
+    
+    @Test
+    public void test_marshal_withNullList_throwsIllegalArgumentExceptionWithMessage()
+    {
+        try
+        {
+            marshaller.marshal(null, Subscriber.class);
+            fail("Expected IllegalArgumentException for marshal() with null list");
+        }
+        catch(IllegalArgumentException e)
+        {
+            assertEquals("List cannot be null", e.getMessage());
+        }
     }
     
     @Test
