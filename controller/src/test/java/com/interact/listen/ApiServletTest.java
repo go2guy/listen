@@ -8,7 +8,9 @@ import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.DelegatingServletInputStream;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class ApiServletTest
@@ -179,7 +180,7 @@ public class ApiServletTest
         servlet.service(request, response);
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-        expectedXml += "<subscribers href=\"/subscribers?_first=0&_max=100\" count=\"0\" total=\"0\"/>";
+        expectedXml += "<subscribers href=\"/subscribers?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());
         assertEquals(expectedXml, response.getContentAsString());
@@ -282,7 +283,7 @@ public class ApiServletTest
         servlet.service(request, response);
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-        expectedXml += "<conferences href=\"/conferences?_first=0&_max=100\" count=\"0\" total=\"0\"/>";
+        expectedXml += "<conferences href=\"/conferences?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", response.getContentType());

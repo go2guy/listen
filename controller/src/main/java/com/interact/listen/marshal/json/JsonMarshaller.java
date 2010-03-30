@@ -27,11 +27,11 @@ public class JsonMarshaller extends Marshaller
         sortMethods(methods);
 
         String resourceTag = getTagForClass(clazz.getSimpleName());
-        String href = "/" + resourceTag + "s/" + resource.getId();
+        String href = buildSpecificHref(resourceTag + "s", resource.getId());
 
         StringBuilder json = new StringBuilder();
         json.append("{");
-        json.append("\"href\":").append("\"").append(href).append("\",");
+        json.append("\"href\":\"").append(href).append("\",");
 
         for(Method method : methods)
         {
@@ -54,10 +54,8 @@ public class JsonMarshaller extends Marshaller
                 else
                 {
                     String associatedTag = getTagForClass(returnType.getSimpleName());
-                    json.append("{\"href\":");
-                    json.append("\"/").append(associatedTag).append("s/").append(((Resource)result).getId())
-                        .append("\"");
-                    json.append("}");
+                    String itemHref = buildSpecificHref(associatedTag + "s", ((Resource)result).getId());
+                    json.append("{\"href\":\"").append(itemHref).append("\"").append("}");
                 }
             }
             else if(java.util.Collection.class.isAssignableFrom(returnType))
@@ -66,10 +64,8 @@ public class JsonMarshaller extends Marshaller
                 String name = s.substring(s.lastIndexOf(".") + 1);
                 String associatedTag = getTagForClass(name);
 
-                json.append("{\"href\":");
-                json.append("\"/").append(associatedTag).append("s?");
-                json.append(resourceTag).append("=").append(href);
-                json.append("\"}");
+                String listHref = buildListHref(associatedTag + "s", 0, 100, null, resourceTag + "=" + encodeUrl(href));
+                json.append("{\"href\":\"").append(listHref).append("\"}");
             }
             else
             {
@@ -107,25 +103,13 @@ public class JsonMarshaller extends Marshaller
 
         String tag = getTagForClass(resourceClass.getSimpleName());
 
+        String href = buildListHref(tag + "s", list.getFirst(), list.getMax(), list.getFieldsForQuery(), list.getSearchPropertiesForQuery());
+
         StringBuilder json = new StringBuilder();
         json.append("{");
-        json.append("\"href\":\"").append("/").append(tag).append("s?");
-        json.append("_first=").append(list.getFirst());
-        json.append("&_max=").append(list.getMax());
-        String fields = list.getFieldsForQuery();
-        if(fields.length() > 0)
-        {
-            json.append("&").append("_fields=").append(list.getFieldsForQuery());
-        }
-        String properties = list.getSearchPropertiesForQuery();
-        if(properties.length() > 0)
-        {
-            json.append("&").append(list.getSearchPropertiesForQuery());
-        }
-        json.append("\",");
+        json.append("\"href\":\"").append(href).append("\",");
 
         int count = list.getList().size();
-
         json.append("\"count\":").append(count).append(",");
         json.append("\"total\":").append(list.getTotal()).append(",");
         
@@ -133,31 +117,19 @@ public class JsonMarshaller extends Marshaller
         {
              if(list.getFirst() + list.getMax() < list.getTotal())
              {
-                 
-                 json.append("\"next\":\"/").append(tag).append("s?");
-                 json.append("_first=").append(list.getMax() + list.getFirst());
-                 json.append("&_max=").append(list.getMax());
-                 fields = list.getFieldsForQuery();
-                 if(fields.length() > 0)
-                 {
-                     json.append("&").append("_fields=").append(list.getFieldsForQuery());
-                 }
-                 properties = list.getSearchPropertiesForQuery();
-                 if(properties.length() > 0)
-                 {
-                     json.append("&").append(list.getSearchPropertiesForQuery());
-                 }
-                 json.append("\",");
+                 String next = buildListHref(tag + "s", list.getMax() + list.getFirst(), list.getMax(),
+                                             list.getFieldsForQuery(), list.getSearchPropertiesForQuery());
+                 json.append("\"next\":\"").append(next).append("\",");
              }
         }
 
         json.append("\"results\":[");
         for(Resource resource : list.getList())
         {
-            String href = "/" + tag + "s/" + resource.getId();
+            String itemHref = "/" + tag + "s/" + resource.getId();
 
             json.append("{");
-            json.append("\"href\":\"").append(href).append("\"");
+            json.append("\"href\":\"").append(itemHref).append("\"");
 
             for(String field : list.getFields())
             {
@@ -186,8 +158,8 @@ public class JsonMarshaller extends Marshaller
                     else
                     {
                         String associatedTag = getTagForClass(returnType.getSimpleName());
-                        json.append("{\"href\":\"/").append(associatedTag).append("s/")
-                            .append(((Resource)result).getId()).append("\"}");
+                        String resourceHref = buildSpecificHref(associatedTag + "s", ((Resource)result).getId());
+                        json.append("{\"href\":\"").append(resourceHref).append("\"}");
                     }
                 }
                 else if(java.util.Collection.class.isAssignableFrom(returnType))
@@ -196,10 +168,8 @@ public class JsonMarshaller extends Marshaller
                     String name = s.substring(s.lastIndexOf(".") + 1);
                     String associatedTag = getTagForClass(name);
 
-                    json.append("{\"href\":");
-                    json.append("\"/").append(associatedTag).append("s?");
-                    json.append(tag).append("=").append(href);
-                    json.append("\"}");
+                    String collectionHref = buildListHref(associatedTag + "s", 0, 100, null, tag + "=" + itemHref);
+                    json.append("{\"href\":\"").append(collectionHref).append("\"}");
                 }
                 else
                 {

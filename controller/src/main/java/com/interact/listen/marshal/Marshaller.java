@@ -7,9 +7,13 @@ import com.interact.listen.resource.Resource;
 import com.interact.listen.resource.ResourceList;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.util.*;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 public abstract class Marshaller
 {
@@ -197,5 +201,47 @@ public abstract class Marshaller
         {
             throw new AssertionError(e);
         }
+    }
+
+    public static final String escapeXml(String toEscape)
+    {
+        return StringEscapeUtils.escapeXml(toEscape);
+    }
+
+    public static final String encodeUrl(String toEncode)
+    {
+        try
+        {
+            return URLEncoder.encode(toEncode, "UTF-8");
+        }
+        catch(UnsupportedEncodingException e)
+        {
+            throw new AssertionError(e);
+        }
+    }
+
+    protected final String buildSpecificHref(String resource, Long id)
+    {
+        return "/" + resource + "/" + id;
+    }
+
+    protected final String buildListHref(String resource, int first, int max, String fields, String properties)
+    {
+        StringBuilder href = new StringBuilder();
+        href.append("/").append(resource).append("?");
+        href.append("_first=").append(first);
+        href.append("&_max=").append(max);
+
+        if(fields != null && fields.length() > 0)
+        {
+            href.append("&_fields=").append(fields);
+        }
+
+        if(properties != null && properties.length() > 0)
+        {
+            href.append("&").append(properties);
+        }
+
+        return href.toString();
     }
 }

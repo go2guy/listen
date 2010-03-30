@@ -30,7 +30,7 @@ public class XmlMarshaller extends Marshaller
         sortMethods(methods);
 
         String resourceTag = getTagForClass(resource.getClass().getSimpleName());
-        
+
         xml.append(marshalOpeningResourceTag(resource, false));
 
         for(Method method : methods)
@@ -61,11 +61,10 @@ public class XmlMarshaller extends Marshaller
                 String name = s.substring(s.lastIndexOf(".") + 1);
                 String associatedTag = getTagForClass(name);
 
-                xml.append("<").append(propertyTag).append(" href=\"");
-                xml.append("/").append(associatedTag).append("s?");
-                xml.append(resourceTag).append("=");
-                xml.append("/").append(resourceTag).append("s/").append(resource.getId());
-                xml.append("\"/>");
+                String collectionHref = buildSpecificHref(resourceTag + "s", resource.getId());
+                String href = buildListHref(associatedTag + "s", 0, 100, null, resourceTag + "=" + encodeUrl(collectionHref));
+                href = escapeXml(href);
+                xml.append("<").append(propertyTag).append(" href=\"").append(href).append("\"/>");
             }
             else
             {
@@ -89,49 +88,28 @@ public class XmlMarshaller extends Marshaller
         }
 
         String tag = getTagForClass(resourceClass.getSimpleName()) + "s"; // pluralize it for the list
-
         StringBuilder xml = new StringBuilder();
-        xml.append("<").append(tag).append(" href=\"/").append(tag).append("?");
-        xml.append("_first=").append(list.getFirst());
-        xml.append("&_max=").append(list.getMax());
-        String fields = list.getFieldsForQuery();
-        if(fields.length() > 0)
-        {
-            xml.append("&").append("_fields=").append(list.getFieldsForQuery());
-        }
-        String properties = list.getSearchPropertiesForQuery();
-        if(properties.length() > 0)
-        {
-            xml.append("&").append(list.getSearchPropertiesForQuery());
-        }
-        xml.append("\"");
-        
-        int count = list.getList().size();
 
+        String href = buildListHref(tag, list.getFirst(), list.getMax(), list.getFieldsForQuery(),
+                                    list.getSearchPropertiesForQuery());
+        href = escapeXml(href);
+        xml.append("<").append(tag).append(" href=\"").append(href).append("\"");
+
+        int count = list.getList().size();
         xml.append(" count=\"").append(count).append("\"");
         xml.append(" total=\"").append(list.getTotal()).append("\"");
 
         if(count < list.getTotal())
         {
-             if(list.getFirst() + list.getMax() < list.getTotal())
-             {
-                 xml.append(" next=\"/").append(tag).append("?");
-                 xml.append("_first=").append(list.getMax() + list.getFirst());
-                 xml.append("&_max=").append(list.getMax());
-                 fields = list.getFieldsForQuery();
-                 if(fields.length() > 0)
-                 {
-                     xml.append("&").append("_fields=").append(list.getFieldsForQuery());
-                 }
-                 properties = list.getSearchPropertiesForQuery();
-                 if(properties.length() > 0)
-                 {
-                     xml.append("&").append(list.getSearchPropertiesForQuery());
-                 }
-                 xml.append("\"");
-             }
+            if(list.getFirst() + list.getMax() < list.getTotal())
+            {
+                String next = buildListHref(tag, list.getMax() + list.getFirst(), list.getMax(),
+                                            list.getFieldsForQuery(), list.getSearchPropertiesForQuery());
+                next = escapeXml(next);
+                xml.append(" next=\"").append(next).append("\"");
+            }
         }
-        
+
         if(list.getList().size() == 0)
         {
             xml.append("/>");
@@ -144,8 +122,10 @@ public class XmlMarshaller extends Marshaller
         for(Resource resource : list.getList())
         {
             String classTag = getTagForClass(resource.getClass().getSimpleName());
-            xml.append("<").append(classTag);
-            xml.append(" href=\"/").append(classTag).append("s/").append(resource.getId()).append("\"");
+
+            String itemHref = buildSpecificHref(classTag + "s", resource.getId());
+            itemHref = escapeXml(itemHref);
+            xml.append("<").append(classTag).append(" href=\"").append(itemHref).append("\"");
 
             for(String field : list.getFields())
             {
@@ -174,12 +154,14 @@ public class XmlMarshaller extends Marshaller
                     else
                     {
                         String associatedTag = getTagForClass(returnType.getSimpleName());
-                        xml.append("/").append(associatedTag).append("s/").append(((Resource)result).getId());
+                        String resourceHref = buildSpecificHref(associatedTag + "s", ((Resource)result).getId());
+                        resourceHref = escapeXml(resourceHref);
+                        xml.append(resourceHref);
                     }
                 }
                 else if(java.util.Collection.class.isAssignableFrom(returnType))
                 {
-                    String s = ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0].toString();
+                    String s = ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0] .toString();
                     String name = s.substring(s.lastIndexOf(".") + 1);
                     String associatedTag = getTagForClass(name);
 
@@ -217,10 +199,13 @@ public class XmlMarshaller extends Marshaller
     private String marshalOpeningResourceTag(Resource resource, boolean selfClosing)
     {
         String classTag = getTagForClass(resource.getClass().getSimpleName());
-        
+
+        String href = buildSpecificHref(classTag + "s", resource.getId());
+        href = escapeXml(href);
+
         StringBuilder xml = new StringBuilder();
         xml.append("<").append(classTag).append(" ");
-        xml.append("href=\"/").append(classTag).append("s/").append(resource.getId()).append("\"");
+        xml.append("href=\"").append(href).append("\"");
         if(selfClosing)
         {
             xml.append("/");
@@ -259,7 +244,7 @@ public class XmlMarshaller extends Marshaller
         else
         {
             xml.append("<").append(tagName).append(">");
-            xml.append(value.toString());
+            xml.append(escapeXml(value.toString()));
             xml.append("</").append(tagName).append(">");
         }
         return xml.toString();

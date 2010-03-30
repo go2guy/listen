@@ -74,7 +74,7 @@ public class XmlMarshallerTest
         resourceList.setTotal(Long.valueOf(3));
 
         StringBuilder expected = new StringBuilder();
-        expected.append("<subscribers href=\"/subscribers?_first=0&_max=10\" count=\"3\" total=\"3\">");
+        expected.append("<subscribers href=\"/subscribers?_first=0&amp;_max=10\" count=\"3\" total=\"3\">");
         expected.append("<subscriber href=\"/subscribers/").append(s0.getId()).append("\"/>");
         expected.append("<subscriber href=\"/subscribers/").append(s1.getId()).append("\"/>");
         expected.append("<subscriber href=\"/subscribers/").append(s2.getId()).append("\"/>");
@@ -104,7 +104,7 @@ public class XmlMarshallerTest
         resourceList.setTotal(Long.valueOf(5));
 
         StringBuilder expected = new StringBuilder();
-        expected.append("<subscribers href=\"/subscribers?_first=0&_max=3\" count=\"3\" total=\"5\" next=\"/subscribers?_first=3&_max=3\">");
+        expected.append("<subscribers href=\"/subscribers?_first=0&amp;_max=3\" count=\"3\" total=\"5\" next=\"/subscribers?_first=3&amp;_max=3\">");
         expected.append("<subscriber href=\"/subscribers/").append(s0.getId()).append("\"/>");
         expected.append("<subscriber href=\"/subscribers/").append(s1.getId()).append("\"/>");
         expected.append("<subscriber href=\"/subscribers/").append(s2.getId()).append("\"/>");
