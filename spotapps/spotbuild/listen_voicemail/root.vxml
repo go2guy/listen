@@ -1,6 +1,6 @@
 <?xml version="1.0"?>                                    
 <vxml version="2.0">
-    <!-- Last Modified 11/02/2009
+    <!-- Last Modified 03/22/2010
        *   @Name   root.vxml
        *   @Desc   This file contains global variable declarations and initializations.
                    These variables are available to all files that reference this document -->
@@ -29,14 +29,27 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
-	<var name="subscriberID" expr="'local'" />
-	<var name="caller" expr="'originator'" />
-	<var name="msgState" expr="'new'" />
+	<var name="ANI" expr="'remote'" />
+	<var name="DNIS" expr="'local'" />
+	<var name="status" expr="''" />
+	<var name="fileLocation" expr="''" />
+	<var name="controller" expr="'http://apps2:8080/listen-controller'" />
+	<var name="referenceID" expr="''" />
+	<var name="isNew" expr="'true'" />
+	<var name="subID" expr="''" />
+	<var name="dataItem" expr="''" />
+	<var name="whichRsrc" expr="'subscribers'" />
+	<var name="returnVal" expr="''" />
+	<var name="returnStr" expr="''" />
+	<var name="hostName" expr="'listenspotbuild:/interact/apps/spotbuild/listen_voicemail/audio/'" />
+	<var name="FILE1" expr="'/interact/apps/spotbuild/listen_voicemail/audio/'" />
+	<var name="OPERATION" expr="'stat'" />
 
 
     <!-- Conference Variables -->
     <var name="II_SB_CONF_NAME" expr="''"/>     	    <!-- Holds the conference information -->
     <var name="II_SB_confUserStatus" expr="'Active'"/>	<!-- Active, Passive -->
+    <var name="II_SB_playEntryAudio" expr="'Yes'"/>     <!-- Determines if an entry tone is played on a conference -->
 
     <!-- Call to java scripts -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->

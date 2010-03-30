@@ -18,30 +18,78 @@
     <var name="II_SB_NEXT_OPTION"/>
     <var name="II_SB_transfer"/>
     <var name="II_SB_projectSource"/>
-	<var name="SB_UV_subscriberID"/>
-	<var name="SB_UV_caller"/>
-	<var name="SB_UV_msgState"/>
+	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_DNIS"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_fileLocation"/>
+	<var name="SB_UV_controller"/>
+	<var name="SB_UV_referenceID"/>
+	<var name="SB_UV_isNew"/>
+	<var name="SB_UV_subID"/>
+	<var name="SB_UV_dataItem"/>
+	<var name="SB_UV_whichRsrc"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_FILE1"/>
+	<var name="SB_UV_OPERATION"/>
 
     
     <form id="beginDocument">
         <block>
-	        
+	        <log target="status">Start</log>
             <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
             <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
-			<assign name="subscriberID" expr="II_SB_local" />
-			<assign name="caller" expr="II_SB_originator" />
+			<assign name="DNIS" expr="II_SB_local" />
+			<assign name="ANI" expr="II_SB_remote" />
 
-			<if cond="SB_UV_subscriberID != undefined">
-				<assign name="subscriberID" expr="SB_UV_subscriberID" />
+			<if cond="SB_UV_ANI != undefined">
+				<assign name="ANI" expr="SB_UV_ANI" />
 			</if>
-			<if cond="SB_UV_caller != undefined">
-				<assign name="caller" expr="SB_UV_caller" />
+			<if cond="SB_UV_DNIS != undefined">
+				<assign name="DNIS" expr="SB_UV_DNIS" />
 			</if>
-			<if cond="SB_UV_msgState != undefined">
-				<assign name="msgState" expr="SB_UV_msgState" />
+			<if cond="SB_UV_status != undefined">
+				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_fileLocation != undefined">
+				<assign name="fileLocation" expr="SB_UV_fileLocation" />
+			</if>
+			<if cond="SB_UV_controller != undefined">
+				<assign name="controller" expr="SB_UV_controller" />
+			</if>
+			<if cond="SB_UV_referenceID != undefined">
+				<assign name="referenceID" expr="SB_UV_referenceID" />
+			</if>
+			<if cond="SB_UV_isNew != undefined">
+				<assign name="isNew" expr="SB_UV_isNew" />
+			</if>
+			<if cond="SB_UV_subID != undefined">
+				<assign name="subID" expr="SB_UV_subID" />
+			</if>
+			<if cond="SB_UV_dataItem != undefined">
+				<assign name="dataItem" expr="SB_UV_dataItem" />
+			</if>
+			<if cond="SB_UV_whichRsrc != undefined">
+				<assign name="whichRsrc" expr="SB_UV_whichRsrc" />
+			</if>
+			<if cond="SB_UV_returnVal != undefined">
+				<assign name="returnVal" expr="SB_UV_returnVal" />
+			</if>
+			<if cond="SB_UV_returnStr != undefined">
+				<assign name="returnStr" expr="SB_UV_returnStr" />
+			</if>
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_FILE1 != undefined">
+				<assign name="FILE1" expr="SB_UV_FILE1" />
+			</if>
+			<if cond="SB_UV_OPERATION != undefined">
+				<assign name="OPERATION" expr="SB_UV_OPERATION" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

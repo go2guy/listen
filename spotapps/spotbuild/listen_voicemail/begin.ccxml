@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 02/17/2010 
+    <!-- Last Modified 03/24/2010 
        *   @Name   begin.ccxml
        *   @Desc   Starts a ccxml dialog and calls main.vxml -->
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_voicemail'"/> <!--  PROJECT_NAME. Project directory -->
-    <var name="II_SB_NEXT_OPTION" expr="'52-3'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
+    <var name="II_SB_NEXT_OPTION" expr="'53-3'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
     <var name="II_SB_MAIN_VXML" expr="'main.vxml'"/>    <!-- MAIN_VXML. Contains the file name of the document to start once ccxml is loaded -->
     <var name="II_SB_BASE_DIR" expr="'/interact/apps/spotbuild/'"/>                 <!-- BASE_DIR. Base directory -->
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
@@ -23,9 +23,24 @@
     <var name="II_SB_type"/>                  <!-- II_SB_type.Contains the type of call - VOIP, PSTN -->
     <var name="II_SB_line"/>                  <!-- Line number processing call -->
     <var name="II_SB_projectSource"/>
-	<var name="SB_UV_subscriberID"/>
-	<var name="SB_UV_caller"/>
-	<var name="SB_UV_msgState"/>
+    <var name="II_SB_whichID"/>
+    <var name="II_SB_newNxtOpt"/>               <!-- newNextOpt. Contains name of next vxml. Gets its value from the create-session file -->
+
+	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_DNIS"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_fileLocation"/>
+	<var name="SB_UV_controller"/>
+	<var name="SB_UV_referenceID"/>
+	<var name="SB_UV_isNew"/>
+	<var name="SB_UV_subID"/>
+	<var name="SB_UV_dataItem"/>
+	<var name="SB_UV_whichRsrc"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_FILE1"/>
+	<var name="SB_UV_OPERATION"/>
 
 
     <!-- Global variables -->
@@ -36,7 +51,6 @@
     <var name="II_SB_sessionID" expr="''"/>     <!-- sessionID. Contains the ID of the current ccxml session -->
     <var name="II_SB_ibcallid"/>                <!-- ibcallid. In bound connection id -->
     <var name="II_SB_obcallid"/>                <!-- obcallid. Out bound connection id -->
-    <var name="II_SB_splitNextOpt"/>            <!-- spitNextOpt. Contains name of next vxml. Gets its value from the branch-call file -->
     <var name="II_SB_indialog" expr="'false'"/> <!-- Indicates when application is in vxml dialog -->
 
 	<!-- Disconnect variables -->
@@ -51,12 +65,11 @@
             <!-- This transition contains the first event encountered when this file is loaded.
                  In here we check the values of the transfer and status variables to determine the
                  next action. If both variables are undefined, we need to start main.vxml -->
-            <log>INFO: Entered begin.ccxml [52-2]</log>
+            <log>INFO: Entered begin.ccxml [53-2]</log>
     	    <log target="status"><value expr="II_SB_PROJECT_NAME"/></log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <assign name="II_SB_line" expr="getNextElement(0,II_SB_sessionID,'.')"/>
-            <log>INFO: II_SB_obcallid [<value expr="II_SB_obcallid"/>]</log>
             <log>INFO: II_SB_status [<value expr="II_SB_status"/>]</log>
             <log>INFO: II_SB_local [<value expr="II_SB_local"/>]</log>
             <log>INFO: II_SB_remote [<value expr="II_SB_remote"/>]</log>
@@ -69,19 +82,23 @@
             <assign name="II_SB_state" expr="'alerted'"/>
             <if cond="((II_SB_transfer == undefined) &amp;&amp; (II_SB_status == undefined))">
                 <assign name="II_SB_ibcallid" expr="II_SB_connectionID"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_subscriberID SB_UV_caller SB_UV_msgState"/> <!-- Start vxml dialog -->
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_ANI SB_UV_DNIS SB_UV_status SB_UV_fileLocation SB_UV_controller SB_UV_referenceID SB_UV_isNew SB_UV_subID SB_UV_dataItem SB_UV_whichRsrc SB_UV_returnVal SB_UV_returnStr SB_UV_hostName SB_UV_FILE1 SB_UV_OPERATION"/> <!-- Start vxml dialog -->
             <else/>
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
         		    <log>INFO: Inbound connection id [<value expr="II_SB_ibcallid"/>]</log>
                     <send data="'dialog.user.alerting'" target="II_SB_sessionID"/>
-                <elseif cond="II_SB_status == 'branchCall'"/>
-                    <log>INFO: Going to [<value expr="II_SB_splitNextOpt"/>.vxml]</log>
-                    <assign name="II_SB_NEXT_OPTION" expr="II_SB_splitNextOpt"/>
-                    <assign name="II_SB_ibcallid" expr="II_SB_obcallid"/>
-                    <assign name="II_SB_connectionID" expr="II_SB_obcallid"/>
-                    <assign name="II_SB_obcallid" expr="''"/>
-                    <send data="'dialog.user.alerting'" target="II_SB_sessionID"/>
+                <elseif cond="II_SB_status == 'createSession'"/>
+                    <log>INFO: Going to [<value expr="II_SB_newNxtOpt"/>.vxml]</log>
+                    <assign name="II_SB_NEXT_OPTION" expr="II_SB_newNxtOpt"/>
+                    <if cond="((II_SB_whichID.length &gt; 0) &amp;&amp; (II_SB_whichID != undefined))">
+                        <assign name="II_SB_ibcallid" expr="II_SB_whichID"/>
+                        <assign name="II_SB_connectionID" expr="II_SB_whichID"/>
+                        <send data="'dialog.user.alerting'" target="II_SB_sessionID"/>
+                    <else/> <!-- Assume there's currently no connection id associated with this session -->
+                        <assign name="II_SB_ibcallid" expr="''"/>
+                        <send data="'dialog.user.startMain'" target="II_SB_sessionID"/>
+                    </if>
                 <else/>
                     <log>ERROR: Invalid state for begin.ccxml</log>
                     <assign name="II_SB_state" expr="'endCall'"/>
@@ -92,15 +109,25 @@
 
         <transition event="dialog.user.alerting" name="alertEV">
             <!-- Here we join the inbound caller to the vxml channel for audio access -->
-            <log>INFO: transition event [<value expr="dialog.user.alerting"/>] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
             <join id1="II_SB_ibcallid" id2="'VXML_CHANNEL'"/> <!-- <join> throw a conference.joined event -->
 		</transition>
 
 		<transition state="alerted" event="conference.joined" name="evt">
             <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
 			<log>INFO: Joined caller to voice channel</log>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_subscriberID SB_UV_caller SB_UV_msgState"/> <!-- Start vxml dialog -->
+            <send data="'dialog.user.startMain'" target="II_SB_sessionID"/>
         </transition>
+
+        <transition event="dialog.user.startMain" name="alertEV" cond="II_SB_ibcallid.length &gt; 0">
+            <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
+            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_ANI SB_UV_DNIS SB_UV_status SB_UV_fileLocation SB_UV_controller SB_UV_referenceID SB_UV_isNew SB_UV_subID SB_UV_dataItem SB_UV_whichRsrc SB_UV_returnVal SB_UV_returnStr SB_UV_hostName SB_UV_FILE1 SB_UV_OPERATION"/> <!-- Start vxml dialog -->
+		</transition>
+
+        <transition event="dialog.user.startMain" name="alertEV">
+            <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
+            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_ANI SB_UV_DNIS SB_UV_status SB_UV_fileLocation SB_UV_controller SB_UV_referenceID SB_UV_isNew SB_UV_subID SB_UV_dataItem SB_UV_whichRsrc SB_UV_returnVal SB_UV_returnStr SB_UV_hostName SB_UV_FILE1 SB_UV_OPERATION"/> <!-- Start vxml dialog -->
+		</transition>
 
         <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->
             <log>INFO: transition event [dialog.started] state [<value expr="II_SB_state"/>]</log>
