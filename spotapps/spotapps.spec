@@ -60,13 +60,13 @@ Requires: spotbuild-vip
     # Install vxml & ccxml scripts
     mkdir -p %{buildroot}/interact/apps/
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
-    rm -f ${buildroot}/interact/apps/spotbuild/SPOTbuild.ccxml
 
     # Install php scripts
     mkdir -p %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen
     cp %{STARTDIR}/scripts/*php %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen/
 
     rm -rf `find %{buildroot}/ -name ".svn" -type d`
+    rm -f %{buildroot}/interact/apps/spotbuild/SPOTbuild.ccxml
 
 #######################################################################
 # The files section lists all files included in the RPM
