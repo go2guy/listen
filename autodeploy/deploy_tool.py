@@ -96,11 +96,11 @@ def doPrep():
         print "Preparing for spotserver deployment"
     
     if hostname==controlserver:
-        print "Preparing for DB deployment"
+        print "Preparing for controller deployment"
         doAnyway("/etc/init.d/listen-controller stop")
     
     if hostname==webserver:
-        print "Preparing for WEB deployment"
+        print "Preparing for web deployment"
         # and this is hideous, but let's shut down some software
         doAnyway("/etc/init.d/listen-web stop")
     
