@@ -1,0 +1,17 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    background: #fff url('images/background-gradient.png') no-repeat top left;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #ccc;
+    padding: 2px 6px;
+}

@@ -4,8 +4,31 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>Listen</title>
+
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="./resources/reset-fonts-grids.css"> 
+    <link rel="stylesheet" type="text/css" href="./resources/jquery/css/excite-bike/jquery-ui-1.8rc3.custom.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/application.css">
+
+    <!-- scripts -->
+    <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
+    <script type="text/javascript" src="./resources/jquery/plugins/dataTables-1.6/media/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="./resources/app/application.js"></script>
   </head>
   <body>
-    <h1>Hello, world</h1>
+    <div id="myDialog" title="Current Callers">
+      <table id="callerTable">
+        <thead>
+          <tr>
+            <th>Caller</th>
+            <th>Admin?</th>
+            <th>Holding?</th>
+            <th>Muted?</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </body>
 </html>
