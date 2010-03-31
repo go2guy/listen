@@ -1,35 +1,28 @@
 package com.interact.listen;
 
+import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.MarshallerNotFoundException;
-import com.interact.listen.marshal.converter.ConversionException;
-import com.interact.listen.marshal.converter.Converter;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Resource;
-import com.interact.listen.resource.ResourceList;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
 import java.util.*;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.*;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.Session;
+import org.hibernate.StaleObjectStateException;
+import org.hibernate.Transaction;
 
 public class ApiServlet extends HttpServlet
 {
     public static final long serialVersionUID = 1L;
+    public static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
-    private static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     {
@@ -43,7 +36,8 @@ public class ApiServlet extends HttpServlet
             UriResourceAttributes attributes = getResourceAttributes(request);
             if(attributes.getName() == null)
             {
-                writeResponse(response, HttpServletResponse.SC_OK, "Welcome to the Listen Controller API", "text/plain");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, "Welcome to the Listen Controller API",
+                                          "text/plain");
                 return;
             }
 
@@ -56,43 +50,29 @@ public class ApiServlet extends HttpServlet
             {
                 // no id, request is for a list of resources
 
-                Map<String, String> query = getQueryParameters(request);
-                Criteria criteria = createCriteria(session, resourceClass, query);
+                Map<String, String> query = ServletUtil.getQueryParameters(request);
+
+                Builder builder = new ResourceListService.Builder(resourceClass, session, marshaller);
+                Map<String, String> searchProperties = getSearchProperties(query);
+                for(Map.Entry<String, String> entry : searchProperties.entrySet())
+                {
+                    builder.addSearchProperty(entry.getKey(), entry.getValue());
+                }
+                Set<String> returnFields = getFields(query);
+                for(String field : returnFields)
+                {
+                    builder.addReturnField(field);
+                }
+                builder.withFirst(getFirst(query));
+                builder.withMax(getMax(query));
+                ResourceListService listService = builder.build();
 
                 long s = time();
-                List<Resource> list = (List<Resource>)criteria.list();
+                String content = listService.list();
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
 
-                // reset criteria for counting
-                criteria.setFirstResult(0);
-                criteria.setProjection(Projections.rowCount());
-                Long total = (Long)criteria.list().get(0);
-
-                ResourceList resourceList = new ResourceList();
-                resourceList.setList(list);
-                resourceList.setMax(getMax(query));
-                resourceList.setFirst(getFirst(query));
-                resourceList.setSearchProperties(getSearchProperties(query));
-                resourceList.setFields(getFields(query));
-                resourceList.setTotal(total);
-
-                // criteria.setProjection(Projections.rowCount());
-                // Long total = (Long)criteria.list().get(0);
-                // resourceList.setTotal(total);
-
-                StringBuilder xml = new StringBuilder();
-                if(marshaller instanceof XmlMarshaller)
-                {
-                    xml.append(XML_TAG);
-                }
-
                 transaction.commit();
-
-                s = time();
-                xml.append(marshaller.marshal(resourceList, resourceClass));
-                System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
-
-                writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());
             }
             else
             {
@@ -120,7 +100,8 @@ public class ApiServlet extends HttpServlet
                 xml.append(marshaller.marshal(resource));
                 System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
 
-                writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, xml.toString(),
+                                          marshaller.getContentType());
             }
         }
         catch(ClassNotFoundException e)
@@ -134,14 +115,14 @@ public class ApiServlet extends HttpServlet
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
         }
         catch(Exception e)
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                          "RUH ROH! Please contact the System Administrator", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                      "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
         }
         finally
@@ -159,15 +140,16 @@ public class ApiServlet extends HttpServlet
 
         if(attributes.getName() == null || attributes.getName().trim().length() == 0)
         {
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to [" + attributes.getName() + "]",
-                          "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to [" +
+                                                                                    attributes.getName() + "]",
+                                      "text/plain");
             return;
         }
 
         if(attributes.getId() != null)
         {
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to specific resource [" +
-                                                                        request.getPathInfo() + "]", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "Cannot POST to specific resource [" + request.getPathInfo() + "]", "text/plain");
             return;
         }
 
@@ -191,8 +173,8 @@ public class ApiServlet extends HttpServlet
 
             if(!resource.validate())
             {
-                writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "The resource you sent was invalid",
-                              "text/plain");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                          "The resource you sent was invalid", "text/plain");
                 return;
             }
 
@@ -216,7 +198,8 @@ public class ApiServlet extends HttpServlet
             xml.append(marshaller.marshal(resource));
             System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
 
-            writeResponse(response, HttpServletResponse.SC_CREATED, xml.toString(), "application/xml");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_CREATED, xml.toString(),
+                                      marshaller.getContentType());
         }
         catch(ClassNotFoundException e)
         {
@@ -229,24 +212,25 @@ public class ApiServlet extends HttpServlet
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error reading request body",
-                          "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                      "Error reading request body", "text/plain");
             return;
         }
         catch(MalformedContentException e)
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                          "The content you provided was malformed, please fix it: " + e.getMessage(), "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "The content you provided was malformed, please fix it: " + e.getMessage(),
+                                      "text/plain");
             return;
         }
         catch(Exception e)
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                          "RUH ROH! Please contact the System Administrator", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                      "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
         }
         finally
@@ -264,9 +248,9 @@ public class ApiServlet extends HttpServlet
 
         if(attributes.getId() == null)
         {
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                          "PUT must be to a specific resource, not the list [" + request.getPathInfo() + "]",
-                          "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "PUT must be to a specific resource, not the list [" + request.getPathInfo() +
+                                          "]", "text/plain");
             return;
         }
 
@@ -319,13 +303,17 @@ public class ApiServlet extends HttpServlet
                 xml.append(marshaller.marshal(updatedResource));
                 System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
 
-                writeResponse(response, HttpServletResponse.SC_OK, xml.toString(), "application/xml");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, xml.toString(),
+                                          marshaller.getContentType());
             }
             else
             {
-                writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                              "Resource failed validation.  Re-query resource before modifying/sending again",
-                              "text/plain");
+                ServletUtil
+                           .writeResponse(
+                                          response,
+                                          HttpServletResponse.SC_BAD_REQUEST,
+                                          "Resource failed validation.  Re-query resource before modifying/sending again",
+                                          "text/plain");
             }
         }
         catch(ClassNotFoundException e)
@@ -339,30 +327,31 @@ public class ApiServlet extends HttpServlet
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error reading request body",
-                          "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                      "Error reading request body", "text/plain");
             return;
         }
         catch(StaleObjectStateException e)
         {
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_CONFLICT,
-                          "Data in the reqest was stale.  Re-query resource before sending again", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_CONFLICT,
+                                      "Data in the reqest was stale.  Re-query resource before sending again",
+                                      "text/plain");
         }
         catch(MalformedContentException e)
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                          "The content you provided was malformed, please fix it", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "The content you provided was malformed, please fix it", "text/plain");
             return;
         }
         catch(Exception e)
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                          "RUH ROH! Please contact the System Administrator", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                      "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
         }
         finally
@@ -380,16 +369,17 @@ public class ApiServlet extends HttpServlet
 
         if(attributes.getName() == null || attributes.getName().trim().length() == 0)
         {
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" + attributes.getName() + "]",
-                          "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" +
+                                                                                    attributes.getName() + "]",
+                                      "text/plain");
             return;
         }
 
         if(attributes.getId() == null)
         {
-            writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                          "DELETE must be on a specific resource, not the list [" + request.getPathInfo() + "]",
-                          "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "DELETE must be on a specific resource, not the list [" + request.getPathInfo() +
+                                          "]", "text/plain");
             return;
         }
 
@@ -430,8 +420,8 @@ public class ApiServlet extends HttpServlet
         {
             e.printStackTrace();
             transaction.rollback();
-            writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                          "RUH ROH! Please contact the System Administrator", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                      "RUH ROH! Please contact the System Administrator", "text/plain");
             return;
         }
         finally
@@ -514,25 +504,6 @@ public class ApiServlet extends HttpServlet
         return qualified;
     }
 
-    private void writeResponse(HttpServletResponse response, int statusCode, String content, String contentType)
-    {
-        response.setStatus(statusCode);
-        response.setContentType(contentType);
-        response.setContentLength(content.length());
-
-        try
-        {
-            PrintWriter writer = response.getWriter();
-            writer.print(content);
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setContentLength(0);
-        }
-    }
-
     /**
      * Retrieves a {@link Marshaller} for the request.
      * 
@@ -551,121 +522,6 @@ public class ApiServlet extends HttpServlet
             System.out.println("Unrecognized content-type provided, assuming XML");
             return new XmlMarshaller();
         }
-    }
-
-    private Map<String, String> getQueryParameters(HttpServletRequest request)
-    {
-        Map<String, String> map = new HashMap<String, String>();
-        String query = request.getQueryString();
-
-        if(query == null || query.trim().length() == 0)
-        {
-            return map;
-        }
-
-        String[] params = query.split("&", 0);
-        if(params.length == 0)
-        {
-            return map;
-        }
-
-        for(String param : params)
-        {
-            String[] pair = param.split("=", 0);
-            if(pair.length != 2)
-            {
-                System.out.println("Warning, pair [" + Arrays.toString(pair) + "] had a length of one, skipping");
-                continue;
-            }
-
-            try
-            {
-                String key = URLDecoder.decode(pair[0], "UTF-8");
-                String value = URLDecoder.decode(pair[1], "UTF-8");
-                map.put(key, value);
-            }
-            catch(UnsupportedEncodingException e)
-            {
-                throw new AssertionError(e);
-            }
-        }
-
-        return map;
-    }
-
-    /**
-     * Creates a {@link Criteria} from the provided query parameters.
-     * <p>
-     * Some query parameters are special and control the result list:
-     * <p>
-     * <ul>
-     * <li>"_first" - The index of the first result that should be retrieved</li>
-     * <li>"_max" - The maximum number of results</li>
-     * <li>"_fields" - Which fields to include in the embedded list elements</li>
-     * </ul>
-     * 
-     * @param session Hibernate session
-     * @param resourceClass class to create criteria for
-     * @param queryParameters query parameters from URL
-     * @return criteria that can be used to list results
-     */
-    private Criteria createCriteria(Session session, Class<? extends Resource> resourceClass,
-                                    Map<String, String> queryParameters) throws CriteriaCreationException
-    {
-        Criteria criteria = session.createCriteria(resourceClass);
-
-        int first = getFirst(queryParameters);
-        criteria.setFirstResult(first);
-
-        int max = getMax(queryParameters);
-        criteria.setMaxResults(max);
-
-        Map<String, String> searchProperties = getSearchProperties(queryParameters);
-        for(Map.Entry<String, String> entry : searchProperties.entrySet())
-        {
-            String key = entry.getKey();
-            String value = entry.getValue();
-
-            String getMethod = "get" + key.substring(0, 1).toUpperCase() + key.substring(1);
-            Method method = Marshaller.findMethod(getMethod, resourceClass);
-            if(method == null)
-            {
-                System.out.println("Resource [" + resourceClass + "] does not have getter for [" + key +
-                                   "], continuing");
-                continue;
-            }
-
-            try
-            {
-                if(Resource.class.isAssignableFrom(method.getReturnType()))
-                {
-                    Long id = Marshaller.getIdFromHref(value);
-                    criteria.createCriteria(key).add(Restrictions.idEq(id));
-                }
-                else
-                {
-                    Class<? extends Converter> converterClass = Marshaller.getConverterClass(method.getReturnType());
-                    Converter converter = converterClass.newInstance();
-                    Object convertedValue = converter.unmarshal(value);
-                    criteria.add(Restrictions.eq(key, convertedValue));
-                }
-            }
-            catch(IllegalAccessException e)
-            {
-                throw new AssertionError(e);
-            }
-            catch(java.lang.InstantiationException e)
-            {
-                throw new AssertionError(e);
-            }
-            catch(ConversionException e)
-            {
-                throw new CriteriaCreationException("Could not convert value [" + value + "] to type [" +
-                                                    method.getReturnType() + "] for finding by [" + key + "]");
-            }
-        }
-
-        return criteria;
     }
 
     private int getMax(Map<String, String> queryParameters)
@@ -733,22 +589,22 @@ public class ApiServlet extends HttpServlet
     {
         private String name;
         private String id;
-        
+
         public String getName()
         {
             return name;
         }
-        
+
         public String getId()
         {
             return id;
         }
-        
+
         public void setName(String name)
         {
             this.name = name;
         }
-        
+
         public void setId(String id)
         {
             this.id = id;

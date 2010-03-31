@@ -2,6 +2,8 @@ package com.interact.listen.resource;
 
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ResourceList
 {
     private List<Resource> list = new ArrayList<Resource>();
@@ -28,9 +30,7 @@ public class ResourceList
 
     public String getFieldsForQuery()
     {
-        String f = fields.toString();
-        f = f.substring(1, f.length() - 1);
-        return f;
+        return StringUtils.join(fields, ",");
     }
 
     public void setFields(Set<String> fields)

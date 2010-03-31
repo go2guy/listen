@@ -285,6 +285,12 @@ public class JsonMarshaller extends Marshaller
         }
     }
 
+    @Override
+    public String getContentType()
+    {
+        return "application/json";
+    }
+
     private boolean isStringType(Class<?> clazz)
     {
         if(Boolean.class.isAssignableFrom(clazz))

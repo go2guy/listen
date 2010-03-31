@@ -61,6 +61,12 @@ public abstract class Marshaller
         throws MalformedContentException;
 
     /**
+     * Returns the content type that is marshalled by this marshaller.
+     * @return content type
+     */
+    public abstract String getContentType();
+
+    /**
      * Factory method for retrieving the correct {@code Marshaller} implementation for a given content type.
      * 
      * @param contentType content type for which to create {@code Marshaller}

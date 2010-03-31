@@ -279,4 +279,10 @@ public class XmlMarshaller extends Marshaller
             throw new ListenRuntimeException(e);
         }
     }
+
+    @Override
+    public String getContentType()
+    {
+        return "application/xml";
+    }
 }

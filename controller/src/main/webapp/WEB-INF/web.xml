@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
+
+    <!-- servlet definitions -->
+
     <servlet>
         <servlet-name>ApiServlet</servlet-name>
         <servlet-class>com.interact.listen.ApiServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     
+    <servlet>
+        <servlet-name>GetConferenceParticipantsServlet</servlet-name>
+        <servlet-class>com.interact.listen.webui.GetConferenceParticipantsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+
+    <!-- mappings -->
+
+    <servlet-mapping>
+        <servlet-name>GetConferenceParticipantsServlet</servlet-name>
+        <url-pattern>/getConferenceParticipants</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>ApiServlet</servlet-name>
         <url-pattern>/*</url-pattern>
