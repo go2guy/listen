@@ -292,7 +292,7 @@ def doInstall():
         startlist.append("/etc/init.d/listen-controller start")
     
     if hostname==webserver:
-        doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm web")
+        doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm gui")
         # Installation successful. Start appropriate processes
         print "WEB Installation complete."
         # Add web processes to list to start
