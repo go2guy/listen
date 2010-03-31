@@ -1,4 +1,4 @@
-<project name="listen-controller" default="war">
+<project name="listen" default="war">
   <property name="src.dir"         value="${basedir}/src"/>
   <property name="build.dir"       value="${basedir}/build"/>
   <property name="lib.dir"         value="${basedir}/lib"/>
@@ -118,32 +118,56 @@
 
   <target name="war" depends="compile" description="--> Packages distributable war file">
     <mkdir dir="${target.dir}"/>
-    <war destfile="${target.dir}/listen-controller.war" webxml="${src.dir}/main/webapp/WEB-INF/web.xml">
-      <fileset dir="${src.dir}/main/webapp" includes="**/*"/>
+
+    <!-- controller war -->
+    <war destfile="${target.dir}/listen-controller.war" webxml="${src.dir}/main/webapp-controller/WEB-INF/web.xml">
+      <fileset dir="${src.dir}/main/webapp-controller" includes="**/*"/>
+      <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
+      <lib dir="${lib.dir}/runtime"/>
+    </war>
+
+    <!-- gui war -->
+    <war destfile="${target.dir}/listen-gui.war" webxml="${src.dir}/main/webapp-gui/WEB-INF/web.xml">
+      <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
       <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
       <lib dir="${lib.dir}/runtime"/>
     </war>
   </target>
 
   <target name="jar" depends="war" description="--> Creates an executable jar file with embedded winstone container">
+
+    <!-- controller jar -->
     <mkdir dir="${war.staging.dir}"/>
+
     <unwar src="${lib.dir}/build/${winstone.jar}" dest="${war.staging.dir}"/>
     <copy file="${target.dir}/listen-controller.war" tofile="${war.staging.dir}/embedded.war"/>
     <jar destfile="${target.dir}/listen-controller.jar" manifest="${war.staging.dir}/META-INF/MANIFEST.MF">
       <fileset dir="${war.staging.dir}" excludes="META-INF/**"/>
     </jar>
-    <!-- hack to get the artifact in place so that we can get the rpms building -->
-    <!-- TODO this will be replaced with the actual web jar once we have something to replace it with -->
-    <copy file="${target.dir}/listen-controller.jar" tofile="${target.dir}/listen-web.jar"/>
+
+    <!-- web jar -->
+    <delete dir="${war.staging.dir}"/>
+    <mkdir dir="${war.staging.dir}"/>
+
+    <unwar src="${lib.dir}/build/${winstone.jar}" dest="${war.staging.dir}"/>
+    <copy file="${target.dir}/listen-gui.war" tofile="${war.staging.dir}/embedded.war"/>
+    <jar destfile="${target.dir}/listen-gui.jar" manifest="${war.staging.dir}/META-INF/MANIFEST.MF">
+      <fileset dir="${war.staging.dir}" excludes="META-INF/**"/>
+    </jar>
   </target>
 
 
   <target name="deploy" depends="jar" description="--> Deploys the application">
     <mkdir dir="${deploy.dir}"/>
     <mkdir dir="${deploy.dir}/logs"/>
+
     <copy file="${target.dir}/listen-controller.war" todir="${deploy.dir}/lib" verbose="true"/>
     <copy file="${target.dir}/listen-controller.jar" todir="${deploy.dir}/lib" verbose="true"/>
     <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts/" verbose="true"/>
+
+    <copy file="${target.dir}/listen-gui.war" todir="${deploy.dir}/lib" verbose="true"/>
+    <copy file="${target.dir}/listen-gui.jar" todir="${deploy.dir}/lib" verbose="true"/>
+    <copy file="${basedir}/scripts/listen-gui" todir="${deploy.dir}/scripts/" verbose="true"/>
   </target>
 
 
@@ -153,6 +177,8 @@
 
 
   <target name="-rpmbuild" depends="deploy">
+
+    <!-- controller rpm -->
     <mkdir dir="${rpm.staging.dir}/BUILD"/>
 
     <exec executable="rpmbuild" failonerror="true">
@@ -164,8 +190,28 @@
 
     <copy todir="ii_artifacts" overwrite="true" flatten="true">
       <fileset dir="${rpm.staging.dir}" includes="**/*.rpm"/>
+    </copy>
+
+    <!-- gui rpm -->
+    <delete dir="${rpm.staging.dir}/BUILD/" includes="**/*"/>
+
+    <exec executable="rpmbuild" failonerror="true">
+      <env key="VERSION" value="1.0"/>
+      <env key="RELEASE" value="${deploy.release}"/>
+      <env key="TOPDIR" value="${rpm.staging.dir}"/>
+      <arg line="-bb --buildroot ${rpm.staging.dir}/BUILD ${basedir}/gui.spec"/>
+    </exec>
+
+    <copy todir="ii_artifacts" overwrite="true" flatten="true">
+      <fileset dir="${rpm.staging.dir}" includes="**/*.rpm"/>
+    </copy>
+
+    <!-- copy .uia artifacts -->
+    <copy todir="ii_artifacts" overwrite="true" flatten="true">
       <fileset dir="${basedir}" includes="*.uia"/>
     </copy>
+
+    <delete dir="${rpm.staging.dir}"/>
   </target>
 
 
@@ -175,6 +221,7 @@
       <param name="deploy.dir" value="${rpm.staging.dir}/BUILD/interact/listen"/>
     </antcall>
   </target>
+
 
   <target name="hudson" depends="test, hudson-plots, rpm" description="target for hudson"/>
 </project>
