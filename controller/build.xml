@@ -39,7 +39,7 @@
     <delete dir="${rpm.staging.dir}" failonerror="false"/>
     <delete dir="${war.staging.dir}" failonerror="false"/>
     <delete failonerror="false">
-      <fileset dir="ii_artifacts" includes="**/*"/>
+      <fileset dir="ii_artifacts" includes="**/*.rpm"/>
     </delete>
   </target>
 
@@ -204,11 +204,6 @@
 
     <copy todir="ii_artifacts" overwrite="true" flatten="true">
       <fileset dir="${rpm.staging.dir}" includes="**/*.rpm"/>
-    </copy>
-
-    <!-- copy .uia artifacts -->
-    <copy todir="ii_artifacts" overwrite="true" flatten="true">
-      <fileset dir="${basedir}" includes="*.uia"/>
     </copy>
 
     <delete dir="${rpm.staging.dir}"/>

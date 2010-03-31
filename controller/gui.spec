@@ -8,7 +8,7 @@
 %define _arch i686
 %endif
 
-Summary: Interact Listen GUI
+Summary: Interact Listen Gui
 Name: listen-gui
 Version: %(echo "${VERSION}")
 Release: %(echo "${RELEASE}")
@@ -22,6 +22,7 @@ BuildRequires: jdk >= 1.6.0_00
 
 %define __spec_install_post /usr/lib/rpm/brp-compress
 %define _topdir %(echo "${TOPDIR}")
+%define _unpackaged_files_terminate_build 0
 %(mkdir -p %{_topdir}/BUILD/)
 %(mkdir -p %{_topdir}/RPMS/%{_arch})
 %(mkdir -p %{_topdir}/SRPMS/)
@@ -60,7 +61,9 @@ BuildRequires: jdk >= 1.6.0_00
     %defattr(775, interact,operator)
 
     # Include everything in the /interact/listen directory
-    /interact/listen
+    %dir /interact/listen/logs
+    /interact/listen/lib/listen-gui.jar
+    /interact/listen/scripts/listen-gui
 
 
 #######################################################################
