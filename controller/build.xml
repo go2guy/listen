@@ -193,7 +193,6 @@
     </copy>
 
     <!-- gui rpm -->
-    <delete dir="${rpm.staging.dir}/BUILD/" includes="**/*"/>
 
     <exec executable="rpmbuild" failonerror="true">
       <env key="VERSION" value="1.0"/>
