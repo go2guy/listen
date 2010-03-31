@@ -15,11 +15,9 @@ echo "Master build populating BUILDDIR=$BUILDDIR"
 mkdir -p $BUILDDIR/interact/packages/conf
 
 # copy in the stuff.  to the place.  You know what I mean
-cp  ../web/ii_artifacts/*.rpm $BUILDDIR/interact/packages/
 cp  ../controller/ii_artifacts/*.rpm $BUILDDIR/interact/packages/
 cp  ../spotapps/ii_artifacts/*.rpm $BUILDDIR/interact/packages/
 
-cp  ../web/ii_artifacts/*.uia $BUILDDIR/interact/packages/conf/
 cp  ../controller/ii_artifacts/*.uia $BUILDDIR/interact/packages/conf/
 cp  ../spotapps/ii_artifacts/*.uia $BUILDDIR/interact/packages/conf/
 

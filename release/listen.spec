@@ -91,11 +91,6 @@ Requires: USE_IIUIA_TO_INSTALL
 #######################################################################
 %post
 
-rm -f /etc/init.d/listen
-ln -s $RPM_INSTALL_PREFIX0/listen/scripts/listenctl /etc/init.d/listen
-chkconfig --add listen
-chkconfig --level 345 listen on
-
 #######################################################################
 # The preun section lists actions to be performed before
 # un-installation
