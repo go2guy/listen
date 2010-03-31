@@ -1,4 +1,4 @@
-package com.interact.listen.webui;
+package com.interact.listen.gui;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

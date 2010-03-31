@@ -12,13 +12,13 @@
 
     <servlet>
         <servlet-name>IndexServlet</servlet-name>
-        <servlet-class>com.interact.listen.IndexServlet</servlet-class>
+        <servlet-class>com.interact.listen.gui.IndexServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>GetConferenceParticipantsServlet</servlet-name>
-        <servlet-class>com.interact.listen.webui.GetConferenceParticipantsServlet</servlet-class>
+        <servlet-class>com.interact.listen.gui.GetConferenceParticipantsServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 

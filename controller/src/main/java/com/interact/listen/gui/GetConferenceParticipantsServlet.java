@@ -1,4 +1,4 @@
-package com.interact.listen.webui;
+package com.interact.listen.gui;
 
 import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;

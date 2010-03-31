@@ -1,4 +1,4 @@
-package com.interact.listen.webui;
+package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
 
