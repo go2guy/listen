@@ -132,6 +132,9 @@
     <jar destfile="${target.dir}/listen-controller.jar" manifest="${war.staging.dir}/META-INF/MANIFEST.MF">
       <fileset dir="${war.staging.dir}" excludes="META-INF/**"/>
     </jar>
+    <!-- hack to get the artifact in place so that we can get the rpms building -->
+    <!-- TODO this will be replaced with the actual web jar once we have something to replace it with -->
+    <copy file="${target.dir}/listen-controller.jar" tofile="${target.dir}/listen-web.jar"/>
   </target>
 
 
