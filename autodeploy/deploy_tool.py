@@ -102,7 +102,7 @@ def doPrep():
     if hostname==webserver:
         print "Preparing for web deployment"
         # and this is hideous, but let's shut down some software
-        doAnyway("/etc/init.d/listen-web stop")
+        doAnyway("/etc/init.d/listen-gui stop")
     
     # setup hosts file
     try:
@@ -296,7 +296,7 @@ def doInstall():
         # Installation successful. Start appropriate processes
         print "WEB Installation complete."
         # Add web processes to list to start
-        startlist.append("/etc/init.d/listen-web start")
+        startlist.append("/etc/init.d/listen-gui start")
     
     # flush duplicates from startlist
     d = {}
