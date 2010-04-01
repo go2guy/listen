@@ -84,6 +84,11 @@ public class Subscriber implements Resource
         {
             return false;
         }
+        
+        if(voicemailGreetingLocation == null)
+        {
+            return false;
+        }
 
         return true;
     }
