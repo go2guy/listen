@@ -31,6 +31,17 @@ public class GetConferenceParticipantsServletTest
     }
 
     @Test
+    public void test_doGet_withNoSessionUser_returnsUnauthorized() throws IOException, ServletException
+    {
+        request.setMethod("GET");
+        servlet.service(request, response);
+        
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+        assertEquals("Unauthorized", response.getContentAsString());
+    }
+    
+    /*
+    @Test
     public void test_doGet_withNonexistentConference_returnsEmptyResultAnd200Response() throws IOException, ServletException
     {
         final Long id = System.currentTimeMillis();
@@ -44,4 +55,5 @@ public class GetConferenceParticipantsServletTest
         assertEquals(expectedBody, response.getContentAsString());
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
+    */
 }
