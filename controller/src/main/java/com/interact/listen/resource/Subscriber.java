@@ -17,6 +17,7 @@ public class Subscriber implements Resource
     @Version
     private Integer version = Integer.valueOf(0);
 
+    @Column(unique = true)
     private String number;
 
     @CollectionOfElements
