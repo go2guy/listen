@@ -3,12 +3,15 @@ package com.interact.listen.gui;
 import static org.junit.Assert.assertEquals;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.User;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,21 +42,24 @@ public class GetConferenceParticipantsServletTest
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         assertEquals("Unauthorized", response.getContentAsString());
     }
-    
-    /*
+
     @Test
-    public void test_doGet_withNonexistentConference_returnsEmptyResultAnd200Response() throws IOException, ServletException
+    public void test_doGet_withNonexistentConference_returns500() throws IOException, ServletException
     {
         final Long id = System.currentTimeMillis();
 
+        Subscriber subscriber = new Subscriber();
+        subscriber.setNumber(String.valueOf(id));
+        User user = new User();
+        user.setSubscriber(subscriber);
+
+        HttpSession session = request.getSession();
+        session.setAttribute("user", user);
+
         request.setMethod("GET");
-        request.setParameter("conference", String.valueOf(id));
         servlet.service(request, response);
 
-        final String expectedBody = "{\"href\":\"/participants?_first=0&_max=100&_fields=isHolding,isAdmin,number,isMuted&conference=/conferences/" + id + "\",\"count\":0,\"total\":0,\"results\":[]}";
-
-        assertEquals(expectedBody, response.getContentAsString());
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        assertEquals("Conference not found", response.getContentAsString());
     }
-    */
 }
