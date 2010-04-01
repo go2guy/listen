@@ -3,7 +3,7 @@ package com.interact.listen.resource;
 import javax.persistence.*;
 
 @Entity
-public class User extends Resource
+public class User implements Resource
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
