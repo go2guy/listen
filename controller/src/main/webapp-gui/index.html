@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="./resources/reset-fonts-grids.css"> 
     <link rel="stylesheet" type="text/css" href="./resources/jquery/css/excite-bike/jquery-ui-1.8rc3.custom.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/application.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/common.css">
 
     <!-- scripts -->
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
@@ -17,7 +18,9 @@
     <script type="text/javascript" src="./resources/app/application.js"></script>
   </head>
   <body>
-    <div id="myDialog" title="Current Callers">
+    <input type="button" name="logout" id="logout" value="Logout"/>
+  
+    <div id="conferenceCallerDialog" title="Current Callers">
       <table id="callerTable">
         <thead>
           <tr>
@@ -29,6 +32,26 @@
         </thead>
         <tbody></tbody>
       </table>
+    </div>
+
+    <div id="loginDialog" title="Login">
+      <form id="loginForm" name="loginForm" method="POST" action="/login">
+        <fieldset>
+          <legend>Login</legend>
+
+          <label for="username">Username
+            <input type="text" id="username" name="username" size="15" maxlength="50"/>
+          </label>
+
+          <label for="password">Password
+            <input type="password" id="password" name="password" size="15" maxlength="50"/>
+          </label>
+        </fieldset>
+
+        <fieldset class="buttons">
+          <input type="submit" id="login" name="login" value="Login"/>
+        </fieldset>
+      </form>
     </div>
   </body>
 </html>
