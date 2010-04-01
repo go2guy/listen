@@ -348,6 +348,15 @@ public class ApiServlet extends HttpServlet
                                       "Data in the reqest was stale.  Re-query resource before sending again",
                                       "text/plain");
         }
+        catch(ConstraintViolationException e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "The content you provided causes a constraint violation, please fix it: " + e.getMessage(),
+                                      "text/plain");
+            return;
+        }
         catch(MalformedContentException e)
         {
             e.printStackTrace();
