@@ -48,7 +48,7 @@ public class UserTest
         user = getPopulatedUser();
         user.validate();
         
-        assertFalse(user.hasErrors());
+        assertTrue(user.validate());
     }
     
     @Test
@@ -58,7 +58,7 @@ public class UserTest
         user.setSubscriber(null);
         user.validate();
         
-        assertTrue(user.hasErrors());
+        assertFalse(user.validate());
     }
     
     @Test
@@ -68,7 +68,7 @@ public class UserTest
         user.setUsername(null);
         user.validate();
         
-        assertTrue(user.hasErrors());
+        assertFalse(user.validate());
     }
     
     @Test
@@ -78,7 +78,7 @@ public class UserTest
         user.setPassword(null);
         user.validate();
         
-        assertTrue(user.hasErrors());
+        assertFalse(user.validate());
     }
     
     private User getPopulatedUser()
