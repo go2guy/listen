@@ -88,6 +88,14 @@ public class ParticipantTest
         participant.setIsMuted(null);
         assertFalse(participant.validate());
     }
+    
+    @Test
+    public void test_validate_nullIsAdminMuted_returnsFalse()
+    {
+        participant = getPopulatedParticipant();
+        participant.setIsAdminMuted(null);
+        assertFalse(participant.validate());
+    }
 
     @Test
     public void test_validate_nullNumber_returnsFalse()
@@ -153,6 +161,7 @@ public class ParticipantTest
         p.setIsAdmin(Boolean.TRUE);
         p.setIsHolding(Boolean.TRUE);
         p.setIsMuted(Boolean.TRUE);
+        p.setIsAdminMuted(Boolean.FALSE);
         p.setNumber(String.valueOf(System.currentTimeMillis()));
         p.setSessionID(String.valueOf(System.currentTimeMillis()));
         p.setVersion(1);

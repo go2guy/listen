@@ -65,6 +65,22 @@ public class SubscriberTest
         subscriber.setNumber(null);
         assertFalse(subscriber.validate());
     }
+    
+    @Test
+    public void test_validate_blankVoicemailGreetingLocation_returnsTrue()
+    {
+        subscriber = getPopulatedSubscriber();
+        subscriber.setVoicemailGreetingLocation("");
+        assertTrue(subscriber.validate());
+    }
+    
+    @Test
+    public void test_validate_nullVoicemailGreetingLocation_returnsFalse()
+    {
+        subscriber = getPopulatedSubscriber();
+        subscriber.setVoicemailGreetingLocation(null);
+        assertFalse(subscriber.validate());
+    }
 
     @Test
     public void test_validate_blankNumber_returnsFalse()
@@ -88,6 +104,7 @@ public class SubscriberTest
         s.setId(System.currentTimeMillis());
         s.setVersion(1);
         s.setNumber(String.valueOf(System.currentTimeMillis()));
+        s.setVoicemailGreetingLocation("foo/bar/baz/biz");
         return s;
     }
 }

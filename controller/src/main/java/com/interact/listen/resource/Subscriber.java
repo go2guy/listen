@@ -17,8 +17,11 @@ public class Subscriber implements Resource
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(unique = true)
+    @Column(unique=true, nullable=false)
     private String number;
+    
+    @Column(nullable=false)
+    private String voicemailGreetingLocation;
 
     @CollectionOfElements
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
@@ -52,6 +55,16 @@ public class Subscriber implements Resource
     public void setVersion(Integer version)
     {
         this.version = version;
+    }
+    
+    public String getVoicemailGreetingLocation()
+    {
+        return voicemailGreetingLocation;
+    }
+
+    public void setVoicemailGreetingLocation(String location)
+    {
+        this.voicemailGreetingLocation = location;
     }
 
     public List<Voicemail> getVoicemails()

@@ -20,6 +20,7 @@ public class Participant implements Resource
     private Boolean isAdmin;
     private Boolean isHolding;
     private Boolean isMuted;
+    private Boolean isAdminMuted;
     private String audioResource;
     private String sessionID;
 
@@ -71,6 +72,16 @@ public class Participant implements Resource
     public void setIsMuted(Boolean muted)
     {
         this.isMuted = muted;
+    }
+    
+    public Boolean getIsAdminMuted()
+    {
+        return isAdminMuted;
+    }
+
+    public void setIsAdminMuted(Boolean adminMuted)
+    {
+        this.isAdminMuted = adminMuted;
     }
 
     public String getNumber()
@@ -137,6 +148,11 @@ public class Participant implements Resource
         }
 
         if(isMuted == null)
+        {
+            return false;
+        }
+        
+        if(isAdminMuted == null)
         {
             return false;
         }

@@ -195,6 +195,7 @@ public class ApiServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailGreetingLocation("foo/bar/baz/biz");
 
         StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -223,6 +224,7 @@ public class ApiServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailGreetingLocation("foo/bar/baz/biz");
 
         StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
