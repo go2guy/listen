@@ -72,21 +72,21 @@ public class User extends Resource
     }
     
     @Override
-    public void validate()
+    public boolean validate()
     {
         if(subscriber == null)
         {
-            addToErrors("Subscriber cannot be null");
+            return false;
         }
         
         if(username == null)
         {
-            addToErrors("Username cannot be null");
+            return false;
         }
         
         if(password == null)
         {
-            addToErrors("Password cannot be null");
+            return false;
         }
     }
 }
