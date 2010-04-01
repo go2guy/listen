@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.Transaction;
 
 public class ApiServlet extends HttpServlet
@@ -222,6 +223,15 @@ public class ApiServlet extends HttpServlet
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                                       "The content you provided was malformed, please fix it: " + e.getMessage(),
+                                      "text/plain");
+            return;
+        }
+        catch(ConstraintViolationException e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "The content you provided causes a constraint violation, please fix it: " + e.getMessage(),
                                       "text/plain");
             return;
         }
