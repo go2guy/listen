@@ -17,10 +17,10 @@ public class Subscriber implements Resource
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(unique=true, nullable=false)
+    @Column(unique = true, nullable = false)
     private String number;
     
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String voicemailGreetingLocation;
 
     @CollectionOfElements

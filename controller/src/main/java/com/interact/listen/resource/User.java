@@ -15,10 +15,10 @@ public class User implements Resource
     @OneToOne
     private Subscriber subscriber;
     
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String username;
     
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String password;
     
     public Long getId()
