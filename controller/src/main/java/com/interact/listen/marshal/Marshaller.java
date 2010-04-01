@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -219,6 +220,18 @@ public abstract class Marshaller
         try
         {
             return URLEncoder.encode(toEncode, "UTF-8");
+        }
+        catch(UnsupportedEncodingException e)
+        {
+            throw new AssertionError(e);
+        }
+    }
+
+    public static final String decodeUrl(String toDecode)
+    {
+        try
+        {
+            return URLDecoder.decode(toDecode, "UTF-8");
         }
         catch(UnsupportedEncodingException e)
         {

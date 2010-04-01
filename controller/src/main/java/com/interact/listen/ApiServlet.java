@@ -577,7 +577,7 @@ public class ApiServlet extends HttpServlet
                 continue;
             }
 
-            searchProperties.put(entry.getKey(), entry.getValue());
+            searchProperties.put(Marshaller.decodeUrl(entry.getKey()), Marshaller.decodeUrl(entry.getValue()));
         }
         return searchProperties;
     }
@@ -592,7 +592,7 @@ public class ApiServlet extends HttpServlet
             {
                 if(!field.trim().equals(""))
                 {
-                    fields.add(field);
+                    fields.add(Marshaller.decodeUrl(field));
                 }
             }
         }
