@@ -38,6 +38,7 @@ public final class HibernateUtil
             config.addAnnotatedClass(Voicemail.class);
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(Participant.class);
+            config.addAnnotatedClass(User.class);
 
             SESSION_FACTORY = config.buildSessionFactory();
         }
