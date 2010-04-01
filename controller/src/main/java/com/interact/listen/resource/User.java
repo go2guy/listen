@@ -88,5 +88,7 @@ public class User implements Resource
         {
             return false;
         }
+        
+        return true;
     }
 }
