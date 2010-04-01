@@ -20,7 +20,6 @@ public class Subscriber implements Resource
     @Column(unique = true, nullable = false)
     private String number;
     
-    @Column(nullable = false)
     private String voicemailGreetingLocation;
 
     @CollectionOfElements
@@ -81,11 +80,6 @@ public class Subscriber implements Resource
     public boolean validate()
     {
         if(number == null || number.trim().equals(""))
-        {
-            return false;
-        }
-        
-        if(voicemailGreetingLocation == null)
         {
             return false;
         }

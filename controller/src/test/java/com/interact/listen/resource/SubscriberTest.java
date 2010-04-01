@@ -75,11 +75,11 @@ public class SubscriberTest
     }
     
     @Test
-    public void test_validate_nullVoicemailGreetingLocation_returnsFalse()
+    public void test_validate_nullVoicemailGreetingLocation_returnsTrue()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setVoicemailGreetingLocation(null);
-        assertFalse(subscriber.validate());
+        assertTrue(subscriber.validate());
     }
 
     @Test
