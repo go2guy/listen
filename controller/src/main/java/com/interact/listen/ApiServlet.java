@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException
 
 public class ApiServlet extends HttpServlet
 {
