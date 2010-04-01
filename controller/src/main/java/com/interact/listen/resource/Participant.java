@@ -1,9 +1,11 @@
 package com.interact.listen.resource;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
 @Entity
-public class Participant implements Resource
+public class Participant implements Resource, Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

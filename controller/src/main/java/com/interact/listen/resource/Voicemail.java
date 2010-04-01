@@ -1,11 +1,12 @@
 package com.interact.listen.resource;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.*;
 
 @Entity
-public class Voicemail implements Resource
+public class Voicemail implements Resource, Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

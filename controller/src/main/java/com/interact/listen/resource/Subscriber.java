@@ -1,5 +1,6 @@
 package com.interact.listen.resource;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.CollectionOfElements;
 
 @Entity
-public class Subscriber implements Resource
+public class Subscriber implements Resource, Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
