@@ -11,6 +11,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>DropParticipantServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.DropParticipantServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetConferenceParticipantsServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceParticipantsServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -34,6 +40,11 @@
         <servlet-name>ApiServlet</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>DropParticipantServlet</servlet-name>
+        <url-pattern>/dropParticipant</url-pattern>    
+    </servlet-mapping>0
 
     <servlet-mapping>
         <servlet-name>GetConferenceParticipantsServlet</servlet-name>

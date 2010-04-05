@@ -57,6 +57,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
 
             Builder builder = new ResourceListService.Builder(Participant.class, session, marshaller)
                                   .addSearchProperty("conference", "/conferences/" + conference.getId())
+                                  .addReturnField("id")
                                   .addReturnField("number")
                                   .addReturnField("isAdmin")
                                   .addReturnField("isMuted")

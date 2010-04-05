@@ -75,7 +75,7 @@ function getConferenceParticipants() {
             callerTable.fnAddData([(result.isAdmin ? '<b>' : '') + result.number + (result.isAdmin ? '</b>' : ''),
                                    (result.isHolding ? 'Holding' : ''),
                                    getMuteButtonHtml(result.isMuted),
-                                   '<a href="#" onclick="return false;" alt="Kick" title="Kick"><img src="resources/app/images/user-denied.png"/></a>'])
+                                   '<a href="#" onclick="dropParticipant(' + result.id + ');return false;" alt="Drop" title="Drop"><img src="resources/app/images/user-denied.png"/></a>'])
         }
     })
 }
@@ -130,4 +130,19 @@ function getMuteButtonHtml(isMuted) {
     html += '<img src="resources/app/images/' + (isMuted ? 'speaker-muted.png' : 'speaker.png') + '"/>';
     html += '</a>';
     return html;
+}
+
+function dropParticipant(id) {
+    $.ajax({
+        type: 'POST',
+        url: '/dropParticipant',
+        data: { id: id },
+        success: function(data) {
+            // TODO feedback that the drop was successful
+        },
+        error: function(req) {
+            // TODO error somewhere on the screen
+            alert('ERROR dropping participant: ' + req.status);
+        }
+    });
 }

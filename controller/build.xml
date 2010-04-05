@@ -137,13 +137,13 @@
     <copy todir="${war.staging.dir}">
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
     </copy>
-    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true">
+    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
       <arg line="${war.staging.dir}/resources/app/application.js -o ${war.staging.dir}/resources/app/application-min.js"/>
     </java>
-    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true">
+    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
       <arg line="${war.staging.dir}/resources/app/application.css -o ${war.staging.dir}/resources/app/application-min.css"/>
     </java>
-    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true">
+    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
       <arg line="${war.staging.dir}/resources/app/common.css -o ${war.staging.dir}/resources/app/common-min.css"/>
     </java>
     <war destfile="${target.dir}/listen-gui.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
