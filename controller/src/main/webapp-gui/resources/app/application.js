@@ -2,6 +2,15 @@ var callerTable, conferencePoller;
 
 $(document).ready(function() {
 
+    $.ajaxSetup({
+        error: function(req, s, e) {
+            if(req.status == 401) { // unauthorized
+                showLogin(); 
+            }
+            // TODO put a message at the bottom of the screen in a semi-opaque red box
+        }
+    });
+
     $('#conferenceCallerDialog').dialog({
         autoOpen: false,
         dialogClass: 'no-close',
@@ -11,7 +20,11 @@ $(document).ready(function() {
         height: 300,
         width: 400,
         position: [50, 50]
-    });
+    })/*
+    .parents('.ui-dialog').draggable({
+        handle: '.ui-dialog-titlebar',
+        containment: [0, 31, $(document).width(), $(document).height()]
+    })*/;
 
     callerTable = $('#callerTable').dataTable({
         bPaginate: false,
@@ -36,7 +49,7 @@ $(document).ready(function() {
         return false;
     });
 
-    $('#logout').click(function(event) {
+    $('#logoutButton').click(function(event) {
         logout();
     });
 
@@ -61,7 +74,8 @@ function getConferenceParticipants() {
             var result = data.results[i];
             callerTable.fnAddData([(result.isAdmin ? '<b>' : '') + result.number + (result.isAdmin ? '</b>' : ''),
                                    (result.isHolding ? 'Holding' : ''),
-                                   '<input type="button" value="' + (result.isMuted ? "Unmute" : "Mute") + '"/>'])
+                                   getMuteButtonHtml(result.isMuted),
+                                   '<a href="#" onclick="return false;" alt="Kick" title="Kick"><img src="resources/app/images/user-denied.png"/></a>'])
         }
     })
 }
@@ -81,7 +95,7 @@ function login(event) {
             $('#loginDialog').dialog('close');
             usernameField.val('');
             passwordField.val('');
-            $('#logout').show();
+            $('#logoutButton').show();
             $('#conferenceCallerDialog').dialog('open');
             startPollingParticipants();
         },
@@ -97,14 +111,23 @@ function logout() {
     $.ajax({
         type: 'POST',
         url: '/logout',
-        success: function(data) {
-            stopPollingParticipants();
-            $('#conferenceCallerDialog').dialog('close');
-            $('#logout').hide();
-            $('#loginDialog').dialog('open');
-        },
+        success: showLogin,
         error: function(data, status) {
             alert('ERROR: ' + status);
         }
     });
+}
+
+function showLogin() {
+    stopPollingParticipants();
+    $('#conferenceCallerDialog').dialog('close');
+    $('#logoutButton').hide();
+    $('#loginDialog').dialog('open');
+}
+
+function getMuteButtonHtml(isMuted) {
+    var html = '<a href="#" onclick="return false;">';
+    html += '<img src="resources/app/images/' + (isMuted ? 'speaker-muted.png' : 'speaker.png') + '"/>';
+    html += '</a>';
+    return html;
 }

@@ -18,13 +18,17 @@
     <script type="text/javascript" src="./resources/app/application-min.js"></script>
   </head>
   <body>
-    <input type="button" name="logout" id="logout" value="Logout"/>
-  
+    <div id="header">
+      <div id="logo"><img src="resources/app/images/listen-logo.png"/></div>
+      <div id="logout"><input type="button" name="logoutButton" id="logoutButton" value="Logout"/></div>
+    </div>
+
     <div id="conferenceCallerDialog" title="Conference">
       <table id="callerTable">
         <thead>
           <tr>
             <th>Caller</th>
+            <th></th>
             <th></th>
             <th></th>
           </tr>

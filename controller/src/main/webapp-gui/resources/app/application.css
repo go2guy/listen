@@ -16,6 +16,25 @@ td, th {
     padding: 2px 6px;
 }
 
+#header {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 30px;
+    width: 100%;
+    background-color: #fff;
+    border-bottom: 2px solid #1162ae;
+}
+
+#header #logo {
+    text-align: left;
+    float: left;
+}
+
+#header #logout {
+    float: right;
+}
+
 .no-title .ui-dialog-titlebar {
     display: none;
 }
@@ -26,12 +45,18 @@ td, th {
 
 .ui-widget-overlay {
     background: #1162ae;
+    opacity: .6;
 }
 
 .ui-dialog-titlebar {
     color: #1162ae;
 }
 
-#logout {
+#logoutButton {
     display: none;
+}
+
+a.button {
+    display: block;
+    cursor: pointer;
 }
