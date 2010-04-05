@@ -26,7 +26,7 @@ $(document).ready(function() {
         draggable: false,
         resizable: false,
         bigframe: true,
-        height: 275,
+        height: 250,
         width: 400,
         position: 'center'
     });
