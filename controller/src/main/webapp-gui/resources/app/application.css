@@ -20,6 +20,18 @@ td, th {
     display: none;
 }
 
+.no-close .ui-dialog-titlebar-close {
+    display: none;
+}
+
 .ui-widget-overlay {
     background: #1162ae;
+}
+
+.ui-dialog-titlebar {
+    color: #1162ae;
+}
+
+#logout {
+    display: none;
 }

@@ -4,6 +4,8 @@ $(document).ready(function() {
 
     $('#conferenceCallerDialog').dialog({
         autoOpen: false,
+        dialogClass: 'no-close',
+        closeOnEscape: false,
         draggable: true,
         resizable: true,
         height: 300,
@@ -24,27 +26,13 @@ $(document).ready(function() {
         draggable: false,
         resizable: false,
         bigframe: true,
-        height: 250,
+        height: 275,
         width: 400,
         position: 'center'
     });
 
     $('#loginForm').submit(function(event) {
-        $.ajax({
-            type: 'POST',
-            url: event.target.action,
-            data: { username: $('#username').val(),
-                    password: $('#password').val() },
-            success: function(data) {
-                $('#loginDialog').dialog('close');
-                $('#conferenceCallerDialog').dialog('open');
-                startPollingParticipants();
-            },
-            error: function(data, status) {
-                alert('ERROR: ' + status);
-            }
-        });
-
+        login(event);
         return false;
     });
 
@@ -70,9 +58,37 @@ function getConferenceParticipants() {
     $.getJSON('/getConferenceParticipants', function(data) {
         callerTable.fnClearTable();
         for(var i = 0; i < data.count; i++) {
-            callerTable.fnAddData([data.results[i].number, data.results[i].isAdmin, data.results[i].isHolding, data.results[i].isMuted])
+            var result = data.results[i];
+            callerTable.fnAddData([result.number, result.isAdmin, result.isHolding, result.isMuted])
         }
     })
+}
+
+function login(event) {
+    var usernameField = $('#username');
+    var passwordField = $('#password');
+    var errorDiv = $('#loginForm .errors');
+    errorDiv.hide();
+
+    $.ajax({
+        type: 'POST',
+        url: event.target.action,
+        data: { username: usernameField.val(),
+                password: passwordField.val() },
+        success: function(data) {
+            $('#loginDialog').dialog('close');
+            usernameField.val('');
+            passwordField.val('');
+            $('#logout').show();
+            $('#conferenceCallerDialog').dialog('open');
+            startPollingParticipants();
+        },
+        error: function(data, status) {
+            passwordField.val('');
+            errorDiv.html(data.responseText);
+            errorDiv.slideDown(200);
+        }
+    });
 }
 
 function logout() {
@@ -82,6 +98,7 @@ function logout() {
         success: function(data) {
             stopPollingParticipants();
             $('#conferenceCallerDialog').dialog('close');
+            $('#logout').hide();
             $('#loginDialog').dialog('open');
         },
         error: function(data, status) {

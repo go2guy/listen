@@ -182,6 +182,13 @@ fieldset div {
   margin: 1em 2em;
 }
 
+fieldset div.errors {
+  margin-top: 0;
+  color: #c00;
+  font-style: italic;
+  font-size: 85%;
+}
+
 label {
   clear: both;
   float: left;
@@ -220,7 +227,8 @@ td, th {
 th {
   text-align: left;
   font-weight: bold;
-  background-color: #3de184;
+  background-color: #1162ae;
+  color: #fff;
   white-space: nowrap;
   padding: .2em .4em;
 }

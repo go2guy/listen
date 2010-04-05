@@ -34,7 +34,7 @@ public class LoginServlet extends HttpServlet
 
             if(username == null || username.trim().equals(""))
             {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing username",
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a username",
                                           "text/plain");
                 transaction.commit();
                 return;
@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet
 
             if(password == null)
             {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing password",
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a password",
                                           "text/plain");
                 transaction.commit();
                 return;
@@ -52,15 +52,16 @@ public class LoginServlet extends HttpServlet
 
             if(user == null)
             {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Credential mismatch",
-                                          "text/plain");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                          "Sorry, that's not a valid username/password", "text/plain");
                 transaction.commit();
                 return;
             }
 
             if(!isValidPassword(user, password))
             {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                          "Sorry, that's not a valid username/password", "text/plain");
                 transaction.commit();
                 return;
             }
