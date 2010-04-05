@@ -7,7 +7,7 @@ use constant TRUE => 1;
 use constant FALSE => 0;
 
 our @ISA = qw (Exporter);
-our @EXPORT = qw(Backup);
+our @EXPORT = qw(Backup BackupSubscriber);
 
 use REST::Client;
 use XML::Simple qw(:strict);
@@ -35,6 +35,37 @@ sub setListenClient {
                  host => $sendto,
                  timeout => $timeout,
                  });
+}
+
+sub BackupSubscriber {
+
+   my ($host, $port, $timeout, $debug, $number) = @_;
+
+   setListenClient($host, $port, $timeout, $debug);
+
+   my $reqlist = $ListenClient->GET("/subscribers?number=$number&_uniqueResult=true")->responseContent();
+
+   if ($ListenClient->responseCode() != 200) {
+      print STDOUT "Subscriber number [$number] was not found.\n";
+      return 0;
+   }
+
+   print "RESULT = $reqlist CODE = ". $ListenClient->responseCode() . "\n";
+
+   open(OUTFILE, ">$number.xml") || die "Can't open [$number.xml] $!\n";
+
+   print OUTFILE "$reqlist\n";
+
+   my $subxs = XML::Simple->new(KeyAttr=>"subscriber", ForceArray=>1,KeepRoot=>1);
+   my $subref = $subxs->XMLin($reqlist);
+
+   if ($DEBUG) {
+      print Dumper($subref);
+   }
+
+   backupDependencies($subref->{subscriber}[0]->{voicemails}[0]->{href}, "voicemail");
+
+   close OUTFILE;
 }
 
 sub Backup {
