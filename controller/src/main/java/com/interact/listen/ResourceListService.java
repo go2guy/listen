@@ -83,9 +83,9 @@ public final class ResourceListService
             return this;
         }
 
-        public Builder uniqueResult(boolean uniqueResult)
+        public Builder uniqueResult(boolean unique)
         {
-            this.uniqueResult = uniqueResult;
+            this.uniqueResult = unique;
             return this;
         }
 
@@ -95,7 +95,7 @@ public final class ResourceListService
         }
     }
 
-    public String list() throws CriteriaCreationException, UniqueResultNotFoundException
+    public String list() throws CriteriaCreationException
     {
         StringBuilder content = new StringBuilder();
         if(marshaller instanceof XmlMarshaller)
