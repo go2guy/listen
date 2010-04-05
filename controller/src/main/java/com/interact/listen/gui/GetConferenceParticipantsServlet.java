@@ -8,8 +8,6 @@ import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
 
-import java.io.PrintWriter;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
