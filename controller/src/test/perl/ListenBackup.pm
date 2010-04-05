@@ -50,7 +50,7 @@ sub BackupSubscriber {
       return 0;
    }
 
-   print "RESULT = $reqlist CODE = ". $ListenClient->responseCode() . "\n";
+   if ($DEBUG) { print "RESULT = $reqlist CODE = ". $ListenClient->responseCode() . "\n"; }
 
    open(OUTFILE, ">$number.xml") || die "Can't open [$number.xml] $!\n";
 
