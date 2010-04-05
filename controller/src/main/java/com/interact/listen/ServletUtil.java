@@ -24,6 +24,9 @@ public final class ServletUtil
         response.setContentType(contentType);
         response.setContentLength(content.length());
 
+        System.out.println("Writing response content [ " + content + " ], type = [" + contentType + "], length = [" +
+                           content.length() + "]");
+
         try
         {
             PrintWriter writer = response.getWriter();

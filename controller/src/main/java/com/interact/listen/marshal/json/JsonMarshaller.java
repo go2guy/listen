@@ -70,17 +70,7 @@ public class JsonMarshaller extends Marshaller
             else
             {
                 String resultString = Marshaller.convert(returnType, result);
-                boolean useQuotes = resultString != null && isStringType(returnType);
-
-                if(useQuotes)
-                {
-                    json.append("\"");
-                }
-                json.append(resultString);
-                if(useQuotes)
-                {
-                    json.append("\"");
-                }
+                json.append(conditionallyQuote(resultString, returnType));
             }
 
             json.append(",");
@@ -174,7 +164,7 @@ public class JsonMarshaller extends Marshaller
                 else
                 {
                     String resultString = Marshaller.convert(returnType, result);
-                    json.append("\"").append(resultString).append("\"");
+                    json.append(conditionallyQuote(resultString, returnType));
                 }
             }
 
@@ -291,6 +281,16 @@ public class JsonMarshaller extends Marshaller
         return "application/json";
     }
 
+    private String conditionallyQuote(String value, Class<?> clazz)
+    {
+        boolean useQuotes = value != null && isStringType(clazz);
+        if(useQuotes)
+        {
+            return "\"" + value + "\"";
+        }
+        return value;
+    }
+    
     private boolean isStringType(Class<?> clazz)
     {
         if(Boolean.class.isAssignableFrom(clazz))

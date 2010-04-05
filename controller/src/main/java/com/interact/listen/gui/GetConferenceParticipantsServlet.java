@@ -68,12 +68,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
 
             transaction.commit();
 
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType(marshaller.getContentType());
-            response.setContentLength(content.length());
-
-            PrintWriter writer = response.getWriter();
-            writer.print(content);
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());
         }
         catch(CriteriaCreationException e)
         {

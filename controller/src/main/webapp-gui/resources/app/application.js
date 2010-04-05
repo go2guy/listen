@@ -59,7 +59,9 @@ function getConferenceParticipants() {
         callerTable.fnClearTable();
         for(var i = 0; i < data.count; i++) {
             var result = data.results[i];
-            callerTable.fnAddData([result.number, result.isAdmin, result.isHolding, result.isMuted])
+            callerTable.fnAddData([(result.isAdmin ? '<b>' : '') + result.number + (result.isAdmin ? '</b>' : ''),
+                                   (result.isHolding ? 'Holding' : ''),
+                                   '<input type="button" value="' + (result.isMuted ? "Unmute" : "Mute") + '"/>'])
         }
     })
 }
