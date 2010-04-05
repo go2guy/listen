@@ -66,14 +66,28 @@ public class ApiServlet extends HttpServlet
                 }
                 builder.withFirst(getFirst(query));
                 builder.withMax(getMax(query));
+                if(query.containsKey("_uniqueResult"))
+                {
+                    builder.uniqueResult(Boolean.valueOf(query.get("_uniqueResult")));
+                }
+
                 ResourceListService listService = builder.build();
 
                 long s = time();
-                String content = listService.list();
+                try
+                {
+                    String content = listService.list();
+                    ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());
+                }
+                catch(UniqueResultNotFoundException e)
+                {
+                    ServletUtil.writeResponse(response, HttpServletResponse.SC_NOT_FOUND, "", "text/plain");
+                }
+                finally
+                {
+                    transaction.commit();
+                }
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
-
-                transaction.commit();
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());
             }
             else
             {

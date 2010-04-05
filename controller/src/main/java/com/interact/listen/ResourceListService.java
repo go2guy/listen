@@ -25,6 +25,7 @@ public final class ResourceListService
     private Set<String> returnFields = new HashSet<String>();
     private int first = 0;
     private int max = 100;
+    private boolean uniqueResult = false;
 
     private ResourceListService(Builder builder)
     {
@@ -35,6 +36,7 @@ public final class ResourceListService
         this.returnFields = builder.returnFields;
         this.first = builder.first;
         this.max = builder.max;
+        this.uniqueResult = builder.uniqueResult;
     }
 
     public static class Builder
@@ -48,6 +50,7 @@ public final class ResourceListService
         private Set<String> returnFields = new HashSet<String>();
         private int first = 0;
         private int max = 100;
+        private boolean uniqueResult = false;
 
         public Builder(Class<? extends Resource> resourceClass, Session session, Marshaller marshaller)
         {
@@ -80,40 +83,58 @@ public final class ResourceListService
             return this;
         }
 
+        public Builder uniqueResult(boolean uniqueResult)
+        {
+            this.uniqueResult = uniqueResult;
+            return this;
+        }
+
         public ResourceListService build()
         {
             return new ResourceListService(this);
         }
     }
 
-    public String list() throws CriteriaCreationException
+    public String list() throws CriteriaCreationException, UniqueResultNotFoundException
     {
-        Criteria criteria = createCriteria();
-        List<Resource> results = (List<Resource>)criteria.list();
-
-        Long total = Long.valueOf(0);
-        if(results.size() > 0)
-        {
-            criteria.setFirstResult(0);
-            criteria.setProjection(Projections.rowCount());
-            total = (Long)criteria.list().get(0);
-        }
-
-        ResourceList list = new ResourceList();
-        list.setList(results);
-        list.setMax(max);
-        list.setFirst(first);
-        list.setSearchProperties(searchProperties);
-        list.setFields(returnFields);
-        list.setTotal(total);
-
         StringBuilder content = new StringBuilder();
         if(marshaller instanceof XmlMarshaller)
         {
             content.append(ApiServlet.XML_TAG);
         }
 
-        content.append(marshaller.marshal(list, resourceClass));
+        Criteria criteria = createCriteria();
+        List<Resource> results = (List<Resource>)criteria.list();
+
+        if(uniqueResult)
+        {
+            if(results.size() == 0)
+            {
+                throw new UniqueResultNotFoundException();
+            }
+
+            content.append(marshaller.marshal(results.get(0)));
+        }
+        else
+        {
+            Long total = Long.valueOf(0);
+            if(results.size() > 0)
+            {
+                criteria.setFirstResult(0);
+                criteria.setProjection(Projections.rowCount());
+                total = (Long)criteria.list().get(0);
+            }
+
+            ResourceList list = new ResourceList();
+            list.setList(results);
+            list.setMax(max);
+            list.setFirst(first);
+            list.setSearchProperties(searchProperties);
+            list.setFields(returnFields);
+            list.setTotal(total);
+
+            content.append(marshaller.marshal(list, resourceClass));
+        }
         return content.toString();
     }
 
