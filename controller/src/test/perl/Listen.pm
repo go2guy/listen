@@ -3,13 +3,15 @@ use strict;
 package Listen;
 require Exporter;
 
+### Uncomment this when ready for install
+#use lib "/interact/listen/perl";
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw(insertTest updateTest deleteTest);
+our @EXPORT = qw(listenInsert listenUpdate listenDelete);
 
-use REST::Client;
-use XML::Parser;
-use XML::XPath;
+require REST::Client;
+require XML::Parser;
+require XML::XPath;
 
 my $SUBLIMITS = 100;
 my $DEBUG = 0;
@@ -17,11 +19,11 @@ my $ListenClient;
 
 sub setListenClient {
 
-   my ($reqtype,$host,$port,$timeout,$debug) = @_;
+   my ($host,$port,$timeout,$debug) = @_;
    my $sendto;
 
    if ($timeout eq undef) { $timeout = 5; }
-   if ($debug ne undef) { $DEBUG = 1; }
+   if ($debug) { $DEBUG = 1; }
 
    if ($DEBUG) {
       print "host = $host port = $port timeout = $timeout\n";
@@ -41,12 +43,12 @@ sub setListenClient {
                 });
 }
 
-sub deleteTest {
+sub listenDelete {
    my $id;
 
    my ($reqtype,$host,$port,$timeout,$debug,$id) = @_;
 
-   setListenClient($reqtype,$host,$port,$timeout,$debug);
+   setListenClient($host,$port,$timeout,$debug);
 
    $ListenClient->DELETE("/$reqtype"."s/$id");
 
@@ -62,7 +64,7 @@ sub deleteTest {
       print STDOUT "$reqtype $id was successfully DELETED\n";
    }
 }
-sub updateTest {
+sub listenUpdate {
 
    my ($id, $vid, $number, $adminpin, $started);
    my ($audio, $admin, $holding, $muted, $session);
@@ -70,7 +72,7 @@ sub updateTest {
 
    my ($reqtype,$host,$port,$timeout,$debug,@reqdata) = @_;
 
-   setListenClient($reqtype,$host,$port,$timeout,$debug);
+   setListenClient($host,$port,$timeout,$debug);
 
    my $reqxml    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
@@ -102,7 +104,6 @@ sub updateTest {
    $reqxml .= "</$reqtype>";
 
    $ListenClient->PUT("/$reqtype"."s/$id", $reqxml, {CustomHeader => 'Content-Type: application/xml;charset=UTF-8'});
-   #select undef, undef, undef,.025;
 
    my ($postresult) = $ListenClient->responseContent();
 
@@ -130,9 +131,7 @@ sub updateTest {
    my $nodeset = $tree->find('//id');
    my @checkid = map($_->string_value, $nodeset->get_nodelist);
 
-   $ListenClient->GET("/$reqtype"."s/$checkid[0]");
-   my ($getresult) = $ListenClient->responseContent();
-   #select undef,undef,undef,.025;
+   my ($getresult) = $ListenClient->GET("/$reqtype"."s/$checkid[0]")->responseContent();
 
    if ($DEBUG) {
       print "GET Response      = ". $ListenClient->responseContent(). "\n";
@@ -148,23 +147,26 @@ sub updateTest {
    return $checkid[0];
 }
 
-sub insertTest {
+sub listenInsert {
 
-   my ($id, $number, $adminpin, $started);
+   my ($id, $number, $adminpin, $started, $admute);
    my ($audio, $admin, $holding, $muted, $session);
    my ($created, $location, $isnew, $conference);
 
    my ($reqtype,$host,$port,$timeout,$debug,@reqdata) = @_;
 
-   setListenClient($reqtype,$host,$port,$timeout,$debug);
+   setListenClient($host,$port,$timeout,$debug);
 
    my $countsxml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><$reqtype"."s href=\"/$reqtype"."s\">";
    my $reqxml    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><$reqtype href=\"/$reqtype"."s/1\">";
 
    if ($reqtype eq "subscriber") {
-      ($number) = @reqdata;
+      ($number,$location) = @reqdata;
 
       $reqxml .= "<number>$number</number>";
+      if ($location ne undef) {
+         $reqxml .= "<voicemailGreetingLocation>$location</voicemailGreetingLocation>";
+      }
    }
 
    elsif ($reqtype eq "conference") {
@@ -175,9 +177,9 @@ sub insertTest {
 
    elsif ($reqtype eq "participant") {
       ($number, $conference, $audio, $admin,
-       $holding, $muted, $session) = @reqdata;
+       $admute, $holding, $muted, $session) = @reqdata;
 
-      $reqxml .= "<audioResource>$audio</audioResource><conference href=\"/conferences/$conference\"/><isAdmin>$admin</isAdmin><isHolding>$holding</isHolding><isMuted>$muted</isMuted><number>$number</number><sessionID>$session</sessionID>";
+      $reqxml .= "<audioResource>$audio</audioResource><conference href=\"/conferences/$conference\"/><isAdmin>$admin</isAdmin><isHolding>$holding</isHolding><isMuted>$muted</isMuted><isAdminMuted>$admute</isAdminMuted><number>$number</number><sessionID>$session</sessionID>";
    }
 
    elsif ($reqtype eq "voicemail") {
@@ -188,7 +190,7 @@ sub insertTest {
 
    $reqxml .= "</$reqtype>";
 
-   #print "XML = $reqxml\n";
+   print "XML = $reqxml\n";
    $ListenClient->POST("/$reqtype"."s",$reqxml,{CustomHeader => 'Content-Type: appliceation/xml;charset=UTF-8'});
 
    if ($DEBUG) {
@@ -217,8 +219,7 @@ sub insertTest {
    my $nodeset = $tree->find('//id');
    my @checkid = map($_->string_value, $nodeset->get_nodelist);
 
-   $ListenClient->GET("/$reqtype"."s/$checkid[0]");
-   my ($getresult) = $ListenClient->responseContent();
+   my ($getresult) = $ListenClient->GET("/$reqtype"."s/$checkid[0]")->responseContent();
 
    if ($DEBUG) {
       print "GET Response      = ". $ListenClient->responseContent(). "\n";
