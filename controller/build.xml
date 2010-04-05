@@ -4,9 +4,10 @@
   <property name="lib.dir"         value="${basedir}/lib"/>
   <property name="target.dir"      value="${basedir}/target"/>
   <property name="deploy.dir"      value="/interact/listen"/>
-  <property name="rpm.staging.dir" value="${target.dir}/staging"/>
   <property name="winstone.jar"    value="winstone-0.9.10.jar"/>
-  <property name="war.staging.dir" value="${target.dir}/war/staging"/>
+  <property name="jar.staging.dir" value="${target.dir}/staging/jar"/>
+  <property name="war.staging.dir" value="${target.dir}/staging/war"/>
+  <property name="rpm.staging.dir" value="${target.dir}/staging/rpm"/>
   <property name="tools.dir"       value="${basedir}/tools"/>
 
   <import file=".build-import-tools.xml"/><!-- import for tools like findbugs, checkstyle, and plots -->
@@ -37,7 +38,7 @@
     <delete dir="${build.dir}" failonerror="false"/>
     <delete dir="${target.dir}" failonerror="false"/>
     <delete dir="${rpm.staging.dir}" failonerror="false"/>
-    <delete dir="${war.staging.dir}" failonerror="false"/>
+    <delete dir="${jar.staging.dir}" failonerror="false"/>
     <delete failonerror="false">
       <fileset dir="ii_artifacts" includes="**/*.rpm"/>
     </delete>
@@ -118,41 +119,61 @@
 
   <target name="war" depends="compile" description="--> Packages distributable war file">
     <mkdir dir="${target.dir}"/>
+    <mkdir dir="${war.staging.dir}"/>
 
     <!-- controller war -->
-    <war destfile="${target.dir}/listen-controller.war" webxml="${src.dir}/main/webapp-controller/WEB-INF/web.xml">
+    <copy todir="${war.staging.dir}">
       <fileset dir="${src.dir}/main/webapp-controller" includes="**/*"/>
+    </copy>
+    <war destfile="${target.dir}/listen-controller.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
+      <fileset dir="${war.staging.dir}" includes="**/*"/>
       <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
       <lib dir="${lib.dir}/runtime"/>
     </war>
+    <delete dir="${war.staging.dir}"/>
 
     <!-- gui war -->
-    <war destfile="${target.dir}/listen-gui.war" webxml="${src.dir}/main/webapp-gui/WEB-INF/web.xml">
+    <mkdir dir="${war.staging.dir}"/>
+    <copy todir="${war.staging.dir}">
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
+    </copy>
+    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true">
+      <arg line="${war.staging.dir}/resources/app/application.js -o ${war.staging.dir}/resources/app/application-min.js"/>
+    </java>
+    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true">
+      <arg line="${war.staging.dir}/resources/app/application.css -o ${war.staging.dir}/resources/app/application-min.css"/>
+    </java>
+    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true">
+      <arg line="${war.staging.dir}/resources/app/common.css -o ${war.staging.dir}/resources/app/common-min.css"/>
+    </java>
+    <war destfile="${target.dir}/listen-gui.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
+      <fileset dir="${war.staging.dir}" includes="**/*"/>
       <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
       <lib dir="${lib.dir}/runtime"/>
     </war>
+    <delete dir="${war.staging.dir}"/>
+
   </target>
 
   <target name="jar" depends="war" description="--> Creates an executable jar file with embedded winstone container">
 
     <!-- controller jar -->
-    <mkdir dir="${war.staging.dir}"/>
+    <mkdir dir="${jar.staging.dir}"/>
 
-    <unwar src="${lib.dir}/build/${winstone.jar}" dest="${war.staging.dir}"/>
-    <copy file="${target.dir}/listen-controller.war" tofile="${war.staging.dir}/embedded.war"/>
-    <jar destfile="${target.dir}/listen-controller.jar" manifest="${war.staging.dir}/META-INF/MANIFEST.MF">
-      <fileset dir="${war.staging.dir}" excludes="META-INF/**"/>
+    <unwar src="${lib.dir}/build/${winstone.jar}" dest="${jar.staging.dir}"/>
+    <copy file="${target.dir}/listen-controller.war" tofile="${jar.staging.dir}/embedded.war"/>
+    <jar destfile="${target.dir}/listen-controller.jar" manifest="${jar.staging.dir}/META-INF/MANIFEST.MF">
+      <fileset dir="${jar.staging.dir}" excludes="META-INF/**"/>
     </jar>
 
     <!-- web jar -->
-    <delete dir="${war.staging.dir}"/>
-    <mkdir dir="${war.staging.dir}"/>
+    <delete dir="${jar.staging.dir}"/>
+    <mkdir dir="${jar.staging.dir}"/>
 
-    <unwar src="${lib.dir}/build/${winstone.jar}" dest="${war.staging.dir}"/>
-    <copy file="${target.dir}/listen-gui.war" tofile="${war.staging.dir}/embedded.war"/>
-    <jar destfile="${target.dir}/listen-gui.jar" manifest="${war.staging.dir}/META-INF/MANIFEST.MF">
-      <fileset dir="${war.staging.dir}" excludes="META-INF/**"/>
+    <unwar src="${lib.dir}/build/${winstone.jar}" dest="${jar.staging.dir}"/>
+    <copy file="${target.dir}/listen-gui.war" tofile="${jar.staging.dir}/embedded.war"/>
+    <jar destfile="${target.dir}/listen-gui.jar" manifest="${jar.staging.dir}/META-INF/MANIFEST.MF">
+      <fileset dir="${jar.staging.dir}" excludes="META-INF/**"/>
     </jar>
   </target>
 
