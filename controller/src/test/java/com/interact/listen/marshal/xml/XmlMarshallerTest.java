@@ -174,4 +174,10 @@ public class XmlMarshallerTest
         assertEquals(subscriber.getId(), unmarshalledSubscriber.getId());
         assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
     }
+
+    @Test
+    public void test_getContentType_returnsApplicationXml()
+    {
+        assertEquals("application/xml", marshaller.getContentType());
+    }
 }

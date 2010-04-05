@@ -125,7 +125,7 @@ public class JsonMarshallerTest
 
         assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
     }
-    
+
     @Test
     public void test_marshal_withSubscriberListAndPagedResults_returnsCorrectJsonWithPaging()
     {
@@ -176,6 +176,11 @@ public class JsonMarshallerTest
 
         assertEquals(subscriber.getId(), unmarshalledSubscriber.getId());
         assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
+    }
 
+    @Test
+    public void test_getContentType_returnsApplicationJson()
+    {
+        assertEquals("application/json", marshaller.getContentType());
     }
 }
