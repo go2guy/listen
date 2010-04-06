@@ -1,8 +1,29 @@
 package com.interact.listen.resource;
 
-public interface Resource
+import java.util.ArrayList;
+import javax.persistence.*;
+
+public abstract class Resource
 {
-    public void setId(Long id);
-    public Long getId();
-    public boolean validate();
+    @Transient
+    private ArrayList<String> errors = new ArrayList<String>(3);
+    
+    public abstract void setId(Long id);
+    public abstract Long getId();
+    public abstract void validate();
+    
+    public boolean hasErrors()
+    {
+        return errors.size() > 0;
+    }
+    
+    public void addToErrors(String errorMessage)
+    {
+        errors.add(errorMessage);
+    }
+    
+    public ArrayList<String> errors()
+    {
+        return errors;
+    }
 }

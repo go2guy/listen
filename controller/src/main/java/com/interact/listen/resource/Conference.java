@@ -9,7 +9,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.CollectionOfElements;
 
 @Entity
-public class Conference implements Resource, Serializable
+public class Conference extends Resource implements Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,8 +18,13 @@ public class Conference implements Resource, Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
+    @Column(nullable = false)
     private Boolean isStarted;
+    
+    @Column(nullable = false)
     private String adminPin;
+    
+    @Column(nullable = false)
     private String number;
 
     @CollectionOfElements
@@ -86,14 +91,21 @@ public class Conference implements Resource, Serializable
     }
 
     @Override
-    public boolean validate()
+    public void validate()
     {
-        if(isStarted != null && adminPin != null && !adminPin.trim().equals("") && number != null &&
-           !number.trim().equals(""))
+        if(isStarted == null)
         {
-            return true;
+            addToErrors("isStarted cannot be null");
         }
-
-        return false;
+        
+        if(adminPin == null || adminPin.trim().equals(""))
+        {
+            addToErrors("adminPin is required");
+        }
+        
+        if(number == null || number.trim().equals(""))
+        {
+            addToErrors("number is required");
+        }
     }
 }

@@ -63,58 +63,72 @@ public class VoicemailTest
     }
 
     @Test
-    public void test_validate_validProperties_returnsTrue()
+    public void test_validate_validProperties_returnsNoErrors()
     {
         voicemail = getPopulatedVoicemail();
-        assertTrue(voicemail.validate());
+        voicemail.validate();
+        
+        assertFalse(voicemail.hasErrors());
     }
 
     @Test
-    public void test_validate_nullSubscriber_returnsFalse()
+    public void test_validate_nullSubscriber_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setSubscriber(null);
-        assertFalse(voicemail.validate());
+        voicemail.validate();
+        
+        assertTrue(voicemail.hasErrors());
     }
 
     @Test
-    public void test_validate_nullDateCreated_returnsFalse()
+    public void test_validate_nullDateCreated_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setDateCreated(null);
-        assertFalse(voicemail.validate());
+        voicemail.validate();
+        
+        assertTrue(voicemail.hasErrors());
     }
 
     @Test
-    public void test_validate_nullFileLocation_returnsFalse()
+    public void test_validate_nullFileLocation_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setFileLocation(null);
-        assertFalse(voicemail.validate());
+        voicemail.validate();
+        
+        assertTrue(voicemail.hasErrors());
     }
 
     @Test
-    public void test_validate_blankFileLocation_returnsFalse()
+    public void test_validate_blankFileLocation_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setFileLocation("");
-        assertFalse(voicemail.validate());
+        voicemail.validate();
+        
+        assertTrue(voicemail.hasErrors());
     }
 
     @Test
-    public void test_validate_whitespaceFileLocation_returnsFalse()
+    public void test_validate_whitespaceFileLocation_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setFileLocation("  ");
-        assertFalse(voicemail.validate());
+        voicemail.validate();
+        
+        assertTrue(voicemail.hasErrors());
     }
 
     @Test
-    public void test_validate_nullIsNew_returnsFalse()
+    public void test_validate_nullIsNew_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setIsNew(null);
-        assertFalse(voicemail.validate());
+        voicemail.validate();
+        
+        assertTrue(voicemail.hasErrors());
     }
 
     private Voicemail getPopulatedVoicemail()

@@ -70,66 +70,82 @@ public class ConferenceTest
     }
 
     @Test
-    public void test_validate_validParameters_returnsTrue()
+    public void test_validate_validParameters_returnsNoErrors()
     {
         conference = getPopulatedConference();
-        assertTrue(conference.validate());
+        conference.validate();
+        
+        assertFalse(conference.hasErrors());
     }
 
     @Test
-    public void test_validate_nullIsStarted_returnsFalse()
+    public void test_validate_nullIsStarted_returnsHasErrors()
     {
         conference = getPopulatedConference();
         conference.setIsStarted(null);
-        assertFalse(conference.validate());
+        conference.validate();
+        
+        assertTrue(conference.hasErrors());
     }
 
     @Test
-    public void test_validate_nullAdminPin_returnsFalse()
+    public void test_validate_nullAdminPin_returnsHasErrors()
     {
         conference = getPopulatedConference();
         conference.setAdminPin(null);
-        assertFalse(conference.validate());
+        conference.validate();
+        
+        assertTrue(conference.hasErrors());
     }
 
     @Test
-    public void test_validate_blankAdminPin_returnsFalse()
+    public void test_validate_blankAdminPin_returnsHasErrors()
     {
         conference = getPopulatedConference();
         conference.setAdminPin("");
-        assertFalse(conference.validate());
+        conference.validate();
+        
+        assertTrue(conference.hasErrors());
     }
 
     @Test
-    public void test_validate_whitespaceAdminPin_returnsFalse()
+    public void test_validate_whitespaceAdminPin_returnsHasErrors()
     {
         conference = getPopulatedConference();
         conference.setAdminPin(" ");
-        assertFalse(conference.validate());
+        conference.validate();
+        
+        assertTrue(conference.hasErrors());
     }
 
     @Test
-    public void test_validate_nullNumber_returnsFalse()
+    public void test_validate_nullNumber_returnsHasErrors()
     {
         conference = getPopulatedConference();
         conference.setNumber(null);
-        assertFalse(conference.validate());
+        conference.validate();
+        
+        assertTrue(conference.hasErrors());
     }
 
     @Test
-    public void test_validate_blankNumber_returnsFalse()
+    public void test_validate_blankNumber_returnsHasErrors()
     {
         conference = getPopulatedConference();
         conference.setNumber("");
-        assertFalse(conference.validate());
+        conference.validate();
+        
+        assertTrue(conference.hasErrors());
     }
 
     @Test
-    public void test_validate_whitespaceNumber_returnsFalse()
+    public void test_validate_whitespaceNumber_returnsHasErrors()
     {
         conference = getPopulatedConference();
         conference.setNumber(" ");
-        assertFalse(conference.validate());
+        conference.validate();
+        
+        assertTrue(conference.hasErrors());
     }
 
     private Conference getPopulatedConference()

@@ -52,50 +52,62 @@ public class SubscriberTest
     }
 
     @Test
-    public void test_validate_validProperties_returnsTrue()
+    public void test_validate_validProperties_returnsNoErrors()
     {
         subscriber = getPopulatedSubscriber();
-        assertTrue(subscriber.validate());
+        subscriber.validate();
+        
+        assertFalse(subscriber.hasErrors());
     }
     
     @Test
-    public void test_validate_nullNumber_returnsFalse()
+    public void test_validate_nullNumber_returnsHasErrors()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setNumber(null);
-        assertFalse(subscriber.validate());
+        subscriber.validate();
+        
+        assertTrue(subscriber.hasErrors());
     }
     
     @Test
-    public void test_validate_blankVoicemailGreetingLocation_returnsTrue()
+    public void test_validate_blankVoicemailGreetingLocation_returnsNoErrors()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setVoicemailGreetingLocation("");
-        assertTrue(subscriber.validate());
+        subscriber.validate();
+        
+        assertFalse(subscriber.hasErrors());
     }
     
     @Test
-    public void test_validate_nullVoicemailGreetingLocation_returnsTrue()
+    public void test_validate_nullVoicemailGreetingLocation_returnsHasErrors()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setVoicemailGreetingLocation(null);
-        assertTrue(subscriber.validate());
+        subscriber.validate();
+        
+        assertFalse(subscriber.hasErrors());
     }
 
     @Test
-    public void test_validate_blankNumber_returnsFalse()
+    public void test_validate_blankNumber_returnsHasErrors()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setNumber("");
-        assertFalse(subscriber.validate());
+        subscriber.validate();
+        
+        assertTrue(subscriber.hasErrors());
     }
 
     @Test
-    public void test_validate_whitespaceNumber_returnsFalse()
+    public void test_validate_whitespaceNumber_returnsHasErrors()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setNumber(" ");
-        assertFalse(subscriber.validate());
+        subscriber.validate();
+        
+        assertTrue(subscriber.hasErrors());
     }
 
     private Subscriber getPopulatedSubscriber()

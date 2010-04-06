@@ -185,11 +185,14 @@ public class ApiServlet extends HttpServlet
             // Resource resource = (Resource)resourceClass.newInstance();
             // String requestBody = this.readInputStreamContents(request.getInputStream());
             // resource.loadFromXml(requestBody, false);
+            
+            resource.validate();
 
-            if(!resource.validate())
+            if(resource.hasErrors())
             {
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                          "The resource you sent was invalid", "text/plain");
+                                          "The resource you sent was invalid: " + resource.errors().toString(),
+                                          "text/plain");
                 return;
             }
 
@@ -245,7 +248,7 @@ public class ApiServlet extends HttpServlet
             e.printStackTrace();
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "The content you provided causes a constraint violation, please fix it: " + e.getMessage(),
+                                      "The content you provided causes a constraint violation, please fix it",
                                       "text/plain");
             return;
         }
@@ -304,9 +307,9 @@ public class ApiServlet extends HttpServlet
             System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
 
             updatedResource.setId(Long.parseLong(attributes.getId()));
-            boolean isValid = updatedResource.validate();
+            updatedResource.validate();
 
-            if(isValid)
+            if(!updatedResource.hasErrors())
             {
                 s = time();
                 session.update(updatedResource);
@@ -315,7 +318,7 @@ public class ApiServlet extends HttpServlet
 
             transaction.commit();
 
-            if(isValid)
+            if(!updatedResource.hasErrors())
             {
                 StringBuilder xml = new StringBuilder();
                 if(marshaller instanceof XmlMarshaller)
@@ -332,11 +335,9 @@ public class ApiServlet extends HttpServlet
             }
             else
             {
-                ServletUtil
-                           .writeResponse(
-                                          response,
+                ServletUtil.writeResponse(response,
                                           HttpServletResponse.SC_BAD_REQUEST,
-                                          "Resource failed validation.  Re-query resource before modifying/sending again",
+                                          "Resource failed validation: " + updatedResource.errors().toString(),
                                           "text/plain");
             }
         }
@@ -367,7 +368,8 @@ public class ApiServlet extends HttpServlet
             e.printStackTrace();
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "The content you provided causes a constraint violation, please fix it: " + e.getMessage(),
+                                      "The content you provided causes a constraint violation, please fix it: " 
+                                      + e.getConstraintName(),
                                       "text/plain");
             return;
         }

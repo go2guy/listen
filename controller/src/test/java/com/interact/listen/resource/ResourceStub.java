@@ -1,6 +1,6 @@
 package com.interact.listen.resource;
 
-public class ResourceStub implements Resource
+public class ResourceStub extends Resource
 {
     private Long id;
 
@@ -15,8 +15,8 @@ public class ResourceStub implements Resource
         this.id = id;
     }
     
-    public boolean validate()
+    public void validate()
     {
-        return true;
+        // oookkkkkk......why am I here?
     }
 }

@@ -43,106 +43,141 @@ public class ParticipantTest
     }
 
     @Test
-    public void test_validate_validProperties_returnsTrue()
+    public void test_validate_validProperties_returnsNoErrors()
     {
         participant = getPopulatedParticipant();
-        assertTrue(participant.validate());
+        assertFalse(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_nullAudioResource_returnsFalse()
+    public void test_validate_nullAudioResource_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setAudioResource(null);
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_nullConference_returnsFalse()
+    public void test_validate_nullConference_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setConference(null);
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_nullIsAdmin_returnsFalse()
+    public void test_validate_nullIsAdmin_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setIsAdmin(null);
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_nullIsHolding_returnsFalse()
+    public void test_validate_nullIsHolding_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setIsHolding(null);
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_nullIsMuted_returnsFalse()
+    public void test_validate_nullIsMuted_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setIsMuted(null);
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
     
     @Test
-    public void test_validate_nullIsAdminMuted_returnsFalse()
+    public void test_validate_nullIsAdminMuted_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setIsAdminMuted(null);
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
+    }
+    
+    @Test
+    public void test_validate_isAdminAndIsAdminMuted_returnsHasErrors()
+    {
+        participant = getPopulatedParticipant();
+        participant.setIsAdmin(Boolean.TRUE);
+        participant.setIsAdminMuted(Boolean.TRUE);
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_nullNumber_returnsFalse()
+    public void test_validate_nullNumber_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setNumber(null);
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_blankNumber_returnsFalse()
+    public void test_validate_blankNumber_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setNumber("");
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_whitespaceNumber_returnsFalse()
+    public void test_validate_whitespaceNumber_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setNumber(" ");
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_nullSessionID_returnsFalse()
+    public void test_validate_nullSessionID_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setSessionID(null);
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_blankSessionID_returnsFalse()
+    public void test_validate_blankSessionID_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setSessionID("");
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     @Test
-    public void test_validate_whitespaceSessionID_returnsFalse()
+    public void test_validate_whitespaceSessionID_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setSessionID(" ");
-        assertFalse(participant.validate());
+        participant.validate();
+        
+        assertTrue(participant.hasErrors());
     }
 
     private Participant getPopulatedParticipant()

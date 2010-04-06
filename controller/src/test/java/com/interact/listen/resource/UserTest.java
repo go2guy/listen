@@ -43,42 +43,42 @@ public class UserTest
     }
 
     @Test
-    public void test_validate_validProperties_returnsTrue()
+    public void test_validate_validProperties_returnsNoErrors()
     {
         user = getPopulatedUser();
         user.validate();
         
-        assertTrue(user.validate());
+        assertFalse(user.hasErrors());
     }
     
     @Test
-    public void test_validate_nullSubscriber_returnsFalse()
+    public void test_validate_nullSubscriber_returnsHasErrors()
     {
         user = getPopulatedUser();
         user.setSubscriber(null);
         user.validate();
         
-        assertFalse(user.validate());
+        assertTrue(user.hasErrors());
     }
     
     @Test
-    public void test_validate_nullUsername_returnsFalse()
+    public void test_validate_nullUsername_returnsHasErrors()
     {
         user = getPopulatedUser();
         user.setUsername(null);
         user.validate();
         
-        assertFalse(user.validate());
+        assertTrue(user.hasErrors());
     }
     
     @Test
-    public void test_validate_nullPassword_returnsFalse()
+    public void test_validate_nullPassword_returnsHasErrors()
     {
         user = getPopulatedUser();
         user.setPassword(null);
         user.validate();
         
-        assertFalse(user.validate());
+        assertTrue(user.hasErrors());
     }
     
     private User getPopulatedUser()

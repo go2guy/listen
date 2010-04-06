@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-public class Voicemail implements Resource, Serializable
+public class Voicemail extends Resource implements Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,8 +18,13 @@ public class Voicemail implements Resource, Serializable
     @ManyToOne
     private Subscriber subscriber;
 
+    @Column(nullable = false)
     private String fileLocation;
+    
+    @Column(nullable = false)
     private Date dateCreated = new Date();
+    
+    @Column(nullable = false)
     private Boolean isNew = Boolean.TRUE;
 
     @Override
@@ -84,28 +89,26 @@ public class Voicemail implements Resource, Serializable
     }
 
     @Override
-    public boolean validate()
+    public void validate()
     {
         if(subscriber == null)
         {
-            return false;
+            addToErrors("subscriber cannot be null");
         }
 
         if(fileLocation == null || fileLocation.trim().equals(""))
         {
-            return false;
+            addToErrors("fileLocation cannot be null");
         }
 
         if(dateCreated == null)
         {
-            return false;
+            addToErrors("dateCreated cannot be null");
         }
 
         if(isNew == null)
         {
-            return false;
+            addToErrors("isNew cannot be null");
         }
-
-        return true;
     }
 }

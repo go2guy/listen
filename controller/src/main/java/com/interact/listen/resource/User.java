@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-public class User implements Resource, Serializable
+public class User extends Resource implements Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -74,23 +74,21 @@ public class User implements Resource, Serializable
     }
     
     @Override
-    public boolean validate()
+    public void validate()
     {
         if(subscriber == null)
         {
-            return false;
+            addToErrors("subscriber cannot be null");
         }
         
         if(username == null)
         {
-            return false;
+            addToErrors("username cannot be null");
         }
         
         if(password == null)
         {
-            return false;
+            addToErrors("password cannot be null");
         }
-        
-        return true;
     }
 }

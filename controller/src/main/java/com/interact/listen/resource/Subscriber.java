@@ -9,7 +9,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.CollectionOfElements;
 
 @Entity
-public class Subscriber implements Resource, Serializable
+public class Subscriber extends Resource implements Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -78,13 +78,11 @@ public class Subscriber implements Resource, Serializable
     }
 
     @Override
-    public boolean validate()
+    public void validate()
     {
         if(number == null || number.trim().equals(""))
         {
-            return false;
+            addToErrors("Subscriber must have a number");
         }
-
-        return true;
     }
 }

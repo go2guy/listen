@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-public class Participant implements Resource, Serializable
+public class Participant extends Resource implements Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -14,16 +14,28 @@ public class Participant implements Resource, Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
+    @Column(nullable = false, unique = true)
     private String number;
 
     @ManyToOne
     private Conference conference;
 
+    @Column(nullable = false)
     private Boolean isAdmin;
+    
+    @Column(nullable = false)
     private Boolean isHolding;
+    
+    @Column(nullable = false)
     private Boolean isMuted;
+    
+    @Column(nullable = false)
     private Boolean isAdminMuted;
+    
+    @Column(nullable = false)
     private String audioResource;
+    
+    @Column(nullable = false)
     private String sessionID;
 
     public String getAudioResource()
@@ -127,48 +139,52 @@ public class Participant implements Resource, Serializable
     }
 
     @Override
-    public boolean validate()
+    public void validate()
     {
         if(audioResource == null)
         {
-            return false;
+            addToErrors("audioResource cannot be null");
         }
 
         if(conference == null)
         {
-            return false;
+            addToErrors("conference cannot be null");
         }
 
         if(isAdmin == null)
         {
-            return false;
+            addToErrors("isAdmin cannot be null");
         }
 
         if(isHolding == null)
         {
-            return false;
+            addToErrors("isHolding cannot be null");
         }
 
         if(isMuted == null)
         {
-            return false;
+            addToErrors("isMuted cannot be null");
         }
         
         if(isAdminMuted == null)
         {
-            return false;
+            addToErrors("isAdminMuted cannot be null");
+        }
+        
+        // Admin cannot be admin muted
+        if(isAdmin != null && isAdminMuted != null && (isAdmin && isAdminMuted))
+        {
+            addToErrors("Admin participants cannot be muted by another Admin");
         }
 
         if(number == null || number.trim().equals(""))
         {
-            return false;
+            addToErrors("Participant must have a number");
         }
 
         if(sessionID == null || sessionID.trim().equals(""))
         {
-            return false;
+            addToErrors("Participant must have a sessionID");
         }
-
-        return true;
     }
 }
