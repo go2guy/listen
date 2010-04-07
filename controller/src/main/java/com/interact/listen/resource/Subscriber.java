@@ -20,8 +20,9 @@ public class Subscriber extends Resource implements Serializable
 
     @Column(unique = true, nullable = false)
     private String number;
-    
+
     private String voicemailGreetingLocation;
+    private String voicemailPin;
 
     @CollectionOfElements
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
@@ -56,7 +57,7 @@ public class Subscriber extends Resource implements Serializable
     {
         this.version = version;
     }
-    
+
     public String getVoicemailGreetingLocation()
     {
         return voicemailGreetingLocation;
@@ -65,6 +66,16 @@ public class Subscriber extends Resource implements Serializable
     public void setVoicemailGreetingLocation(String location)
     {
         this.voicemailGreetingLocation = location;
+    }
+
+    public String getVoicemailPin()
+    {
+        return voicemailPin;
+    }
+
+    public void setVoicemailPin(String voicemailPin)
+    {
+        this.voicemailPin = voicemailPin;
     }
 
     public List<Voicemail> getVoicemails()

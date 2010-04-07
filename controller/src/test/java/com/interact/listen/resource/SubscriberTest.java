@@ -34,6 +34,15 @@ public class SubscriberTest
     }
 
     @Test
+    public void test_setVoicemailPin_withValidVoicemailPin_setsVoicemailPin()
+    {
+        final String pin = String.valueOf(System.currentTimeMillis());
+        subscriber.setVoicemailPin(pin);
+
+        assertEquals(pin, subscriber.getVoicemailPin());
+    }
+    
+    @Test
     public void test_setId_withValidId_setsId()
     {
         final Long id = System.currentTimeMillis();
