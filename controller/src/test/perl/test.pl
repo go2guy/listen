@@ -31,7 +31,7 @@ my @connection = (%options->{h}, %options->{p}, %options->{t}, %options->{d});
 my ($subid, $conid, $parid, $voiid);
 ### Inserts
 for (my $cnt = 14024750789; $cnt < 14024750791; ++$cnt) {
-   $subid = listenInsert("subscriber", @connection, $cnt, "/interact/audio/greeting/");
+   $subid = listenInsert("subscriber", @connection, $cnt, "/interact/audio/greeting/", undef);
    if ($subid <= 0) { print STDOUT "Error processing subscriber request. [$subid] Exiting.\n"; last;}
    $voiid = listenInsert("voicemail", @connection, $subid, "2009-10-11T00:00:00.000", "/interact/audio/123.wav", "true");
    if ($voiid <= 0) { print STDOUT "Error processing voicemail request. [$voiid] Exiting.\n"; last;}

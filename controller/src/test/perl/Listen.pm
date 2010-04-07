@@ -1,3 +1,9 @@
+#=======================================================
+# Name: Listen.pm
+#
+# Description: Library for handling insert/update/delete 
+#    for the Listen product.
+#=======================================================
 use strict;
 
 package Listen;
@@ -6,16 +12,94 @@ require Exporter;
 ### Uncomment this when ready for install
 #use lib "/interact/listen/perl";
 
-our @ISA = qw(Exporter);
+our @ISA    = qw(Exporter);
 our @EXPORT = qw(listenInsert listenUpdate listenDelete);
 
 require REST::Client;
 require XML::Parser;
 require XML::XPath;
 
-my $SUBLIMITS = 100;
 my $DEBUG = 0;
 my $ListenClient;
+
+=head1 NAME
+
+Listen - Main Listen functions. 
+
+=head1 SYNOPSIS
+
+   use Listen;
+   listenInsert($reqtype, $host, $port, $timeout, $debug, ...)
+   listenUpdate($reqtype, $host, $port, $timeout, $debug, ...)
+   listenDelete($reqtype, $host, $port, $timeout, $debug, $id)
+
+=head1 DESCRIPTION
+
+   A collection of subroutines to handle the inserting, deleting, and 
+   updating of Listen data.
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item * listenInsert($reqtype, $host, $port, $timeout, $debug, ...)
+ 
+Accepts 
+   $reqtype = "subscriber"        
+            $number, $voicemailGreetingLocation, $voicemailPin
+
+   $reqtype = "conference"        
+            $number, $adminpin, $isstarted
+
+   $reqtype = "participant"        
+            $number, $conference, $audioResource, $isAdmin,
+            $isAdminMuted, $isHolding, $isMuted, $sessionID
+
+   $reqtype = "voicemail"        
+            $subid, $dateCreated, $fileLocation, $isNew
+
+Returns
+   The id of the reqtype created which is > 0, else error number <= 0
+
+=item * listenUpdate($reqtype, $host, $port, $timeout, $debug, ...)
+
+Accepts
+   $reqtype = "subscriber"
+            $subid, $number, $voicemailGreetingLocation, $voicemailPin
+
+   $reqtype = "conference"
+            $confid, $number, $adminPin, $isStarted
+
+   $reqtype = "participant"
+            $partid, $number, $confid, $audioResource, $isAdmin,
+            $isAdminMuted, $isHolding, $isMuted, $sessionID
+
+   $reqtype = "voicemail"
+            $voiceid, $subid, $dateCreated, $fileLocation, $isNew
+
+Returns
+   The id of the reqtype created which is > 0, else error number <= 0
+
+=item * listenDelete($reqtype, $host, $port, $timeout, $debug, $id)
+
+Accepts
+   $reqtype = "subscriber", "conference", "participant", or "voicemail"
+   $id      = the id number of the reqtype you wish to delete
+
+Returns
+   0 for success, else error number
+
+=back
+
+=head1 AUTHOR
+
+Kevin Murray (murrayk@iivip.com)
+
+=head1 COPYRIGHT
+
+Copyright 2010 Interact Incorporated.
+
+=cut
 
 sub setListenClient {
 
@@ -35,7 +119,6 @@ sub setListenClient {
    else {
       $sendto = "http://$host:$port";
    }
-
 
    $ListenClient = REST::Client->new({
                 host => $sendto,
@@ -59,14 +142,17 @@ sub listenDelete {
    if ($ListenClient->responseCode() != 200 &&
        $ListenClient->responseCode() != 204 ) {
       print STDOUT "$reqtype $id was not DELETED, error returned " . $ListenClient->responseCode() . "\n";
+      return -($ListenClient->responseCode());
    }
    else {
       print STDOUT "$reqtype $id was successfully DELETED\n";
+      return 0;
    }
 }
+
 sub listenUpdate {
 
-   my ($id, $vid, $number, $adminpin, $started);
+   my ($id, $vid, $number, $adminpin, $started, $admute);
    my ($audio, $admin, $holding, $muted, $session);
    my ($created, $location, $isnew, $conference);
 
@@ -77,9 +163,16 @@ sub listenUpdate {
    my $reqxml    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
    if ($reqtype eq "subscriber") {
-      ($id,$number) = @reqdata;
+      ($id,$number,$location,$adminpin) = @reqdata;
 
       $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\"><number>$number</number>";
+
+      if ($location ne undef) {
+         $reqxml .= "<voicemailGreetingLocation>$location</voicemailGreetingLocation>";
+      }
+      if ($adminpin ne undef) {
+         $reqxml .= "<voicemailPin>$adminpin</voicemailPin>";
+      }
    }
 
    elsif ($reqtype eq "conference") {
@@ -93,13 +186,14 @@ sub listenUpdate {
 
    elsif ($reqtype eq "participant") {
       ($id,$number, $conference, $audio, $admin,
-       $holding, $muted, $session) = @reqdata;
+       $admute, $holding, $muted, $session) = @reqdata;
 
       $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\">
                      <audioResource>$audio</audioResource>
                      <conference href=\"/conferences/$conference\"/>
                      <isAdmin>$admin</isAdmin>
                      <isHolding>$holding</isHolding>
+                     <isAdminMuted>$admute</isAdminMuted>
                      <isMuted>$muted</isMuted>
                      <number>$number</number>
                      <sessionID>$session</sessionID>";
@@ -123,8 +217,8 @@ sub listenUpdate {
 
    if ($DEBUG) {
       print "XML = $reqxml\n";
-      print "POST Response      = ". $ListenClient->responseContent(). "\n";
-      print "POST Response code = ". $ListenClient->responseCode(). "\n";
+      print "POST Response      = " . $ListenClient->responseContent() . "\n";
+      print "POST Response code = " . $ListenClient->responseCode() . "\n";
    }
 
    my $parser = XML::Parser->new(ErrorContext => 2);
@@ -155,8 +249,8 @@ sub listenUpdate {
    my ($getresult) = $ListenClient->GET("/$reqtype"."s/$checkid[0]")->responseContent();
 
    if ($DEBUG) {
-      print "GET Response      = ". $ListenClient->responseContent(). "\n";
-      print "GET Response code = ". $ListenClient->responseCode(). "\n";
+      print "GET Response      = " . $ListenClient->responseContent() . "\n";
+      print "GET Response code = " . $ListenClient->responseCode() . "\n";
    }
 
    if ($ListenClient->responseCode() != 200) {
@@ -187,11 +281,14 @@ sub listenInsert {
    my $reqxml    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><$reqtype href=\"/$reqtype"."s/1\">";
 
    if ($reqtype eq "subscriber") {
-      ($number,$location) = @reqdata;
+      ($number,$location,$adminpin) = @reqdata;
 
       $reqxml .= "<number>$number</number>";
       if ($location ne undef) {
          $reqxml .= "<voicemailGreetingLocation>$location</voicemailGreetingLocation>";
+      }
+      if ($adminpin ne undef) {
+         $reqxml .= "<voicemailPin>$adminpin</voicemailPin>";
       }
    }
 
@@ -232,8 +329,8 @@ sub listenInsert {
    $ListenClient->POST("/$reqtype"."s",$reqxml,{CustomHeader => 'Content-Type: appliceation/xml;charset=UTF-8'});
 
    if ($DEBUG) {
-      print "POST Response      = ". $ListenClient->responseContent(). "\n";
-      print "POST Response code = ". $ListenClient->responseCode(). "\n";
+      print "POST Response      = " . $ListenClient->responseContent() . "\n";
+      print "POST Response code = " . $ListenClient->responseCode() . "\n";
    }
 
    my ($postresult) = $ListenClient->responseContent();
@@ -265,8 +362,8 @@ sub listenInsert {
    my ($getresult) = $ListenClient->GET("/$reqtype"."s/$checkid[0]")->responseContent();
 
    if ($DEBUG) {
-      print "GET Response      = ". $ListenClient->responseContent(). "\n";
-      print "GET Response code = ". $ListenClient->responseCode(). "\n";
+      print "GET Response      = " . $ListenClient->responseContent() . "\n";
+      print "GET Response code = " . $ListenClient->responseCode() . "\n";
    }
 
    if ($ListenClient->responseCode() != 200) {
