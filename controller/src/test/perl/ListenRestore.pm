@@ -18,6 +18,19 @@ my $ListenClient;
 my $DEBUG = FALSE;
 my @CONNECTION;
 
+sub Restore {
+   my ($reqtype, $host, $port,
+       $timeout, $debug, $filename) = @_;
+
+   setListenClient($host, $port, $timeout, $debug);
+
+   if ($DEBUG) {
+      print "Input = $reqtype $filename\n";
+   }
+
+   restoreRequest($reqtype, $filename);
+}
+
 sub setListenClient {
 
    my ($host, $port, $timeout, $debug) = @_;
@@ -38,19 +51,6 @@ sub setListenClient {
                  timeout => $timeout,
                  });
    @CONNECTION = ($host,$port,$timeout,$debug);
-}
-
-sub Restore {
-   my ($reqtype, $host, $port,
-       $timeout, $debug, $filename) = @_;
-
-   setListenClient($host, $port, $timeout, $debug);
-
-   if ($DEBUG) {
-      print "Input = $reqtype $filename\n";
-   }
-
-   restoreRequest($reqtype, $filename);
 }
 
 sub restoreRequest {

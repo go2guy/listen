@@ -79,26 +79,40 @@ sub listenUpdate {
    if ($reqtype eq "subscriber") {
       ($id,$number) = @reqdata;
 
-      $reqxml .= "<$reqtype href=\"/$reqtype/$id\"><number>$number</number>";
+      $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\"><number>$number</number>";
    }
 
    elsif ($reqtype eq "conference") {
      ($id,$number, $adminpin, $started) = @reqdata;
 
-      $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\"><adminPin>$adminpin</adminPin><isStarted>$started</isStarted><number>$number</number>";
+      $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\">
+                     <adminPin>$adminpin</adminPin>
+                     <isStarted>$started</isStarted>
+                     <number>$number</number>";
    }
 
    elsif ($reqtype eq "participant") {
       ($id,$number, $conference, $audio, $admin,
        $holding, $muted, $session) = @reqdata;
 
-      $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\"><audioResource>$audio</audioResource><conference href=\"/conferences/$conference\"/><isAdmin>$admin</isAdmin><isHolding>$holding</isHolding><isMuted>$muted</isMuted><number>$number</number><sessionID>$session</sessionID>";
+      $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\">
+                     <audioResource>$audio</audioResource>
+                     <conference href=\"/conferences/$conference\"/>
+                     <isAdmin>$admin</isAdmin>
+                     <isHolding>$holding</isHolding>
+                     <isMuted>$muted</isMuted>
+                     <number>$number</number>
+                     <sessionID>$session</sessionID>";
    }
 
    elsif ($reqtype eq "voicemail") {
       ($vid, $id, $created, $location, $isnew) = @reqdata;
 
-         $reqxml .= "<$reqtype href=\"/$reqtype"."s/$vid\"><dateCreated>$created</dateCreated><fileLocation>$location</fileLocation><isNew>$isnew</isNew><subscriber href=\"/subscribers/$id\"/>";
+         $reqxml .= "<$reqtype href=\"/$reqtype"."s/$vid\">
+                        <dateCreated>$created</dateCreated>
+                        <fileLocation>$location</fileLocation>
+                        <isNew>$isnew</isNew>
+                        <subscriber href=\"/subscribers/$id\"/>";
    }
 
    $reqxml .= "</$reqtype>";
@@ -108,11 +122,18 @@ sub listenUpdate {
    my ($postresult) = $ListenClient->responseContent();
 
    if ($DEBUG) {
+      print "XML = $reqxml\n";
       print "POST Response      = ". $ListenClient->responseContent(). "\n";
       print "POST Response code = ". $ListenClient->responseCode(). "\n";
    }
 
    my $parser = XML::Parser->new(ErrorContext => 2);
+
+   if ($ListenClient->responseCode() != 200) {
+      print STDERR "Error calling PUT [" . $ListenClient->responseCode() . "] [" 
+                   . $ListenClient->responseContent() . "]\n";
+      return -($ListenClient->responseCode());
+   }
 
    eval {
       $parser->parse($postresult);
@@ -136,6 +157,11 @@ sub listenUpdate {
    if ($DEBUG) {
       print "GET Response      = ". $ListenClient->responseContent(). "\n";
       print "GET Response code = ". $ListenClient->responseCode(). "\n";
+   }
+
+   if ($ListenClient->responseCode() != 200) {
+      print STDERR "Error calling PUT [" . $ListenClient->responseCode() . "]\n";
+      return -($ListenClient->responseCode());
    }
 
    if ($getresult ne $postresult) {
@@ -172,25 +198,37 @@ sub listenInsert {
    elsif ($reqtype eq "conference") {
      ($number, $adminpin, $started) = @reqdata;
 
-      $reqxml .= "<adminPin>$adminpin</adminPin><isStarted>$started</isStarted><number>$number</number>";
+      $reqxml .= "<adminPin>$adminpin</adminPin>
+                  <isStarted>$started</isStarted>
+                  <number>$number</number>";
    }
 
    elsif ($reqtype eq "participant") {
       ($number, $conference, $audio, $admin,
        $admute, $holding, $muted, $session) = @reqdata;
 
-      $reqxml .= "<audioResource>$audio</audioResource><conference href=\"/conferences/$conference\"/><isAdmin>$admin</isAdmin><isHolding>$holding</isHolding><isMuted>$muted</isMuted><isAdminMuted>$admute</isAdminMuted><number>$number</number><sessionID>$session</sessionID>";
+      $reqxml .= "<audioResource>$audio</audioResource>
+                  <conference href=\"/conferences/$conference\"/>
+                  <isAdmin>$admin</isAdmin>
+                  <isHolding>$holding</isHolding>
+                  <isMuted>$muted</isMuted>
+                  <isAdminMuted>$admute</isAdminMuted>
+                  <number>$number</number>
+                  <sessionID>$session</sessionID>";
    }
 
    elsif ($reqtype eq "voicemail") {
       ($id, $created, $location, $isnew) = @reqdata;
 
-         $reqxml .= "<dateCreated>$created</dateCreated><fileLocation>$location</fileLocation><isNew>$isnew</isNew><subscriber href=\"/subscribers/$id\"/>";
+         $reqxml .= "<dateCreated>$created</dateCreated>
+                     <fileLocation>$location</fileLocation>
+                     <isNew>$isnew</isNew>
+                     <subscriber href=\"/subscribers/$id\"/>";
    }
 
    $reqxml .= "</$reqtype>";
 
-   print "XML = $reqxml\n";
+   if ($DEBUG) { print "XML = $reqxml\n"; }
    $ListenClient->POST("/$reqtype"."s",$reqxml,{CustomHeader => 'Content-Type: appliceation/xml;charset=UTF-8'});
 
    if ($DEBUG) {
@@ -199,6 +237,11 @@ sub listenInsert {
    }
 
    my ($postresult) = $ListenClient->responseContent();
+
+   if ($ListenClient->responseCode() != 201) {
+      print STDERR "Error Could not create record with POST [" . $ListenClient->responseCode() . "]\n";
+      return -($ListenClient->responseCode());
+   }
 
    my $parser = XML::Parser->new(ErrorContext => 2);
 
@@ -224,6 +267,11 @@ sub listenInsert {
    if ($DEBUG) {
       print "GET Response      = ". $ListenClient->responseContent(). "\n";
       print "GET Response code = ". $ListenClient->responseCode(). "\n";
+   }
+
+   if ($ListenClient->responseCode() != 200) {
+      print STDERR "Error with GET [" . $ListenClient->responseCode() . "]\n";
+      return -($ListenClient->responseCode());
    }
 
    if ($getresult ne $postresult) {

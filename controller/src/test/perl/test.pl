@@ -8,7 +8,7 @@ use ListenRestore;
 
 my (%options);
 
-getopt("hptd", \%options);
+getopts("h:p:t:d", \%options);
 
 check_options();
 
@@ -28,30 +28,25 @@ sub usage {
 
 my @connection = (%options->{h}, %options->{p}, %options->{t}, %options->{d});
 
-
+my ($subid, $conid, $parid, $voiid);
 ### Inserts
-for (my $cnt = 14024750789; $cnt < 14024750889; ++$cnt) {
-   insertTest("subscriber", @connection, $cnt);
-}
-#my $subid = insertTest("subscriber", @connection, 14024750789);
-#my $conid = insertTest("conference", @connection, 14024750789, 123, "false");
-#my $parid = insertTest("participant", @connection, 14024750789, 1, "/interact/audio/123.wav", "false", "false", "true", 987654);
-#my $voiid = insertTest("voicemail", @connection, $subid, "2009-10-11T00:00:00.000", "/interact/audio/123.wav", "true");
+for (my $cnt = 14024750789; $cnt < 14024750791; ++$cnt) {
+   $subid = listenInsert("subscriber", @connection, $cnt, "/interact/audio/greeting/");
+   if ($subid <= 0) { print STDOUT "Error processing subscriber request. [$subid] Exiting.\n"; last;}
+   $voiid = listenInsert("voicemail", @connection, $subid, "2009-10-11T00:00:00.000", "/interact/audio/123.wav", "true");
+   if ($voiid <= 0) { print STDOUT "Error processing voicemail request. [$voiid] Exiting.\n"; last;}
 
-#my $subid = insertTest("subscriber", @connection, 14024750799);
+   $conid = listenInsert("conference", @connection, $cnt, 123, "false");
+   if ($conid <= 0) { print STDOUT "Error processing conference request. [$conid] Exiting.\n"; last;}
+   $parid = listenInsert("participant", @connection, $cnt, 1, "/interact/audio/123.wav", "false", "false", "false", "true", $cnt);
+   if ($parid <= 0) { print STDOUT "Error processing participant request. [$parid] Exiting.\n"; last;}
+}
 
 #print "Subid = $subid\n";
 
-#deleteTest("subscriber", @connection, $subid);
-
+#listenUpdate("subscriber", @connection, $subid, 14024750789);
+listenUpdate("subscriber", @connection, 2, 14024750789);
+#listenDelete("subscriber", @connection, $subid);
 ### Updates
-#updateTest("subscriber", @connection, $subid, 14023158299);
 
-### Backup test. This does not do a delete so you
-### will need to handle clearing out the tables.
-### Easiest way would be to restart the listener.
-#backupRequest("subscriber", "blah");
-
-####Restore test
-#loadRequest("subscriber", "blah");
 print "\nDONE\n";

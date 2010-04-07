@@ -1,3 +1,9 @@
+#=======================================================
+# Name: ListenBackup.pm
+#
+# Description: Library for handling tbe backup requests
+#    for the Listen product.
+#=======================================================
 use strict;
 
 package ListenBackup;
@@ -15,6 +21,65 @@ use Data::Dumper;
 
 my $ListenClient;
 my $DEBUG = FALSE;
+
+=head1 NAME
+
+ListenBackup - Listen backup funtions
+
+=head1 SYNOPSIS
+
+   use ListenBackup;
+   Backup($reqtype, $host, $port, $timeout, $debug, $filename)
+   BackupSubscriber($host, $port, $timeout, $debug, $number)
+
+=head1 DESCRIPTION
+
+   A collection of subroutines to facilitate the backing up
+        of Listen data.
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item * Backup($reqtype, $host, $port, $timeout, $debug, $filename)
+
+   Accepts $reqtype, $host, $port, $timeout, $debug, $filename
+   Returns 0 for success, else error number
+
+=item * BackupSubscriber($host, $port, $timeout, $debug, $number)
+
+   Accepts $host, $port, $timeout, $debug, $number
+   Returns 0 for success, else error number
+
+=back
+
+=head1 AUTHOR
+
+Kevin Murray (murrayk@iivip.com)
+
+=head1 COPYRIGHT
+
+Copyright 2010 Interact Incorporated.
+
+=cut
+
+sub Backup {
+   my ($reqtype, $host, $port,
+       $timeout, $debug, $filename) = @_;
+
+   setListenClient($host, $port, $timeout, $debug);
+
+   if ($DEBUG) {
+      print "Input = $reqtype $filename\n";
+   }
+
+   if ($reqtype eq "subscriber" || $reqtype eq "conference") {
+      return (backupRequest($reqtype, $filename));
+   }
+   else {
+      print STDERR "You entered an invalid thing to backup\n";
+   }
+}
 
 sub setListenClient {
 
@@ -68,24 +133,6 @@ sub BackupSubscriber {
    close OUTFILE;
 }
 
-sub Backup {
-   my ($reqtype, $host, $port,
-       $timeout, $debug, $filename) = @_;
-
-   setListenClient($host, $port, $timeout, $debug);
-
-   if ($DEBUG) {
-      print "Input = $reqtype $filename\n";
-   }
-
-   if ($reqtype eq "subscriber" || $reqtype eq "conference") {
-      backupRequest($reqtype, $filename);
-   }
-   else {
-      print STDERR "You entered an invalid thing to backup\n";
-   }
-}
-
 sub backupRequest {
 
    my ($reqtype, $filename) = @_;
@@ -108,11 +155,19 @@ sub backupRequest {
       open(OUTFILE, ">$filename") || die "Can't open [$filename] $!\n";
 
       my $done = 0;
+      my $rc = 0;
 
       while (!$done) {
 
          for (my $x = 0; $x < $count; ++$x) {
             my ($response) = $ListenClient->GET($ref->{$reqtype."s"}[0]->{$reqtype}[$x]->{href})->responseContent();
+
+            if ($ListenClient->responseCode() != 200) {
+               print STDERR "There was an error getting requests error returned [" . $ListenClient->responseCode() . "]\n";
+               close OUTFILE;
+               return $ListenClient->repsonseCode();
+            }
+
             print OUTFILE "$response\n";
 
             my $subxs = XML::Simple->new(KeyAttr=>"$reqtype", ForceArray=>1,KeepRoot=>1);
@@ -123,10 +178,16 @@ sub backupRequest {
             }
 
             if ($reqtype eq "subscriber") {
-               backupDependencies($subref->{$reqtype}[0]->{voicemails}[0]->{href}, "voicemail");
+               $rc = backupDependencies($subref->{$reqtype}[0]->{voicemails}[0]->{href}, "voicemail");
             }
             elsif ($reqtype eq "conference") {
-               backupDependencies($subref->{$reqtype}[0]->{participants}[0]->{href}, "participant");
+               $rc = backupDependencies($subref->{$reqtype}[0]->{participants}[0]->{href}, "participant");
+            }
+
+            if ($rc != 0) {
+               print STDERR "There was an error getting dependencies [$rc]. Exiting!\n";
+               close OUTFILE;
+               return $rc; 
             }
          }
 
@@ -147,12 +208,13 @@ sub backupRequest {
          }
 
       }
-      close(INFILE);
+      close(OUTFILE);
    }
 
    else {
       print STDOUT "There were no $reqtype" . "s found! Backup file was not created.\n";
    }
+   return 0;
 }
 
 sub backupDependencies {
@@ -177,6 +239,12 @@ sub backupDependencies {
    while (!$done) {
       for (my $x = 0; $x < $count; ++$x) {
          my ($response) = $ListenClient->GET($ref->{$reqtype."s"}[0]->{$reqtype}[$x]->{href})->responseContent();
+
+         if ($ListenClient->responseCode() != 200) {
+            print STDERR "There was an error getting requests error returned [" . $ListenClient->responseCode() . "]\n";
+            return $ListenClient->repsonseCode();
+         }
+
          print OUTFILE "$response\n";
 
          my $subxs = XML::Simple->new(KeyAttr=>"$reqtype", ForceArray=>1,KeepRoot=>1);
