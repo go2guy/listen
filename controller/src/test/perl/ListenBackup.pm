@@ -154,7 +154,7 @@ sub backupRequest {
 
       open(OUTFILE, ">$filename") || die "Can't open [$filename] $!\n";
 
-      my $done = 0;
+      my $done = FALSE;
       my $rc = 0;
 
       while (!$done) {
@@ -192,7 +192,7 @@ sub backupRequest {
          }
 
          if ($next eq undef) {
-            $done = 1;
+            $done = TRUE;
          }
          else {
             $ListenClient->GET($next);

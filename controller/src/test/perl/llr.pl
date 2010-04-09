@@ -37,8 +37,8 @@ sub usage {
    print STDOUT "\n\t\t -r is for restore.\n";
    print STDOUT "\n\t\t -p <port> is optional. If your host requires a port, use this\n";
    print STDOUT "\n\t\t -t <timeout> is optional and defaults to 5.\n";
-   print STDOUT "\n\t\t -d is debug.\n";
-   print STDOUT "\n\t\t -n <subscriber number> this option is for backing up an individual subscriber.\n";
+   print STDOUT "\n\t\t -d is debug. Use this flag to turn on debugging\n";
+   print STDOUT "\n\t\t -n <subscriber number> this option is for backing up or restoring an individual subscriber.\n";
    print STDOUT "\t\t You will not need the -s option if using -n. The filename will be the subscribers number\n";
 }
 

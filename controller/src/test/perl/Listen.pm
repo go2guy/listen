@@ -9,17 +9,21 @@ use strict;
 package Listen;
 require Exporter;
 
+use constant TRUE  => 1;
+use constant FALSE => 0;
 ### Uncomment this when ready for install
 #use lib "/interact/listen/perl";
 
 our @ISA    = qw(Exporter);
-our @EXPORT = qw(listenInsert listenUpdate listenDelete);
+our @EXPORT = qw(listenInsert listenUpdate listenDelete listenGetIDs);
 
-require REST::Client;
-require XML::Parser;
-require XML::XPath;
+use REST::Client;
+use XML::Parser;
+use XML::XPath;
+use XML::Simple;
+use Data::Dumper;
 
-my $DEBUG = 0;
+my $DEBUG = FALSE;
 my $ListenClient;
 
 =head1 NAME
@@ -107,7 +111,7 @@ sub setListenClient {
    my $sendto;
 
    if ($timeout eq undef) { $timeout = 5; }
-   if ($debug) { $DEBUG = 1; }
+   if ($debug) { $DEBUG = TRUE; }
 
    if ($DEBUG) {
       print "host = $host port = $port timeout = $timeout\n";
@@ -124,6 +128,62 @@ sub setListenClient {
                 host => $sendto,
                 timeout => $timeout,
                 });
+}
+
+sub listenGetIDs {
+   
+   my ($reqtype,$host,$port,$timeout,$debug) = @_;
+
+   my @resultarray;
+
+   setListenClient($host,$port,$timeout,$debug);
+
+   my $reqlist = $ListenClient->GET("/$reqtype"."s")->responseContent();
+
+   my $xs = XML::Simple->new(KeyAttr => "$reqtype"."s", ForceArray => 1, KeepRoot => 1);
+   my $ref = $xs->XMLin($reqlist);
+
+   my $count = $ref->{$reqtype."s"}[0]->{count};
+   my $total = $ref->{$reqtype."s"}[0]->{total};
+   my $next = $ref->{$reqtype."s"}[0]->{next};
+
+   if ($count > 0) {
+
+      my $done = FALSE;
+
+      while (!$done) {
+
+         for (my $x = 0; $x < $count; ++$x) {
+
+            my ($response) = $ListenClient->GET($ref->{$reqtype."s"}[0]->{$reqtype}[$x]->{href})->responseContent();
+
+            if ($ListenClient->responseCode() != 200) {
+               print STDERR "There was an error getting requests, error returned [" . $ListenClient->responseCode() . "]\n";
+               exit;
+            }
+
+            my $subxs = XML::Simple->new(KeyAttr => "$reqtype", ForceArray => 1, KeepRoot => 1);
+            my $subref = $subxs->XMLin($response);     
+
+            if ($DEBUG) { print Dumper($subref); }
+
+            push (@resultarray, $subref->{$reqtype}[0]->{id}[0]);
+
+            if ($next eq undef) {
+               $done = TRUE;
+            }
+            else {
+               $ListenClient->GET($next);
+               $reqlist = $ListenClient->responseContent();
+               $ref     = $xs->XMLin($reqlist);
+               $count   = $ref->{subscribers}[0]->{count};
+               $total   = $ref->{subscribers}[0]->{total};
+               $next    = $ref->{subscribers}[0]->{next};
+            }
+         }
+      }
+   return @resultarray;
+   }
 }
 
 sub listenDelete {
@@ -145,27 +205,43 @@ sub listenDelete {
       return -($ListenClient->responseCode());
    }
    else {
-      print STDOUT "$reqtype $id was successfully DELETED\n";
+      if ($DEBUG) { print STDOUT "$reqtype $id was successfully DELETED\n"; }
       return 0;
    }
+}
+
+sub getVersion {
+ 
+   my ($reqtype, $reqid) = @_;
+
+   my ($getresult) = $ListenClient->GET("/$reqtype"."s/$reqid")->responseContent();
+   
+   my $xs = XML::Simple->new(KeyAttr => "$reqtype"."s", ForceArray => 1, KeepRoot => 1);
+   my $ref = $xs->XMLin($getresult);
+
+   return $ref->{$reqtype}[0]->{version}[0];
 }
 
 sub listenUpdate {
 
    my ($id, $vid, $number, $adminpin, $started, $admute);
    my ($audio, $admin, $holding, $muted, $session);
-   my ($created, $location, $isnew, $conference);
+   my ($created, $location, $isnew, $conference, $version);
 
    my ($reqtype,$host,$port,$timeout,$debug,@reqdata) = @_;
 
    setListenClient($host,$port,$timeout,$debug);
+
 
    my $reqxml    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
    if ($reqtype eq "subscriber") {
       ($id,$number,$location,$adminpin) = @reqdata;
 
-      $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\"><number>$number</number>";
+      $version = getVersion($reqtype, $id);
+      $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\">
+                     <number>$number</number>
+                     <version>$version</version>";
 
       if ($location ne undef) {
          $reqxml .= "<voicemailGreetingLocation>$location</voicemailGreetingLocation>";
@@ -178,9 +254,11 @@ sub listenUpdate {
    elsif ($reqtype eq "conference") {
      ($id,$number, $adminpin, $started) = @reqdata;
 
+      $version = getVersion($reqtype, $id);
       $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\">
                      <adminPin>$adminpin</adminPin>
                      <isStarted>$started</isStarted>
+                     <version>$version</version>
                      <number>$number</number>";
    }
 
@@ -188,6 +266,7 @@ sub listenUpdate {
       ($id,$number, $conference, $audio, $admin,
        $admute, $holding, $muted, $session) = @reqdata;
 
+      $version = getVersion($reqtype, $id);
       $reqxml .= "<$reqtype href=\"/$reqtype"."s/$id\">
                      <audioResource>$audio</audioResource>
                      <conference href=\"/conferences/$conference\"/>
@@ -196,17 +275,20 @@ sub listenUpdate {
                      <isAdminMuted>$admute</isAdminMuted>
                      <isMuted>$muted</isMuted>
                      <number>$number</number>
+                     <version>$version</version>
                      <sessionID>$session</sessionID>";
    }
 
    elsif ($reqtype eq "voicemail") {
       ($vid, $id, $created, $location, $isnew) = @reqdata;
 
-         $reqxml .= "<$reqtype href=\"/$reqtype"."s/$vid\">
-                        <dateCreated>$created</dateCreated>
-                        <fileLocation>$location</fileLocation>
-                        <isNew>$isnew</isNew>
-                        <subscriber href=\"/subscribers/$id\"/>";
+      $version = getVersion($reqtype, $id);
+      $reqxml .= "<$reqtype href=\"/$reqtype"."s/$vid\">
+                     <dateCreated>$created</dateCreated>
+                     <fileLocation>$location</fileLocation>
+                     <isNew>$isnew</isNew>
+                     <version>$version</version>
+                     <subscriber href=\"/subscribers/$id\"/>";
    }
 
    $reqxml .= "</$reqtype>";
@@ -217,8 +299,8 @@ sub listenUpdate {
 
    if ($DEBUG) {
       print "XML = $reqxml\n";
-      print "POST Response      = " . $ListenClient->responseContent() . "\n";
-      print "POST Response code = " . $ListenClient->responseCode() . "\n";
+      print "PUT Response      = " . $ListenClient->responseContent() . "\n";
+      print "PUT Response code = " . $ListenClient->responseCode() . "\n";
    }
 
    my $parser = XML::Parser->new(ErrorContext => 2);
@@ -364,6 +446,7 @@ sub listenInsert {
    if ($DEBUG) {
       print "GET Response      = " . $ListenClient->responseContent() . "\n";
       print "GET Response code = " . $ListenClient->responseCode() . "\n";
+      print "GET Response ID = " . $checkid[0] ."\n";
    }
 
    if ($ListenClient->responseCode() != 200) {
