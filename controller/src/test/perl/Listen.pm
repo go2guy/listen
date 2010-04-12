@@ -147,11 +147,14 @@ sub listenGetIDs {
    my $total = $ref->{$reqtype."s"}[0]->{total};
    my $next = $ref->{$reqtype."s"}[0]->{next};
 
+   if ($DEBUG) { print "Count $count Total $total Next $next\n"; }
+
    if ($count > 0) {
 
       my $done = FALSE;
 
       while (!$done) {
+         print "Count $count Total $total Next $next\n";
 
          for (my $x = 0; $x < $count; ++$x) {
 
@@ -159,7 +162,7 @@ sub listenGetIDs {
 
             if ($ListenClient->responseCode() != 200) {
                print STDERR "There was an error getting requests, error returned [" . $ListenClient->responseCode() . "]\n";
-               exit;
+               return -($ListenClient->responseCode());
             }
 
             my $subxs = XML::Simple->new(KeyAttr => "$reqtype", ForceArray => 1, KeepRoot => 1);
@@ -168,22 +171,21 @@ sub listenGetIDs {
             if ($DEBUG) { print Dumper($subref); }
 
             push (@resultarray, $subref->{$reqtype}[0]->{id}[0]);
-
-            if ($next eq undef) {
-               $done = TRUE;
-            }
-            else {
-               $ListenClient->GET($next);
-               $reqlist = $ListenClient->responseContent();
-               $ref     = $xs->XMLin($reqlist);
-               $count   = $ref->{subscribers}[0]->{count};
-               $total   = $ref->{subscribers}[0]->{total};
-               $next    = $ref->{subscribers}[0]->{next};
-            }
+         }
+         if ($next eq undef) {
+            $done = TRUE;
+         }
+         else {
+            $ListenClient->GET($next);
+            $reqlist = $ListenClient->responseContent();
+            $ref     = $xs->XMLin($reqlist);
+            $count   = $ref->{$reqtype."s"}[0]->{count};
+            $total   = $ref->{$reqtype."s"}[0]->{total};
+            $next    = $ref->{$reqtype."s"}[0]->{next};
          }
       }
-   return @resultarray;
    }
+   return @resultarray;
 }
 
 sub listenDelete {
@@ -201,7 +203,8 @@ sub listenDelete {
 
    if ($ListenClient->responseCode() != 200 &&
        $ListenClient->responseCode() != 204 ) {
-      print STDOUT "$reqtype $id was not DELETED, error returned " . $ListenClient->responseCode() . "\n";
+      print STDOUT "$reqtype $id was not DELETED, error returned [" . $ListenClient->responseCode() . "] [" .
+                   $ListenClient->responseContent() . "]\n";
       return -($ListenClient->responseCode());
    }
    else {
@@ -219,6 +222,10 @@ sub getVersion {
    my $xs = XML::Simple->new(KeyAttr => "$reqtype"."s", ForceArray => 1, KeepRoot => 1);
    my $ref = $xs->XMLin($getresult);
 
+   if ($ListenClient->responseCode != 200) {
+      print STDERR "Error with version GET [" . $ListenClient->responseCode() . "] [$getresult]\n";
+      return -($ListenClient->responseCode());
+   }
    return $ref->{$reqtype}[0]->{version}[0];
 }
 
@@ -231,7 +238,6 @@ sub listenUpdate {
    my ($reqtype,$host,$port,$timeout,$debug,@reqdata) = @_;
 
    setListenClient($host,$port,$timeout,$debug);
-
 
    my $reqxml    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
@@ -293,6 +299,8 @@ sub listenUpdate {
 
    $reqxml .= "</$reqtype>";
 
+   if ($version < 0) { return $version; }
+
    $ListenClient->PUT("/$reqtype"."s/$id", $reqxml, {CustomHeader => 'Content-Type: application/xml;charset=UTF-8'});
 
    my ($postresult) = $ListenClient->responseContent();
@@ -336,7 +344,7 @@ sub listenUpdate {
    }
 
    if ($ListenClient->responseCode() != 200) {
-      print STDERR "Error calling PUT [" . $ListenClient->responseCode() . "]\n";
+      print STDERR "Error calling PUT [" . $ListenClient->responseCode() . "] [" . $ListenClient->responseContent() . "]\n";
       return -($ListenClient->responseCode());
    }
 
@@ -418,7 +426,8 @@ sub listenInsert {
    my ($postresult) = $ListenClient->responseContent();
 
    if ($ListenClient->responseCode() != 201) {
-      print STDERR "Error Could not create record with POST [" . $ListenClient->responseCode() . "]\n";
+      print STDERR "Error Could not create record $reqtype with POST [" . $ListenClient->responseCode() . "] [" .
+                    $ListenClient->responseContent() . "]\n";
       return -($ListenClient->responseCode());
    }
 
@@ -450,7 +459,7 @@ sub listenInsert {
    }
 
    if ($ListenClient->responseCode() != 200) {
-      print STDERR "Error with GET [" . $ListenClient->responseCode() . "]\n";
+      print STDERR "Error with GET [" . $ListenClient->responseCode() . "] [" . $ListenClient->responseContent() . "]\n";
       return -($ListenClient->responseCode());
    }
 
