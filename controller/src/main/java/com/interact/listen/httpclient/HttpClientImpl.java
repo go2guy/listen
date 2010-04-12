@@ -1,0 +1,112 @@
+package com.interact.listen.httpclient;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+
+public class HttpClientImpl implements HttpClient
+{
+    private boolean requestMade = false;
+    private Integer responseStatus;
+    private String responseEntity;
+
+    @Override
+    public void post(String uri, Map<String, String> params) throws IOException
+    {
+        HttpPost request = new HttpPost();
+        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        post(uri, buildQueryString(params));
+    }
+
+    @Override
+    public void post(String uri, String entityContent) throws IOException
+    {
+        HttpPost request = new HttpPost();
+        performEntityEnclosingRequest(request, entityContent);
+    }
+
+    @Override
+    public Integer getResponseStatus()
+    {
+        if(!requestMade)
+        {
+            throw new IllegalStateException("You must make a request before getting the response status");
+        }
+        return responseStatus;
+    }
+
+    @Override
+    public String getResponseEntity()
+    {
+        if(!requestMade)
+        {
+            throw new IllegalStateException("You must make a request before getting the response entity");
+        }
+        return responseEntity;
+    }
+
+    private void performEntityEnclosingRequest(HttpEntityEnclosingRequestBase request, String entityContent)
+        throws IOException
+    {
+        try
+        {
+            HttpEntity entity = new StringEntity(entityContent, "UTF-8");
+            request.setEntity(entity);
+            performRequest(request);
+        }
+        catch(UnsupportedEncodingException e)
+        {
+            throw new AssertionError(e);
+        }
+    }
+
+    private void performRequest(HttpRequestBase request) throws IOException
+    {
+        org.apache.http.client.HttpClient client = new DefaultHttpClient();
+        HttpContext context = new BasicHttpContext();
+
+        requestMade = true;
+        HttpResponse response = client.execute(request, context);
+
+        this.responseStatus = response.getStatusLine().getStatusCode();
+        this.responseEntity = getEntity(response);
+    }
+
+    private static String getEntity(HttpResponse response) throws IOException
+    {
+        HttpEntity entity = response.getEntity();
+        if(entity == null)
+        {
+            return null;
+        }
+
+        String entityString = EntityUtils.toString(entity);
+        entity.consumeContent(); // reads any remaining content from the stream (avoids leaving stuff on the stream)
+        return entityString;
+    }
+
+    private static String buildQueryString(Map<String, String> params)
+    {
+        StringBuilder builder = new StringBuilder();
+        for(Map.Entry<String, String> entry : params.entrySet())
+        {
+            builder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+        }
+        if(params.size() > 0)
+        {
+            builder.deleteCharAt(builder.length() - 1); // delete last '&'
+        }
+        return builder.toString();
+    }
+}

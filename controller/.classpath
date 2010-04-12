@@ -24,5 +24,9 @@
 	<classpathentry kind="lib" path="lib/runtime/slf4j-log4j12-1.5.8.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/json_simple-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/httpclient-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/httpcore-nio-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/httpmime-4.0.1.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>
