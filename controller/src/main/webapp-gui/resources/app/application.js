@@ -115,8 +115,8 @@ function logout() {
         type: 'POST',
         url: '/logout',
         success: showLogin,
-        error: function(data, status) {
-            alert('ERROR: ' + status);
+        error: function(req) {
+            noticeError(req.responseText);
         }
     });
 }
@@ -151,7 +151,7 @@ function muteParticipant(id) {
             noticeSuccess('Participant muted');
         },
         error: function(req) {
-            noticeError('Error muting participant: ' + req.status);
+            noticeError(req.responseText);
         }
     });
 }
@@ -165,7 +165,7 @@ function unmuteParticipant(id) {
             noticeSuccess('Participant unmuted');
         },
         error: function(req) {
-            noticeError('Error unmuting participant: ' + req.status);
+            noticeError(req.responseText);
         }
     });
 }
@@ -179,7 +179,7 @@ function dropParticipant(id) {
             noticeSuccess('Participant dropped');
         },
         error: function(req) {
-            noticeError('Error dropping participant: ' + req.status);
+            noticeError(req.responseText);
         }
     });
 }

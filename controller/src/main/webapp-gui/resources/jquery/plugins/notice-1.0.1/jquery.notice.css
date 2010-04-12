@@ -16,7 +16,7 @@
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
 	color: #eee;
-	padding: 6px 6px 0 6px;
+	padding: 15px 6px 0 6px;
 /*	font-family: lucida Grande;
 	font-size: 11px;*/
 	border: 2px solid #999;
@@ -33,4 +33,5 @@
 	right: 6px;
 	top: 6px;
 	cursor: pointer;
+	color: #CCC;
 }
