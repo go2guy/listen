@@ -93,7 +93,12 @@ public class ApiServlet extends HttpServlet
             {
                 // id provided, request is looking for a specific resource
 
-                // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
+                if(!isValidResourceId(attributes.getId()))
+                {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+
                 long s = time();
                 Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
                 transaction.commit();
@@ -285,7 +290,12 @@ public class ApiServlet extends HttpServlet
             String className = getResourceClassName(attributes.getName());
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
-            // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
+            if(!isValidResourceId(attributes.getId()))
+            {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+
             Resource currentResource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
 
             if(currentResource == null)
@@ -419,7 +429,12 @@ public class ApiServlet extends HttpServlet
             String className = getResourceClassName(attributes.getName());
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
-            // TODO verify that id is parseable as a Long first; if not, respond with 400 + error information
+            if(!isValidResourceId(attributes.getId()))
+            {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+
             long s = time();
             Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
             System.out.println("TIMER: get() took " + (time() - s) + "ms");
@@ -606,6 +621,19 @@ public class ApiServlet extends HttpServlet
             }
         }
         return fields;
+    }
+
+    private static boolean isValidResourceId(String id)
+    {
+        try
+        {
+            Long.parseLong(id);
+            return true;
+        }
+        catch(NumberFormatException e)
+        {
+            return false;
+        }
     }
 
     private long time()
