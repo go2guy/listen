@@ -33,6 +33,12 @@
 	<var name="SB_UV_hostName"/>
 	<var name="SB_UV_FILE1"/>
 	<var name="SB_UV_OPERATION"/>
+	<var name="SB_UV_request"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_params"/>
+	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_audioURL"/>
+	<var name="SB_UV_filePath"/>
 
     
     <form id="beginDocument">
@@ -90,6 +96,24 @@
 			</if>
 			<if cond="SB_UV_OPERATION != undefined">
 				<assign name="OPERATION" expr="SB_UV_OPERATION" />
+			</if>
+			<if cond="SB_UV_request != undefined">
+				<assign name="request" expr="SB_UV_request" />
+			</if>
+			<if cond="SB_UV_resource != undefined">
+				<assign name="resource" expr="SB_UV_resource" />
+			</if>
+			<if cond="SB_UV_params != undefined">
+				<assign name="params" expr="SB_UV_params" />
+			</if>
+			<if cond="SB_UV_cntrlURL != undefined">
+				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
+			</if>
+			<if cond="SB_UV_audioURL != undefined">
+				<assign name="audioURL" expr="SB_UV_audioURL" />
+			</if>
+			<if cond="SB_UV_filePath != undefined">
+				<assign name="filePath" expr="SB_UV_filePath" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

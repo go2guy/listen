@@ -12,7 +12,7 @@
 	    <log target="status">Set File URL</log>
             <log>INFO: Entered assign-variable.vxml [54-21]</log>
             <log>INFO: FILE1 current value [<value expr="FILE1"/>]</log> <!-- Log current value. Update variable and log updated value -->
-            <assign name="FILE1" expr="FILE1 + fileLocation"/>
+            <assign name="FILE1" expr="filePath + fileLocation"/>
             <log>INFO: FILE1 updated to [<value expr="FILE1"/>]</log>
             <if cond="II_SB_assign_NxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_assign_NxtOpt"/>.vxml]</log>

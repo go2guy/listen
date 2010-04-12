@@ -5,7 +5,7 @@
 	   *   @Name   record-audio.vxml
 	   *   @Desc   Records an audio file -->
 
-	<var name="II_SB_nextOpt" expr="'55-13'"/>           <!--  Name of next vxml template -->
+	<var name="II_SB_nextOpt" expr="'55-24'"/>           <!--  Name of next vxml template -->
 	<var name="II_SB_recName" expr="fileLocation"/>    <!--  Name of the recorded file -->
 	<var name="II_SB_playBeep" expr="'true'"/>          <!--  Play beep before recording starts -->
     <var name="II_SB_dtmfTerm" expr="'true'"/>    <!--  Allow dtfm key press to terminate recording -->

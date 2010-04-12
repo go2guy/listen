@@ -5,16 +5,18 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'53-62'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'54-4'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(DNIS)
+            function II_SB_JS_function(ANI,subID)
             {
-	                var digits = new String();
-    var strObj =  new String(DNIS);
+	                var dateObj = new Date();
+    var outStr = new String();
+    var digits = new String();
+    var strObj =  new String(ANI);
     var loc1 = 0;
-    var loc2 = DNIS.length;
+    var loc2 = ANI.length;
     if (strObj.indexOf('sip:')     != -1) {loc1 = strObj.indexOf('sip:')     + 4}
     if (strObj.indexOf('sip:+')    != -1) {loc1 = strObj.indexOf('sip:+')    + 5}
     if (strObj.indexOf('sip:ext')  != -1) {loc1 = strObj.indexOf('sip:ext')  + 7}
@@ -27,17 +29,26 @@
     if (strObj.indexOf(';')        != -1) {loc2 = strObj.indexOf(';')}
     if (strObj.indexOf('@')        != -1) {loc2 = strObj.indexOf('@')}
     digits = strObj.substring(loc1,loc2);
-    return digits
+
+    outStr = outStr.concat(dateObj.getFullYear());
+    outStr = outStr.concat((dateObj.getMonth() < 9 ? "0" : ""), (dateObj.getMonth()+1));
+    outStr = outStr.concat((dateObj.getDate() < 10 ? "0" : ""), dateObj.getDate());
+    outStr = outStr.concat((dateObj.getHours() < 10? "0" : ""),  dateObj.getHours());
+    outStr = outStr.concat((dateObj.getMinutes() < 10? "0" : ""), dateObj.getMinutes());
+    outStr = outStr.concat((dateObj.getSeconds() < 10? "0" : ""), dateObj.getSeconds());          
+
+    return digits + "_" + outStr + "_" + subID;
+
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Sub ID</log>
-            <log>INFO: Entered run-javascript.vxml [53-4]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(DNIS)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="subID" expr="II_SB_userJava" />   
+            <log target="status">Set Filename</log>
+            <log>INFO: Entered run-javascript.vxml [54-31]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(ANI,subID)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="fileLocation" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

@@ -14,10 +14,10 @@
         <block>
     	    <log target="status">Validate Mailbox</log>
             <log>INFO: Entered data-query.vxml [53-5]</log>
-            <data name="validate" src="http://localhost/spot/cgi-bin/spotbuild/listen/validate.php" method="get" namelist="dataItem whichRsrc controller " fetchtimeout="II_SB_dataTimeOut"/>
-			<assign name="status" expr="validate.Status" />
-			<assign name="returnVal" expr="validate.Result" />
-			<assign name="returnStr" expr="validate.Reason" />
+            <data name="apiObj" src="http://localhost/spot/cgi-bin/spotbuild/listen/controller.php" method="get" namelist="cntrlURL request resource params " fetchtimeout="II_SB_dataTimeOut"/>
+			<assign name="status" expr="apiObj.Status" />
+			<assign name="returnVal" expr="apiObj.Result" />
+			<assign name="returnStr" expr="apiObj.Reason" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>

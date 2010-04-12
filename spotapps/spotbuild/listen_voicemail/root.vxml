@@ -44,6 +44,12 @@
 	<var name="hostName" expr="'listenspotbuild:/interact/apps/spotbuild/listen_voicemail/audio/'" />
 	<var name="FILE1" expr="'/interact/apps/spotbuild/listen_voicemail/audio/'" />
 	<var name="OPERATION" expr="'stat'" />
+	<var name="request" expr="'get'" />
+	<var name="resource" expr="'subscribers'" />
+	<var name="params" expr="''" />
+	<var name="cntrlURL" expr="'http://apps4:8080/listen-controller'" />
+	<var name="audioURL" expr="''" />
+	<var name="filePath" expr="'/interact/apps/spotbuild/listen_voicemail/audio/'" />
 
 
     <!-- Conference Variables -->
