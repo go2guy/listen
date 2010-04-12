@@ -182,13 +182,7 @@ public class ApiServlet extends HttpServlet
             Resource resource = marshaller.unmarshal(request.getInputStream(), resourceClass);
             System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
 
-            // Resource resource = (Resource)resourceClass.newInstance();
-            // String requestBody = this.readInputStreamContents(request.getInputStream());
-            // resource.loadFromXml(requestBody, false);
-            
-            resource.validate();
-
-            if(resource.hasErrors())
+            if(!resource.validate() && resource.hasErrors())
             {
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                                           "The resource you sent was invalid: " + resource.errors().toString(),
@@ -307,9 +301,8 @@ public class ApiServlet extends HttpServlet
             System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
 
             updatedResource.setId(Long.parseLong(attributes.getId()));
-            updatedResource.validate();
 
-            if(!updatedResource.hasErrors())
+            if(updatedResource.validate() && !updatedResource.hasErrors())
             {
                 s = time();
                 session.update(updatedResource);

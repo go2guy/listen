@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,12 +15,6 @@ public class ParticipantTest
     public void setUp()
     {
         participant = new Participant();
-    }
-
-    @After
-    public void tearDown()
-    {
-        participant = null;
     }
 
     @Test
@@ -46,6 +39,8 @@ public class ParticipantTest
     public void test_validate_validProperties_returnsNoErrors()
     {
         participant = getPopulatedParticipant();
+
+        assertTrue(participant.validate());
         assertFalse(participant.hasErrors());
     }
 
@@ -54,8 +49,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setAudioResource(null);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -64,8 +59,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setConference(null);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -74,8 +69,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setIsAdmin(null);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -84,8 +79,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setIsHolding(null);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -94,29 +89,29 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setIsMuted(null);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
-    
+
     @Test
     public void test_validate_nullIsAdminMuted_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setIsAdminMuted(null);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
-    
+
     @Test
     public void test_validate_isAdminAndIsAdminMuted_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
         participant.setIsAdmin(Boolean.TRUE);
         participant.setIsAdminMuted(Boolean.TRUE);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -125,8 +120,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setNumber(null);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -135,8 +130,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setNumber("");
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -145,8 +140,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setNumber(" ");
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -155,8 +150,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setSessionID(null);
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -165,8 +160,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setSessionID("");
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 
@@ -175,8 +170,8 @@ public class ParticipantTest
     {
         participant = getPopulatedParticipant();
         participant.setSessionID(" ");
-        participant.validate();
-        
+
+        assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
     }
 

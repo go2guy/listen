@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,12 +15,6 @@ public class ConferenceTest
     public void setUp()
     {
         conference = new Conference();
-    }
-
-    @After
-    public void tearDown()
-    {
-        conference = null;
     }
 
     @Test
@@ -73,8 +66,8 @@ public class ConferenceTest
     public void test_validate_validParameters_returnsNoErrors()
     {
         conference = getPopulatedConference();
-        conference.validate();
-        
+
+        assertTrue(conference.validate());
         assertFalse(conference.hasErrors());
     }
 
@@ -83,8 +76,8 @@ public class ConferenceTest
     {
         conference = getPopulatedConference();
         conference.setIsStarted(null);
-        conference.validate();
-        
+
+        assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
 
@@ -93,8 +86,8 @@ public class ConferenceTest
     {
         conference = getPopulatedConference();
         conference.setAdminPin(null);
-        conference.validate();
-        
+
+        assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
 
@@ -103,8 +96,8 @@ public class ConferenceTest
     {
         conference = getPopulatedConference();
         conference.setAdminPin("");
-        conference.validate();
-        
+
+        assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
 
@@ -113,8 +106,8 @@ public class ConferenceTest
     {
         conference = getPopulatedConference();
         conference.setAdminPin(" ");
-        conference.validate();
-        
+
+        assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
 
@@ -123,8 +116,8 @@ public class ConferenceTest
     {
         conference = getPopulatedConference();
         conference.setNumber(null);
-        conference.validate();
-        
+
+        assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
 
@@ -133,8 +126,8 @@ public class ConferenceTest
     {
         conference = getPopulatedConference();
         conference.setNumber("");
-        conference.validate();
-        
+
+        assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
 
@@ -143,8 +136,8 @@ public class ConferenceTest
     {
         conference = getPopulatedConference();
         conference.setNumber(" ");
-        conference.validate();
-        
+
+        assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
 

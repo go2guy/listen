@@ -89,11 +89,14 @@ public class Subscriber extends Resource implements Serializable
     }
 
     @Override
-    public void validate()
+    public boolean validate()
     {
+        boolean isValid = true;
         if(number == null || number.trim().equals(""))
         {
             addToErrors("Subscriber must have a number");
+            isValid = false;
         }
+        return isValid;
     }
 }

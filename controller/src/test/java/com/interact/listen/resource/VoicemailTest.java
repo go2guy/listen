@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,12 +17,6 @@ public class VoicemailTest
     public void setUp()
     {
         voicemail = new Voicemail();
-    }
-
-    @After
-    public void tearDown()
-    {
-        voicemail = null;
     }
 
     @Test
@@ -66,8 +59,8 @@ public class VoicemailTest
     public void test_validate_validProperties_returnsNoErrors()
     {
         voicemail = getPopulatedVoicemail();
-        voicemail.validate();
-        
+
+        assertTrue(voicemail.validate());
         assertFalse(voicemail.hasErrors());
     }
 
@@ -76,8 +69,8 @@ public class VoicemailTest
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setSubscriber(null);
-        voicemail.validate();
-        
+
+        assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
     }
 
@@ -86,8 +79,8 @@ public class VoicemailTest
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setDateCreated(null);
-        voicemail.validate();
-        
+
+        assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
     }
 
@@ -96,8 +89,8 @@ public class VoicemailTest
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setFileLocation(null);
-        voicemail.validate();
-        
+
+        assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
     }
 
@@ -106,8 +99,8 @@ public class VoicemailTest
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setFileLocation("");
-        voicemail.validate();
-        
+
+        assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
     }
 
@@ -116,8 +109,8 @@ public class VoicemailTest
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setFileLocation("  ");
-        voicemail.validate();
-        
+
+        assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
     }
 
@@ -126,8 +119,8 @@ public class VoicemailTest
     {
         voicemail = getPopulatedVoicemail();
         voicemail.setIsNew(null);
-        voicemail.validate();
-        
+
+        assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
     }
 

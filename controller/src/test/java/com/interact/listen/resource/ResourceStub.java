@@ -10,13 +10,15 @@ public class ResourceStub extends Resource
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
     }
-    
-    public void validate()
+
+    @Override
+    public boolean validate()
     {
-        // oookkkkkk......why am I here?
+        return true;
     }
 }

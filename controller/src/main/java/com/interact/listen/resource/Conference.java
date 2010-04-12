@@ -91,21 +91,28 @@ public class Conference extends Resource implements Serializable
     }
 
     @Override
-    public void validate()
+    public boolean validate()
     {
+        boolean isValid = true;
+
         if(isStarted == null)
         {
             addToErrors("isStarted cannot be null");
+            isValid = false;
         }
         
         if(adminPin == null || adminPin.trim().equals(""))
         {
             addToErrors("adminPin is required");
+            isValid = false;
         }
         
         if(number == null || number.trim().equals(""))
         {
             addToErrors("number is required");
+            isValid = false;
         }
+
+        return isValid;
     }
 }

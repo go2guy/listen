@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,12 +15,6 @@ public class SubscriberTest
     public void setUp()
     {
         subscriber = new Subscriber();
-    }
-
-    @After
-    public void tearDown()
-    {
-        subscriber = null;
     }
 
     @Test
@@ -41,7 +34,7 @@ public class SubscriberTest
 
         assertEquals(pin, subscriber.getVoicemailPin());
     }
-    
+
     @Test
     public void test_setId_withValidId_setsId()
     {
@@ -64,38 +57,38 @@ public class SubscriberTest
     public void test_validate_validProperties_returnsNoErrors()
     {
         subscriber = getPopulatedSubscriber();
-        subscriber.validate();
-        
+
+        assertTrue(subscriber.validate());
         assertFalse(subscriber.hasErrors());
     }
-    
+
     @Test
     public void test_validate_nullNumber_returnsHasErrors()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setNumber(null);
-        subscriber.validate();
-        
+
+        assertFalse(subscriber.validate());
         assertTrue(subscriber.hasErrors());
     }
-    
+
     @Test
     public void test_validate_blankVoicemailGreetingLocation_returnsNoErrors()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setVoicemailGreetingLocation("");
-        subscriber.validate();
-        
+
+        assertTrue(subscriber.validate());
         assertFalse(subscriber.hasErrors());
     }
-    
+
     @Test
-    public void test_validate_nullVoicemailGreetingLocation_returnsHasErrors()
+    public void test_validate_nullVoicemailGreetingLocation_returnsNoErrors()
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setVoicemailGreetingLocation(null);
-        subscriber.validate();
-        
+
+        assertTrue(subscriber.validate());
         assertFalse(subscriber.hasErrors());
     }
 
@@ -104,8 +97,8 @@ public class SubscriberTest
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setNumber("");
-        subscriber.validate();
-        
+
+        assertFalse(subscriber.validate());
         assertTrue(subscriber.hasErrors());
     }
 
@@ -114,8 +107,8 @@ public class SubscriberTest
     {
         subscriber = getPopulatedSubscriber();
         subscriber.setNumber(" ");
-        subscriber.validate();
-        
+
+        assertFalse(subscriber.validate());
         assertTrue(subscriber.hasErrors());
     }
 

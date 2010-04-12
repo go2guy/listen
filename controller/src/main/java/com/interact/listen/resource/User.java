@@ -16,13 +16,13 @@ public class User extends Resource implements Serializable
 
     @OneToOne
     private Subscriber subscriber;
-    
+
     @Column(nullable = false)
     private String username;
-    
+
     @Column(nullable = false)
     private String password;
-    
+
     public Long getId()
     {
         return id;
@@ -37,12 +37,12 @@ public class User extends Resource implements Serializable
     {
         return version;
     }
-    
+
     public void setVersion(Integer version)
     {
         this.version = version;
     }
-    
+
     public void setSubscriber(Subscriber subscriber)
     {
         this.subscriber = subscriber;
@@ -52,7 +52,7 @@ public class User extends Resource implements Serializable
     {
         return subscriber;
     }
-    
+
     public String getUsername()
     {
         return username;
@@ -62,7 +62,7 @@ public class User extends Resource implements Serializable
     {
         this.username = username;
     }
-    
+
     public String getPassword()
     {
         return password;
@@ -72,23 +72,28 @@ public class User extends Resource implements Serializable
     {
         this.password = password;
     }
-    
+
     @Override
-    public void validate()
+    public boolean validate()
     {
+        boolean isValid = true;
         if(subscriber == null)
         {
             addToErrors("subscriber cannot be null");
+            isValid = false;
         }
-        
+
         if(username == null)
         {
             addToErrors("username cannot be null");
+            isValid = false;
         }
-        
+
         if(password == null)
         {
             addToErrors("password cannot be null");
+            isValid = false;
         }
+        return isValid;
     }
 }

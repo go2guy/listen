@@ -22,19 +22,19 @@ public class Participant extends Resource implements Serializable
 
     @Column(nullable = false)
     private Boolean isAdmin;
-    
+
     @Column(nullable = false)
     private Boolean isHolding;
-    
+
     @Column(nullable = false)
     private Boolean isMuted;
-    
+
     @Column(nullable = false)
     private Boolean isAdminMuted;
-    
+
     @Column(nullable = false)
     private String audioResource;
-    
+
     @Column(nullable = false)
     private String sessionID;
 
@@ -87,7 +87,7 @@ public class Participant extends Resource implements Serializable
     {
         this.isMuted = muted;
     }
-    
+
     public Boolean getIsAdminMuted()
     {
         return isAdminMuted;
@@ -139,52 +139,65 @@ public class Participant extends Resource implements Serializable
     }
 
     @Override
-    public void validate()
+    public boolean validate()
     {
+        boolean isValid = true;
+
         if(audioResource == null)
         {
             addToErrors("audioResource cannot be null");
+            isValid = false;
         }
 
         if(conference == null)
         {
             addToErrors("conference cannot be null");
+            isValid = false;
         }
 
         if(isAdmin == null)
         {
             addToErrors("isAdmin cannot be null");
+            isValid = false;
         }
 
         if(isHolding == null)
         {
             addToErrors("isHolding cannot be null");
+            isValid = false;
         }
 
         if(isMuted == null)
         {
             addToErrors("isMuted cannot be null");
+            isValid = false;
         }
-        
+
         if(isAdminMuted == null)
         {
             addToErrors("isAdminMuted cannot be null");
+            isValid = false;
         }
-        
+
         // Admin cannot be admin muted
         if(isAdmin != null && isAdminMuted != null && (isAdmin && isAdminMuted))
         {
             addToErrors("Admin participants cannot be muted by another Admin");
+            isValid = false;
         }
 
         if(number == null || number.trim().equals(""))
         {
             addToErrors("Participant must have a number");
+            isValid = false;
         }
 
         if(sessionID == null || sessionID.trim().equals(""))
         {
             addToErrors("Participant must have a sessionID");
+            isValid = false;
         }
+
+        return isValid;
     }
 }

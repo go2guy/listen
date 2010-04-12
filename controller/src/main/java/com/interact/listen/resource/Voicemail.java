@@ -20,10 +20,10 @@ public class Voicemail extends Resource implements Serializable
 
     @Column(nullable = false)
     private String fileLocation;
-    
+
     @Column(nullable = false)
     private Date dateCreated = new Date();
-    
+
     @Column(nullable = false)
     private Boolean isNew = Boolean.TRUE;
 
@@ -89,26 +89,32 @@ public class Voicemail extends Resource implements Serializable
     }
 
     @Override
-    public void validate()
+    public boolean validate()
     {
+        boolean isValid = true;
         if(subscriber == null)
         {
             addToErrors("subscriber cannot be null");
+            isValid = false;
         }
 
         if(fileLocation == null || fileLocation.trim().equals(""))
         {
             addToErrors("fileLocation cannot be null");
+            isValid = false;
         }
 
         if(dateCreated == null)
         {
             addToErrors("dateCreated cannot be null");
+            isValid = false;
         }
 
         if(isNew == null)
         {
             addToErrors("isNew cannot be null");
+            isValid = false;
         }
+        return isValid;
     }
 }

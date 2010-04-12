@@ -10,7 +10,7 @@ public abstract class Resource
     
     public abstract void setId(Long id);
     public abstract Long getId();
-    public abstract void validate();
+    public abstract boolean validate();
     
     public boolean hasErrors()
     {
