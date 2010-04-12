@@ -61,6 +61,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
                                   .addReturnField("number")
                                   .addReturnField("isAdmin")
                                   .addReturnField("isMuted")
+                                  .addReturnField("isAdminMuted")
                                   .addReturnField("isHolding");
             ResourceListService service = builder.build();
             String content = service.list();

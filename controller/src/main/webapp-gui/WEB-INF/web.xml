@@ -34,6 +34,18 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <servlet>
+        <servlet-name>MuteParticipantServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.MuteParticipantServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>UnmuteParticipantServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.UnmuteParticipantServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <!-- mappings -->
 
     <servlet-mapping>
@@ -44,7 +56,7 @@
     <servlet-mapping>
         <servlet-name>DropParticipantServlet</servlet-name>
         <url-pattern>/dropParticipant</url-pattern>    
-    </servlet-mapping>0
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>GetConferenceParticipantsServlet</servlet-name>
@@ -59,6 +71,16 @@
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MuteParticipantServlet</servlet-name>
+        <url-pattern>/muteParticipant</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>UnmuteParticipantServlet</servlet-name>
+        <url-pattern>/unmuteParticipant</url-pattern>    
     </servlet-mapping>
 
     <!-- welcome files -->

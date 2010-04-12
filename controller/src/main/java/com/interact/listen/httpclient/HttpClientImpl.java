@@ -24,15 +24,14 @@ public class HttpClientImpl implements HttpClient
     @Override
     public void post(String uri, Map<String, String> params) throws IOException
     {
-        HttpPost request = new HttpPost();
-        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        post(uri, buildQueryString(params));
+        post(uri, "application/x-www-form-urlencoded", buildQueryString(params));
     }
 
     @Override
-    public void post(String uri, String entityContent) throws IOException
+    public void post(String uri, String contentType, String entityContent) throws IOException
     {
-        HttpPost request = new HttpPost();
+        HttpPost request = new HttpPost(uri);
+        request.setHeader("Content-Type", contentType);
         performEntityEnclosingRequest(request, entityContent);
     }
 
@@ -59,6 +58,9 @@ public class HttpClientImpl implements HttpClient
     private void performEntityEnclosingRequest(HttpEntityEnclosingRequestBase request, String entityContent)
         throws IOException
     {
+        System.out.println("Making HTTP " + request.getMethod() + " request to " + request.getURI() + " with entity [" +
+                           entityContent + "]");
+
         try
         {
             HttpEntity entity = new StringEntity(entityContent, "UTF-8");
@@ -81,6 +83,8 @@ public class HttpClientImpl implements HttpClient
 
         this.responseStatus = response.getStatusLine().getStatusCode();
         this.responseEntity = getEntity(response);
+
+        System.out.println("Received " + responseStatus + " response with entity [" + responseEntity + "]");
     }
 
     private static String getEntity(HttpResponse response) throws IOException

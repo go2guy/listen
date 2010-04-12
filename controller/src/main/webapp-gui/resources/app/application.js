@@ -53,7 +53,7 @@ $(document).ready(function() {
         logout();
     });
 
-    $('#loginDialog').dialog('open');
+    showLogin();
 });
 
 function startPollingParticipants() {
@@ -74,7 +74,7 @@ function getConferenceParticipants() {
             var result = data.results[i];
             callerTable.fnAddData([(result.isAdmin ? '<b>' : '') + result.number + (result.isAdmin ? '</b>' : ''),
                                    (result.isHolding ? 'Holding' : ''),
-                                   getMuteButtonHtml(result.isMuted),
+                                   getMuteButtonHtml(result.id, result.isMuted || result.isAdminMuted),
                                    '<a href="#" onclick="dropParticipant(' + result.id + ');return false;" alt="Drop" title="Drop"><img src="resources/app/images/user-denied.png"/></a>'])
         }
     })
@@ -123,13 +123,50 @@ function showLogin() {
     $('#conferenceCallerDialog').dialog('close');
     $('#logoutButton').hide();
     $('#loginDialog').dialog('open');
+    $('#username').focus();
 }
 
-function getMuteButtonHtml(isMuted) {
-    var html = '<a href="#" onclick="return false;">';
-    html += '<img src="resources/app/images/' + (isMuted ? 'speaker-muted.png' : 'speaker.png') + '"/>';
+function getMuteButtonHtml(id, isMuted) {
+    var html = '<a href="#" ';
+    if(isMuted) {
+        html += 'onclick="unmuteParticipant(' + id + ');return false;"';
+    } else {
+        html += 'onclick="muteParticipant(' + id + ');return false;"';
+    }
+    html += '>';
+    html += '<img src="resources/app/images/' + (isMuted ? 'speaker-muted.png' : 'speaker.png') + '" id="muteButton' + id + '" width="16" height="16"/>';
     html += '</a>';
     return html;
+}
+
+function muteParticipant(id) {
+    $.ajax({
+        type: 'POST',
+        url: '/muteParticipant',
+        data: { id: id },
+        success: function(data) {
+            // TODO anything? the table will refresh itself
+        },
+        error: function(req) {
+            // TODO error somewhere on the screen
+            alert('ERROR muting participant: ' + req.status);
+        }
+    });
+}
+
+function unmuteParticipant(id) {
+    $.ajax({
+        type: 'POST',
+        url: '/unmuteParticipant',
+        data: { id: id },
+        success: function(data) {
+            // TODO anything? the table will refresh itself
+        },
+        error: function(req) {
+            // TODO error somewhere on the screen
+            alert('ERROR unmuting participant: ' + req.status);
+        }
+    });
 }
 
 function dropParticipant(id) {

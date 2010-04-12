@@ -13,7 +13,7 @@ public interface HttpClient
 
     public void post(String uri, Map<String, String> params) throws IOException;
 
-    public void post(String uri, String entityContent) throws IOException;
+    public void post(String uri, String contentType, String entityContent) throws IOException;
 
     public Integer getResponseStatus();
 

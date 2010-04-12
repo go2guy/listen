@@ -499,10 +499,10 @@ public class ApiServlet extends HttpServlet
         String[] parts = pathInfo.split("/");
 
         UriResourceAttributes attributes = new UriResourceAttributes();
-        attributes.setName(parts[0].toLowerCase());
+        attributes.setName(parts[0]);
         if(parts.length > 1)
         {
-            attributes.setId(parts[1].toLowerCase());
+            attributes.setId(parts[1]);
         }
         return attributes;
     }

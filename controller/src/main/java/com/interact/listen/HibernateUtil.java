@@ -28,17 +28,18 @@ public final class HibernateUtil
             config.setProperty("hibernate.connection.autocommit", "false");
             config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
             config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-            config.setProperty("hibernate.show_sql", "true");
+            config.setProperty("hibernate.show_sql", "false");
             config.setProperty("hibernate.transaction.factory_class",
                                "org.hibernate.transaction.JDBCTransactionFactory");
             config.setProperty("hibernate.current_session_context_class", "thread");
 
             // application classes
-            config.addAnnotatedClass(Subscriber.class);
-            config.addAnnotatedClass(Voicemail.class);
             config.addAnnotatedClass(Conference.class);
+            config.addAnnotatedClass(ListenSpotSubscriber.class);
             config.addAnnotatedClass(Participant.class);
+            config.addAnnotatedClass(Subscriber.class);
             config.addAnnotatedClass(User.class);
+            config.addAnnotatedClass(Voicemail.class);
 
             SESSION_FACTORY = config.buildSessionFactory();
         }

@@ -98,7 +98,7 @@ public class GetConferenceParticipantsServletTest
 
         StringBuilder expectedJson = new StringBuilder();
         expectedJson.append("{\"href\":\"/participants?");
-        expectedJson.append("_first=0&_max=100&_fields=id,isHolding,isAdmin,number,isMuted");
+        expectedJson.append("_first=0&_max=100&_fields=id,isAdminMuted,isHolding,isAdmin,number,isMuted");
         expectedJson.append("&conference=/conferences/").append(conference.getId()).append("\",");
         expectedJson.append("\"count\":0,");
         expectedJson.append("\"total\":0,");
