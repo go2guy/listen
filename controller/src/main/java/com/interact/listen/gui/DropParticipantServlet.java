@@ -63,6 +63,10 @@ public class DropParticipantServlet extends HttpServlet
     {
         // TODO i'm not sure this is "secure" enough - however, we don't have anything directly linking "user" to
         // "conference" right now
+        if(participant.getIsAdmin())
+        {
+            return false;
+        }
         return user.getSubscriber().getNumber().equals(participant.getConference().getNumber());
     }
 }

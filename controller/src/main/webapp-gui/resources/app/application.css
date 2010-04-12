@@ -60,3 +60,17 @@ a.button {
     display: block;
     cursor: pointer;
 }
+
+.notice-success {
+    background: #0F0;
+    color: #000;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.notice-error {
+    background: #F00;
+    color: #000;
+    font-weight: bold;
+    font-size: 12px;
+}

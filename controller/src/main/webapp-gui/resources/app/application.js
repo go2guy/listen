@@ -5,9 +5,12 @@ $(document).ready(function() {
     $.ajaxSetup({
         error: function(req, s, e) {
             if(req.status == 401) { // unauthorized
-                showLogin(); 
+                showLogin();
+
+                var errorDiv = $('#loginForm .errors');
+                errorDiv.html('You have been automatically logged out');
+                errorDiv.show();
             }
-            // TODO put a message at the bottom of the screen in a semi-opaque red box
         }
     });
 
@@ -145,11 +148,10 @@ function muteParticipant(id) {
         url: '/muteParticipant',
         data: { id: id },
         success: function(data) {
-            // TODO anything? the table will refresh itself
+            noticeSuccess('Participant muted');
         },
         error: function(req) {
-            // TODO error somewhere on the screen
-            alert('ERROR muting participant: ' + req.status);
+            noticeError('Error muting participant: ' + req.status);
         }
     });
 }
@@ -160,11 +162,10 @@ function unmuteParticipant(id) {
         url: '/unmuteParticipant',
         data: { id: id },
         success: function(data) {
-            // TODO anything? the table will refresh itself
+            noticeSuccess('Participant unmuted');
         },
         error: function(req) {
-            // TODO error somewhere on the screen
-            alert('ERROR unmuting participant: ' + req.status);
+            noticeError('Error unmuting participant: ' + req.status);
         }
     });
 }
@@ -175,11 +176,28 @@ function dropParticipant(id) {
         url: '/dropParticipant',
         data: { id: id },
         success: function(data) {
-            // TODO feedback that the drop was successful
+            noticeSuccess('Participant dropped');
         },
         error: function(req) {
-            // TODO error somewhere on the screen
-            alert('ERROR dropping participant: ' + req.status);
+            noticeError('Error dropping participant: ' + req.status);
         }
+    });
+}
+
+function noticeSuccess(message, stay) {
+    $.noticeAdd({
+        text: message,
+        type: 'notice-success',
+        stayTime: 2000,
+        stay: (stay ? true : false)
+    });
+}
+
+function noticeError(message, stay) {
+    $.noticeAdd({
+        text: message,
+        type: 'notice-error',
+        stayTime: 2000,
+        stay: (stay ? true : false)
     });
 }
