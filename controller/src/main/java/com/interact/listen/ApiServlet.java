@@ -302,15 +302,15 @@ public class ApiServlet extends HttpServlet
                 return;
             }
 
-            Resource currentResource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
+            Resource originalResource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
 
-            if(currentResource == null)
+            if(originalResource == null)
             {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
 
-            session.evict(currentResource);
+            session.evict(originalResource);
 
             long s = time();
             Resource updatedResource = marshaller.unmarshal(request.getInputStream(), resourceClass);
@@ -321,7 +321,7 @@ public class ApiServlet extends HttpServlet
             if(updatedResource.validate() && !updatedResource.hasErrors())
             {
                 s = time();
-                persistenceService.update(updatedResource);
+                persistenceService.update(updatedResource, originalResource);
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
             }
 

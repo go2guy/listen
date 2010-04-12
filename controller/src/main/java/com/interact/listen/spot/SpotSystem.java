@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Spot
+public class SpotSystem
 {
     // e.g. "http://apps2/spot/ccxml/basichttp"
     private String httpInterfaceUri;
 
-    public Spot(String httpInterfaceUri)
+    public SpotSystem(String httpInterfaceUri)
     {
         this.httpInterfaceUri = httpInterfaceUri;
     }

@@ -6,7 +6,7 @@ import javax.persistence.*;
 public abstract class Resource
 {
     @Transient
-    private ArrayList<String> errors = new ArrayList<String>(3);
+    private ArrayList<String> errors = new ArrayList<String>();
     
     public abstract void setId(Long id);
     public abstract Long getId();
