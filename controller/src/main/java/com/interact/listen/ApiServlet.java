@@ -24,6 +24,9 @@ public class ApiServlet extends HttpServlet
     public static final long serialVersionUID = 1L;
     public static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
+    // TODO it seems like there should be an easier way to manage the Hibernate session outside the scope of this Servlet,
+    // perhaps inside of a Filter?
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     {
@@ -31,6 +34,7 @@ public class ApiServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
@@ -100,7 +104,7 @@ public class ApiServlet extends HttpServlet
                 }
 
                 long s = time();
-                Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
+                Resource resource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
                 transaction.commit();
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
 
@@ -175,6 +179,7 @@ public class ApiServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
@@ -196,11 +201,11 @@ public class ApiServlet extends HttpServlet
             }
 
             s = time();
-            Long id = (Long)session.save(resource);
+            Long id = persistenceService.save(resource);
             System.out.println("TIMER: save() took " + (time() - s) + "ms");
 
             s = time();
-            resource = (Resource)session.get(resourceClass, id);
+            resource = persistenceService.get(resourceClass, id);
             System.out.println("TIMER: get() took " + (time() - s) + "ms");
 
             transaction.commit();
@@ -282,6 +287,7 @@ public class ApiServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
@@ -296,7 +302,7 @@ public class ApiServlet extends HttpServlet
                 return;
             }
 
-            Resource currentResource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
+            Resource currentResource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
 
             if(currentResource == null)
             {
@@ -315,7 +321,7 @@ public class ApiServlet extends HttpServlet
             if(updatedResource.validate() && !updatedResource.hasErrors())
             {
                 s = time();
-                session.update(updatedResource);
+                persistenceService.update(updatedResource);
                 System.out.println("TIMER: list() took " + (time() - s) + "ms");
             }
 
@@ -423,6 +429,7 @@ public class ApiServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
@@ -436,7 +443,7 @@ public class ApiServlet extends HttpServlet
             }
 
             long s = time();
-            Resource resource = (Resource)session.get(resourceClass, Long.parseLong(attributes.getId()));
+            Resource resource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
             System.out.println("TIMER: get() took " + (time() - s) + "ms");
 
             if(resource == null)
@@ -446,7 +453,7 @@ public class ApiServlet extends HttpServlet
             }
 
             s = time();
-            session.delete(resource);
+            persistenceService.delete(resource);
             System.out.println("TIMER: delete() took " + (time() - s) + "ms");
 
             transaction.commit();
