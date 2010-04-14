@@ -87,6 +87,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
         }
         finally
         {
+//TODO drop this down to a lower logging level? it's too frequent (since it's polled) by the javascript
             System.out.println("TIMER: GetConferenceParticipantsServlet.doGet() took " +
                                (System.currentTimeMillis() - start) + "ms");
         }

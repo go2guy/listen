@@ -19,7 +19,7 @@ public class SpotSystem
 
     private enum SpotRequestEvent
     {
-        DROP_PARTICIPANT("Drop"), MUTE_PARTICIPANT("Mute"), UNMUTE_PARTICIPANT("Unmute");
+        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), UNMUTE_PARTICIPANT("UNMUTE");
 
         private String eventName;
 
@@ -35,7 +35,7 @@ public class SpotSystem
         params.put("sessionid", participant.getSessionID());
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.DROP_PARTICIPANT.eventName);
-        params.put("II_SB_valueToPass", ""); // FIXME put a value here
+        params.put("II_SB_valueToPass", "");
         sendSpotRequest(params);
     }
 
@@ -45,7 +45,7 @@ public class SpotSystem
         params.put("sessionid", participant.getSessionID());
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.MUTE_PARTICIPANT.eventName);
-        params.put("II_SB_valueToPass", ""); // FIXME put a value here
+        params.put("II_SB_valueToPass", "");
         sendSpotRequest(params);
     }
 
@@ -55,7 +55,7 @@ public class SpotSystem
         params.put("sessionid", participant.getSessionID());
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.UNMUTE_PARTICIPANT.eventName);
-        params.put("II_SB_valueToPass", ""); // FIXME put a value here
+        params.put("II_SB_valueToPass", "");
         sendSpotRequest(params);
     }
 

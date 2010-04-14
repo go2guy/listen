@@ -200,4 +200,28 @@ public class Participant extends Resource implements Serializable
 
         return isValid;
     }
+
+    /**
+     * Static factory method for copying a {@code Participant}. Note that this method <strong>does not</strong> copy the
+     * {@code id} of the {@code Participant} being copied.
+     * <p>
+     * Developer note: this method is to avoid using {@link Object}'s {@code clone()} method, which is a broken
+     * principle.
+     * 
+     * @param participant {@code Participant} to copy
+     * @return new {@code Participant}
+     */
+    public static Participant copy(Participant participant)
+    {
+        Participant copy = new Participant();
+        copy.setAudioResource(participant.audioResource);
+        copy.setConference(participant.getConference());
+        copy.setIsAdmin(participant.getIsAdmin());
+        copy.setIsAdminMuted(participant.getIsAdminMuted());
+        copy.setIsHolding(participant.getIsHolding());
+        copy.setIsMuted(participant.getIsMuted());
+        copy.setNumber(participant.getNumber());
+        copy.setSessionID(participant.getSessionID());
+        return copy;
+    }
 }

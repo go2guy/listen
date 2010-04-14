@@ -322,7 +322,7 @@ public class ApiServlet extends HttpServlet
             {
                 s = time();
                 persistenceService.update(updatedResource, originalResource);
-                System.out.println("TIMER: list() took " + (time() - s) + "ms");
+                System.out.println("TIMER: update() took " + (time() - s) + "ms");
             }
 
             transaction.commit();

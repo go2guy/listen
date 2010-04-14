@@ -45,8 +45,7 @@ public class PersistenceService
                 for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
                 {
                     SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
-                    if(updatedParticipant.getIsMuted().booleanValue() ||
-                       updatedParticipant.getIsAdminMuted().booleanValue())
+                    if(updatedParticipant.getIsAdminMuted().booleanValue())
                     {
                         spotSystem.muteParticipant(updatedParticipant);
                     }
@@ -81,9 +80,7 @@ public class PersistenceService
 
     private boolean areMutedValuesDifferent(Participant p1, Participant p2)
     {
-        boolean mutedChanged = !p1.getIsMuted().booleanValue() == p2.getIsMuted().booleanValue();
-        boolean adminMutedChanged = !p1.getIsAdminMuted().booleanValue() == p2.getIsAdminMuted().booleanValue();
-        return mutedChanged || adminMutedChanged;
+        return p1.getIsAdminMuted().booleanValue() != p2.getIsAdminMuted().booleanValue();
     }
 
     private List<ListenSpotSubscriber> getSpotSubscribers()

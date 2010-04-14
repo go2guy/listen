@@ -1,9 +1,11 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
+import com.interact.listen.spot.SpotCommunicationException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,7 @@ public class MuteParticipantServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
@@ -50,9 +53,19 @@ public class MuteParticipantServlet extends HttpServlet
                 return;
             }
 
+            Participant original = Participant.copy(participant);
+
             participant.setIsAdminMuted(Boolean.TRUE);
-            session.update(participant);
+            persistenceService.update(participant, original);
             transaction.commit();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                      "Error muting participant", "text/plain");
+            return;
         }
         finally
         {

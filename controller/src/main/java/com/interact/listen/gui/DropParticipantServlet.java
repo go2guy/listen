@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
@@ -38,6 +39,7 @@ public class DropParticipantServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
@@ -49,8 +51,16 @@ public class DropParticipantServlet extends HttpServlet
                 transaction.rollback();
                 return;
             }
-            session.delete(participant);
+            persistenceService.delete(participant);
             transaction.commit();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                      "Error dropping participant", "text/plain");
+            return;
         }
         finally
         {
