@@ -2,6 +2,28 @@ YAHOO.namespace('listen');
 var callerTable, conferencePoller;
 
 function Conference() {
+
+    // init jquery dialog
+    $('#conferenceDialog').dialog({
+        autoOpen: false,
+        closeOnEscape: false,
+        dialogClass: 'no-close',
+        draggable: true,
+        height: 300,
+        position: [50, 50],
+        resizable: true,
+        title: 'My Conference',
+        width: 400
+    })/*
+    .parents('.ui-dialog').draggable({
+        handle: '.ui-dialog-titlebar',
+        containment: [0, 31, $(document).width(), $(document).height()]
+    })*/;
+
+    $.getJSON('/getConferenceInfo', function(data) {
+        $('#conferenceDialog').dialog('option', 'title', 'Conference ' + data.number);
+    });
+
     YAHOO.widget.DataTable.Formatter.muteFormatter = function(liner, record, column, data) {
         liner.innerHTML = getMuteButtonHtml(record.getData('id'), record.getData('isAdminMuted') == "true");
     };
@@ -45,7 +67,8 @@ function Conference() {
                         dataTable.deleteRow(target);
                     },
                     error: function(req) {
-                        noticeError(req.responseText);
+                        // TODO something here? 
+                        //noticeError(req.responseText);
                     }
                 });
                 break;
@@ -62,6 +85,14 @@ function Conference() {
         animation.animate();
     });*/
 
+    this.show = function() {
+        $('#conferenceDialog').dialog('open');
+    };
+
+    this.hide = function() {
+        $('#conferenceDialog').dialog('close');
+    };
+
     this.startPolling = function() {
         var callback = {
             success: dataTable.onDataReturnInitializeTable,
@@ -76,12 +107,11 @@ function Conference() {
 
     this.stopPolling = function() {
         dataSource.clearAllIntervals();
-    }
+    };
+
 }
 
 $(document).ready(function() {
-
-    YAHOO.listen.mainConference = new Conference();
 
     $.ajaxSetup({
         error: function(req, s, e) {
@@ -94,21 +124,6 @@ $(document).ready(function() {
             }
         }
     });
-
-    $('#conferenceDialog').dialog({
-        autoOpen: false,
-        dialogClass: 'no-close',
-        closeOnEscape: false,
-        draggable: true,
-        resizable: true,
-        height: 300,
-        width: 400,
-        position: [50, 50]
-    })/*
-    .parents('.ui-dialog').draggable({
-        handle: '.ui-dialog-titlebar',
-        containment: [0, 31, $(document).width(), $(document).height()]
-    })*/;
 
     $('#loginDialog').dialog({
         modal: true,
@@ -150,7 +165,9 @@ function login(event) {
             usernameField.val('');
             passwordField.val('');
             $('#logoutButton').show();
-            $('#conferenceDialog').dialog('open');
+
+            YAHOO.listen.mainConference = new Conference();
+            YAHOO.listen.mainConference.show();
             YAHOO.listen.mainConference.startPolling();
         },
         error: function(data, status) {
@@ -173,8 +190,10 @@ function logout() {
 }
 
 function showLogin() {
-    YAHOO.listen.mainConference.stopPolling();
-    $('#conferenceDialog').dialog('close');
+    if(YAHOO.listen.mainConference) {
+        YAHOO.listen.mainConference.stopPolling();
+        YAHOO.listen.mainConference.hide();
+    }
     $('#logoutButton').hide();
     $('#loginDialog').dialog('open');
     $('#username').focus();
