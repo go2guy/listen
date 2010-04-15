@@ -28,16 +28,16 @@ function Conference() {
         liner.innerHTML = getMuteButtonHtml(record.getData('id'), record.getData('isAdminMuted') == "true");
     };
 
-    var columns = [
+    var participantColumns = [
         {key: 'number', label: '', className: 'conferenceParticipantTableNumber'},
         {key: 'isAdminMuted', label: '', formatter: 'muteFormatter', className: 'conferenceParticipantTableDrop'},
         {key: 'drop', label: '', className: 'conferenceParticipantTableDrop'}
     ];
 
-    var dataSource = new YAHOO.util.DataSource('/getConferenceParticipants');
-    dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-    dataSource.connXhrMode = 'queueRequests';
-    dataSource.responseSchema = {
+    var participantDataSource = new YAHOO.util.DataSource('/getConferenceParticipants');
+    participantDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    participantDataSource.connXhrMode = 'queueRequests';
+    participantDataSource.responseSchema = {
         resultsList: 'results',
         fields: [
             {key: 'id', parser: 'number'},
@@ -49,22 +49,22 @@ function Conference() {
         ]
     };
 
-    var dataTable = new YAHOO.widget.DataTable('conferenceParticipantTable', columns, dataSource);
-    dataTable.subscribe('cellClickEvent', function(args) {
+    var participantDataTable = new YAHOO.widget.DataTable('conferenceParticipantTable', participantColumns, participantDataSource);
+    participantDataTable.subscribe('cellClickEvent', function(args) {
         var target = args.target;
-        var column = dataTable.getColumn(target);
+        var column = participantDataTable.getColumn(target);
 
         switch(column.key) {
 
             case 'drop':
-                var record = dataTable.getRecord(target)
+                var record = participantDataTable.getRecord(target)
                 $.ajax({
                     type: 'POST',
                     url: '/dropParticipant',
                     data: { id: record.getData('id') },
                     success: function(data) {
                         noticeSuccess('Participant dropped');
-                        dataTable.deleteRow(target);
+                        participantDataTable.deleteRow(target);
                     },
                     error: function(req) {
                         // TODO something here? 
@@ -74,8 +74,8 @@ function Conference() {
                 break;
         }
     });/* TODO get this to work
-    dataTable.subscribe('cellUpdateEvent', function(record, column, oldData) {
-        var td = dataTable.getTdEl({record: record, column: column});
+    participantDataTable.subscribe('cellUpdateEvent', function(record, column, oldData) {
+        var td = participantDataTable.getTdEl({record: record, column: column});
         YAHOO.util.Dom.setStyle(td, 'backgroundColor', '#ffff00');
         var animation = new YAHOO.util.ColorAnim(td, {
             backgroundColor: {
@@ -85,28 +85,62 @@ function Conference() {
         animation.animate();
     });*/
 
+    var historyColumns = [
+        {key: 'dateCreated', label: '', className: 'conferenceHistoryTableDateCreated'},
+        {key: 'user', label: '', className: 'conferenceHistoryTableUser'},
+        {key: 'description', label: '', className: 'conferenceHistoryTableDescription'}
+    ];
+
+    var historyDataSource = new YAHOO.util.DataSource('/getConferenceHistory');
+    historyDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    historyDataSource.connXhrMode = 'queueRequests';
+    historyDataSource.responseSchema = {
+        resultsList: 'results',
+        fields: [
+            'dateCreated',
+            'user',
+            'description'
+        ]
+    };
+
+    var historyDataTable = new YAHOO.widget.DataTable('conferenceHistoryTable', historyColumns, historyDataSource);
+
     this.show = function() {
         $('#conferenceDialog').dialog('open');
+        this.startPolling();
     };
 
     this.hide = function() {
+        this.stopPolling();
         $('#conferenceDialog').dialog('close');
     };
 
     this.startPolling = function() {
-        var callback = {
-            success: dataTable.onDataReturnInitializeTable,
+        var participantCallback = {
+            success: participantDataTable.onDataReturnInitializeTable,
             failure: function() {
-                noticeError('Error initializing Conference DataTable');
+                // TODO something?
+                //noticeError('Error initializing Conference DataTable');
             },
-            scope: dataTable
+            scope: participantDataTable
         };
 
-        dataSource.setInterval(1000, null, callback);
+        participantDataSource.setInterval(1000, null, participantCallback);
+        
+        var historyCallback = {
+            success: historyDataTable.onDataReturnInitializeTable,
+            failure: function() {
+                // TODO something?
+            },
+            scope: historyDataTable
+        };
+        
+        historyDataSource.setInterval(1000, null, historyCallback);
     };
 
     this.stopPolling = function() {
-        dataSource.clearAllIntervals();
+        participantDataSource.clearAllIntervals();
+        historyDataSource.clearAllIntervals();
     };
 
 }
@@ -168,7 +202,6 @@ function login(event) {
 
             YAHOO.listen.mainConference = new Conference();
             YAHOO.listen.mainConference.show();
-            YAHOO.listen.mainConference.startPolling();
         },
         error: function(data, status) {
             passwordField.val('');
@@ -191,7 +224,6 @@ function logout() {
 
 function showLogin() {
     if(YAHOO.listen.mainConference) {
-        YAHOO.listen.mainConference.stopPolling();
         YAHOO.listen.mainConference.hide();
     }
     $('#logoutButton').hide();

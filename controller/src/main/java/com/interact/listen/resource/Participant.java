@@ -1,8 +1,17 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.PersistenceService;
+import com.interact.listen.spot.SpotCommunicationException;
+import com.interact.listen.spot.SpotSystem;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 
 @Entity
 public class Participant extends Resource implements Serializable
@@ -223,5 +232,93 @@ public class Participant extends Resource implements Serializable
         copy.setNumber(participant.getNumber());
         copy.setSessionID(participant.getSessionID());
         return copy;
+    }
+
+    @Override
+    public void beforeUpdate(Session session, Resource original) throws PersistenceException
+    {
+        Participant originalParticipant = (Participant)original;
+
+        try
+        {
+            if(isAdminMuted.booleanValue() != originalParticipant.getIsAdminMuted().booleanValue())
+            {
+                List<ListenSpotSubscriber> spotSubscribers = getSpotSubscribers(session);
+                for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+                {
+                    SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+                    if(isAdminMuted.booleanValue())
+                    {
+                        spotSystem.muteParticipant(this);
+                    }
+                    else
+                    {
+                        spotSystem.unmuteParticipant(this);
+                    }
+                }
+
+                ConferenceHistory history = new ConferenceHistory();
+                history.setConference(conference);
+                history.setUser("Current User"); // FIXME
+
+                if(isAdminMuted)
+                {
+                    history.setDescription(number + " was muted");
+                }
+                else
+                {
+                    history.setDescription(number + " was unmuted");
+                }
+
+                PersistenceService persistenceService = new PersistenceService(session);
+                persistenceService.save(history);
+            }
+        }
+        catch(SpotCommunicationException e)
+        {
+            throw new PersistenceException(e);
+        }
+        catch(IOException e)
+        {
+            throw new PersistenceException(e);
+        }
+    }
+
+    public void beforeDelete(Session session) throws PersistenceException
+    {
+        try
+        {
+            // FIXME what happens when the first one succeeds and the second one fails? do we "rollback" the first one?
+            // there's no way we can do it with 100% reliability (because the "rollback" might fail, too)
+            // - in all likelihood there will only be one Spot subscriber, but we should accommodate many
+            List<ListenSpotSubscriber> spotSubscribers = getSpotSubscribers(session);
+            for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+            {
+                SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+                spotSystem.dropParticipant(this);
+            }
+
+            ConferenceHistory history = new ConferenceHistory();
+            history.setConference(conference);
+            history.setUser("Current User"); // FIXME
+            history.setDescription(number + " was dropped");
+
+            PersistenceService persistenceService = new PersistenceService(session);
+            persistenceService.save(history);
+        }
+        catch(SpotCommunicationException e)
+        {
+            throw new PersistenceException(e);
+        }
+        catch(IOException e)
+        {
+            throw new PersistenceException(e);
+        }
+    }
+
+    private List<ListenSpotSubscriber> getSpotSubscribers(Session session)
+    {
+        Criteria criteria = session.createCriteria(ListenSpotSubscriber.class);
+        return criteria.list();
     }
 }

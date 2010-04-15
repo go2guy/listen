@@ -1,6 +1,7 @@
 package com.interact.listen.resource;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.*;
 
@@ -13,6 +14,8 @@ public class ConferenceHistory extends Resource implements Serializable
 
     @Version
     private Integer version = Integer.valueOf(0);
+
+    private Date dateCreated = new Date();
 
     @ManyToOne
     private Conference conference;
@@ -41,6 +44,16 @@ public class ConferenceHistory extends Resource implements Serializable
     public void setVersion(Integer version)
     {
         this.version = version;
+    }
+
+    public Date getDateCreated()
+    {
+        return dateCreated == null ? null : new Date(dateCreated.getTime());
+    }
+
+    public void setDateCreated(Date dateCreated)
+    {
+        this.dateCreated = dateCreated == null ? null : new Date(dateCreated.getTime());
     }
 
     public Conference getConference()

@@ -17,6 +17,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetConferenceHistoryServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetConferenceHistoryServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceInfoServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -62,6 +68,11 @@
     <servlet-mapping>
         <servlet-name>DropParticipantServlet</servlet-name>
         <url-pattern>/dropParticipant</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetConferenceHistoryServlet</servlet-name>
+        <url-pattern>/getConferenceHistory</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

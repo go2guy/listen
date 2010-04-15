@@ -97,3 +97,7 @@ a.button {
     width: 40px;
     background: #fff url('images/user-denied.png') no-repeat center center;
 }
+
+ .conferenceHistoryTableDateCreated, .conferenceHistoryTableUser, .conferenceHistoryTableDescription {
+    text-align: left;
+ }
