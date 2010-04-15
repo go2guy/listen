@@ -1,6 +1,87 @@
+YAHOO.namespace('listen');
 var callerTable, conferencePoller;
 
+function Conference() {
+    YAHOO.widget.DataTable.Formatter.muteFormatter = function(liner, record, column, data) {
+        liner.innerHTML = getMuteButtonHtml(record.getData('id'), record.getData('isAdminMuted') == "true");
+    };
+
+    var columns = [
+        {key: 'number', label: '', className: 'conferenceParticipantTableNumber'},
+        {key: 'isAdminMuted', label: '', formatter: 'muteFormatter', className: 'conferenceParticipantTableDrop'},
+        {key: 'drop', label: '', className: 'conferenceParticipantTableDrop'}
+    ];
+
+    var dataSource = new YAHOO.util.DataSource('/getConferenceParticipants');
+    dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    dataSource.connXhrMode = 'queueRequests';
+    dataSource.responseSchema = {
+        resultsList: 'results',
+        fields: [
+            {key: 'id', parser: 'number'},
+            'number',
+            'isAdmin',
+            'isMuted',
+            'isAdminMuted',
+            'isHolding'
+        ]
+    };
+
+    var dataTable = new YAHOO.widget.DataTable('conferenceParticipantTable', columns, dataSource);
+    dataTable.subscribe('cellClickEvent', function(args) {
+        var target = args.target;
+        var column = dataTable.getColumn(target);
+
+        switch(column.key) {
+
+            case 'drop':
+                var record = dataTable.getRecord(target)
+                $.ajax({
+                    type: 'POST',
+                    url: '/dropParticipant',
+                    data: { id: record.getData('id') },
+                    success: function(data) {
+                        noticeSuccess('Participant dropped');
+                        dataTable.deleteRow(target);
+                    },
+                    error: function(req) {
+                        noticeError(req.responseText);
+                    }
+                });
+                break;
+        }
+    });/* TODO get this to work
+    dataTable.subscribe('cellUpdateEvent', function(record, column, oldData) {
+        var td = dataTable.getTdEl({record: record, column: column});
+        YAHOO.util.Dom.setStyle(td, 'backgroundColor', '#ffff00');
+        var animation = new YAHOO.util.ColorAnim(td, {
+            backgroundColor: {
+                to: '#ffffff'
+            }
+        });
+        animation.animate();
+    });*/
+
+    this.startPolling = function() {
+        var callback = {
+            success: dataTable.onDataReturnInitializeTable,
+            failure: function() {
+                noticeError('Error initializing Conference DataTable');
+            },
+            scope: dataTable
+        };
+
+        dataSource.setInterval(1000, null, callback);
+    };
+
+    this.stopPolling = function() {
+        dataSource.clearAllIntervals();
+    }
+}
+
 $(document).ready(function() {
+
+    YAHOO.listen.mainConference = new Conference();
 
     $.ajaxSetup({
         error: function(req, s, e) {
@@ -14,7 +95,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#conferenceCallerDialog').dialog({
+    $('#conferenceDialog').dialog({
         autoOpen: false,
         dialogClass: 'no-close',
         closeOnEscape: false,
@@ -28,12 +109,6 @@ $(document).ready(function() {
         handle: '.ui-dialog-titlebar',
         containment: [0, 31, $(document).width(), $(document).height()]
     })*/;
-
-    callerTable = $('#callerTable').dataTable({
-        bPaginate: false,
-        bFilter: false,
-        bInfo: false
-    });
 
     $('#loginDialog').dialog({
         modal: true,
@@ -59,30 +134,6 @@ $(document).ready(function() {
     showLogin();
 });
 
-function startPollingParticipants() {
-    getConferenceParticipants();
-    conferencePoller = setInterval(function() {
-        getConferenceParticipants();
-    }, 1000);
-}
-
-function stopPollingParticipants() {
-    clearTimeout(conferencePoller);
-}
-
-function getConferenceParticipants() {
-    $.getJSON('/getConferenceParticipants', function(data) {
-        callerTable.fnClearTable();
-        for(var i = 0; i < data.count; i++) {
-            var result = data.results[i];
-            callerTable.fnAddData([(result.isAdmin ? '<b>' : '') + result.number + (result.isAdmin ? '</b>' : ''),
-                                   (result.isHolding ? 'Holding' : ''),
-                                   getMuteButtonHtml(result.id, result.isMuted || result.isAdminMuted),
-                                   '<a href="#" onclick="dropParticipant(' + result.id + ');return false;" alt="Drop" title="Drop"><img src="resources/app/images/user-denied.png"/></a>'])
-        }
-    })
-}
-
 function login(event) {
     var usernameField = $('#username');
     var passwordField = $('#password');
@@ -99,8 +150,8 @@ function login(event) {
             usernameField.val('');
             passwordField.val('');
             $('#logoutButton').show();
-            $('#conferenceCallerDialog').dialog('open');
-            startPollingParticipants();
+            $('#conferenceDialog').dialog('open');
+            YAHOO.listen.mainConference.startPolling();
         },
         error: function(data, status) {
             passwordField.val('');
@@ -122,8 +173,8 @@ function logout() {
 }
 
 function showLogin() {
-    stopPollingParticipants();
-    $('#conferenceCallerDialog').dialog('close');
+    YAHOO.listen.mainConference.stopPolling();
+    $('#conferenceDialog').dialog('close');
     $('#logoutButton').hide();
     $('#loginDialog').dialog('open');
     $('#username').focus();
@@ -163,20 +214,6 @@ function unmuteParticipant(id) {
         data: { id: id },
         success: function(data) {
             noticeSuccess('Participant unmuted');
-        },
-        error: function(req) {
-            noticeError(req.responseText);
-        }
-    });
-}
-
-function dropParticipant(id) {
-    $.ajax({
-        type: 'POST',
-        url: '/dropParticipant',
-        data: { id: id },
-        success: function(data) {
-            noticeSuccess('Participant dropped');
         },
         error: function(req) {
             noticeError(req.responseText);

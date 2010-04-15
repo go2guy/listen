@@ -6,7 +6,7 @@
     <title>Listen</title>
 
     <!-- css -->
-    <link rel="stylesheet" type="text/css" href="./resources/reset-fonts-grids.css"> 
+    <link rel="stylesheet" type="text/css" href="./resources/yui-2.8.0r4/reset-fonts-grids/reset-fonts-grids.css"> 
     <link rel="stylesheet" type="text/css" href="./resources/jquery/css/excite-bike/jquery-ui-1.8rc3.custom.css">
     <link rel="stylesheet" type="text/css" href="./resources/jquery/plugins/notice-1.0.1/jquery.notice.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/application-min.css">
@@ -15,8 +15,15 @@
     <!-- scripts -->
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
-    <script type="text/javascript" src="./resources/jquery/plugins/dataTables-1.6/media/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="./resources/jquery/plugins/notice-1.0.1/jquery.notice.js"></script>
+    
+    <script type="text/javascript" src="./resources/yui-2.8.0r4/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script type="text/javascript" src="./resources/yui-2.8.0r4/element/element-min.js"></script>
+    <script type="text/javascript" src="./resources/yui-2.8.0r4/datasource/datasource-min.js"></script>
+    <script type="text/javascript" src="./resources/yui-2.8.0r4/json/json-min.js"></script>
+    <script type="text/javascript" src="./resources/yui-2.8.0r4/connection/connection-min.js"></script>
+    <script type="text/javascript" src="./resources/yui-2.8.0r4/datatable/datatable-min.js"></script>
+    
     <script type="text/javascript" src="./resources/app/application-min.js"></script>
   </head>
   <body>
@@ -25,19 +32,25 @@
       <div id="logout"><input type="button" name="logoutButton" id="logoutButton" value="Logout"/></div>
     </div>
 
-    <div id="conferenceCallerDialog" title="Conference">
-      <table id="callerTable">
-        <thead>
-          <tr>
-            <th>Caller</th>
-            <th></th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <span style="font-size: 85%;">Conference administrators are <b>Bold</b></span>
+    <div id="conferenceDialog" title="Conference">
+      <div class="dialogSection">
+        <div class="title">Participants</div>
+        <div id="conferenceParticipantTable"></div>
+      </div>
+
+      <div class="dialogSection">
+        <div class="title">History</div>
+        <table id="conferenceHistoryTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Who</th>
+              <th>What</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
     <div id="loginDialog" title="Login">
