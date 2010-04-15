@@ -5,7 +5,6 @@ import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
-import com.interact.listen.spot.SpotCommunicationException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
