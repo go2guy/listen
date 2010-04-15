@@ -1,8 +1,7 @@
 package com.interact.listen.resource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -20,15 +19,18 @@ public class Conference extends Resource implements Serializable
 
     @Column(nullable = false)
     private Boolean isStarted;
-    
+
     @Column(nullable = false)
     private String adminPin;
-    
+
     @Column(nullable = false)
     private String number;
 
     @CollectionOfElements
     private List<Participant> participants = new ArrayList<Participant>();
+
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private Set<ConferenceHistory> conferenceHistorys = new HashSet<ConferenceHistory>();
 
     public Boolean getIsStarted()
     {
@@ -90,6 +92,16 @@ public class Conference extends Resource implements Serializable
         this.participants = participants;
     }
 
+    public Set<ConferenceHistory> getConferenceHistorys()
+    {
+        return conferenceHistorys;
+    }
+
+    public void setConferenceHistorys(Set<ConferenceHistory> conferenceHistorys)
+    {
+        this.conferenceHistorys = conferenceHistorys;
+    }
+
     @Override
     public boolean validate()
     {
@@ -100,13 +112,13 @@ public class Conference extends Resource implements Serializable
             addToErrors("isStarted cannot be null");
             isValid = false;
         }
-        
+
         if(adminPin == null || adminPin.trim().equals(""))
         {
             addToErrors("adminPin is required");
             isValid = false;
         }
-        
+
         if(number == null || number.trim().equals(""))
         {
             addToErrors("number is required");
