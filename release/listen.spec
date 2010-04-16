@@ -24,7 +24,6 @@ BuildArch: %{_arch}
 Requires: USE_IIUIA_TO_INSTALL
 
 %define __spec_install_post /usr/lib/rpm/brp-compress
-%define manifest %( echo $FILEFILE )
 
 %define _topdir %(if [ "${TOPDIR}" == "" ]; then echo "/var/tmp/%{name}-%{version}-%{release}-topdir"; else echo "${TOPDIR}"; fi;)
 %(mkdir -p %{_topdir}/RPMS/)
@@ -63,9 +62,8 @@ Requires: USE_IIUIA_TO_INSTALL
 #######################################################################
 # The files section lists all files included in the RPM
 #######################################################################
-%files 
+%files -f %(echo $MANIFEST)
     %defattr(755,interact,operator)
-    /interact/packages/ 
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
@@ -73,6 +71,11 @@ Requires: USE_IIUIA_TO_INSTALL
 # around forever
 #######################################################################
 %clean
+    rm -rf %{STARTDIR}/ii_artifacts/*
+    mkdir -p %{STARTDIR}/ii_artifacts/
+    mv %{_topdir}/RPMS/*/*.rpm %{STARTDIR}/ii_artifacts/
+    rm -rf %{buildroot}/
+    rm -rf %{_topdir}/RPMS %{_topdir}/SRPMS %{_topdir}/SOURCES
 
 #######################################################################
 # This is a log of what changes occurred when the package is updated.
