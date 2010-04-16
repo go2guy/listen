@@ -38,7 +38,7 @@ fi
 # Get upstream artifact
 wget -nv ${UPSTREAM_URL}/artifact//*zip*/listen.zip
 unzip listen.zip
-export listenRPM=`find ./archive -name "INSA*.rpm"`
+export listenRPM=`find ./archive -name "listen-*.rpm"`
 
 # Get last successful uia
 wget -nv ${UIA_URL}/artifact//*zip*/uia.zip
