@@ -45,20 +45,9 @@ wget -nv ${UIA_URL}/artifact//*zip*/uia.zip
 unzip uia.zip
 export UIARPM=`find ./archive -name "uia*.rpm"`
 
-echo "listenRPM is [ ${listenRPM} ]."
-echo "UIARPM is [ ${UIARPM} ]."
-
-# Distribute packages to server
-#scp ${SSH_OPTS} ${INSARPM} ${UIARPM} root@${INSASERVER}:/interact/
-#scp ${SSH_OPTS} deployINSA.py root@${INSASERVER}:/root/
+ssh ${SSH_OPTS} root@${controlserver} "rm -f /interact/packages/listen*rpm"
+scp ${listenRPM} ${UIARPM} deploy_tool.py ${controlserver}:/interact/
 
 # Invoke deploy -- do all phases
-#ssh ${SSH_OPTS} root@${INSASERVER} "/root/deployINSA.py --insaserver=${INSASERVER} --rtbserver=${RTBSERVER} --dbserver=${DBSERVER} --webserver=${WEBSERVER} --phase=all"
-
-
-#rm -f /interact/packages/listen*rpm
-#
-#cp listen/release/ii_artifacts/*.rpm /interact/
-#
-#listen/autodeploy/deploy_tool.py --controlserver=listenvip.interact.nonreg --spotserver=listenvip.interact.nonreg --webserver=listenvip.interact.nonreg --phase=all
+ssh ${SSH_OPTS} root@${controlserver} "/interact/deploy_tool.py --controlserver=${controlserver} --spotserver=${spotserver} --webserver=${webserver} --phase=all"
 
