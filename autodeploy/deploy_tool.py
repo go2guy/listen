@@ -277,7 +277,7 @@ def doInstall():
     
     # define an empty list for startup commands
     
-    startlist = []
+    startlist = {}
     if hostname==spotserver:
         doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm spotapps")
         # Installation successful.
@@ -289,24 +289,21 @@ def doInstall():
         # this is a mess
         print "Controller installation complete."
         # Add db processes to list to start
-        startlist.append("/etc/init.d/listen-controller start")
+        startlist["/etc/init.d/listen-controller": "start"]
     
     if hostname==webserver:
         doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm gui")
         # Installation successful. Start appropriate processes
         print "WEB Installation complete."
         # Add web processes to list to start
-        startlist.append("/etc/init.d/listen-gui start")
+        startlist["/etc/init.d/listen-gui": "start"]
     
-    # flush duplicates from startlist
-    d = {}
-    for command in startlist:
-        d[command]=command
-    startlist=d.values()
-    
+    doCmd("/interact/packages/iiInstall.sh -i --noinput --force /interact/packages/listen*.rpm collector")
+    startlist["/etc/init.d/collector": "start"]
+
     # execute listed startup commands 
-    for command in startlist:
-        doCmd(command)
+    for command,action in startlist.iteritems():
+        doCmd(command + " " + action)
 
 
 def doPost():    
