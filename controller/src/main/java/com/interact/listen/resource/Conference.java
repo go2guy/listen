@@ -23,6 +23,9 @@ public class Conference extends Resource implements Serializable
     @Column(nullable = false)
     private String adminPin;
 
+    @Column(nullable = true)
+    private String passivePin;
+
     @Column(nullable = false)
     private String number;
 
@@ -50,6 +53,16 @@ public class Conference extends Resource implements Serializable
     public void setAdminPin(String adminPin)
     {
         this.adminPin = adminPin;
+    }
+
+    public String getPassivePin()
+    {
+        return passivePin;
+    }
+
+    public void setPassivePin(String passivePin)
+    {
+        this.passivePin = passivePin;
     }
 
     public String getNumber()

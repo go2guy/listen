@@ -145,6 +145,7 @@ public class ConferenceTest
     {
         Conference c = new Conference();
         c.setAdminPin(String.valueOf(System.currentTimeMillis()));
+        c.setPassivePin("");
         c.setId(System.currentTimeMillis());
         c.setIsStarted(Boolean.TRUE);
         c.setNumber(String.valueOf(System.currentTimeMillis()));
