@@ -32,11 +32,11 @@ public abstract class Resource
     }
 
     public void beforeSave(Session session)
-    {}
+    { }
 
     public void beforeUpdate(Session session, Resource original)
-    {}
+    { }
 
     public void beforeDelete(Session session)
-    {}
+    { }
 }
