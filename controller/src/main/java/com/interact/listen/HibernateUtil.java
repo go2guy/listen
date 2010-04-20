@@ -2,13 +2,17 @@ package com.interact.listen;
 
 import com.interact.listen.resource.*;
 
+import java.text.DecimalFormat;
+
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 
 public final class HibernateUtil
 {
     private static final SessionFactory SESSION_FACTORY;
-    
+
     private HibernateUtil()
     {
         throw new AssertionError("Cannot instantiate utility class " + this.getClass().getName());
@@ -43,6 +47,11 @@ public final class HibernateUtil
             config.addAnnotatedClass(Voicemail.class);
 
             SESSION_FACTORY = config.buildSessionFactory();
+
+            if(Boolean.valueOf(System.getProperty("bootstrap", "false")))
+            {
+                bootstrap();
+            }
         }
         catch(Exception e)
         {
@@ -54,5 +63,52 @@ public final class HibernateUtil
     public static SessionFactory getSessionFactory()
     {
         return SESSION_FACTORY;
+    }
+
+    private static void bootstrap()
+    {
+        Session session = getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        try
+        {
+            for(int i = 0; i < 10; i++)
+            {
+                Conference conference = new Conference();
+                conference.setNumber(new DecimalFormat("000000").format(i));
+                conference.setAdminPin("111" + conference.getNumber());
+                conference.setIsStarted(true);
+                conference.setPassivePin("000" + conference.getNumber());
+                session.save(conference);
+
+                System.out.println("BOOTSTRAP: Saved Conference " + conference.getId());
+
+                for(int j = 0; j < 10; j++)
+                {
+                    Participant participant = new Participant();
+                    participant.setAudioResource("/foo/bar");
+                    participant.setConference(conference);
+                    participant.setIsAdmin(j == 0);
+                    participant.setIsAdminMuted(false);
+                    participant.setIsHolding(false);
+                    participant.setIsMuted(false);
+                    participant.setNumber("999" + conference.getNumber() + new DecimalFormat("000").format(j));
+                    participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
+                    session.save(participant);
+
+                    System.out.println("BOOTSTRAP: Saved Participant " + participant.getId());
+                }
+            }
+
+            transaction.commit();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+
+            System.out.println("System exiting (bootstrap error).");
+            System.exit(1);
+        }
     }
 }

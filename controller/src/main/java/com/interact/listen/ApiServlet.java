@@ -74,6 +74,10 @@ public class ApiServlet extends HttpServlet
                 {
                     builder.uniqueResult(Boolean.valueOf(query.get("_uniqueResult")));
                 }
+                if(query.containsKey("_or"))
+                {
+                    builder.or(Boolean.valueOf(query.get("_or")));
+                }
 
                 ResourceListService listService = builder.build();
 

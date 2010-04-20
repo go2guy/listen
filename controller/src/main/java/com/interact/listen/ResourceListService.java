@@ -12,8 +12,7 @@ import java.util.*;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 
 public final class ResourceListService
 {
@@ -26,6 +25,7 @@ public final class ResourceListService
     private int first = 0;
     private int max = 100;
     private boolean uniqueResult = false;
+    private boolean or = false;
 
     private ResourceListService(Builder builder)
     {
@@ -37,6 +37,7 @@ public final class ResourceListService
         this.first = builder.first;
         this.max = builder.max;
         this.uniqueResult = builder.uniqueResult;
+        this.or = builder.or;
     }
 
     public static class Builder
@@ -51,6 +52,7 @@ public final class ResourceListService
         private int first = 0;
         private int max = 100;
         private boolean uniqueResult = false;
+        private boolean or = false;
 
         public Builder(Class<? extends Resource> resourceClass, Session session, Marshaller marshaller)
         {
@@ -86,6 +88,12 @@ public final class ResourceListService
         public Builder uniqueResult(boolean unique)
         {
             this.uniqueResult = unique;
+            return this;
+        }
+
+        public Builder or(boolean isOr)
+        {
+            this.or = isOr;
             return this;
         }
 
@@ -150,6 +158,8 @@ public final class ResourceListService
         criteria.setFirstResult(first);
         criteria.setMaxResults(max);
 
+        Junction junction = or ? Restrictions.disjunction() : Restrictions.conjunction();
+
         for(Map.Entry<String, String> entry : searchProperties.entrySet())
         {
             String key = entry.getKey();
@@ -169,14 +179,15 @@ public final class ResourceListService
                 if(Resource.class.isAssignableFrom(method.getReturnType()))
                 {
                     Long id = Marshaller.getIdFromHref(value);
-                    criteria.createCriteria(key).add(Restrictions.idEq(id));
+                    criteria.createAlias(key, key + "_alias");
+                    junction.add(Restrictions.eq(key + "_alias.id", id));
                 }
                 else
                 {
                     Class<? extends Converter> converterClass = Marshaller.getConverterClass(method.getReturnType());
                     Converter converter = converterClass.newInstance();
                     Object convertedValue = converter.unmarshal(value);
-                    criteria.add(Restrictions.eq(key, convertedValue));
+                    junction.add(Restrictions.eq(key, convertedValue));
                 }
             }
             catch(IllegalAccessException e)
@@ -193,6 +204,8 @@ public final class ResourceListService
                                                     method.getReturnType() + "] for finding by [" + key + "]");
             }
         }
+
+        criteria.add(junction);
 
         return criteria;
     }
