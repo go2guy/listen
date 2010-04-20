@@ -1,6 +1,7 @@
 package com.interact.listen;
 
 import com.interact.listen.resource.*;
+import com.interact.listen.resource.Pin.PinType;
 
 import java.text.DecimalFormat;
 
@@ -32,7 +33,7 @@ public final class HibernateUtil
             config.setProperty("hibernate.connection.autocommit", "false");
             config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
             config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-            config.setProperty("hibernate.show_sql", "false");
+            config.setProperty("hibernate.show_sql", "true");
             config.setProperty("hibernate.transaction.factory_class",
                                "org.hibernate.transaction.JDBCTransactionFactory");
             config.setProperty("hibernate.current_session_context_class", "thread");
@@ -42,6 +43,7 @@ public final class HibernateUtil
             config.addAnnotatedClass(ConferenceHistory.class);
             config.addAnnotatedClass(ListenSpotSubscriber.class);
             config.addAnnotatedClass(Participant.class);
+            config.addAnnotatedClass(Pin.class);
             config.addAnnotatedClass(Subscriber.class);
             config.addAnnotatedClass(User.class);
             config.addAnnotatedClass(Voicemail.class);
@@ -75,10 +77,22 @@ public final class HibernateUtil
             for(int i = 0; i < 10; i++)
             {
                 Conference conference = new Conference();
-                conference.setActivePin(new DecimalFormat("000000").format(i));
-                conference.setAdminPin("111" + conference.getActivePin());
+
+                String basePin = new DecimalFormat("0000").format(i);
+
+                Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
+                Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
+                Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
+
+                session.save(activePin);
+                session.save(adminPin);
+                session.save(passivePin);
+
+                conference.addToPins(activePin);
+                conference.addToPins(adminPin);
+                conference.addToPins(passivePin);
+
                 conference.setIsStarted(true);
-                conference.setPassivePin("000" + conference.getActivePin());
                 session.save(conference);
 
                 System.out.println("BOOTSTRAP: Saved Conference " + conference.getId());
@@ -92,7 +106,7 @@ public final class HibernateUtil
                     participant.setIsAdminMuted(false);
                     participant.setIsHolding(false);
                     participant.setIsMuted(false);
-                    participant.setNumber("999" + conference.getActivePin() + new DecimalFormat("000").format(j));
+                    participant.setNumber("999" + basePin + new DecimalFormat("000").format(j));
                     participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
                     session.save(participant);
 
@@ -106,9 +120,7 @@ public final class HibernateUtil
         {
             e.printStackTrace();
             transaction.rollback();
-
-            System.out.println("System exiting (bootstrap error).");
-            System.exit(1);
+            throw new ExceptionInInitializerError(e);
         }
     }
 }

@@ -178,10 +178,8 @@ public class ParticipantTest
     private Participant getPopulatedParticipant()
     {
         Conference c = new Conference();
-        c.setAdminPin(String.valueOf(System.currentTimeMillis()));
         c.setId(System.currentTimeMillis());
         c.setIsStarted(Boolean.TRUE);
-        c.setActivePin(String.valueOf(System.currentTimeMillis()));
         c.setVersion(1);
 
         Participant p = new Participant();

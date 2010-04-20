@@ -157,6 +157,7 @@ public final class ResourceListService
 
         criteria.setFirstResult(first);
         criteria.setMaxResults(max);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         Junction junction = or ? Restrictions.disjunction() : Restrictions.conjunction();
 

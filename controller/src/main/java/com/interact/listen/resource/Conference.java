@@ -5,6 +5,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import org.hibernate.Session;
 import org.hibernate.annotations.CollectionOfElements;
 
 @Entity
@@ -20,14 +21,8 @@ public class Conference extends Resource implements Serializable
     @Column(nullable = false)
     private Boolean isStarted;
 
-    @Column(nullable = false)
-    private String adminPin;
-
-    @Column(nullable = true)
-    private String passivePin;
-
-    @Column(nullable = false)
-    private String activePin;
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    private Set<Pin> pins = new HashSet<Pin>();
 
     @CollectionOfElements
     private List<Participant> participants = new ArrayList<Participant>();
@@ -45,34 +40,30 @@ public class Conference extends Resource implements Serializable
         this.isStarted = isStarted;
     }
 
-    public String getAdminPin()
+    public Set<Pin> getPins()
     {
-        return adminPin;
+        return new HashSet<Pin>(pins);
     }
 
-    public void setAdminPin(String adminPin)
+    public void setPins(Set<Pin> pins)
     {
-        this.adminPin = adminPin;
+        this.pins = new HashSet<Pin>(pins);
+        for(Pin pin : pins)
+        {
+            pin.setConference(this);
+        }
     }
 
-    public String getPassivePin()
+    public void addToPins(Pin pin)
     {
-        return passivePin;
+        pin.setConference(this);
+        this.pins.add(pin);
     }
 
-    public void setPassivePin(String passivePin)
+    public void removeFromPins(Pin pin)
     {
-        this.passivePin = passivePin;
-    }
-
-    public String getActivePin()
-    {
-        return activePin;
-    }
-
-    public void setActivePin(String activePin)
-    {
-        this.activePin = activePin;
+        this.pins.remove(pin);
+        pin.setConference(null);
     }
 
     public Long getId()
@@ -118,26 +109,22 @@ public class Conference extends Resource implements Serializable
     @Override
     public boolean validate()
     {
-        boolean isValid = true;
-
         if(isStarted == null)
         {
             addToErrors("isStarted cannot be null");
-            isValid = false;
         }
 
-        if(adminPin == null || adminPin.trim().equals(""))
-        {
-            addToErrors("adminPin is required");
-            isValid = false;
-        }
+        return !hasErrors();
+    }
 
-        if(activePin == null || activePin.trim().equals(""))
-        {
-            addToErrors("activePin is required");
-            isValid = false;
-        }
+    public static Conference findByPinNumber(String pinNumber, Session session)
+    {
+        final String hql = "select c from Conference c join c.pins as p where p.number = ?";
 
-        return isValid;
+        org.hibernate.Query query = session.createQuery(hql);
+        query.setMaxResults(1);
+        query.setString(0, pinNumber);
+
+        return (Conference)query.uniqueResult();
     }
 }

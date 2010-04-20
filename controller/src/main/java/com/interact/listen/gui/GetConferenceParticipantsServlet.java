@@ -41,12 +41,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
             // TODO we probably need a specific JSON marshaller for the web UI servlets - something that
             // doesn't return hrefs, but returns only the queried and necessary (e.g. paging) information
             Marshaller marshaller = new JsonMarshaller();
-
-            // TODO factor this out into a general "find" method on a service/utility class
-            Criteria criteria = session.createCriteria(Conference.class);
-            criteria.add(Restrictions.eq("activePin", user.getSubscriber().getNumber()));
-            criteria.setMaxResults(1);
-            Conference conference = (Conference)criteria.uniqueResult();
+            Conference conference = Conference.findByPinNumber(user.getSubscriber().getNumber(), session);
 
             if(conference == null)
             {
@@ -58,7 +53,6 @@ public class GetConferenceParticipantsServlet extends HttpServlet
             Builder builder = new ResourceListService.Builder(Participant.class, session, marshaller)
                                   .addSearchProperty("conference", "/conferences/" + conference.getId())
                                   .addReturnField("id")
-                                  .addReturnField("activePin")
                                   .addReturnField("isAdmin")
                                   .addReturnField("isMuted")
                                   .addReturnField("isAdminMuted")

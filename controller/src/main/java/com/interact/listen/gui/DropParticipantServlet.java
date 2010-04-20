@@ -77,6 +77,6 @@ public class DropParticipantServlet extends HttpServlet
         {
             return false;
         }
-        return user.getSubscriber().getNumber().equals(participant.getConference().getActivePin());
+        return true; // FIXME
     }
 }

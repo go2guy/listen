@@ -18,24 +18,6 @@ public class ConferenceTest
     }
 
     @Test
-    public void test_setNumber_withValidNumber_setsNumber()
-    {
-        final String activePin = String.valueOf(System.currentTimeMillis());
-        conference.setActivePin(activePin);
-
-        assertEquals(activePin, conference.getActivePin());
-    }
-
-    @Test
-    public void test_setAdminPin_withValidAdminPin_setsAdminPin()
-    {
-        final String adminPin = String.valueOf(System.currentTimeMillis());
-        conference.setAdminPin(adminPin);
-
-        assertEquals(adminPin, conference.getAdminPin());
-    }
-
-    @Test
     public void test_setIsStarted_withValidIsStarted_setsIsStarted()
     {
         final Boolean isStarted = true;
@@ -81,74 +63,11 @@ public class ConferenceTest
         assertTrue(conference.hasErrors());
     }
 
-    @Test
-    public void test_validate_nullAdminPin_returnsHasErrors()
-    {
-        conference = getPopulatedConference();
-        conference.setAdminPin(null);
-
-        assertFalse(conference.validate());
-        assertTrue(conference.hasErrors());
-    }
-
-    @Test
-    public void test_validate_blankAdminPin_returnsHasErrors()
-    {
-        conference = getPopulatedConference();
-        conference.setAdminPin("");
-
-        assertFalse(conference.validate());
-        assertTrue(conference.hasErrors());
-    }
-
-    @Test
-    public void test_validate_whitespaceAdminPin_returnsHasErrors()
-    {
-        conference = getPopulatedConference();
-        conference.setAdminPin(" ");
-
-        assertFalse(conference.validate());
-        assertTrue(conference.hasErrors());
-    }
-
-    @Test
-    public void test_validate_nullNumber_returnsHasErrors()
-    {
-        conference = getPopulatedConference();
-        conference.setActivePin(null);
-
-        assertFalse(conference.validate());
-        assertTrue(conference.hasErrors());
-    }
-
-    @Test
-    public void test_validate_blankNumber_returnsHasErrors()
-    {
-        conference = getPopulatedConference();
-        conference.setActivePin("");
-
-        assertFalse(conference.validate());
-        assertTrue(conference.hasErrors());
-    }
-
-    @Test
-    public void test_validate_whitespaceNumber_returnsHasErrors()
-    {
-        conference = getPopulatedConference();
-        conference.setActivePin(" ");
-
-        assertFalse(conference.validate());
-        assertTrue(conference.hasErrors());
-    }
-
     private Conference getPopulatedConference()
     {
         Conference c = new Conference();
-        c.setAdminPin(String.valueOf(System.currentTimeMillis()));
-        c.setPassivePin("");
         c.setId(System.currentTimeMillis());
         c.setIsStarted(Boolean.TRUE);
-        c.setActivePin(String.valueOf(System.currentTimeMillis()));
         c.setVersion(1);
         return c;
     }

@@ -5,6 +5,7 @@ import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Resource;
 import com.interact.listen.resource.ResourceList;
+import com.interact.listen.resource.Pin.PinType;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -31,6 +32,7 @@ public abstract class Marshaller
         converters.put(Date.class, Iso8601DateConverter.class);
         converters.put(Integer.class, IntegerConverter.class);
         converters.put(Long.class, LongConverter.class);
+        converters.put(PinType.class, PinTypeConverter.class);
         converters.put(String.class, StringConverter.class);
     }
 
@@ -148,11 +150,13 @@ public abstract class Marshaller
         }
         catch(InvocationTargetException e)
         {
+            e.printStackTrace();
             throw new AssertionError("InvocationTargetException when calling [" + method.getName() + "] of Resource [" +
                                      resource.getClass().getName() + "]");
         }
         catch(IllegalAccessException e)
         {
+            e.printStackTrace();
             throw new AssertionError("IllegalAccessException when calling [" + method.getName() + "] of Resource [" +
                                      resource.getClass().getName() + "]");
         }

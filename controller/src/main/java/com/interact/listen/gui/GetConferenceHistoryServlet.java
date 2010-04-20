@@ -12,9 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 
 public class GetConferenceHistoryServlet extends HttpServlet
@@ -39,12 +37,7 @@ public class GetConferenceHistoryServlet extends HttpServlet
         try
         {
             Marshaller marshaller = new JsonMarshaller();
-
-            // TODO factor this out into a general "find" method on a service/utility class
-            Criteria criteria = session.createCriteria(Conference.class);
-            criteria.add(Restrictions.eq("activePin", user.getSubscriber().getNumber()));
-            criteria.setMaxResults(1);
-            Conference conference = (Conference)criteria.uniqueResult();
+            Conference conference = Conference.findByPinNumber(user.getSubscriber().getNumber(), session);
 
             if(conference == null)
             {

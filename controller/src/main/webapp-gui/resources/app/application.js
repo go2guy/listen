@@ -20,6 +20,7 @@ function Conference() {
         containment: [0, 31, $(document).width(), $(document).height()]
     })*/;
 
+    // FIXME update this to retrieve the conference active pin(s)
     $.getJSON('/getConferenceInfo', function(data) {
         $('#conferenceDialog').dialog('option', 'title', 'Conference ' + data.number);
     });

@@ -4,9 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.*;
+import com.interact.listen.resource.Pin.PinType;
 
 import java.io.IOException;
 
@@ -73,18 +72,22 @@ public class GetConferenceParticipantsServletTest
     {
         final Long id = System.currentTimeMillis();
 
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(id));
 
         Conference conference = new Conference();
-        conference.setAdminPin(String.valueOf(System.currentTimeMillis()));
         conference.setIsStarted(true);
         conference.setId(System.currentTimeMillis());
-        conference.setActivePin(subscriber.getNumber());
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
+        Pin pin = Pin.newInstance(subscriber.getNumber(), PinType.ADMIN);
+        session.save(pin);
+        
+        conference.addToPins(pin);
         session.save(conference);
+
         tx.commit();
 
         User user = new User();
@@ -98,7 +101,7 @@ public class GetConferenceParticipantsServletTest
 
         StringBuilder expectedJson = new StringBuilder();
         expectedJson.append("{\"href\":\"/participants?");
-        expectedJson.append("_first=0&_max=100&_fields=id,isAdminMuted,isHolding,activePin,isAdmin,isMuted");
+        expectedJson.append("_first=0&_max=100&_fields=id,isAdminMuted,isHolding,isAdmin,isMuted");
         expectedJson.append("&conference=/conferences/").append(conference.getId()).append("\",");
         expectedJson.append("\"count\":0,");
         expectedJson.append("\"total\":0,");

@@ -5,9 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.*;
+import com.interact.listen.resource.Pin.PinType;
 
 import java.io.IOException;
 
@@ -71,18 +70,22 @@ public class GetConferenceInfoServletTest
     {
         final Long id = System.currentTimeMillis();
 
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(id));
 
         Conference conference = new Conference();
-        conference.setAdminPin(String.valueOf(System.currentTimeMillis()));
         conference.setIsStarted(true);
         conference.setId(System.currentTimeMillis());
-        conference.setActivePin(subscriber.getNumber());
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
+        Pin pin = Pin.newInstance(subscriber.getNumber(), PinType.ADMIN);
+        session.save(pin);
+
+        conference.addToPins(pin);
         session.save(conference);
+
         tx.commit();
 
         User user = new User();
@@ -94,7 +97,7 @@ public class GetConferenceInfoServletTest
         request.setMethod("GET");
         servlet.service(request, response);
 
-        String activePin = "\"activePin\":\"" + conference.getActivePin() + "\"";
-        assertTrue(response.getContentAsString().contains(activePin));
+        String hrefString = "\"href\":\"/conferences/" + conference.getId() + "\"";
+        assertTrue(response.getContentAsString().contains(hrefString));
     }
 }
