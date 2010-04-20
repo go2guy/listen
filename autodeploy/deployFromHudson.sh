@@ -14,24 +14,14 @@ elif [ "${UIA_URL}" == "" ]
 then
     echo "No uia package url given."
     exit 1
-elif [ "${controlserver}" == "" ]
+elif [ "${listenserver}" == "" ]
 then
-    echo "No control server host given."
-    exit 1
-elif [ "${spotserver}" == "" ]
-then
-    echo "No spot server host given."
-    exit 1
-elif [ "${webserver}" == "" ]
-then
-    echo "No web server host given."
+    echo "No listen server host given."
     exit 1
 else
     echo
     echo "Servers to be deployed:"
-    echo "Control server               [ $controlserver ]."
-    echo "Spot server                  [ $spotserver ]."
-    echo "Web server                   [ $webserver ]."
+    echo "Listen server               [ ${listenserver} ]."
     echo
 fi
 
@@ -45,9 +35,9 @@ wget -nv ${UIA_URL}/artifact//*zip*/uia.zip
 unzip uia.zip
 export UIARPM=`find ./archive -name "uia*.rpm"`
 
-ssh ${SSH_OPTS} root@${controlserver} "rm -f /interact/packages/listen*rpm"
-scp ${listenRPM} ${UIARPM} deploy_tool.py ${controlserver}:/interact/
+ssh ${SSH_OPTS} root@${listenserver} "rm -f /interact/packages/listen*rpm"
+scp ${listenRPM} ${UIARPM} deploy_tool.py ${listenserver}:/interact/
 
 # Invoke deploy -- do all phases
-ssh ${SSH_OPTS} root@${controlserver} "/interact/deploy_tool.py --controlserver=${controlserver} --spotserver=${spotserver} --webserver=${webserver} --phase=all"
+ssh ${SSH_OPTS} root@${listenserver} "/interact/deploy_tool.py --listenserver=${listenserver} --phase=all"
 
