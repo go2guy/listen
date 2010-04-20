@@ -16,3 +16,24 @@
 # Stats collection files
 /interact/packages/statcollector-*.rpm
 /interact/packages/conf/statcollector.uia
+
+# xmlsecurity files
+/interact/packages/xmlsecurity-*.rpm
+/interact/packages/conf/xmlsecurity.uia
+
+# spotbuild-vip files
+/interact/packages/spotbuild-vip-*.rpm
+/interact/packages/conf/spotbuild-vip.uia
+
+# arcade files
+/interact/packages/iiacs-V*.rpm
+/interact/packages/iiacs-audio-V*.rpm
+/interact/packages/iiacs-softspot-V*.rpm
+/interact/packages/iiserv-V*.rpm
+/interact/packages/iiserv-snmp-V*.rpm
+/interact/packages/iiserv-tool-V*.rpm
+/interact/packages/iixap-V*.rpm
+/interact/packages/conf/iiacs.uia
+/interact/packages/conf/iiacs-softspot.uia
+/interact/packages/conf/iiserv.uia
+/interact/packages/conf/iixap.uia
