@@ -300,11 +300,11 @@ def install():
 
     if hostname == listenserver:
         run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "all"])
-        startlist["/interact/program/iiMoap": ""]
-        startlist["/interact/program/iiSysSrvr": ""]
-        startlist["service", "collector": "start"]
-        startlist["service", "listen-controller": "start"]
-        startlist["service", "listen-gui": "start"]
+        startlist["/interact/program/iiMoap"] = ""
+        startlist["/interact/program/iiSysSrvr"] = ""
+        startlist["service", "collector"] = "start"
+        startlist["service", "listen-controller"] = "start"
+        startlist["service", "listen-gui"] = "start"
 
     # execute listed startup commands 
     for command,action in startlist.iteritems():
