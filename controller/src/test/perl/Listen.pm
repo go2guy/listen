@@ -11,8 +11,9 @@ require Exporter;
 
 use constant TRUE  => 1;
 use constant FALSE => 0;
+
 ### Uncomment this when ready for install
-#use lib "/interact/listen/perl";
+use lib "/interact/listen/perl";
 
 our @ISA    = qw(Exporter);
 our @EXPORT = qw(listenInsert listenUpdate listenDelete listenGetIDs);
@@ -22,9 +23,13 @@ use XML::Parser;
 use XML::XPath;
 use XML::Simple;
 use Data::Dumper;
+use Log::Log4perl;
+
+Log::Log4perl::init('./log4perl.cfg');
 
 my $DEBUG = FALSE;
 my $ListenClient;
+my $LOGGER = Log::Log4perl->get_logger("Listen");
 
 =head1 NAME
 
@@ -114,7 +119,7 @@ sub setListenClient {
    if ($debug) { $DEBUG = TRUE; }
 
    if ($DEBUG) {
-      print "host = $host port = $port timeout = $timeout\n";
+      $LOGGER->debug("host = $host port = $port timeout = $timeout\n");
    }
 
    if ($port eq undef) {
@@ -145,30 +150,30 @@ sub listenGetIDs {
 
    my $count = $ref->{$reqtype."s"}[0]->{count};
    my $total = $ref->{$reqtype."s"}[0]->{total};
-   my $next = $ref->{$reqtype."s"}[0]->{next};
+   my $next  = $ref->{$reqtype."s"}[0]->{next};
 
-   if ($DEBUG) { print "Count $count Total $total Next $next\n"; }
+   if ($DEBUG) { $LOGGER->debug("Count $count Total $total Next $next\n"); }
 
    if ($count > 0) {
 
       my $done = FALSE;
 
       while (!$done) {
-         print "Count $count Total $total Next $next\n";
+         if ($DEBUG) { $LOGGER->debug("Count $count Total $total Next $next\n"); }
 
          for (my $x = 0; $x < $count; ++$x) {
 
             my ($response) = $ListenClient->GET($ref->{$reqtype."s"}[0]->{$reqtype}[$x]->{href})->responseContent();
 
             if ($ListenClient->responseCode() != 200) {
-               print STDERR "There was an error getting requests, error returned [" . $ListenClient->responseCode() . "]\n";
+               $LOGGER->error("There was an error getting requests, error returned [" . $ListenClient->responseCode() . "]\n");
                return -($ListenClient->responseCode());
             }
 
             my $subxs = XML::Simple->new(KeyAttr => "$reqtype", ForceArray => 1, KeepRoot => 1);
             my $subref = $subxs->XMLin($response);     
 
-            if ($DEBUG) { print Dumper($subref); }
+            if ($DEBUG) { $LOGGER->debug(Dumper($subref)); }
 
             push (@resultarray, $subref->{$reqtype}[0]->{id}[0]);
          }
@@ -198,17 +203,17 @@ sub listenDelete {
    $ListenClient->DELETE("/$reqtype"."s/$id");
 
    if ($DEBUG) {
-      print "Response Code " . $ListenClient->responseCode() . "\n";
+      $LOGGER->debug("Response Code " . $ListenClient->responseCode() . "\n");
    }
 
    if ($ListenClient->responseCode() != 200 &&
        $ListenClient->responseCode() != 204 ) {
-      print STDOUT "$reqtype $id was not DELETED, error returned [" . $ListenClient->responseCode() . "] [" .
-                   $ListenClient->responseContent() . "]\n";
+      $LOGGER->error("$reqtype $id was not DELETED, error returned [" . $ListenClient->responseCode() . "] [" .
+                   $ListenClient->responseContent() . "]\n");
       return -($ListenClient->responseCode());
    }
    else {
-      if ($DEBUG) { print STDOUT "$reqtype $id was successfully DELETED\n"; }
+      if ($DEBUG) { $LOGGER->debug("$reqtype $id was successfully DELETED\n"); }
       return 0;
    }
 }
@@ -223,7 +228,7 @@ sub getVersion {
    my $ref = $xs->XMLin($getresult);
 
    if ($ListenClient->responseCode != 200) {
-      print STDERR "Error with version GET [" . $ListenClient->responseCode() . "] [$getresult]\n";
+      $LOGGER->error("Error with version GET [" . $ListenClient->responseCode() . "] [$getresult]\n");
       return -($ListenClient->responseCode());
    }
    return $ref->{$reqtype}[0]->{version}[0];
@@ -306,16 +311,16 @@ sub listenUpdate {
    my ($postresult) = $ListenClient->responseContent();
 
    if ($DEBUG) {
-      print "XML = $reqxml\n";
-      print "PUT Response      = " . $ListenClient->responseContent() . "\n";
-      print "PUT Response code = " . $ListenClient->responseCode() . "\n";
+      $LOGGER->debug( "XML = $reqxml\n");
+      $LOGGER->debug( "PUT Response      = " . $ListenClient->responseContent() . "\n");
+      $LOGGER->debug( "PUT Response code = " . $ListenClient->responseCode() . "\n");
    }
 
    my $parser = XML::Parser->new(ErrorContext => 2);
 
    if ($ListenClient->responseCode() != 200) {
-      print STDERR "Error calling PUT [" . $ListenClient->responseCode() . "] [" 
-                   . $ListenClient->responseContent() . "]\n";
+      $LOGGER->error( "Error calling PUT [" . $ListenClient->responseCode() . "] [" 
+                   . $ListenClient->responseContent() . "]\n");
       return -($ListenClient->responseCode());
    }
 
@@ -325,7 +330,7 @@ sub listenUpdate {
 
    if ($@) {
       $@ =~ s/at \/.*?$//s;
-      print STDERR "\nERROR in '$postresult':\n$@\n";
+      $LOGGER->error( "\nERROR in '$postresult':\n$@\n");
       return 0;
    }
 
@@ -339,19 +344,19 @@ sub listenUpdate {
    my ($getresult) = $ListenClient->GET("/$reqtype"."s/$checkid[0]")->responseContent();
 
    if ($DEBUG) {
-      print "GET Response      = " . $ListenClient->responseContent() . "\n";
-      print "GET Response code = " . $ListenClient->responseCode() . "\n";
+      $LOGGER->debug( "GET Response      = " . $ListenClient->responseContent() . "\n");
+      $LOGGER->debug( "GET Response code = " . $ListenClient->responseCode() . "\n");
    }
 
    if ($ListenClient->responseCode() != 200) {
-      print STDERR "Error calling PUT [" . $ListenClient->responseCode() . "] [" . $ListenClient->responseContent() . "]\n";
+      $LOGGER->error( "Error calling PUT [" . $ListenClient->responseCode() . "] [" . $ListenClient->responseContent() . "]\n");
       return -($ListenClient->responseCode());
    }
 
    if ($getresult ne $postresult) {
-      print "RESULT = $postresult\n";
-      print "GET    = $getresult\n";
-      print STDERR "The results do not match\n";
+      $LOGGER->error( "RESULT = $postresult\n");
+      $LOGGER->error( "GET    = $getresult\n");
+      $LOGGER->error("The results do not match\n");
    }
 
    return $checkid[0];
@@ -415,19 +420,19 @@ sub listenInsert {
 
    $reqxml .= "</$reqtype>";
 
-   if ($DEBUG) { print "XML = $reqxml\n"; }
+   if ($DEBUG) { $LOGGER->debug( "XML = $reqxml\n"); }
    $ListenClient->POST("/$reqtype"."s",$reqxml,{CustomHeader => 'Content-Type: appliceation/xml;charset=UTF-8'});
 
    if ($DEBUG) {
-      print "POST Response      = " . $ListenClient->responseContent() . "\n";
-      print "POST Response code = " . $ListenClient->responseCode() . "\n";
+      $LOGGER->debug( "POST Response      = " . $ListenClient->responseContent() . "\n");
+      $LOGGER->debug( "POST Response code = " . $ListenClient->responseCode() . "\n");
    }
 
    my ($postresult) = $ListenClient->responseContent();
 
    if ($ListenClient->responseCode() != 201) {
-      print STDERR "Error Could not create record $reqtype with POST [" . $ListenClient->responseCode() . "] [" .
-                    $ListenClient->responseContent() . "]\n";
+      $LOGGER->error( "Error Could not create record $reqtype with POST [" . $ListenClient->responseCode() . "] [" .
+                    $ListenClient->responseContent() . "]\n");
       return -($ListenClient->responseCode());
    }
 
@@ -439,7 +444,7 @@ sub listenInsert {
 
    if ($@) {
       $@ =~ s/at \/.*?$//s;
-      print STDERR "\nERROR in '$postresult':\n$@\n";
+      $LOGGER->error( "\nERROR in '$postresult':\n$@\n");
       return 0;
    }
 
@@ -453,20 +458,20 @@ sub listenInsert {
    my ($getresult) = $ListenClient->GET("/$reqtype"."s/$checkid[0]")->responseContent();
 
    if ($DEBUG) {
-      print "GET Response      = " . $ListenClient->responseContent() . "\n";
-      print "GET Response code = " . $ListenClient->responseCode() . "\n";
-      print "GET Response ID = " . $checkid[0] ."\n";
+      $LOGGER->debug( "GET Response      = " . $ListenClient->responseContent() . "\n");
+      $LOGGER->debug( "GET Response code = " . $ListenClient->responseCode() . "\n");
+      $LOGGER->debug( "GET Response ID = " . $checkid[0] ."\n");
    }
 
    if ($ListenClient->responseCode() != 200) {
-      print STDERR "Error with GET [" . $ListenClient->responseCode() . "] [" . $ListenClient->responseContent() . "]\n";
+      $LOGGER->debug("Error with GET [" . $ListenClient->responseCode() . "] [" . $ListenClient->responseContent() . "]\n");
       return -($ListenClient->responseCode());
    }
 
    if ($getresult ne $postresult) {
-      print "RESULT = $postresult\n";
-      print "GET    = $getresult\n";
-      print STDERR "The results do not match\n";
+      $LOGGER->error( "RESULT = $postresult\n");
+      $LOGGER->error( "GET    = $getresult\n");
+      $LOGGER->error( "The results do not match\n");
    }
 
    return $checkid[0];

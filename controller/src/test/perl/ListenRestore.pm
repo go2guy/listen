@@ -1,4 +1,11 @@
+#=======================================================
+# Name: ListenRestore.pm
+#
+# Description: Library for handling tbe restore requests
+#    for the Listen product.
+#=======================================================
 use strict;
+use lib "/interact/listen/perl";
 
 package ListenRestore;
 require Exporter;
@@ -6,17 +13,53 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(Restore);
 
-use constant TRUE => 1;
+use constant TRUE  => 1;
 use constant FALSE => 0;
 
 use REST::Client;
 use XML::Simple qw(:strict);
 use Data::Dumper;
 use Listen;
+use Log::Log4perl;
+
+Log::Log4perl->init("./log4perl.cfg");
 
 my $ListenClient;
 my $DEBUG = FALSE;
 my @CONNECTION;
+my $LOGGER = Log::Log4perl->get_logger("Listen");
+
+=head1 NAME
+
+ListenRestore - Listen restore functions
+
+=head1 SYNOPSIS
+
+   use ListenRestore;
+   Restore($reqtype, $host, $port, $timeout, $debug, $filename);
+
+=head1 DESCRIPTION
+  
+   A collection of subroutines to facilitate the restoring of 
+      listen data from files.
+
+=head1 FUNCTIONS
+=over 4
+
+=item * Restore($reqtype, $host, $port, $timeout, $debug, $filename);
+
+   Accepts $reqtype, $host, $port, $timeout, $debug, $filename
+
+   Returns 0 for success, else error number
+=back
+
+=head1 AUTHOR
+Kevin Murray (murrayk@iivip.com)
+
+=head1 COPYRIGHT
+Copyright 2010 Interact Incorporated
+
+=cut
 
 sub Restore {
    my ($reqtype, $host, $port,
@@ -25,10 +68,10 @@ sub Restore {
    setListenClient($host, $port, $timeout, $debug);
 
    if ($DEBUG) {
-      print "Input = $reqtype $filename\n";
+      $LOGGER->debug("Input = $reqtype $filename\n");
    }
 
-   restoreRequest($reqtype, $filename);
+   return (restoreRequest($reqtype, $filename));
 }
 
 sub setListenClient {
@@ -40,7 +83,7 @@ sub setListenClient {
    if ($debug) { $DEBUG = TRUE; }
 
    if ($DEBUG) {
-      print "host = $host port = $port timeout = $timeout\n";
+      $LOGGER->debug("host = $host port = $port timeout = $timeout\n");
    }
 
    if ($port eq undef) { $sendto = "http://$host"; }
@@ -65,26 +108,32 @@ sub restoreRequest {
       my ($reqxml) = $_;
 
       my $xs = XML::Simple->new(KeyAttr => $reqtype."s",ForceArray => 1, KeepRoot => 1);
-      my $ref = $xs->XMLin($reqxml);
+      my $ref = eval { $xs->XMLin($reqxml); };
+
+      if ($@) {
+         $@ = ! s/at \/.*?$//s;
+         $LOGGER->error("\nERROR in '$reqxml':\n$@\n");
+         return 1;
+      }
 
       if ($DEBUG) {
-         print Dumper($ref);
+         $LOGGER->debug(Dumper($ref));
       }
 
       if ($ref->{subscriber} ne undef) {
-         my ($number) = $ref->{$reqtype}[0]->{number}[0];
+         my ($number)   = $ref->{$reqtype}[0]->{number}[0];
          my ($voiceloc) = $ref->{$reqtype}[0]->{voicemailGreetingLocation}[0];
 
-         if ($DEBUG) { print "NUMBER = $number VOICE  = $voiceloc\n"; }
+         if ($DEBUG) { $LOGGER->debug("NUMBER = $number VOICE  = $voiceloc\n"); }
          $reqid = listenInsert("subscriber", @CONNECTION, $number, $voiceloc);
       }
 
       if ($ref->{voicemail} ne undef) {
-         my ($created) = $ref->{voicemail}[0]->{dateCreated}[0];
+         my ($created)  = $ref->{voicemail}[0]->{dateCreated}[0];
          my ($location) = $ref->{voicemail}[0]->{fileLocation}[0];
-         my ($isnew) = $ref->{voicemail}[0]->{isNew}[0];
+         my ($isnew)    = $ref->{voicemail}[0]->{isNew}[0];
 
-         if ($DEBUG) { print "id = $reqid created = $created location = $location isnew = $isnew\n"; }
+         if ($DEBUG) { $LOGGER->debug("id = $reqid created = $created location = $location isnew = $isnew\n"); }
          listenInsert("voicemail", @CONNECTION, $reqid, $created, $location, $isnew);
       }
 
@@ -93,7 +142,7 @@ sub restoreRequest {
          my ($adminpin) = $ref->{conference}[0]->{adminPin}[0];
          my ($started)  = $ref->{conference}[0]->{isStarted}[0];
 
-         if ($DEBUG) { print "number = $number adminPin = $adminpin started = $started\n"; }
+         if ($DEBUG) { $LOGGER->debug( "number = $number adminPin = $adminpin started = $started\n"); }
          $reqid = listenInsert("conference", @CONNECTION, $number, $adminpin, $started);
       }
 

@@ -5,6 +5,7 @@
 #    for the Listen product.
 #=======================================================
 use strict;
+use lib "/interact/listen/perl";
 
 package ListenBackup;
 require Exporter;
@@ -18,9 +19,12 @@ our @EXPORT = qw(Backup BackupSubscriber);
 use REST::Client;
 use XML::Simple qw(:strict);
 use Data::Dumper;
+use Log::Log4perl;
 
 my $ListenClient;
 my $DEBUG = FALSE;
+Log::Log4perl->init("./log4perl.cfg");
+my $LOGGER = Log::Log4perl->get_logger("ListenBackup");
 
 =head1 NAME
 
@@ -70,14 +74,14 @@ sub Backup {
    setListenClient($host, $port, $timeout, $debug);
 
    if ($DEBUG) {
-      print "Input = $reqtype $filename\n";
+      $LOGGER->debug("Input = $reqtype $filename\n");
    }
 
    if ($reqtype eq "subscriber" || $reqtype eq "conference") {
       return (backupRequest($reqtype, $filename));
    }
    else {
-      print STDERR "You entered an invalid thing to backup\n";
+      $LOGGER->error("You entered an invalid thing to backup\n");
    }
 }
 
@@ -90,7 +94,7 @@ sub setListenClient {
    if ($debug) { $DEBUG = TRUE; }
 
    if ($DEBUG) {
-      print "host = $host port = $port timeout = $timeout\n";
+      $LOGGER->debug("host = $host port = $port timeout = $timeout\n");
    }
 
    if ($port eq undef) { $sendto = "http://$host"; }
@@ -111,11 +115,11 @@ sub BackupSubscriber {
    my $reqlist = $ListenClient->GET("/subscribers?number=$number&_uniqueResult=true")->responseContent();
 
    if ($ListenClient->responseCode() != 200) {
-      print STDOUT "Subscriber number [$number] was not found.\n";
+      $LOGGER->error("Subscriber number [$number] was not found.\n");
       return 0;
    }
 
-   if ($DEBUG) { print "RESULT = $reqlist CODE = ". $ListenClient->responseCode() . "\n"; }
+   if ($DEBUG) { $LOGGER->debug("RESULT = $reqlist CODE = ". $ListenClient->responseCode() . "\n"); }
 
    open(OUTFILE, ">$number.xml") || die "Can't open [$number.xml] $!\n";
 
@@ -125,7 +129,7 @@ sub BackupSubscriber {
    my $subref = $subxs->XMLin($reqlist);
 
    if ($DEBUG) {
-      print Dumper($subref);
+      $LOGGER->debug(Dumper($subref));
    }
 
    backupDependencies($subref->{subscriber}[0]->{voicemails}[0]->{href}, "voicemail");
@@ -143,7 +147,7 @@ sub backupRequest {
    my $ref = $xs->XMLin($reqlist);
 
    if ($DEBUG) {
-      print Dumper($ref);
+      $LOGGER->debug(Dumper($ref));
    }
 
    my $count = $ref->{$reqtype."s"}[0]->{count};
@@ -163,7 +167,7 @@ sub backupRequest {
             my ($response) = $ListenClient->GET($ref->{$reqtype."s"}[0]->{$reqtype}[$x]->{href})->responseContent();
 
             if ($ListenClient->responseCode() != 200) {
-               print STDERR "There was an error getting requests error returned [" . $ListenClient->responseCode() . "]\n";
+               $LOGGER->error("There was an error getting requests error returned [" . $ListenClient->responseCode() . "]\n");
                close OUTFILE;
                return $ListenClient->repsonseCode();
             }
@@ -174,7 +178,7 @@ sub backupRequest {
             my $subref = $subxs->XMLin($response);
 
             if ($DEBUG) {
-               print Dumper($subref);
+               $LOGGER->debug(Dumper($subref));
             }
 
             if ($reqtype eq "subscriber") {
@@ -185,7 +189,7 @@ sub backupRequest {
             }
 
             if ($rc != 0) {
-               print STDERR "There was an error getting dependencies [$rc]. Exiting!\n";
+               $LOGGER->error("There was an error getting dependencies [$rc]. Exiting!\n");
                close OUTFILE;
                return $rc; 
             }
@@ -203,7 +207,7 @@ sub backupRequest {
             $next    = $ref->{subscribers}[0]->{next};
 
             if ($DEBUG) {
-              print "count = $count total = $total next = $next\n";
+              $LOGGER->debug("count = $count total = $total next = $next\n");
             }
          }
 
@@ -212,7 +216,7 @@ sub backupRequest {
    }
 
    else {
-      print STDOUT "There were no $reqtype" . "s found! Backup file was not created.\n";
+      $LOGGER->info("There were no $reqtype" . "s found! Backup file was not created.\n");
    }
    return 0;
 }
@@ -228,8 +232,8 @@ sub backupDependencies {
    my $ref = $xs->XMLin($reqlist);
 
    if ($DEBUG) {
-      print STDOUT "href = $href reqtype = $reqtype\n";
-      print Dumper($ref);
+      $LOGGER->debug( "href = $href reqtype = $reqtype\n");
+      $LOGGER->debug(Dumper($ref));
    }
 
    my $count = $ref->{$reqtype."s"}[0]->{count};
@@ -241,7 +245,7 @@ sub backupDependencies {
          my ($response) = $ListenClient->GET($ref->{$reqtype."s"}[0]->{$reqtype}[$x]->{href})->responseContent();
 
          if ($ListenClient->responseCode() != 200) {
-            print STDERR "There was an error getting requests error returned [" . $ListenClient->responseCode() . "]\n";
+            $LOGGER->error("There was an error getting requests error returned [" . $ListenClient->responseCode() . "]\n");
             return $ListenClient->repsonseCode();
          }
 
@@ -262,7 +266,7 @@ sub backupDependencies {
          $total   = $ref->{subscribers}[0]->{total};
          $next    = $ref->{subscribers}[0]->{next};
          if ($DEBUG) {
-            print "count = $count total = $total next = $next\n";
+            $LOGGER->debug("count = $count total = $total next = $next\n");
          }
       }
    }

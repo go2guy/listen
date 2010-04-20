@@ -1,6 +1,7 @@
 #!/usr/bin/perl
-
 use strict;
+use lib "/interact/listen/perl";
+
 use Getopt::Std;
 use Listen;
 use ListenBackup;
@@ -57,7 +58,7 @@ my $voicecount = $startvalue;
 my $concount   = $startvalue;
 my $partcount  = $startvalue;
 my $rc;
-for (my $cnt = 14034750789; $cnt < 14034750899; ++$cnt) {
+for (my $cnt = 14034750789; $cnt < 14034750999; ++$cnt) {
    $rc = listenUpdate("subscriber", @connection, $subcount, $cnt);
    if ($rc <= 0) { print STDOUT "Error updating subscriber $subcount number $cnt. [$rc] Exiting.\n"; exit;}
    $rc = listenUpdate("voicemail", @connection, $voicecount++, $subcount++, "2010-03-01T00:00:00.001", "/interact/audio/456.wav", "false");
@@ -70,8 +71,6 @@ for (my $cnt = 14034750789; $cnt < 14034750899; ++$cnt) {
 
 print "DONE Updates\n";
 my @results = listenGetIDs("voicemail", @connection);
-if (%options->{d}) { print "SIZE of results $#results [@results]\n"; }
-
 if ($results[0] > 0) {
    foreach my $id (@results) {
       my $rc = listenDelete("voicemail", @connection, $id);
@@ -104,4 +103,4 @@ if ($results[0] > 0) {
    }
 }
 print "DONE conference deletes\n";
-print "\nDONE deletes\n";
+print "\nDONE\n";
