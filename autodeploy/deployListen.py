@@ -268,7 +268,7 @@ def prep():
         run(execute)
 
     # Clean interact directory
-    pardon = ["/interact/xtt", getLatestFile("/interact/uia*.rpm"), getLatestFile("/interact/listen*.rpm")]
+    pardon = ["/interact/xtt", "/interact/master/.iiXmlLicense", "/interact/master/.iiLicense.dat", getLatestFile("/interact/uia*.rpm"), getLatestFile("/interact/listen*.rpm")]
     removeFiles("/interact/", pardon)
 
     # remove interact user
