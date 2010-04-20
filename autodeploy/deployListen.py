@@ -302,9 +302,9 @@ def install():
         run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "all"])
         startlist["/interact/program/iiMoap"] = ""
         startlist["/interact/program/iiSysSrvr"] = ""
-        startlist["service", "collector"] = "start"
-        startlist["service", "listen-controller"] = "start"
-        startlist["service", "listen-gui"] = "start"
+        startlist["/etc/init.d/collector"] = "start"
+        startlist["/etc/init.d/listen-controller"] = "start"
+        startlist["/etc/init.d/listen-gui"] = "start"
 
     # execute listed startup commands 
     for command,action in startlist.iteritems():
