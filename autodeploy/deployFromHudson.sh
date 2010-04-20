@@ -36,8 +36,9 @@ unzip uia.zip
 export UIARPM=`find ./archive -name "uia*.rpm"`
 
 ssh ${SSH_OPTS} root@${listenserver} "rm -f /interact/packages/listen*rpm"
-scp ${listenRPM} ${UIARPM} deployListen.py ${listenserver}:/interact/
+scp ${listenRPM} ${UIARPM} ${listenserver}:/interact/
+scp deployListen.py ${listenserver}:/root/
 
 # Invoke deploy -- do all phases
-ssh ${SSH_OPTS} root@${listenserver} "/interact/deployListen.py --listenserver=${listenserver} --phase=all"
+ssh ${SSH_OPTS} root@${listenserver} "/root/deployListen.py --listenserver=${listenserver} --phase=all"
 
