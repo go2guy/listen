@@ -80,7 +80,7 @@ public class GetConferenceParticipantsServletTest
         conference.setAdminPin(String.valueOf(System.currentTimeMillis()));
         conference.setIsStarted(true);
         conference.setId(System.currentTimeMillis());
-        conference.setNumber(subscriber.getNumber());
+        conference.setActivePin(subscriber.getNumber());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -98,7 +98,7 @@ public class GetConferenceParticipantsServletTest
 
         StringBuilder expectedJson = new StringBuilder();
         expectedJson.append("{\"href\":\"/participants?");
-        expectedJson.append("_first=0&_max=100&_fields=id,isAdminMuted,isHolding,isAdmin,number,isMuted");
+        expectedJson.append("_first=0&_max=100&_fields=id,isAdminMuted,isHolding,activePin,isAdmin,isMuted");
         expectedJson.append("&conference=/conferences/").append(conference.getId()).append("\",");
         expectedJson.append("\"count\":0,");
         expectedJson.append("\"total\":0,");

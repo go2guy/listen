@@ -44,7 +44,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
 
             // TODO factor this out into a general "find" method on a service/utility class
             Criteria criteria = session.createCriteria(Conference.class);
-            criteria.add(Restrictions.eq("number", user.getSubscriber().getNumber()));
+            criteria.add(Restrictions.eq("activePin", user.getSubscriber().getNumber()));
             criteria.setMaxResults(1);
             Conference conference = (Conference)criteria.uniqueResult();
 
@@ -58,7 +58,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
             Builder builder = new ResourceListService.Builder(Participant.class, session, marshaller)
                                   .addSearchProperty("conference", "/conferences/" + conference.getId())
                                   .addReturnField("id")
-                                  .addReturnField("number")
+                                  .addReturnField("activePin")
                                   .addReturnField("isAdmin")
                                   .addReturnField("isMuted")
                                   .addReturnField("isAdminMuted")

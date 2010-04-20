@@ -78,7 +78,7 @@ public class GetConferenceInfoServletTest
         conference.setAdminPin(String.valueOf(System.currentTimeMillis()));
         conference.setIsStarted(true);
         conference.setId(System.currentTimeMillis());
-        conference.setNumber(subscriber.getNumber());
+        conference.setActivePin(subscriber.getNumber());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -94,7 +94,7 @@ public class GetConferenceInfoServletTest
         request.setMethod("GET");
         servlet.service(request, response);
 
-        String number = "\"number\":\"" + conference.getNumber() + "\"";
-        assertTrue(response.getContentAsString().contains(number));
+        String activePin = "\"activePin\":\"" + conference.getActivePin() + "\"";
+        assertTrue(response.getContentAsString().contains(activePin));
     }
 }

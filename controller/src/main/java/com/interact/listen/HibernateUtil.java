@@ -75,10 +75,10 @@ public final class HibernateUtil
             for(int i = 0; i < 10; i++)
             {
                 Conference conference = new Conference();
-                conference.setNumber(new DecimalFormat("000000").format(i));
-                conference.setAdminPin("111" + conference.getNumber());
+                conference.setActivePin(new DecimalFormat("000000").format(i));
+                conference.setAdminPin("111" + conference.getActivePin());
                 conference.setIsStarted(true);
-                conference.setPassivePin("000" + conference.getNumber());
+                conference.setPassivePin("000" + conference.getActivePin());
                 session.save(conference);
 
                 System.out.println("BOOTSTRAP: Saved Conference " + conference.getId());
@@ -92,7 +92,7 @@ public final class HibernateUtil
                     participant.setIsAdminMuted(false);
                     participant.setIsHolding(false);
                     participant.setIsMuted(false);
-                    participant.setNumber("999" + conference.getNumber() + new DecimalFormat("000").format(j));
+                    participant.setNumber("999" + conference.getActivePin() + new DecimalFormat("000").format(j));
                     participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
                     session.save(participant);
 

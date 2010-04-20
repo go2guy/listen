@@ -20,10 +20,10 @@ public class ConferenceTest
     @Test
     public void test_setNumber_withValidNumber_setsNumber()
     {
-        final String number = String.valueOf(System.currentTimeMillis());
-        conference.setNumber(number);
+        final String activePin = String.valueOf(System.currentTimeMillis());
+        conference.setActivePin(activePin);
 
-        assertEquals(number, conference.getNumber());
+        assertEquals(activePin, conference.getActivePin());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class ConferenceTest
     public void test_validate_nullNumber_returnsHasErrors()
     {
         conference = getPopulatedConference();
-        conference.setNumber(null);
+        conference.setActivePin(null);
 
         assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
@@ -125,7 +125,7 @@ public class ConferenceTest
     public void test_validate_blankNumber_returnsHasErrors()
     {
         conference = getPopulatedConference();
-        conference.setNumber("");
+        conference.setActivePin("");
 
         assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
@@ -135,7 +135,7 @@ public class ConferenceTest
     public void test_validate_whitespaceNumber_returnsHasErrors()
     {
         conference = getPopulatedConference();
-        conference.setNumber(" ");
+        conference.setActivePin(" ");
 
         assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
@@ -148,7 +148,7 @@ public class ConferenceTest
         c.setPassivePin("");
         c.setId(System.currentTimeMillis());
         c.setIsStarted(Boolean.TRUE);
-        c.setNumber(String.valueOf(System.currentTimeMillis()));
+        c.setActivePin(String.valueOf(System.currentTimeMillis()));
         c.setVersion(1);
         return c;
     }

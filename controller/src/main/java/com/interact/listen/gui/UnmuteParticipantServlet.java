@@ -75,7 +75,7 @@ public class UnmuteParticipantServlet extends HttpServlet
 
     private boolean isUserAllowedToUnmute(User user, Participant participant)
     {
-        if(!user.getSubscriber().getNumber().equals(participant.getConference().getNumber()))
+        if(!user.getSubscriber().getNumber().equals(participant.getConference().getActivePin()))
         {
             return false;
         }

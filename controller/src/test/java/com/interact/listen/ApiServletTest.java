@@ -300,7 +300,7 @@ public class ApiServletTest
 
         Conference conference = new Conference();
         conference.setId(System.currentTimeMillis());
-        conference.setNumber(String.valueOf(System.currentTimeMillis()));
+        conference.setActivePin(String.valueOf(System.currentTimeMillis()));
         conference.setAdminPin(String.valueOf(System.currentTimeMillis()));
         conference.setIsStarted(Boolean.FALSE);
 
@@ -329,7 +329,7 @@ public class ApiServletTest
 
         Conference conference = new Conference();
         conference.setId(System.currentTimeMillis());
-        conference.setNumber(String.valueOf(System.currentTimeMillis()));
+        conference.setActivePin(String.valueOf(System.currentTimeMillis()));
         conference.setAdminPin(String.valueOf(System.currentTimeMillis()));
         conference.setIsStarted(Boolean.FALSE);
 

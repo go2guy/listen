@@ -181,7 +181,7 @@ public class ParticipantTest
         c.setAdminPin(String.valueOf(System.currentTimeMillis()));
         c.setId(System.currentTimeMillis());
         c.setIsStarted(Boolean.TRUE);
-        c.setNumber(String.valueOf(System.currentTimeMillis()));
+        c.setActivePin(String.valueOf(System.currentTimeMillis()));
         c.setVersion(1);
 
         Participant p = new Participant();

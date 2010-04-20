@@ -27,7 +27,7 @@ public class Conference extends Resource implements Serializable
     private String passivePin;
 
     @Column(nullable = false)
-    private String number;
+    private String activePin;
 
     @CollectionOfElements
     private List<Participant> participants = new ArrayList<Participant>();
@@ -65,14 +65,14 @@ public class Conference extends Resource implements Serializable
         this.passivePin = passivePin;
     }
 
-    public String getNumber()
+    public String getActivePin()
     {
-        return number;
+        return activePin;
     }
 
-    public void setNumber(String number)
+    public void setActivePin(String activePin)
     {
-        this.number = number;
+        this.activePin = activePin;
     }
 
     public Long getId()
@@ -132,9 +132,9 @@ public class Conference extends Resource implements Serializable
             isValid = false;
         }
 
-        if(number == null || number.trim().equals(""))
+        if(activePin == null || activePin.trim().equals(""))
         {
-            addToErrors("number is required");
+            addToErrors("activePin is required");
             isValid = false;
         }
 

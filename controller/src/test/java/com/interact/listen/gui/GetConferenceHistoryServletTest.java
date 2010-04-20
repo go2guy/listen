@@ -80,7 +80,7 @@ public class GetConferenceHistoryServletTest
         conference.setAdminPin(String.valueOf(System.currentTimeMillis()));
         conference.setIsStarted(true);
         conference.setId(System.currentTimeMillis());
-        conference.setNumber(subscriber.getNumber());
+        conference.setActivePin(subscriber.getNumber());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
