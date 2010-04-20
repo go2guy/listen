@@ -9,6 +9,7 @@ try:
     import socket
     import subprocess
     import sys
+    import time
     import traceback
     import urllib
     import urllib2
@@ -20,9 +21,7 @@ except ImportError, e:
 
 def main():
     global phase
-    global webserver
-    global spotserver
-    global controlserver
+    global listenserver
     global hostname
 
     phases = {"prep": prep, "install": install, "upgrade": install, "post": post, "all": all}
@@ -31,27 +30,12 @@ def main():
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
     parser.add_option(
         "",
-        "--webserver",
-        dest="webserver",
+        "--listenserver",
+        dest="listenserver",
         action="store",
+        metavar="SERVER",
         default=None,
-        help="The name of the web server host to use")
-
-    parser.add_option(
-        "",
-        "--spotserver",
-        dest="spotserver",
-        action="store",
-        default=None,
-        help="The name of the spot server host to use")
-
-    parser.add_option(
-        "",
-        "--controlserver",
-        dest="controlserver",
-        action="store",
-        default=None,
-        help="The name of the control server host to use")
+        help="The name of the listen server host to use")
 
     parser.add_option(
         "",
@@ -64,24 +48,16 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    if options.webserver == None:
-        parser.error("--webserver option not supplied")
-
-    if options.spotserver == None:
-        parser.error("--spotserver option not supplied")
-
-    if options.controlserver == None:
-        parser.error("--controlserver option not supplied")
+    if options.listenserver == None:
+        parser.error("--listenserver option not supplied")
 
     if options.phase == None:
         parser.error("--phase option not supplied")
 
-    webserver,__,__ = socket.gethostbyaddr(options.webserver)
-    spotserver,__,__ = socket.gethostbyaddr(options.spotserver)
-    controlserver,__,__ = socket.gethostbyaddr(options.controlserver)
+    listenserver,__,__ = socket.gethostbyaddr(options.listenserver)
 
     hostname = socket.gethostname()
-    if hostname not in (webserver, spotserver, controlserver):
+    if hostname not in (listenserver):
         print("Local hostname [ %s ] matches no entries on input hostlist." % hostname)
         sys.exit(1)
 
@@ -228,17 +204,21 @@ def all():
 def prep():
     run(["mkdir", "-p", "/interact/packages/"])
 
-    if hostname == spotserver:
-        print("Preparing for spotserver deployment")
-    
-    if hostname == controlserver:
-        print("Preparing for controller deployment")
-        run(["/etc/init.d/listen-controller", "stop"], failonerror=False)
-    
-    if hostname == webserver:
-        print("Preparing for web deployment")
-        run(["/etc/init.d/listen-gui", "stop"], failonerror=False)
-    
+    if hostname == listenserver:
+        print("Preparing for deployment")
+        run(["service", "listen-controller", "stop"], failonerror=False)
+        run(["service", "listen-gui", "stop"], failonerror=False)
+
+        # And kill them just to be sure
+        killprocs = ["/interact/.*/iiMoap", "/interact/.*/iiSysSrvr", "/interact/.*/collector", "/interact/.*/listen-gui", "/interact/.*/listen-controller"]
+        for killproc in killprocs:
+            run(["pkill", "-TERM", "-f", killproc], failonerror=False)
+
+        time.sleep(30)
+
+        for killproc in killprocs:
+            run(["pkill", "-KILL", "-f", killproc], failonerror=False)
+
     # setup hosts file
     try:
         # Output standard info
@@ -251,7 +231,7 @@ def prep():
         fileHandle.write("\n")
 
         # Output host aliases
-        for host, alias in ([spotserver, "defaultspot"], [controlserver, "defaultcontroller"], [webserver, "defaultweb"]):
+        for host, alias in ([listenserver, "defaultspot"], [listenserver, "defaultcontroller"], [listenserver, "defaultweb"]):
             #loop through and lookup names for all hosts that
             #populated
             if host != None:
@@ -318,28 +298,13 @@ def install():
     # define an empty list for startup commands
     startlist = {}
 
-    if hostname==spotserver:
-        run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "spotapps"])
-        # Installation successful.
-        print("Listen-spotapps installation complete")
-    
-    if hostname==controlserver:
-        run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "controller"])
-        # perform the schema installs
-        # this is a mess
-        print("Controller installation complete.")
-        # Add db processes to list to start
-        startlist["/etc/init.d/listen-controller": "start"]
-    
-    if hostname==webserver:
-        run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "gui"])
-        # Installation successful. Start appropriate processes
-        print("WEB Installation complete.")
-        # Add web processes to list to start
-        startlist["/etc/init.d/listen-gui": "start"]
-    
-    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "collector"])
-    startlist["/etc/init.d/collector": "start"]
+    if hostname == listenserver:
+        run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "all"])
+        startlist["/interact/program/iiMoap": ""]
+        startlist["/interact/program/iiSysSrvr": ""]
+        startlist["service", "collector": "start"]
+        startlist["service", "listen-controller": "start"]
+        startlist["service", "listen-gui": "start"]
 
     # execute listed startup commands 
     for command,action in startlist.iteritems():
