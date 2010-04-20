@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_conference/root.vxml"> <!--  Set location of root document -->
+    <!-- Last Modified 10/20/2009
+       *   @Name   assign-variable.vxml
+       *   @Desc   Assigns a value to a global variable
+    -->
+    <var name="II_SB_assign_NxtOpt" expr="'30-22'"/>  <!--  Assign Variable Next Option. Name of next file -->
+
+    <form id="beginDocument">
+        <block>
+	    <log target="status">Set Request</log>
+            <log>INFO: Entered assign-variable.vxml [30-28]</log>
+            <log>INFO: request current value [<value expr="request"/>]</log> <!-- Log current value. Update variable and log updated value -->
+            <assign name="request" expr="'post' + ''"/>
+            <log>INFO: request updated to [<value expr="request"/>]</log>
+            <if cond="II_SB_assign_NxtOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_assign_NxtOpt"/>.vxml]</log>
+				<goto expr="'file:' + II_SB_APP_PATH + II_SB_assign_NxtOpt + '.vxml'"/>
+			<else/> <!-- Exit to ccxml layer -->
+				<assign name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set. Exit to CCXML.</log>
+				<log>INFO: Return status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+        </block>
+    </form>
+</vxml>

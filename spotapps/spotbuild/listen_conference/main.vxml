@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_conference/root.vxml"> <!--  Set location of root document -->
+    <!-- Last Modified 10/21/2009
+       *   @Name   main.vxml
+       *   @Desc   Sets up call parameters -->
+
+    <!-- Passed in from CCXML -->
+    <var name="II_SB_local"/>
+    <var name="II_SB_remote"/>
+    <var name="II_SB_originator"/>
+    <var name="II_SB_protocol"/>
+    <var name="II_SB_connectionID"/>
+    <var name="II_SB_type"/>
+    <var name="II_SB_line"/>
+    <var name="II_SB_sessionID"/>
+    <var name="II_SB_CODE_DIR"/>
+    <var name="II_SB_NEXT_OPTION"/>
+    <var name="II_SB_transfer"/>
+    <var name="II_SB_projectSource"/>
+	<var name="SB_UV_call_start_time"/>
+	<var name="SB_UV_call_end_time"/>
+	<var name="SB_UV_admin_pin"/>
+	<var name="SB_UV_active_pin"/>
+	<var name="SB_UV_user_id"/>
+	<var name="SB_UV_filename"/>
+	<var name="SB_UV_get_input"/>
+	<var name="SB_UV_user_pin"/>
+	<var name="SB_UV_error_cnt"/>
+	<var name="SB_UV_conference_id"/>
+	<var name="SB_UV_whichPath"/>
+	<var name="SB_UV_max_error"/>
+	<var name="SB_UV_MODE"/>
+	<var name="SB_UV_POSITION"/>
+	<var name="SB_UV_DATA"/>
+	<var name="SB_UV_FILENAME"/>
+	<var name="SB_UV_index"/>
+	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_dest_number"/>
+	<var name="SB_UV_info_saved"/>
+	<var name="SB_UV_whichDial"/>
+	<var name="SB_UV_prev_path"/>
+	<var name="SB_UV_result"/>
+	<var name="SB_UV_session_id"/>
+	<var name="SB_UV_temp_session"/>
+	<var name="SB_UV_memberCount"/>
+	<var name="SB_UV_CONF_ID"/>
+	<var name="SB_UV_DNIS"/>
+	<var name="SB_UV_audioURL"/>
+	<var name="SB_UV_request"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_params"/>
+	<var name="SB_UV_id"/>
+	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_isAdmin"/>
+	<var name="SB_UV_reqMinCnt"/>
+	<var name="SB_UV_reqMaxCnt"/>
+	<var name="SB_UV_reqCnt"/>
+	<var name="SB_UV_sipURL"/>
+	<var name="SB_UV_FILE1"/>
+	<var name="SB_UV_OPERATION"/>
+	<var name="SB_UV_isMuted"/>
+	<var name="SB_UV_isAdminMuted"/>
+	<var name="SB_UV_passive_pin"/>
+	<var name="SB_UV_outboundID"/>
+	<var name="SB_UV_isPassive"/>
+
+    
+    <form id="beginDocument">
+        <block>
+	        
+            <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
+            <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
+            <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
+            <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
+            <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="ANI" expr="II_SB_remote" />
+			<assign name="user_id" expr="II_SB_connectionID" />
+			<assign name="session_id" expr="II_SB_sessionID" />
+
+			<if cond="SB_UV_call_start_time != undefined">
+				<assign name="call_start_time" expr="SB_UV_call_start_time" />
+			</if>
+			<if cond="SB_UV_call_end_time != undefined">
+				<assign name="call_end_time" expr="SB_UV_call_end_time" />
+			</if>
+			<if cond="SB_UV_admin_pin != undefined">
+				<assign name="admin_pin" expr="SB_UV_admin_pin" />
+			</if>
+			<if cond="SB_UV_active_pin != undefined">
+				<assign name="active_pin" expr="SB_UV_active_pin" />
+			</if>
+			<if cond="SB_UV_user_id != undefined">
+				<assign name="user_id" expr="SB_UV_user_id" />
+			</if>
+			<if cond="SB_UV_filename != undefined">
+				<assign name="filename" expr="SB_UV_filename" />
+			</if>
+			<if cond="SB_UV_get_input != undefined">
+				<assign name="get_input" expr="SB_UV_get_input" />
+			</if>
+			<if cond="SB_UV_user_pin != undefined">
+				<assign name="user_pin" expr="SB_UV_user_pin" />
+			</if>
+			<if cond="SB_UV_error_cnt != undefined">
+				<assign name="error_cnt" expr="SB_UV_error_cnt" />
+			</if>
+			<if cond="SB_UV_conference_id != undefined">
+				<assign name="conference_id" expr="SB_UV_conference_id" />
+			</if>
+			<if cond="SB_UV_whichPath != undefined">
+				<assign name="whichPath" expr="SB_UV_whichPath" />
+			</if>
+			<if cond="SB_UV_max_error != undefined">
+				<assign name="max_error" expr="SB_UV_max_error" />
+			</if>
+			<if cond="SB_UV_MODE != undefined">
+				<assign name="MODE" expr="SB_UV_MODE" />
+			</if>
+			<if cond="SB_UV_POSITION != undefined">
+				<assign name="POSITION" expr="SB_UV_POSITION" />
+			</if>
+			<if cond="SB_UV_DATA != undefined">
+				<assign name="DATA" expr="SB_UV_DATA" />
+			</if>
+			<if cond="SB_UV_FILENAME != undefined">
+				<assign name="FILENAME" expr="SB_UV_FILENAME" />
+			</if>
+			<if cond="SB_UV_index != undefined">
+				<assign name="index" expr="SB_UV_index" />
+			</if>
+			<if cond="SB_UV_ANI != undefined">
+				<assign name="ANI" expr="SB_UV_ANI" />
+			</if>
+			<if cond="SB_UV_dest_number != undefined">
+				<assign name="dest_number" expr="SB_UV_dest_number" />
+			</if>
+			<if cond="SB_UV_info_saved != undefined">
+				<assign name="info_saved" expr="SB_UV_info_saved" />
+			</if>
+			<if cond="SB_UV_whichDial != undefined">
+				<assign name="whichDial" expr="SB_UV_whichDial" />
+			</if>
+			<if cond="SB_UV_prev_path != undefined">
+				<assign name="prev_path" expr="SB_UV_prev_path" />
+			</if>
+			<if cond="SB_UV_result != undefined">
+				<assign name="result" expr="SB_UV_result" />
+			</if>
+			<if cond="SB_UV_session_id != undefined">
+				<assign name="session_id" expr="SB_UV_session_id" />
+			</if>
+			<if cond="SB_UV_temp_session != undefined">
+				<assign name="temp_session" expr="SB_UV_temp_session" />
+			</if>
+			<if cond="SB_UV_memberCount != undefined">
+				<assign name="memberCount" expr="SB_UV_memberCount" />
+			</if>
+			<if cond="SB_UV_CONF_ID != undefined">
+				<assign name="CONF_ID" expr="SB_UV_CONF_ID" />
+			</if>
+			<if cond="SB_UV_DNIS != undefined">
+				<assign name="DNIS" expr="SB_UV_DNIS" />
+			</if>
+			<if cond="SB_UV_audioURL != undefined">
+				<assign name="audioURL" expr="SB_UV_audioURL" />
+			</if>
+			<if cond="SB_UV_request != undefined">
+				<assign name="request" expr="SB_UV_request" />
+			</if>
+			<if cond="SB_UV_resource != undefined">
+				<assign name="resource" expr="SB_UV_resource" />
+			</if>
+			<if cond="SB_UV_params != undefined">
+				<assign name="params" expr="SB_UV_params" />
+			</if>
+			<if cond="SB_UV_id != undefined">
+				<assign name="id" expr="SB_UV_id" />
+			</if>
+			<if cond="SB_UV_cntrlURL != undefined">
+				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
+			</if>
+			<if cond="SB_UV_status != undefined">
+				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_returnVal != undefined">
+				<assign name="returnVal" expr="SB_UV_returnVal" />
+			</if>
+			<if cond="SB_UV_returnStr != undefined">
+				<assign name="returnStr" expr="SB_UV_returnStr" />
+			</if>
+			<if cond="SB_UV_isAdmin != undefined">
+				<assign name="isAdmin" expr="SB_UV_isAdmin" />
+			</if>
+			<if cond="SB_UV_reqMinCnt != undefined">
+				<assign name="reqMinCnt" expr="SB_UV_reqMinCnt" />
+			</if>
+			<if cond="SB_UV_reqMaxCnt != undefined">
+				<assign name="reqMaxCnt" expr="SB_UV_reqMaxCnt" />
+			</if>
+			<if cond="SB_UV_reqCnt != undefined">
+				<assign name="reqCnt" expr="SB_UV_reqCnt" />
+			</if>
+			<if cond="SB_UV_sipURL != undefined">
+				<assign name="sipURL" expr="SB_UV_sipURL" />
+			</if>
+			<if cond="SB_UV_FILE1 != undefined">
+				<assign name="FILE1" expr="SB_UV_FILE1" />
+			</if>
+			<if cond="SB_UV_OPERATION != undefined">
+				<assign name="OPERATION" expr="SB_UV_OPERATION" />
+			</if>
+			<if cond="SB_UV_isMuted != undefined">
+				<assign name="isMuted" expr="SB_UV_isMuted" />
+			</if>
+			<if cond="SB_UV_isAdminMuted != undefined">
+				<assign name="isAdminMuted" expr="SB_UV_isAdminMuted" />
+			</if>
+			<if cond="SB_UV_passive_pin != undefined">
+				<assign name="passive_pin" expr="SB_UV_passive_pin" />
+			</if>
+			<if cond="SB_UV_outboundID != undefined">
+				<assign name="outboundID" expr="SB_UV_outboundID" />
+			</if>
+			<if cond="SB_UV_isPassive != undefined">
+				<assign name="isPassive" expr="SB_UV_isPassive" />
+			</if>
+
+            <log>INFO: Completed global variable setup</log>
+			<if cond="II_SB_nextOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>
+				<goto expr="'file:'+II_SB_APP_PATH + II_SB_nextOpt +'.vxml'"/>
+			<else/> <!-- Exit to ccxml layer -->
+				<assign name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set. Exit to CCXML.</log>
+				<log>INFO: Exit Status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+        </block>
+    </form>
+</vxml>
