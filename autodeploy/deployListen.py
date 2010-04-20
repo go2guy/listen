@@ -208,6 +208,7 @@ def prep():
         print("Preparing for deployment")
         run(["service", "listen-controller", "stop"], failonerror=False)
         run(["service", "listen-gui", "stop"], failonerror=False)
+        run(["service", "collector", "stop"], failonerror=False)
 
         # And kill them just to be sure
         killprocs = ["/interact/.*/iiMoap", "/interact/.*/iiSysSrvr", "/interact/.*/collector", "/interact/.*/listen-gui", "/interact/.*/listen-controller"]
@@ -312,9 +313,9 @@ def install():
 
 
 def post():    
-    if hostname == controlserver: 
-        #run automated tests here?
-        print("performing postinstall steps") 
+    if hostname == listenserver: 
+        # run automated tests here
+        print("Performing postinstall steps") 
 
 if __name__ == "__main__":
     main()
