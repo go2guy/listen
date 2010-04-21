@@ -28,5 +28,6 @@
 	<classpathentry kind="lib" path="lib/runtime/httpcore-nio-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/httpmime-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/build/mockito-all-1.8.4.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>

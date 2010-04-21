@@ -1,5 +1,6 @@
 package com.interact.listen.spot;
 
+import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.httpclient.HttpClientImpl;
 import com.interact.listen.resource.Participant;
 
@@ -12,9 +13,16 @@ public class SpotSystem
     // e.g. "http://apps2/spot/ccxml/basichttp"
     private String httpInterfaceUri;
 
+    private HttpClient httpClient = new HttpClientImpl();
+
     public SpotSystem(String httpInterfaceUri)
     {
         this.httpInterfaceUri = httpInterfaceUri;
+    }
+
+    public void setHttpClient(HttpClient httpClient)
+    {
+        this.httpClient = httpClient;
     }
 
     private enum SpotRequestEvent
@@ -61,13 +69,13 @@ public class SpotSystem
 
     private void sendSpotRequest(Map<String, String> params) throws IOException, SpotCommunicationException
     {
-        HttpClientImpl client = new HttpClientImpl();
-        client.post(httpInterfaceUri, params);
+        httpClient.post(httpInterfaceUri, params);
 
-        Integer status = client.getResponseStatus();
+        Integer status = httpClient.getResponseStatus();
         if(!isSuccessStatus(status))
         {
-            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT");
+            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" +
+                                                 httpInterfaceUri + "]");
         }
     }
 
