@@ -36,9 +36,6 @@ public class Participant extends Resource implements Serializable
     private Boolean isAdminMuted;
 
     @Column(nullable = false)
-    private Boolean isHolding;
-
-    @Column(nullable = false)
     private Boolean isMuted;
 
     @Column(nullable = false)
@@ -110,16 +107,6 @@ public class Participant extends Resource implements Serializable
         this.isAdminMuted = adminMuted;
     }
 
-    public Boolean getIsHolding()
-    {
-        return isHolding;
-    }
-
-    public void setIsHolding(Boolean holding)
-    {
-        this.isHolding = holding;
-    }
-
     public Boolean getIsMuted()
     {
         return isMuted;
@@ -180,11 +167,6 @@ public class Participant extends Resource implements Serializable
             addToErrors("isAdmin cannot be null");
         }
 
-        if(isHolding == null)
-        {
-            addToErrors("isHolding cannot be null");
-        }
-
         if(isMuted == null)
         {
             addToErrors("isMuted cannot be null");
@@ -236,7 +218,6 @@ public class Participant extends Resource implements Serializable
         copy.setConference(participant.getConference());
         copy.setIsAdmin(participant.getIsAdmin());
         copy.setIsAdminMuted(participant.getIsAdminMuted());
-        copy.setIsHolding(participant.getIsHolding());
         copy.setIsMuted(participant.getIsMuted());
         copy.setIsPassive(participant.getIsPassive());
         copy.setNumber(participant.getNumber());

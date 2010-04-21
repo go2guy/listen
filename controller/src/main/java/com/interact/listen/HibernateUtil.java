@@ -104,8 +104,8 @@ public final class HibernateUtil
                     participant.setConference(conference);
                     participant.setIsAdmin(j == 0);
                     participant.setIsAdminMuted(false);
-                    participant.setIsHolding(false);
                     participant.setIsMuted(false);
+                    participant.setIsPassive(false);
                     participant.setNumber("999" + basePin + new DecimalFormat("000").format(j));
                     participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
                     session.save(participant);

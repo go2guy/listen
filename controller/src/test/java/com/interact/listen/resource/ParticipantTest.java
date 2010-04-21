@@ -75,16 +75,6 @@ public class ParticipantTest
     }
 
     @Test
-    public void test_validate_nullIsHolding_returnsHasErrors()
-    {
-        participant = getPopulatedParticipant();
-        participant.setIsHolding(null);
-
-        assertFalse(participant.validate());
-        assertTrue(participant.hasErrors());
-    }
-
-    @Test
     public void test_validate_nullIsMuted_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
@@ -198,7 +188,6 @@ public class ParticipantTest
         p.setId(System.currentTimeMillis());
         p.setIsAdmin(Boolean.TRUE);
         p.setIsAdminMuted(Boolean.FALSE);
-        p.setIsHolding(Boolean.TRUE);
         p.setIsMuted(Boolean.TRUE);
         p.setIsPassive(Boolean.FALSE);
         p.setNumber(String.valueOf(System.currentTimeMillis()));
