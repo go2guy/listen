@@ -33,7 +33,7 @@ public final class HibernateUtil
             config.setProperty("hibernate.connection.autocommit", "false");
             config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
             config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-            config.setProperty("hibernate.show_sql", "true");
+            config.setProperty("hibernate.show_sql", "false");
             config.setProperty("hibernate.transaction.factory_class",
                                "org.hibernate.transaction.JDBCTransactionFactory");
             config.setProperty("hibernate.current_session_context_class", "thread");
@@ -72,15 +72,40 @@ public final class HibernateUtil
         Session session = getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
+        // provisions subscribers/users/conferences/participants
+
+        // for N=0..9
+
+        // subscriber number     = 10N
+        // subscriber VM pin     = 10N
+        // user username         = 10N
+        // user password         = super
+        // conference activePin  = 10N
+        // conference adminPin   = 99910N
+        // conference passivePin = 00010N
+        //   participant numbers are 40200N000M, where M=0..9
+        
         try
         {
             for(int i = 0; i < 10; i++)
             {
+                Subscriber subscriber = new Subscriber();
+                subscriber.setNumber(new DecimalFormat("000").format(100 + i));
+                subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
+                subscriber.setVoicemailPin(subscriber.getNumber());
+                session.save(subscriber);
+
+                User user = new User();
+                user.setPassword("super");
+                user.setSubscriber(subscriber);
+                user.setUsername(subscriber.getNumber());
+                session.save(user);
+
                 Conference conference = new Conference();
 
-                String basePin = new DecimalFormat("0000").format(i);
+                String basePin = new DecimalFormat("000").format(i + 100);
 
-                Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
+                Pin activePin = Pin.newInstance(basePin, PinType.ACTIVE);
                 Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
                 Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
 
@@ -106,7 +131,7 @@ public final class HibernateUtil
                     participant.setIsAdminMuted(false);
                     participant.setIsMuted(false);
                     participant.setIsPassive(false);
-                    participant.setNumber("999" + basePin + new DecimalFormat("000").format(j));
+                    participant.setNumber("402" + basePin + new DecimalFormat("0000").format(j));
                     participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
                     session.save(participant);
 

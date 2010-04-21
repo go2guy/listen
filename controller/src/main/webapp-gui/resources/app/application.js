@@ -1,5 +1,4 @@
 YAHOO.namespace('listen');
-var callerTable, conferencePoller;
 
 function Conference() {
 
@@ -9,11 +8,11 @@ function Conference() {
         closeOnEscape: false,
         dialogClass: 'no-close',
         draggable: true,
-        height: 300,
+        height: 700,
         position: [50, 50],
         resizable: true,
         title: 'My Conference',
-        width: 400
+        width: 500
     })/*
     .parents('.ui-dialog').draggable({
         handle: '.ui-dialog-titlebar',
@@ -26,7 +25,7 @@ function Conference() {
     });
 
     YAHOO.widget.DataTable.Formatter.muteFormatter = function(liner, record, column, data) {
-        liner.innerHTML = getMuteButtonHtml(record.getData('id'), record.getData('isAdminMuted') == "true");
+        liner.innerHTML = getMuteButtonHtml(record.getData('id'), record.getData('isAdminMuted'));
     };
 
     var participantColumns = [
@@ -45,8 +44,7 @@ function Conference() {
             'number',
             'isAdmin',
             'isMuted',
-            'isAdminMuted',
-            'isHolding'
+            'isAdminMuted'
         ]
     };
 
@@ -118,7 +116,7 @@ function Conference() {
 
     this.startPolling = function() {
         var participantCallback = {
-            success: participantDataTable.onDataReturnInitializeTable,
+            success: participantDataTable.onDataReturnReplaceRows,
             failure: function() {
                 // TODO something?
                 //noticeError('Error initializing Conference DataTable');
@@ -129,7 +127,7 @@ function Conference() {
         participantDataSource.setInterval(1000, null, participantCallback);
         
         var historyCallback = {
-            success: historyDataTable.onDataReturnInitializeTable,
+            success: historyDataTable.onDataReturnReplaceRows,
             failure: function() {
                 // TODO something?
             },
