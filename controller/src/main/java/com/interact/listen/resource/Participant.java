@@ -23,8 +23,8 @@ public class Participant extends Resource implements Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(nullable = false, unique = true)
-    private String number;
+    @Column(nullable = false)
+    private String audioResource;
 
     @ManyToOne
     private Conference conference;
@@ -33,19 +33,42 @@ public class Participant extends Resource implements Serializable
     private Boolean isAdmin;
 
     @Column(nullable = false)
+    private Boolean isAdminMuted;
+
+    @Column(nullable = false)
     private Boolean isHolding;
 
     @Column(nullable = false)
     private Boolean isMuted;
 
     @Column(nullable = false)
-    private Boolean isAdminMuted;
+    private Boolean isPassive;
 
-    @Column(nullable = false)
-    private String audioResource;
+    @Column(nullable = false, unique = true)
+    private String number;
 
     @Column(nullable = false)
     private String sessionID;
+
+    public Long getId()
+    {
+        return id;
+    }
+
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
+
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion(Integer version)
+    {
+        this.version = version;
+    }
 
     public String getAudioResource()
     {
@@ -57,14 +80,14 @@ public class Participant extends Resource implements Serializable
         this.audioResource = audioResource;
     }
 
-    public String getSessionID()
+    public void setConference(Conference conference)
     {
-        return sessionID;
+        this.conference = conference;
     }
 
-    public void setSessionID(String sessionID)
+    public Conference getConference()
     {
-        this.sessionID = sessionID;
+        return conference;
     }
 
     public Boolean getIsAdmin()
@@ -75,6 +98,16 @@ public class Participant extends Resource implements Serializable
     public void setIsAdmin(Boolean admin)
     {
         this.isAdmin = admin;
+    }
+
+    public Boolean getIsAdminMuted()
+    {
+        return isAdminMuted;
+    }
+
+    public void setIsAdminMuted(Boolean adminMuted)
+    {
+        this.isAdminMuted = adminMuted;
     }
 
     public Boolean getIsHolding()
@@ -97,14 +130,14 @@ public class Participant extends Resource implements Serializable
         this.isMuted = muted;
     }
 
-    public Boolean getIsAdminMuted()
+    public Boolean getIsPassive()
     {
-        return isAdminMuted;
+        return isPassive;
     }
 
-    public void setIsAdminMuted(Boolean adminMuted)
+    public void setIsPassive(Boolean isPassive)
     {
-        this.isAdminMuted = adminMuted;
+        this.isPassive = isPassive;
     }
 
     public String getNumber()
@@ -117,34 +150,14 @@ public class Participant extends Resource implements Serializable
         this.number = number;
     }
 
-    public Long getId()
+    public String getSessionID()
     {
-        return id;
+        return sessionID;
     }
 
-    public void setId(Long id)
+    public void setSessionID(String sessionID)
     {
-        this.id = id;
-    }
-
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setConference(Conference conference)
-    {
-        this.conference = conference;
-    }
-
-    public Conference getConference()
-    {
-        return conference;
-    }
-
-    public void setVersion(Integer version)
-    {
-        this.version = version;
+        this.sessionID = sessionID;
     }
 
     @Override
@@ -155,59 +168,55 @@ public class Participant extends Resource implements Serializable
         if(audioResource == null)
         {
             addToErrors("audioResource cannot be null");
-            isValid = false;
         }
 
         if(conference == null)
         {
             addToErrors("conference cannot be null");
-            isValid = false;
         }
 
         if(isAdmin == null)
         {
             addToErrors("isAdmin cannot be null");
-            isValid = false;
         }
 
         if(isHolding == null)
         {
             addToErrors("isHolding cannot be null");
-            isValid = false;
         }
 
         if(isMuted == null)
         {
             addToErrors("isMuted cannot be null");
-            isValid = false;
         }
 
         if(isAdminMuted == null)
         {
             addToErrors("isAdminMuted cannot be null");
-            isValid = false;
+        }
+
+        if(isPassive == null)
+        {
+            addToErrors("isPassive cannot be null");
         }
 
         // Admin cannot be admin muted
         if(isAdmin != null && isAdminMuted != null && (isAdmin && isAdminMuted))
         {
             addToErrors("Admin participants cannot be muted by another Admin");
-            isValid = false;
         }
 
         if(number == null || number.trim().equals(""))
         {
             addToErrors("Participant must have a number");
-            isValid = false;
         }
 
         if(sessionID == null || sessionID.trim().equals(""))
         {
             addToErrors("Participant must have a sessionID");
-            isValid = false;
         }
 
-        return isValid;
+        return !hasErrors();
     }
 
     /**
@@ -229,6 +238,7 @@ public class Participant extends Resource implements Serializable
         copy.setIsAdminMuted(participant.getIsAdminMuted());
         copy.setIsHolding(participant.getIsHolding());
         copy.setIsMuted(participant.getIsMuted());
+        copy.setIsPassive(participant.getIsPassive());
         copy.setNumber(participant.getNumber());
         copy.setSessionID(participant.getSessionID());
         return copy;

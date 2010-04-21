@@ -105,6 +105,16 @@ public class ParticipantTest
     }
 
     @Test
+    public void test_validate_nullIsPassive_returnsFalseAndHasErrors()
+    {
+        participant = getPopulatedParticipant();
+        participant.setIsPassive(null);
+
+        assertFalse(participant.validate());
+        assertTrue(participant.hasErrors());
+    }
+
+    @Test
     public void test_validate_isAdminAndIsAdminMuted_returnsHasErrors()
     {
         participant = getPopulatedParticipant();
@@ -187,9 +197,10 @@ public class ParticipantTest
         p.setConference(c);
         p.setId(System.currentTimeMillis());
         p.setIsAdmin(Boolean.TRUE);
+        p.setIsAdminMuted(Boolean.FALSE);
         p.setIsHolding(Boolean.TRUE);
         p.setIsMuted(Boolean.TRUE);
-        p.setIsAdminMuted(Boolean.FALSE);
+        p.setIsPassive(Boolean.FALSE);
         p.setNumber(String.valueOf(System.currentTimeMillis()));
         p.setSessionID(String.valueOf(System.currentTimeMillis()));
         p.setVersion(1);
