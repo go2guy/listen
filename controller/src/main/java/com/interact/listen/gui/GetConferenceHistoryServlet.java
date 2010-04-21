@@ -50,7 +50,8 @@ public class GetConferenceHistoryServlet extends HttpServlet
                                   .addSearchProperty("conference", "/conferences/" + conference.getId())
                                   .addReturnField("dateCreated")
                                   .addReturnField("user")
-                                  .addReturnField("description");
+                                  .addReturnField("description")
+                                  .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING);
             ResourceListService service = builder.build();
             String content = service.list();
 

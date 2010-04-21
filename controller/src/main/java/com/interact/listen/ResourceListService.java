@@ -26,6 +26,13 @@ public final class ResourceListService
     private int max = 100;
     private boolean uniqueResult = false;
     private boolean or = false;
+    private String sortColumn = "id";
+    private SortOrder sortOrder = SortOrder.ASCENDING;
+
+    public enum SortOrder
+    {
+        ASCENDING, DESCENDING;
+    }
 
     private ResourceListService(Builder builder)
     {
@@ -38,6 +45,8 @@ public final class ResourceListService
         this.max = builder.max;
         this.uniqueResult = builder.uniqueResult;
         this.or = builder.or;
+        this.sortColumn = builder.sortColumn;
+        this.sortOrder = builder.sortOrder;
     }
 
     public static class Builder
@@ -53,6 +62,8 @@ public final class ResourceListService
         private int max = 100;
         private boolean uniqueResult = false;
         private boolean or = false;
+        private String sortColumn = "id";
+        private SortOrder sortOrder = SortOrder.ASCENDING;
 
         public Builder(Class<? extends Resource> resourceClass, Session session, Marshaller marshaller)
         {
@@ -97,6 +108,13 @@ public final class ResourceListService
             return this;
         }
 
+        public Builder sortBy(String column, SortOrder order)
+        {
+            this.sortColumn = column;
+            this.sortOrder = order;
+            return this;
+        }
+
         public ResourceListService build()
         {
             return new ResourceListService(this);
@@ -111,7 +129,7 @@ public final class ResourceListService
             content.append(ApiServlet.XML_TAG);
         }
 
-        Criteria criteria = createCriteria();
+        Criteria criteria = createCriteria(false);
         List<Resource> results = (List<Resource>)criteria.list();
 
         if(uniqueResult)
@@ -128,8 +146,7 @@ public final class ResourceListService
             Long total = Long.valueOf(0);
             if(results.size() > 0)
             {
-                criteria.setFirstResult(0);
-                criteria.setProjection(Projections.rowCount());
+                criteria = createCriteria(true);
                 total = (Long)criteria.list().get(0);
             }
 
@@ -151,13 +168,23 @@ public final class ResourceListService
      * 
      * @return criteria that can be used to list results
      */
-    private Criteria createCriteria() throws CriteriaCreationException
+    private Criteria createCriteria(boolean forCount) throws CriteriaCreationException
     {
         Criteria criteria = session.createCriteria(resourceClass);
 
-        criteria.setFirstResult(first);
         criteria.setMaxResults(max);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        if(!forCount)
+        {
+            criteria.setFirstResult(first);
+            criteria.addOrder(sortOrder == SortOrder.ASCENDING ? Order.asc(sortColumn) : Order.desc(sortColumn));
+        }
+        else
+        {
+            criteria.setFirstResult(0);
+            criteria.setProjection(Projections.rowCount());
+        }
 
         Junction junction = or ? Restrictions.disjunction() : Restrictions.conjunction();
 

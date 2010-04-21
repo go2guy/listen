@@ -72,17 +72,18 @@ function Conference() {
                 });
                 break;
         }
-    });/* TODO get this to work
+    });/* TODO get this to work*/
     participantDataTable.subscribe('cellUpdateEvent', function(record, column, oldData) {
         var td = participantDataTable.getTdEl({record: record, column: column});
+        /*
         YAHOO.util.Dom.setStyle(td, 'backgroundColor', '#ffff00');
         var animation = new YAHOO.util.ColorAnim(td, {
             backgroundColor: {
                 to: '#ffffff'
             }
         });
-        animation.animate();
-    });*/
+        animation.animate();*/ alert('event!');
+    });/**/
 
     var historyColumns = [
         {key: 'dateCreated', label: '', className: 'conferenceHistoryTableDateCreated'},
