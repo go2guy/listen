@@ -30,7 +30,8 @@ public class ResourceList
 
     public String getFieldsForQuery()
     {
-        return StringUtils.join(fields, ",");
+        Set<String> sorted = new TreeSet<String>(fields);
+        return StringUtils.join(sorted, ",");
     }
 
     public void setFields(Set<String> fields)
