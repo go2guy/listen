@@ -30,7 +30,7 @@ start() {
    
     echo -n $"Starting listen-controller: "
     # Start me up!
-    java -jar $LISTEN_HOME/lib/listen-controller.jar --httpPort=9090  --logfile=/interact/listen/logs/listen-controller.console <&- 1>/dev/null 2>&1 &
+    java -jar $LISTEN_HOME/lib/listen-controller.jar --httpPort=9090 --ajp13Port=9091  --logfile=/interact/listen/logs/listen-controller.console <&- 1>/dev/null 2>&1 &
     RETVAL=$?
     JPID=$!
     echo $JPID > /var/run/listen-controller.pid

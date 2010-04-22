@@ -30,7 +30,7 @@ start() {
    
     echo -n $"Starting listen-gui: "
     # Start me up!
-    java -jar $LISTEN_HOME/lib/listen-gui.jar --httpPort=9096  --logfile=/interact/listen/logs/listen-gui.console <&- 1>/dev/null 2>&1 &
+    java -jar $LISTEN_HOME/lib/listen-gui.jar --httpPort=9096 --ajp13Port=9097  --logfile=/interact/listen/logs/listen-gui.console <&- 1>/dev/null 2>&1 &
     RETVAL=$?
     JPID=$!
     echo $JPID > /var/run/listen-gui.pid
