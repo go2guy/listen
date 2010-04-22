@@ -35,6 +35,21 @@
                     <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
                 </property>
             </question>
+
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the controller url</text>
+                <default>http://localhost:9090/</default>
+                <validateRegex preset="URL"/>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>cntrlURL</name>
+                    <group>Controller</group>
+                    <description>URL</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
+                </property>
+            </question>
         </inquiry>
     </install>
 
