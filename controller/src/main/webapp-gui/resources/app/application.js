@@ -1,5 +1,8 @@
 YAHOO.namespace('listen');
 
+YAHOO.widget.DataTable.MSG_LOADING = 'Loading...';
+YAHOO.widget.DataTable.MSG_EMPTY = 'Empty';
+
 function Conference() {
 
     // init jquery dialog
@@ -72,18 +75,17 @@ function Conference() {
                 });
                 break;
         }
-    });/* TODO get this to work*/
+    });/* TODO get this to work
     participantDataTable.subscribe('cellUpdateEvent', function(record, column, oldData) {
         var td = participantDataTable.getTdEl({record: record, column: column});
-        /*
         YAHOO.util.Dom.setStyle(td, 'backgroundColor', '#ffff00');
         var animation = new YAHOO.util.ColorAnim(td, {
             backgroundColor: {
                 to: '#ffffff'
             }
         });
-        animation.animate();*/ alert('event!');
-    });/**/
+        animation.animate();
+    });*/
 
     var historyColumns = [
         {key: 'dateCreated', label: '', className: 'conferenceHistoryTableDateCreated'},
