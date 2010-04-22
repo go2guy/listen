@@ -70,7 +70,7 @@
 	<var name="reqMinCnt" expr="'0'" />
 	<var name="reqMaxCnt" expr="'15'" />
 	<var name="reqCnt" expr="'0'" />
-	<var name="sipURL" expr="''" />
+	<var name="sipURL" expr="''" /> <!-- Config SIP server name -->
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'delete'" />
 	<var name="isMuted" expr="'false'" />
