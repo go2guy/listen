@@ -18,6 +18,24 @@
                 <version>5.0.0</version>
             </rpm>
         </pre>
+
+        <inquiry>
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the server name of the SIP trunk</text>
+                <default></default>
+                <validateRegex>^${HOSTNAME}$|^$</validateRegex>
+                <validateInfo>The value may be any number of letters, numbers, dashes, or periods or the value may be blank.</validateInfo>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>sipURL</name>
+                    <group>SIP</group>
+                    <description>server name</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
+                </property>
+            </question>
+        </inquiry>
     </install>
 
     <rollback>
