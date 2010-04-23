@@ -29,40 +29,27 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
-	<var name="call_start_time" expr="''" />
-	<var name="call_end_time" expr="''" />
-	<var name="admin_pin" expr="''" />
-	<var name="active_pin" expr="''" />
-	<var name="user_id" expr="'connectionID'" />
-	<var name="filename" expr="''" />
-	<var name="get_input" expr="''" />
-	<var name="user_pin" expr="''" />
-	<var name="error_cnt" expr="'0'" />
-	<var name="conference_id" expr="''" />
+	<var name="startTime" expr="''" />
+	<var name="userID" expr="'connectionID'" />
+	<var name="fileName" expr="''" />
+	<var name="getInput" expr="''" />
+	<var name="userPin" expr="''" />
+	<var name="errCnt" expr="'0'" />
+	<var name="confID" expr="''" />
 	<var name="whichPath" expr="''" />
-	<var name="max_error" expr="'3'" />
+	<var name="maxErr" expr="'3'" />
 	<var name="MODE" expr="'APPEND'" />
-	<var name="POSITION" expr="'0'" />
 	<var name="DATA" expr="''" />
 	<var name="FILENAME" expr="'/interact/logs/'" />
-	<var name="index" expr="'0'" />
-	<var name="ANI" expr="'remote'" />
-	<var name="dest_number" expr="''" />
-	<var name="info_saved" expr="'no'" />
-	<var name="whichDial" expr="''" />
-	<var name="prev_path" expr="''" />
-	<var name="result" expr="''" />
-	<var name="session_id" expr="'sessionID'" />
-	<var name="temp_session" expr="''" />
-	<var name="memberCount" expr="''" />
+	<var name="infoSaved" expr="'false'" />
+	<var name="SID" expr="'sessionID'" />
+	<var name="tempSID" expr="''" />
 	<var name="CONF_ID" expr="''" />
-	<var name="DNIS" expr="''" />
 	<var name="audioURL" expr="'/interact/apps/spotbuild/listen_conference/audio/'" />
 	<var name="request" expr="'get'" />
-	<var name="resource" expr="'conferences'" />
 	<var name="params" expr="''" />
 	<var name="id" expr="''" />
-	<var name="cntrlURL" expr="''" /> <!-- Config Controller URL -->
+	<var name="cntrlURL" expr="''" />
 	<var name="status" expr="''" />
 	<var name="returnVal" expr="''" />
 	<var name="returnStr" expr="''" />
@@ -70,14 +57,20 @@
 	<var name="reqMinCnt" expr="'0'" />
 	<var name="reqMaxCnt" expr="'15'" />
 	<var name="reqCnt" expr="'0'" />
-	<var name="sipURL" expr="''" /> <!-- Config SIP server name -->
+	<var name="sipURL" expr="''" />
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'delete'" />
 	<var name="isMuted" expr="'false'" />
 	<var name="isAdminMuted" expr="'false'" />
-	<var name="passive_pin" expr="''" />
-	<var name="outboundID" expr="''" />
 	<var name="isPassive" expr="'false'" />
+	<var name="isActive" expr="'false'" />
+	<var name="pinLength" expr="'6'" />
+	<var name="resource" expr="'pins'" />
+	<var name="ANI" expr="'remote'" />
+	<var name="index" expr="'0'" />
+	<var name="memberCnt" expr="'0'" />
+	<var name="prevPath" expr="''" />
+	<var name="phoneNumber" expr="''" />
 
 
     <!-- Conference Variables -->

@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 03/24/2010 
+    <!-- Last Modified 04/23/2010 
        *   @Name   begin.ccxml
        *   @Desc   Starts a ccxml dialog and calls main.vxml -->
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_conference'"/> <!--  PROJECT_NAME. Project directory -->
-    <var name="II_SB_NEXT_OPTION" expr="'35-3'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
+    <var name="II_SB_NEXT_OPTION" expr="'78-3'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
     <var name="II_SB_MAIN_VXML" expr="'main.vxml'"/>    <!-- MAIN_VXML. Contains the file name of the document to start once ccxml is loaded -->
     <var name="II_SB_BASE_DIR" expr="'/interact/apps/spotbuild/'"/>                 <!-- BASE_DIR. Base directory -->
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
@@ -26,37 +26,24 @@
     <var name="II_SB_whichID"/>
     <var name="II_SB_newNxtOpt"/>               <!-- newNextOpt. Contains name of next vxml. Gets its value from the create-session file -->
 
-	<var name="SB_UV_call_start_time"/>
-	<var name="SB_UV_call_end_time"/>
-	<var name="SB_UV_admin_pin"/>
-	<var name="SB_UV_active_pin"/>
-	<var name="SB_UV_user_id"/>
-	<var name="SB_UV_filename"/>
-	<var name="SB_UV_get_input"/>
-	<var name="SB_UV_user_pin"/>
-	<var name="SB_UV_error_cnt"/>
-	<var name="SB_UV_conference_id"/>
+	<var name="SB_UV_startTime"/>
+	<var name="SB_UV_userID"/>
+	<var name="SB_UV_fileName"/>
+	<var name="SB_UV_getInput"/>
+	<var name="SB_UV_userPin"/>
+	<var name="SB_UV_errCnt"/>
+	<var name="SB_UV_confID"/>
 	<var name="SB_UV_whichPath"/>
-	<var name="SB_UV_max_error"/>
+	<var name="SB_UV_maxErr"/>
 	<var name="SB_UV_MODE"/>
-	<var name="SB_UV_POSITION"/>
 	<var name="SB_UV_DATA"/>
 	<var name="SB_UV_FILENAME"/>
-	<var name="SB_UV_index"/>
-	<var name="SB_UV_ANI"/>
-	<var name="SB_UV_dest_number"/>
-	<var name="SB_UV_info_saved"/>
-	<var name="SB_UV_whichDial"/>
-	<var name="SB_UV_prev_path"/>
-	<var name="SB_UV_result"/>
-	<var name="SB_UV_session_id"/>
-	<var name="SB_UV_temp_session"/>
-	<var name="SB_UV_memberCount"/>
+	<var name="SB_UV_infoSaved"/>
+	<var name="SB_UV_SID"/>
+	<var name="SB_UV_tempSID"/>
 	<var name="SB_UV_CONF_ID"/>
-	<var name="SB_UV_DNIS"/>
 	<var name="SB_UV_audioURL"/>
 	<var name="SB_UV_request"/>
-	<var name="SB_UV_resource"/>
 	<var name="SB_UV_params"/>
 	<var name="SB_UV_id"/>
 	<var name="SB_UV_cntrlURL"/>
@@ -72,9 +59,15 @@
 	<var name="SB_UV_OPERATION"/>
 	<var name="SB_UV_isMuted"/>
 	<var name="SB_UV_isAdminMuted"/>
-	<var name="SB_UV_passive_pin"/>
-	<var name="SB_UV_outboundID"/>
 	<var name="SB_UV_isPassive"/>
+	<var name="SB_UV_isActive"/>
+	<var name="SB_UV_pinLength"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_index"/>
+	<var name="SB_UV_memberCnt"/>
+	<var name="SB_UV_prevPath"/>
+	<var name="SB_UV_phoneNumber"/>
 
 
     <!-- Global variables -->
@@ -99,9 +92,12 @@
             <!-- This transition contains the first event encountered when this file is loaded.
                  In here we check the values of the transfer and status variables to determine the
                  next action. If both variables are undefined, we need to start main.vxml -->
-            <log>INFO: Entered begin.ccxml [35-2]</log>
+            <log>INFO: Entered begin.ccxml [78-2]</log>
     	    <log target="status"><value expr="II_SB_PROJECT_NAME"/></log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
+            <if cond="II_SB_obcallid == undefined">
+                <assign name="II_SB_obcallid" expr="''"/>
+            </if>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <assign name="II_SB_line" expr="getNextElement(0,II_SB_sessionID,'.')"/>
             <log>INFO: II_SB_status [<value expr="II_SB_status"/>]</log>
@@ -116,7 +112,7 @@
             <assign name="II_SB_state" expr="'alerted'"/>
             <if cond="((II_SB_transfer == undefined) &amp;&amp; (II_SB_status == undefined))">
                 <assign name="II_SB_ibcallid" expr="II_SB_connectionID"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_call_start_time SB_UV_call_end_time SB_UV_admin_pin SB_UV_active_pin SB_UV_user_id SB_UV_filename SB_UV_get_input SB_UV_user_pin SB_UV_error_cnt SB_UV_conference_id SB_UV_whichPath SB_UV_max_error SB_UV_MODE SB_UV_POSITION SB_UV_DATA SB_UV_FILENAME SB_UV_index SB_UV_ANI SB_UV_dest_number SB_UV_info_saved SB_UV_whichDial SB_UV_prev_path SB_UV_result SB_UV_session_id SB_UV_temp_session SB_UV_memberCount SB_UV_CONF_ID SB_UV_DNIS SB_UV_audioURL SB_UV_request SB_UV_resource SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_passive_pin SB_UV_outboundID SB_UV_isPassive"/> <!-- Start vxml dialog -->
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_startTime SB_UV_userID SB_UV_fileName SB_UV_getInput SB_UV_userPin SB_UV_errCnt SB_UV_confID SB_UV_whichPath SB_UV_maxErr SB_UV_MODE SB_UV_DATA SB_UV_FILENAME SB_UV_infoSaved SB_UV_SID SB_UV_tempSID SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_resource SB_UV_ANI SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber"/> <!-- Start vxml dialog -->
             <else/>
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
@@ -155,12 +151,12 @@
 
         <transition event="dialog.user.startMain" name="alertEV" cond="II_SB_ibcallid.length &gt; 0">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_call_start_time SB_UV_call_end_time SB_UV_admin_pin SB_UV_active_pin SB_UV_user_id SB_UV_filename SB_UV_get_input SB_UV_user_pin SB_UV_error_cnt SB_UV_conference_id SB_UV_whichPath SB_UV_max_error SB_UV_MODE SB_UV_POSITION SB_UV_DATA SB_UV_FILENAME SB_UV_index SB_UV_ANI SB_UV_dest_number SB_UV_info_saved SB_UV_whichDial SB_UV_prev_path SB_UV_result SB_UV_session_id SB_UV_temp_session SB_UV_memberCount SB_UV_CONF_ID SB_UV_DNIS SB_UV_audioURL SB_UV_request SB_UV_resource SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_passive_pin SB_UV_outboundID SB_UV_isPassive"/> <!-- Start vxml dialog -->
+            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_startTime SB_UV_userID SB_UV_fileName SB_UV_getInput SB_UV_userPin SB_UV_errCnt SB_UV_confID SB_UV_whichPath SB_UV_maxErr SB_UV_MODE SB_UV_DATA SB_UV_FILENAME SB_UV_infoSaved SB_UV_SID SB_UV_tempSID SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_resource SB_UV_ANI SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.user.startMain" name="alertEV">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_call_start_time SB_UV_call_end_time SB_UV_admin_pin SB_UV_active_pin SB_UV_user_id SB_UV_filename SB_UV_get_input SB_UV_user_pin SB_UV_error_cnt SB_UV_conference_id SB_UV_whichPath SB_UV_max_error SB_UV_MODE SB_UV_POSITION SB_UV_DATA SB_UV_FILENAME SB_UV_index SB_UV_ANI SB_UV_dest_number SB_UV_info_saved SB_UV_whichDial SB_UV_prev_path SB_UV_result SB_UV_session_id SB_UV_temp_session SB_UV_memberCount SB_UV_CONF_ID SB_UV_DNIS SB_UV_audioURL SB_UV_request SB_UV_resource SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_passive_pin SB_UV_outboundID SB_UV_isPassive"/> <!-- Start vxml dialog -->
+            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_startTime SB_UV_userID SB_UV_fileName SB_UV_getInput SB_UV_userPin SB_UV_errCnt SB_UV_confID SB_UV_whichPath SB_UV_maxErr SB_UV_MODE SB_UV_DATA SB_UV_FILENAME SB_UV_infoSaved SB_UV_SID SB_UV_tempSID SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_resource SB_UV_ANI SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->
@@ -264,6 +260,7 @@
             <var name="II_SB_file1" expr="II_SB_CODE_DIR + 'hang-up.vxml'"/>
             <var name="II_SB_file2" expr="''"/>
             <var name="II_SB_fileOprtn" expr="'stat'"/>
+            <assign name="II_SB_ibcallid" expr="''"/>
 			<assign name="II_SB_discID" expr="evt.connectionid"/>
 			<assign name="II_SB_discReason" expr="evt.reason"/>
 			<assign name="II_SB_discOriginator" expr="evt.connection.originator"/>
