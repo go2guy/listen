@@ -16,6 +16,15 @@ public abstract class Resource
 
     public abstract boolean validate();
 
+    /**
+     * Returns a copy of this {@code Resource}.
+     * 
+     * @param withIdAndVersion whether or not to copy the id and version of the original onto the copy (typically
+     * {@code false})
+     * @return copy of this {@code Resource}
+     */
+    public abstract Resource copy(boolean withIdAndVersion);
+
     public boolean hasErrors()
     {
         return errors.size() > 0;

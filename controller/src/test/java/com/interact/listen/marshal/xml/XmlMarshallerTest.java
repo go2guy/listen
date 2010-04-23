@@ -1,6 +1,7 @@
 package com.interact.listen.marshal.xml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import com.interact.listen.marshal.MalformedContentException;
@@ -160,7 +161,7 @@ public class XmlMarshallerTest
     }
     
     @Test
-    public void test_unmarshal() throws MalformedContentException
+    public void test_unmarshal_withUnmarshalIdFalse_unmarshalsSubscriberWithoutId() throws MalformedContentException
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
@@ -169,7 +170,23 @@ public class XmlMarshallerTest
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
 
-        Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, Subscriber.class);
+        Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, new Subscriber(), false);
+
+        assertNull(unmarshalledSubscriber.getId());
+        assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
+    }
+
+    @Test
+    public void test_unmarshal_withUnmarshalIdTrue_unmarshalsSubscriberWithId() throws MalformedContentException
+    {
+        Subscriber subscriber = new Subscriber();
+        subscriber.setId(System.currentTimeMillis());
+        subscriber.setNumber("foo" + System.currentTimeMillis());
+
+        String xml = marshaller.marshal(subscriber);
+        ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
+
+        Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, new Subscriber(), true);
 
         assertEquals(subscriber.getId(), unmarshalledSubscriber.getId());
         assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());

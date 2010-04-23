@@ -251,13 +251,13 @@ public class XmlMarshaller extends Marshaller
     }
 
     @Override
-    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
+    public Resource unmarshal(InputStream inputStream, Resource resource, boolean unmarshalId)
         throws MalformedContentException
     {
         try
         {
             XMLReader reader = XMLReaderFactory.createXMLReader();
-            SaxContentHandler contentHandler = new SaxContentHandler(this, asResource);
+            SaxContentHandler contentHandler = new SaxContentHandler(this, resource, unmarshalId);
             SaxErrorHandler errorHandler = new SaxErrorHandler();
             reader.setContentHandler(contentHandler);
             reader.setErrorHandler(errorHandler);

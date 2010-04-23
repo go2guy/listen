@@ -14,11 +14,13 @@ public class ListenSpotSubscriber extends Resource
 
     private String httpApi;
 
+    @Override
     public Long getId()
     {
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
@@ -44,6 +46,7 @@ public class ListenSpotSubscriber extends Resource
         this.httpApi = httpApi;
     }
 
+    @Override
     public boolean validate()
     {
         boolean isValid = true;
@@ -53,5 +56,19 @@ public class ListenSpotSubscriber extends Resource
             isValid = false;
         }
         return isValid;
+    }
+
+    @Override
+    public ListenSpotSubscriber copy(boolean withIdAndVersion)
+    {
+        ListenSpotSubscriber copy = new ListenSpotSubscriber();
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+            copy.setVersion(version);
+        }
+
+        copy.setHttpApi(httpApi);
+        return copy;
     }
 }

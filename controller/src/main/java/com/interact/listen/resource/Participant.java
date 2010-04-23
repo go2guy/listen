@@ -47,11 +47,13 @@ public class Participant extends Resource implements Serializable
     @Column(nullable = false)
     private String sessionID;
 
+    @Override
     public Long getId()
     {
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
@@ -201,27 +203,24 @@ public class Participant extends Resource implements Serializable
         return !hasErrors();
     }
 
-    /**
-     * Static factory method for copying a {@code Participant}. Note that this method <strong>does not</strong> copy the
-     * {@code id} of the {@code Participant} being copied.
-     * <p>
-     * Developer note: this method is to avoid using {@link Object}'s {@code clone()} method, which is a broken
-     * principle.
-     * 
-     * @param participant {@code Participant} to copy
-     * @return new {@code Participant}
-     */
-    public static Participant copy(Participant participant)
+    @Override
+    public Participant copy(boolean withIdAndVersion)
     {
         Participant copy = new Participant();
-        copy.setAudioResource(participant.audioResource);
-        copy.setConference(participant.getConference());
-        copy.setIsAdmin(participant.getIsAdmin());
-        copy.setIsAdminMuted(participant.getIsAdminMuted());
-        copy.setIsMuted(participant.getIsMuted());
-        copy.setIsPassive(participant.getIsPassive());
-        copy.setNumber(participant.getNumber());
-        copy.setSessionID(participant.getSessionID());
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+            copy.setVersion(version);
+        }
+
+        copy.setAudioResource(audioResource);
+        copy.setConference(conference);
+        copy.setIsAdmin(isAdmin);
+        copy.setIsAdminMuted(isAdminMuted);
+        copy.setIsMuted(isMuted);
+        copy.setIsPassive(isPassive);
+        copy.setNumber(number);
+        copy.setSessionID(sessionID);
         return copy;
     }
 

@@ -43,6 +43,7 @@ public class Subscriber extends Resource implements Serializable
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
@@ -63,9 +64,9 @@ public class Subscriber extends Resource implements Serializable
         return voicemailGreetingLocation;
     }
 
-    public void setVoicemailGreetingLocation(String location)
+    public void setVoicemailGreetingLocation(String voicemailGreetingLocation)
     {
-        this.voicemailGreetingLocation = location;
+        this.voicemailGreetingLocation = voicemailGreetingLocation;
     }
 
     public String getVoicemailPin()
@@ -98,5 +99,22 @@ public class Subscriber extends Resource implements Serializable
             isValid = false;
         }
         return isValid;
+    }
+
+    @Override
+    public Subscriber copy(boolean withIdAndVersion)
+    {
+        Subscriber copy = new Subscriber();
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+            copy.setVersion(version);
+        }
+
+        copy.setNumber(number);
+        copy.setVoicemailGreetingLocation(voicemailGreetingLocation);
+        copy.setVoicemailPin(voicemailPin);
+        copy.setVoicemails(voicemails);
+        return copy;
     }
 }

@@ -33,6 +33,7 @@ public class Voicemail extends Resource implements Serializable
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
@@ -116,5 +117,22 @@ public class Voicemail extends Resource implements Serializable
             isValid = false;
         }
         return isValid;
+    }
+
+    @Override
+    public Voicemail copy(boolean withIdAndVersion)
+    {
+        Voicemail copy = new Voicemail();
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+            copy.setVersion(version);
+        }
+
+        copy.setDateCreated(dateCreated == null ? null : new Date(dateCreated.getTime()));
+        copy.setFileLocation(fileLocation);
+        copy.setIsNew(isNew);
+        copy.setSubscriber(subscriber);
+        return copy;
     }
 }

@@ -193,7 +193,7 @@ public class ApiServlet extends HttpServlet
             Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
 
             long s = time();
-            Resource resource = marshaller.unmarshal(request.getInputStream(), resourceClass);
+            Resource resource = marshaller.unmarshal(request.getInputStream(), resourceClass.newInstance(), false);
             System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
 
             if(!resource.validate() && resource.hasErrors())
@@ -306,32 +306,34 @@ public class ApiServlet extends HttpServlet
                 return;
             }
 
-            Resource originalResource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
+            Resource resource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
 
-            if(originalResource == null)
+            if(resource == null)
             {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
 
-            session.evict(originalResource);
+            //session.evict(resource);
 
+            Resource original = resource.copy(false);
+            
             long s = time();
-            Resource updatedResource = marshaller.unmarshal(request.getInputStream(), resourceClass);
+            resource = marshaller.unmarshal(request.getInputStream(), resource, false);
             System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
 
-            updatedResource.setId(Long.parseLong(attributes.getId()));
+            //updatedResource.setId(Long.parseLong(attributes.getId()));
 
-            if(updatedResource.validate() && !updatedResource.hasErrors())
+            if(resource.validate() && !resource.hasErrors())
             {
                 s = time();
-                persistenceService.update(updatedResource, originalResource);
+                persistenceService.update(resource, original);
                 System.out.println("TIMER: update() took " + (time() - s) + "ms");
             }
 
             transaction.commit();
 
-            if(!updatedResource.hasErrors())
+            if(!resource.hasErrors())
             {
                 StringBuilder xml = new StringBuilder();
                 if(marshaller instanceof XmlMarshaller)
@@ -340,7 +342,7 @@ public class ApiServlet extends HttpServlet
                 }
 
                 s = time();
-                xml.append(marshaller.marshal(updatedResource));
+                xml.append(marshaller.marshal(resource));
                 System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
 
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, xml.toString(),
@@ -350,7 +352,7 @@ public class ApiServlet extends HttpServlet
             {
                 ServletUtil.writeResponse(response,
                                           HttpServletResponse.SC_BAD_REQUEST,
-                                          "Resource failed validation: " + updatedResource.errors().toString(),
+                                          "Resource failed validation: " + resource.errors().toString(),
                                           "text/plain");
             }
         }

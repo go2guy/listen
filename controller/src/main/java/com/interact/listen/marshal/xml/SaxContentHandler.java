@@ -18,26 +18,17 @@ public class SaxContentHandler extends DefaultHandler
 
     private Resource resource;
     private String resourceElement;
+    private boolean unmarshalId = false;
 
     private String value;
     private Attributes attributes;
 
-    public SaxContentHandler(XmlMarshaller marshaller, Class<? extends Resource> asResource)
+    public SaxContentHandler(XmlMarshaller marshaller, Resource resource, boolean unmarshalId)
     {
         super();
         this.marshaller = marshaller;
-        try
-        {
-            this.resource = (Resource)asResource.newInstance();
-        }
-        catch(IllegalAccessException e)
-        {
-            throw new AssertionError("IllegalAccessException when instantiating [" + asResource + "]");
-        }
-        catch(InstantiationException e)
-        {
-            throw new AssertionError("InstantiationException when instantiating [" + asResource + "]");
-        }
+        this.resource = resource;
+        this.unmarshalId = unmarshalId;
     }
 
     public Resource getResource()
@@ -56,11 +47,14 @@ public class SaxContentHandler extends DefaultHandler
         {
             resourceElement = qName;
 
-            String href = theAttributes.getValue("href");
-            // no href on POST
-            if(href != null)
+            if(unmarshalId)
             {
-                resource.setId(Marshaller.getIdFromHref(href));
+                String href = theAttributes.getValue("href");
+                // no href on POST
+                if(href != null)
+                {
+                    resource.setId(Marshaller.getIdFromHref(href));
+                }
             }
         }
     }
@@ -76,6 +70,11 @@ public class SaxContentHandler extends DefaultHandler
     {
         if(!qName.equals(resourceElement) && (value != null || attributes.getValue("href") != null))
         {
+            if(!unmarshalId && qName.equals("id"))
+            {
+                return;
+            }
+
             try
             {
                 // all of the regular elements

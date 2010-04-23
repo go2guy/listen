@@ -57,10 +57,11 @@ public abstract class Marshaller
      * Unmarshals the content of the provided {@code InputStream} into a resource.
      * 
      * @param inputStream input stream containing marshalled content
-     * @param asResource resource type to unmarshal as
+     * @param resource resource to unmarshal stream into
+     * @param unmarshalId whether or not to unmarshal the id from the href
      * @return unmarshalled {@link Resource}
      */
-    public abstract Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
+    public abstract Resource unmarshal(InputStream inputStream, Resource resource, boolean unmarshalId)
         throws MalformedContentException;
 
     /**

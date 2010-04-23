@@ -23,11 +23,13 @@ public class User extends Resource implements Serializable
     @Column(nullable = false)
     private String password;
 
+    @Override
     public Long getId()
     {
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
@@ -95,5 +97,21 @@ public class User extends Resource implements Serializable
             isValid = false;
         }
         return isValid;
+    }
+
+    @Override
+    public User copy(boolean withIdAndVersion)
+    {
+        User copy = new User();
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+            copy.setVersion(version);
+        }
+
+        copy.setPassword(password);
+        copy.setSubscriber(subscriber);
+        copy.setUsername(username);
+        return copy;
     }
 }

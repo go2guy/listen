@@ -66,11 +66,13 @@ public class Conference extends Resource implements Serializable
         pin.setConference(null);
     }
 
+    @Override
     public Long getId()
     {
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
@@ -115,6 +117,23 @@ public class Conference extends Resource implements Serializable
         }
 
         return !hasErrors();
+    }
+
+    @Override
+    public Conference copy(boolean withIdAndVersion)
+    {
+        Conference copy = new Conference();
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+            copy.setVersion(version);
+        }
+
+        copy.setConferenceHistorys(conferenceHistorys);
+        copy.setIsStarted(isStarted);
+        copy.setParticipants(participants);
+        copy.setPins(pins);
+        return copy;
     }
 
     public static Conference findByPinNumber(String pinNumber, Session session)

@@ -21,4 +21,15 @@ public class ResourceStub extends Resource
     {
         return true;
     }
+
+    @Override
+    public ResourceStub copy(boolean withIdAndVersion)
+    {
+        ResourceStub copy = new ResourceStub();
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+        }
+        return copy;
+    }
 }

@@ -62,7 +62,7 @@ public class UnmuteParticipantServlet extends HttpServlet
                 return;
             }
 
-            Participant original = Participant.copy(participant);
+            Participant original = participant.copy(false);
 
             participant.setIsAdminMuted(Boolean.FALSE);
             persistenceService.update(participant, original);

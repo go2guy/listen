@@ -183,26 +183,28 @@ public class JsonMarshaller extends Marshaller
     }
 
     @Override
-    public Resource unmarshal(InputStream inputStream, Class<? extends Resource> asResource)
+    public Resource unmarshal(InputStream inputStream, Resource resource, boolean unmarshalId)
         throws MalformedContentException
     {
         try
         {
-            Resource resource = (Resource)asResource.newInstance();
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject)parser.parse(new InputStreamReader(inputStream));
 
-            String href = (String)json.get("href");
-            if(href != null)
+            if(unmarshalId)
             {
-                resource.setId(getIdFromHref(href));
+                String href = (String)json.get("href");
+                if(href != null)
+                {
+                    resource.setId(getIdFromHref(href));
+                }
             }
 
             for(Object k : json.keySet())
             {
                 String key = (String)k;
 
-                if(key.equals("href"))
+                if(key.equals("href") || key.equals("id")) // already retrieved the id above
                 {
                     continue;
                 }

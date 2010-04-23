@@ -38,11 +38,13 @@ public class Pin extends Resource implements Serializable
         return pin;
     }
 
+    @Override
     public Long getId()
     {
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
@@ -107,5 +109,21 @@ public class Pin extends Resource implements Serializable
         }
 
         return !hasErrors();
+    }
+
+    @Override
+    public Pin copy(boolean withIdAndVersion)
+    {
+        Pin copy = new Pin();
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+            copy.setVersion(version);
+        }
+
+        copy.setConference(conference);
+        copy.setNumber(number);
+        copy.setType(type);
+        return copy;
     }
 }

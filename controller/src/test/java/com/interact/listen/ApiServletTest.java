@@ -241,7 +241,7 @@ public class ApiServletTest
 
         // get the created subscriber's id
         InputStream is = new ByteArrayInputStream(response.getContentAsByteArray());
-        subscriber = (Subscriber)marshaller.unmarshal(is, Subscriber.class);
+        subscriber = (Subscriber)marshaller.unmarshal(is, new Subscriber(), true);
         Long id = subscriber.getId();
 
         // now delete it
@@ -344,7 +344,7 @@ public class ApiServletTest
 
         InputStream is = new ByteArrayInputStream(response.getContentAsByteArray());
 
-        conference = (Conference)marshaller.unmarshal(is, Conference.class);
+        conference = (Conference)marshaller.unmarshal(is, new Conference(), true);
 
         response = new MockHttpServletResponse();
 

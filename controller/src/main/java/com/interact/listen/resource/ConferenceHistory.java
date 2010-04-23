@@ -26,11 +26,13 @@ public class ConferenceHistory extends Resource implements Serializable
     @Column(nullable = false)
     private String description;
 
+    @Override
     public Long getId()
     {
         return id;
     }
 
+    @Override
     public void setId(Long id)
     {
         this.id = id;
@@ -109,5 +111,22 @@ public class ConferenceHistory extends Resource implements Serializable
         }
 
         return isValid;
+    }
+
+    @Override
+    public ConferenceHistory copy(boolean withIdAndVersion)
+    {
+        ConferenceHistory copy = new ConferenceHistory();
+        if(withIdAndVersion)
+        {
+            copy.setId(id);
+            copy.setVersion(version);
+        }
+
+        copy.setConference(conference);
+        copy.setDateCreated(dateCreated == null ? null : new Date(dateCreated.getTime()));
+        copy.setDescription(description);
+        copy.setUser(user);
+        return copy;
     }
 }
