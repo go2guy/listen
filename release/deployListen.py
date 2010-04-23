@@ -183,7 +183,7 @@ def prep():
         fileHandle.write("\n")
 
         # Output host aliases
-        for host, alias in ([listenserver, "defaultspot"], [listenserver, "defaultcontroller"], [listenserver, "defaultweb"], insaserver, "defaultinsa"):
+        for host, alias in ([listenserver, "defaultspot"], [listenserver, "defaultcontroller"], [listenserver, "defaultweb"], [insaserver, "defaultinsa"]):
             #loop through and lookup names for all hosts that
             #populated
             if host != None:
