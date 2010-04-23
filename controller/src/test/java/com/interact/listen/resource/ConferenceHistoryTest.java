@@ -1,5 +1,6 @@
 package com.interact.listen.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +16,12 @@ public class ConferenceHistoryTest
     public void setUp()
     {
         conferenceHistory = new ConferenceHistory();
+    }
+
+    @Test
+    public void test_version_defaultsToZero()
+    {
+        assertEquals(Integer.valueOf(0), conferenceHistory.getVersion());
     }
 
     @Test
@@ -119,6 +126,32 @@ public class ConferenceHistoryTest
 
         assertFalse(conferenceHistory.validate());
         assertTrue(conferenceHistory.hasErrors());
+    }
+
+    @Test
+    public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
+    {
+        ConferenceHistory original = getPopulatedConferenceHistory();
+        ConferenceHistory copy = original.copy(false);
+
+        assertTrue(original.getConference() == copy.getConference()); // same reference
+        assertEquals(original.getDateCreated(), copy.getDateCreated());
+        assertFalse(original.getDateCreated() == copy.getDateCreated()); // different reference
+        assertEquals(original.getDescription(), copy.getDescription());
+        assertTrue(original.getUser() == copy.getUser()); // same reference
+
+        assertNull(copy.getId());
+        assertEquals(Integer.valueOf(0), copy.getVersion());
+    }
+
+    @Test
+    public void test_copy_withIdAndVersion_createsShallowCopyWithIdAndVersion()
+    {
+        ConferenceHistory original = getPopulatedConferenceHistory();
+        ConferenceHistory copy = original.copy(true);
+
+        assertEquals(original.getId(), copy.getId());
+        assertEquals(original.getVersion(), copy.getVersion());
     }
 
     private ConferenceHistory getPopulatedConferenceHistory()

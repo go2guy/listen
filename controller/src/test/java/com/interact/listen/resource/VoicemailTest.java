@@ -1,8 +1,6 @@
 package com.interact.listen.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 
@@ -17,6 +15,12 @@ public class VoicemailTest
     public void setUp()
     {
         voicemail = new Voicemail();
+    }
+
+    @Test
+    public void test_version_defaultsToZero()
+    {
+        assertEquals(Integer.valueOf(0), voicemail.getVersion());
     }
 
     @Test
@@ -122,6 +126,32 @@ public class VoicemailTest
 
         assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
+    }
+
+    @Test
+    public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
+    {
+        Voicemail original = getPopulatedVoicemail();
+        Voicemail copy = original.copy(false);
+
+        assertEquals(original.getDateCreated(), copy.getDateCreated());
+        assertFalse(original.getDateCreated() == copy.getDateCreated()); // different reference
+        assertEquals(original.getFileLocation(), copy.getFileLocation());
+        assertEquals(original.getIsNew(), copy.getIsNew());
+        assertTrue(original.getSubscriber() == copy.getSubscriber()); // same reference
+
+        assertNull(copy.getId());
+        assertEquals(Integer.valueOf(0), copy.getVersion());
+    }
+
+    @Test
+    public void test_copy_withIdAndVersion_createsShallowCopyWithIdAndVersion()
+    {
+        Voicemail original = getPopulatedVoicemail();
+        Voicemail copy = original.copy(true);
+
+        assertEquals(original.getId(), copy.getId());
+        assertEquals(original.getVersion(), copy.getVersion());
     }
 
     private Voicemail getPopulatedVoicemail()

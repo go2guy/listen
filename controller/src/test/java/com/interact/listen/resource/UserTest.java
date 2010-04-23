@@ -1,5 +1,6 @@
 package com.interact.listen.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +16,12 @@ public class UserTest
     public void setUp()
     {
         user = new User();
+    }
+
+    @Test
+    public void test_version_defaultsToZero()
+    {
+        assertEquals(Integer.valueOf(0), user.getVersion());
     }
 
     @Test
@@ -72,6 +79,30 @@ public class UserTest
 
         assertFalse(user.validate());
         assertTrue(user.hasErrors());
+    }
+
+    @Test
+    public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
+    {
+        User original = getPopulatedUser();
+        User copy = original.copy(false);
+
+        assertEquals(original.getPassword(), copy.getPassword());
+        assertTrue(original.getSubscriber() == copy.getSubscriber()); // same reference
+        assertEquals(original.getUsername(), copy.getUsername());
+
+        assertNull(copy.getId());
+        assertEquals(Integer.valueOf(0), copy.getVersion());
+    }
+
+    @Test
+    public void test_copy_withIdAndVersion_createsShallowCopyWithIdAndVersion()
+    {
+        User original = getPopulatedUser();
+        User copy = original.copy(true);
+
+        assertEquals(original.getId(), copy.getId());
+        assertEquals(original.getVersion(), copy.getVersion());
     }
 
     private User getPopulatedUser()

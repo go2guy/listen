@@ -13,7 +13,7 @@ public class Voicemail extends Resource implements Serializable
     private Long id;
 
     @Version
-    private Integer version;
+    private Integer version = Integer.valueOf(0);
 
     @ManyToOne
     private Subscriber subscriber;

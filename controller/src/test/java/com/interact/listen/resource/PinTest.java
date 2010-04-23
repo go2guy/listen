@@ -1,5 +1,6 @@
 package com.interact.listen.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -17,6 +18,12 @@ public class PinTest
     public void setUp()
     {
         pin = new Pin();
+    }
+
+    @Test
+    public void test_version_defaultsToZero()
+    {
+        assertEquals(Integer.valueOf(0), pin.getVersion());
     }
 
     @Test
@@ -112,6 +119,30 @@ public class PinTest
 
         assertFalse(pin.validate());
         assertTrue(pin.hasErrors());
+    }
+
+    @Test
+    public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
+    {
+        Pin original = getPopulatedPin();
+        Pin copy = original.copy(false);
+
+        assertTrue(original.getConference() == copy.getConference()); // same reference
+        assertEquals(original.getNumber(), copy.getNumber());
+        assertEquals(original.getType(), copy.getType());
+
+        assertNull(copy.getId());
+        assertEquals(Integer.valueOf(0), copy.getVersion());
+    }
+
+    @Test
+    public void test_copy_withIdAndVersion_createsShallowCopyWithIdAndVersion()
+    {
+        Pin original = getPopulatedPin();
+        Pin copy = original.copy(true);
+
+        assertEquals(original.getId(), copy.getId());
+        assertEquals(original.getVersion(), copy.getVersion());
     }
 
     private Pin getPopulatedPin()

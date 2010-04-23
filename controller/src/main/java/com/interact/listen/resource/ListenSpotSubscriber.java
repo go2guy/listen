@@ -1,6 +1,11 @@
 package com.interact.listen.resource;
 
+import java.util.List;
+
 import javax.persistence.*;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 
 @Entity
 public class ListenSpotSubscriber extends Resource
@@ -10,7 +15,7 @@ public class ListenSpotSubscriber extends Resource
     private Long id;
 
     @Version
-    private Integer version;
+    private Integer version = Integer.valueOf(0);
 
     private String httpApi;
 
@@ -70,5 +75,11 @@ public class ListenSpotSubscriber extends Resource
 
         copy.setHttpApi(httpApi);
         return copy;
+    }
+
+    public static List<ListenSpotSubscriber> list(Session session)
+    {
+        Criteria criteria = session.createCriteria(ListenSpotSubscriber.class);
+        return criteria.list();
     }
 }

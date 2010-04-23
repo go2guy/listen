@@ -10,7 +10,6 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 @Entity
@@ -233,7 +232,7 @@ public class Participant extends Resource implements Serializable
         {
             if(isAdminMuted.booleanValue() != originalParticipant.getIsAdminMuted().booleanValue())
             {
-                List<ListenSpotSubscriber> spotSubscribers = getSpotSubscribers(session);
+                List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
                 for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
                 {
                     SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
@@ -281,7 +280,7 @@ public class Participant extends Resource implements Serializable
             // FIXME what happens when the first one succeeds and the second one fails? do we "rollback" the first one?
             // there's no way we can do it with 100% reliability (because the "rollback" might fail, too)
             // - in all likelihood there will only be one Spot subscriber, but we should accommodate many
-            List<ListenSpotSubscriber> spotSubscribers = getSpotSubscribers(session);
+            List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
             for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
             {
                 SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
@@ -304,11 +303,5 @@ public class Participant extends Resource implements Serializable
         {
             throw new PersistenceException(e);
         }
-    }
-
-    private List<ListenSpotSubscriber> getSpotSubscribers(Session session)
-    {
-        Criteria criteria = session.createCriteria(ListenSpotSubscriber.class);
-        return criteria.list();
     }
 }

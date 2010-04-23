@@ -42,12 +42,12 @@ public class Conference extends Resource implements Serializable
 
     public Set<Pin> getPins()
     {
-        return new HashSet<Pin>(pins);
+        return pins;
     }
 
     public void setPins(Set<Pin> pins)
     {
-        this.pins = new HashSet<Pin>(pins);
+        this.pins = pins;
         for(Pin pin : pins)
         {
             pin.setConference(this);

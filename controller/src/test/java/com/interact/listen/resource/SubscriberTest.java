@@ -1,5 +1,6 @@
 package com.interact.listen.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +16,12 @@ public class SubscriberTest
     public void setUp()
     {
         subscriber = new Subscriber();
+    }
+
+    @Test
+    public void test_version_defaultsToZero()
+    {
+        assertEquals(Integer.valueOf(0), subscriber.getVersion());
     }
 
     @Test
@@ -110,6 +117,31 @@ public class SubscriberTest
 
         assertFalse(subscriber.validate());
         assertTrue(subscriber.hasErrors());
+    }
+
+    @Test
+    public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
+    {
+        Subscriber original = getPopulatedSubscriber();
+        Subscriber copy = original.copy(false);
+
+        assertEquals(original.getNumber(), copy.getNumber());
+        assertEquals(original.getVoicemailGreetingLocation(), copy.getVoicemailGreetingLocation());
+        assertEquals(original.getVoicemailPin(), copy.getVoicemailPin());
+        assertTrue(original.getVoicemails() == copy.getVoicemails()); // same reference
+
+        assertNull(copy.getId());
+        assertEquals(Integer.valueOf(0), copy.getVersion());
+    }
+
+    @Test
+    public void test_copy_withIdAndVersion_createsShallowCopyWithIdAndVersion()
+    {
+        Subscriber original = getPopulatedSubscriber();
+        Subscriber copy = original.copy(true);
+
+        assertEquals(original.getId(), copy.getId());
+        assertEquals(original.getVersion(), copy.getVersion());
     }
 
     private Subscriber getPopulatedSubscriber()

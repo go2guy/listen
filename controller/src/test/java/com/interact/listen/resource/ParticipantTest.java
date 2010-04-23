@@ -1,5 +1,6 @@
 package com.interact.listen.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +16,12 @@ public class ParticipantTest
     public void setUp()
     {
         participant = new Participant();
+    }
+
+    @Test
+    public void test_version_defaultsToZero()
+    {
+        assertEquals(Integer.valueOf(0), participant.getVersion());
     }
 
     @Test
@@ -173,6 +180,35 @@ public class ParticipantTest
 
         assertFalse(participant.validate());
         assertTrue(participant.hasErrors());
+    }
+
+    @Test
+    public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
+    {
+        Participant original = getPopulatedParticipant();
+        Participant copy = original.copy(false);
+
+        assertEquals(original.getAudioResource(), copy.getAudioResource());
+        assertTrue(original.getConference() == copy.getConference()); // same reference
+        assertEquals(original.getIsAdmin(), copy.getIsAdmin());
+        assertEquals(original.getIsAdminMuted(), copy.getIsAdminMuted());
+        assertEquals(original.getIsMuted(), copy.getIsMuted());
+        assertEquals(original.getIsPassive(), copy.getIsPassive());
+        assertEquals(original.getNumber(), copy.getNumber());
+        assertEquals(original.getSessionID(), copy.getSessionID());
+
+        assertNull(copy.getId());
+        assertEquals(Integer.valueOf(0), copy.getVersion());
+    }
+
+    @Test
+    public void test_copy_withIdAndVersion_createsShallowCopyWithIdAndVersion()
+    {
+        Participant original = getPopulatedParticipant();
+        Participant copy = original.copy(true);
+
+        assertEquals(original.getId(), copy.getId());
+        assertEquals(original.getVersion(), copy.getVersion());
     }
 
     private Participant getPopulatedParticipant()
