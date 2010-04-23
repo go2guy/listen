@@ -286,13 +286,14 @@ def license():
 
     # if we have gotten this far, and only in that case, wipe out existing
     # license and replace with this one
-    print("")
     print("Retrieved license details.")
     licenseFile = open("/interact/master/.iiXmlLicense", "w+")
     for line in urlreturn:
         licenseFile.write(line)
-
     licenseFile.close()
+
+    print("Wrote license file.")
+    print("")
 
 
 def install():
