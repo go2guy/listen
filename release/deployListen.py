@@ -39,6 +39,15 @@ def main():
 
     parser.add_option(
         "",
+        "--insaserver",
+        dest="insaserver",
+        action="store",
+        metavar="SERVER",
+        default=None,
+        help="The name of the INSA server host to use")
+
+    parser.add_option(
+        "",
         "--phase",
         dest="phase",
         action="store",
@@ -51,10 +60,14 @@ def main():
     if options.listenserver == None:
         parser.error("--listenserver option not supplied")
 
+    if options.insaserver == None:
+        parser.error("--insaserver option not supplied")
+
     if options.phase == None:
         parser.error("--phase option not supplied")
 
     listenserver,__,__ = socket.gethostbyaddr(options.listenserver)
+    insaserver,__,__ = socket.gethostbyaddr(options.insaserver)
 
     hostname = socket.gethostname()
     if hostname not in (listenserver):
@@ -169,7 +182,7 @@ def prep():
         fileHandle.write("\n")
 
         # Output host aliases
-        for host, alias in ([listenserver, "defaultspot"], [listenserver, "defaultcontroller"], [listenserver, "defaultweb"]):
+        for host, alias in ([listenserver, "defaultspot"], [listenserver, "defaultcontroller"], [listenserver, "defaultweb"], insaserver, "defaultinsa"):
             #loop through and lookup names for all hosts that
             #populated
             if host != None:

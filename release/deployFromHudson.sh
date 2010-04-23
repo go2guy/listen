@@ -18,10 +18,15 @@ elif [ "${listenserver}" == "" ]
 then
     echo "No listen server host given."
     exit 1
+elif [ "${insaserver}" == "" ]
+then
+    echo "No insa server host given."
+    exit 1
 else
     echo
     echo "Servers to be deployed:"
     echo "Listen server               [ ${listenserver} ]."
+    echo "INSA server                 [ ${insaserver} ]."
     echo
 fi
 
@@ -40,5 +45,5 @@ scp ${listenRPM} ${UIARPM} ${listenserver}:/interact/
 scp deployListen.py ${listenserver}:/root/
 
 # Invoke deploy -- do all phases
-ssh ${SSH_OPTS} root@${listenserver} "/root/deployListen.py --listenserver=${listenserver} --phase=all"
+ssh ${SSH_OPTS} root@${listenserver} "/root/deployListen.py --listenserver=${listenserver} --insaserver=${insaserver} --phase=all"
 
