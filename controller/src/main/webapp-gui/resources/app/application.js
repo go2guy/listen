@@ -66,7 +66,7 @@ function Conference() {
                     data: { id: record.getData('id') },
                     success: function(data) {
                         noticeSuccess('Participant dropped');
-                        participantDataTable.deleteRow(target);
+                        //participantDataTable.deleteRow(target); // no delete, wait for poll
                     },
                     error: function(req) {
                         // TODO something here? 

@@ -72,6 +72,8 @@ public final class HibernateUtil
         Session session = getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
+        PersistenceService persistenceService = new PersistenceService(session);
+
         // provisions subscribers/users/conferences/participants
 
         // for N=0..9
@@ -93,13 +95,13 @@ public final class HibernateUtil
                 subscriber.setNumber(new DecimalFormat("000").format(100 + i));
                 subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
                 subscriber.setVoicemailPin(subscriber.getNumber());
-                session.save(subscriber);
+                persistenceService.save(subscriber);
 
                 User user = new User();
                 user.setPassword("super");
                 user.setSubscriber(subscriber);
                 user.setUsername(subscriber.getNumber());
-                session.save(user);
+                persistenceService.save(user);
 
                 Conference conference = new Conference();
 
@@ -109,16 +111,16 @@ public final class HibernateUtil
                 Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
                 Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
 
-                session.save(activePin);
-                session.save(adminPin);
-                session.save(passivePin);
+                persistenceService.save(activePin);
+                persistenceService.save(adminPin);
+                persistenceService.save(passivePin);
 
                 conference.addToPins(activePin);
                 conference.addToPins(adminPin);
                 conference.addToPins(passivePin);
 
                 conference.setIsStarted(true);
-                session.save(conference);
+                persistenceService.save(conference);
 
                 System.out.println("BOOTSTRAP: Saved Conference " + conference.getId());
 
@@ -133,7 +135,7 @@ public final class HibernateUtil
                     participant.setIsPassive(false);
                     participant.setNumber("402" + basePin + new DecimalFormat("0000").format(j));
                     participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
-                    session.save(participant);
+                    persistenceService.save(participant);
 
                     System.out.println("BOOTSTRAP: Saved Participant " + participant.getId());
                 }
@@ -143,13 +145,13 @@ public final class HibernateUtil
             subscriber.setNumber("347");
             subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
             subscriber.setVoicemailPin(subscriber.getNumber());
-            session.save(subscriber);
+            persistenceService.save(subscriber);
 
             User user = new User();
             user.setPassword("super");
             user.setSubscriber(subscriber);
             user.setUsername(subscriber.getNumber());
-            session.save(user);
+            persistenceService.save(user);
 
             Conference conference = new Conference();
 
@@ -157,16 +159,16 @@ public final class HibernateUtil
             Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
             Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
 
-            session.save(activePin);
-            session.save(adminPin);
-            session.save(passivePin);
+            persistenceService.save(activePin);
+            persistenceService.save(adminPin);
+            persistenceService.save(passivePin);
 
             conference.setIsStarted(false);
             conference.addToPins(activePin);
             conference.addToPins(adminPin);
             conference.addToPins(passivePin);
 
-            session.save(conference);
+            persistenceService.save(conference);
 
             transaction.commit();
         }

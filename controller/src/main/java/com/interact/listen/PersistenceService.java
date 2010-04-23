@@ -21,18 +21,23 @@ public class PersistenceService
     public Long save(Resource resource)
     {
         resource.beforeSave(session);
-        return (Long)session.save(resource);
+        Long id = (Long)session.save(resource);
+        resource.afterSave(session);
+
+        return id;
     }
 
     public void update(Resource updatedResource, Resource originalResource)
     {
         updatedResource.beforeUpdate(session, originalResource);
         session.update(updatedResource);
+        updatedResource.afterUpdate(session, originalResource);
     }
 
     public void delete(Resource resource)
     {
         resource.beforeDelete(session);
         session.delete(resource);
+        resource.afterDelete(session);
     }
 }

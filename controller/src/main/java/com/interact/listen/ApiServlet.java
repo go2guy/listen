@@ -21,6 +21,13 @@ import org.hibernate.exception.ConstraintViolationException;
 
 public class ApiServlet extends HttpServlet
 {
+    static
+    {
+        // prime the Hibernate config, optionally bootstrap data
+        HibernateUtil.getSessionFactory();
+        // FIXME ideally this could go somewhere else
+    }
+
     public static final long serialVersionUID = 1L;
     public static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 

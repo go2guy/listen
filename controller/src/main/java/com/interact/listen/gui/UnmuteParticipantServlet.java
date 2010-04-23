@@ -1,13 +1,16 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
-import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
+import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
+import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +52,6 @@ public class UnmuteParticipantServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
-        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
@@ -62,10 +64,14 @@ public class UnmuteParticipantServlet extends HttpServlet
                 return;
             }
 
-            Participant original = participant.copy(false);
+            // send request to all SPOT subscribers
+            List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
+            for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+            {
+                SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+                spotSystem.unmuteParticipant(participant);
+            }
 
-            participant.setIsAdminMuted(Boolean.FALSE);
-            persistenceService.update(participant, original);
             transaction.commit();
         }
         catch(Exception e)

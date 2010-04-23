@@ -40,12 +40,65 @@ public abstract class Resource
         return errors;
     }
 
+    /**
+     * Callback to be executed before this {@code Resource} is saved.
+     * 
+     * @param session Hibernate session
+     */
     public void beforeSave(Session session)
-    { }
+    {
+        // default implementation is no-op
+    }
 
+    /**
+     * Callback to be executed before this {@code Resource} is updated.
+     * 
+     * @param session Hibernate session
+     * @param original {@code Resource} before properties were updated
+     */
     public void beforeUpdate(Session session, Resource original)
-    { }
+    {
+        // default implementation is no-op
+    }
 
+    /**
+     * Callback to be executed before this {@code Resource} is deleted.
+     * 
+     * @param session Hibernate session
+     */
     public void beforeDelete(Session session)
-    { }
+    {
+        // default implementation is no-op
+    }
+
+    /**
+     * Callback to be executed after this {@code Resource} is saved.
+     * 
+     * @param session Hibernate session
+     */
+    public void afterSave(Session session)
+    {
+        // default implementation is no-op
+    }
+
+    /**
+     * Callback to be executed after this {@code Resource} is updated.
+     * 
+     * @param session Hibernate session
+     * @param original {@code Resource} before properties were updated
+     */
+    public void afterUpdate(Session session, Resource original)
+    {
+        // default implementation is no-op
+    }
+
+    /**
+     * Callback to be executed after this {@code Resource} is deleted.
+     * 
+     * @param session Hibernate session
+     */
+    public void afterDelete(Session session)
+    {
+        // default implementation is no-op
+    }
 }

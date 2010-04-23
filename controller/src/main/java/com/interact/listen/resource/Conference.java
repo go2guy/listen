@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.PersistenceService;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -132,13 +134,41 @@ public class Conference extends Resource implements Serializable
         copy.setConferenceHistorys(conferenceHistorys);
         copy.setIsStarted(isStarted);
         copy.setParticipants(participants);
-        
+
         for(Pin pin : pins)
         {
             copy.addToPins(pin.copy(false));
         }
 
         return copy;
+    }
+
+    @Override
+    public void afterSave(Session session)
+    {
+        ConferenceHistory history = new ConferenceHistory();
+        history.setConference(this);
+        history.setUser("Current User"); // FIXME
+        history.setDescription("Conference created");
+        
+        PersistenceService persistenceService = new PersistenceService(session);
+        persistenceService.save(history);
+    }
+
+    @Override
+    public void afterUpdate(Session session, Resource original)
+    {
+        Conference originalConference = (Conference)original;
+        if(isStarted.booleanValue() != originalConference.getIsStarted().booleanValue())
+        {
+            ConferenceHistory history = new ConferenceHistory();
+            history.setConference(this);
+            history.setUser("Current User"); // FIXME
+            history.setDescription("Conference " + (isStarted ? "started" : "ended"));
+
+            PersistenceService persistenceService = new PersistenceService(session);
+            persistenceService.save(history);
+        }
     }
 
     public static Conference findByPinNumber(String pinNumber, Session session)
