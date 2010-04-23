@@ -11,7 +11,7 @@
 
 # Spot Apps files
 /interact/packages/listen-spotapps-*.rpm
-/interact/packages/conf/spotapps.uia
+/interact/packages/conf/listen-spotapps.uia
 
 # Stats collection files
 /interact/packages/statcollector-*.rpm
