@@ -6,6 +6,7 @@ try:
     import os
     import re
     import rpm
+    import sha
     import socket
     import subprocess
     import sys
