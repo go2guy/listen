@@ -64,69 +64,6 @@ def main():
     phases[options.phase]()
 
 
-def getLicense():
-    # pull hostid and fingerprint for this host
-    args = ['/interact/program/xmlsecurity','-hostid']
-    substream=subprocess.Popen(args,stdout=subprocess.PIPE);
-    for line in substream.stdout:
-        print("Licensing hostid is [ %s ]." % line)
-        hostid=line 
-
-    args = ['/interact/program/xmlsecurity','-fingerprint']
-    substream=subprocess.Popen(args,stdout=subprocess.PIPE);
-    for line in substream.stdout:
-        print("Licensing fingerprint is [ %s ]." % line)
-        fingerprint=line 
-
-    # cook up the args for our request to the licensing server
-    postargs = {'command':'temp',
-        'username':'iilincoln',
-        'password':'745cb5fd855d1bfe845fbe79cb8f5f335a9afe77'}
-
-    postargs['hostid']=hostid
-    postargs['fingerprint']=fingerprint
-    postargs['hostname']=hostname
-    args=urllib.urlencode(postargs)
-
-    # send request for temp license, which will server to register 
-    # this host with licensing server
-    substream=urllib2.urlopen('https://www.iivipconnect.com/GetLicense.php',args)
-    urlreturn=substream.readlines()
-
-    # temp license has been retrieved -- but is not needed
-    # now retrieve feature list
-    substream=urllib2.urlopen('https://www.iivipconnect.com/GetAvailable.php',args)
-    urlreturn=substream.readlines()
-    features={}
-    for line in urlreturn:
-        parsedline=line.strip().split(':')
-        if (parsedline[2]=='boolean'):
-            postargs['feature_'+parsedline[0]]=parsedline[0]
-            postargs['count_'+parsedline[0]]=1
-        else:
-            postargs['feature_'+parsedline[0]]=parsedline[0]
-            postargs['count_'+parsedline[0]]=100
-
-
-    postargs['command']='perm'
-    # encode the features into a new postdata argument 
-    args=urllib.urlencode(postargs)
-    print("Licensing request postdata is [ %s ]." % args)
-    # fetch permanent license
-    substream=urllib2.urlopen('https://www.iivipconnect.com/GetLicense.php',args)
-    urlreturn=substream.readlines()
-    
-    # if we have gotten this far, and only in that case, wipe out existing
-    # license and replace with this one
-    print("Retrieved license details:")
-    licenseFile=open( "/interact/master/.iiXmlLicense", "w+" )
-    for line in urlreturn:
-        print(line)
-        licenseFile.write(line)
-
-    licenseFile.close()
-
-
 def run(command, shell=False, failonerror=True):
     now=datetime.datetime.now()
     print("%s deployListen> %s " % (str(now), " ".join(command)))
@@ -269,13 +206,78 @@ def prep():
         run(execute)
 
     # Clean interact directory
-    pardon = ["/interact/xtt", "/interact/master/.iiXmlLicense", "/interact/master/.iiLicense.dat", getLatestFile("/interact/uia*.rpm"), getLatestFile("/interact/listen*.rpm")]
+    pardon = ["/interact/xtt", getLatestFile("/interact/uia*.rpm"), getLatestFile("/interact/listen*.rpm")]
     removeFiles("/interact/", pardon)
 
     # remove interact user
     print("Removing interact user.")
     run(["userdel", "interact"], failonerror=False)
     run(["groupdel", "operator"], failonerror=False)
+
+
+def license():
+    # pull hostid and fingerprint for this host
+    args = ['/interact/program/xmlsecurity','-hostid']
+    substream = subprocess.Popen(args,stdout=subprocess.PIPE);
+    for line in substream.stdout:
+        print("Licensing hostid is [ %s ]." % line)
+        hostid = line
+
+    args = ['/interact/program/xmlsecurity','-fingerprint']
+    substream = subprocess.Popen(args,stdout=subprocess.PIPE);
+    for line in substream.stdout:
+        print("Licensing fingerprint is [ %s ]." % line)
+        fingerprint = line
+
+    # cook up the args for our request to the licensing server
+    password = sha.new('Interact_DeployTool_87D9wqjrJJLZ').hexdigest()
+    postargs = {'command':'temp',
+                'username':'DeployTool',
+                'password':password,
+                'hostid': hostid,
+                'fingerprint': fingerprint,
+                'hostname':hostname}
+
+    args = urllib.urlencode(postargs)
+
+    # send request for temp license, which will serve to register
+    # this host with licensing server
+    substream = urllib2.urlopen('https://www.iivipconnect.com/GetLicense.php', args)
+    urlreturn = substream.readlines()
+
+    # temp license has been retrieved -- but is not needed
+    # now retrieve feature list
+    substream = urllib2.urlopen('https://www.iivipconnect.com/GetAvailable.php', args)
+    urlreturn = substream.readlines()
+
+    features = {}
+    for line in urlreturn:
+        parsedline = line.strip().split(':')
+        if (parsedline[2] == 'boolean'):
+            postargs['feature_' + parsedline[0]] = parsedline[0]
+            postargs['count_' + parsedline[0]] = 1
+        else:
+            postargs['feature_' + parsedline[0]] = parsedline[0]
+            postargs['count_' + parsedline[0]] = 100
+
+
+    # encode the features into a new postdata argument
+    postargs['command'] = 'perm'
+    args = urllib.urlencode(postargs)
+
+    # fetch permanent license
+    substream = urllib2.urlopen('https://www.iivipconnect.com/GetLicense.php', args)
+    urlreturn = substream.readlines()
+
+    # if we have gotten this far, and only in that case, wipe out existing
+    # license and replace with this one
+    print("")
+    print("Retrieved license details.")
+    licenseFile = open("/interact/master/.iiXmlLicense", "w+")
+    for line in urlreturn:
+        licenseFile.write(line)
+
+    licenseFile.close()
 
 
 def install():
@@ -306,6 +308,9 @@ def install():
         startlist["/etc/init.d/collector"] = "start"
         startlist["/etc/init.d/listen-controller"] = "start"
         startlist["/etc/init.d/listen-gui"] = "start"
+
+    # License the system before we try to start anything.
+    license()
 
     # execute listed startup commands 
     for command,action in startlist.iteritems():
