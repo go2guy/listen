@@ -71,7 +71,7 @@ public class ConferenceTest
     }
 
     @Test
-    public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
+    public void test_copy_withoutIdAndVersion_createsCopyWithoutIdAndVersion()
     {
         Conference original = getPopulatedConference();
         Conference copy = original.copy(false);
@@ -79,14 +79,18 @@ public class ConferenceTest
         assertTrue(original.getConferenceHistorys() == copy.getConferenceHistorys()); // same reference
         assertEquals(original.getIsStarted(), copy.getIsStarted());
         assertTrue(original.getParticipants() == copy.getParticipants()); // same reference
-        assertTrue(original.getPins() == copy.getPins()); // same reference
+        
+        // pins cannot be the same reference - in fact, i don't think any collection can
+        // FIXME make all collections and references deep copies
+        assertFalse(original.getPins() == copy.getPins()); // different reference
+        // TODO containsAll check here
 
         assertNull(copy.getId());
         assertEquals(Integer.valueOf(0), copy.getVersion());
     }
 
     @Test
-    public void test_copy_withIdAndVersion_createsShallowCopyWithIdAndVersion()
+    public void test_copy_withIdAndVersion_createsCopyWithIdAndVersion()
     {
         Conference original = getPopulatedConference();
         Conference copy = original.copy(true);

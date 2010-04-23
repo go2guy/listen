@@ -132,7 +132,12 @@ public class Conference extends Resource implements Serializable
         copy.setConferenceHistorys(conferenceHistorys);
         copy.setIsStarted(isStarted);
         copy.setParticipants(participants);
-        copy.setPins(pins);
+        
+        for(Pin pin : pins)
+        {
+            copy.addToPins(pin.copy(false));
+        }
+
         return copy;
     }
 
