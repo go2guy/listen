@@ -1,11 +1,15 @@
 package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 
@@ -23,7 +27,7 @@ public class DropParticipantServletTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-    private HttpServlet servlet;
+    private DropParticipantServlet servlet;
 
     @Before
     public void setUp()
@@ -114,6 +118,18 @@ public class DropParticipantServletTest
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         assertEquals("Not allowed to drop participant", response.getContentAsString());
+    }
+
+    @Test
+    public void test_doPost_sendsStat() throws IOException, ServletException
+    {
+        StatSender statSender = mock(StatSender.class);
+        request.getSession().getServletContext().setAttribute("statSender", statSender);
+
+        request.setMethod("POST");
+        servlet.service(request, response);
+
+        verify(statSender).send(Stat.GUI_DROP_PARTICIPANT);
     }
 
     private void setSessionUser(HttpServletRequest request)

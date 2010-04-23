@@ -2,16 +2,19 @@ package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -26,7 +29,7 @@ public class GetConferenceInfoServletTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-    private HttpServlet servlet = new GetConferenceInfoServlet();
+    private GetConferenceInfoServlet servlet = new GetConferenceInfoServlet();
 
     @Before
     public void setUp()
@@ -99,5 +102,17 @@ public class GetConferenceInfoServletTest
 
         String hrefString = "\"href\":\"/conferences/" + conference.getId() + "\"";
         assertTrue(response.getContentAsString().contains(hrefString));
+    }
+
+    @Test
+    public void test_doGet_sendsStat() throws IOException, ServletException
+    {
+        StatSender statSender = mock(StatSender.class);
+        request.getSession().getServletContext().setAttribute("statSender", statSender);
+
+        request.setMethod("GET");
+        servlet.service(request, response);
+
+        verify(statSender).send(Stat.GUI_GET_CONFERENCE_INFO);
     }
 }

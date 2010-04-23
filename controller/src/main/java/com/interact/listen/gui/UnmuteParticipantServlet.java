@@ -5,6 +5,9 @@ import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
+import com.interact.listen.stats.InsaStatSender;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +24,13 @@ public class UnmuteParticipantServlet extends HttpServlet
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     {
         long start = System.currentTimeMillis();
+
+        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
+        if(statSender == null)
+        {
+            statSender = new InsaStatSender();
+        }
+        statSender.send(Stat.GUI_UNMUTE_PARTICIPANT);
 
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)

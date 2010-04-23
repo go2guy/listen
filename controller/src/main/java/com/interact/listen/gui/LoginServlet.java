@@ -3,6 +3,9 @@ package com.interact.listen.gui;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.User;
+import com.interact.listen.stats.InsaStatSender;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import javax.servlet.http.*;
 
@@ -19,6 +22,13 @@ public class LoginServlet extends HttpServlet
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     {
         long start = System.currentTimeMillis();
+
+        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
+        if(statSender == null)
+        {
+            statSender = new InsaStatSender();
+        }
+        statSender.send(Stat.GUI_LOGIN);
 
         Session hibernateSession = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = hibernateSession.beginTransaction();

@@ -1,16 +1,19 @@
 package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -25,7 +28,7 @@ public class GetConferenceParticipantsServletTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-    private HttpServlet servlet = new GetConferenceParticipantsServlet();
+    private GetConferenceParticipantsServlet servlet = new GetConferenceParticipantsServlet();
 
     // TODO do we need to return something different if the conference itself is not found? 404?
 
@@ -109,5 +112,17 @@ public class GetConferenceParticipantsServletTest
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals(expectedJson.toString(), response.getContentAsString());
+    }
+
+    @Test
+    public void test_doGet_sendsStat() throws IOException, ServletException
+    {
+        StatSender statSender = mock(StatSender.class);
+        request.getSession().getServletContext().setAttribute("statSender", statSender);
+
+        request.setMethod("GET");
+        servlet.service(request, response);
+
+        verify(statSender).send(Stat.GUI_GET_CONFERENCE_PARTICIPANTS);
     }
 }

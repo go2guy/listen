@@ -2,6 +2,15 @@
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
 
+    <filter>
+        <filter-name>StatFilter</filter-name>
+        <filter-class>com.interact.listen.stats.StatFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>StatFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
     <!-- servlet definitions -->
 
     <servlet>

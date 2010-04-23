@@ -7,6 +7,9 @@ import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.ConferenceHistory;
 import com.interact.listen.resource.User;
+import com.interact.listen.stats.InsaStatSender;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,12 +21,19 @@ import org.hibernate.Transaction;
 public class GetConferenceHistoryServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
-    
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     {
         long start = System.currentTimeMillis();
-        
+
+        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
+        if(statSender == null)
+        {
+            statSender = new InsaStatSender();
+        }
+        statSender.send(Stat.GUI_GET_CONFERENCE_HISTORY);
+
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
