@@ -22,6 +22,7 @@ except ImportError, e:
 def main():
     global phase
     global listenserver
+    global insaserver
     global hostname
 
     phases = {"prep": prep, "install": install, "upgrade": install, "post": post, "all": all}
