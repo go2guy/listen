@@ -76,15 +76,15 @@ public final class HibernateUtil
 
         // for N=0..9
 
-        // subscriber number     = 10N
-        // subscriber VM pin     = 10N
-        // user username         = 10N
-        // user password         = super
-        // conference activePin  = 10N
-        // conference adminPin   = 99910N
+        // subscriber number = 10N
+        // subscriber VM pin = 10N
+        // user username = 10N
+        // user password = super
+        // conference activePin = 10N
+        // conference adminPin = 99910N
         // conference passivePin = 00010N
-        //   participant numbers are 40200N000M, where M=0..9
-        
+        // participant numbers are 40200N000M, where M=0..9
+
         try
         {
             for(int i = 0; i < 10; i++)
@@ -138,6 +138,35 @@ public final class HibernateUtil
                     System.out.println("BOOTSTRAP: Saved Participant " + participant.getId());
                 }
             }
+
+            Subscriber subscriber = new Subscriber();
+            subscriber.setNumber("347");
+            subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
+            subscriber.setVoicemailPin(subscriber.getNumber());
+            session.save(subscriber);
+
+            User user = new User();
+            user.setPassword("super");
+            user.setSubscriber(subscriber);
+            user.setUsername(subscriber.getNumber());
+            session.save(user);
+
+            Conference conference = new Conference();
+
+            Pin activePin = Pin.newInstance("111", PinType.ACTIVE);
+            Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
+            Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
+
+            session.save(activePin);
+            session.save(adminPin);
+            session.save(passivePin);
+
+            conference.setIsStarted(false);
+            conference.addToPins(activePin);
+            conference.addToPins(adminPin);
+            conference.addToPins(passivePin);
+
+            session.save(conference);
 
             transaction.commit();
         }
