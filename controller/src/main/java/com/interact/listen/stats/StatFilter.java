@@ -26,7 +26,7 @@ public class StatFilter implements Filter
 
         if(resource != null)
         {
-            String enumValue = "LISTEN_CONTROLLER_API_" + resource.toUpperCase() + "_" + method;
+            String enumValue = "API_" + resource.toUpperCase() + "_" + method;
 
             try
             {
