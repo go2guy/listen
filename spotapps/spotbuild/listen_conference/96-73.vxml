@@ -9,11 +9,11 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Path</log>
+	    <log target="status">Set Event</log>
             <log>INFO: Entered assign-variable.vxml [96-73]</log>
-            <log>INFO: whichPath current value [<value expr="whichPath"/>]</log> <!-- Log current value. Update variable and log updated value -->
-            <assign name="whichPath" expr="'rejoinConf' + ''"/>
-            <log>INFO: whichPath updated to [<value expr="whichPath"/>]</log>
+            <log>INFO: whichEvent current value [<value expr="whichEvent"/>]</log> <!-- Log current value. Update variable and log updated value -->
+            <assign name="whichEvent" expr="'MUTE' + ''"/>
+            <log>INFO: whichEvent updated to [<value expr="whichEvent"/>]</log>
             <if cond="II_SB_assign_NxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_assign_NxtOpt"/>.vxml]</log>
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_assign_NxtOpt + '.vxml'"/>

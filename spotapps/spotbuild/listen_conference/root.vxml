@@ -71,6 +71,7 @@
 	<var name="memberCnt" expr="'0'" />
 	<var name="prevPath" expr="''" />
 	<var name="phoneNumber" expr="''" />
+	<var name="whichEvent" expr="''" />
 
 
     <!-- Conference Variables -->

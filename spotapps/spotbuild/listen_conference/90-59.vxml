@@ -5,16 +5,20 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'90-50'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'90-21'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(getInput,isAdmin)
+            function II_SB_JS_function(getInput,isAdmin,isAdminMuted)
             {
-	            if (((getInput == 3)  || (getInput == 4))&& (isAdmin))
+	            if(getInput == 1)
 return getInput;
+else if((getInput == 2) && (!(isAdminMuted)))
+return getInput;
+else if((isAdmin) && (getInput == 3 || getInput == 4))
+getInput;
 else
-return 0;
+return "REJOIN";
             }
         ]]>
     </script>
@@ -22,8 +26,8 @@ return 0;
     <form id="beginDocument">
         <block>
             <log target="status">Key Press</log>
-            <log>INFO: Entered run-javascript.vxml [90-23]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput,isAdmin)"/>   <!-- Call Javascript funtion and store result -->
+            <log>INFO: Entered run-javascript.vxml [90-59]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput,isAdmin,isAdminMuted)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

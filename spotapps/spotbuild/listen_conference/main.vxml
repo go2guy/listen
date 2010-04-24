@@ -60,6 +60,7 @@
 	<var name="SB_UV_memberCnt"/>
 	<var name="SB_UV_prevPath"/>
 	<var name="SB_UV_phoneNumber"/>
+	<var name="SB_UV_whichEvent"/>
 
     
     <form id="beginDocument">
@@ -199,6 +200,9 @@
 			</if>
 			<if cond="SB_UV_phoneNumber != undefined">
 				<assign name="phoneNumber" expr="SB_UV_phoneNumber" />
+			</if>
+			<if cond="SB_UV_whichEvent != undefined">
+				<assign name="whichEvent" expr="SB_UV_whichEvent" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
