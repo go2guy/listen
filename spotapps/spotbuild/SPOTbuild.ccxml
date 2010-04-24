@@ -13,7 +13,7 @@
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>     <!-- Location of java script file -->
 
     <!-- Application constants. These are used to control the flow of the application -->
-    <var name="II_SB_PROJECT_NAME" expr="'listen_main'"/>         <!-- Config: PROJECT_NAME. Project directory -->
+    <var name="II_SB_PROJECT_NAME" expr="'listen_conference'"/>         <!-- Config: PROJECT_NAME. Project directory -->
     <var name="II_SB_BASE_DIR" expr="'/interact/apps/spotbuild/'"/>   <!-- BASE_DIR. Base directory -->
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/> <!-- CODE_DIR. Application directory under base directory. Contains all code -->
     <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>     <!-- VXML LIB DIR. VXML library directory path -->
@@ -41,7 +41,7 @@
 
         <!-- Received ccxml.loaded -->
         <transition state="idle" event="ccxml.loaded" name="loadEV">
-            <log>INFO: Entered SPOTbuild.ccxml [51-2]</log>
+            <log>INFO: Entered SPOTbuild.ccxml [78-2]</log>
             <log>INFO: transition event [<value expr="loadEV.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
         </transition>
