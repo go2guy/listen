@@ -9,7 +9,6 @@ import java.util.*;
 import javax.persistence.*;
 
 import org.hibernate.Session;
-import org.hibernate.annotations.CollectionOfElements;
 
 @Entity
 public class Conference extends Resource implements Serializable

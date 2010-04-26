@@ -3,7 +3,7 @@ package com.interact.listen.security;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
-public class SecurityUtils
+public final class SecurityUtils
 {
     private SecurityUtils()
     {

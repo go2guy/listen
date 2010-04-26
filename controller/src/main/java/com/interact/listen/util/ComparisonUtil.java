@@ -1,6 +1,6 @@
 package com.interact.listen.util;
 
-public class ComparisonUtil
+public final class ComparisonUtil
 {
     private ComparisonUtil()
     {
