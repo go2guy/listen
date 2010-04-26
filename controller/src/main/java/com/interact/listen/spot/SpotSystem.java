@@ -81,7 +81,7 @@ public class SpotSystem
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
         httpClient.post(httpInterfaceUri, params);
 
-        Integer status = httpClient.getResponseStatus();
+        int status = httpClient.getResponseStatus();
         if(!isSuccessStatus(status))
         {
             throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" +
@@ -89,12 +89,8 @@ public class SpotSystem
         }
     }
 
-    private boolean isSuccessStatus(Integer status)
+    private boolean isSuccessStatus(int status)
     {
-        if(status == null)
-        {
-            return false;
-        }
         return status >= 200 && status <= 299;
     }
 }

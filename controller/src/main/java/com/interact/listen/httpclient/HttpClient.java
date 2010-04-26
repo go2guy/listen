@@ -15,7 +15,7 @@ public interface HttpClient
 
     public void post(String uri, String contentType, String entityContent) throws IOException;
 
-    public Integer getResponseStatus();
+    public int getResponseStatus();
 
     public String getResponseEntity();
 }

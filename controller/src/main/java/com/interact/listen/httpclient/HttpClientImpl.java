@@ -18,7 +18,7 @@ import org.apache.http.util.EntityUtils;
 public class HttpClientImpl implements HttpClient
 {
     private boolean requestMade = false;
-    private Integer responseStatus;
+    private int responseStatus;
     private String responseEntity;
 
     @Override
@@ -36,7 +36,7 @@ public class HttpClientImpl implements HttpClient
     }
 
     @Override
-    public Integer getResponseStatus()
+    public int getResponseStatus()
     {
         if(!requestMade)
         {
