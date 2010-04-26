@@ -41,7 +41,7 @@ public class LoginServlet extends HttpServlet
             String username = request.getParameter("username");
             String password = request.getParameter("password");
 
-            System.out.println("POST LoginServlet username=" + username + "&password=" + password);
+            System.out.println("POST LoginServlet username=" + username + "&password=*");
 
             if(username == null || username.trim().equals(""))
             {
