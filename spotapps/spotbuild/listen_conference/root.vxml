@@ -37,7 +37,7 @@
 	<var name="errCnt" expr="'0'" />
 	<var name="confID" expr="''" />
 	<var name="whichPath" expr="''" />
-	<var name="maxErr" expr="'3'" />
+	<var name="maxErr" expr="'3'" /> <!-- Config Error Max Error Count -->
 	<var name="MODE" expr="'APPEND'" />
 	<var name="DATA" expr="''" />
 	<var name="FILENAME" expr="'/interact/logs/'" />
@@ -49,7 +49,7 @@
 	<var name="request" expr="'get'" />
 	<var name="params" expr="''" />
 	<var name="id" expr="''" />
-	<var name="cntrlURL" expr="''" />
+	<var name="cntrlURL" expr="''" /> <!-- Config Controller URL -->
 	<var name="status" expr="''" />
 	<var name="returnVal" expr="''" />
 	<var name="returnStr" expr="''" />
@@ -57,14 +57,14 @@
 	<var name="reqMinCnt" expr="'0'" />
 	<var name="reqMaxCnt" expr="'15'" />
 	<var name="reqCnt" expr="'0'" />
-	<var name="sipURL" expr="''" />
+	<var name="sipURL" expr="''" /> <!-- Config SIP server name -->
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'delete'" />
 	<var name="isMuted" expr="'false'" />
 	<var name="isAdminMuted" expr="'false'" />
 	<var name="isPassive" expr="'false'" />
 	<var name="isActive" expr="'false'" />
-	<var name="pinLength" expr="'6'" />
+	<var name="pinLength" expr="'6'" /> <!-- Config Pin Length  -->
 	<var name="resource" expr="'pins'" />
 	<var name="ANI" expr="'remote'" />
 	<var name="index" expr="'0'" />

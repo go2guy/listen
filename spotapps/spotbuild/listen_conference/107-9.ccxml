@@ -82,10 +82,12 @@
             <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_indialog" expr="'false'"/>
 			<var name="SB_UV_confID" expr="evt.values.confID"/>
+			<var name="SB_UV_phoneNumber" expr="evt.values.phoneNumber"/>
+			<var name="SB_UV_audioURL" expr="evt.values.audioURL"/>
         
             <assign name="II_SB_state" expr="'createSession'"/>
 	        <assign name="II_SB_status" expr="'createSession'"/>
-    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_confID"/>
+    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_confID SB_UV_phoneNumber SB_UV_audioURL"/>
 	    </transition>
 
 	    <!-- Catch ccxml.created event -->

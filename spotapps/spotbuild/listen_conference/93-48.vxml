@@ -25,7 +25,7 @@
 	<property name="incompletetimeout" value="0s"/>     <!--  incompletetimeout. This is the length of silence after an incompletely recognized speech -->
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
-    <var name="II_SB_promptList" expr="'P'+'noParticipants2'+'|'"/>  <!--  List of audio files / speech to play -->
+    <var name="II_SB_promptList" expr="'P'+'noParticipants'+'|'"/>  <!--  List of audio files / speech to play -->
     <var name="II_SB_PlyAudio_nextOpt" expr="'90-3'"/>  <!--  PlayAudio Next Option. Name of next file -->
 	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	

@@ -5,7 +5,7 @@
        *   @Name   math.vxml
        *   @Desc   Sets up simple math operations -->
 
-    <var name="II_SB_nxtOpt" expr="'80-5'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'80-25'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>

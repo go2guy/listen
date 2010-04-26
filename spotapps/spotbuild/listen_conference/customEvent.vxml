@@ -40,7 +40,7 @@
 			</if>
 			<if cond="II_SB_eventReceived == 'On Demand Out Dial'">
 				<assign name="II_SB_assign_NxtOpt" expr="'107-3'"/>
-				<assign name="'phoneNumber'" expr="II_SB_valueReceived"/>
+				<assign name="phoneNumber" expr="II_SB_valueReceived"/>
 			</if>
 
             <if cond="II_SB_assign_NxtOpt != ''">

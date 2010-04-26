@@ -61,6 +61,8 @@
 	<var name="SB_UV_prevPath"/>
 	<var name="SB_UV_phoneNumber"/>
 	<var name="SB_UV_whichEvent"/>
+	<var name="SB_UV_helpCnt"/>
+	<var name="SB_UV_maxHelp"/>
 
     
     <form id="beginDocument">
@@ -203,6 +205,12 @@
 			</if>
 			<if cond="SB_UV_whichEvent != undefined">
 				<assign name="whichEvent" expr="SB_UV_whichEvent" />
+			</if>
+			<if cond="SB_UV_helpCnt != undefined">
+				<assign name="helpCnt" expr="SB_UV_helpCnt" />
+			</if>
+			<if cond="SB_UV_maxHelp != undefined">
+				<assign name="maxHelp" expr="SB_UV_maxHelp" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -25,7 +25,7 @@
             <log>INFO: Entered create-session.vxml [107-9]</log>
             <if cond="II_SB_fromCCXML == 'true'">
                 <log>INFO: Returning to ccxml with Variables</log>
-                <exit namelist="confID"/>
+                <exit namelist="confID phoneNumber audioURL"/>
             <else/>
                 <log>INFO: Returning to ccxml with returnValues</log>
                 <assign name="II_SB_status" expr="'connected'"/>
