@@ -8,7 +8,7 @@ import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.User;
-import com.interact.listen.security.SecurityUtils;
+import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
@@ -96,7 +96,7 @@ public class LoginServletTest
         subscriber.setNumber(String.valueOf(userId));
         User user = new User();
         user.setUsername(username);
-        user.setPassword(SecurityUtils.hashPassword(password));
+        user.setPassword(SecurityUtil.hashPassword(password));
         user.setSubscriber(subscriber);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -125,7 +125,7 @@ public class LoginServletTest
         subscriber.setNumber(String.valueOf(userId));
         User user = new User();
         user.setUsername(username);
-        user.setPassword(SecurityUtils.hashPassword(password));
+        user.setPassword(SecurityUtil.hashPassword(password));
         user.setSubscriber(subscriber);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
