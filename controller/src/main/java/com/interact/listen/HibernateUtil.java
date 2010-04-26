@@ -2,7 +2,7 @@ package com.interact.listen;
 
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
-import com.interact.listen.security.SecurityUtils;
+import com.interact.listen.security.SecurityUtil;
 
 import java.text.DecimalFormat;
 
@@ -118,7 +118,7 @@ public final class HibernateUtil
                 persistenceService.save(conference);
 
                 User user = new User();
-                user.setPassword(SecurityUtils.hashPassword("super"));
+                user.setPassword(SecurityUtil.hashPassword("super"));
                 user.setSubscriber(subscriber);
                 user.setUsername(subscriber.getNumber());
                 user.addToConferences(conference);

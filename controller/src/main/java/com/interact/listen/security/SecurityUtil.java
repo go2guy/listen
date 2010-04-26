@@ -3,11 +3,11 @@ package com.interact.listen.security;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
-public final class SecurityUtils
+public final class SecurityUtil
 {
-    private SecurityUtils()
+    private SecurityUtil()
     {
-        throw new AssertionError("Cannot instantiate utility class SecurityUtils");
+        throw new AssertionError("Cannot instantiate utility class SecurityUtil");
     }
 
     public static String hashPassword(String plaintextPassword)
