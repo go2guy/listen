@@ -1,9 +1,8 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -152,6 +151,90 @@ public class ConferenceHistoryTest
 
         assertEquals(original.getId(), copy.getId());
         assertEquals(original.getVersion(), copy.getVersion());
+    }
+
+    @Test
+    public void test_equals_sameObject_returnsTrue()
+    {
+        assertTrue(conferenceHistory.equals(conferenceHistory));
+    }
+
+    @Test
+    public void test_equals_thatNull_returnsFalse()
+    {
+        assertFalse(conferenceHistory.equals(null));
+    }
+
+    @Test
+    public void test_equals_thatNotAConferenceHistory_returnsFalse()
+    {
+        assertFalse(conferenceHistory.equals(new String()));
+    }
+
+    @Test
+    public void test_equals_conferenceNotEqual_returnsFalse()
+    {
+        conferenceHistory.setConference(new Conference());
+
+        ConferenceHistory that = new ConferenceHistory();
+        that.setConference(null);
+
+        assertFalse(conferenceHistory.equals(that));
+    }
+
+    @Test
+    public void test_equals_dateCreatedNotEqual_returnsFalse()
+    {
+        conferenceHistory.setDateCreated(new Date());
+
+        ConferenceHistory that = new ConferenceHistory();
+        that.setDateCreated(null);
+
+        assertFalse(conferenceHistory.equals(that));
+    }
+
+    @Test
+    public void test_equals_descriptionNotEqual_returnsFalse()
+    {
+        conferenceHistory.setDescription(String.valueOf(System.currentTimeMillis()));
+
+        ConferenceHistory that = new ConferenceHistory();
+        that.setDescription(null);
+
+        assertFalse(conferenceHistory.equals(that));
+    }
+
+    @Test
+    public void test_equals_userNotEqual_returnsFalse()
+    {
+        conferenceHistory.setUser(String.valueOf(System.currentTimeMillis()));
+
+        ConferenceHistory that = new ConferenceHistory();
+        that.setUser(null);
+
+        assertFalse(conferenceHistory.equals(that));
+    }
+
+    @Test
+    public void test_equals_allPropertiesEqual_returnsTrue()
+    {
+        Conference conference = new Conference();
+        Date dateCreated = new Date();
+        String description = String.valueOf(System.currentTimeMillis());
+        String user = String.valueOf(System.currentTimeMillis());
+
+        conferenceHistory.setConference(conference);
+        conferenceHistory.setDateCreated(dateCreated);
+        conferenceHistory.setDescription(description);
+        conferenceHistory.setUser(user);
+
+        ConferenceHistory that = new ConferenceHistory();
+        that.setConference(conference);
+        that.setDateCreated(dateCreated);
+        that.setDescription(description);
+        that.setUser(user);
+
+        assertTrue(conferenceHistory.equals(that));
     }
 
     private ConferenceHistory getPopulatedConferenceHistory()

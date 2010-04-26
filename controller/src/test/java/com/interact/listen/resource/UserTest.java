@@ -1,9 +1,6 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +100,48 @@ public class UserTest
 
         assertEquals(original.getId(), copy.getId());
         assertEquals(original.getVersion(), copy.getVersion());
+    }
+
+    @Test
+    public void test_equals_sameObject_returnsTrue()
+    {
+        assertTrue(user.equals(user));
+    }
+
+    @Test
+    public void test_equals_thatNull_returnsFalse()
+    {
+        assertFalse(user.equals(null));
+    }
+
+    @Test
+    public void test_equals_thatNotAUser_returnsFalse()
+    {
+        assertFalse(user.equals(new String()));
+    }
+
+    @Test
+    public void test_equals_usernameNotEqual_returnsFalse()
+    {
+        user.setUsername(String.valueOf(System.currentTimeMillis()));
+
+        User that = new User();
+        that.setUsername(null);
+
+        assertFalse(user.equals(that));
+    }
+
+    @Test
+    public void test_equals_allPropertiesEqual_returnsTrue()
+    {
+        String username = String.valueOf(System.currentTimeMillis());
+
+        user.setUsername(username);
+
+        User that = new User();
+        that.setUsername(username);
+
+        assertTrue(user.equals(that));
     }
 
     private User getPopulatedUser()

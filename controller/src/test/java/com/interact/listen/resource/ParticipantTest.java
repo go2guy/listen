@@ -1,9 +1,6 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -209,6 +206,48 @@ public class ParticipantTest
 
         assertEquals(original.getId(), copy.getId());
         assertEquals(original.getVersion(), copy.getVersion());
+    }
+
+    @Test
+    public void test_equals_sameObject_returnsTrue()
+    {
+        assertTrue(participant.equals(participant));
+    }
+
+    @Test
+    public void test_equals_thatNull_returnsFalse()
+    {
+        assertFalse(participant.equals(null));
+    }
+
+    @Test
+    public void test_equals_thatNotAParticipant_returnsFalse()
+    {
+        assertFalse(participant.equals(new String()));
+    }
+
+    @Test
+    public void test_equals_sessionIDNotEqual_returnsFalse()
+    {
+        participant.setSessionID(String.valueOf(System.currentTimeMillis()));
+
+        Participant that = new Participant();
+        that.setSessionID(null);
+
+        assertFalse(participant.equals(that));
+    }
+
+    @Test
+    public void test_equals_allPropertiesEqual_returnsTrue()
+    {
+        String sessionID = String.valueOf(System.currentTimeMillis());
+
+        participant.setSessionID(sessionID);
+
+        Participant that = new Participant();
+        that.setSessionID(sessionID);
+
+        assertTrue(participant.equals(that));
     }
 
     private Participant getPopulatedParticipant()

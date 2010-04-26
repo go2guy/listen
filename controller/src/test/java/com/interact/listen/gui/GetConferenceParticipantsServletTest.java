@@ -80,21 +80,22 @@ public class GetConferenceParticipantsServletTest
 
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(id));
+        session.save(subscriber);
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setId(System.currentTimeMillis());
-
-        Pin pin = Pin.newInstance(subscriber.getNumber(), PinType.ADMIN);
-        session.save(pin);
-        
-        conference.addToPins(pin);
+        conference.setDescription(String.valueOf(System.currentTimeMillis()));
         session.save(conference);
-
-        tx.commit();
 
         User user = new User();
         user.setSubscriber(subscriber);
+        user.setUsername(String.valueOf(System.currentTimeMillis()));
+        user.setPassword(String.valueOf(System.currentTimeMillis()));
+        user.addToConferences(conference);
+        session.save(user);
+
+        tx.commit();
 
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute("user", user);

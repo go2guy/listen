@@ -11,6 +11,8 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +51,11 @@ public class GetConferenceParticipantsServlet extends HttpServlet
             // TODO we probably need a specific JSON marshaller for the web UI servlets - something that
             // doesn't return hrefs, but returns only the queried and necessary (e.g. paging) information
             Marshaller marshaller = new JsonMarshaller();
-            Conference conference = Conference.findByPinNumber(user.getSubscriber().getNumber(), session);
+            Conference conference = null;
+            if(user.getConferences().size() > 0)
+            {
+                conference = new ArrayList<Conference>(user.getConferences()).get(0);
+            }
 
             if(conference == null)
             {

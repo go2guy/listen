@@ -1,9 +1,6 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import com.interact.listen.resource.Pin.PinType;
 
@@ -143,6 +140,48 @@ public class PinTest
 
         assertEquals(original.getId(), copy.getId());
         assertEquals(original.getVersion(), copy.getVersion());
+    }
+
+    @Test
+    public void test_equals_sameObject_returnsTrue()
+    {
+        assertTrue(pin.equals(pin));
+    }
+
+    @Test
+    public void test_equals_thatNull_returnsFalse()
+    {
+        assertFalse(pin.equals(null));
+    }
+
+    @Test
+    public void test_equals_thatNotAPin_returnsFalse()
+    {
+        assertFalse(pin.equals(new String()));
+    }
+
+    @Test
+    public void test_equals_numberNotEqual_returnsFalse()
+    {
+        pin.setNumber(String.valueOf(System.currentTimeMillis()));
+
+        Pin that = new Pin();
+        that.setNumber(null);
+
+        assertFalse(pin.equals(that));
+    }
+
+    @Test
+    public void test_equals_allPropertiesEqual_returnsTrue()
+    {
+        String number = String.valueOf(System.currentTimeMillis());
+
+        pin.setNumber(number);
+
+        Pin that = new Pin();
+        that.setNumber(number);
+
+        assertTrue(pin.equals(that));
     }
 
     private Pin getPopulatedPin()

@@ -1,6 +1,11 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.util.ComparisonUtil;
+
 import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -17,11 +22,17 @@ public class User extends Resource implements Serializable
     @OneToOne
     private Subscriber subscriber;
 
+    // TODO enforce unique username
     @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
+
+    private Date lastLogin = new Date();
+
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    private Set<Conference> conferences = new HashSet<Conference>();
 
     @Override
     public Long getId()
@@ -75,6 +86,42 @@ public class User extends Resource implements Serializable
         this.password = password;
     }
 
+    public Date getLastLogin()
+    {
+        return lastLogin == null ? null : new Date(lastLogin.getTime());
+    }
+
+    public void setLastLogin(Date lastLogin)
+    {
+        this.lastLogin = lastLogin == null ? null : new Date(lastLogin.getTime());
+    }
+
+    public Set<Conference> getConferences()
+    {
+        return conferences;
+    }
+
+    public void setConferences(Set<Conference> conferences)
+    {
+        this.conferences = conferences;
+        for(Conference conference : this.conferences)
+        {
+            conference.setUser(this);
+        }
+    }
+
+    public void addToConferences(Conference conference)
+    {
+        conference.setUser(this);
+        this.conferences.add(conference);
+    }
+
+    public void removeFromConferences(Conference conference)
+    {
+        conference.setUser(null);
+        this.conferences.remove(conference);
+    }
+
     @Override
     public boolean validate()
     {
@@ -112,6 +159,49 @@ public class User extends Resource implements Serializable
         copy.setPassword(password);
         copy.setSubscriber(subscriber);
         copy.setUsername(username);
+        copy.setLastLogin(lastLogin == null ? null : new Date(lastLogin.getTime()));
+
+        for(Conference conference : conferences)
+        {
+            copy.addToConferences(conference);
+        }
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+        {
+            return true;
+        }
+
+        if(that == null)
+        {
+            return false;
+        }
+
+        if(!(that instanceof User))
+        {
+            return false;
+        }
+
+        final User user = (User)that;
+
+        if(!ComparisonUtil.isEqual(user.getUsername(), getUsername()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int hash = 1;
+        hash *= prime + (getUsername() == null ? 0 : getUsername().hashCode());
+        return hash;
     }
 }

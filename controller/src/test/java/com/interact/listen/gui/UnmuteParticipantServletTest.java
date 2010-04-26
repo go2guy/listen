@@ -105,11 +105,7 @@ public class UnmuteParticipantServletTest
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setId(System.currentTimeMillis());
-
-        Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        session.save(pin);
-
-        conference.addToPins(pin);
+        conference.setDescription(String.valueOf(System.currentTimeMillis()));
         session.save(conference);
 
         Participant participant = new Participant();

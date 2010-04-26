@@ -1,9 +1,6 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -142,6 +139,48 @@ public class SubscriberTest
 
         assertEquals(original.getId(), copy.getId());
         assertEquals(original.getVersion(), copy.getVersion());
+    }
+
+    @Test
+    public void test_equals_sameObject_returnsTrue()
+    {
+        assertTrue(subscriber.equals(subscriber));
+    }
+
+    @Test
+    public void test_equals_thatNull_returnsFalse()
+    {
+        assertFalse(subscriber.equals(null));
+    }
+
+    @Test
+    public void test_equals_thatNotAsubscriber_returnsFalse()
+    {
+        assertFalse(subscriber.equals(new String()));
+    }
+
+    @Test
+    public void test_equals_numberNotEqual_returnsFalse()
+    {
+        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+
+        Subscriber that = new Subscriber();
+        that.setNumber(null);
+
+        assertFalse(subscriber.equals(that));
+    }
+
+    @Test
+    public void test_equals_allPropertiesEqual_returnsTrue()
+    {
+        String number = String.valueOf(System.currentTimeMillis());
+
+        subscriber.setNumber(number);
+
+        Subscriber that = new Subscriber();
+        that.setNumber(number);
+
+        assertTrue(subscriber.equals(that));
     }
 
     private Subscriber getPopulatedSubscriber()

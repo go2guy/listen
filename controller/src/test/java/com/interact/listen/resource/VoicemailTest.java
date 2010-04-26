@@ -154,6 +154,62 @@ public class VoicemailTest
         assertEquals(original.getVersion(), copy.getVersion());
     }
 
+    @Test
+    public void test_equals_sameObject_returnsTrue()
+    {
+        assertTrue(voicemail.equals(voicemail));
+    }
+
+    @Test
+    public void test_equals_thatNull_returnsFalse()
+    {
+        assertFalse(voicemail.equals(null));
+    }
+
+    @Test
+    public void test_equals_thatNotAVoicemail_returnsFalse()
+    {
+        assertFalse(voicemail.equals(new String()));
+    }
+
+    @Test
+    public void test_equals_fileLocationNotEqual_returnsFalse()
+    {
+        voicemail.setFileLocation(String.valueOf(System.currentTimeMillis()));
+
+        Voicemail that = new Voicemail();
+        that.setFileLocation(null);
+
+        assertFalse(voicemail.equals(that));
+    }
+
+    @Test
+    public void test_equals_subscriberNotEqual_returnsFalse()
+    {
+        voicemail.setSubscriber(new Subscriber());
+
+        Voicemail that = new Voicemail();
+        that.setSubscriber(null);
+
+        assertFalse(voicemail.equals(that));
+    }
+
+    @Test
+    public void test_equals_allPropertiesEqual_returnsTrue()
+    {
+        String fileLocation = String.valueOf(System.currentTimeMillis());
+        Subscriber subscriber = new Subscriber();
+
+        voicemail.setFileLocation(fileLocation);
+        voicemail.setSubscriber(subscriber);
+
+        Voicemail that = new Voicemail();
+        that.setFileLocation(fileLocation);
+        that.setSubscriber(subscriber);
+
+        assertTrue(voicemail.equals(that));
+    }
+
     private Voicemail getPopulatedVoicemail()
     {
         Subscriber s = new Subscriber();

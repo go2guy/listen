@@ -30,5 +30,6 @@
 	<classpathentry kind="lib" path="lib/runtime/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/build/mockito-all-1.8.4.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/insa-stats-client.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/commons-codec-1.4.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>

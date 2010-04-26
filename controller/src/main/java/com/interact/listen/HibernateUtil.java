@@ -2,6 +2,7 @@ package com.interact.listen;
 
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
+import com.interact.listen.security.SecurityUtils;
 
 import java.text.DecimalFormat;
 
@@ -82,7 +83,7 @@ public final class HibernateUtil
         // subscriber VM pin = 10N
         // user username = 10N
         // user password = super
-        // conference activePin = 10N
+        // conference activePin = 11110N
         // conference adminPin = 99910N
         // conference passivePin = 00010N
         // participant numbers are 40200N000M, where M=0..9
@@ -97,17 +98,9 @@ public final class HibernateUtil
                 subscriber.setVoicemailPin(subscriber.getNumber());
                 persistenceService.save(subscriber);
 
-                User user = new User();
-                user.setPassword("super");
-                user.setSubscriber(subscriber);
-                user.setUsername(subscriber.getNumber());
-                persistenceService.save(user);
-
-                Conference conference = new Conference();
-
                 String basePin = new DecimalFormat("000").format(i + 100);
 
-                Pin activePin = Pin.newInstance(basePin, PinType.ACTIVE);
+                Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
                 Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
                 Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
 
@@ -115,12 +108,21 @@ public final class HibernateUtil
                 persistenceService.save(adminPin);
                 persistenceService.save(passivePin);
 
+                Conference conference = new Conference();
                 conference.addToPins(activePin);
                 conference.addToPins(adminPin);
                 conference.addToPins(passivePin);
 
                 conference.setIsStarted(true);
+                conference.setDescription(subscriber.getNumber());
                 persistenceService.save(conference);
+
+                User user = new User();
+                user.setPassword(SecurityUtils.hashPassword("super"));
+                user.setSubscriber(subscriber);
+                user.setUsername(subscriber.getNumber());
+                user.addToConferences(conference);
+                persistenceService.save(user);
 
                 System.out.println("BOOTSTRAP: Saved Conference " + conference.getId());
 
@@ -147,14 +149,6 @@ public final class HibernateUtil
             subscriber.setVoicemailPin(subscriber.getNumber());
             persistenceService.save(subscriber);
 
-            User user = new User();
-            user.setPassword("super");
-            user.setSubscriber(subscriber);
-            user.setUsername(subscriber.getNumber());
-            persistenceService.save(user);
-
-            Conference conference = new Conference();
-
             Pin activePin = Pin.newInstance("111", PinType.ACTIVE);
             Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
             Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
@@ -163,12 +157,21 @@ public final class HibernateUtil
             persistenceService.save(adminPin);
             persistenceService.save(passivePin);
 
+            Conference conference = new Conference();
             conference.setIsStarted(false);
+            conference.setDescription("Ladi's Conference");
             conference.addToPins(activePin);
             conference.addToPins(adminPin);
             conference.addToPins(passivePin);
 
             persistenceService.save(conference);
+
+            User user = new User();
+            user.setPassword("super");
+            user.setSubscriber(subscriber);
+            user.setUsername(subscriber.getNumber());
+            user.addToConferences(conference);
+            persistenceService.save(user);
 
             transaction.commit();
         }

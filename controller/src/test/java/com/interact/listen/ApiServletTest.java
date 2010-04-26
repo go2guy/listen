@@ -301,6 +301,7 @@ public class ApiServletTest
         Conference conference = new Conference();
         conference.setId(System.currentTimeMillis());
         conference.setIsStarted(Boolean.FALSE);
+        conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -328,6 +329,7 @@ public class ApiServletTest
         Conference conference = new Conference();
         conference.setId(System.currentTimeMillis());
         conference.setIsStarted(Boolean.FALSE);
+        conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

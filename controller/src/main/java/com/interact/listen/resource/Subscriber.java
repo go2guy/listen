@@ -1,12 +1,12 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.util.ComparisonUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
-
-import org.hibernate.annotations.CollectionOfElements;
 
 @Entity
 public class Subscriber extends Resource implements Serializable
@@ -24,7 +24,7 @@ public class Subscriber extends Resource implements Serializable
     private String voicemailGreetingLocation;
     private String voicemailPin;
 
-    @CollectionOfElements
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
 
     public String getNumber()
@@ -116,5 +116,42 @@ public class Subscriber extends Resource implements Serializable
         copy.setVoicemailPin(voicemailPin);
         copy.setVoicemails(voicemails);
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+        {
+            return true;
+        }
+
+        if(that == null)
+        {
+            return false;
+        }
+
+        if(!(that instanceof Subscriber))
+        {
+            return false;
+        }
+
+        Subscriber subscriber = (Subscriber)that;
+
+        if(!ComparisonUtil.isEqual(subscriber.getNumber(), getNumber()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int hash = 1;
+        hash *= prime + (getNumber() == null ? 0 : getNumber().hashCode());
+        return hash;
     }
 }

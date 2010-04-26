@@ -93,12 +93,18 @@ public class DropParticipantServlet extends HttpServlet
 
     private boolean isUserAllowedToDrop(User user, Participant participant)
     {
-        // TODO i'm not sure this is "secure" enough - however, we don't have anything directly linking "user" to
-        // "conference" right now
+        // does the current user own the conference?
+        if(!user.getConferences().contains(participant.getConference()))
+        {
+            return false;
+        }
+
+        // admin users cannot be dropped
         if(participant.getIsAdmin())
         {
             return false;
         }
-        return true; // FIXME
+
+        return true;
     }
 }

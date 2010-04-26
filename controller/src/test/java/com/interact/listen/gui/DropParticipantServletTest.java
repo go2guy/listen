@@ -91,6 +91,7 @@ public class DropParticipantServletTest
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setId(System.currentTimeMillis());
+        conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
         session.save(pin);

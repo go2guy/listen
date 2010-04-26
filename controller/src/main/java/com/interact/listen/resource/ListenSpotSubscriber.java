@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.util.ComparisonUtil;
+
 import java.util.List;
 
 import javax.persistence.*;
@@ -81,5 +83,42 @@ public class ListenSpotSubscriber extends Resource
     {
         Criteria criteria = session.createCriteria(ListenSpotSubscriber.class);
         return criteria.list();
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+        {
+            return true;
+        }
+
+        if(that == null)
+        {
+            return false;
+        }
+
+        if(!(that instanceof ListenSpotSubscriber))
+        {
+            return false;
+        }
+
+        ListenSpotSubscriber listenSpotSubscriber = (ListenSpotSubscriber)that;
+
+        if(!ComparisonUtil.isEqual(listenSpotSubscriber.getHttpApi(), getHttpApi()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int hash = 1;
+        hash *= prime + (getHttpApi() == null ? 0 : getHttpApi().hashCode());
+        return hash;
     }
 }

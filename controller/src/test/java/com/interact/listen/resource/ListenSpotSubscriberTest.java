@@ -1,9 +1,6 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import com.interact.listen.HibernateUtil;
 
@@ -107,7 +104,49 @@ public class ListenSpotSubscriberTest
 
         assertEquals(0, list.size());
     }
-    
+
+    @Test
+    public void test_equals_sameObject_returnsTrue()
+    {
+        assertTrue(listenSpotSubscriber.equals(listenSpotSubscriber));
+    }
+
+    @Test
+    public void test_equals_thatNull_returnsFalse()
+    {
+        assertFalse(listenSpotSubscriber.equals(null));
+    }
+
+    @Test
+    public void test_equals_thatNotAListenSpotSubscriber_returnsFalse()
+    {
+        assertFalse(listenSpotSubscriber.equals(new String()));
+    }
+
+    @Test
+    public void test_equals_httpApiNotEqual_returnsFalse()
+    {
+        listenSpotSubscriber.setHttpApi("foo");
+
+        ListenSpotSubscriber that = new ListenSpotSubscriber();
+        that.setHttpApi(null);
+
+        assertFalse(listenSpotSubscriber.equals(that));
+    }
+
+    @Test
+    public void test_equals_allPropertiesEqual_returnsTrue()
+    {
+        String httpApi = String.valueOf(System.currentTimeMillis());
+
+        listenSpotSubscriber.setHttpApi(httpApi);
+
+        ListenSpotSubscriber that = new ListenSpotSubscriber();
+        that.setHttpApi(httpApi);
+
+        assertTrue(listenSpotSubscriber.equals(that));
+    }
+
     private ListenSpotSubscriber getPopulatedListenSpotSubscriber()
     {
         ListenSpotSubscriber l = new ListenSpotSubscriber();

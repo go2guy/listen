@@ -11,6 +11,8 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,18 +42,22 @@ public class GetConferenceHistoryServlet extends HttpServlet
             ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
             return;
         }
-        
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
-        
+
         try
         {
             Marshaller marshaller = new JsonMarshaller();
-            Conference conference = Conference.findByPinNumber(user.getSubscriber().getNumber(), session);
+            Conference conference = null;
+            if(user.getConferences().size() > 0)
+            {
+                conference = new ArrayList<Conference>(user.getConferences()).get(0);
+            }
 
             if(conference == null)
             {
-                transaction.commit();
+                transaction.rollback();
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found", "text/plain");
                 return;
             }

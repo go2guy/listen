@@ -91,8 +91,13 @@ public class MuteParticipantServlet extends HttpServlet
 
     private boolean isUserAllowedToMute(User user, Participant participant)
     {
-        // FIXME this isn't a good check
+        // does the current user own the conference?
+        if(!user.getConferences().contains(participant.getConference()))
+        {
+            return false;
+        }
 
+        // admins cannot be admin muted
         if(participant.getIsAdmin())
         {
             return false;

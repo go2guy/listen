@@ -1,6 +1,7 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
 
@@ -266,5 +267,42 @@ public class Participant extends Resource implements Serializable
 
         PersistenceService persistenceService = new PersistenceService(session);
         persistenceService.save(history);
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+        {
+            return true;
+        }
+
+        if(that == null)
+        {
+            return false;
+        }
+
+        if(!(that instanceof Participant))
+        {
+            return false;
+        }
+
+        Participant participant = (Participant)that;
+
+        if(!ComparisonUtil.isEqual(participant.getSessionID(), getSessionID()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int hash = 1;
+        hash *= prime + (getSessionID() == null ? 0 : getSessionID().hashCode());
+        return hash;
     }
 }

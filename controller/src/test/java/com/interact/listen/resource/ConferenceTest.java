@@ -1,9 +1,6 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +58,26 @@ public class ConferenceTest
     }
 
     @Test
+    public void test_validate_nullDescription_returnsTrueAndHasErrors()
+    {
+        conference = getPopulatedConference();
+        conference.setDescription(null);
+
+        assertFalse(conference.validate());
+        assertTrue(conference.hasErrors());
+    }
+
+    @Test
+    public void test_validate_blankDescription_returnsTrueAndHasErrors()
+    {
+        conference = getPopulatedConference();
+        conference.setDescription(" ");
+
+        assertFalse(conference.validate());
+        assertTrue(conference.hasErrors());
+    }
+
+    @Test
     public void test_validate_nullIsStarted_returnsHasErrors()
     {
         conference = getPopulatedConference();
@@ -79,7 +96,7 @@ public class ConferenceTest
         assertTrue(original.getConferenceHistorys() == copy.getConferenceHistorys()); // same reference
         assertEquals(original.getIsStarted(), copy.getIsStarted());
         assertTrue(original.getParticipants() == copy.getParticipants()); // same reference
-        
+
         // pins cannot be the same reference - in fact, i don't think any collection can
         // FIXME make all collections and references deep copies
         assertFalse(original.getPins() == copy.getPins()); // different reference
@@ -99,9 +116,66 @@ public class ConferenceTest
         assertEquals(original.getVersion(), copy.getVersion());
     }
 
+    @Test
+    public void test_equals_sameObject_returnsTrue()
+    {
+        assertTrue(conference.equals(conference));
+    }
+
+    @Test
+    public void test_equals_thatNull_returnsFalse()
+    {
+        assertFalse(conference.equals(null));
+    }
+
+    @Test
+    public void test_equals_thatNotAConference_returnsFalse()
+    {
+        assertFalse(conference.equals(new String()));
+    }
+
+    @Test
+    public void test_equals_descriptionNotEqual_returnsFalse()
+    {
+        conference.setDescription("foo");
+
+        Conference that = new Conference();
+        that.setDescription(null);
+
+        assertFalse(conference.equals(that));
+    }
+
+    @Test
+    public void test_equals_userNotEqual_returnsFalse()
+    {
+        conference.setUser(new User());
+
+        Conference that = new Conference();
+        that.setUser(null);
+
+        assertFalse(conference.equals(that));
+    }
+
+    @Test
+    public void test_equals_allPropertiesEqual_returnsTrue()
+    {
+        User user = new User();
+        String description = String.valueOf(System.currentTimeMillis());
+
+        conference.setDescription(description);
+        conference.setUser(user);
+
+        Conference that = new Conference();
+        that.setDescription(description);
+        that.setUser(user);
+
+        assertTrue(conference.equals(that));
+    }
+
     private Conference getPopulatedConference()
     {
         Conference c = new Conference();
+        c.setDescription(String.valueOf(System.currentTimeMillis()));
         c.setId(System.currentTimeMillis());
         c.setIsStarted(Boolean.TRUE);
         c.setVersion(1);

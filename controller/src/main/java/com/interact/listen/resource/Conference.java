@@ -1,6 +1,7 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -20,17 +21,24 @@ public class Conference extends Resource implements Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
+    // TODO enforce unique description per User
+    @Column(nullable = false)
+    private String description;
+
     @Column(nullable = false)
     private Boolean isStarted;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Pin> pins = new HashSet<Pin>();
 
-    @CollectionOfElements
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<Participant> participants = new ArrayList<Participant>();
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<ConferenceHistory> conferenceHistorys = new HashSet<ConferenceHistory>();
+
+    @ManyToOne
+    private User user;
 
     public Boolean getIsStarted()
     {
@@ -90,6 +98,16 @@ public class Conference extends Resource implements Serializable
         this.version = version;
     }
 
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
     public List<Participant> getParticipants()
     {
         return participants;
@@ -110,9 +128,24 @@ public class Conference extends Resource implements Serializable
         this.conferenceHistorys = conferenceHistorys;
     }
 
+    public User getUser()
+    {
+        return user;
+    }
+
+    public void setUser(User user)
+    {
+        this.user = user;
+    }
+
     @Override
     public boolean validate()
     {
+        if(description == null || description.trim().equals(""))
+        {
+            addToErrors("description cannot be blank or null");
+        }
+
         if(isStarted == null)
         {
             addToErrors("isStarted cannot be null");
@@ -131,6 +164,7 @@ public class Conference extends Resource implements Serializable
             copy.setVersion(version);
         }
 
+        copy.setDescription(description);
         copy.setConferenceHistorys(conferenceHistorys);
         copy.setIsStarted(isStarted);
         copy.setParticipants(participants);
@@ -139,6 +173,8 @@ public class Conference extends Resource implements Serializable
         {
             copy.addToPins(pin.copy(false));
         }
+
+        copy.setUser(user);
 
         return copy;
     }
@@ -150,7 +186,7 @@ public class Conference extends Resource implements Serializable
         history.setConference(this);
         history.setUser("Current User"); // FIXME
         history.setDescription("Conference created");
-        
+
         PersistenceService persistenceService = new PersistenceService(session);
         persistenceService.save(history);
     }
@@ -171,6 +207,7 @@ public class Conference extends Resource implements Serializable
         }
     }
 
+    // TODO is this used anywhere anymore?
     public static Conference findByPinNumber(String pinNumber, Session session)
     {
         final String hql = "select c from Conference c join c.pins as p where p.number = ?";
@@ -180,5 +217,43 @@ public class Conference extends Resource implements Serializable
         query.setString(0, pinNumber);
 
         return (Conference)query.uniqueResult();
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+        {
+            return true;
+        }
+
+        if(!(that instanceof Conference))
+        {
+            return false;
+        }
+
+        final Conference conference = (Conference)that;
+
+        if(!ComparisonUtil.isEqual(conference.getDescription(), getDescription()))
+        {
+            return false;
+        }
+
+        if(!ComparisonUtil.isEqual(conference.getUser(), getUser()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int hash = 1;
+        hash *= prime + (getDescription() == null ? 0 : getDescription().hashCode());
+        hash *= prime + (getUser() == null ? 0 : getUser().hashCode());
+        return hash;
     }
 }

@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.util.ComparisonUtil;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -128,5 +130,60 @@ public class ConferenceHistory extends Resource implements Serializable
         copy.setDescription(description);
         copy.setUser(user);
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+        {
+            return true;
+        }
+
+        if(that == null)
+        {
+            return false;
+        }
+
+        if(!(that instanceof ConferenceHistory))
+        {
+            return false;
+        }
+
+        ConferenceHistory conferenceHistory = (ConferenceHistory)that;
+
+        if(!ComparisonUtil.isEqual(conferenceHistory.getConference(), getConference()))
+        {
+            return false;
+        }
+
+        if(!ComparisonUtil.isEqual(conferenceHistory.getDateCreated(), getDateCreated()))
+        {
+            return false;
+        }
+
+        if(!ComparisonUtil.isEqual(conferenceHistory.getDescription(), getDescription()))
+        {
+            return false;
+        }
+
+        if(!ComparisonUtil.isEqual(conferenceHistory.getUser(), getUser()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int hash = 1;
+        hash *= prime + (getConference() == null ? 0 : getConference().hashCode());
+        hash *= prime + (getDateCreated() == null ? 0 : getDateCreated().hashCode());
+        hash *= prime + (getDescription() == null ? 0 : getDescription().hashCode());
+        hash *= prime + (getUser() == null ? 0 : getUser().hashCode());
+        return hash;
     }
 }

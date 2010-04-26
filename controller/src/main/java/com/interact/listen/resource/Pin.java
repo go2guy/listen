@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.util.ComparisonUtil;
+
 import java.io.Serializable;
 
 import javax.persistence.*;
@@ -125,5 +127,42 @@ public class Pin extends Resource implements Serializable
         copy.setNumber(number);
         copy.setType(type);
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+        {
+            return true;
+        }
+
+        if(that == null)
+        {
+            return false;
+        }
+
+        if(!(that instanceof Pin))
+        {
+            return false;
+        }
+
+        Pin pin = (Pin)that;
+
+        if(!ComparisonUtil.isEqual(pin.getNumber(), getNumber()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int hash = 1;
+        hash *= prime + (getNumber() == null ? 0 : getNumber().hashCode());
+        return hash;
     }
 }

@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.util.ComparisonUtil;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -134,5 +136,48 @@ public class Voicemail extends Resource implements Serializable
         copy.setIsNew(isNew);
         copy.setSubscriber(subscriber);
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+        {
+            return true;
+        }
+
+        if(that == null)
+        {
+            return false;
+        }
+
+        if(!(that instanceof Voicemail))
+        {
+            return false;
+        }
+
+        Voicemail voicemail = (Voicemail)that;
+
+        if(!ComparisonUtil.isEqual(voicemail.getFileLocation(), getFileLocation()))
+        {
+            return false;
+        }
+
+        if(!ComparisonUtil.isEqual(voicemail.getSubscriber(), getSubscriber()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int hash = 1;
+        hash *= prime + (getFileLocation() == null ? 0 : getFileLocation().hashCode());
+        hash *= prime + (getSubscriber() == null ? 0 : getSubscriber().hashCode());
+        return hash;
     }
 }
