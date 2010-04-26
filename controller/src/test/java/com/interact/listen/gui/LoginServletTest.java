@@ -89,7 +89,7 @@ public class LoginServletTest
     public void test_doPost_userFoundButInvalidPassword_returns401WithMessage() throws IOException, ServletException
     {
         final Long userId = System.currentTimeMillis();
-        final String username = "foo";
+        final String username = String.valueOf(System.currentTimeMillis());
         final String password = "bar";
 
         Subscriber subscriber = new Subscriber();
@@ -118,7 +118,7 @@ public class LoginServletTest
     public void test_doPost_validCredentials_returns200() throws IOException, ServletException
     {
         final Long userId = System.currentTimeMillis();
-        final String username = "foo";
+        final String username = String.valueOf(System.currentTimeMillis());
         final String password = "bar";
 
         Subscriber subscriber = new Subscriber();

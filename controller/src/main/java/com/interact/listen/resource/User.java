@@ -22,14 +22,15 @@ public class User extends Resource implements Serializable
     @OneToOne
     private Subscriber subscriber;
 
-    // TODO enforce unique username
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
     private Date lastLogin = new Date();
+
+    private Boolean isAdministrator = Boolean.FALSE;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
@@ -96,6 +97,16 @@ public class User extends Resource implements Serializable
         this.lastLogin = lastLogin == null ? null : new Date(lastLogin.getTime());
     }
 
+    public Boolean getIsAdministrator()
+    {
+        return isAdministrator;
+    }
+
+    public void setIsAdministrator(Boolean isAdministrator)
+    {
+        this.isAdministrator = isAdministrator;
+    }
+
     public Set<Conference> getConferences()
     {
         return conferences;
@@ -125,25 +136,27 @@ public class User extends Resource implements Serializable
     @Override
     public boolean validate()
     {
-        boolean isValid = true;
-        if(subscriber == null)
+        if(isAdministrator == null)
         {
-            addToErrors("subscriber cannot be null");
-            isValid = false;
-        }
-
-        if(username == null)
-        {
-            addToErrors("username cannot be null");
-            isValid = false;
+            addToErrors("isAdministrator cannot be null");
         }
 
         if(password == null)
         {
             addToErrors("password cannot be null");
-            isValid = false;
         }
-        return isValid;
+
+        if(subscriber == null)
+        {
+            addToErrors("subscriber cannot be null");
+        }
+
+        if(username == null)
+        {
+            addToErrors("username cannot be null");
+        }
+
+        return !hasErrors();
     }
 
     @Override
@@ -160,6 +173,7 @@ public class User extends Resource implements Serializable
         copy.setSubscriber(subscriber);
         copy.setUsername(username);
         copy.setLastLogin(lastLogin == null ? null : new Date(lastLogin.getTime()));
+        copy.setIsAdministrator(isAdministrator);
 
         for(Conference conference : conferences)
         {

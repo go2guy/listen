@@ -16,6 +16,12 @@ public class UserTest
     }
 
     @Test
+    public void test_isAdministrator_defaultsToFalse()
+    {
+        assertEquals(Boolean.FALSE, user.getIsAdministrator());
+    }
+
+    @Test
     public void test_version_defaultsToZero()
     {
         assertEquals(Integer.valueOf(0), user.getVersion());
@@ -28,6 +34,13 @@ public class UserTest
         user.setId(id);
 
         assertEquals(id, user.getId());
+    }
+
+    @Test
+    public void test_setIsAdministrator_withValidBoolean_setsIsAdministrator()
+    {
+        user.setIsAdministrator(Boolean.TRUE);
+        assertEquals(Boolean.TRUE, user.getIsAdministrator());
     }
 
     @Test
@@ -46,6 +59,16 @@ public class UserTest
 
         assertTrue(user.validate());
         assertFalse(user.hasErrors());
+    }
+
+    @Test
+    public void test_validate_nullIsAdministrator_returnsFalseAndHasErrors()
+    {
+        user = getPopulatedUser();
+        user.setIsAdministrator(null);
+
+        assertFalse(user.validate());
+        assertTrue(user.hasErrors());
     }
 
     @Test
@@ -156,6 +179,7 @@ public class UserTest
         u.setSubscriber(s);
         u.setUsername("foo");
         u.setPassword("bar");
+        u.setIsAdministrator(Boolean.FALSE);
 
         return u;
     }
