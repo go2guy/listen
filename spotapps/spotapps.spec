@@ -116,7 +116,7 @@ Requires: spotbuild-vip
        [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/spotbuild/welcome.ccxml" ]
     then
         rm -f /interact/apps/iistart.ccxml
-        ln -s /interact/apps/spotbuild/welcome.ccxml /interact/apps/iistart.ccxml
+        ln -s /interact/apps/spotbuild/listen_conference/listen_conference.ccxml /interact/apps/iistart.ccxml
     fi
 
 #######################################################################
