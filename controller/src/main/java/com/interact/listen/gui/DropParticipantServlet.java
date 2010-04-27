@@ -93,18 +93,23 @@ public class DropParticipantServlet extends HttpServlet
 
     private boolean isUserAllowedToDrop(User user, Participant participant)
     {
-        // does the current user own the conference?
-        if(!user.getConferences().contains(participant.getConference()))
-        {
-            return false;
-        }
-
-        // admin users cannot be dropped
+        // admins cannot be dropped
         if(participant.getIsAdmin())
         {
             return false;
         }
 
-        return true;
+        if(user.getIsAdministrator())
+        {
+            return true;
+        }
+
+        // does the current user own the conference?
+        if(user.getConferences().contains(participant.getConference()))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -45,22 +45,40 @@ public class GetConferenceParticipantsServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
+            String id = request.getParameter("id");
+
             // TODO we probably need a specific JSON marshaller for the web UI servlets - something that
             // doesn't return hrefs, but returns only the queried and necessary (e.g. paging) information
             Marshaller marshaller = new JsonMarshaller();
             Conference conference = null;
-            if(user.getConferences().size() > 0)
+            if(id == null)
             {
-                conference = new ArrayList<Conference>(user.getConferences()).get(0);
+                if(user.getConferences().size() > 0)
+                {
+                    conference = new ArrayList<Conference>(user.getConferences()).get(0);
+                }
+            }
+            else
+            {
+                conference = (Conference)persistenceService.get(Conference.class, Long.parseLong(id));
             }
 
             if(conference == null)
             {
-                transaction.commit();
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found", "text/plain");
+                transaction.rollback();
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                          "Conference not found", "text/plain");
+                return;
+            }
+
+            if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
+            {
+                transaction.rollback();
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
                 return;
             }
 

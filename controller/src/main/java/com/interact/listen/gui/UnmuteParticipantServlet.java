@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Participant;
@@ -52,10 +53,11 @@ public class UnmuteParticipantServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
-            Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
+            Participant participant = (Participant)persistenceService.get(Participant.class, Long.valueOf(id));
             if(!isUserAllowedToUnmute(user, participant))
             {
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
@@ -91,18 +93,23 @@ public class UnmuteParticipantServlet extends HttpServlet
 
     private boolean isUserAllowedToUnmute(User user, Participant participant)
     {
-        // does the current user own the conference?
-        if(!user.getConferences().contains(participant.getConference()))
-        {
-            return false;
-        }
-
         // admins cannot be admin muted
         if(participant.getIsAdmin())
         {
             return false;
         }
 
-        return true;
+        if(user.getIsAdministrator())
+        {
+            return true;
+        }
+
+        // does the current user own the conference?
+        if(user.getConferences().contains(participant.getConference()))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

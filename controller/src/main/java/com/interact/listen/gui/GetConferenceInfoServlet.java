@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.json.JsonMarshaller;
@@ -44,24 +45,42 @@ public class GetConferenceInfoServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
+            String id = request.getParameter("id");
+
             Marshaller marshaller = new JsonMarshaller();
             Conference conference = null;
-            if(user.getConferences().size() > 0)
+            if(id == null)
             {
-                conference = new ArrayList<Conference>(user.getConferences()).get(0);
+                if(user.getConferences().size() > 0)
+                {
+                    conference = new ArrayList<Conference>(user.getConferences()).get(0);
+                }
             }
-
-            transaction.commit();
+            else
+            {
+                conference = (Conference)persistenceService.get(Conference.class, Long.parseLong(id));
+            }
 
             if(conference == null)
             {
+                transaction.rollback();
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                           "Conference not found", "text/plain");
                 return;
             }
+
+            if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
+            {
+                transaction.rollback();
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+                return;
+            }
+
+            transaction.commit();
 
             String content = marshaller.marshal(conference);
             ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());

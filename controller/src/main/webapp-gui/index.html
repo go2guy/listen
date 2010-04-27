@@ -24,7 +24,7 @@
     <script type="text/javascript" src="./resources/yui-2.8.0r4/connection/connection-min.js"></script>
     <script type="text/javascript" src="./resources/yui-2.8.0r4/datatable/datatable-min.js"></script>
     
-    <script type="text/javascript" src="./resources/app/application-min.js"></script>
+    <script type="text/javascript" src="./resources/app/application.js"></script>
   </head>
   <body>
     <div id="header">
@@ -32,7 +32,7 @@
       <div id="logout"><input type="button" name="logoutButton" id="logoutButton" value="Logout"/></div>
     </div>
 
-    <div id="conferenceDialog">
+    <div id="conferenceDialog" class="dialog">
       <div class="dialogSection">
         <div class="title">Participants</div>
         <div id="conferenceParticipantTable"></div>
@@ -44,7 +44,11 @@
       </div>
     </div>
 
-    <div id="loginDialog" title="Login">
+    <div id="conferenceListDialog" class="dialog">
+      <div id="conferenceListTable"></div>
+    </div>
+
+    <div id="loginDialog" title="Login" class="dialog">
       <form id="loginForm" name="loginForm" method="POST" action="/login">
         <fieldset>
           <legend>Login</legend>
@@ -62,6 +66,28 @@
 
         <fieldset class="buttons">
           <input type="submit" id="login" name="login" value="Login"/>
+        </fieldset>
+      </form>
+    </div>
+
+    <div id="provisionAccountDialog" class="dialog">
+      <form id="provisionAccountForm" name="provisionAccountForm" method="POST" action="/provisionAccount">
+        <fieldset>
+          <legend>Provision New Account</legend>
+          <div class="errors" style="display: none;"></div>
+          <label for="number">Subscriber Number
+            <input type="text" id="provisionAccountNumber" name="provisionAccountNumber"/>
+          </label>
+          <label for="provisionAccountUsername">Username
+            <input type="text" id="provisionAccountUsername" name="provisionAccountUsername"/>
+          </label>
+          <label for="provisionAccountPassword">Password
+            <input type="password" id="provisionAccountPassword" name="provisionAccountPassword"/>
+          </label>
+        </fieldset>
+
+        <fieldset class="buttons">
+          <input type="submit" id="provisionAccountSubmit" name="provisionAccountSubmit" value="Provision Account"/>
         </fieldset>
       </form>
     </div>

@@ -90,6 +90,14 @@ public final class HibernateUtil
 
         try
         {
+            // Administrative user
+            User user = new User();
+            user.setUsername("Admin");
+            user.setPassword(SecurityUtil.hashPassword("super"));
+            user.setIsAdministrator(Boolean.TRUE);
+            persistenceService.save(user);
+
+            // dummy accounts
             for(int i = 0; i < 10; i++)
             {
                 Subscriber subscriber = new Subscriber();
@@ -117,7 +125,7 @@ public final class HibernateUtil
                 conference.setDescription(subscriber.getNumber());
                 persistenceService.save(conference);
 
-                User user = new User();
+                user = new User();
                 user.setPassword(SecurityUtil.hashPassword("super"));
                 user.setSubscriber(subscriber);
                 user.setUsername(subscriber.getNumber());
@@ -143,6 +151,7 @@ public final class HibernateUtil
                 }
             }
 
+            // account for integration testing
             Subscriber subscriber = new Subscriber();
             subscriber.setNumber("347");
             subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
@@ -166,8 +175,8 @@ public final class HibernateUtil
 
             persistenceService.save(conference);
 
-            User user = new User();
-            user.setPassword("super");
+            user = new User();
+            user.setPassword(SecurityUtil.hashPassword("super"));
             user.setSubscriber(subscriber);
             user.setUsername(subscriber.getNumber());
             user.addToConferences(conference);

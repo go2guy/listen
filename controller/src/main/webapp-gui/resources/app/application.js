@@ -1,20 +1,20 @@
 YAHOO.namespace('listen');
 
+YAHOO.listen.isAdmin = false;
+
 YAHOO.widget.DataTable.MSG_LOADING = 'Loading...';
 YAHOO.widget.DataTable.MSG_EMPTY = 'Empty';
 
-function Conference() {
+function Conference(conferenceId) {
 
-    // init jquery dialog
     $('#conferenceDialog').dialog({
         autoOpen: false,
         closeOnEscape: false,
         dialogClass: 'no-close',
-        draggable: true,
+        draggable: false,
         height: 700,
-        position: [50, 50],
-        resizable: true,
-        title: 'My Conference',
+        position: [500, 50],
+        resizable: false,
         width: 500
     })/*
     .parents('.ui-dialog').draggable({
@@ -22,9 +22,8 @@ function Conference() {
         containment: [0, 31, $(document).width(), $(document).height()]
     })*/;
 
-    // FIXME update this to retrieve the conference active pin(s)
-    $.getJSON('/getConferenceInfo', function(data) {
-        $('#conferenceDialog').dialog('option', 'title', 'Conference ' + data.number);
+    $.getJSON('/getConferenceInfo?id=' + conferenceId, function(data) {
+        $('#conferenceDialog').dialog('option', 'title', 'Conference: ' + data.description);
     });
 
     YAHOO.widget.DataTable.Formatter.muteFormatter = function(liner, record, column, data) {
@@ -37,7 +36,7 @@ function Conference() {
         {key: 'drop', label: '', className: 'conferenceParticipantTableDrop'}
     ];
 
-    var participantDataSource = new YAHOO.util.DataSource('/getConferenceParticipants');
+    var participantDataSource = new YAHOO.util.DataSource('/getConferenceParticipants?id=' + conferenceId);
     participantDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     participantDataSource.connXhrMode = 'queueRequests';
     participantDataSource.responseSchema = {
@@ -93,7 +92,7 @@ function Conference() {
         {key: 'description', label: '', className: 'conferenceHistoryTableDescription'}
     ];
 
-    var historyDataSource = new YAHOO.util.DataSource('/getConferenceHistory');
+    var historyDataSource = new YAHOO.util.DataSource('/getConferenceHistory?id=' + conferenceId);
     historyDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     historyDataSource.connXhrMode = 'queueRequests';
     historyDataSource.responseSchema = {
@@ -128,7 +127,7 @@ function Conference() {
         };
 
         participantDataSource.setInterval(1000, null, participantCallback);
-        
+
         var historyCallback = {
             success: historyDataTable.onDataReturnReplaceRows,
             failure: function() {
@@ -144,7 +143,89 @@ function Conference() {
         participantDataSource.clearAllIntervals();
         historyDataSource.clearAllIntervals();
     };
+}
 
+function ConferenceList() {
+
+    var openConference;
+
+    $('#conferenceListDialog').dialog({
+        autoOpen: false,
+        closeOnEscape: false,
+        dialogClass: 'no-close',
+        draggable: false,
+        height: 400,
+        position: [50, 50],
+        resizable: false,
+        title: 'Available Conferences',
+        width: 400
+    });
+    
+    YAHOO.widget.DataTable.Formatter.conferenceListDescriptionFormatter = function(liner, record, column, data) {
+        liner.innerHTML = '<a href="#" onclick="YAHOO.listen.conferenceList.openConference(' + record.getData('id') + ');return false;">' + record.getData('description') + '</a>';
+    };
+
+    var columns = [
+//        {key: 'id', label: 'Id', formatter: 'conferenceListFormatter', className: 'dataTableCell'},
+        {key: 'description', label: 'Description', className: 'dataTableCell', formatter: 'conferenceListDescriptionFormatter'},
+        {key: 'isStarted', label: 'Started?', className: 'dataTableCell'},
+        {key: 'callers', label: 'Callers', className: 'dataTableCell'}
+    ];
+
+    var dataSource = new YAHOO.util.DataSource('/getConferenceList');
+    dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    dataSource.connXhrMode = 'queueRequests';
+    dataSource.responseSchema = {
+        resultsList: 'results',
+        fields: [
+            {key: 'id', parser: 'number'},
+            'description',
+            'isStarted'
+            // TODO subscriber/user to whom conference belongs
+        ]
+    };
+
+    var dataTable = new YAHOO.widget.DataTable('conferenceListTable', columns, dataSource);
+
+    this.show = function() {
+        this.startPolling();
+        $('#conferenceListDialog').dialog('open');
+    }
+
+    this.hide = function() {
+        $('#conferenceListDialog').dialog('close');
+        this.stopPolling();
+    }
+
+    this.startPolling = function() {
+        var callback = {
+            success: dataTable.onDataReturnReplaceRows,
+            failure: function() {
+                // TODO something?
+            },
+            scope: dataTable
+        };
+        dataSource.setInterval(1000, null, callback);
+    };
+
+    this.stopPolling = function() {
+        dataSource.clearAllIntervals();
+    };
+
+    this.openConference = function(id) {
+        if(openConference) {
+            openConference.hide();
+        }
+        openConference = new Conference(id);
+        openConference.show();
+    };
+
+    this.hideOpenConferences = function() {
+        if(openConference) {
+            openConference.hide();
+        }
+        openConference = null;
+    };
 }
 
 $(document).ready(function() {
@@ -162,15 +243,15 @@ $(document).ready(function() {
     });
 
     $('#loginDialog').dialog({
-        modal: true,
-        dialogClass: 'no-title',
         autoOpen: false,
-        draggable: false,
-        resizable: false,
         bigframe: true,
+        dialogClass: 'no-title',
+        draggable: false,
         height: 250,
-        width: 400,
-        position: 'center'
+        modal: true,
+        position: 'center',
+        resizable: false,
+        width: 400
     });
 
     $('#loginForm').submit(function(event) {
@@ -180,6 +261,21 @@ $(document).ready(function() {
 
     $('#logoutButton').click(function(event) {
         logout();
+    });
+
+    $('#provisionAccountDialog').dialog({
+        autoOpen: false,
+        dialogClass: 'no-title',
+        draggable: false,
+        height: 300,
+        position: [50, 500],
+        resizable: false,
+        width: 400
+    });
+
+    $('#provisionAccountForm').submit(function(event) {
+        provisionAccount(event);
+        return false;
     });
 
     showLogin();
@@ -196,14 +292,23 @@ function login(event) {
         url: event.target.action,
         data: { username: usernameField.val(),
                 password: passwordField.val() },
+        dataType: 'text',
         success: function(data) {
+            // close things
             $('#loginDialog').dialog('close');
             usernameField.val('');
             passwordField.val('');
-            $('#logoutButton').show();
 
-            YAHOO.listen.mainConference = new Conference();
-            YAHOO.listen.mainConference.show();
+            YAHOO.listen.isAdmin = (data == 'true');
+
+            // open things
+            $('#logoutButton').show();
+            YAHOO.listen.conferenceList = new ConferenceList();
+            YAHOO.listen.conferenceList.show();
+            
+            if(YAHOO.listen.isAdmin) {
+                $('#provisionAccountDialog').dialog('open');
+            }
         },
         error: function(data, status) {
             passwordField.val('');
@@ -225,10 +330,16 @@ function logout() {
 }
 
 function showLogin() {
-    if(YAHOO.listen.mainConference) {
-        YAHOO.listen.mainConference.hide();
+    if(YAHOO.listen.conferenceList) {
+      YAHOO.listen.conferenceList.hideOpenConferences();
+      YAHOO.listen.conferenceList.hide();
     }
+
+    // close things
     $('#logoutButton').hide();
+    $('#provisionAccountDialog').dialog('close');
+
+    // open things
     $('#loginDialog').dialog('open');
     $('#username').focus();
 }
@@ -270,6 +381,34 @@ function unmuteParticipant(id) {
         },
         error: function(req) {
             noticeError(req.responseText);
+        }
+    });
+}
+
+function provisionAccount(event) {
+    var errorDiv = $('#loginForm .errors');
+    errorDiv.hide();
+
+    var provisionAccountNumber = $('#provisionAccountNumber');
+    var provisionAccountPassword = $('#provisionAccountPassword');
+    var provisionAccountUsername = $('#provisionAccountUsername'); 
+
+    $.ajax({
+        type: 'POST',
+        url: event.target.action,
+        data: { number: provisionAccountNumber.val(),
+                password: provisionAccountPassword.val(),
+                username: provisionAccountUsername.val() },
+        success: function(data) {
+            //$('#provisionAccountDialog').close();
+            provisionAccountNumber.val('');
+            provisionAccountPassword.val('');
+            provisionAccountUsername.val('');
+            noticeSuccess('Account Provisioned');
+        },
+        error: function(data, status) {
+            errorDiv.html(data.responseText);
+            errorDiv.slideDown(200);
         }
     });
 }

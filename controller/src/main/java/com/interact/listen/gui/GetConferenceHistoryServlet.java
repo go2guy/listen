@@ -45,20 +45,37 @@ public class GetConferenceHistoryServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
+        PersistenceService persistenceService = new PersistenceService(session);
 
         try
         {
+            String id = request.getParameter("id");
+
             Marshaller marshaller = new JsonMarshaller();
             Conference conference = null;
-            if(user.getConferences().size() > 0)
+            if(id == null)
             {
-                conference = new ArrayList<Conference>(user.getConferences()).get(0);
+                if(user.getConferences().size() > 0)
+                {
+                    conference = new ArrayList<Conference>(user.getConferences()).get(0);
+                }
+            }
+            else
+            {
+                conference = (Conference)persistenceService.get(Conference.class, Long.parseLong(id));
             }
 
             if(conference == null)
             {
                 transaction.rollback();
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found", "text/plain");
+                return;
+            }
+
+            if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
+            {
+                transaction.rollback();
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
                 return;
             }
 

@@ -78,8 +78,12 @@ public class LoginServlet extends HttpServlet
             }
 
             httpSession.setAttribute("user", user);
-
             transaction.commit();
+
+            // FIXME this could be more ... less ugly (we could return the whole user object back, at least)
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, String.valueOf(user.getIsAdministrator()),
+                                      "text/plain");
+            return;
         }
         finally
         {

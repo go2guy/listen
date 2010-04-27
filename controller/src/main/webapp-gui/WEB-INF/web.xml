@@ -38,6 +38,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetConferenceListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetConferenceListServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetConferenceParticipantsServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceParticipantsServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -58,6 +64,12 @@
     <servlet>
         <servlet-name>MuteParticipantServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.MuteParticipantServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ProvisionAccountServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.ProvisionAccountServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -90,6 +102,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>GetConferenceListServlet</servlet-name>
+        <url-pattern>/getConferenceList</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>GetConferenceParticipantsServlet</servlet-name>
         <url-pattern>/getConferenceParticipants</url-pattern>
     </servlet-mapping>
@@ -107,6 +124,11 @@
     <servlet-mapping>
         <servlet-name>MuteParticipantServlet</servlet-name>
         <url-pattern>/muteParticipant</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ProvisionAccountServlet</servlet-name>
+        <url-pattern>/provisionAccount</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>

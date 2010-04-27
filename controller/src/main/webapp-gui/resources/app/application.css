@@ -16,6 +16,10 @@ td, th {
     padding: 2px 6px;
 }
 
+.dialog {
+    display: none;
+}
+
 #header { /*Soon to have rounded corners*/
     position: absolute;
     left: 0;
@@ -110,6 +114,10 @@ a.button {
     background: #fff url('images/user-denied.png') no-repeat center center;
 }
 
- .conferenceHistoryTableDateCreated, .conferenceHistoryTableUser, .conferenceHistoryTableDescription {
+.conferenceHistoryTableDateCreated, .conferenceHistoryTableUser, .conferenceHistoryTableDescription {
     text-align: left;
- }
+}
+
+.dataTableCell {
+    text-align: left;
+}
