@@ -3,7 +3,7 @@ html, body {
 }
 
 body {
-    background: #fff url('images/background-gradient.png') no-repeat top left;
+    background: #dae4ee url('images/background-gradient.png') no-repeat top left;
 }
 
 table {
@@ -22,13 +22,14 @@ td, th {
     top: 0;
     height: 30px;
     width: 100%;
-    background-color: #fff;
+    background: #fff url('images/title_header_bkg') repeat-x top left;
     border-bottom: 2px solid #1162ae;
 }
 
 #header #logo {
     text-align: left;
     float: left;
+	
 }
 
 #header #logout {
