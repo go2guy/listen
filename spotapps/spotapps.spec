@@ -137,7 +137,7 @@ Requires: spotbuild-vip
         rm -f /interact/apps/iistart.ccxml
 
         # Update iistart.ccxml to point back to either welcome.ccxml or iidefault.ccxml
-        if [ -f /interact/apps/spotapps/welcome.ccxml ]
+        if [ -f /interact/apps/spotbuid/welcome.ccxml ]
         then
             ln -s /interact/apps/spotbuid/welcome.ccxml /interact/apps/iistart.ccxml
         elif [ -f /interact/apps/iidefault.ccxml ]
