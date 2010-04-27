@@ -34,7 +34,7 @@ td, th {
 
 #header #logout {
     float: right;
-	background: #000000 url(images/title_3color_swatches.png) no-repeat top left;
+	background: #000000 url('images/title_3color_swatches.png') no-repeat top left;
 	padding-left: 85px;
 	color:#FFFFFF;
 	width: 175px;
@@ -84,9 +84,13 @@ a.button {
 }
 
 .dialogSection .title {
+	height: 44px;
     width: 100%;
-    background-color: #ccc;
+	background:#CCCCCC url('images/dialogSection_title_bkg.png') repeat-x top left;
+	color:#000000;
     text-align: left;
+	padding: 30px;
+	font-size:1.1em;
 }
 
 #conferenceParticipantTable thead, #conferenceHistoryTable thead {
