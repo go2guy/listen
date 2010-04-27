@@ -19,6 +19,7 @@ public class ListenSpotSubscriber extends Resource
     @Version
     private Integer version = Integer.valueOf(0);
 
+    @Column(nullable = false, unique = true)
     private String httpApi;
 
     @Override
