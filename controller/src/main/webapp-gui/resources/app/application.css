@@ -3,7 +3,7 @@ html, body {
 }
 
 body {
-    background: #dae4ee url('images/background-gradient.png') no-repeat top left;
+    background: #dae4ee;
 }
 
 table {
@@ -29,6 +29,7 @@ td, th {
 #header #logo {
     text-align: left;
     float: left;
+	padding-left:10px;
 	
 }
 
