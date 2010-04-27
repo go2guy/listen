@@ -66,7 +66,6 @@ Requires: spotbuild-vip
     cp %{STARTDIR}/scripts/*php %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen/
 
     rm -rf `find %{buildroot}/ -name ".svn" -type d`
-    rm -f %{buildroot}/interact/apps/spotbuild/SPOTbuild.ccxml
 
 #######################################################################
 # The files section lists all files included in the RPM
@@ -111,21 +110,14 @@ Requires: spotbuild-vip
 # The post section lists actions to be performed after installation
 #######################################################################
 %post
-
-     #######################################################################
-     # This section will only be run when actually installing the package
-     # and will NOT be run when upgrading.
-     #######################################################################
-
-    ######################################################################
-    ### System Profile Configurations                                  ###
-    ######################################################################
-
-
-    ######################################################################
-    ### Java Configurations                                            ###
-    ######################################################################
-
+    # Update iistart.ccxml link if it is currently non-existant or pointing to iidefault.ccxml or welcome.ccxml
+    if [ ! -f /interact/apps/iistart.ccxml ] || \
+       [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/iidefault.ccxml" ] || \
+       [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/spotbuild/welcome.ccxml" ]
+    then
+        rm -f /interact/apps/iistart.ccxml
+        ln -s /interact/apps/spotbuild/welcome.ccxml /interact/apps/iistart.ccxml
+    fi
 
 #######################################################################
 # The preun section lists actions to be performed before
@@ -138,8 +130,19 @@ Requires: spotbuild-vip
 # un-installation
 #######################################################################
 %postun
+    # If this is an uninstall and not an upgrade...
+    if [ "$1" -le "0" ]
+    then
+        # Spotbuild apps are no longer valid
+        rm -f /interact/apps/iistart.ccxml
 
-    #######################################################################
-    # This section will only be run when actually installing the package
-    # and will NOT be run when upgrading.
-    #######################################################################
+        # Update iistart.ccxml to point back to either welcome.ccxml or iidefault.ccxml
+        if [ -f /interact/apps/spotapps/welcome.ccxml ]
+        then
+            ln -s /interact/apps/spotbuid/welcome.ccxml /interact/apps/iistart.ccxml
+        elif [ -f /interact/apps/iidefault.ccxml ]
+        then
+            ln -s /interact/apps/iidefault.ccxml /interact/apps/iistart.ccxml
+        fi
+    fi
+
