@@ -54,8 +54,8 @@ td, th {
 }
 
 .ui-widget-overlay {
-    background: #1162ae;
-    opacity: .3;
+    background: #5d5d5d;
+    opacity: .5;
 }
 
 .ui-dialog-titlebar {
