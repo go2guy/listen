@@ -84,13 +84,13 @@ a.button {
 }
 
 .dialogSection .title {
-	height: 44px;
+	height: 30px;
     width: 100%;
 	background:#CCCCCC url('images/dialogSection_title_bkg.png') repeat-x top left;
 	color:#000000;
     text-align: left;
+	text-indent:15px;
 	font-size:1.1em;
-	padding-left:10px;
 }
 
 #conferenceParticipantTable thead, #conferenceHistoryTable thead {
