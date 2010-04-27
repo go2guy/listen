@@ -35,6 +35,11 @@ td, th {
 
 #header #logout {
     float: right;
+	background: #000000 url(images/title_3color_swatches.png) no-repeat top left;
+	padding-left: 85px;
+	color:#FFFFFF;
+	width: 175px;
+	
 }
 
 .no-title .ui-dialog-titlebar {
