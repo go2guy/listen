@@ -142,12 +142,5 @@ fi
 cp iiInstall.cfg $BUILDROOT/interact/packages/conf/
 
 export MANIFEST=`pwd`/files.mf
-if [ -z "$VERSION" ]; then
-    export VERSION="unknown"
-fi
-
-if [ -z "$RELEASE" ]; then
-    export RELEASE="`date +%Y%m%d%H%M`"
-fi
 rpmbuild -bb --buildroot $BUILDROOT listen.spec
 

@@ -9,8 +9,8 @@
 
 Summary: Contains a full release of the Interact listen Software.
 Name: listen
-Version: %(echo ${VERSION})
-Release: %(echo ${RELEASE})
+Version: 0.2
+Release: %(date +%Y%m%d%H%M)
 License: Copyright (c) Interact Incorporated. All Rights Reserved.
 Vendor: Interact Incorporated
 URL: http://www.iivip.com

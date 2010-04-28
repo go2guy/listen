@@ -6,8 +6,8 @@
 
 Summary: Interact Incorporated Listen SPOT Applications package
 Name: listen-spotapps
-Version: %(if [ "${VERSION}" == "" ]; then echo "1.0"; else echo "${VERSION}"; fi;)
-Release: %(if [ "${RELEASE}" == "" ]; then date "+%Y%m%d%H%M"; else echo "${RELEASE}"; fi;)
+Version: 0.2
+Release: %(svnversion | cut -d ':' -f 1)
 License: Copyright (c) Interact Incorporated. All Rights Reserved.
 Group: Interact
 Vendor: Interact Incorporated
