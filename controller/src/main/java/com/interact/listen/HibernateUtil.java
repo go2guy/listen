@@ -77,7 +77,7 @@ public final class HibernateUtil
 
         // provisions subscribers/users/conferences/participants
 
-        // for N=0..9
+        // for N=0..5
 
         // subscriber number = 10N
         // subscriber VM pin = 10N
@@ -98,7 +98,7 @@ public final class HibernateUtil
             persistenceService.save(user);
 
             // dummy accounts
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < 5; i++)
             {
                 Subscriber subscriber = new Subscriber();
                 subscriber.setNumber(new DecimalFormat("000").format(100 + i));
@@ -166,21 +166,21 @@ public final class HibernateUtil
             persistenceService.save(adminPin);
             persistenceService.save(passivePin);
 
-            Conference conference = new Conference();
-            conference.setIsStarted(false);
-            conference.setDescription("Ladi's Conference");
-            conference.addToPins(activePin);
-            conference.addToPins(adminPin);
-            conference.addToPins(passivePin);
-
-            persistenceService.save(conference);
-
-            user = new User();
-            user.setPassword(SecurityUtil.hashPassword("super"));
-            user.setSubscriber(subscriber);
-            user.setUsername(subscriber.getNumber());
-            user.addToConferences(conference);
-            persistenceService.save(user);
+//            Conference conference = new Conference();
+//            conference.setIsStarted(false);
+//            conference.setDescription("Ladi's Conference");
+//            conference.addToPins(activePin);
+//            conference.addToPins(adminPin);
+//            conference.addToPins(passivePin);
+//
+//            persistenceService.save(conference);
+//
+//            user = new User();
+//            user.setPassword(SecurityUtil.hashPassword("super"));
+//            user.setSubscriber(subscriber);
+//            user.setUsername(subscriber.getNumber());
+//            user.addToConferences(conference);
+//            persistenceService.save(user);
 
             transaction.commit();
         }

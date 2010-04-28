@@ -154,7 +154,7 @@ function ConferenceList() {
         closeOnEscape: false,
         dialogClass: 'no-close',
         draggable: false,
-        height: 400,
+        height: 250,
         position: [50, 50],
         resizable: false,
         title: 'Available Conferences',
@@ -267,8 +267,8 @@ $(document).ready(function() {
         autoOpen: false,
         dialogClass: 'no-title',
         draggable: false,
-        height: 300,
-        position: [50, 500],
+        height: 350,
+        position: [50, 350],
         resizable: false,
         width: 400
     });
@@ -386,7 +386,7 @@ function unmuteParticipant(id) {
 }
 
 function provisionAccount(event) {
-    var errorDiv = $('#loginForm .errors');
+    var errorDiv = $('#provisionAccountForm .errors');
     errorDiv.hide();
 
     var provisionAccountNumber = $('#provisionAccountNumber');
