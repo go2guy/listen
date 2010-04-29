@@ -13,7 +13,7 @@
             {
 	                if (userPin.length == pinLength)
         return userPin;
-    else if ((userPin == ' * ') && (helpCnt < maxHelp))
+    else if ((userPin == '*') && (helpCnt < maxHelp))
         return userPin;
     else
         return "ERROR";

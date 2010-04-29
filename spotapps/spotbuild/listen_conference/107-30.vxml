@@ -5,11 +5,11 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable
     -->
-    <var name="II_SB_assign_NxtOpt" expr="'105-44'"/>  <!--  Assign Variable Next Option. Name of next file -->
+    <var name="II_SB_assign_NxtOpt" expr="'107-47'"/>  <!--  Assign Variable Next Option. Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    
+	    <log target="status">Assign ANI</log>
             <log>INFO: Entered assign-variable.vxml [107-30]</log>
             <log>INFO: ANI current value [<value expr="ANI"/>]</log> <!-- Log current value. Update variable and log updated value -->
             <assign name="ANI" expr="phoneNumber + ''"/>

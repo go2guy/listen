@@ -9,10 +9,10 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(returnVal)
+            function II_SB_JS_function(returnVal,reqCnt)
             {
 	            var result = eval("("+returnVal+")");
-if(result.total > result.count)
+if(result.total > (result.count + reqCnt))
 return 1;
 else
 return 0;
@@ -24,7 +24,7 @@ return 0;
         <block>
             <log target="status">Chk Total</log>
             <log>INFO: Entered run-javascript.vxml [93-43]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal,reqCnt)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

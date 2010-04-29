@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    
+	    <log target="status">Assign phoneNumber</log>
             <log>INFO: Entered assign-variable.vxml [107-34]</log>
             <log>INFO: phoneNumber current value [<value expr="phoneNumber"/>]</log> <!-- Log current value. Update variable and log updated value -->
             <assign name="phoneNumber" expr="'sip:' + phoneNumber"/>

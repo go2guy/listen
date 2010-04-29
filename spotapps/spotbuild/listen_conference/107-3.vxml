@@ -21,11 +21,11 @@
 
     <form id="beginDocument">
         <block>
-	         
+	        <log target="status">Creating New Session</log> 
             <log>INFO: Entered create-session.vxml [107-3]</log>
             <if cond="II_SB_fromCCXML == 'true'">
                 <log>INFO: Returning to ccxml with Variables</log>
-                <exit namelist="phoneNumber confID audioURL"/>
+                <exit namelist="phoneNumber confID audioURL ANI outBoundID"/>
             <else/>
                 <log>INFO: Returning to ccxml with returnValues</log>
                 <assign name="II_SB_status" expr="'connected'"/>

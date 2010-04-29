@@ -29,7 +29,7 @@
 	<var name="SB_UV_maxErr"/>
 	<var name="SB_UV_MODE"/>
 	<var name="SB_UV_DATA"/>
-	<var name="SB_UV_FILENAME"/>
+	<var name="SB_UV_FILE"/>
 	<var name="SB_UV_infoSaved"/>
 	<var name="SB_UV_SID"/>
 	<var name="SB_UV_tempSID"/>
@@ -63,6 +63,9 @@
 	<var name="SB_UV_whichEvent"/>
 	<var name="SB_UV_helpCnt"/>
 	<var name="SB_UV_maxHelp"/>
+	<var name="SB_UV_isRegistered"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_outBoundID"/>
 
     
     <form id="beginDocument">
@@ -110,8 +113,8 @@
 			<if cond="SB_UV_DATA != undefined">
 				<assign name="DATA" expr="SB_UV_DATA" />
 			</if>
-			<if cond="SB_UV_FILENAME != undefined">
-				<assign name="FILENAME" expr="SB_UV_FILENAME" />
+			<if cond="SB_UV_FILE != undefined">
+				<assign name="FILE" expr="SB_UV_FILE" />
 			</if>
 			<if cond="SB_UV_infoSaved != undefined">
 				<assign name="infoSaved" expr="SB_UV_infoSaved" />
@@ -211,6 +214,15 @@
 			</if>
 			<if cond="SB_UV_maxHelp != undefined">
 				<assign name="maxHelp" expr="SB_UV_maxHelp" />
+			</if>
+			<if cond="SB_UV_isRegistered != undefined">
+				<assign name="isRegistered" expr="SB_UV_isRegistered" />
+			</if>
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_outBoundID != undefined">
+				<assign name="outBoundID" expr="SB_UV_outBoundID" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

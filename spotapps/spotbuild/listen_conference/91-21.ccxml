@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 04/23/2010
+    <!-- Last Modified 04/27/2010
        *   @Name   out-dial.ccxml
        *   @Desc   Creates an out dial -->
 
@@ -125,7 +125,8 @@
 				<else/> <!-- Create VOIP call and play ringing tone to caller -->
 					<log>INFO: Trying VOIP call</log>
                     <var name="OBCALL.noproxy" expr="'true'"/>
-                    <if cond="iiNumber(II_SB_destination)">
+                    <var name="tmpVal" expr="getnum(II_SB_destination)"/>
+                    <if cond="iiNumber(tmpVal)">
                         <assign name="OBCALL.noproxy" expr="'false'"/>
                     </if>
 					<createcall dest="'sip:'+II_SB_destination" connectionid="II_SB_obcallid" callerid="II_SB_callerID" hints="OBCALL" timeout="II_SB_ringTime"/>

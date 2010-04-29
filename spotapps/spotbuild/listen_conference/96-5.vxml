@@ -9,31 +9,36 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(getInput,returnVal,index)
+            function II_SB_JS_function(getInput,returnVal,index,isAdmin)
             {
 	            var result;
+var whoAmI = new String(isAdmin);
+var admin = 'true';
 var tmpVal = eval("("+returnVal+")");
-var isAdmin = tmpVal.results[index].isAdmin;
-var isPassive = tmpVal.results[index].isPassive;
+var isAdminStatus = tmpVal.results[index].isAdmin;
+var isPassiveStatus = tmpVal.results[index].isPassive;
 
 var options = new String("1,2,3");
 if(getInput == 4)
     result = "RESTART";
-else if (isAdmin && (options.match(getInput)))
-        result = "INVALID_ADMIN";
-else if (isPassive && (options.match(getInput))){
-    if ((getInput == 1) || (getInput == 2))
-        result = "INVALID_PASSIVE";
-    else
-        result = "DROP";
-}
-else if ((options.match(getInput))){
-    if(getInput == 1) 
-        result = "MUTE";
-    else if (getInput == 2)
-        result = "UNMUTE";
-    else
-        result = "DROP";
+else if (whoAmI == admin)
+{
+    if (isAdminStatus && (options.match(getInput)))
+            result = "INVALID_ADMIN";
+    else if (isPassiveStatus && (options.match(getInput))){
+        if ((getInput == 1) || (getInput == 2))
+            result = "INVALID_PASSIVE";
+        else
+            result = "DROP";
+    }
+    else if ((options.match(getInput))){
+        if(getInput == 1) 
+            result = "MUTE";
+        else if (getInput == 2)
+            result = "UNMUTE";
+        else
+            result = "DROP";
+    }
 }
 else
     result = "REJOIN";
@@ -47,7 +52,7 @@ return result;
         <block>
             <log target="status">Key Press</log>
             <log>INFO: Entered run-javascript.vxml [96-5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput,returnVal,index)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput,returnVal,index,isAdmin)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

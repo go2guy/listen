@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_conference/root.vxml"> <!--  Set location of root document -->
-    <!-- Last Modified 11/02/2009
+    <!-- Last Modified 04/27/2010
        *   @Name	Audio-prompt.vxml
        *   @Desc	This script allows a developer play audio / speech
        			   	and collect user inputs. An MRCP server is needed for speech. -->
@@ -26,7 +26,7 @@
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
     <var name="II_SB_promptList" expr="'P'+'passiveByAdmin'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'89-59'"/>  <!--  PlayAudio Next Option. Name of next file -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'89-60'"/>  <!--  PlayAudio Next Option. Name of next file -->
 	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	
 	<!-- Voice properties -->
@@ -155,9 +155,13 @@
                          If so, use that location for file url and prompt group in file name -->
                     <if cond="inString('/',II_SB_promptID,'')">
                         <assign name="II_SB_whichPath" expr="''"/>
+                    <else/>
+                        <assign name="II_SB_whichPath" expr="II_SB_AUDIO_PATH"/>
                     </if>
                     <if cond="inString('.',II_SB_promptID,'')">
                         <assign name="II_SB_AUDIO_EXT" expr="''"/>
+                    <else/>
+                        <assign name="II_SB_AUDIO_EXT" expr="'.00.'+II_SB_PRMT_CODE"/>
                     </if>
                     <assign name="II_SB_promptID" expr="II_SB_whichPath+II_SB_promptID+II_SB_AUDIO_EXT"/>
                     <log>INFO: Attempting to play audio file [<value expr="II_SB_promptID"/>]</log>

@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">Write CDR</log>
             <log>INFO: Entered data-query.vxml [82-19]</log>
-            <data name="fileOBJ" src="http://localhost/spot/cgi-bin/spotbuild/filewrite.php" method="post" namelist="DATA FILENAME MODE " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="fileOBJ" src="http://localhost/spot/cgi-bin/spotbuild/filewrite.php" method="post" namelist="DATA FILE MODE " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="fileOBJ.Result" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>

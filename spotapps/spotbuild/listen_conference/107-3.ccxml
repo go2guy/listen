@@ -84,10 +84,12 @@
 			<var name="SB_UV_phoneNumber" expr="evt.values.phoneNumber"/>
 			<var name="SB_UV_confID" expr="evt.values.confID"/>
 			<var name="SB_UV_audioURL" expr="evt.values.audioURL"/>
+			<var name="SB_UV_ANI" expr="evt.values.ANI"/>
+			<var name="SB_UV_outBoundID" expr="evt.values.outBoundID"/>
         
             <assign name="II_SB_state" expr="'createSession'"/>
 	        <assign name="II_SB_status" expr="'createSession'"/>
-    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_phoneNumber SB_UV_confID SB_UV_audioURL"/>
+    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_phoneNumber SB_UV_confID SB_UV_audioURL SB_UV_ANI SB_UV_outBoundID"/>
 	    </transition>
 
 	    <!-- Catch ccxml.created event -->

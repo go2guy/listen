@@ -13,7 +13,7 @@
     <var name="II_SB_allowDropKey" expr="'true'"/>    <!--  Whether drop keys are enabled -->
     <var name="II_SB_drpKeyLength" expr="'1'"/>        <!--  Number of keys used for drop key -->
     <var name="II_SB_drpKeyTime" expr="'3s'"/>          <!--  Time between drop key presses -->
-    <var name="II_SB_callerID" expr="'sip:outDial@iipbx'"/>                <!--  Caller ID -->
+    <var name="II_SB_callerID" expr="outBoundID"/>                <!--  Caller ID -->
 
     <!-- Edge Variables -->
     <var name="II_SB_drpKeyOpt" expr="''"/>        <!--  Where to go if a drop key is pressed -->
@@ -94,7 +94,7 @@
         		<log>INFO: Updated Last Entry to [<value expr="II_SB_lastEntry"/>]</log>
             </if>
 			
-			<assign name="infoSaved" expr="II_SB_outBoundID" />
+			<assign name="userID" expr="II_SB_outBoundID" />
 
             <log>INFO: CallerID [<value expr="II_SB_callerIdentity"/>]</log>
             <log>INFO: ConnectionID [<value expr="II_SB_outBoundID"/>]</log>

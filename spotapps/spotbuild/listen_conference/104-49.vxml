@@ -13,7 +13,7 @@
             {
 	                if ((getInput == 1) || (getInput == 2))
         return getInput ;
-    else if ((getInput == ' * ') && (helpCnt < maxHelp))
+    else if ((getInput == '*') && (helpCnt < maxHelp))
         return getInput ;
     else
         return "ERROR";

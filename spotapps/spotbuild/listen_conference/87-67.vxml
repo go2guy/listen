@@ -14,7 +14,7 @@
 	                var opts = new String("1,2,3");
     if (opts.match(getInput))
         return getInput;
-    else if ((getInput == ' * ') && (helpCnt < maxHelp))
+    else if ((getInput == '*') && (helpCnt < maxHelp))
         return getInput;
     else
         return "ERROR";

@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(confID,SID,ANI,audioURL,isAdmin,isAdminMuted,isMuted,isPassive)
             {
-	            return "{\"audioResource\": \""+audioURL+"\",\"conference\": { \"href\": \"/conferences/"+confID+"\" },\"isAdmin\": \""+isAdmin+"\",\"isPassive\": "+isPassive+",\"isMuted\": "+isMuted+",\"isAdminMuted\": "+isAdminMuted+",\"number\": "+ANI+",\"sessionID\": \""+SID+"\"}";
+	            return "{\"audioResource\": \""+audioURL+"\",\"conference\": { \"href\": \"/conferences/"+confID+"\" },\"isAdmin\": \""+isAdmin+"\",\"isPassive\": "+isPassive+",\"isMuted\": "+isMuted+",\"isAdminMuted\": "+isAdminMuted+",\"number\": \""+ANI+"\",\"sessionID\": \""+SID+"\"}";
             }
         ]]>
     </script>
