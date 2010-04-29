@@ -21,15 +21,15 @@
 
         <inquiry>
             <question level="not_in_backup" severity="ask">
-                <text>Enter the server name of the SIP trunk</text>
+                <text>Enter the local host name</text>
                 <default></default>
                 <validateRegex>^${HOSTNAME}$|^$</validateRegex>
                 <validateInfo>The value may be any number of letters, numbers, dashes, or periods or the value may be blank.</validateInfo>
 
                 <property format="ccvxml" action="update" quotes="yes">
-                    <name>sipURL</name>
-                    <group>SIP</group>
-                    <description>server name</description>
+                    <name>hostName</name>
+                    <group>System</group>
+                    <description>Local Host Name</description>
                     <tag>var</tag>
                     <attribute>expr</attribute>
                     <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
@@ -45,6 +45,67 @@
                     <name>cntrlURL</name>
                     <group>Controller</group>
                     <description>URL</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the pin length</text>
+                <default>6</default>
+                <validateRegex preset="DIGITS"/>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>pinLength</name>
+                    <group>Pin</group>
+                    <description>Length</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the maximum allowed errors</text>
+                <default>3</default>
+                <validateRegex preset="DIGITS"/>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>maxErr</name>
+                    <group>Error</group>
+                    <description>Max Error Count</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the maximum allowed help attempts</text>
+                <default>3</default>
+                <validateRegex preset="DIGITS"/>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>maxHelp</name>
+                    <group>Help</group>
+                    <description>Max Max Help Attempts</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the server name of the SIP trunk</text>
+                <default></default>
+                <validateRegex>^${HOSTNAME}$|^$</validateRegex>
+                <validateInfo>The value may be any number of letters, numbers, dashes, or periods or the value may be blank.</validateInfo>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>sipURL</name>
+                    <group>SIP</group>
+                    <description>server name</description>
                     <tag>var</tag>
                     <attribute>expr</attribute>
                     <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
