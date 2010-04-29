@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="db"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/build/junit-4.8.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/servlet-api-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/sqlitejdbc-v056.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/antlr-2.7.6.jar"/>
@@ -32,5 +31,11 @@
 	<classpathentry kind="lib" path="lib/runtime/insa-stats-client.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/build/findbugs.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jstl-impl-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jstl-api-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/build/jsp-api.jar"/>
+	<classpathentry kind="lib" path="lib/build/jetty/jetty-6.1.24.jar"/>
+	<classpathentry kind="lib" path="lib/build/jetty/jetty-util-6.1.24.jar"/>
+	<classpathentry kind="lib" path="lib/build/jetty/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>

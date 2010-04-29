@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -78,5 +79,18 @@ public final class ServletUtil
         }
 
         return map;
+    }
+
+    public static void forward(String to, HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException
+    {
+        System.out.println("Forwarding to [" + to + "]");
+        request.getRequestDispatcher(to).forward(request, response);
+    }
+
+    public static void redirect(String to, HttpServletResponse response) throws IOException
+    {
+        System.out.println("Redirecting to [" + to + "]");
+        response.sendRedirect(to);
     }
 }

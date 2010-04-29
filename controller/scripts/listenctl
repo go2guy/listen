@@ -49,7 +49,7 @@ maxShutdownTime=15                                         # maximum number of s
 pidFile="/var/run/$serviceNameLo.pid"                      # name of PID file (PID = process ID number)
 javaCommand="java"                                         # name of the Java launcher without the path
 javaExe="$JAVA_HOME/bin/$javaCommand -jar"                 # file name of the Java application launcher executable
-javaArgs="/interact/listen/bin/listen-controller.jar"      # arguments for Java launcher
+javaArgs="/interact/listen/bin/listen-controller.war"      # arguments for Java launcher
 javaCommandLine="$javaExe $javaArgs"                       # command line to start the Java service application
 javaCommandLineKeyword="Listen-controller"                    # a keyword that occurs on the commandline, used to detect an already running service process and to distinguish it from others
 rcFileBaseName="rc$serviceNameLo"                          # basename of the "rc" symlink file for this script

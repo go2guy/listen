@@ -8,6 +8,11 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 import org.hibernate.Criteria;
@@ -20,7 +25,17 @@ public class LoginServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        HttpSession session = request.getSession();
+        request.setAttribute("errors", session.getAttribute("errors"));
+        session.removeAttribute("errors");
+
+        ServletUtil.forward("/login.jsp", request, response);
+    }
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
         long start = System.currentTimeMillis();
 
@@ -43,51 +58,44 @@ public class LoginServlet extends HttpServlet
 
             System.out.println("POST LoginServlet username=" + username + "&password=*");
 
+            Map<String, String> errors = new HashMap<String, String>();
+
             if(username == null || username.trim().equals(""))
             {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a username",
-                                          "text/plain");
-                transaction.commit();
-                return;
+                errors.put("username", "Please provide a username");
             }
 
-            if(password == null)
+            if(password == null || password.trim().equals(""))
             {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a password",
-                                          "text/plain");
-                transaction.commit();
-                return;
+                errors.put("password", "Please provide a password");
             }
 
-            User user = findUserByUsername(username, hibernateSession);
-
-            if(user == null)
+            if(errors.size() == 0)
             {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                                          "Sorry, that's not a valid username/password", "text/plain");
-                transaction.commit();
-                return;
+                User user = findUserByUsername(username, hibernateSession);
+                if(user == null || !isValidPassword(user, password))
+                {
+                    errors.put("username", "Sorry, those aren't valid credentials");
+                }
+
+                httpSession.setAttribute("user", user);
             }
 
-            if(!isValidPassword(user, password))
-            {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                                          "Sorry, that's not a valid username/password", "text/plain");
-                transaction.commit();
-                return;
-            }
-
-            httpSession.setAttribute("user", user);
             transaction.commit();
 
-            // FIXME this could be more ... less ugly (we could return the whole user object back, at least)
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, String.valueOf(user.getIsAdministrator()),
-                                      "text/plain");
-            return;
+            if(errors.size() > 0)
+            {
+                httpSession.setAttribute("errors", errors);
+                ServletUtil.redirect("/login", response);
+            }
+            else
+            {
+                ServletUtil.redirect("/index", response);
+            }
         }
         finally
         {
-            System.out.println("TIMER: LoginServlet.goPost() took " + (System.currentTimeMillis() - start) + "ms");
+            System.out.println("TIMER: LoginServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 

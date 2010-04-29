@@ -4,8 +4,6 @@
   <property name="lib.dir"         value="${basedir}/lib"/>
   <property name="target.dir"      value="${basedir}/target"/>
   <property name="deploy.dir"      value="/interact/listen"/>
-  <property name="winstone.jar"    value="winstone-0.9.10.jar"/>
-  <property name="jar.staging.dir" value="${target.dir}/staging/jar"/>
   <property name="war.staging.dir" value="${target.dir}/staging/war"/>
   <property name="rpm.staging.dir" value="${target.dir}/staging/rpm"/>
   <property name="tools.dir"       value="${basedir}/tools"/>
@@ -39,7 +37,6 @@
     <delete dir="${build.dir}" failonerror="false"/>
     <delete dir="${target.dir}" failonerror="false"/>
     <delete dir="${rpm.staging.dir}" failonerror="false"/>
-    <delete dir="${jar.staging.dir}" failonerror="false"/>
     <delete failonerror="false">
       <fileset dir="ii_artifacts" includes="**/*.rpm"/>
     </delete>
@@ -120,16 +117,34 @@
 
   <target name="war" depends="compile" description="--> Packages distributable war file">
     <mkdir dir="${target.dir}"/>
-    <mkdir dir="${war.staging.dir}"/>
 
     <!-- controller war -->
+    <mkdir dir="${war.staging.dir}"/>
     <copy todir="${war.staging.dir}">
       <fileset dir="${src.dir}/main/webapp-controller" includes="**/*"/>
+    </copy>
+    <unjar dest="${war.staging.dir}">
+      <patternset>
+        <exclude name="META-INF/**/*"/>
+        <exclude name="images/**/*"/>
+        <exclude name=".options"/>
+        <exclude name="about.html"/>
+        <exclude name="jdtCompilerAdapter.jar"/>
+        <exclude name="plugin*"/>
+      </patternset>
+      <fileset dir="${lib.dir}/build/jetty" includes="*.jar"/>
+    </unjar>
+    <copy todir="${war.staging.dir}">
+      <fileset dir="${build.dir}/main" includes="com/interact/listen/server/EmbeddedJettyServer.class"/>
     </copy>
     <war destfile="${target.dir}/listen-controller.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
       <fileset dir="${war.staging.dir}" includes="**/*"/>
       <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
       <lib dir="${lib.dir}/runtime"/>
+
+      <manifest>
+        <attribute name="Main-Class" value="com.interact.listen.server.EmbeddedJettyServer"/>
+      </manifest>
     </war>
     <delete dir="${war.staging.dir}"/>
 
@@ -147,48 +162,41 @@
     <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
       <arg line="${war.staging.dir}/resources/app/common.css -o ${war.staging.dir}/resources/app/common-min.css"/>
     </java>
+    <unjar dest="${war.staging.dir}">
+      <patternset>
+        <exclude name="META-INF/**/*"/>
+        <exclude name="images/**/*"/>
+        <exclude name=".options"/>
+        <exclude name="about.html"/>
+        <exclude name="jdtCompilerAdapter.jar"/>
+        <exclude name="plugin*"/>
+      </patternset>
+      <fileset dir="${lib.dir}/build/jetty" includes="*.jar"/>
+    </unjar>
+    <copy todir="${war.staging.dir}">
+      <fileset dir="${build.dir}/main" includes="com/interact/listen/server/EmbeddedJettyServer.class"/>
+    </copy>
     <war destfile="${target.dir}/listen-gui.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
       <fileset dir="${war.staging.dir}" includes="**/*"/>
       <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
       <lib dir="${lib.dir}/runtime"/>
+
+      <manifest>
+        <attribute name="Main-Class" value="com.interact.listen.server.EmbeddedJettyServer"/>
+      </manifest>
     </war>
     <delete dir="${war.staging.dir}"/>
-
-  </target>
-
-  <target name="jar" depends="war" description="--> Creates an executable jar file with embedded winstone container">
-
-    <!-- controller jar -->
-    <mkdir dir="${jar.staging.dir}"/>
-
-    <unwar src="${lib.dir}/build/${winstone.jar}" dest="${jar.staging.dir}"/>
-    <copy file="${target.dir}/listen-controller.war" tofile="${jar.staging.dir}/embedded.war"/>
-    <jar destfile="${target.dir}/listen-controller.jar" manifest="${jar.staging.dir}/META-INF/MANIFEST.MF">
-      <fileset dir="${jar.staging.dir}" excludes="META-INF/**"/>
-    </jar>
-
-    <!-- web jar -->
-    <delete dir="${jar.staging.dir}"/>
-    <mkdir dir="${jar.staging.dir}"/>
-
-    <unwar src="${lib.dir}/build/${winstone.jar}" dest="${jar.staging.dir}"/>
-    <copy file="${target.dir}/listen-gui.war" tofile="${jar.staging.dir}/embedded.war"/>
-    <jar destfile="${target.dir}/listen-gui.jar" manifest="${jar.staging.dir}/META-INF/MANIFEST.MF">
-      <fileset dir="${jar.staging.dir}" excludes="META-INF/**"/>
-    </jar>
   </target>
 
 
-  <target name="deploy" depends="jar" description="--> Deploys the application">
+  <target name="deploy" depends="war" description="--> Deploys the application">
     <mkdir dir="${deploy.dir}"/>
     <mkdir dir="${deploy.dir}/logs"/>
 
     <copy file="${target.dir}/listen-controller.war" todir="${deploy.dir}/lib" verbose="true"/>
-    <copy file="${target.dir}/listen-controller.jar" todir="${deploy.dir}/lib" verbose="true"/>
     <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts/" verbose="true"/>
 
     <copy file="${target.dir}/listen-gui.war" todir="${deploy.dir}/lib" verbose="true"/>
-    <copy file="${target.dir}/listen-gui.jar" todir="${deploy.dir}/lib" verbose="true"/>
     <copy file="${basedir}/scripts/listen-gui" todir="${deploy.dir}/scripts/" verbose="true"/>
   </target>
 

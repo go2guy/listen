@@ -58,7 +58,7 @@ BuildRequires: jdk >= 1.6.0_00
 
     # Include everything in the /interact/listen directory
     %dir /interact/listen/logs
-    /interact/listen/lib/listen-controller.jar
+    /interact/listen/lib/listen-controller.war
     /interact/listen/scripts/listen-controller
 
 

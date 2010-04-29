@@ -233,30 +233,9 @@ $(document).ready(function() {
     $.ajaxSetup({
         error: function(req, s, e) {
             if(req.status == 401) { // unauthorized
-                showLogin();
-
-                var errorDiv = $('#loginForm .errors');
-                errorDiv.html('You have been automatically logged out');
-                errorDiv.show();
+                logout();
             }
         }
-    });
-
-    $('#loginDialog').dialog({
-        autoOpen: false,
-        bigframe: true,
-        dialogClass: 'no-title',
-        draggable: false,
-        height: 250,
-        modal: true,
-        position: 'center',
-        resizable: false,
-        width: 400
-    });
-
-    $('#loginForm').submit(function(event) {
-        login(event);
-        return false;
     });
 
     $('#logoutButton').click(function(event) {
@@ -278,70 +257,24 @@ $(document).ready(function() {
         return false;
     });
 
-    showLogin();
+    showEverything();
 });
 
-function login(event) {
-    var usernameField = $('#username');
-    var passwordField = $('#password');
-    var errorDiv = $('#loginForm .errors');
-    errorDiv.hide();
+function showEverything() {
+    YAHOO.listen.isAdmin = true; // FIXME
 
-    $.ajax({
-        type: 'POST',
-        url: event.target.action,
-        data: { username: usernameField.val(),
-                password: passwordField.val() },
-        dataType: 'text',
-        success: function(data) {
-            // close things
-            $('#loginDialog').dialog('close');
-            usernameField.val('');
-            passwordField.val('');
-
-            YAHOO.listen.isAdmin = (data == 'true');
-
-            // open things
-            $('#logoutButton').show();
-            YAHOO.listen.conferenceList = new ConferenceList();
-            YAHOO.listen.conferenceList.show();
-            
-            if(YAHOO.listen.isAdmin) {
-                $('#provisionAccountDialog').dialog('open');
-            }
-        },
-        error: function(data, status) {
-            passwordField.val('');
-            errorDiv.html(data.responseText);
-            errorDiv.slideDown(200);
-        }
-    });
+    // open things
+    $('#logoutButton').show();
+    YAHOO.listen.conferenceList = new ConferenceList();
+    YAHOO.listen.conferenceList.show();
+    
+    if(YAHOO.listen.isAdmin) {
+        $('#provisionAccountDialog').dialog('open');
+    }
 }
 
 function logout() {
-    $.ajax({
-        type: 'POST',
-        url: '/logout',
-        success: showLogin,
-        error: function(req) {
-            noticeError(req.responseText);
-        }
-    });
-}
-
-function showLogin() {
-    if(YAHOO.listen.conferenceList) {
-      YAHOO.listen.conferenceList.hideOpenConferences();
-      YAHOO.listen.conferenceList.hide();
-    }
-
-    // close things
-    $('#logoutButton').hide();
-    $('#provisionAccountDialog').dialog('close');
-
-    // open things
-    $('#loginDialog').dialog('open');
-    $('#username').focus();
+    window.location = '/logout';
 }
 
 function getMuteButtonHtml(id, isMuted) {

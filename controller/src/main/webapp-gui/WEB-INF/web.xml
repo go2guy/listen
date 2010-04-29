@@ -3,6 +3,15 @@
 <web-app>
 
     <filter>
+        <filter-name>RequestInformationFilter</filter-name>
+        <filter-class>com.interact.listen.RequestInformationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RequestInformationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>StatFilter</filter-name>
         <filter-class>com.interact.listen.stats.StatFilter</filter-class>
     </filter>
@@ -46,6 +55,12 @@
     <servlet>
         <servlet-name>GetConferenceParticipantsServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceParticipantsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>IndexServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.IndexServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -112,6 +127,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>IndexServlet</servlet-name>
+        <url-pattern>/index</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
@@ -139,7 +159,7 @@
     <!-- welcome files -->
 
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>index</welcome-file>
     </welcome-file-list>
 
 </web-app>
