@@ -2,11 +2,7 @@
 # controller.spec
 #######################################################################
 %define STARTDIR %(pwd)
-
-# Make sure we specify i686 if this is not a 64 bit build.
-%ifnarch x86_64
-%define _arch i686
-%endif
+%define _arch noarch
 
 Summary: Interact Listen Controller
 Name: listen-controller
