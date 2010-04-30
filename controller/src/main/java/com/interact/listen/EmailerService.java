@@ -17,7 +17,7 @@ public class EmailerService
     private static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private static final SimpleDateFormat SDF = new SimpleDateFormat(ISO8601_FORMAT);
     
-    private final String emailBody = "<html><body>Hello,<br/><br/>"
+    private static final String emailBody = "<html><body>Hello,<br/><br/>"
                                      + "You have been invited to a conference by %s.<br/><br/>"
                                      + "Conference details:<br/><br/>"
                                      + "Date/Time: %s<br/>"
