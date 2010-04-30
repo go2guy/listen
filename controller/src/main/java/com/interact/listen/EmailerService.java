@@ -17,7 +17,7 @@ public class EmailerService
     private static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private static final SimpleDateFormat SDF = new SimpleDateFormat(ISO8601_FORMAT);
     
-    private static final String emailBody = "<html><body>Hello,<br/><br/>"
+    private static final String EMAIL_BODY = "<html><body>Hello,<br/><br/>"
                                      + "You have been invited to a conference by %s.<br/><br/>"
                                      + "Conference details:<br/><br/>"
                                      + "Date/Time: %s<br/>"
@@ -117,7 +117,7 @@ public class EmailerService
     {
         String formattedDateTime = SDF.format(dateTime);
         String activePin = getPin(conference.getPins(), Pin.PinType.ACTIVE);
-        String formattedEmailBody = String.format(emailBody, username, formattedDateTime, description, activePin);
+        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, activePin);
         
         return formattedEmailBody;
     }
@@ -126,7 +126,7 @@ public class EmailerService
     {
         String formattedDateTime = SDF.format(dateTime);
         String passivePin = getPin(conference.getPins(), Pin.PinType.PASSIVE);
-        String formattedEmailBody = String.format(emailBody, username, formattedDateTime, description, passivePin);
+        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, passivePin);
         
         return formattedEmailBody;
     }
