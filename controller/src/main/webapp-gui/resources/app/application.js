@@ -256,6 +256,23 @@ $(document).ready(function() {
         provisionAccount(event);
         return false;
     });
+    
+    $('#scheduleConferenceDialog').dialog({
+        autoOpen: false,
+        dialogClass: 'no-title',
+        draggable: false,
+        height: 300,
+        position: [500, 350],
+        resizable: false,
+        width: 400
+    });
+
+    $('#scheduleConferenceForm').submit(function(event) {
+        scheduleConference(event);
+        return false;
+    });
+    
+    $("#scheduleConferenceDate").datepicker();
 
     showEverything();
 });
@@ -267,6 +284,7 @@ function showEverything() {
     $('#logoutButton').show();
     YAHOO.listen.conferenceList = new ConferenceList();
     YAHOO.listen.conferenceList.show();
+    $('#scheduleConferenceDialog').dialog('open');
     
     if(YAHOO.listen.isAdmin) {
         $('#provisionAccountDialog').dialog('open');
@@ -338,6 +356,46 @@ function provisionAccount(event) {
             provisionAccountPassword.val('');
             provisionAccountUsername.val('');
             noticeSuccess('Account Provisioned');
+        },
+        error: function(data, status) {
+            errorDiv.html(data.responseText);
+            errorDiv.slideDown(200);
+        }
+    });
+}
+
+function scheduleConference(event) {
+    var errorDiv = $('#scheduleConferenceForm .errors');
+    errorDiv.hide();
+
+    var scheduleConferenceDate = $('#scheduleConferenceDate');
+    var scheduleConferenceTimeHour = $('#scheduleConferenceTimeHour');
+    var scheduleConferenceTimeMinute = $('#scheduleConferenceTimeMinute');
+    var scheduleConferenceTimeAmPm = $('#scheduleConferenceTimeAmPm');
+    var scheduleConferenceDescription = $('#scheduleConferenceDescription');
+    var scheduleConferenceActiveParticipants = $('#scheduleConferenceActiveParticipants');
+    var scheduleConferencePassiveParticipants = $('#scheduleConferencePassiveParticipants'); 
+
+    $.ajax({
+        type: 'POST',
+        url: event.target.action,
+        data: { date: scheduleConferenceDate.val(),
+                hour: scheduleConferenceTimeHour.val(),
+                minute: scheduleConferenceTimeMinute.val(),
+                amPm: scheduleConferenceTimeAmPm.val(),
+                description: scheduleConferenceDescription.val(),
+                activeParticipants: scheduleConferenceActiveParticipants.val(),
+                passiveParticipants: scheduleConferencePassiveParticipants.val() },
+        success: function(data) {
+            //$('#scheduleConferenceDialog').close();
+            scheduleConferenceDate.val('');
+            scheduleConferenceTimeHour.val('1');
+            scheduleConferenceTimeMinute.val('00');
+            scheduleConferenceTimeAmPm.val('AM');
+            scheduleConferenceDescription.val('');
+            scheduleConferenceActiveParticipants.val('');
+            scheduleConferencePassiveParticipants.val('');
+            noticeSuccess('Conference Scheduled');
         },
         error: function(data, status) {
             errorDiv.html(data.responseText);

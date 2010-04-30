@@ -70,5 +70,58 @@
         </fieldset>
       </form>
     </div>
+    
+    <div id="scheduleConferenceDialog" class="dialog">
+      <form id="scheduleConferenceForm" name="scheduleConferenceForm" method="POST" action="/scheduleConference">
+        <fieldset>
+          <legend>Schedule Conference</legend>
+          <div class="errors" style="display: none;"></div>
+          <label for="scheduleConferenceDate">Date
+            <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/>
+          </label>
+          <label for="scheduleConferenceTime">Time
+            <div id="scheduleConferenceTime" name="scheduleConferenceTime" style="display: inline">
+              <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+              </select>
+              <select id="scheduleConferenceTimeMinute" name="scheduleConferenceTimeMinute">
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+              </select>
+              <select id="scheduleConferenceTimeAmPm" name="scheduleConferenceTimeAmPm">
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+              </select>
+            </div>
+          </label>
+          <label for="scheduleConferenceDescription">Description
+            <input type="text" id="scheduleConferenceDescription" name="scheduleConferenceDescription"/>
+          </label>
+          <label for="scheduleConferenceActiveParticipants">Active Participants
+            <input type="text" id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"/>
+          </label>
+          <label for="scheduleConferencePassiveParticipants">Passive Participants
+            <input type="text" id="scheduleConferencePassiveParticipants" name="scheduleConferencePassiveParticipants"/>
+          </label>
+        </fieldset>
+
+        <fieldset class="buttons">
+          <input type="submit" id="scheduleConferenceSubmit" name="scheduleConferenceSubmit" value="Schedule Conference"/>
+        </fieldset>
+      </form>
+    </div>
   </body>
 </html>

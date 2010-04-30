@@ -93,6 +93,12 @@
         <servlet-class>com.interact.listen.gui.UnmuteParticipantServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>ScheduleConferenceServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.ScheduleConferenceServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <!-- mappings -->
 
@@ -154,6 +160,11 @@
     <servlet-mapping>
         <servlet-name>UnmuteParticipantServlet</servlet-name>
         <url-pattern>/unmuteParticipant</url-pattern>    
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>ScheduleConferenceServlet</servlet-name>
+        <url-pattern>/scheduleConference</url-pattern>    
     </servlet-mapping>
 
     <!-- welcome files -->
