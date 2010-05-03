@@ -17,6 +17,10 @@
 /interact/packages/statcollector-*.rpm
 /interact/packages/conf/statcollector.uia
 
+# dts plugin for stats client
+/interact/packages/statcollector_dts-*.rpm
+/interact/packages/conf/statcollector_dts.uia
+
 # xmlsecurity files
 /interact/packages/xmlsecurity-*.rpm
 /interact/packages/conf/xmlsecurity.uia
