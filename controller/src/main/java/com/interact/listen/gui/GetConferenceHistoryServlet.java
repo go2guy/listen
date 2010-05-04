@@ -11,8 +11,6 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.ArrayList;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,18 +50,7 @@ public class GetConferenceHistoryServlet extends HttpServlet
             String id = request.getParameter("id");
 
             Marshaller marshaller = new JsonMarshaller();
-            Conference conference = null;
-            if(id == null)
-            {
-                if(user.getConferences().size() > 0)
-                {
-                    conference = new ArrayList<Conference>(user.getConferences()).get(0);
-                }
-            }
-            else
-            {
-                conference = (Conference)persistenceService.get(Conference.class, Long.parseLong(id));
-            }
+            Conference conference = GuiServletUtil.getConferenceFromIdOrUser(id, user, persistenceService);
 
             if(conference == null)
             {
@@ -82,8 +69,8 @@ public class GetConferenceHistoryServlet extends HttpServlet
             Builder builder = new ResourceListService.Builder(ConferenceHistory.class, session, marshaller)
                                   .addSearchProperty("conference", "/conferences/" + conference.getId())
                                   .addReturnField("dateCreated")
-                                  .addReturnField("user")
                                   .addReturnField("description")
+                                  .addReturnField("id")
                                   .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING);
             ResourceListService service = builder.build();
             String content = service.list();

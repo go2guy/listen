@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet
         request.setAttribute("errors", session.getAttribute("errors"));
         session.removeAttribute("errors");
 
-        ServletUtil.forward("/login.jsp", request, response);
+        ServletUtil.forward("/WEB-INF/jsp/login.jsp", request, response);
     }
 
     @Override

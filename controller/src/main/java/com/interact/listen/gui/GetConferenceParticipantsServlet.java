@@ -86,8 +86,9 @@ public class GetConferenceParticipantsServlet extends HttpServlet
                                   .addSearchProperty("conference", "/conferences/" + conference.getId())
                                   .addReturnField("id")
                                   .addReturnField("isAdmin")
-                                  .addReturnField("isMuted")
                                   .addReturnField("isAdminMuted")
+                                  .addReturnField("isMuted")
+                                  .addReturnField("isPassive")
                                   .addReturnField("number");
             ResourceListService service = builder.build();
             String content = service.list();

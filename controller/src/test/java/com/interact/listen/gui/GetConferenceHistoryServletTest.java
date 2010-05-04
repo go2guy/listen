@@ -105,7 +105,7 @@ public class GetConferenceHistoryServletTest
 
         StringBuilder expectedJson = new StringBuilder();
         expectedJson.append("{\"href\":\"/conferenceHistorys?");
-        expectedJson.append("_first=0&_max=100&_fields=dateCreated,description,user");
+        expectedJson.append("_first=0&_max=100&_fields=dateCreated,description,id");
         expectedJson.append("&conference=/conferences/").append(conference.getId()).append("\",");
         expectedJson.append("\"count\":0,");
         expectedJson.append("\"total\":0,");

@@ -1,11 +1,11 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.PersistenceService;
-import com.interact.listen.ServletUtil;
+import com.interact.listen.*;
+import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Pin;
 import com.interact.listen.resource.User;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-public class GetConferenceInfoServlet extends HttpServlet
+public class GetConferencePinsServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
@@ -32,7 +32,7 @@ public class GetConferenceInfoServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_GET_CONFERENCE_INFO);
+        statSender.send(Stat.GUI_GET_CONFERENCE_PINS);
 
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
@@ -55,8 +55,7 @@ public class GetConferenceInfoServlet extends HttpServlet
             if(conference == null)
             {
                 transaction.rollback();
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                          "Conference not found", "text/plain");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found", "text/plain");
                 return;
             }
 
@@ -67,10 +66,24 @@ public class GetConferenceInfoServlet extends HttpServlet
                 return;
             }
 
+            Builder builder = new ResourceListService.Builder(Pin.class, session, marshaller)
+                                  .addSearchProperty("conference", "/conferences/" + conference.getId())
+                                  .addReturnField("id")
+                                  .addReturnField("number")
+                                  .addReturnField("type");
+            ResourceListService service = builder.build();
+            String content = service.list();
+
             transaction.commit();
 
-            String content = marshaller.marshal(conference);
             ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());
+        }
+        catch(CriteriaCreationException e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
+            return;
         }
         catch(Exception e)
         {
@@ -82,8 +95,9 @@ public class GetConferenceInfoServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: GetConferenceInfoServlet.doGet() took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            //TODO drop this down to a lower logging level? it's too frequent (since it's polled) by the javascript
+            System.out.println("TIMER: GetConferencePinsServlet.doGet() took " +
+                               (System.currentTimeMillis() - start) + "ms");
         }
     }
 }

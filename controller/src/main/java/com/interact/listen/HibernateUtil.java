@@ -142,7 +142,7 @@ public final class HibernateUtil
                     participant.setIsAdmin(j == 0);
                     participant.setIsAdminMuted(false);
                     participant.setIsMuted(false);
-                    participant.setIsPassive(false);
+                    participant.setIsPassive(j == 6);
                     participant.setNumber("402" + basePin + new DecimalFormat("0000").format(j));
                     participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
                     persistenceService.save(participant);

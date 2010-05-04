@@ -1,0 +1,304 @@
+/* floating footer */
+
+#wrapper {
+    min-height: 100%;
+    height: 100%;
+}
+
+#wrapper-main {
+    overflow: auto;
+    padding-bottom: 26px;
+}
+
+#footer {
+    font-size: 60%;
+    height: 26px;
+    margin-top: -26px;
+    text-align: center;
+}
+
+/* general layout & styles */
+
+#header {
+    background #FFFFFF url('images/title_header_bkg.png') repeat-x top left;
+    border-bottom: 2px solid #989898;
+    height: 26px;
+    width: 100%;
+}
+
+#subheader {
+    height: 26px;
+    text-align: right;
+    width: 100%;
+}
+
+#logo {
+    float: left;
+    height: 100%;
+    padding-left: 10px;
+    text-align: left;
+}
+
+#userInfo {
+    background: #000000 url('images/title_3color_swatches.png') no-repeat top left;
+    color: #FFFFFF;
+    float: right;
+    height: 100%;
+    padding-left: 5em;
+    padding-right: 1em;
+    text-align: right;
+    width: 20em;
+}
+
+#userInfo a {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+#main {
+    width: 100%;
+}
+
+.add-button, .delete-button, .mute-button, .schedule-button, .unmute-button, .unmute-button-disabled {
+    background-color: inherit;
+    background-position: 1px 1px;
+    background-repeat: no-repeat;
+    border-width: 0;
+    color: inherit;
+    cursor: pointer;
+    height: 20px;
+    font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    padding-left: 20px;
+}
+
+.add-button {
+    background-image: url('images/new/icon_add_16x16.png');
+}
+
+.delete-button {
+    background-image: url('images/new/icon_delete_16x16.png');
+}
+
+.mute-button {
+    background-image: url('images/new/icon_speaker_unmuted_16x16.png');
+}
+
+.schedule-button {
+    background-image: url('images/new/icon_schedule_16x16.png');
+}
+
+.unmute-button {
+    background-image: url('images/new/icon_speaker_muted_16x16.png');
+}
+
+.unmute-button-disabled {
+    background-image: url('images/new/icon_speaker_muted_disabled_16x16.png');
+}
+
+/* dialogs */
+
+.dialog {
+    display: none;
+}
+
+.ui-widget-overlay {
+    background: #5d5d5d;
+    opacity: .5;
+}
+
+/* conference window */
+
+.window {
+    border: 1px solid #DAE4EE;
+    border-radius: 8px;
+    display: none;
+    height: 100%;
+    margin: 10px;
+    -moz-border-radius: 8px;
+    padding: 3px;
+}
+
+#conference-window .left, #conference-window .right {
+    float: left;
+    width: 50%;
+}
+
+.conference-header {
+    background-color: #EEEEEE;
+    border-radius: 8px;
+    color: #1162AE;
+    font-size: 125%;
+    font-variant: small-caps;
+    font-weight: bold;
+    margin-bottom: 4px;
+    -moz-border-radius: 8px;
+}
+
+.conference-title {
+    border-color: #DAE4EE;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+}
+
+.conference-title, .panel-content, .panel-title, .panel-menu {
+    padding: 3px;
+}
+
+.conference-menu {
+    text-align: right;
+    margin-right: 1em;
+}
+
+.left .panel {
+    margin-right: 2px;
+}
+
+.right .panel {
+    margin-left: 2px;
+}
+
+.panel {
+    border: 1px solid #DAE4EE;
+    font-size: 90%;
+    margin-bottom: 4px;
+}
+
+.panel-menu {
+    margin-bottom: 2px;
+}
+
+.panel-title {
+    background-color: #DAE4EE;
+    color: #1162AE;
+    font-weight: bold;
+}
+
+.panel-menu {
+    background-color: #EEEEEE;
+    font-size: 75%;
+    text-align: right;
+}
+
+.panel-content {
+    /*background-color: #EEEEEE;*/
+    overflow: auto;
+}
+
+#templates {
+    display: none;
+}
+
+/* conference caller list */
+
+.caller-row {
+    /*background: #FFFFFF url('images/new/caller_background.png') repeat-x bottom left;*/
+    background-color: #DAE4EE;
+    border-radius: .5em;
+    color: #000000;
+    display: block;
+    height: 2em;
+    margin-bottom: 5px;
+    -moz-border-radius: .5em;
+    width: 100%;
+}
+
+.caller-row-admin {
+    /*background: #FFFFFF url('images/new/caller_admin_background.png') repeat-x bottom left;*/
+    background-color: #1162AE;
+    color: #FFFFFF;
+}
+
+.caller-row-passive {
+    background: inherit;
+    background-color: #CCCCCC;
+}
+
+.caller-user-icon, .caller-mute-icon, .caller-drop-icon {
+    height: 2em;
+    text-align: center;
+    width: 2em;
+}
+
+.caller-user-icon {
+    float: left;
+}
+
+.caller-row-admin .caller-user-icon {
+    background-image: url('images/new/icon_admin_logo_16x16.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.caller-number {
+    float: left;
+    font-size: 1.15em;
+    font-weight: bold;
+    padding-left: .5em;
+    padding-top: .35em;
+}
+
+.caller-mute-icon, .caller-drop-icon {
+    margin-right: 1em;
+}
+
+.caller-mute-icon {
+    float: right;
+}
+
+.caller-drop-icon {
+    float: right;
+}
+
+.caller-mute-icon button, .caller-drop-icon button {
+    margin-top: .25em;
+}
+
+/* conference history list */
+
+.history-row {
+    background-color: #FFFFFF;
+    display: block;
+    height: 1.5em;
+    margin-bottom: 1px;
+    width: 100%;
+}
+
+/* conference pin list */
+
+.pin-row {
+    background-color: #DAE4EE;
+    border-radius: .5em;
+    color: #000000;
+    display: block;
+    height: 2em;
+    margin-bottom: 5px;
+    -moz-border-radius: .5em;
+    width: 100%;
+}
+
+.pin-row-admin {
+    background-color: #1162AE;
+    color: #FFFFFF;
+}
+
+.pin-row-passive {
+    background: inherit;
+    background-color: #CCCCCC;
+}
+
+.pin-number, .pin-type {
+    float: left;
+    font-weight: bold;
+    padding: .35em 2em 0 .5em;
+}
+
+.pin-remove {
+    float: right;
+    margin-right: 1em;
+}
+
+.pin-remove button {
+    margin-top: .25em;
+}

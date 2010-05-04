@@ -24,6 +24,6 @@ public class IndexServlet extends HttpServlet
             return;
         }
 
-        ServletUtil.forward("/index.html", request, response);
+        ServletUtil.forward("/WEB-INF/jsp/index.jsp", request, response);
     }
 }
