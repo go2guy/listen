@@ -305,6 +305,7 @@ $(document).ready(function() {
 
     $('#scheduleConferenceForm').submit(function(event) {
         scheduleConference(event);
+        $('#scheduleConferenceDialog').dialog('close');
         return false;
     });
 

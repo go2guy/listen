@@ -8,12 +8,12 @@
     <link rel="SHORTCUT ICON" href="./resources/app/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="./resources/yui-2.8.0r4/reset-fonts/reset-fonts.css">
     <link rel="stylesheet" type="text/css" href="./resources/jquery/css/excite-bike/jquery-ui-1.8rc3.custom.css">
-    <link rel="stylesheet" type="text/css" href="./resources/app/common.css">
-    <link rel="stylesheet" type="text/css" href="./resources/app/all.css">
-    <link rel="stylesheet" type="text/css" href="./resources/app/index.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/common-min.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/all-min.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/index-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
-    <script type="text/javascript" src="./resources/app/index.js"></script>
+    <script type="text/javascript" src="./resources/app/index-min.js"></script>
   </head>
   <body>
     <div id="wrapper">

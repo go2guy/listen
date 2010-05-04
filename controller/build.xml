@@ -17,21 +17,30 @@
 
   <property name="deploy.version" value="0.2"/>
   <exec outputproperty="deploy.release" executable="svnversion">
-      <arg line="-n -c" />
-          <redirector>
-              <outputfilterchain>
-                  <tokenfilter>
-                       <replaceregex pattern="^[0-9]*:?" replace="" flags="g"/>
-                  </tokenfilter>
-              </outputfilterchain>
-          </redirector>
+    <arg line="-n -c"/>
+    <redirector>
+      <outputfilterchain>
+        <tokenfilter>
+          <replaceregex pattern="^[0-9]*:?" replace="" flags="g"/>
+        </tokenfilter>
+      </outputfilterchain>
+    </redirector>
   </exec>
-
 
   <taskdef resource="tasks.properties" classpathref="javac.classpath"/>
   <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${lib.dir}/build/ant-contrib-1.0b3.jar"/>
   <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="src/build/findbugs-1.3.9/lib/findbugs-ant.jar"/>
   <taskdef resource="checkstyletask.properties" classpath="${lib.dir}/build/checkstyle-all-5.1.jar"/>
+
+  <macrodef name="minify">
+    <attribute name="in"/>
+    <attribute name="out"/>
+    <sequential>
+      <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true">
+        <arg line="@{in} -o @{out}"/>
+      </java>
+    </sequential>
+  </macrodef>
 
   <target name="clean" description="--> Removes build artifacts created by this script">
     <delete dir="${build.dir}" failonerror="false"/>
@@ -153,15 +162,12 @@
     <copy todir="${war.staging.dir}">
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
     </copy>
-    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
-      <arg line="${war.staging.dir}/resources/app/application.js -o ${war.staging.dir}/resources/app/application-min.js"/>
-    </java>
-    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
-      <arg line="${war.staging.dir}/resources/app/application.css -o ${war.staging.dir}/resources/app/application-min.css"/>
-    </java>
-    <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
-      <arg line="${war.staging.dir}/resources/app/common.css -o ${war.staging.dir}/resources/app/common-min.css"/>
-    </java>
+    <minify in="${war.staging.dir}/resources/app/all.css" out="${war.staging.dir}/resources/app/all-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/common.css" out="${war.staging.dir}/resources/app/common-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/login.css" out="${war.staging.dir}/resources/app/login-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/login.js" out="${war.staging.dir}/resources/app/login-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/index.css" out="${war.staging.dir}/resources/app/index-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/index.js" out="${war.staging.dir}/resources/app/index-min.js"/>
     <unjar dest="${war.staging.dir}">
       <patternset>
         <exclude name="META-INF/**/*"/>
