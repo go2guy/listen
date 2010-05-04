@@ -159,11 +159,10 @@ def prep():
     if hostname == listenserver:
         print("Preparing for deployment")
         run(["service", "listen-controller", "stop"], failonerror=False)
-        run(["service", "listen-gui", "stop"], failonerror=False)
         run(["service", "collector", "stop"], failonerror=False)
 
         # And kill them just to be sure
-        killprocs = ["/interact/.*/iiMoap", "/interact/.*/iiSysSrvr", "/interact/.*/collector", "/interact/.*/listen-gui", "/interact/.*/listen-controller"]
+        killprocs = ["/interact/.*/iiMoap", "/interact/.*/iiSysSrvr", "/interact/.*/collector", "/interact/.*/listen-controller"]
         for killproc in killprocs:
             run(["pkill", "-TERM", "-f", killproc], failonerror=False)
 
@@ -323,7 +322,6 @@ def install():
         startlist["/interact/program/iiSysSrvr"] = ""
         startlist["/etc/init.d/collector"] = "start"
         startlist["/etc/init.d/listen-controller"] = "start"
-        startlist["/etc/init.d/listen-gui"] = "start"
 
     # License the system before we try to start anything.
     license()

@@ -5,10 +5,6 @@
 /interact/packages/listen-controller-*.rpm
 /interact/packages/conf/listen-controller.uia
 
-# GUI Files
-/interact/packages/listen-gui-*.rpm
-/interact/packages/conf/listen-gui.uia
-
 # Spot Apps files
 /interact/packages/listen-spotapps-*.rpm
 /interact/packages/conf/listen-spotapps.uia
