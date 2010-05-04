@@ -6,10 +6,10 @@ import com.interact.listen.security.SecurityUtil;
 
 import java.text.DecimalFormat;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 public final class HibernateUtil
 {
@@ -51,9 +51,27 @@ public final class HibernateUtil
 
             SESSION_FACTORY = config.buildSessionFactory();
 
-            if(Boolean.valueOf(System.getProperty("bootstrap", "false")))
+            Session session = getSessionFactory().getCurrentSession();
+            Transaction transaction = session.beginTransaction();
+
+            PersistenceService persistenceService = new PersistenceService(session);
+
+            try
             {
-                bootstrap();
+                createAdminUserIfNotPresent(session, persistenceService);
+
+                if(Boolean.valueOf(System.getProperty("bootstrap", "false")))
+                {
+                    bootstrap(persistenceService);
+                }
+
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                transaction.rollback();
+                throw new ExceptionInInitializerError(e);
             }
         }
         catch(Exception e)
@@ -68,12 +86,8 @@ public final class HibernateUtil
         return SESSION_FACTORY;
     }
 
-    private static void bootstrap()
+    private static void bootstrap(PersistenceService persistenceService)
     {
-        Session session = getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-
-        PersistenceService persistenceService = new PersistenceService(session);
 
         // provisions subscribers/users/conferences/participants
 
@@ -88,107 +102,94 @@ public final class HibernateUtil
         // conference passivePin = 00010N
         // participant numbers are 40200N000M, where M=0..9
 
-        try
+        // dummy accounts
+        for(int i = 0; i < 5; i++)
         {
-            // Administrative user
-            User user = new User();
-            user.setUsername("Admin");
-            user.setPassword(SecurityUtil.hashPassword("super"));
-            user.setIsAdministrator(Boolean.TRUE);
-            persistenceService.save(user);
-
-            // dummy accounts
-            for(int i = 0; i < 5; i++)
-            {
-                Subscriber subscriber = new Subscriber();
-                subscriber.setNumber(new DecimalFormat("000").format(100 + i));
-                subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
-                subscriber.setVoicemailPin(subscriber.getNumber());
-                persistenceService.save(subscriber);
-
-                String basePin = new DecimalFormat("000").format(i + 100);
-
-                Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
-                Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
-                Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
-
-                persistenceService.save(activePin);
-                persistenceService.save(adminPin);
-                persistenceService.save(passivePin);
-
-                Conference conference = new Conference();
-                conference.addToPins(activePin);
-                conference.addToPins(adminPin);
-                conference.addToPins(passivePin);
-
-                conference.setIsStarted(true);
-                conference.setDescription(subscriber.getNumber());
-                persistenceService.save(conference);
-
-                user = new User();
-                user.setPassword(SecurityUtil.hashPassword("super"));
-                user.setSubscriber(subscriber);
-                user.setUsername(subscriber.getNumber());
-                user.addToConferences(conference);
-                persistenceService.save(user);
-
-                System.out.println("BOOTSTRAP: Saved Conference " + conference.getId());
-
-                for(int j = 0; j < 10; j++)
-                {
-                    Participant participant = new Participant();
-                    participant.setAudioResource("/foo/bar");
-                    participant.setConference(conference);
-                    participant.setIsAdmin(j == 0);
-                    participant.setIsAdminMuted(false);
-                    participant.setIsMuted(false);
-                    participant.setIsPassive(j == 6);
-                    participant.setNumber("402" + basePin + new DecimalFormat("0000").format(j));
-                    participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
-                    persistenceService.save(participant);
-
-                    System.out.println("BOOTSTRAP: Saved Participant " + participant.getId());
-                }
-            }
-
-            // account for integration testing
             Subscriber subscriber = new Subscriber();
-            subscriber.setNumber("347");
+            subscriber.setNumber(new DecimalFormat("000").format(100 + i));
             subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
             subscriber.setVoicemailPin(subscriber.getNumber());
             persistenceService.save(subscriber);
 
-            Pin activePin = Pin.newInstance("111", PinType.ACTIVE);
-            Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
-            Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
+            String basePin = new DecimalFormat("000").format(i + 100);
+
+            Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
+            Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
+            Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
 
             persistenceService.save(activePin);
             persistenceService.save(adminPin);
             persistenceService.save(passivePin);
 
-//            Conference conference = new Conference();
-//            conference.setIsStarted(false);
-//            conference.setDescription("Ladi's Conference");
-//            conference.addToPins(activePin);
-//            conference.addToPins(adminPin);
-//            conference.addToPins(passivePin);
-//
-//            persistenceService.save(conference);
-//
-//            user = new User();
-//            user.setPassword(SecurityUtil.hashPassword("super"));
-//            user.setSubscriber(subscriber);
-//            user.setUsername(subscriber.getNumber());
-//            user.addToConferences(conference);
-//            persistenceService.save(user);
+            Conference conference = new Conference();
+            conference.addToPins(activePin);
+            conference.addToPins(adminPin);
+            conference.addToPins(passivePin);
 
-            transaction.commit();
+            conference.setIsStarted(true);
+            conference.setDescription(subscriber.getNumber());
+            persistenceService.save(conference);
+
+            User user = new User();
+            user.setPassword(SecurityUtil.hashPassword("super"));
+            user.setSubscriber(subscriber);
+            user.setUsername(subscriber.getNumber());
+            user.addToConferences(conference);
+            persistenceService.save(user);
+
+            System.out.println("BOOTSTRAP: Saved Conference " + conference.getId());
+
+            for(int j = 0; j < 10; j++)
+            {
+                Participant participant = new Participant();
+                participant.setAudioResource("/foo/bar");
+                participant.setConference(conference);
+                participant.setIsAdmin(j == 0);
+                participant.setIsAdminMuted(false);
+                participant.setIsMuted(false);
+                participant.setIsPassive(j == 6);
+                participant.setNumber("402" + basePin + new DecimalFormat("0000").format(j));
+                participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
+                persistenceService.save(participant);
+
+                System.out.println("BOOTSTRAP: Saved Participant " + participant.getId());
+            }
         }
-        catch(Exception e)
+
+        // account for integration testing
+        Subscriber subscriber = new Subscriber();
+        subscriber.setNumber("347");
+        subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
+        subscriber.setVoicemailPin(subscriber.getNumber());
+        persistenceService.save(subscriber);
+
+        Pin activePin = Pin.newInstance("111", PinType.ACTIVE);
+        Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
+        Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
+
+        persistenceService.save(activePin);
+        persistenceService.save(adminPin);
+        persistenceService.save(passivePin);
+    }
+
+    private static void createAdminUserIfNotPresent(Session session, PersistenceService persistenceService)
+    {
+        Criteria criteria = session.createCriteria(User.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setFirstResult(0);
+        criteria.setProjection(Projections.rowCount());
+        criteria.add(Restrictions.eq("isAdministrator", Boolean.TRUE));
+
+        Long count = (Long)criteria.list().get(0);
+
+        if(count == 0)
         {
-            e.printStackTrace();
-            transaction.rollback();
-            throw new ExceptionInInitializerError(e);
+            System.out.println("BOOTSTRAP: Created admin User");
+            User user = new User();
+            user.setUsername("Admin");
+            user.setPassword(SecurityUtil.hashPassword("conference4U!"));
+            user.setIsAdministrator(Boolean.TRUE);
+            persistenceService.save(user);
         }
     }
 }
