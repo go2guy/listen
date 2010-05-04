@@ -20,7 +20,7 @@
 /* general layout & styles */
 
 #header {
-    background #FFFFFF url('images/title_header_bkg.png') repeat-x top left;
+    background: #FFFFFF url('images/new/title_header_bkg.png') repeat-x top left;
     border-bottom: 2px solid #989898;
     height: 26px;
     width: 100%;
@@ -40,7 +40,7 @@
 }
 
 #userInfo {
-    background: #000000 url('images/title_3color_swatches.png') no-repeat top left;
+    background: #000000 url('images/new/title_color_swatches_64x26.png') no-repeat top left;
     color: #FFFFFF;
     float: right;
     height: 100%;

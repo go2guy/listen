@@ -22,7 +22,7 @@
 User user = (User)session.getAttribute("user");
 %>
         <div id="header">
-          <div id="logo"><img src="resources/app/images/listen-logo.png"/></div>
+          <div id="logo"><img src="resources/app/images/new/listen_logo_50x24.png"/></div>
           <div id="userInfo">Hi, <%= user.getUsername() %>! | <a href="#">Settings</a> | <a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
         </div>
 <%

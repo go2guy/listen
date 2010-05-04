@@ -16,7 +16,7 @@
   </head>
   <body>
     <div id="left">
-      <div id="logo"><img src="./resources/app/images/listen_logo_large.png"/></div>
+      <div id="logo"><img src="./resources/app/images/new/listen_logo_172x73.png"/></div>
     </div>
     <div id="right">
       <div id="login">
