@@ -4,6 +4,8 @@ import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 import org.hibernate.*;
@@ -27,13 +29,17 @@ public final class HibernateUtil
             AnnotationConfiguration config = new AnnotationConfiguration();
             config.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
             config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
-            config.setProperty("hibernate.connection.url", "jdbc:hsqldb:mem:demodb");
+
+            String dburl = getDbConnectionString();
+            System.out.println("INIT: DB connection string is [" + dburl + "]");
+
+            config.setProperty("hibernate.connection.url", dburl);
             config.setProperty("hibernate.connection.username", "sa");
             config.setProperty("hibernate.connection.password", "");
             config.setProperty("hibernate.connection.pool_size", "1");
             config.setProperty("hibernate.connection.autocommit", "false");
             config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
-            config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+            config.setProperty("hibernate.hbm2ddl.auto", "update");
             config.setProperty("hibernate.show_sql", "false");
             config.setProperty("hibernate.transaction.factory_class",
                                "org.hibernate.transaction.JDBCTransactionFactory");
@@ -84,6 +90,45 @@ public final class HibernateUtil
     public static SessionFactory getSessionFactory()
     {
         return SESSION_FACTORY;
+    }
+
+    private static String getDbConnectionString()
+    {
+        try
+        {
+            String dirPath = System.getProperty("data.dir", "/var/lib/com.interact.listen");
+            File dir = new File(dirPath);
+            if(!dir.exists())
+            {
+                System.out.println("INIT: Creating data directory at [" + dir + "]");
+                dir.mkdirs();
+            }
+            else if(dir.exists() && !dir.isDirectory())
+            {
+                // first try user home
+                File homeDir = new File(System.getProperty("user.home"));
+                if(homeDir.exists() && homeDir.canWrite())
+                {
+                    dir = new File(homeDir, ".com.interact.listen");
+                    dir.mkdirs();
+                }
+                else
+                {
+                    // then try temp directory
+                    File temp = File.createTempFile("temp", "temp");
+                    File tempDir = new File(temp.getParent(), "com.interact.listen");
+                    System.out.println("INIT: Cannot use [" + dir + "] for data directory, using [" + tempDir + "]");
+                    dir = tempDir;
+                }
+            }
+
+            return "jdbc:hsqldb:file:" + dir.getAbsolutePath() + "/database/listendb";
+        }
+        catch(IOException e)
+        {
+            System.out.println("INIT: Error initializing data directory, using current working directory");
+            return "jdbc:hsqldb:file:listendb";
+        }
     }
 
     private static void bootstrap(PersistenceService persistenceService)
