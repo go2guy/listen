@@ -5,7 +5,6 @@ import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 import org.hibernate.*;
@@ -62,23 +61,14 @@ public final class HibernateUtil
 
             PersistenceService persistenceService = new PersistenceService(session);
 
-            try
-            {
-                createAdminUserIfNotPresent(session, persistenceService);
+            createAdminUserIfNotPresent(session, persistenceService);
 
-                if(Boolean.valueOf(System.getProperty("bootstrap", "false")))
-                {
-                    bootstrap(persistenceService);
-                }
-
-                transaction.commit();
-            }
-            catch(Exception e)
+            if(Boolean.valueOf(System.getProperty("bootstrap", "false")))
             {
-                e.printStackTrace();
-                transaction.rollback();
-                throw new ExceptionInInitializerError(e);
+                bootstrap(persistenceService);
             }
+
+            transaction.commit();
         }
         catch(Exception e)
         {
@@ -101,7 +91,10 @@ public final class HibernateUtil
             if(!dir.exists())
             {
                 System.out.println("INIT: Creating data directory at [" + dir + "]");
-                dir.mkdirs();
+                if(!dir.mkdirs())
+                {
+                    System.out.println("Cannot create directory [" + dir + "]"); 
+                }
             }
             else if(dir.exists() && !dir.isDirectory())
             {
@@ -110,7 +103,10 @@ public final class HibernateUtil
                 if(homeDir.exists() && homeDir.canWrite())
                 {
                     dir = new File(homeDir, ".com.interact.listen");
-                    dir.mkdirs();
+                    if(!dir.mkdirs())
+                    {
+                        System.out.println("Cannot create directory [" + dir + "]");
+                    }
                 }
                 else
                 {
@@ -124,16 +120,16 @@ public final class HibernateUtil
 
             return "jdbc:hsqldb:file:" + dir.getAbsolutePath() + "/database/listendb";
         }
-        catch(IOException e)
+        catch(Exception e)
         {
             System.out.println("INIT: Error initializing data directory, using current working directory");
-            return "jdbc:hsqldb:file:listendb";
         }
+
+        return "jdbc:hsqldb:file:listendb";
     }
 
     private static void bootstrap(PersistenceService persistenceService)
     {
-
         // provisions subscribers/users/conferences/participants
 
         // for N=0..5
