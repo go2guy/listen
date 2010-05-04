@@ -77,8 +77,16 @@
     background-image: url('images/new/icon_add_16x16.png');
 }
 
+.add-button:hover {
+    background-image: url('images/new/icon_add_hover_16x16.png');
+}
+
 .delete-button {
     background-image: url('images/new/icon_delete_16x16.png');
+}
+
+.delete-button:hover {
+    background-image: url('images/new/icon_delete_hover_16x16.png');
 }
 
 .mute-button {
@@ -87,6 +95,10 @@
 
 .schedule-button {
     background-image: url('images/new/icon_schedule_16x16.png');
+}
+
+.schedule-button:hover {
+    background-image: url('images/new/icon_schedule_hover_16x16.png');
 }
 
 .unmute-button {
