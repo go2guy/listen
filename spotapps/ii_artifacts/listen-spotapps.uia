@@ -20,11 +20,13 @@
         </pre>
 
         <inquiry>
-            <question level="not_in_backup" severity="ask">
+            <question level="not_in_backup" severity="take_default">
                 <text>Enter the local host name</text>
-                <default></default>
-                <validateRegex>^${HOSTNAME}$|^$</validateRegex>
-                <validateInfo>The value may be any number of letters, numbers, dashes, or periods or the value may be blank.</validateInfo>
+                <default>
+                    #!/bin/bash
+                    hostname
+                </default>
+                <validateRegex preset="HOSTNAME"/>
 
                 <property format="ccvxml" action="update" quotes="yes">
                     <name>hostName</name>
@@ -37,8 +39,19 @@
             </question>
 
             <question level="not_in_backup" severity="ask">
-                <text>Enter the controller url</text>
-                <default>http://localhost:9090/</default>
+                <text>Enter the host running the listen controller</text>
+                <default>localhost</default>
+                <validateRegex preset="HOSTNAME"/>
+
+                <property format="propsh" action="upsert">
+                    <name>controllerHost</name>
+                    <location>/dev/null</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="take_default">
+                <text></text>
+                <default>http://${controllerHost}:9090/api/</default>
                 <validateRegex preset="URL"/>
 
                 <property format="ccvxml" action="update" quotes="yes">
