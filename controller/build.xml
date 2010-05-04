@@ -127,37 +127,6 @@
   <target name="war" depends="compile" description="--> Packages distributable war file">
     <mkdir dir="${target.dir}"/>
 
-    <!-- controller war -->
-    <mkdir dir="${war.staging.dir}"/>
-    <copy todir="${war.staging.dir}">
-      <fileset dir="${src.dir}/main/webapp-controller" includes="**/*"/>
-    </copy>
-    <unjar dest="${war.staging.dir}">
-      <patternset>
-        <exclude name="META-INF/**/*"/>
-        <exclude name="images/**/*"/>
-        <exclude name=".options"/>
-        <exclude name="about.html"/>
-        <exclude name="jdtCompilerAdapter.jar"/>
-        <exclude name="plugin*"/>
-      </patternset>
-      <fileset dir="${lib.dir}/build/jetty" includes="*.jar"/>
-    </unjar>
-    <copy todir="${war.staging.dir}">
-      <fileset dir="${build.dir}/main" includes="com/interact/listen/server/EmbeddedJettyServer.class"/>
-    </copy>
-    <war destfile="${target.dir}/listen-controller.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
-      <fileset dir="${war.staging.dir}" includes="**/*"/>
-      <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
-      <lib dir="${lib.dir}/runtime"/>
-
-      <manifest>
-        <attribute name="Main-Class" value="com.interact.listen.server.EmbeddedJettyServer"/>
-      </manifest>
-    </war>
-    <delete dir="${war.staging.dir}"/>
-
-    <!-- gui war -->
     <mkdir dir="${war.staging.dir}"/>
     <copy todir="${war.staging.dir}">
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
@@ -182,7 +151,7 @@
     <copy todir="${war.staging.dir}">
       <fileset dir="${build.dir}/main" includes="com/interact/listen/server/EmbeddedJettyServer.class"/>
     </copy>
-    <war destfile="${target.dir}/listen-gui.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
+    <war destfile="${target.dir}/listen-controller.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
       <fileset dir="${war.staging.dir}" includes="**/*"/>
       <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
       <lib dir="${lib.dir}/runtime"/>
@@ -201,9 +170,6 @@
 
     <copy file="${target.dir}/listen-controller.war" todir="${deploy.dir}/lib" verbose="true"/>
     <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts/" verbose="true"/>
-
-    <copy file="${target.dir}/listen-gui.war" todir="${deploy.dir}/lib" verbose="true"/>
-    <copy file="${basedir}/scripts/listen-gui" todir="${deploy.dir}/scripts/" verbose="true"/>
   </target>
 
 
@@ -214,27 +180,11 @@
 
   <target name="-rpmbuild" depends="deploy">
 
-    <!-- controller rpm -->
-    <mkdir dir="${rpm.staging.dir}/BUILD"/>
-
-    <exec executable="rpmbuild" failonerror="true">
-      <env key="VERSION" value="${deploy.version}"/>
-      <env key="RELEASE" value="${deploy.release}"/>
-      <env key="TOPDIR" value="${rpm.staging.dir}"/>
-      <arg line="-bb --buildroot ${rpm.staging.dir}/BUILD ${basedir}/controller.spec"/>
-    </exec>
-
-    <copy todir="ii_artifacts" overwrite="true" flatten="true">
-      <fileset dir="${rpm.staging.dir}" includes="**/*.rpm"/>
-    </copy>
-
-    <!-- gui rpm -->
-
     <exec executable="rpmbuild" failonerror="true">
       <env key="VERSION" value="1.0"/>
       <env key="RELEASE" value="${deploy.release}"/>
       <env key="TOPDIR" value="${rpm.staging.dir}"/>
-      <arg line="-bb --buildroot ${rpm.staging.dir}/BUILD ${basedir}/gui.spec"/>
+      <arg line="-bb --buildroot ${rpm.staging.dir}/BUILD ${basedir}/controller.spec"/>
     </exec>
 
     <copy todir="ii_artifacts" overwrite="true" flatten="true">
