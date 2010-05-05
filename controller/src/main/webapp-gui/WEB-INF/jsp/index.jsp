@@ -23,7 +23,7 @@ User user = (User)session.getAttribute("user");
 %>
         <div id="header">
           <div id="logo"><img src="resources/app/images/new/listen_logo_50x24.png"/></div>
-          <div id="userInfo">Hi, <%= user.getUsername() %>! | <a href="#">Settings</a> | <a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
+          <div id="userInfo">Hi, <%= user.getUsername() %>! <a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
         </div>
 <%
 if(user != null && user.getIsAdministrator()) {
@@ -38,7 +38,11 @@ if(user != null && user.getIsAdministrator()) {
           <div id="conference-window" class="window">
             <div class="conference-header">
               <div id="conference-title" class="conference-title">Conference ###</div>
-              <div class="conference-menu"><button id="schedule-button" class="schedule-button">Schedule</button></div>
+              <div class="conference-menu">
+                <div id="conference-status-icon"></div>
+                <div id="conference-status-message"></div>
+                <div class="buttons"><button id="schedule-button" class="schedule-button">Schedule</button></div>
+              </div>
             </div>
             <div class="left">
               <div id="conference-callers" class="panel">

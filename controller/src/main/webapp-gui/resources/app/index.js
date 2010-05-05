@@ -97,7 +97,12 @@ function ConferenceCallerList() {
      * Updates the list with the provided data. Provided data should be an array of caller objects.
      */
     this.update = function(list) {
-        $('#conference-caller-count').text(list.length); // TODO move this out of the list functionality
+        var callerCount = $('#conference-caller-count');
+        // TODO move this out of the list functionality
+        if(callerCount.text() != list.length) {
+            callerCount.text(list.length);
+        }
+        //$('#conference-caller-count').text(list.length);
 
         var callers = $('#caller-list').find('.caller-row');
         var ids = [];
@@ -221,7 +226,13 @@ function ConferencePinList() {
     };
 
     this.update = function(list) {
-        $('#conference-pin-count').text(list.length); // TODO move this out of the list functionality
+        var pinCount = $('#conference-pin-count');
+        // TODO move this out of the list functionality
+        if(pinCount.text() != list.length) {
+            pinCount.text(list.length);
+        }
+        //$('#conference-pin-count').text(list.length);
+
         var pins = $('#pin-list').find('.pin-row');
         var ids = [];
 
@@ -338,6 +349,28 @@ $(document).ready(function() {
         var pinInterval = setInterval(function() {
             $.getJSON('/getConferencePins?id=' + conferenceId, function(data) {
                 pins.update(data.results);
+            });
+        }, 1000);
+
+        var infoInterval = setInterval(function() {
+            $.getJSON('/getConferenceInfo?id=' + conferenceId, function(data) {
+                var icon = $('#conference-status-icon');
+                var message = $('#conference-status-message');
+
+                var onMessage = 'Started';
+                var offMessage = 'Waiting for administrator';
+
+                if(data.isStarted) {
+                    icon.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
+                    if(message.text() != onMessage) {
+                        message.text(onMessage);
+                    }
+                } else {
+                    icon.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
+                    if(message.text() != offMessage) {
+                        message.text(offMessage);
+                    }
+                }
             });
         }, 1000);
 

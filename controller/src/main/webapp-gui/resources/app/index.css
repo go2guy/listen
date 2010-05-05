@@ -73,6 +73,10 @@
     padding-left: 20px;
 }
 
+.add-button:hover, .delete-button:hover, .mute-button:hover, .schedule-button:hover, .unmute-button:hover {
+    color: #666666;
+}
+
 .add-button {
     background-image: url('images/new/icon_add_16x16.png');
 }
@@ -93,6 +97,10 @@
     background-image: url('images/new/icon_speaker_unmuted_16x16.png');
 }
 
+.mute-button:hover {
+    background-image: url('images/new/icon_speaker_unmuted_hover_16x16.png');
+}
+
 .schedule-button {
     background-image: url('images/new/icon_schedule_16x16.png');
 }
@@ -103,6 +111,10 @@
 
 .unmute-button {
     background-image: url('images/new/icon_speaker_muted_16x16.png');
+}
+
+.unmute-button:hover {
+    background-image: url('images/new/icon_speaker_muted_hover_16x16.png');
 }
 
 .unmute-button-disabled {
@@ -129,6 +141,7 @@
     height: 100%;
     margin: 10px;
     -moz-border-radius: 8px;
+    overflow: auto;
     padding: 3px;
 }
 
@@ -139,6 +152,7 @@
 
 .conference-header {
     background-color: #EEEEEE;
+    border: 2px solid #1162AE;
     border-radius: 8px;
     color: #1162AE;
     font-size: 125%;
@@ -146,12 +160,11 @@
     font-weight: bold;
     margin-bottom: 4px;
     -moz-border-radius: 8px;
+    overflow: auto;
 }
 
 .conference-title {
-    border-color: #DAE4EE;
-    border-style: solid;
-    border-width: 0 0 1px 0;
+    clear: right;
 }
 
 .conference-title, .panel-content, .panel-title, .panel-menu {
@@ -159,8 +172,36 @@
 }
 
 .conference-menu {
-    text-align: right;
-    margin-right: 1em;
+    border-color: #DAE4EE;
+    border-style: solid;
+    border-width: 1px 0 0 0;
+    clear: left;
+}
+
+.conference-menu div {
+    float: left;
+    margin: 3px 0 0 3px;
+}
+
+.conference-menu div.buttons {
+    float: right;
+}
+
+#conference-status-message {
+    color: #666666;
+    font-size: 60%;
+    font-style: italic;
+    font-variant: normal;
+    font-weight: normal;
+    margin-top: 5px;
+}
+
+#conference-status-icon {
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    display: block;
+    height: 16px;
+    width: 16px;
 }
 
 .left .panel {
@@ -172,9 +213,12 @@
 }
 
 .panel {
-    border: 1px solid #DAE4EE;
+/*    border: 1px solid #DAE4EE;*/
+    border: 2px solid #1162AE;
+    border-radius: 8px;
     font-size: 90%;
     margin-bottom: 4px;
+    -moz-border-radius: 8px;
 }
 
 .panel-menu {
@@ -183,8 +227,14 @@
 
 .panel-title {
     background-color: #DAE4EE;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     color: #1162AE;
     font-weight: bold;
+    -moz-border-radius-topleft: 8px;
+    -moz-border-radius-topright: 8px;
+    -webkit-border-top-left-radius: 8px;
+    -webkit-border-top-right-radius: 8px;
 }
 
 .panel-menu {
