@@ -14,9 +14,13 @@ elif [ "${UIA_URL}" == "" ]
 then
     echo "No uia package url given."
     exit 1
-elif [ "${listenserver}" == "" ]
+elif [ "${controller}" == "" ]
 then
-    echo "No listen server host given."
+    echo "No listen controller server given."
+    exit 1
+elif [ "${spotserver}" == "" ]
+then
+    echo "No spot server given."
     exit 1
 elif [ "${insaserver}" == "" ]
 then
@@ -25,7 +29,8 @@ then
 else
     echo
     echo "Servers to be deployed:"
-    echo "Listen server               [ ${listenserver} ]."
+    echo "Controller server           [ ${controllerserver} ]."
+    echo "SPOT server                 [ ${spotserver} ]."
     echo "INSA server                 [ ${insaserver} ]."
     echo
 fi
@@ -67,7 +72,7 @@ fi
 
 
 # Invoke deploy -- do all phases
-ssh ${SSH_OPTS} root@${listenserver} "/root/deployListen.py --listenserver=${listenserver} --insaserver=${insaserver} --phase=all"
+ssh ${SSH_OPTS} root@${listenserver} "/root/deployListen.py --controllerserver=${controllerserver} --spotserver=${spotserver} --insaserver=${insaserver} --phase=all"
 if [ $? -ne 0 ]
 then
     exit 1
