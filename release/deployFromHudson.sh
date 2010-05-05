@@ -52,19 +52,19 @@ fi
 export listenRPM=`find ./archive -name "listen-*.rpm"`
 export UIARPM=`find ./archive -name "uia*.rpm"`
 
-ssh ${SSH_OPTS} root@${listenserver} "rm -f /interact/packages/listen*rpm"
+ssh ${SSH_OPTS} root@${controllerserver} "rm -f /interact/packages/listen*rpm"
 if [ $? -ne 0 ]
 then
     exit 1
 fi
 
-scp ${listenRPM} ${UIARPM} ${listenserver}:/interact/
+scp ${listenRPM} ${UIARPM} ${controllerserver}:/interact/
 if [ $? -ne 0 ]
 then
     exit 1
 fi
 
-scp deployListen.py ${listenserver}:/root/
+scp deployListen.py ${controllerserver}:/root/
 if [ $? -ne 0 ]
 then
     exit 1
@@ -72,7 +72,7 @@ fi
 
 
 # Invoke deploy -- do all phases
-ssh ${SSH_OPTS} root@${listenserver} "/root/deployListen.py --controllerserver=${controllerserver} --spotserver=${spotserver} --insaserver=${insaserver} --phase=all"
+ssh ${SSH_OPTS} root@${controllerserver} "/root/deployListen.py --controllerserver=${controllerserver} --spotserver=${spotserver} --insaserver=${insaserver} --phase=all"
 if [ $? -ne 0 ]
 then
     exit 1
