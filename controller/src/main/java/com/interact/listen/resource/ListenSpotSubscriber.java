@@ -1,6 +1,5 @@
 package com.interact.listen.resource;
 
-import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.util.List;
