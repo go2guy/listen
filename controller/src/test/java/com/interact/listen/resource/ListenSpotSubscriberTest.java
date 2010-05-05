@@ -3,6 +3,8 @@ package com.interact.listen.resource;
 import static org.junit.Assert.*;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.resource.ListenSpotSubscriber.PhoneNumberProtocolType;
+import com.interact.listen.resource.Pin.PinType;
 
 import java.util.List;
 
@@ -43,6 +45,24 @@ public class ListenSpotSubscriberTest
         listenSpotSubscriber.setHttpApi(httpApi);
 
         assertEquals(httpApi, listenSpotSubscriber.getHttpApi());
+    }
+    
+    @Test
+    public void test_setPhoneNumber_withValidPhoneNumber_setsId()
+    {
+        final String phoneNumber = "foo";
+        listenSpotSubscriber.setHttpApi(phoneNumber);
+
+        assertEquals(phoneNumber, listenSpotSubscriber.getPhoneNumber());
+    }
+    
+    @Test
+    public void test_setPhoneNumberProtocol_withValidProtocol_setsProtocol()
+    {
+        final PhoneNumberProtocolType protocol = PhoneNumberProtocolType.VOIP;
+        listenSpotSubscriber.setPhoneNumberProtocol(protocol);
+
+        assertEquals(protocol, listenSpotSubscriber.getPhoneNumberProtocol());
     }
 
     @Test
@@ -145,6 +165,33 @@ public class ListenSpotSubscriberTest
         that.setHttpApi(httpApi);
 
         assertTrue(listenSpotSubscriber.equals(that));
+    }
+    
+    @Test
+    public void test_validate_nullPhoneNumber_returnsFalseAndHasErrors()
+    {
+        listenSpotSubscriber.setPhoneNumber(null);
+
+        assertFalse(listenSpotSubscriber.validate());
+        assertTrue(listenSpotSubscriber.hasErrors());
+    }
+    
+    @Test
+    public void test_validate_blankPhoneNumber_returnsFalseAndHasErrors()
+    {
+        listenSpotSubscriber.setPhoneNumber("");
+
+        assertFalse(listenSpotSubscriber.validate());
+        assertTrue(listenSpotSubscriber.hasErrors());
+    }
+    
+    @Test
+    public void test_validate_nullPhoneNumberProtocol_returnsFalseAndHasErrors()
+    {
+        listenSpotSubscriber.setPhoneNumberProtocol(null);
+
+        assertFalse(listenSpotSubscriber.validate());
+        assertTrue(listenSpotSubscriber.hasErrors());
     }
 
     private ListenSpotSubscriber getPopulatedListenSpotSubscriber()

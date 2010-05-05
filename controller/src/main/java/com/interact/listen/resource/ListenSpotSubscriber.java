@@ -1,5 +1,6 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.util.List;
@@ -21,6 +22,16 @@ public class ListenSpotSubscriber extends Resource
 
     @Column(nullable = false, unique = true)
     private String httpApi;
+    
+    private String phoneNumber;
+    
+    @Enumerated(EnumType.STRING)
+    private PhoneNumberProtocolType phoneNumberProtocol;
+
+    public static enum PhoneNumberProtocolType
+    {
+        VOIP, PSTN;
+    }
 
     @Override
     public Long getId()
@@ -53,6 +64,26 @@ public class ListenSpotSubscriber extends Resource
     {
         this.httpApi = httpApi;
     }
+    
+    public String getPhoneNumber()
+    {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber)
+    {
+        this.phoneNumber = phoneNumber;
+    }
+    
+    public PhoneNumberProtocolType getPhoneNumberProtocol()
+    {
+        return phoneNumberProtocol;
+    }
+
+    public void setPhoneNumberProtocol(PhoneNumberProtocolType type)
+    {
+        this.phoneNumberProtocol = type;
+    }
 
     @Override
     public boolean validate()
@@ -61,6 +92,16 @@ public class ListenSpotSubscriber extends Resource
         if(httpApi == null || httpApi.trim().equals(""))
         {
             addToErrors("'httpApi' cannot be null or blank");
+            isValid = false;
+        }
+        if(phoneNumber == null || phoneNumber.trim().equals(""))
+        {
+            addToErrors("'phoneNumber' cannot be null or blank");
+            isValid = false;
+        }
+        if(phoneNumberProtocol == null)
+        {
+            addToErrors("'phoneNumberProtocol' cannot be null");
             isValid = false;
         }
         return isValid;
