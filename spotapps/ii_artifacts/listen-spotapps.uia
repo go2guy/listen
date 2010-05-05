@@ -124,6 +124,21 @@
                     <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
                 </property>
             </question>
+
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the mimimum allowed digits for a pstn call</text>
+                <default>10</default>
+                <validateRegex preset="DIGITS"/>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>pstnLength</name>
+                    <group>PSTN</group>
+                    <description>Minimum Digits Length</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
+                </property>
+            </question>
         </inquiry>
     </install>
 
