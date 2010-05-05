@@ -51,7 +51,7 @@ public class ListenSpotSubscriberTest
     public void test_setPhoneNumber_withValidPhoneNumber_setsId()
     {
         final String phoneNumber = "foo";
-        listenSpotSubscriber.setHttpApi(phoneNumber);
+        listenSpotSubscriber.setPhoneNumber(phoneNumber);
 
         assertEquals(phoneNumber, listenSpotSubscriber.getPhoneNumber());
     }
