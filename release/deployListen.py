@@ -32,12 +32,21 @@ def main():
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
     parser.add_option(
         "",
-        "--listenserver",
-        dest="listenserver",
+        "--controllerserver",
+        dest="controllerserver",
         action="store",
         metavar="SERVER",
         default=None,
-        help="The name of the listen server host to use")
+        help="The name of the listen controller server to use")
+
+    parser.add_option(
+        "",
+        "--spotserver",
+        dest="spotserver",
+        action="store",
+        metavar="SERVER",
+        default=None,
+        help="The name of the spot server to use")
 
     parser.add_option(
         "",
@@ -46,7 +55,7 @@ def main():
         action="store",
         metavar="SERVER",
         default=None,
-        help="The name of the INSA server host to use")
+        help="The name of the INSA server to use")
 
     parser.add_option(
         "",
@@ -183,7 +192,7 @@ def prep():
         fileHandle.write("\n")
 
         # Output host aliases
-        for host, alias in ([listenserver, "defaultspot"], [listenserver, "defaultcontroller"], [listenserver, "defaultweb"], [insaserver, "defaultinsa"]):
+        for host, alias in ([controllerserver, "defaultcontroller"], [spotserver, "defaultspot"], [insaserver, "defaultinsa"]):
             #loop through and lookup names for all hosts that
             #populated
             if host != None:
