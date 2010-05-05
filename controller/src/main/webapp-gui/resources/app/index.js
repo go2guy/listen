@@ -171,6 +171,7 @@ function ConferenceHistoryList() {
                 clone.attr('id', 'history-' + data.id);
                 clone.find('.history-content').html(data.dateCreated + ' - ' + data.description);
                 clone.css('opacity', 0);
+                clone.addClass(i % 2 == 1 ? 'odd' : 'even');
                 $('#history-list:first-child').prepend(clone);
                 clone.animate({ opacity: 1 }, 1000);
             }

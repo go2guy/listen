@@ -204,6 +204,10 @@
     width: 16px;
 }
 
+li.even {
+    background-color: #EEEEEE;
+}
+
 .left .panel {
     margin-right: 2px;
 }
