@@ -6,14 +6,14 @@
        *   @Desc   Sets up the parameters for PSTN or VOIP calls -->
 
     <!-- Node Variables -->
-    <var name="II_SB_destination" expr="getInput"/>        <!--  Destination number to be called -->
+    <var name="II_SB_destination" expr="phoneNumber"/>        <!--  Destination number to be called -->
     <var name="II_SB_callLength" expr="''"/>       <!--  Max length of the call -->
     <var name="II_SB_ringTime" expr="'25s'"/>               <!--  Max ring time -->
     <var name="II_SB_dialType" expr="'VOIP'"/>           <!--  VOIP/PSTN -->
     <var name="II_SB_allowDropKey" expr="'true'"/>    <!--  Whether drop keys are enabled -->
-    <var name="II_SB_drpKeyLength" expr="'3'"/>        <!--  Number of keys used for drop key -->
-    <var name="II_SB_drpKeyTime" expr="'3s'"/>          <!--  Time between drop key presses -->
-    <var name="II_SB_callerID" expr="''"/>                <!--  Caller ID -->
+    <var name="II_SB_drpKeyLength" expr="'1'"/>        <!--  Number of keys used for drop key -->
+    <var name="II_SB_drpKeyTime" expr="'0s'"/>          <!--  Time between drop key presses -->
+    <var name="II_SB_callerID" expr="outBoundID"/>                <!--  Caller ID -->
 
     <!-- Edge Variables -->
     <var name="II_SB_drpKeyOpt" expr="'105-27'"/>        <!--  Where to go if a drop key is pressed -->
@@ -21,7 +21,7 @@
     <var name="II_SB_notAnsOpt" expr="'105-11'"/>  	<!--  Next option when call is not answered -->
     <var name="II_SB_failedOpt" expr="'105-7'"/>     <!--  Next option when connection attempt fails -->
     <var name="II_SB_maxTimeOpt" expr="''"/>      <!--  Next option when max time for call is reached -->
-    <var name="II_SB_inbDiscOpt" expr="'82-3'"/>  <!--  Next option when caller hangs up -->
+    <var name="II_SB_inbDiscOpt" expr="'104-42'"/>  <!--  Next option when caller hangs up -->
     <var name="II_SB_outbDiscOpt" expr="'105-19'"/> <!--  Next option when called party hangs up -->
 
     <!-- Global variables -->
@@ -94,7 +94,8 @@
         		<log>INFO: Updated Last Entry to [<value expr="II_SB_lastEntry"/>]</log>
             </if>
 			<assign name="getInput" expr="II_SB_userEntry" />
-			
+			<assign name="outBoundID" expr="II_SB_outBoundID" />
+
             <log>INFO: CallerID [<value expr="II_SB_callerIdentity"/>]</log>
             <log>INFO: ConnectionID [<value expr="II_SB_outBoundID"/>]</log>
             <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>

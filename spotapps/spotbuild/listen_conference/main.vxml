@@ -18,31 +18,36 @@
     <var name="II_SB_NEXT_OPTION"/>
     <var name="II_SB_transfer"/>
     <var name="II_SB_projectSource"/>
-	<var name="SB_UV_startTime"/>
+	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_userID"/>
+	<var name="SB_UV_callType"/>
+	<var name="SB_UV_SID"/>
+	<var name="SB_UV_startTime"/>
+	<var name="SB_UV_tempSID"/>
 	<var name="SB_UV_fileName"/>
 	<var name="SB_UV_getInput"/>
-	<var name="SB_UV_userPin"/>
 	<var name="SB_UV_errCnt"/>
+	<var name="SB_UV_maxErr"/>
 	<var name="SB_UV_confID"/>
 	<var name="SB_UV_whichPath"/>
-	<var name="SB_UV_maxErr"/>
+	<var name="SB_UV_helpCnt"/>
+	<var name="SB_UV_maxHelp"/>
 	<var name="SB_UV_MODE"/>
 	<var name="SB_UV_DATA"/>
 	<var name="SB_UV_FILE"/>
-	<var name="SB_UV_infoSaved"/>
-	<var name="SB_UV_SID"/>
-	<var name="SB_UV_tempSID"/>
+	<var name="SB_UV_isInfoSaved"/>
 	<var name="SB_UV_CONF_ID"/>
 	<var name="SB_UV_audioURL"/>
 	<var name="SB_UV_request"/>
 	<var name="SB_UV_params"/>
 	<var name="SB_UV_id"/>
 	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_resource"/>
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_returnVal"/>
 	<var name="SB_UV_returnStr"/>
 	<var name="SB_UV_isAdmin"/>
+	<var name="SB_UV_maxReqCnt"/>
 	<var name="SB_UV_reqMinCnt"/>
 	<var name="SB_UV_reqMaxCnt"/>
 	<var name="SB_UV_reqCnt"/>
@@ -54,23 +59,19 @@
 	<var name="SB_UV_isPassive"/>
 	<var name="SB_UV_isActive"/>
 	<var name="SB_UV_pinLength"/>
-	<var name="SB_UV_resource"/>
-	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_index"/>
 	<var name="SB_UV_memberCnt"/>
 	<var name="SB_UV_prevPath"/>
 	<var name="SB_UV_phoneNumber"/>
 	<var name="SB_UV_whichEvent"/>
-	<var name="SB_UV_helpCnt"/>
-	<var name="SB_UV_maxHelp"/>
-	<var name="SB_UV_isRegistered"/>
 	<var name="SB_UV_hostName"/>
 	<var name="SB_UV_outBoundID"/>
+	<var name="SB_UV_pstnLength"/>
 
     
     <form id="beginDocument">
         <block>
-	        
+	        <log target="status">Start</log>
             <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
             <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
@@ -78,13 +79,26 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="ANI" expr="II_SB_remote" />
 			<assign name="userID" expr="II_SB_connectionID" />
+			<assign name="callType" expr="II_SB_type" />
 			<assign name="SID" expr="II_SB_sessionID" />
 
-			<if cond="SB_UV_startTime != undefined">
-				<assign name="startTime" expr="SB_UV_startTime" />
+			<if cond="SB_UV_ANI != undefined">
+				<assign name="ANI" expr="SB_UV_ANI" />
 			</if>
 			<if cond="SB_UV_userID != undefined">
 				<assign name="userID" expr="SB_UV_userID" />
+			</if>
+			<if cond="SB_UV_callType != undefined">
+				<assign name="callType" expr="SB_UV_callType" />
+			</if>
+			<if cond="SB_UV_SID != undefined">
+				<assign name="SID" expr="SB_UV_SID" />
+			</if>
+			<if cond="SB_UV_startTime != undefined">
+				<assign name="startTime" expr="SB_UV_startTime" />
+			</if>
+			<if cond="SB_UV_tempSID != undefined">
+				<assign name="tempSID" expr="SB_UV_tempSID" />
 			</if>
 			<if cond="SB_UV_fileName != undefined">
 				<assign name="fileName" expr="SB_UV_fileName" />
@@ -92,11 +106,11 @@
 			<if cond="SB_UV_getInput != undefined">
 				<assign name="getInput" expr="SB_UV_getInput" />
 			</if>
-			<if cond="SB_UV_userPin != undefined">
-				<assign name="userPin" expr="SB_UV_userPin" />
-			</if>
 			<if cond="SB_UV_errCnt != undefined">
 				<assign name="errCnt" expr="SB_UV_errCnt" />
+			</if>
+			<if cond="SB_UV_maxErr != undefined">
+				<assign name="maxErr" expr="SB_UV_maxErr" />
 			</if>
 			<if cond="SB_UV_confID != undefined">
 				<assign name="confID" expr="SB_UV_confID" />
@@ -104,8 +118,11 @@
 			<if cond="SB_UV_whichPath != undefined">
 				<assign name="whichPath" expr="SB_UV_whichPath" />
 			</if>
-			<if cond="SB_UV_maxErr != undefined">
-				<assign name="maxErr" expr="SB_UV_maxErr" />
+			<if cond="SB_UV_helpCnt != undefined">
+				<assign name="helpCnt" expr="SB_UV_helpCnt" />
+			</if>
+			<if cond="SB_UV_maxHelp != undefined">
+				<assign name="maxHelp" expr="SB_UV_maxHelp" />
 			</if>
 			<if cond="SB_UV_MODE != undefined">
 				<assign name="MODE" expr="SB_UV_MODE" />
@@ -116,14 +133,8 @@
 			<if cond="SB_UV_FILE != undefined">
 				<assign name="FILE" expr="SB_UV_FILE" />
 			</if>
-			<if cond="SB_UV_infoSaved != undefined">
-				<assign name="infoSaved" expr="SB_UV_infoSaved" />
-			</if>
-			<if cond="SB_UV_SID != undefined">
-				<assign name="SID" expr="SB_UV_SID" />
-			</if>
-			<if cond="SB_UV_tempSID != undefined">
-				<assign name="tempSID" expr="SB_UV_tempSID" />
+			<if cond="SB_UV_isInfoSaved != undefined">
+				<assign name="isInfoSaved" expr="SB_UV_isInfoSaved" />
 			</if>
 			<if cond="SB_UV_CONF_ID != undefined">
 				<assign name="CONF_ID" expr="SB_UV_CONF_ID" />
@@ -143,6 +154,9 @@
 			<if cond="SB_UV_cntrlURL != undefined">
 				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
 			</if>
+			<if cond="SB_UV_resource != undefined">
+				<assign name="resource" expr="SB_UV_resource" />
+			</if>
 			<if cond="SB_UV_status != undefined">
 				<assign name="status" expr="SB_UV_status" />
 			</if>
@@ -154,6 +168,9 @@
 			</if>
 			<if cond="SB_UV_isAdmin != undefined">
 				<assign name="isAdmin" expr="SB_UV_isAdmin" />
+			</if>
+			<if cond="SB_UV_maxReqCnt != undefined">
+				<assign name="maxReqCnt" expr="SB_UV_maxReqCnt" />
 			</if>
 			<if cond="SB_UV_reqMinCnt != undefined">
 				<assign name="reqMinCnt" expr="SB_UV_reqMinCnt" />
@@ -188,12 +205,6 @@
 			<if cond="SB_UV_pinLength != undefined">
 				<assign name="pinLength" expr="SB_UV_pinLength" />
 			</if>
-			<if cond="SB_UV_resource != undefined">
-				<assign name="resource" expr="SB_UV_resource" />
-			</if>
-			<if cond="SB_UV_ANI != undefined">
-				<assign name="ANI" expr="SB_UV_ANI" />
-			</if>
 			<if cond="SB_UV_index != undefined">
 				<assign name="index" expr="SB_UV_index" />
 			</if>
@@ -209,20 +220,14 @@
 			<if cond="SB_UV_whichEvent != undefined">
 				<assign name="whichEvent" expr="SB_UV_whichEvent" />
 			</if>
-			<if cond="SB_UV_helpCnt != undefined">
-				<assign name="helpCnt" expr="SB_UV_helpCnt" />
-			</if>
-			<if cond="SB_UV_maxHelp != undefined">
-				<assign name="maxHelp" expr="SB_UV_maxHelp" />
-			</if>
-			<if cond="SB_UV_isRegistered != undefined">
-				<assign name="isRegistered" expr="SB_UV_isRegistered" />
-			</if>
 			<if cond="SB_UV_hostName != undefined">
 				<assign name="hostName" expr="SB_UV_hostName" />
 			</if>
 			<if cond="SB_UV_outBoundID != undefined">
 				<assign name="outBoundID" expr="SB_UV_outBoundID" />
+			</if>
+			<if cond="SB_UV_pstnLength != undefined">
+				<assign name="pstnLength" expr="SB_UV_pstnLength" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

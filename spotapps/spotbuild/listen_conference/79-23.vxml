@@ -9,12 +9,12 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(helpCnt,maxHelp,userPin,pinLength)
+            function II_SB_JS_function(helpCnt,maxHelp,getInput,pinLength)
             {
-	                if (userPin.length == pinLength)
-        return userPin;
-    else if ((userPin == '*') && (helpCnt < maxHelp))
-        return userPin;
+	                if (getInput.length == pinLength)
+        return getInput;
+    else if ((getInput == '*') && (helpCnt < maxHelp))
+        return getInput;
     else
         return "ERROR";
             }
@@ -25,8 +25,8 @@
         <block>
             <log target="status">Check Entry</log>
             <log>INFO: Entered run-javascript.vxml [79-23]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(helpCnt,maxHelp,userPin,pinLength)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="userPin" expr="II_SB_userJava" />   
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(helpCnt,maxHelp,getInput,pinLength)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="getInput" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

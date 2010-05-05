@@ -1,0 +1,279 @@
+<?xml version="1.0" ?>
+<ccxml version="1.0">
+
+    <!-- Last Modified 04/23/2010 -->
+
+    <!--
+      /**
+       *   @Name   send-custom-event.ccxml
+       *   @desc   Send a Custom Event to a given session ID
+       */
+    -->
+
+    <!-- These variables are passed in from begin.ccxml -->
+    <var name="II_SB_status"/>
+    <var name="II_SB_NEXT_OPTION"/>
+    <var name="II_SB_remote"/>
+    <var name="II_SB_local"/>
+    <var name="II_SB_originator"/>
+    <var name="II_SB_protocol"/>
+    <var name="II_SB_connectionID"/>
+    <var name="II_SB_type"/>
+    <var name="II_SB_CODE_DIR"/>
+    <var name="II_SB_BASE_DIR"/>
+    <var name="II_SB_confid"/>
+    <var name="II_SB_passValues"/>
+    <var name="II_SB_ibcallid"/>
+    <var name="II_SB_VXML_LIB"/>
+    <var name="II_SB_projectSource"/>
+
+    <!-- spotbuild Options -->
+    <var name="II_SB_nxtOpt" expr="''"/>
+    <var name="II_SB_sessionToSendTo" expr="''"/>
+    <var name="II_SB_valueToPass" expr="''"/>
+    <var name="II_SB_eventToPass" expr="''"/>
+    <var name="II_SB_NEXT_OPTION_SUCCESS"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE"/>
+
+    <!-- Global variables -->
+    <var name="II_SB_state" expr="'idle'"/>   <!-- state. This variable holds the CCXML dialog state -->    
+    <var name="II_SB_dialogID" expr="''"/>    <!-- dialogID. Contains the ID for the last vxml dialog that was started -->
+    <var name="II_SB_sessionID" expr="''"/>   <!-- sessionID. Contains the ID of the ccxml session -->
+    <var name="II_SB_indialog" expr="'false'"/>
+    <var name="II_SB_userEntry" expr="''"/>	<!-- Drop key presses -->
+    <var name="II_SB_particList" expr="''"/>
+    <var name="II_SB_index" expr="0"/>
+    <var name="II_SB_whichID" expr="''"/>
+    <!-- call information -->
+    <var name="II_SB_obcallid"/>
+
+    <!-- load javascript library -->
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>
+
+    <!-- Begin executable code -->
+    <eventprocessor statevariable="II_SB_state">
+
+        <!-- Load CCXML file. Log status and update state -->
+		<transition state="idle" event="ccxml.loaded" name="loadEv">
+            <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Entered send-custom-event with id 113-53</log>
+            <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
+            <assign name="II_SB_state" expr="'loaded'"/>
+            <log>INFO: passValues [<value expr="II_SB_passValues"/>]</log>
+            <log>INFO: sessionID - <value expr="II_SB_sessionID"/></log>
+
+            <!-- Populating Global Variables -->
+            <assign name="II_SB_sessionToSendTo" expr="getNextElement(0,II_SB_passValues,'|')"/>
+            <assign name="II_SB_eventToPass" expr="getNextElement(1,II_SB_passValues,'|')"/>
+            <assign name="II_SB_valueToPass" expr="getNextElement(2,II_SB_passValues,'|')"/>
+            <assign name="II_SB_NEXT_OPTION_SUCCESS" expr="getNextElement(3,II_SB_passValues,'|')"/>
+            <assign name="II_SB_NEXT_OPTION_FAILURE" expr="getNextElement(4,II_SB_passValues,'|')"/>
+            <log>INFO: NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log> 
+            <log>INFO: session to send to - <value expr="II_SB_sessionToSendTo"/></log>
+            <if cond="II_SB_sessionToSendTo != ''">
+                <send data="'dialog.user.sendSessionId'" target="II_SB_sessionID"/>
+            <else/>
+                <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+            </if>
+    	</transition>
+
+        <transition event="dialog.user.sendSessionId">
+            <log>INFO: Sending custom event to session</log>
+            <if cond="II_SB_sessionToSendTo != II_SB_sessionID">
+                <assign name="II_SB_state" expr="'sendingEvent'"/>
+                <send data="'dialog.user.customEvent'" target="II_SB_sessionToSendTo" namelist="II_SB_eventToPass II_SB_valueToPass"/>
+            <else/>
+                <assign name="II_SB_NEXT_OPTION" expr="II_SB_NEXT_OPTION_SUCCESS"/>
+                <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="sendingEvent" event="send.successful">
+            <log>INFO: Custom Event send Success</log>
+            <assign name="II_SB_state" expr="'sendingEventSuccess'"/>
+            <assign name="II_SB_NEXT_OPTION" expr="II_SB_NEXT_OPTION_SUCCESS"/>
+            <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>            
+        </transition>
+
+        <transition state="sendingEvent" event="error.send.targetunavailable">
+            <log>INFO: Custom Event send Failed</log>
+            <assign name="II_SB_state" expr="'sendingEventFailed'"/>
+            <assign name="II_SB_NEXT_OPTION" expr="II_SB_NEXT_OPTION_FAILURE"/>            
+            <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+        </transition>
+
+        <!-- This option returns the call to the VXML so that whatever happens, this is the next transition -->
+        <transition event="dialog.user.nextVXML">
+			<log>INFO: transition event [dialog.user.nextVXML]</log>
+            <log>INFO: NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log>
+            <if cond="II_SB_NEXT_OPTION == '' || II_SB_NEXT_OPTION == undefined">
+                <assign name="II_SB_state" expr="'endCall'"/>
+                <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            <else/>
+                <assign name="II_SB_state" expr="'nextOptionRun'"/>
+    		    <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.vxml'" namelist="II_SB_ibcallid"/>
+            </if>
+        </transition>
+
+        <!-- Return from vxml dialog -->
+        <transition state="nextOptionRun" event="dialog.exit" name="evt">
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <assign name="II_SB_status" expr="evt.values.II_SB_status"/>
+       		<assign name="II_SB_NEXT_OPTION" expr="evt.values.II_SB_nextOpt"/>
+            <log>INFO: status to check on the dialog.exit [<value expr="II_SB_status"/>]</log>
+            <if cond="(II_SB_status == 'endCall') || (II_SB_status == 'hangup')">
+                <log>INFO: End call</log>
+                <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            <elseif cond="II_SB_status == 'outDialCheck'"/>
+                <log>INFO: Checking Out Dial status</log>
+                <var name="II_SB_fromCCXML" expr="'true'"/>
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.vxml'" namelist="II_SB_obcallid II_SB_fromCCXML"/>
+            <elseif cond="II_SB_status == 'transfer'"/>
+                <log>INFO: Transfering to a new program</log>
+                <var name="II_SB_transfer" expr="'yes'"/>
+                <assign name="II_SB_projectSource" expr="'listen_conference'"/>
+		        <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid"/>
+            <else/>
+		        <assign name="II_SB_passValues" expr="evt.values.II_SB_returnValues"/>
+        		<log>INFO: NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log>
+        		<log>INFO: passValues [<value expr="II_SB_passValues"/>]</log>
+        		<fetch next="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_NEXT_OPTION II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_CODE_DIR II_SB_BASE_DIR II_SB_ibcallid II_SB_passValues II_SB_projectSource II_SB_obcallid"/>
+            </if>
+        </transition>
+
+        <!-- Custom Event Code -->
+        <transition event="dialog.user.customEvent" name="evt">
+            <log>INFO: Received a customEvent</log>
+            <assign name="II_SB_state" expr="'customEvent'"/>
+            <assign name="II_SB_passValues" expr="evt.II_SB_eventToPass + '|' + evt.II_SB_valueToPass"/>
+            <if cond="II_SB_indialog == 'true'">
+                <send data="'dialog.user.termDialog'" target="II_SB_sessionID"/>
+            <else/>
+              	<assign name="II_SB_state" expr="'nextOptionRun'"/>
+	        	<dialogstart src="'file:' + II_SB_CODE_DIR + 'customEvent.vxml'" namelist="II_SB_ibcallid II_SB_passValues"/>
+            </if>
+        </transition>
+
+        <transition state="customEvent" event="dialog.exit">
+            <log>PHILLIP: entered the broadcast Message with dialog.exit</log>
+            <var name="II_SB_indialog" expr="'false'"/>
+          	<assign name="II_SB_state" expr="'nextOptionRun'"/>
+	    	<dialogstart src="'file:' + II_SB_CODE_DIR + 'customEvent.vxml'" namelist="II_SB_ibcallid II_SB_passValues"/>
+        </transition>
+
+        <!-- Catch for the disconnect of the obcallid -->
+        <transition event="connection.disconnected" name="evt" cond="evt.connectionid == II_SB_obcallid">
+            <log>INFO: caught the connection.disconnected from the hangup from connectionid - <value expr="II_SB_obcallid"/></log>
+            <assign name="II_SB_obcallid" expr="''"/>
+        </transition>
+
+		<transition event="connection.disconnected" name="evt" cond="evt.connectionid == II_SB_connectionID">
+            <log>INFO: transition event [connection.DISCONNECTED] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_ibcallid" expr="''"/>
+			<assign name="II_SB_discID" expr="evt.connectionid"/>
+			<assign name="II_SB_discReason" expr="evt.reason"/>
+			<assign name="II_SB_discOriginator" expr="evt.connection.originator"/>
+            <if cond="II_SB_indialog == 'true'">
+                <assign name="II_SB_state" expr="'terminatingDialog'"/>
+                <dialogterminate dialogid="II_SB_dialogID"/>
+            <else/>
+                <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="terminatingDialog" event="dialog.exit" name="evt">
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
+        </transition>
+
+		<transition event="dialog.user.hangup" name="evt">
+			<log>INFO: transition event [dialog.user.hangup] state [<value expr="II_SB_state"/>]</log>
+            <var name="II_SB_file1" expr="II_SB_CODE_DIR + 'hang-up.vxml'"/>
+            <var name="II_SB_file2" expr="''"/>
+            <var name="II_SB_fileOprtn" expr="'stat'"/>
+			<assign name="II_SB_state" expr="'hangUp'"/>
+            <dialogstart src="'file:' + II_SB_BASE_DIR + 'lib/vxml/fileUtil.vxml'" namelist="II_SB_file1 II_SB_file2 II_SB_fileOprtn"/> <!-- Check for Hangup logic -->
+		</transition>
+
+        <!-- Return from vxml dialog -->
+        <transition state="hangUp" event="dialog.exit" name="evt">
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <if cond="evt.values.II_SB_status != 'Failure'">
+                <if cond="evt.values.II_SB_fileSize != ''">
+                    <log>INFO: Found hang up node</log>
+                    <dialogstart src="'file:' + II_SB_CODE_DIR + 'hang-up.vxml'" namelist="II_SB_discID II_SB_discReason II_SB_discOriginator"/>
+                <else/>
+                    <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+                </if>
+            <else/>
+                <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <!-- Fetched ccxml document -->
+        <transition event="fetch.done" name="evt">
+            <log>INFO: transition event [fetch.done] state [<value expr="II_SB_state"/>]</log>
+            <goto fetchid="evt.fetchid"/> <!-- Go to ccxml document -->
+        </transition>
+
+        <!-- Started VXML dialog -->
+        <transition event="dialog.started" name="evt">
+            <assign name="II_SB_indialog" expr="'true'"/>
+            <assign name="II_SB_dialogID" expr="evt.dialogid"/>
+            <log>INFO: dialogID in the dialog.started [<value expr="II_SB_dialogID"/>]</log>
+        </transition>
+
+    	<!-- Terminates the currently running dialog. -->
+	    <transition event="dialog.user.termDialog">
+			<log>INFO: transition event [dialog.user.termDialog] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Terminating dialog [<value expr="II_SB_dialogID" />]</log>
+            <dialogterminate dialogid="II_SB_dialogID"/>
+        </transition>
+
+        <!-- catch dialog.exit -->
+        <transition event="dialog.exit" name="evt">
+			<log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+        </transition>
+
+        <!-- Catch dialog not started -->
+        <transition event="error.dialog.notstarted" name="evt">
+            <log>INFO: transition event [<value expr="evt.name"/>] state [<value expr="II_SB_state"/>]</log>
+            <log>ERROR: Unable to start Dialog. REASON [<value expr="evt.reason"/>]</log>
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+        </transition>
+
+        <!-- Catch fetch error -->
+        <transition event="error.fetch" name="evt">
+            <log>INFO: transition event [<value expr="evt.name"/>] state [<value expr="II_SB_state"/>]</log>
+            <log>ERROR: Unable to fetch document. REASON [<value expr="evt.reason"/>]</log>            
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+        </transition>
+
+        <!-- Catch errors -->
+        <transition event="error.dialog.semantic" name="evt">
+            <log>INFO: transition event [error.dialog.semantic] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+        </transition>
+
+        <transition event="err*" name="errEV">
+            <log>INFO: transition event [err*] state [<value expr="II_SB_state"/>]</log>
+            <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+        </transition>
+
+        <!-- Exit ccxml layer -->
+        <transition event="dialog.user.endCall">
+            <log>INFO: transition event [dialog.user.endCall] state [<value expr="II_SB_state"/>]</log>
+            <exit/>
+        </transition>
+
+    </eventprocessor>
+</ccxml>

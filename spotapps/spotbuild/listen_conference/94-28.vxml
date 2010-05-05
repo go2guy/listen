@@ -12,7 +12,7 @@
 	    <log target="status">Set Max Cnt</log>
             <log>INFO: Entered assign-variable.vxml [94-28]</log>
             <log>INFO: reqMaxCnt current value [<value expr="reqMaxCnt"/>]</log> <!-- Log current value. Update variable and log updated value -->
-            <assign name="reqMaxCnt" expr="'15' + ''"/>
+            <assign name="reqMaxCnt" expr="maxReqCnt + ''"/>
             <log>INFO: reqMaxCnt updated to [<value expr="reqMaxCnt"/>]</log>
             <if cond="II_SB_assign_NxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_assign_NxtOpt"/>.vxml]</log>

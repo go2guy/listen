@@ -6,7 +6,7 @@
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_conference'"/> <!--  PROJECT_NAME. Project directory -->
-    <var name="II_SB_NEXT_OPTION" expr="'78-3'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
+    <var name="II_SB_NEXT_OPTION" expr="'109-3'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
     <var name="II_SB_MAIN_VXML" expr="'main.vxml'"/>    <!-- MAIN_VXML. Contains the file name of the document to start once ccxml is loaded -->
     <var name="II_SB_BASE_DIR" expr="'/interact/apps/spotbuild/'"/>                 <!-- BASE_DIR. Base directory -->
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
@@ -26,31 +26,36 @@
     <var name="II_SB_whichID"/>
     <var name="II_SB_newNxtOpt"/>               <!-- newNextOpt. Contains name of next vxml. Gets its value from the create-session file -->
 
-	<var name="SB_UV_startTime"/>
+	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_userID"/>
+	<var name="SB_UV_callType"/>
+	<var name="SB_UV_SID"/>
+	<var name="SB_UV_startTime"/>
+	<var name="SB_UV_tempSID"/>
 	<var name="SB_UV_fileName"/>
 	<var name="SB_UV_getInput"/>
-	<var name="SB_UV_userPin"/>
 	<var name="SB_UV_errCnt"/>
+	<var name="SB_UV_maxErr"/>
 	<var name="SB_UV_confID"/>
 	<var name="SB_UV_whichPath"/>
-	<var name="SB_UV_maxErr"/>
+	<var name="SB_UV_helpCnt"/>
+	<var name="SB_UV_maxHelp"/>
 	<var name="SB_UV_MODE"/>
 	<var name="SB_UV_DATA"/>
 	<var name="SB_UV_FILE"/>
-	<var name="SB_UV_infoSaved"/>
-	<var name="SB_UV_SID"/>
-	<var name="SB_UV_tempSID"/>
+	<var name="SB_UV_isInfoSaved"/>
 	<var name="SB_UV_CONF_ID"/>
 	<var name="SB_UV_audioURL"/>
 	<var name="SB_UV_request"/>
 	<var name="SB_UV_params"/>
 	<var name="SB_UV_id"/>
 	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_resource"/>
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_returnVal"/>
 	<var name="SB_UV_returnStr"/>
 	<var name="SB_UV_isAdmin"/>
+	<var name="SB_UV_maxReqCnt"/>
 	<var name="SB_UV_reqMinCnt"/>
 	<var name="SB_UV_reqMaxCnt"/>
 	<var name="SB_UV_reqCnt"/>
@@ -62,18 +67,14 @@
 	<var name="SB_UV_isPassive"/>
 	<var name="SB_UV_isActive"/>
 	<var name="SB_UV_pinLength"/>
-	<var name="SB_UV_resource"/>
-	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_index"/>
 	<var name="SB_UV_memberCnt"/>
 	<var name="SB_UV_prevPath"/>
 	<var name="SB_UV_phoneNumber"/>
 	<var name="SB_UV_whichEvent"/>
-	<var name="SB_UV_helpCnt"/>
-	<var name="SB_UV_maxHelp"/>
-	<var name="SB_UV_isRegistered"/>
 	<var name="SB_UV_hostName"/>
 	<var name="SB_UV_outBoundID"/>
+	<var name="SB_UV_pstnLength"/>
 
 
     <!-- Global variables -->
@@ -98,7 +99,7 @@
             <!-- This transition contains the first event encountered when this file is loaded.
                  In here we check the values of the transfer and status variables to determine the
                  next action. If both variables are undefined, we need to start main.vxml -->
-            <log>INFO: Entered begin.ccxml [78-2]</log>
+            <log>INFO: Entered begin.ccxml [109-2]</log>
     	    <log target="status"><value expr="II_SB_PROJECT_NAME"/></log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <if cond="II_SB_obcallid == undefined">
@@ -118,7 +119,7 @@
             <assign name="II_SB_state" expr="'alerted'"/>
             <if cond="((II_SB_transfer == undefined) &amp;&amp; (II_SB_status == undefined))">
                 <assign name="II_SB_ibcallid" expr="II_SB_connectionID"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_startTime SB_UV_userID SB_UV_fileName SB_UV_getInput SB_UV_userPin SB_UV_errCnt SB_UV_confID SB_UV_whichPath SB_UV_maxErr SB_UV_MODE SB_UV_DATA SB_UV_FILE SB_UV_infoSaved SB_UV_SID SB_UV_tempSID SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_resource SB_UV_ANI SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber SB_UV_whichEvent SB_UV_helpCnt SB_UV_maxHelp SB_UV_isRegistered SB_UV_hostName SB_UV_outBoundID"/> <!-- Start vxml dialog -->
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_ANI SB_UV_userID SB_UV_callType SB_UV_SID SB_UV_startTime SB_UV_tempSID SB_UV_fileName SB_UV_getInput SB_UV_errCnt SB_UV_maxErr SB_UV_confID SB_UV_whichPath SB_UV_helpCnt SB_UV_maxHelp SB_UV_MODE SB_UV_DATA SB_UV_FILE SB_UV_isInfoSaved SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_resource SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_maxReqCnt SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber SB_UV_whichEvent SB_UV_hostName SB_UV_outBoundID SB_UV_pstnLength"/> <!-- Start vxml dialog -->
             <else/>
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
@@ -157,12 +158,12 @@
 
         <transition event="dialog.user.startMain" name="alertEV" cond="II_SB_ibcallid.length &gt; 0">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_startTime SB_UV_userID SB_UV_fileName SB_UV_getInput SB_UV_userPin SB_UV_errCnt SB_UV_confID SB_UV_whichPath SB_UV_maxErr SB_UV_MODE SB_UV_DATA SB_UV_FILE SB_UV_infoSaved SB_UV_SID SB_UV_tempSID SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_resource SB_UV_ANI SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber SB_UV_whichEvent SB_UV_helpCnt SB_UV_maxHelp SB_UV_isRegistered SB_UV_hostName SB_UV_outBoundID"/> <!-- Start vxml dialog -->
+            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_ANI SB_UV_userID SB_UV_callType SB_UV_SID SB_UV_startTime SB_UV_tempSID SB_UV_fileName SB_UV_getInput SB_UV_errCnt SB_UV_maxErr SB_UV_confID SB_UV_whichPath SB_UV_helpCnt SB_UV_maxHelp SB_UV_MODE SB_UV_DATA SB_UV_FILE SB_UV_isInfoSaved SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_resource SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_maxReqCnt SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber SB_UV_whichEvent SB_UV_hostName SB_UV_outBoundID SB_UV_pstnLength"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.user.startMain" name="alertEV">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_startTime SB_UV_userID SB_UV_fileName SB_UV_getInput SB_UV_userPin SB_UV_errCnt SB_UV_confID SB_UV_whichPath SB_UV_maxErr SB_UV_MODE SB_UV_DATA SB_UV_FILE SB_UV_infoSaved SB_UV_SID SB_UV_tempSID SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_resource SB_UV_ANI SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber SB_UV_whichEvent SB_UV_helpCnt SB_UV_maxHelp SB_UV_isRegistered SB_UV_hostName SB_UV_outBoundID"/> <!-- Start vxml dialog -->
+            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource SB_UV_ANI SB_UV_userID SB_UV_callType SB_UV_SID SB_UV_startTime SB_UV_tempSID SB_UV_fileName SB_UV_getInput SB_UV_errCnt SB_UV_maxErr SB_UV_confID SB_UV_whichPath SB_UV_helpCnt SB_UV_maxHelp SB_UV_MODE SB_UV_DATA SB_UV_FILE SB_UV_isInfoSaved SB_UV_CONF_ID SB_UV_audioURL SB_UV_request SB_UV_params SB_UV_id SB_UV_cntrlURL SB_UV_resource SB_UV_status SB_UV_returnVal SB_UV_returnStr SB_UV_isAdmin SB_UV_maxReqCnt SB_UV_reqMinCnt SB_UV_reqMaxCnt SB_UV_reqCnt SB_UV_sipURL SB_UV_FILE1 SB_UV_OPERATION SB_UV_isMuted SB_UV_isAdminMuted SB_UV_isPassive SB_UV_isActive SB_UV_pinLength SB_UV_index SB_UV_memberCnt SB_UV_prevPath SB_UV_phoneNumber SB_UV_whichEvent SB_UV_hostName SB_UV_outBoundID SB_UV_pstnLength"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->

@@ -23,24 +23,24 @@
             <assign name="II_SB_valueReceived" expr="getNextElement(1,II_SB_passValues,'|')"/>
             <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
 
-			<if cond="II_SB_eventReceived == 'DROP'">
-				<assign name="II_SB_assign_NxtOpt" expr="'96-78'"/>
-			</if>
-			<if cond="II_SB_eventReceived == 'UNMUTE'">
-				<assign name="II_SB_assign_NxtOpt" expr="'96-88'"/>
-			</if>
 			<if cond="II_SB_eventReceived == 'MUTE'">
-				<assign name="II_SB_assign_NxtOpt" expr="'96-99'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'112-4'"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'DROP'">
+				<assign name="II_SB_assign_NxtOpt" expr="'112-15'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'END'">
-				<assign name="II_SB_assign_NxtOpt" expr="'92-95'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'112-35'"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'UNMUTE'">
+				<assign name="II_SB_assign_NxtOpt" expr="'112-20'"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'DIAL'">
+				<assign name="II_SB_assign_NxtOpt" expr="'114-5'"/>
+				<assign name="phoneNumber" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'JOIN'">
 				<assign name="II_SB_assign_NxtOpt" expr="'86-22'"/>
-			</if>
-			<if cond="II_SB_eventReceived == 'On Demand Out Dial'">
-				<assign name="II_SB_assign_NxtOpt" expr="'107-52'"/>
-				<assign name="phoneNumber" expr="II_SB_valueReceived"/>
 			</if>
 
             <if cond="II_SB_assign_NxtOpt != ''">

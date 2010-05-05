@@ -6,7 +6,7 @@
        *   @Desc   Calls the create session ccxml template -->
 
     <!-- Node Variables -->
-    <var name="II_SB_whichID" expr="''"/>  <!-- Connection or conference ID used in new session -->
+    <var name="II_SB_whichID" expr="outBoundID"/>  <!-- Connection or conference ID used in new session -->
 
     <!-- Edge Variables -->
     <var name="II_SB_oldNxtOpt" expr="'86-3'"/>       <!-- Next option for original session -->
@@ -21,7 +21,7 @@
 
     <form id="beginDocument">
         <block>
-	         
+	        <log target="status">New Participant</log> 
             <log>INFO: Entered create-session.vxml [105-35]</log>
             <if cond="II_SB_fromCCXML == 'true'">
                 <log>INFO: Returning to ccxml with Variables</log>

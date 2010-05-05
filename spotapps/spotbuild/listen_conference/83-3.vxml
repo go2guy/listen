@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(userPin)
+            function II_SB_JS_function(getInput)
             {
-	            return "?_uniqueResult=true&number="+userPin;
+	            return "?_uniqueResult=true&number="+getInput;
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Pin Query</log>
             <log>INFO: Entered run-javascript.vxml [83-3]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(userPin)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

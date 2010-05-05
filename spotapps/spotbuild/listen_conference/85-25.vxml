@@ -11,9 +11,9 @@
         <block>
 	    <log target="status">Info Saved</log>
             <log>INFO: Entered assign-variable.vxml [85-25]</log>
-            <log>INFO: infoSaved current value [<value expr="infoSaved"/>]</log> <!-- Log current value. Update variable and log updated value -->
-            <assign name="infoSaved" expr="'true' + ''"/>
-            <log>INFO: infoSaved updated to [<value expr="infoSaved"/>]</log>
+            <log>INFO: isInfoSaved current value [<value expr="isInfoSaved"/>]</log> <!-- Log current value. Update variable and log updated value -->
+            <assign name="isInfoSaved" expr="'true' + ''"/>
+            <log>INFO: isInfoSaved updated to [<value expr="isInfoSaved"/>]</log>
             <if cond="II_SB_assign_NxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_assign_NxtOpt"/>.vxml]</log>
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_assign_NxtOpt + '.vxml'"/>
