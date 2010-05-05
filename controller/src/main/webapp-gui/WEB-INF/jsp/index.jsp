@@ -46,9 +46,11 @@ if(user != null && user.getIsAdministrator()) {
             </div>
             <div class="left">
               <div id="conference-callers" class="panel">
-                <div class="panel-title">Current Callers (<span id="conference-caller-count">0</span>)</div>
-                <div class="panel-menu">
-                  <button class="add-button" readonly="readonly" disabled="disabled">Add</button>
+                <div class="panel-header">
+                  <div class="panel-title">Current Callers (<span id="conference-caller-count">0</span>)</div>
+                  <div class="panel-menu">
+                    <button class="add-button" readonly="readonly" disabled="disabled">Add</button>
+                  </div>
                 </div>
                 <div class="panel-content">
                   <ul id="caller-list"></ul>
@@ -57,16 +59,20 @@ if(user != null && user.getIsAdministrator()) {
             </div>
             <div class="right">
               <div id="conference-pins" class="panel">
-                <div class="panel-title">Pins (<span id="conference-pin-count">0</span>)</div>
-                <div class="panel-menu">
-                  <button class="add-button" readonly="readonly" disabled="disabled">Add</button>
+                <div class="panel-header">
+                  <div class="panel-title">Pins (<span id="conference-pin-count">0</span>)</div>
+                  <div class="panel-menu">
+                    <button class="add-button" readonly="readonly" disabled="disabled">Add</button>
+                  </div>
                 </div>
                 <div class="panel-content">
                   <ul id="pin-list"></ul>
                 </div>
               </div>
               <div id="conference-history" class="panel">
-                <div class="panel-title">Recent History</div>
+                <div class="panel-header">
+                  <div class="panel-title">Recent History</div>
+                </div>
                 <div class="panel-content">
                   <ul id="history-list"></ul>
                 </div>
