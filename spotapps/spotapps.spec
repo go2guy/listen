@@ -71,8 +71,12 @@ Requires: spotbuild-vip
 # The files section lists all files included in the RPM
 #######################################################################
 %files
+    # We want to exclude the /interact/apps/spotbuild/ and /interact/apps/spotbuild/lib/cgi-bin/ directories and only include contents under them
+    # This is to keep the package from colliding with the directories which are also delivered by spobtuild-vip
     %defattr(777,interact,operator)
-    /interact/apps/spotbuild
+    /interact/apps/spotbuild/*.doc*
+    /interact/apps/spotbuild/listen*
+    /interact/apps/spotbuild/lib/cgi-bin/listen
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
