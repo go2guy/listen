@@ -14,7 +14,7 @@ elif [ "${UIA_URL}" == "" ]
 then
     echo "No uia package url given."
     exit 1
-elif [ "${controller}" == "" ]
+elif [ "${controllerserver}" == "" ]
 then
     echo "No listen controller server given."
     exit 1
