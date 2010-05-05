@@ -78,6 +78,7 @@
 	<var name="hostName" expr="''" /> <!-- Config System Local Host Name -->
 	<var name="outBoundID" expr="''" />
 	<var name="pstnLength" expr="'10'" /> <!-- Config PSTN Minimum Digits Length -->
+	<var name="DNIS" expr="'local'" />
 
 
     <!-- Conference Variables -->

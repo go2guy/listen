@@ -67,6 +67,7 @@
 	<var name="SB_UV_hostName"/>
 	<var name="SB_UV_outBoundID"/>
 	<var name="SB_UV_pstnLength"/>
+	<var name="SB_UV_DNIS"/>
 
     
     <form id="beginDocument">
@@ -77,6 +78,7 @@
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
 			<assign name="userID" expr="II_SB_connectionID" />
 			<assign name="callType" expr="II_SB_type" />
@@ -228,6 +230,9 @@
 			</if>
 			<if cond="SB_UV_pstnLength != undefined">
 				<assign name="pstnLength" expr="SB_UV_pstnLength" />
+			</if>
+			<if cond="SB_UV_DNIS != undefined">
+				<assign name="DNIS" expr="SB_UV_DNIS" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
