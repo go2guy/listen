@@ -22,7 +22,8 @@ except ImportError, e:
 
 def main():
     global phase
-    global listenserver
+    global controllerserver
+    global spotserver
     global insaserver
     global hostname
 
@@ -68,8 +69,11 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    if options.listenserver == None:
-        parser.error("--listenserver option not supplied")
+    if options.controllerserver == None:
+        parser.error("--controllerserver option not supplied")
+
+    if options.spotserver == None:
+        parser.error("--spotserver option not supplied")
 
     if options.insaserver == None:
         parser.error("--insaserver option not supplied")
@@ -77,11 +81,12 @@ def main():
     if options.phase == None:
         parser.error("--phase option not supplied")
 
-    listenserver,__,__ = socket.gethostbyaddr(options.listenserver)
+    controllerserver,__,__ = socket.gethostbyaddr(options.controllerserver)
+    spotserver,__,__ = socket.gethostbyaddr(options.spotserver)
     insaserver,__,__ = socket.gethostbyaddr(options.insaserver)
 
     hostname = socket.gethostname()
-    if hostname not in (listenserver):
+    if hostname not in (controllerserver, spotserver):
         print("Local hostname [ %s ] matches no entries on input hostlist." % hostname)
         sys.exit(1)
 
@@ -165,7 +170,7 @@ def all():
 def prep():
     run(["mkdir", "-p", "/interact/packages/"])
 
-    if hostname == listenserver:
+    if hostname == controllerserver:
         print("Preparing for deployment")
         run(["service", "listen-controller", "stop"], failonerror=False)
         run(["service", "collector", "stop"], failonerror=False)
@@ -325,7 +330,7 @@ def install():
     # define an empty list for startup commands
     startlist = {}
 
-    if hostname == listenserver:
+    if hostname == controllerserver:
         run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "all"])
         startlist["/interact/program/iiMoap"] = ""
         startlist["/interact/program/iiSysSrvr"] = ""
@@ -341,7 +346,7 @@ def install():
 
 
 def post():    
-    if hostname == listenserver: 
+    if hostname == controllerserver: 
         # run automated tests here
         print("Performing postinstall steps") 
 
