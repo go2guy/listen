@@ -181,7 +181,7 @@
   <target name="-rpmbuild" depends="deploy">
 
     <exec executable="rpmbuild" failonerror="true">
-      <env key="VERSION" value="1.0"/>
+      <env key="VERSION" value="${deploy.version}"/>
       <env key="RELEASE" value="${deploy.release}"/>
       <env key="TOPDIR" value="${rpm.staging.dir}"/>
       <arg line="-bb --buildroot ${rpm.staging.dir}/BUILD ${basedir}/controller.spec"/>
