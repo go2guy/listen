@@ -84,6 +84,12 @@ public final class HibernateUtil
 
     private static String getDbConnectionString()
     {
+        String configured = System.getProperty("com.interact.listen.dburl");
+        if(configured != null)
+        {
+            return configured;
+        }
+
         try
         {
             String dirPath = System.getProperty("data.dir", "/var/lib/com.interact.listen");

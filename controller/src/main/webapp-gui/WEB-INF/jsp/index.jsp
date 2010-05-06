@@ -8,7 +8,7 @@
     <link rel="SHORTCUT ICON" href="./resources/app/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="./resources/yui-2.8.0r4/reset-fonts/reset-fonts.css">
     <link rel="stylesheet" type="text/css" href="./resources/jquery/css/excite-bike/jquery-ui-1.8rc3.custom.css">
-    <link rel="stylesheet" type="text/css" href="./resources/app/common-min.css">
+<!--    <link rel="stylesheet" type="text/css" href="./resources/app/common-min.css">-->
     <link rel="stylesheet" type="text/css" href="./resources/app/all-min.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/index-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
@@ -34,6 +34,7 @@ if(user != null && user.getIsAdministrator()) {
 <%
 }
 %>
+        <div id="notification"></div>
         <div id="main">
           <div id="conference-window" class="window">
             <div class="conference-header">
@@ -82,8 +83,8 @@ if(user != null && user.getIsAdministrator()) {
         </div>
       </div><!-- wrapper-main -->
     </div><!-- wrapper -->
-    <div id="footer">
-      Listen &copy;2010 <a href="http://www.iivip.com">Interact Incorporated</a> | <a href="#">Terms of Use</a>
+    <div id="footer"><!--
+      Listen &copy;2010 <a href="http://www.iivip.com">Interact Incorporated</a> | <a href="#">Terms of Use</a>-->
     </div>
 
     <div id="templates">
@@ -107,23 +108,32 @@ if(user != null && user.getIsAdministrator()) {
 if(user != null && user.getIsAdministrator()) {
 %>
     <div id="provisionAccountDialog" class="dialog">
+      <div class="form-error-message"></div>
       <form id="provisionAccountForm" name="provisionAccountForm" method="POST" action="/provisionAccount">
-        <fieldset>
-          <div class="errors" style="display: none;"></div>
-          <label for="number">Subscriber Number
-            <input type="text" id="provisionAccountNumber" name="provisionAccountNumber"/>
-          </label>
-          <label for="provisionAccountUsername">Username
-            <input type="text" id="provisionAccountUsername" name="provisionAccountUsername"/>
-          </label>
-          <label for="provisionAccountPassword">Password
-            <input type="password" id="provisionAccountPassword" name="provisionAccountPassword"/>
-          </label>
-        </fieldset>
-
-        <fieldset class="buttons">
-          <input type="submit" id="provisionAccountSubmit" name="provisionAccountSubmit" value="Create New Account"/>
-        </fieldset>
+        <table>
+          <caption>Creates a new subscriber, user, and conference</caption>
+          <tbody>
+            <tr>
+              <th><label for="number">Subscriber Number</label></th>
+              <td><input type="text" id="provisionAccountNumber" name="provisionAccountNumber"/></td>
+            </tr>
+            <tr>
+              <th><label for="provisionAccountUsername">Username</label></th>
+              <td><input type="text" id="provisionAccountUsername" name="provisionAccountUsername"/></td>
+            </tr>
+            <tr>
+              <th><label for="provisionAccountPassword">Password</label></th>
+              <td><input type="password" id="provisionAccountPassword" name="provisionAccountPassword"/></td>
+            </tr>
+            <tr>
+              <th><label for="provisionAccountPasswordConfirm">Confirm Password</label></th>
+              <td><input type="password" id="provisionAccountPasswordConfirm" name="provisionAccountPasswordConfirm"/></td>
+            </tr>
+            <tr>
+              <td colspan="2" class="buttons"><input type="submit" id="provisionAccountSubmit" name="provisionAccountSubmit" value="Create New Account"/></td>
+            </tr>
+          </tbody>
+        </table>
       </form>
     </div>
 <%
@@ -131,15 +141,18 @@ if(user != null && user.getIsAdministrator()) {
 %>
 
     <div id="scheduleConferenceDialog" class="dialog">
+      <div class="form-error-message"></div>
       <form id="scheduleConferenceForm" name="scheduleConferenceForm" method="POST" action="/scheduleConference">
-        <fieldset>
-          <div class="errors" style="display: none;"></div>
-          <label for="scheduleConferenceDate">Date
-            <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/>
-          </label>
-          <label for="scheduleConferenceTime">Time
-            <div id="scheduleConferenceTime" name="scheduleConferenceTime" style="display: inline">
-              <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour">
+        <table>
+          <caption>
+          This will send an email to the specified recipients with a date, time, phone number, and pin number.
+          </caption>
+          <tbody>
+            <tr>
+              <th><label for="scheduleConferenceDate">Date & Time</label></th>
+              <td>
+                <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/><br/>
+                <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour">
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -152,33 +165,36 @@ if(user != null && user.getIsAdministrator()) {
                   <option value="10">10</option>
                   <option value="11">11</option>
                   <option value="12">12</option>
-              </select>
-              <select id="scheduleConferenceTimeMinute" name="scheduleConferenceTimeMinute">
+                </select>
+                <select id="scheduleConferenceTimeMinute" name="scheduleConferenceTimeMinute">
                   <option value="00">00</option>
                   <option value="15">15</option>
                   <option value="30">30</option>
                   <option value="45">45</option>
-              </select>
-              <select id="scheduleConferenceTimeAmPm" name="scheduleConferenceTimeAmPm">
+                </select>
+                <select id="scheduleConferenceTimeAmPm" name="scheduleConferenceTimeAmPm">
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
-              </select>
-            </div>
-          </label>
-          <label for="scheduleConferenceDescription">Description
-            <input type="text" id="scheduleConferenceDescription" name="scheduleConferenceDescription"/>
-          </label>
-          <label for="scheduleConferenceActiveParticipants">Active Participants
-            <input type="text" id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"/>
-          </label>
-          <label for="scheduleConferencePassiveParticipants">Passive Participants
-            <input type="text" id="scheduleConferencePassiveParticipants" name="scheduleConferencePassiveParticipants"/>
-          </label>
-        </fieldset>
-
-        <fieldset class="buttons">
-          <input type="submit" id="scheduleConferenceSubmit" name="scheduleConferenceSubmit" value="Schedule Conference"/>
-        </fieldset>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th><label for="scheduleConferenceActiveParticipants">Active caller email addresses (comma-separated):</label></th>
+              <td><textarea id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"></textarea></td>
+            </tr>
+            <tr>
+              <th><label for="scheduleConferencePassiveParticipants">Passive caller email addresses (comma-separated):</label></th>
+              <td><textarea id="scheduleConferencePassiveParticipants" name="scheduleConferencePassiveParticipants"></textarea></td>
+            </tr>
+            <tr>
+              <th><label for="scheduleConferenceDescription">Memo to include in email</label></th>
+              <td><textarea id="scheduleConferenceDescription" name="scheduleConferenceDescription"></textarea>
+            </tr>
+            <tr>
+              <td colspan="2" class="buttons"><input type="submit" id="scheduleConferenceSubmit" name="scheduleConferenceSubmit" value="Schedule Conference"/></td>
+            </tr>
+          </tbody>
+        </table>
       </form>
     </div>
   </body>

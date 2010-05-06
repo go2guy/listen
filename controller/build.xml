@@ -92,6 +92,7 @@
            forkmode="once"
            showoutput="true">
       <sysproperty key="net.sourceforge.cobertura.datafile" file="${basedir}/cobertura.ser"/>
+      <sysproperty key="com.interact.listen.dburl" value="jdbc:hsqldb:mem:listendb"/>
       <formatter type="xml"/>
       <classpath>
         <pathelement location="${build.dir}/cobertura"/>
@@ -132,7 +133,6 @@
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
     </copy>
     <minify in="${war.staging.dir}/resources/app/all.css" out="${war.staging.dir}/resources/app/all-min.css"/>
-    <minify in="${war.staging.dir}/resources/app/common.css" out="${war.staging.dir}/resources/app/common-min.css"/>
     <minify in="${war.staging.dir}/resources/app/login.css" out="${war.staging.dir}/resources/app/login-min.css"/>
     <minify in="${war.staging.dir}/resources/app/login.js" out="${war.staging.dir}/resources/app/login-min.js"/>
     <minify in="${war.staging.dir}/resources/app/index.css" out="${war.staging.dir}/resources/app/index-min.css"/>

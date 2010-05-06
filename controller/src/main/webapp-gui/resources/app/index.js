@@ -286,7 +286,7 @@ $(document).ready(function() {
     $('#provisionAccountDialog').dialog({
         autoOpen: false,
         draggable: false,
-        height: 400,
+        height: 600,
         modal: true,
         position: 'center',
         resizable: false,
@@ -296,7 +296,6 @@ $(document).ready(function() {
 
     $('#provisionAccountForm').submit(function(event) {
         provisionAccount(event);
-        $('#provisionAccountDialog').dialog('close');
         return false;
     });
 
@@ -307,7 +306,7 @@ $(document).ready(function() {
     $('#scheduleConferenceDialog').dialog({
         autoOpen: false,
         draggable: false,
-        height: 400,
+        height: 600,
         modal: true,
         position: 'center',
         resizable: false,
@@ -317,7 +316,6 @@ $(document).ready(function() {
 
     $('#scheduleConferenceForm').submit(function(event) {
         scheduleConference(event);
-        $('#scheduleConferenceDialog').dialog('close');
         return false;
     });
 
@@ -383,36 +381,41 @@ $(document).ready(function() {
 });
 
 function provisionAccount(event) {
-    var errorDiv = $('#provisionAccountForm .errors');
-    errorDiv.hide();
+    var div = $('#scheduleConferenceDialog .form-error-message');
+    div.hide();
+    div.text('');
 
     var provisionAccountNumber = $('#provisionAccountNumber');
     var provisionAccountPassword = $('#provisionAccountPassword');
+    var provisionAccountPasswordConfirm = $('#provisionAccountPasswordConfirm');
     var provisionAccountUsername = $('#provisionAccountUsername'); 
 
     $.ajax({
         type: 'POST',
         url: event.target.action,
-        data: { number: provisionAccountNumber.val(),
+        data: { confirmPassword: provisionAccountPasswordConfirm.val(),
+                number: provisionAccountNumber.val(),
                 password: provisionAccountPassword.val(),
                 username: provisionAccountUsername.val() },
         success: function(data) {
-            //$('#provisionAccountDialog').close();
+            $('#provisionAccountDialog').dialog('close');
             provisionAccountNumber.val('');
             provisionAccountPassword.val('');
             provisionAccountUsername.val('');
-            noticeSuccess('Account Provisioned');
+            notify('Account provisioned');
         },
         error: function(data, status) {
-            errorDiv.html(data.responseText);
-            errorDiv.slideDown(200);
+            var div = $('#provisionAccountDialog .form-error-message');
+            div.text(data.responseText);
+            div.slideDown(200);
         }
     });
 }
 
 function scheduleConference(event) {
-    var errorDiv = $('#scheduleConferenceForm .errors');
-    errorDiv.hide();
+    var div = $('#scheduleConferenceDialog .form-error-message');
+    div.hide();
+    div.text('');
 
     var scheduleConferenceDate = $('#scheduleConferenceDate');
     var scheduleConferenceTimeHour = $('#scheduleConferenceTimeHour');
@@ -433,7 +436,7 @@ function scheduleConference(event) {
                 activeParticipants: scheduleConferenceActiveParticipants.val(),
                 passiveParticipants: scheduleConferencePassiveParticipants.val() },
         success: function(data) {
-            //$('#scheduleConferenceDialog').close();
+            $('#scheduleConferenceDialog').dialog('close');
             scheduleConferenceDate.val('');
             scheduleConferenceTimeHour.val('1');
             scheduleConferenceTimeMinute.val('00');
@@ -441,11 +444,29 @@ function scheduleConference(event) {
             scheduleConferenceDescription.val('');
             scheduleConferenceActiveParticipants.val('');
             scheduleConferencePassiveParticipants.val('');
-            //noticeSuccess('Conference Scheduled');
+            notify('Emails have been sent to the provided addresses');
         },
         error: function(data, status) {
-            errorDiv.html(data.responseText);
-            errorDiv.slideDown(200);
+            var div = $('#scheduleConferenceDialog .form-error-message');
+            div.text(data.responseText);
+            div.slideDown(200);
         }
     });
+}
+
+function notify(message, isError, stay) {
+    var div = $('#notification');
+    if(isError === true) {
+        div.addClass('error');
+    } else {
+        div.removeClass('error');
+    }
+    $('#notification').text(message);
+    $('#notification').slideDown(200);
+
+    if(stay !== true) {
+        setTimeout(function() {
+            $('#notification').slideUp(200);
+        }, 3000);
+    }
 }

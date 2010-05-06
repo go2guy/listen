@@ -47,26 +47,41 @@ public class ProvisionAccountServlet extends HttpServlet
         }
 
         String number = request.getParameter("number");
-        if(number == null)
+        if(number == null || number.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a number",
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Number",
                                       "text/plain");
             return;
         }
 
         String username = request.getParameter("username");
-        if(username == null)
+        if(username == null || username.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a username",
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username",
                                       "text/plain");
             return;
         }
 
         String password = request.getParameter("password");
-        if(password == null)
+        if(password == null || password.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a password",
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password",
                                       "text/plain");
+            return;
+        }
+
+        String confirmPassword = request.getParameter("confirmPassword");
+        if(confirmPassword == null || confirmPassword.trim().equals(""))
+        {
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "Please provide a Confirm Password", "text/plain");
+            return;
+        }
+
+        if(!password.equals(confirmPassword))
+        {
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "Password and Confirm Password do not match", "text/plain");
             return;
         }
 

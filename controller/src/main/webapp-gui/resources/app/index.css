@@ -121,15 +121,16 @@
     background-image: url('images/new/icon_speaker_muted_disabled_16x16.png');
 }
 
-/* dialogs */
-
-.dialog {
+#notification {
+    background-color: #66FF66;
+    border-color: #33CC33;
+    border-style: solid;
+    border-width: 2px 0;
     display: none;
-}
-
-.ui-widget-overlay {
-    background: #5d5d5d;
-    opacity: .5;
+    height: 1.5em;
+    padding-top: .25em;
+    text-align: center;
+    width: 100%;
 }
 
 /* conference window */
@@ -368,4 +369,53 @@ li.odd {
 
 .pin-remove button {
     margin-top: .25em;
+}
+
+/* dialogs & forms */
+
+.dialog {
+    display: none;
+}
+
+.ui-widget-overlay {
+    background: #5d5d5d;
+    opacity: .5;
+}
+
+.dialog table {
+    width: 100%;
+}
+
+.dialog table caption {
+    font-style: italic;
+}
+
+.dialog table th {
+    width: 33%;
+}
+
+.dialog table td, .dialog table th {
+    padding: 10px 3px;
+    text-align: left;
+}
+
+.dialog table td.buttons {
+    text-align: center;
+}
+
+.dialog table td textarea {
+    width: 100%;
+}
+
+.form-error-message {
+    background-color: #CC0000;
+    color: #FFFFFF;
+    display: none;
+    padding: .25em;
+    text-align: center;
+    width: 100%;
+}
+
+#scheduleConferenceDate {
+    width: 10em;
 }
