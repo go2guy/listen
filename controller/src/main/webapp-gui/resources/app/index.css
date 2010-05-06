@@ -135,12 +135,12 @@
 /* conference window */
 
 .window {
-    border: 1px solid #DAE4EE;
-    border-radius: 8px;
+/*    border: 1px solid #DAE4EE;
+    border-radius: 8px;*/
     display: none;
-    height: 100%;
+/*    height: 100%;*/
     margin: 10px;
-    -moz-border-radius: 8px;
+/*    -moz-border-radius: 8px;*/
     overflow: hide;
     padding: 3px;
 }
