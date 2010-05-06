@@ -23,11 +23,13 @@ except ImportError, e:
 def main():
     global phase
     global controllerserver
-    global spotserver
+    global ivrserver
     global insaserver
     global hostname
+    global masterpkg
+    global uiapkg
 
-    phases = {"prep": prep, "install": install, "upgrade": install, "post": post, "all": all}
+    phases = {"prep": prep, "install": install, "post": post, "all": all}
 
     parser = OptionParser()
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
@@ -42,12 +44,12 @@ def main():
 
     parser.add_option(
         "",
-        "--spotserver",
-        dest="spotserver",
+        "--ivrserver",
+        dest="ivrserver",
         action="store",
         metavar="SERVER",
         default=None,
-        help="The name of the spot server to use")
+        help="The name of the ivr server to use")
 
     parser.add_option(
         "",
@@ -57,6 +59,24 @@ def main():
         metavar="SERVER",
         default=None,
         help="The name of the INSA server to use")
+
+    parser.add_option(
+        "",
+        "--masterpkg",
+        dest="masterpkg",
+        action="store",
+        metavar="PKG",
+        default=None,
+        help="The master package to use for installation")
+
+    parser.add_option(
+        "",
+        "--uiapkg",
+        dest="uiapkg",
+        action="store",
+        metavar="PKG",
+        default=None,
+        help="The uia package to use for installation")
 
     parser.add_option(
         "",
@@ -72,8 +92,8 @@ def main():
     if options.controllerserver == None:
         parser.error("--controllerserver option not supplied")
 
-    if options.spotserver == None:
-        parser.error("--spotserver option not supplied")
+    if options.ivrserver == None:
+        parser.error("--ivrserver option not supplied")
 
     if options.insaserver == None:
         parser.error("--insaserver option not supplied")
@@ -81,46 +101,244 @@ def main():
     if options.phase == None:
         parser.error("--phase option not supplied")
 
+    if options.masterpkg == None:
+        parser.error("--masterpkg option not supplied")
+
+    if options.uiapkg == None:
+        parser.error("--uiapkg option not supplied")
+
     controllerserver,__,__ = socket.gethostbyaddr(options.controllerserver)
-    spotserver,__,__ = socket.gethostbyaddr(options.spotserver)
+    ivrserver,__,__ = socket.gethostbyaddr(options.ivrserver)
     insaserver,__,__ = socket.gethostbyaddr(options.insaserver)
+    masterpkg = options.masterpkg
+    uiapkg = options.uiapkg
 
     hostname = socket.gethostname()
-    if hostname not in (controllerserver, spotserver):
-        print("Local hostname [ %s ] matches no entries on input hostlist." % hostname)
+    hosts = set([controllerserver, ivrserver])
+    if hostname not in hosts:
+        localprog = os.path.abspath(__file__)
+        remoteprog = os.path.expanduser('~/' + os.path.basename(__file__))
+        remotemaster = "/interact/" + os.path.basename(masterpkg)
+        remoteuia = "/interact/" + os.path.basename(uiapkg)
+
+        # Send to all hosts
+        for remotehost in hosts:
+            sftp(remotehost, localprog, remoteprog, 0700)
+            sftp(remotehost, masterpkg, remotemaster, 0700)
+            sftp(remotehost, uiapkg, remoteuia, 0700)
+            runRemote(remotehost, "%s --controllerserver=%s --ivrserver=%s --insaserver=%s --masterpkg=%s --uiapkg=%s --phase=%s" % (remoteprog, controllerserver, ivrserver, insaserver, remotemaster, remoteuia, options.phase))
+
+    else:
+        phases[options.phase]()
+
+
+def sftp(remotehost, localfile, remotefile, mode=None):
+    import paramiko
+
+    connection = None
+    client = None
+    retval = -1
+    try:
+        connection = paramiko.Transport((remotehost, 22))
+
+# Can't seem to get pub/priv key authentication working.  Will just use "super" for now.
+#        keyfile = open(os.path.expanduser("~/.ssh/id_dsa"))
+#        print("keyfile is [ %s ]." % keyfile)
+#        print("lines: \n%s" % "".join(keyfile.readlines()))
+#        pubkey = paramiko.PKey()
+#        pubkey.from_private_key(file_obj=keyfile)
+#        print(str(pubkey))
+#        pubkey.from_private_key_file(filename=os.path.expanduser("~/.ssh/id_dsa.pub"))
+
+        connection.connect(username="root", password="super")
+        if not connection.is_active():
+            print("Connection to [ %s ] is not active." % remotehost)
+            sys.exit(1)
+
+        if not connection.is_authenticated():
+            print("Failed authenticating to [ %s ]." % remotehost)
+            sys.exit(1)
+
+        client = paramiko.SFTPClient.from_transport(connection)
+        now = datetime.datetime.now()
+        print("%s deployListen> sftp %s %s:%s" % (str(now), localfile, remotehost, remotefile))
+        client.put(localfile, remotefile)
+
+        if mode != None:
+            client.chmod(remotefile, mode)
+
+        if client != None:
+            client.close()
+
+    except paramiko.SSHException, sshe:
+        print("Unable to connect to %s: %s" % (remotehost, str(sshe)))
         sys.exit(1)
 
-    phases[options.phase]()
+    if connection != None:
+        connection.close()
+
+    return retval
 
 
-def run(command, shell=False, failonerror=True):
-    now=datetime.datetime.now()
-    print("%s deployListen> %s " % (str(now), " ".join(command)))
+def runRemote(remotehost, command, failonerror=True):
+    import paramiko
 
+    connection = None
+    channel = None
+    retval = -1
     try:
-        retval = subprocess.call(command, shell=shell)
-        if retval != 0:
-            print("Command [ %s ] failed on [ %s ] (returned [ %s ])." % (" ".join(command), hostname, str(retval)))
+        connection = paramiko.Transport((remotehost, 22))
+
+# Can't seem to get pub/priv key authentication working.  Will just use "super" for now.
+#        keyfile = open(os.path.expanduser("~/.ssh/id_dsa"))
+#        print("keyfile is [ %s ]." % keyfile)
+#        print("lines: \n%s" % "".join(keyfile.readlines()))
+#        pubkey = paramiko.PKey()
+#        pubkey.from_private_key(file_obj=keyfile)
+#        print(str(pubkey))
+#        pubkey.from_private_key_file(filename=os.path.expanduser("~/.ssh/id_dsa.pub"))
+
+        connection.connect(username="root", password="super")
+        if not connection.is_active():
+            print("Connection to [ %s ] is not active." % remotehost)
+            sys.exit(1)
+
+        if not connection.is_authenticated():
+            print("Failed authenticating to [ %s ]." % remotehost)
+            sys.exit(1)
+
+        channel = connection.open_session()
+        channel.setblocking(0)
+
+        try:
+            now = datetime.datetime.now()
+            print("%s deployListen::%s> %s " % (str(now), remotehost, command))
+            channel.exec_command(command)
+
+            # Buffer remote command output, echoing to terminal.
+            # Keep reading until the remote command has finished.
+            while True:
+                if channel.recv_ready():
+                    sys.stdout.write(channel.recv(1024))
+
+                if channel.exit_status_ready():
+                    break
+
+                time.sleep(1)
+
+            # Output any stderr that might exist
+            while True:
+                if channel.recv_stderr_ready():
+                    sys.stdout.write(channel.recv_stderr(1024))
+
+                else:
+                    break;
+
+            # Note any nonzero return status and exit if applicable
+            retval = channel.recv_exit_status()
+            if retval != 0:
+                print("Remote command [ %s ] failed on [ %s ] (returned [ %s ])." % (command, remotehost, str(retval)))
+                if failonerror:
+                    sys.exit(1)
+
+        except paramiko.SSHException, sshe:
+            print("Remote command [ %s ] failed on [ %s ] (returned [ %s ])." % (command, remotehost, str(sshe)))
             if failonerror:
                 sys.exit(1)
 
-    except Exception, e:
-        print("Command [ %s ] failed on [ %s ] (returned [ %s ])." % (" ".join(command), hostname, str(e)))
-        if failonerror:
-            sys.exit(1)
+        if channel != None:
+            channel.close()
 
-    print
+    except paramiko.SSHException, sshe:
+        print("Unable to connect to %s: %s" % (remotehost, str(sshe)))
+        sys.exit(1)
+
+    if connection != None:
+        connection.close()
+
+    return retval
 
 
-def getLatestFile(filename):
-    # get all files which match the filename, sort in reverse, return first entry or None.
-    files = glob.glob(filename)
-    if len(files) >= 1:
-        files.sort(reverse=True)
-        return files[0]
+def all():
+    prep()
+    install()
+    post()
 
-    else:
-        return None
+
+def prep():
+    run(["mkdir", "-p", "/interact/packages/"])
+
+    if hostname == controllerserver:
+        print("Preparing for deployment")
+        run(["service", "listen-controller", "stop"], failonerror=False)
+        run(["service", "collector", "stop"], failonerror=False)
+
+        # And kill them just to be sure
+        killprocs = ["/interact/.*/iiMoap", "/interact/.*/iiSysSrvr", "/interact/.*/collector", "/interact/.*/listen-controller"]
+        for killproc in killprocs:
+            run(["pkill", "-TERM", "-f", killproc], failonerror=False)
+
+        time.sleep(30)
+
+        for killproc in killprocs:
+            run(["pkill", "-KILL", "-f", killproc], failonerror=False)
+
+    # setup hosts file
+    try:
+        # Output standard info
+        print("Generating hosts file")
+        fileHandle = open( "/etc/hosts" , "w+" )
+        fileHandle.write("# Do not remove the following line, or various programs\n")
+        fileHandle.write("# that require network functionality will fail.\n")
+        fileHandle.write("127.0.0.1       localhost.localdomain localhost\n")
+        fileHandle.write("::1             localhost6.localdomain6 localhost6\n")
+        fileHandle.write("\n")
+
+        # Output host aliases
+        for host, alias in ([controllerserver, "defaultcontroller"], [ivrserver, "defaultivr"], [insaserver, "defaultinsa"]):
+            #loop through and lookup names for all hosts that
+            #populated
+            if host != None:
+                try:
+                    ip = socket.gethostbyname(host)
+                    # name determined, write to hosts file
+                    fileHandle.write("%s %s %s %s.interact.nonreg\n" % (ip, host, alias, alias))
+
+                except:
+                    print("Unable to retrieve ip information for [ %s ]: %s" % (str(host), str(sys.exc_info()[0])))
+                    sys.exit(1)
+
+    finally:
+        fileHandle.close()
+
+    print("Removing old Interact rpm packages")
+    pardon = ['xtt','xvm-tools']
+    deathrow = []
+    transactionSet = rpm.TransactionSet()
+    iterator = transactionSet.dbMatch('group', "Interact")
+    if iterator != None:
+        for current in iterator:
+            currentfull = current['name'] + "-" + current['version'] + "-" + current['release']
+            if current['name'] in pardon:
+                print("Ignoring removal of package [ %s ]." % currentfull)
+            else:
+                print("Adding [ %s ] to list of rpms to be removed." % currentfull)
+                deathrow.append(currentfull)
+
+    # Remove all rpms in deathrow as long as we have added a package
+    if len(deathrow) > 0:
+        execute = ["rpm", "-e"]
+        execute.extend(deathrow)
+        run(execute)
+
+    # Clean interact directory
+    pardon = ["/interact/xtt", uiapkg, masterpkg]
+    removeFiles("/interact/", pardon)
+
+    # remove interact user
+    print("Removing interact user.")
+    run(["userdel", "interact"], failonerror=False)
+    run(["groupdel", "operator"], failonerror=False)
 
 
 def removeFiles(rootdir, pardon={}):
@@ -161,86 +379,26 @@ def removeFiles(rootdir, pardon={}):
         run(execute)
 
 
-def all():
-    prep()
-    install()
-    post()
+def install():
+    # install uia packages
+    run(["rpm", "-Uvh", uiapkg])
 
-
-def prep():
-    run(["mkdir", "-p", "/interact/packages/"])
+    # define an empty list for startup commands
+    startlist = {}
 
     if hostname == controllerserver:
-        print("Preparing for deployment")
-        run(["service", "listen-controller", "stop"], failonerror=False)
-        run(["service", "collector", "stop"], failonerror=False)
+        run(["/interact/packages/iiInstall.sh", "-i", "--noinput", masterpkg, "all"])
+        startlist["/interact/program/iiMoap"] = ""
+        startlist["/interact/program/iiSysSrvr"] = ""
+        startlist["/etc/init.d/collector"] = "start"
+        startlist["/etc/init.d/listen-controller"] = "start"
 
-        # And kill them just to be sure
-        killprocs = ["/interact/.*/iiMoap", "/interact/.*/iiSysSrvr", "/interact/.*/collector", "/interact/.*/listen-controller"]
-        for killproc in killprocs:
-            run(["pkill", "-TERM", "-f", killproc], failonerror=False)
+    # License the system before we try to start anything.
+    license()
 
-        time.sleep(30)
-
-        for killproc in killprocs:
-            run(["pkill", "-KILL", "-f", killproc], failonerror=False)
-
-    # setup hosts file
-    try:
-        # Output standard info
-        print("Generating hosts file")
-        fileHandle = open( "/etc/hosts" , "w+" )
-        fileHandle.write("# Do not remove the following line, or various programs\n")
-        fileHandle.write("# that require network functionality will fail.\n")
-        fileHandle.write("127.0.0.1       localhost.localdomain localhost\n")
-        fileHandle.write("::1             localhost6.localdomain6 localhost6\n")
-        fileHandle.write("\n")
-
-        # Output host aliases
-        for host, alias in ([controllerserver, "defaultcontroller"], [spotserver, "defaultspot"], [insaserver, "defaultinsa"]):
-            #loop through and lookup names for all hosts that
-            #populated
-            if host != None:
-                try:
-                    ip = socket.gethostbyname(host)
-                    # name determined, write to hosts file
-                    fileHandle.write("%s %s %s %s.interact.nonreg\n" % (ip, host, alias, alias))
-
-                except:
-                    print("Unable to retrieve ip information for [ %s ]: %s" % (str(host), str(sys.exc_info()[0])))
-                    sys.exit(1)
-
-    finally:
-        fileHandle.close()
-
-    print("Removing old Interact rpm packages")
-    pardon = ['xtt','xvm-tools']
-    deathrow = []
-    transactionSet = rpm.TransactionSet()
-    iterator = transactionSet.dbMatch('group', "Interact")
-    if iterator != None:
-        for current in iterator:
-            currentfull = current['name'] + "-" + current['version'] + "-" + current['release']
-            if current['name'] in pardon:
-                print("Ignoring removal of package [ %s ]." % currentfull)
-            else:
-                print("Adding [ %s ] to list of rpms to be removed." % currentfull)
-                deathrow.append(currentfull)
-
-    # Remove all rpms in deathrow as long as we have added a package
-    if len(deathrow) > 0:
-        execute = ["rpm", "-e"]
-        execute.extend(deathrow)
-        run(execute)
-
-    # Clean interact directory
-    pardon = ["/interact/xtt", getLatestFile("/interact/uia*.rpm"), getLatestFile("/interact/listen*.rpm")]
-    removeFiles("/interact/", pardon)
-
-    # remove interact user
-    print("Removing interact user.")
-    run(["userdel", "interact"], failonerror=False)
-    run(["groupdel", "operator"], failonerror=False)
+    # execute listed startup commands 
+    for command,action in startlist.iteritems():
+        run([command, action])
 
 
 def license():
@@ -309,46 +467,30 @@ def license():
     print("")
 
 
-def install():
-    # install uia packages
-    uiaPKG = getLatestFile("/interact/uia*.rpm")
-    if uiaPKG == None:
-        print("No UIA package found")
-        sys.exit(1)
-
-    print("Found uia package [ %s ]." % uiaPKG)
-    run(["rpm", "-Uvh", uiaPKG])
-
-    # get listen package
-    listenPKG = getLatestFile("/interact/listen*.rpm")
-    if listenPKG == None:
-        print("No listen package found")
-        sys.exit(1)
-
-    print("Found listen package [ %s ]." % listenPKG)
-
-    # define an empty list for startup commands
-    startlist = {}
-
-    if hostname == controllerserver:
-        run(["/interact/packages/iiInstall.sh", "-i", "--noinput", listenPKG, "all"])
-        startlist["/interact/program/iiMoap"] = ""
-        startlist["/interact/program/iiSysSrvr"] = ""
-        startlist["/etc/init.d/collector"] = "start"
-        startlist["/etc/init.d/listen-controller"] = "start"
-
-    # License the system before we try to start anything.
-    license()
-
-    # execute listed startup commands 
-    for command,action in startlist.iteritems():
-        run([command, action])
-
-
 def post():    
     if hostname == controllerserver: 
         # run automated tests here
         print("Performing postinstall steps") 
+
+
+def run(command, shell=False, failonerror=True):
+    now=datetime.datetime.now()
+    print("%s deployListen> %s " % (str(now), " ".join(command)))
+
+    try:
+        retval = subprocess.call(command, shell=shell)
+        if retval != 0:
+            print("Command [ %s ] failed on [ %s ] (returned [ %s ])." % (" ".join(command), hostname, str(retval)))
+            if failonerror:
+                sys.exit(1)
+
+    except Exception, e:
+        print("Command [ %s ] failed on [ %s ] (returned [ %s ])." % (" ".join(command), hostname, str(e)))
+        if failonerror:
+            sys.exit(1)
+
+    print
+
 
 if __name__ == "__main__":
     main()
