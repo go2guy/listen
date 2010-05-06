@@ -219,7 +219,7 @@ def runRemote(remotehost, command, failonerror=True):
             # Keep reading until the remote command has finished.
             while True:
                 if channel.recv_ready():
-                    sys.stdout.write(channel.recv(1024))
+                    sys.stdout.write(channel.recv(1024 * 1024))
 
                 if channel.exit_status_ready():
                     break
@@ -229,7 +229,7 @@ def runRemote(remotehost, command, failonerror=True):
             # Output any stderr that might exist
             while True:
                 if channel.recv_stderr_ready():
-                    sys.stdout.write(channel.recv_stderr(1024))
+                    sys.stdout.write(channel.recv_stderr(1024 * 1024))
 
                 else:
                     break;
