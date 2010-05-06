@@ -61,6 +61,17 @@ Requires: spotbuild-vip
     mkdir -p %{buildroot}/interact/apps/
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
 
+    # Remove extras and listen_conference root.vxml
+    rm -rf %{buildroot}/interact/apps/spotbuild/*.docx %{buildroot}/interact/apps/spotbuild/*mailbox
+    rm -rf %{buildroot}/interact/apps/spotbuild/*main %{buildroot}/interact/apps/spotbuild/*voicemail
+    rm -f %{buildroot}/interact/apps/spotbuild/listen_conference/root.vxml
+
+    # Run Encryption
+#    /interact/program/iiXMLcrypt -e listenConf %{buildroot}/interact/apps/spotbuild/listen_conference
+
+    # Add root.vxml
+    cp -r %{STARTDIR}/spotbuild/listen_conference/root.vxml %{buildroot}/interact/apps/spotbuild/listen_conference
+
     # Install php scripts
     mkdir -p %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen
     cp %{STARTDIR}/scripts/*php %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen/
@@ -74,7 +85,6 @@ Requires: spotbuild-vip
     # We want to exclude the /interact/apps/spotbuild/ and /interact/apps/spotbuild/lib/cgi-bin/ directories and only include contents under them
     # This is to keep the package from colliding with the directories which are also delivered by spobtuild-vip
     %defattr(777,interact,operator)
-    /interact/apps/spotbuild/*.doc*
     /interact/apps/spotbuild/listen*
     /interact/apps/spotbuild/lib/cgi-bin/listen
 
