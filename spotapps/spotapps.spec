@@ -67,7 +67,7 @@ Requires: spotbuild-vip
     rm -f %{buildroot}/interact/apps/spotbuild/listen_conference/root.vxml
 
     # Run Encryption
-#    /interact/program/iiXMLcrypt -e listenConf %{buildroot}/interact/apps/spotbuild/listen_conference
+    /interact/program/iiXMLcrypt -e listenConf %{buildroot}/interact/apps/spotbuild/listen_conference
 
     # Add root.vxml
     cp -r %{STARTDIR}/spotbuild/listen_conference/root.vxml %{buildroot}/interact/apps/spotbuild/listen_conference
