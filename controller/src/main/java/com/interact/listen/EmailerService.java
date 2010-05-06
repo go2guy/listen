@@ -22,6 +22,7 @@ public class EmailerService
                                      + "Conference details:<br/><br/>"
                                      + "Date/Time: %s<br/>"
                                      + "Description: %s<br/>"
+                                     + "%s: %s<br/>" //this will be phone number or ip based on protocol
                                      + "Pin: %s<br/>"
                                      + "</body></html>";
     
@@ -65,18 +66,19 @@ public class EmailerService
     }
 
     public boolean sendScheduleEmail(ArrayList<String> toAddressesList, String username, String description, 
-                                     Date dateTime, Conference conference, String emailType)
+                                     Date dateTime, Conference conference, String phoneNumber, String protocol, String emailType)
     {
         String body  = "";
         boolean result = true;
+        String numberTitle = protocol.equals("PSTN") ? "Phone Number" : "IP Address";
         
         if(emailType.equals("ACTIVE"))
         {
-            body = getActiveMessageBody(username, description, conference, dateTime);
+            body = getActiveMessageBody(username, description, conference, numberTitle, phoneNumber, dateTime);
         }
         else if(emailType.equals("PASSIVE"))
         {
-            body = getPassiveMessageBody(username, description, conference, dateTime);
+            body = getPassiveMessageBody(username, description, conference, numberTitle, phoneNumber, dateTime);
         }
         
         InternetAddress[] toAddresses = getInternetAddresses(toAddressesList);
@@ -113,20 +115,24 @@ public class EmailerService
         return mailAddresses.toArray(returnArray);
     }
 
-    private String getActiveMessageBody(String username, String description, Conference conference, Date dateTime)
+    private String getActiveMessageBody(String username, String description, Conference conference, String numberTitle,
+                                        String phoneNumber, Date dateTime)
     {
         String formattedDateTime = SDF.format(dateTime);
         String activePin = getPin(conference.getPins(), Pin.PinType.ACTIVE);
-        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, activePin);
+        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, numberTitle,
+                                                  phoneNumber, activePin);
         
         return formattedEmailBody;
     }
     
-    private String getPassiveMessageBody(String username, String description, Conference conference, Date dateTime)
+    private String getPassiveMessageBody(String username, String description, Conference conference,
+                                         String numberTitle, String phoneNumber, Date dateTime)
     {
         String formattedDateTime = SDF.format(dateTime);
         String passivePin = getPin(conference.getPins(), Pin.PinType.PASSIVE);
-        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, passivePin);
+        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, numberTitle,
+                                                  phoneNumber, passivePin);
         
         return formattedEmailBody;
     }

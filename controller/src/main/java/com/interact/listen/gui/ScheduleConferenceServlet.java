@@ -1,8 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.*;
-import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.*;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -118,47 +118,59 @@ public class ScheduleConferenceServlet extends HttpServlet
             ArrayList<String> serviceActiveAddresses =  new ArrayList<String>();
             ArrayList<String> servicePassiveAddresses =  new ArrayList<String>();
             
-            //attempting some validation here so the service doesn't error out on address without an '@' sign
-            for(String activeAddress : activeAddresses)
+            List<Resource> listenSpotSubscribers = queryListenSpotSubscribers(session);
+            String phoneNumber = getConferencePhoneNumber(listenSpotSubscribers);
+            String protocol = getConferenceProtocol(listenSpotSubscribers);
+            
+            if(!phoneNumber.equals("") && !protocol.equals(""))
             {
-                if(activeAddress.contains("@"))
+              //attempting some validation here so the service doesn't error out on address without an '@' sign
+                for(String activeAddress : activeAddresses)
                 {
-                    serviceActiveAddresses.add(activeAddress);
+                    if(activeAddress.contains("@"))
+                    {
+                        serviceActiveAddresses.add(activeAddress);
+                    }
+                }
+                
+                for(String passiveAddress : passiveAddresses)
+                {
+                    if(passiveAddress.contains("@"))
+                    {
+                        servicePassiveAddresses.add(passiveAddress);
+                    }
+                }
+                
+                boolean activeSuccess = true;
+                boolean passiveSuccess = true;
+                
+                if(!serviceActiveAddresses.isEmpty())
+                {
+                    activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, user.getUsername(), description,
+                                                                   sdf.parse(dateTime), userConference, phoneNumber,
+                                                                   protocol, "ACTIVE");
+                }
+                
+                if(!servicePassiveAddresses.isEmpty())
+                {
+                    passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, user.getUsername(),
+                                                                    description, sdf.parse(dateTime), userConference,
+                                                                    phoneNumber, protocol, "PASSIVE");
+                }
+                
+                if(!(activeSuccess && passiveSuccess))
+                {
+                    ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                              "An error occurred sending the conference schedule e-mail", "text/plain");
+                    return;
                 }
             }
-            
-            for(String passiveAddress : passiveAddresses)
+            else
             {
-                if(passiveAddress.contains("@"))
-                {
-                    servicePassiveAddresses.add(passiveAddress);
-                }
-            }
-            
-            boolean activeSuccess = true;
-            boolean passiveSuccess = true;
-            
-            if(!serviceActiveAddresses.isEmpty())
-            {
-                activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, user.getUsername(), description,
-                                                               sdf.parse(dateTime), userConference, "ACTIVE");
-            }
-            
-            if(!servicePassiveAddresses.isEmpty())
-            {
-                passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, user.getUsername(),
-                                                                description, sdf.parse(dateTime), userConference,
-                                                                "PASSIVE");
-            }
-            
-            if(!(activeSuccess && passiveSuccess))
-            {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                          "An error occurred sending the conference schedule e-mail", "text/plain");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                          "Unable to determine conference phone number or protocol", "text/plain");
                 return;
             }
-
-            transaction.commit();
         }
         catch(Exception e)
         {
@@ -170,8 +182,45 @@ public class ScheduleConferenceServlet extends HttpServlet
         }
         finally
         {
+            transaction.commit();
             System.out.println("TIMER: ScheduleConferenceServlet.doPost() took " + (System.currentTimeMillis() - start) +
                                "ms");
         }
+    }
+    
+    private List<Resource> queryListenSpotSubscribers(Session session)
+    {
+        List<Resource> listenSpotSubscribers;
+        
+        Criteria criteria = session.createCriteria(ListenSpotSubscriber.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        listenSpotSubscribers = (List<Resource>)criteria.list();
+        
+        return listenSpotSubscribers;
+    }
+    
+    private String getConferencePhoneNumber(List<Resource> listenSpotSubscribers)
+    {
+        String phoneNumber = "";
+        
+        if(listenSpotSubscribers.size() > 0)
+        {
+            phoneNumber = ((ListenSpotSubscriber)listenSpotSubscribers.get(0)).getPhoneNumber();
+        }
+        
+        return phoneNumber;
+    }
+    
+    private String getConferenceProtocol(List<Resource> listenSpotSubscribers)
+    {
+        String protocol = "";
+        
+        if(listenSpotSubscribers.size() > 0)
+        {
+            //get the enum value as a string
+            protocol = ((ListenSpotSubscriber)listenSpotSubscribers.get(0)).getPhoneNumberProtocol().toString();
+        }
+        
+        return protocol;
     }
 }
