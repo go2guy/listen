@@ -29,7 +29,7 @@ def main():
     global masterpkg
     global uiapkg
 
-    phases = {"prep": prep, "install": install, "post": post, "all": all}
+    phases = {"prep": prep, "license": license, "install": install, "post": post, "all": all}
 
     parser = OptionParser()
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
@@ -133,7 +133,11 @@ def main():
 
 
 def sftp(remotehost, localfile, remotefile, mode=None):
-    import paramiko
+    try:
+        import paramiko
+
+    except ImportError, e:
+        raise "Unable to import required module: " + str(e)
 
     connection = None
     client = None
@@ -181,7 +185,11 @@ def sftp(remotehost, localfile, remotefile, mode=None):
 
 
 def runRemote(remotehost, command, failonerror=True):
-    import paramiko
+    try:
+        import paramiko
+
+    except ImportError, e:
+        raise "Unable to import required module: " + str(e)
 
     connection = None
     channel = None
