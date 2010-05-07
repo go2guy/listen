@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <uia>
     <iiLoader>
-        <TYPES>*.vxml:*.ccxml</TYPES>
+        <TYPES></TYPES>
         <PATH></PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
