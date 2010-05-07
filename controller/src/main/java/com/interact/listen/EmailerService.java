@@ -15,7 +15,7 @@ public class EmailerService
 {
     private static final String EMAIL_SUBJECT = "Listen Conference Invitation";    
     private static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-    private static final SimpleDateFormat SDF = new SimpleDateFormat(ISO8601_FORMAT);
+    private final SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
     
     private static final String EMAIL_BODY = "<html><body>Hello,<br/><br/>"
                                      + "You have been invited to a conference by %s.<br/><br/>"
@@ -95,7 +95,6 @@ public class EmailerService
     {
         ArrayList<InternetAddress> mailAddresses = new ArrayList<InternetAddress>();
         
-        int i = 0;
         for(String email : emails)
         {
             try
@@ -118,7 +117,7 @@ public class EmailerService
     private String getActiveMessageBody(String username, String description, Conference conference, String numberTitle,
                                         String phoneNumber, Date dateTime)
     {
-        String formattedDateTime = SDF.format(dateTime);
+        String formattedDateTime = sdf.format(dateTime);
         String activePin = getPin(conference.getPins(), Pin.PinType.ACTIVE);
         String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, numberTitle,
                                                   phoneNumber, activePin);
@@ -129,7 +128,7 @@ public class EmailerService
     private String getPassiveMessageBody(String username, String description, Conference conference,
                                          String numberTitle, String phoneNumber, Date dateTime)
     {
-        String formattedDateTime = SDF.format(dateTime);
+        String formattedDateTime = sdf.format(dateTime);
         String passivePin = getPin(conference.getPins(), Pin.PinType.PASSIVE);
         String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, numberTitle,
                                                   phoneNumber, passivePin);
