@@ -15,7 +15,6 @@ public class EmailerService
 {
     private static final String EMAIL_SUBJECT = "Listen Conference Invitation";    
     private static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-    private final SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
     
     private static final String EMAIL_BODY = "<html><body>Hello,<br/><br/>"
                                      + "You have been invited to a conference by %s.<br/><br/>"
@@ -25,7 +24,9 @@ public class EmailerService
                                      + "%s: %s<br/>" //this will be phone number or ip based on protocol
                                      + "Pin: %s<br/>"
                                      + "</body></html>";
-    
+
+    private final SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
+
     private boolean sendEmail(InternetAddress[] toAddresses, String body, Date dateTime)
     {
         Properties props = new Properties();
