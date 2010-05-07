@@ -35,12 +35,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>GetConferenceHistoryServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetConferenceHistoryServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceInfoServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -49,18 +43,6 @@
     <servlet>
         <servlet-name>GetConferenceListServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceListServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>GetConferenceParticipantsServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetConferenceParticipantsServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>GetConferencePinsServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetConferencePinsServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -119,11 +101,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>GetConferenceHistoryServlet</servlet-name>
-        <url-pattern>/getConferenceHistory</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
         <url-pattern>/getConferenceInfo</url-pattern>
     </servlet-mapping>
@@ -131,16 +108,6 @@
     <servlet-mapping>
         <servlet-name>GetConferenceListServlet</servlet-name>
         <url-pattern>/getConferenceList</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>GetConferenceParticipantsServlet</servlet-name>
-        <url-pattern>/getConferenceParticipants</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>GetConferencePinsServlet</servlet-name>
-        <url-pattern>/getConferencePins</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -7,8 +7,9 @@ import static org.mockito.Mockito.verify;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.resource.*;
-import com.interact.listen.resource.Pin.PinType;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.User;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
@@ -45,7 +46,7 @@ public class GetConferenceInfoServletTest
         servlet.service(request, response);
 
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("Unauthorized", response.getContentAsString());
+        assertEquals("Unauthorized - not logged in", response.getContentAsString());
     }
 
     @Test

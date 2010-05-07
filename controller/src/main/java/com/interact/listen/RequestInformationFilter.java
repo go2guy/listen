@@ -19,6 +19,10 @@ public class RequestInformationFilter implements Filter
         info.append(req.getRemoteAddr()).append(" ");
         info.append(req.getMethod()).append(" ");
         info.append(req.getRequestURI());
+        if(req.getQueryString() != null && !req.getQueryString().trim().equals(""))
+        {
+            info.append("?").append(req.getQueryString());
+        }
 
         System.out.println("--> [" + info + "]");
 

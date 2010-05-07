@@ -1,12 +1,10 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.PersistenceService;
-import com.interact.listen.ServletUtil;
+import com.interact.listen.*;
+import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.json.JsonMarshaller;
-import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.*;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -37,7 +35,7 @@ public class GetConferenceInfoServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in", "text/plain");
             return;
         }
 
@@ -63,14 +61,22 @@ public class GetConferenceInfoServlet extends HttpServlet
             if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
             {
                 transaction.rollback();
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - conference does not belong to user", "text/plain");
                 return;
             }
 
+            StringBuilder content = new StringBuilder();
+            content.append("{");
+            content.append("\"info\":").append(getInfo(conference, marshaller)).append(",");
+            content.append("\"participants\":").append(getParticipants(conference, marshaller, session)).append(",");
+            content.append("\"pins\":").append(getPins(conference, marshaller, session)).append(",");
+            content.append("\"history\":").append(getHistory(conference, marshaller, session));
+            content.append("}");
+
             transaction.commit();
 
-            String content = marshaller.marshal(conference);
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content.toString(),
+                                      marshaller.getContentType());
         }
         catch(Exception e)
         {
@@ -85,5 +91,47 @@ public class GetConferenceInfoServlet extends HttpServlet
             System.out.println("TIMER: GetConferenceInfoServlet.doGet() took " + (System.currentTimeMillis() - start) +
                                "ms");
         }
+    }
+
+    private String getInfo(Conference conference, Marshaller marshaller)
+    {
+        return marshaller.marshal(conference);
+    }
+
+    private String getParticipants(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
+    {
+        Builder builder = new ResourceListService.Builder(Participant.class, session, marshaller)
+            .addSearchProperty("conference", "/conferences/" + conference.getId())
+            .addReturnField("id")
+            .addReturnField("isAdmin")
+            .addReturnField("isAdminMuted")
+            .addReturnField("isMuted")
+            .addReturnField("isPassive")
+            .addReturnField("number");
+        ResourceListService service = builder.build();
+        return service.list();
+    }
+
+    private String getPins(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
+    {
+        Builder builder = new ResourceListService.Builder(Pin.class, session, marshaller)
+            .addSearchProperty("conference", "/conferences/" + conference.getId())
+            .addReturnField("id")
+            .addReturnField("number")
+            .addReturnField("type");
+        ResourceListService service = builder.build();
+        return service.list();
+    }
+
+    private String getHistory(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
+    {
+        Builder builder = new ResourceListService.Builder(ConferenceHistory.class, session, marshaller)
+            .addSearchProperty("conference", "/conferences/" + conference.getId())
+            .addReturnField("dateCreated")
+            .addReturnField("description")
+            .addReturnField("id")
+            .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING);
+        ResourceListService service = builder.build();
+        return service.list();
     }
 }

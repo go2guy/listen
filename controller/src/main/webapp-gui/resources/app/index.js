@@ -325,41 +325,28 @@ $(document).ready(function() {
     $("#scheduleConferenceDate").datepicker();
 
     // set up conference
-
     $.getJSON('/getConferenceInfo', function(data) {
-        var conferenceId = data.id;
-        $('#conference-title').html('Conference ' + data.description);
+        var conferenceId = data.info.id;
+        $('#conference-title').html('Conference ' + data.info.description);
 
         var callers = new ConferenceCallerList();
-        var participantInterval = setInterval(function() {
-            $.getJSON('/getConferenceParticipants?id=' + conferenceId, function(data) {
-                callers.update(data.results);
-            });
-        }, 1000);
-    
         var history = new ConferenceHistoryList();
-        var historyInterval = setInterval(function() {
-            $.getJSON('/getConferenceHistory?id=' + conferenceId, function(data) {
-                history.update(data.results);
-            });
-        }, 1000);
-    
         var pins = new ConferencePinList();
-        var pinInterval = setInterval(function() {
-            $.getJSON('/getConferencePins?id=' + conferenceId, function(data) {
-                pins.update(data.results);
-            });
-        }, 1000);
 
-        var infoInterval = setInterval(function() {
+        var interval = setInterval(function() {
             $.getJSON('/getConferenceInfo?id=' + conferenceId, function(data) {
+                callers.update(data.participants.results);
+                history.update(data.history.results);
+                pins.update(data.pins.results);
+
+                // conference status icon and message
                 var icon = $('#conference-status-icon');
                 var message = $('#conference-status-message');
 
                 var onMessage = 'Started';
                 var offMessage = 'Waiting for administrator';
 
-                if(data.isStarted) {
+                if(data.info.isStarted) {
                     icon.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
                     if(message.text() != onMessage) {
                         message.text(onMessage);
