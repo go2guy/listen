@@ -212,7 +212,7 @@ public final class ResourceListService
                 }
                 else
                 {
-                    Class<? extends Converter> converterClass = Marshaller.getConverterClass(method.getReturnType());
+                    Class<? extends Converter> converterClass = Marshaller.getDefaultConverterClass(method.getReturnType());
                     Converter converter = converterClass.newInstance();
                     Object convertedValue = converter.unmarshal(value);
                     junction.add(Restrictions.eq(key, convertedValue));

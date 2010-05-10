@@ -69,7 +69,7 @@ public class JsonMarshaller extends Marshaller
             }
             else
             {
-                String resultString = Marshaller.convert(returnType, result);
+                String resultString = convert(returnType, result);
                 json.append(conditionallyQuote(resultString, returnType));
             }
 
@@ -163,7 +163,7 @@ public class JsonMarshaller extends Marshaller
                 }
                 else
                 {
-                    String resultString = Marshaller.convert(returnType, result);
+                    String resultString = convert(returnType, result);
                     json.append(conditionallyQuote(resultString, returnType));
                 }
             }
@@ -237,7 +237,7 @@ public class JsonMarshaller extends Marshaller
                 }
                 else
                 {
-                    Class<? extends Converter> converterClass = Marshaller.getConverterClass(parameterType);
+                    Class<? extends Converter> converterClass = getConverterClass(parameterType);
                     if(converterClass == null)
                     {
                         throw new AssertionError("No Converter configured for [" + parameterType +

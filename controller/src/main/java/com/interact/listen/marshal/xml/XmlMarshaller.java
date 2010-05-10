@@ -68,7 +68,7 @@ public class XmlMarshaller extends Marshaller
             }
             else
             {
-                String resultString = Marshaller.convert(returnType, result);
+                String resultString = convert(returnType, result);
                 xml.append(marshalTag(propertyTag, resultString));
             }
         }
@@ -171,7 +171,7 @@ public class XmlMarshaller extends Marshaller
                 }
                 else
                 {
-                    String resultString = Marshaller.convert(returnType, result);
+                    String resultString = convert(returnType, result);
                     xml.append(resultString);
                 }
 

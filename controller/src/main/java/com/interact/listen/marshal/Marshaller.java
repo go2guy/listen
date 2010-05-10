@@ -20,19 +20,22 @@ public abstract class Marshaller
     /** Global names of methods that should be omitted when marshalling objects */
     protected static final List<String> OMIT_METHODS = new ArrayList<String>();
 
+    /** Default Map of Converters that should be used when marshalling/unmarshalling certain data types */
+    private static final Map<Class<?>, Class<? extends Converter>> DEFAULT_CONVERTERS = new HashMap<Class<?>, Class<? extends Converter>>();
+
     /** Map of Converters that should be used when marshalling/unmarshalling certain data types */
-    private static Map<Class<?>, Class<? extends Converter>> converters = new HashMap<Class<?>, Class<? extends Converter>>();
+    private Map<Class<?>, Class<? extends Converter>> converters = new HashMap<Class<?>, Class<? extends Converter>>();
 
     static
     {
         OMIT_METHODS.add("getClass");
-        converters.put(Boolean.class, BooleanConverter.class);
-        converters.put(Date.class, Iso8601DateConverter.class);
-        converters.put(Integer.class, IntegerConverter.class);
-        converters.put(Long.class, LongConverter.class);
-        converters.put(Pin.PinType.class, PinTypeConverter.class);
-        converters.put(String.class, StringConverter.class);
-        converters.put(ListenSpotSubscriber.PhoneNumberProtocolType.class, PhoneNumberProtocolTypeConverter.class);
+        DEFAULT_CONVERTERS.put(Boolean.class, BooleanConverter.class);
+        DEFAULT_CONVERTERS.put(Date.class, Iso8601DateConverter.class);
+        DEFAULT_CONVERTERS.put(Integer.class, IntegerConverter.class);
+        DEFAULT_CONVERTERS.put(Long.class, LongConverter.class);
+        DEFAULT_CONVERTERS.put(Pin.PinType.class, PinTypeConverter.class);
+        DEFAULT_CONVERTERS.put(String.class, StringConverter.class);
+        DEFAULT_CONVERTERS.put(ListenSpotSubscriber.PhoneNumberProtocolType.class, PhoneNumberProtocolTypeConverter.class);
     }
 
     /**
@@ -162,11 +165,26 @@ public abstract class Marshaller
         }
     }
 
-    public static final Class<? extends Converter> getConverterClass(Class<?> forClass)
+    public final void registerConverterClass(Class<?> forClass, Class<? extends Converter> converterClass)
     {
-        return converters.get(forClass);
+        converters.put(forClass, converterClass);
     }
 
+    public final Class<? extends Converter> getConverterClass(Class<?> forClass)
+    {
+        if(converters.containsKey(forClass))
+        {
+            return converters.get(forClass);
+        }
+        
+        return Marshaller.getDefaultConverterClass(forClass);
+    }
+
+    public static final Class<? extends Converter> getDefaultConverterClass(Class<?> forClass)
+    {
+        return DEFAULT_CONVERTERS.get(forClass);
+    }
+    
     public static final Long getIdFromHref(String href)
     {
         if(href == null)
@@ -196,11 +214,11 @@ public abstract class Marshaller
         return null;
     }
 
-    public static final String convert(Class<?> forClass, Object value)
+    public final String convert(Class<?> forClass, Object value)
     {
         try
         {
-            Class<? extends Converter> converterClass = Marshaller.getConverterClass(forClass);
+            Class<? extends Converter> converterClass = getConverterClass(forClass);
             Converter converter = converterClass.newInstance();
             return converter.marshal(value);
         }

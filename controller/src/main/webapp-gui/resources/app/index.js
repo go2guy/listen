@@ -249,6 +249,10 @@ function ConferenceHistoryList() {
             for(var j = 0; j < histories.length; j++) {
                 var li = $(histories[j]);
                 if(li.attr('id') == 'history-' + data.id) {
+                    var content = data.dateCreated + ' - ' + data.description;
+                    if(li.text() != content) {
+                        li.text(content);
+                    }
                     found = true;
                     break;
                 }
@@ -257,7 +261,7 @@ function ConferenceHistoryList() {
             if(!found) {
                 var clone = $('#history-row-template').clone();
                 clone.attr('id', 'history-' + data.id);
-                clone.find('.history-content').html(data.dateCreated + ' - ' + data.description);
+                clone.find('.history-content').text(data.dateCreated + ' - ' + data.description);
                 clone.css('opacity', 0);
                 clone.addClass(i % 2 == 1 ? 'odd' : 'even');
                 $('#history-list:first-child').prepend(clone);

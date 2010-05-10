@@ -3,11 +3,14 @@ package com.interact.listen.gui;
 import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.marshal.Marshaller;
+import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.*;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
+
+import java.util.Date;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +51,8 @@ public class GetConferenceInfoServlet extends HttpServlet
             String id = request.getParameter("id");
 
             Marshaller marshaller = new JsonMarshaller();
+            marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
+
             Conference conference = GuiServletUtil.getConferenceFromIdOrUser(id, user, persistenceService);
 
             if(conference == null)
