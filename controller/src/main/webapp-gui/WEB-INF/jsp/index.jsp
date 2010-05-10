@@ -1,39 +1,35 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.interact.listen.resource.User" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html><%
+User user = (User)session.getAttribute("user"); %>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>Listen</title>
     <link rel="SHORTCUT ICON" href="./resources/app/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="./resources/yui-2.8.0r4/reset-fonts/reset-fonts.css">
     <link rel="stylesheet" type="text/css" href="./resources/jquery/css/excite-bike/jquery-ui-1.8rc3.custom.css">
-<!--    <link rel="stylesheet" type="text/css" href="./resources/app/common-min.css">-->
     <link rel="stylesheet" type="text/css" href="./resources/app/all-min.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/index-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
-    <script type="text/javascript" src="./resources/app/index-min.js"></script>
+    <script type="text/javascript" src="./resources/app/index-min.js"></script><%
+if(user != null && user.getIsAdministrator()) { %>
+    <script type="text/javascript" src="./resources/app/admin-min.js"></script><%
+} %>
   </head>
   <body>
     <div id="wrapper">
       <div id="wrapper-main">
-<%
-User user = (User)session.getAttribute("user");
-%>
         <div id="header">
           <div id="logo"><img src="resources/app/images/new/listen_logo_50x24.png"/></div>
           <div id="userInfo">Hi, <%= user.getUsername() %>! | <a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
-        </div>
-<%
-if(user != null && user.getIsAdministrator()) {
-%>
+        </div><%
+if(user != null && user.getIsAdministrator()) { %>
         <div id="subheader">
           <button id="create-new-account-button" class="add-button">Create New Account</button>
-        </div>
-<%
-}
-%>
+        </div><%
+} %>
         <div id="notification"></div>
         <div id="main">
           <div id="conference-window" class="window">
@@ -102,11 +98,8 @@ if(user != null && user.getIsAdministrator()) {
         <div class="pin-type"></div>
         <div class="pin-remove"></div>
       </li>
-    </div>
-
-<%
-if(user != null && user.getIsAdministrator()) {
-%>
+    </div><%
+if(user != null && user.getIsAdministrator()) { %>
     <div id="provisionAccountDialog" class="dialog">
       <div class="form-error-message"></div>
       <form id="provisionAccountForm" name="provisionAccountForm" method="POST" action="/provisionAccount">
@@ -135,11 +128,8 @@ if(user != null && user.getIsAdministrator()) {
           </tbody>
         </table>
       </form>
-    </div>
-<%
-}
-%>
-
+    </div><%
+} %>
     <div id="scheduleConferenceDialog" class="dialog">
       <div class="form-error-message"></div>
       <form id="scheduleConferenceForm" name="scheduleConferenceForm" method="POST" action="/scheduleConference">

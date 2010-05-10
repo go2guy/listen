@@ -132,6 +132,7 @@
     <copy todir="${war.staging.dir}">
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
     </copy>
+    <minify in="${war.staging.dir}/resources/app/admin.js" out="${war.staging.dir}/resources/app/admin-min.js"/>
     <minify in="${war.staging.dir}/resources/app/all.css" out="${war.staging.dir}/resources/app/all-min.css"/>
     <minify in="${war.staging.dir}/resources/app/login.css" out="${war.staging.dir}/resources/app/login-min.css"/>
     <minify in="${war.staging.dir}/resources/app/login.js" out="${war.staging.dir}/resources/app/login-min.js"/>
