@@ -1,5 +1,13 @@
 var currentConference;
 
+$.ajaxSetup({
+    error: function(xhr, textStatus, errorThrown) {
+        if(xhr && xhr.status == 401) {
+            window.location = '/logout';
+        }
+    }
+});
+
 var server = {
     muteCaller: function(id) {
         $.ajax({
@@ -55,32 +63,37 @@ function Conference(id) {
 
     this.show = function(animate) {
         interval = setInterval(function() {
-            $.getJSON('/getConferenceInfo?id=' + conferenceId, function(data) {
-                callers.update(data.participants.results);
-                history.update(data.history.results);
-                pins.update(data.pins.results);
-
-                var title = $('#conference-title');
-                if(title.text() != 'Conference ' + data.info.description) {
-                    title.text('Conference ' + data.info.description);
-                }
-
-                // conference status icon and message
-                var icon = $('#conference-status-icon');
-                var message = $('#conference-status-message');
-
-                var onMessage = 'Started';
-                var offMessage = 'Waiting for administrator';
-
-                if(data.info.isStarted) {
-                    icon.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
-                    if(message.text() != onMessage) {
-                        message.text(onMessage);
+            $.ajax({
+                url: '/getConferenceInfo?id=' + conferenceId,
+                dataType: 'json',
+                cache: false,
+                success: function(data, textStatus, xhr) {
+                    callers.update(data.participants.results);
+                    history.update(data.history.results);
+                    pins.update(data.pins.results);
+    
+                    var title = $('#conference-title');
+                    if(title.text() != 'Conference ' + data.info.description) {
+                        title.text('Conference ' + data.info.description);
                     }
-                } else {
-                    icon.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
-                    if(message.text() != offMessage) {
-                        message.text(offMessage);
+    
+                    // conference status icon and message
+                    var icon = $('#conference-status-icon');
+                    var message = $('#conference-status-message');
+    
+                    var onMessage = 'Started';
+                    var offMessage = 'Waiting for administrator';
+    
+                    if(data.info.isStarted) {
+                        icon.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
+                        if(message.text() != onMessage) {
+                            message.text(onMessage);
+                        }
+                    } else {
+                        icon.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
+                        if(message.text() != offMessage) {
+                            message.text(offMessage);
+                        }
                     }
                 }
             });
