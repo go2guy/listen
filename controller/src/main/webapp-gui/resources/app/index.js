@@ -1,3 +1,5 @@
+var currentConference;
+
 var server = {
     muteCaller: function(id) {
         $.ajax({
@@ -40,6 +42,79 @@ var server = {
             }
         });
     }
+}
+
+function Conference(id) {
+    var conferenceId = id;
+
+    var callers = new ConferenceCallerList();
+    var history = new ConferenceHistoryList();
+    var pins = new ConferencePinList();
+
+    var interval;
+
+    this.show = function(animate) {
+        interval = setInterval(function() {
+            $.getJSON('/getConferenceInfo?id=' + conferenceId, function(data) {
+                callers.update(data.participants.results);
+                history.update(data.history.results);
+                pins.update(data.pins.results);
+
+                var title = $('#conference-title');
+                if(title.text() != 'Conference ' + data.info.description) {
+                    title.text('Conference ' + data.info.description);
+                }
+
+                // conference status icon and message
+                var icon = $('#conference-status-icon');
+                var message = $('#conference-status-message');
+
+                var onMessage = 'Started';
+                var offMessage = 'Waiting for administrator';
+
+                if(data.info.isStarted) {
+                    icon.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
+                    if(message.text() != onMessage) {
+                        message.text(onMessage);
+                    }
+                } else {
+                    icon.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
+                    if(message.text() != offMessage) {
+                        message.text(offMessage);
+                    }
+                }
+            });
+        }, 1000);
+
+        setTimeout(function() {
+            var window = $('#conference-window');
+            if(animate) {
+                window.css('opacity', 0);
+                window.css('display', 'block');
+                window.animate({ opacity: 1 }, 1000);
+            } else {
+                window.css('display', 'block');
+            }
+        }, 1000);
+    };
+
+    this.hide = function(animate) {
+        var window = $('#conference-window');
+        if(animate) {
+            window.animate({ opacity: 0 }, 1000, function() {
+                window.css('display', 'none');
+            });
+        } else {
+            window.css('display', 'none');
+        }
+        $('#caller-list').find('li').remove();
+        $('#pin-list').find('li').remove();
+        $('#history-list').find('li').remove();
+
+        if(interval) {
+            clearInterval(interval);
+        }
+    };
 }
 
 function ConferenceCallerList() {
@@ -304,46 +379,9 @@ $(document).ready(function() {
     });
     $("#scheduleConferenceDate").datepicker();
 
-    // set up conference
     $.getJSON('/getConferenceInfo', function(data) {
-        var conferenceId = data.info.id;
-        $('#conference-title').html('Conference ' + data.info.description);
-
-        var callers = new ConferenceCallerList();
-        var history = new ConferenceHistoryList();
-        var pins = new ConferencePinList();
-
-        var interval = setInterval(function() {
-            $.getJSON('/getConferenceInfo?id=' + conferenceId, function(data) {
-                callers.update(data.participants.results);
-                history.update(data.history.results);
-                pins.update(data.pins.results);
-
-                // conference status icon and message
-                var icon = $('#conference-status-icon');
-                var message = $('#conference-status-message');
-
-                var onMessage = 'Started';
-                var offMessage = 'Waiting for administrator';
-
-                if(data.info.isStarted) {
-                    icon.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
-                    if(message.text() != onMessage) {
-                        message.text(onMessage);
-                    }
-                } else {
-                    icon.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
-                    if(message.text() != offMessage) {
-                        message.text(offMessage);
-                    }
-                }
-            });
-        }, 1000);
-
-        var conference = $('#conference-window');
-        conference.css('opacity', 0);
-        conference.css('display', 'block');
-        conference.animate({ opacity: 1 }, 1000);
+        currentConference = new Conference(data.info.id);
+        currentConference.show(true);
     });
 });
 

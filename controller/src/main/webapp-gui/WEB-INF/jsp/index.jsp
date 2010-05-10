@@ -31,7 +31,31 @@ if(user != null && user.getIsAdministrator()) { %>
         </div><%
 } %>
         <div id="notification"></div>
-        <div id="main">
+        <div id="main"><%
+if(user != null && user.getIsAdministrator()) { %>
+          <div id="conference-list" class="window">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Conference List</div>
+              </div>
+              <div class="panel-content">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Status</th><!--
+                      <th>Callers</th>
+                      <th>Duration</th>-->
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div><%
+} %>
           <div id="conference-window" class="window">
             <div class="conference-header">
               <div id="conference-title" class="conference-title">Conference ###</div>

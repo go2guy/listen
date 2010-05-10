@@ -59,7 +59,7 @@
     width: 100%;
 }
 
-.add-button, .delete-button, .mute-button, .schedule-button, .unmute-button, .unmute-button-disabled {
+.add-button, .delete-button, .mute-button, .schedule-button, .unmute-button, .unmute-button-disabled, .view-button {
     background-color: inherit;
     background-position: 1px 1px;
     background-repeat: no-repeat;
@@ -73,7 +73,7 @@
     padding-left: 18px;
 }
 
-.add-button:hover, .delete-button:hover, .mute-button:hover, .schedule-button:hover, .unmute-button:hover {
+.add-button:hover, .delete-button:hover, .mute-button:hover, .schedule-button:hover, .unmute-button:hover, .view-button:hover {
     color: #888888;
 }
 
@@ -121,6 +121,14 @@
     background-image: url('images/new/icon_speaker_muted_disabled_16x16.png');
 }
 
+.view-button {
+    background-image: url('images/new/icon_add_16x16.png');
+}
+
+.view-button:hover {
+    background-image: url('images/new/icon_add_hover_16x16.png');
+}
+
 #notification {
     background-color: #66FF66;
     border-color: #33CC33;
@@ -138,12 +146,49 @@
 .window {
 /*    border: 1px solid #DAE4EE;
     border-radius: 8px;*/
-    display: none;
 /*    height: 100%;*/
     margin: 10px;
 /*    -moz-border-radius: 8px;*/
     overflow: hide;
+    padding: 3px 3px 0 3px;
+}
+
+#conference-list .panel {
+    border-color: #666666;
+}
+
+#conference-list .panel-header {
+    background-color: #000000;
+/*    border-color: #666666;*/
+    color: #FFFFFF;
+}
+
+#conference-list .panel-title {
+    cursor: pointer;
+}
+
+#conference-list .panel-content {
+    display: none;
+/*    height: 15em;
+    overflow: auto;*/
+}
+
+#conference-list table {
+    border: 1px solid #CCCCCC;
+    border-collapse: collapse;
+}
+
+#conference-list table th {
+    font-weight: bold;
+}
+
+#conference-list table td, #conference-list table th {
+    border: 1px solid #CCCCCC;
     padding: 3px;
+}
+
+#conference-window {
+    display: none;
 }
 
 #conference-window .left, #conference-window .right {
@@ -218,7 +263,6 @@ li.odd {
 }
 
 .panel {
-/*    border: 1px solid #DAE4EE;*/
     border: 2px solid #1162AE;
     border-radius: 8px;
     font-size: 90%;
