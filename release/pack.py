@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 try:
-    import md5, base64
+    import md5, base64, re
     from optparse import OptionParser
 
 except ImportError, e:
@@ -14,10 +14,12 @@ def build(name, files):
     # Write all of the template code into output file up to the "load" method.
     templines = template.readlines()
     for index, templine in enumerate(templines):
+        outfile.write(templine)
+
         if re.search('def[\s]+load(.*):', templine) != None:
+            index += 1
             break
 
-        outfile.write(templine + "\n")
 
     # Write all of the packages in base64
     packfiles = []
@@ -30,12 +32,12 @@ def build(name, files):
             encont.append(base64.b64encode(packline))
         packfiles.append("packfile('%s','%s',['%s'])" % (packfile.name, md5.new("".join(contents)).hexdigest(), "','".join(encont)))
 
-    outfile.write("    global packfiles")
-    outfile.write("    packfiles = [%s]" % ",".join(packfiles))
+    outfile.write("    global packfiles" + "\n")
+    outfile.write("    packfiles = [%s]" % ",".join(packfiles) + "\n")
 
     # Write all of the template code after the load method.
     for index, templine in enumerate(templines[index:]):
-        outfile.write(templine + "\n")
+        outfile.write(templine)
 
     outfile.close()
 
