@@ -68,12 +68,12 @@ def default(unpackdir):
 
 def start():
     # Start all associated processes
-    run("/interact/master/iiMoap")
-    run("/interact/master/iiSysSrvr")
-    run("service", "collector", "start")
-    run("Service", "listen-controller", "start")
-    run("service", "statistics", "start")
-    run("service", "tomcat", "start")
+    run(["/interact/program/iiMoap"])
+    run(["/interact/program/iiSysSrvr"])
+    run(["service", "collector", "start"])
+    run(["service", "listen-controller", "start"])
+    run(["service", "statistics", "start"])
+    run(["service", "tomcat", "start"])
 
 
 def run(command, shell=False, failonerror=True):
