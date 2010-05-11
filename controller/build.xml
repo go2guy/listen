@@ -36,7 +36,7 @@
     <attribute name="in"/>
     <attribute name="out"/>
     <sequential>
-      <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true">
+      <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
         <arg line="@{in} -o @{out}"/>
       </java>
     </sequential>
