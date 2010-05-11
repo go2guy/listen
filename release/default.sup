@@ -1,0 +1,3 @@
+PROPSH /dev/null~upsert~controllerHost~localhost
+PROPSH /dev/null~insert~cc.host~localhost
+PROPSH /usr/local/tomcat/lib/insa.properties~update~eln.host~localhost

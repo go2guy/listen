@@ -36,7 +36,7 @@ class packfile(object):
 def load():
 
 
-def default(unpackdir):
+def default(unpackdir, sipServer):
     # Should be 3 packs (uia, listen, and Realize)
     uiapkg = None
     listenpkg = None
@@ -58,12 +58,22 @@ def default(unpackdir):
     if uiapkg == None or listenpkg == None or realizepkg == None:
         sys.exit("Unable to find required packages in bundle.")
 
+    # create default.sup if it doesn't exist...
+    os.utime(unpackdir + "/default.sup", None)
+
+    if sipServer != None and sipServer != "":
+        supfile = open(unpackdir + "/default.sup", "a")
+        supfile.write("CCVXML /interact/apps/spotbuild/listen_conference/root.vxml~update~sipURL~%s~SIP~var~expr~1~server name" % sipServer)
+        supfile.close()
+
     run(["rpm", "-Uvh", "--replacepkgs", unpackdir + "/" + uiapkg])
-    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "all"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--test", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "all"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "all"])
 #    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip"])
 #    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "ivrserver"])
 #    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "controller"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "realizeserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "realizeserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "realizeserver"])
 
 
 def start():
@@ -120,7 +130,16 @@ def main():
         dest="start",
         action="store_true",
         default=False,
-        help="Start all associated processes when installation is finished. (only applicable if \"default\" has also been specified.")
+        help="Start all associated processes when installation is finished (only applicable if \"default\" has also been specified.")
+
+    parser.add_option(
+        "",
+        "--sipServer",
+        dest="sipServer",
+        action="store",
+        metavar="HOST",
+        default=None,
+        help="The host name of the server containing the SIP trunk (only applicable if \"default\" has also been specified.")
 
     # Parse input parameters.
     (opts, args) = parser.parse_args()
@@ -150,7 +169,7 @@ def main():
 
     # If default was specified, run default commands
     if opts.default:
-        default(unpackdir)
+        default(unpackdir, opts.sipServer)
 
         if opts.start:
             start()
