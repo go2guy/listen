@@ -284,8 +284,6 @@ function ConferenceHistoryList() {
                 }
             }
 
-            console.log("I = " + i);
-
             if(!found) {
                 var clone = $('#history-row-template').clone();
                 clone.attr('id', 'history-' + data.id);
