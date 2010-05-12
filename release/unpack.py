@@ -77,6 +77,11 @@ def default(unpackdir, sipServer):
 
 
 def start():
+    # Only try to start things if a license file exists
+    if not os.path.exists('/interact/master/.iiXmlLicense'):
+        print("Applications are not licensed.")
+        sys.exit()
+
     # Start all associated processes
     run(["/interact/program/iiMoap"])
     run(["/interact/program/iiSysSrvr"])
@@ -125,21 +130,21 @@ def main():
         help="Install using all default values.")
 
     parser.add_option(
-        "-s",
-        "--start",
-        dest="start",
-        action="store_true",
-        default=False,
-        help="Start all associated processes when installation is finished (only applicable if \"default\" has also been specified.")
-
-    parser.add_option(
         "",
         "--sipServer",
         dest="sipServer",
         action="store",
         metavar="HOST",
         default=None,
-        help="The host name of the server containing the SIP trunk (only applicable if \"default\" has also been specified.")
+        help="The host name of the server containing the SIP trunk (only applicable if \"default\" has also been specified).")
+
+    parser.add_option(
+        "-s",
+        "--start",
+        dest="start",
+        action="store_true",
+        default=False,
+        help="Start all associated processes when installation is finished (only applicable if \"default\" has also been specified and a valid license file exists).")
 
     # Parse input parameters.
     (opts, args) = parser.parse_args()
