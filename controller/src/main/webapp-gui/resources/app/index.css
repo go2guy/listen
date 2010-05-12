@@ -336,8 +336,7 @@ li.odd {
 }
 
 .caller-row-admin {
-    /*background: #FFFFFF url('images/new/caller_admin_background.png') repeat-x bottom left;*/
-    background-color: #1162AE;
+    background-color: #81A8EA;
     color: #FFFFFF;
 }
 
@@ -410,7 +409,7 @@ li.odd {
 }
 
 .pin-row-admin {
-    background-color: #1162AE;
+    background-color: #81A8EA;
     color: #FFFFFF;
 }
 
