@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 04/23/2010 
+    <!-- Last Modified 05/05/2010 
        *   @Name   begin.ccxml
        *   @Desc   Starts a ccxml dialog and calls main.vxml -->
 
@@ -105,6 +105,9 @@
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <if cond="II_SB_obcallid == undefined">
                 <assign name="II_SB_obcallid" expr="''"/>
+            </if>
+            <if cond="II_SB_ibcallid == undefined">
+                <assign name="II_SB_ibcallid" expr="''"/>
             </if>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <assign name="II_SB_line" expr="getNextElement(0,II_SB_sessionID,'.')"/>

@@ -129,7 +129,7 @@
                     <if cond="iiNumber(tmpVal)">
                         <assign name="OBCALL.noproxy" expr="'false'"/>
                     </if>
-					<createcall dest="'sip:'+II_SB_destination" connectionid="II_SB_obcallid" callerid="II_SB_callerID" hints="OBCALL" timeout="II_SB_ringTime"/>
+					<createcall dest="'sip:'+II_SB_destination" connectionid="II_SB_obcallid" callerid="'sip:14024768786@stl03a.netlogic.net'" hints="OBCALL" timeout="II_SB_ringTime"/>
                     <var name="II_SB_promptID" expr="II_SB_BASE_DIR+'audio/system/ringing.00.wav'"/>
                     <var name="II_SB_repeat" expr="'y'"/>
                     <var name="II_SB_interval" expr="'2000'"/> <!-- Number of milliseconds repeat -->
