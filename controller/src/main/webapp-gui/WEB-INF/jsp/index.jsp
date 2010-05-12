@@ -22,7 +22,7 @@ if(user != null && user.getIsAdministrator()) { %>
     <div id="wrapper">
       <div id="wrapper-main">
         <div id="header">
-          <div id="logo"><img src="resources/app/images/new/listen_logo_50x24.png"/></div>
+          <div id="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
           <div id="userInfo">Hi, <%= user.getUsername() %>! | <a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
         </div><%
 if(user != null && user.getIsAdministrator()) { %>
@@ -70,12 +70,12 @@ if(user != null && user.getIsAdministrator()) { %>
                 <div class="panel-header">
                   <div class="panel-title">Current Callers (<span id="conference-caller-count">0</span>)</div>
                   <div class="panel-menu">
-                    <button id="outdial-show" name="outdial-show" class="outdial-button">Add</button>
+                    <button id="outdial-show" name="outdial-show" class="outdial-button">OnDemand</button>
                     <div id="outdial-dialog" class="inline-dialog">
                       <form name="outdial-form" id="outdial-form">
                         <div class="form-error-message"></div>
                         <div>
-                          <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/><br/>
+                          <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
                         </div>
                         <div>
                           <button class="cancel-button" name="outdial-cancel" id="outdial-cancel">Cancel</button>

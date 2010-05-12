@@ -110,11 +110,11 @@
 }
 
 .outdial-button {
-    background-image: url('images/new/icon_add_16x16.png');
+    background-image: url('images/new/icon_outdial_16x16.png');
 }
 
 .outdial-button:hover {
-    background-image: url('images/new/icon_add_hover_16x16.png');
+    background-image: url('images/new/icon_outdial_hover_16x16.png');
 }
 
 .schedule-button {
