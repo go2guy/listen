@@ -27,6 +27,11 @@ def pack(name, files):
             finally:
                 os.close(fileDescriptor)
 
+    # >1 arches is OK if one of them is "noarch". get rid of the noarch and use the arch specific package
+    # if the only arch is 'noarch' leave it.
+    if len(arch) > 1:
+        arch.pop('noarch', None)
+
     if len(arch) != 1:
         print("An invalid number or rpm architectures was found in input files %s: found %d but should be 1." % (files, len(arch)))
         sys.exit()
