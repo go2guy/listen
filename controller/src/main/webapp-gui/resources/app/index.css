@@ -63,18 +63,21 @@
     background-color: inherit;
     background-position: 1px 1px;
     background-repeat: no-repeat;
-    border-width: 0;
-    color: inherit;
+    border: 1px solid #1162AE;
+    border-radius: 4px;
+    color: #1162AE;
     cursor: pointer;
-    height: 18px;
+    height: 20px;
     font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
     font-size: 13px;
     font-weight: bold;
-    padding-left: 18px;
+    -moz-border-radius: 4px;
+    padding: 1px 1px 1px 18px;
+    -webkit-border-radius: 4px;
 }
 
 .add-button:hover, .cancel-button:hover, .delete-button:hover, .mute-button:hover, .outdial-button:hover, .schedule-button:hover, .unmute-button:hover, .view-button:hover {
-    color: #888888;
+    background-color: #FFFFFF;
 }
 
 .add-button {
@@ -243,7 +246,7 @@
 
 .conference-menu div {
     float: left;
-    margin: 3px 0 0 6px;
+    margin: 3px 0 3px 6px;
 }
 
 .conference-menu div.buttons {
