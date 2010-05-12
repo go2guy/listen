@@ -89,11 +89,11 @@
 }
 
 .cancel-button {
-    background-image: url('images/new/icon_delete_16x16.png');
+    background-image: url('images/new/icon_cancel_16x16.png');
 }
 
 .cancel-button:hover {
-    background-image: url('images/new/icon_delete_hover_16x16.png');
+    background-image: url('images/new/icon_cancel_hover_16x16.png');
 }
 
 .delete-button {
