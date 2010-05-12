@@ -76,6 +76,16 @@ public class ConferenceTest
         assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
+    
+    @Test
+    public void test_validate_nullStartTime_returnsTrueAndHasErrors()
+    {
+        conference = getPopulatedConference();
+        conference.setStartTime(null);
+
+        assertFalse(conference.validate());
+        assertTrue(conference.hasErrors());
+    }
 
     @Test
     public void test_validate_nullIsStarted_returnsHasErrors()

@@ -1,6 +1,9 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
+import com.interact.listen.stats.StatSenderFactory;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
@@ -26,6 +29,9 @@ public class Conference extends Resource implements Serializable
 
     @Column(nullable = false)
     private Boolean isStarted;
+    
+    @Column(nullable = false)
+    private Date startTime = new Date();
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Pin> pins = new HashSet<Pin>();
@@ -106,6 +112,16 @@ public class Conference extends Resource implements Serializable
     {
         this.description = description;
     }
+    
+    public Date getStartTime()
+    {
+        return startTime == null ? null : new Date(startTime.getTime());
+    }
+
+    public void setStartTime(Date startTime)
+    {
+        this.startTime = startTime == null ? null : new Date(startTime.getTime());
+    }
 
     public List<Participant> getParticipants()
     {
@@ -149,6 +165,11 @@ public class Conference extends Resource implements Serializable
         {
             addToErrors("isStarted cannot be null");
         }
+        
+        if(startTime == null)
+        {
+            addToErrors("startTime cannot be null");
+        }
 
         return !hasErrors();
     }
@@ -164,6 +185,7 @@ public class Conference extends Resource implements Serializable
         }
 
         copy.setDescription(description);
+        copy.setStartTime(startTime);
         copy.setConferenceHistorys(conferenceHistorys);
         copy.setIsStarted(isStarted);
         copy.setParticipants(participants);
@@ -181,6 +203,7 @@ public class Conference extends Resource implements Serializable
     @Override
     public void afterSave(Session session)
     {
+        StatSender statSender = StatSenderFactory.getStatSender();
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(this);
         history.setUser("Current User"); // FIXME
@@ -188,11 +211,17 @@ public class Conference extends Resource implements Serializable
 
         PersistenceService persistenceService = new PersistenceService(session);
         persistenceService.save(history);
+        
+        if(isStarted.booleanValue())
+        {
+            statSender.send(Stat.CONFERENCE_START);
+        }
     }
 
     @Override
     public void afterUpdate(Session session, Resource original)
     {
+        StatSender statSender = StatSenderFactory.getStatSender();
         Conference originalConference = (Conference)original;
         if(isStarted.booleanValue() != originalConference.getIsStarted().booleanValue())
         {
@@ -203,6 +232,22 @@ public class Conference extends Resource implements Serializable
 
             PersistenceService persistenceService = new PersistenceService(session);
             persistenceService.save(history);
+            
+            if(isStarted.booleanValue())
+            {
+                //Conference moved to 'started'
+                startTime = new Date();
+                statSender.send(Stat.CONFERENCE_START);
+            }
+            else
+            {
+                //Conference ended
+                // TODO add a conference length stat
+                Long conferenceLength = System.currentTimeMillis() - startTime.getTime();
+                
+                //want conference length in seconds
+                statSender.send(Stat.CONFERENCE_LENGTH, conferenceLength / 1000);
+            }
         }
     }
 

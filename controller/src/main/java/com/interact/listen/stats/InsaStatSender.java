@@ -7,9 +7,16 @@ public class InsaStatSender implements StatSender
     @Override
     public void send(Stat stat)
     {
+        send(stat, null);
+    }
+    
+    @Override
+    public void send(Stat stat, Long value)
+    {
         try
         {
-            StatsPublisher.send(stat.getStatId(), 1, StatsPublisher.INCREMENT);
+            StatsPublisher.send(stat.getStatId(), value == null ? 1 : value, value == null ? StatsPublisher.INCREMENT
+                                                                                          : StatsPublisher.SET);
         }
         catch(Exception e)
         {

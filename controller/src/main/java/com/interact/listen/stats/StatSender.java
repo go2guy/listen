@@ -9,4 +9,6 @@ public interface StatSender
      * @param stat {@code Stat} to send
      */
     public void send(Stat stat);
+    
+    public void send(Stat stat, Long vlaue);
 }

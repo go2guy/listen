@@ -1,6 +1,9 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
+import com.interact.listen.stats.StatSenderFactory;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
@@ -223,6 +226,7 @@ public class Participant extends Resource implements Serializable
     @Override
     public void afterSave(Session session)
     {
+        StatSender statSender = StatSenderFactory.getStatSender();
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(conference);
         history.setUser("Current User"); // FIXME
@@ -230,6 +234,21 @@ public class Participant extends Resource implements Serializable
 
         PersistenceService persistenceService = new PersistenceService(session);
         persistenceService.save(history);
+        
+        //TODO add stat for certain participant types joining a conference ADMIN, ACTIVE, PASSIVE
+        
+        if(isAdmin)
+        {
+            statSender.send(Stat.ADMIN_PARTICIPANT_JOIN);
+        }
+        else if(isPassive)
+        {
+            statSender.send(Stat.PASSIVE_PARTICIPANT_JOIN);
+        }
+        else
+        {
+            statSender.send(Stat.ACTIVE_PARTICIPANT_JOIN);
+        }
     }
 
     @Override
