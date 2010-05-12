@@ -9,6 +9,20 @@ $.ajaxSetup({
 });
 
 var server = {
+    dropCaller: function(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/dropParticipant',
+            data: { id: id },
+            success: function(data) {
+                //noticeSuccess('Participant dropped');
+            },
+            error: function(req) {
+                //noticeError(req.responseText);
+            }
+        });
+    },
+
     muteCaller: function(id) {
         $.ajax({
             type: 'POST',
@@ -19,6 +33,28 @@ var server = {
             },
             error: function(req) {
                 //noticeError(req.responseText);
+            }
+        });
+    },
+
+    outdial: function(number, conferenceId) {
+        var errorDiv = $('#outdial-dialog .form-error-message');
+        errorDiv.hide();
+        errorDiv.text('');
+
+        $.ajax({
+            type: 'POST',
+            url: '/outdial',
+            data: { number: number,
+                    conferenceId: conferenceId },
+            success: function(data) {
+                $('#outdial-dialog').slideUp(200);
+                notify('Number ' + number + ' is being dialed');
+            },
+            error: function(req) {
+                errorDiv.text(req.responseText);
+                errorDiv.slideDown(200);
+                //notify('An error occurred dialing the number - please contact an Administrator.');
             }
         });
     },
@@ -35,20 +71,6 @@ var server = {
                 //noticeError(req.responseText);
             }
         });
-    },
-
-    dropCaller: function(id) {
-        $.ajax({
-            type: 'POST',
-            url: '/dropParticipant',
-            data: { id: id },
-            success: function(data) {
-                //noticeSuccess('Participant dropped');
-            },
-            error: function(req) {
-                //noticeError(req.responseText);
-            }
-        });
     }
 }
 
@@ -60,6 +82,10 @@ function Conference(id) {
     var pins = new ConferencePinList();
 
     var interval;
+
+    this.getConferenceId = function() {
+        return conferenceId;
+    }
 
     this.show = function(animate) {
         interval = setInterval(function() {
@@ -395,6 +421,23 @@ $(document).ready(function() {
         $('#scheduleConferenceDialog').dialog('open');
     });
     $("#scheduleConferenceDate").datepicker();
+
+    $('#outdial-show').click(function() {
+        $('#outdial-dialog').slideDown(200);
+        $('#outdial-number').focus();
+    });
+
+    $('#outdial-form').submit(function() { return false });
+
+    $('#outdial-cancel').click(function() {
+        $('#outdial-dialog').slideUp(200);
+        $('#outdial-dialog .form-error-message').hide();
+        $('#outdial-dialog .form-error-message').text('');
+    });
+
+    $('#outdial-submit').click(function() {
+        server.outdial($('#outdial-number').val(), currentConference.getConferenceId());
+    });
 
     $.getJSON('/getConferenceInfo', function(data) {
         currentConference = new Conference(data.info.id);

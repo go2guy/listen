@@ -71,6 +71,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>OutdialServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.OutdialServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>ProvisionAccountServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.ProvisionAccountServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -128,6 +134,11 @@
     <servlet-mapping>
         <servlet-name>MuteParticipantServlet</servlet-name>
         <url-pattern>/muteParticipant</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>OutdialServlet</servlet-name>
+        <url-pattern>/outdial</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>

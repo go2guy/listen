@@ -36,7 +36,7 @@ public class SpotSystem
 
     private enum SpotRequestEvent
     {
-        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), UNMUTE_PARTICIPANT("UNMUTE");
+        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), OUTDIAL("DIAL"), UNMUTE_PARTICIPANT("UNMUTE");
 
         private String eventName;
 
@@ -63,6 +63,16 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.MUTE_PARTICIPANT.eventName);
         params.put("II_SB_valueToPass", "");
+        sendSpotRequest(params);
+    }
+
+    public void outdial(String number, String adminSessionId) throws IOException, SpotCommunicationException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("sessionid", adminSessionId);
+        params.put("name", "dialog.user.customEvent");
+        params.put("II_SB_eventToPass", SpotRequestEvent.OUTDIAL.eventName);
+        params.put("II_SB_valueToPass", number);
         sendSpotRequest(params);
     }
 

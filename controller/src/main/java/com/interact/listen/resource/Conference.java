@@ -30,7 +30,7 @@ public class Conference extends Resource implements Serializable
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Pin> pins = new HashSet<Pin>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private List<Participant> participants = new ArrayList<Participant>();
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })

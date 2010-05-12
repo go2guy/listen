@@ -59,7 +59,7 @@
     width: 100%;
 }
 
-.add-button, .delete-button, .mute-button, .schedule-button, .unmute-button, .unmute-button-disabled, .view-button {
+.add-button, .cancel-button, .delete-button, .mute-button, .outdial-button, .schedule-button, .unmute-button, .unmute-button-disabled, .view-button {
     background-color: inherit;
     background-position: 1px 1px;
     background-repeat: no-repeat;
@@ -73,7 +73,7 @@
     padding-left: 18px;
 }
 
-.add-button:hover, .delete-button:hover, .mute-button:hover, .schedule-button:hover, .unmute-button:hover, .view-button:hover {
+.add-button:hover, .cancel-button:hover, .delete-button:hover, .mute-button:hover, .outdial-button:hover, .schedule-button:hover, .unmute-button:hover, .view-button:hover {
     color: #888888;
 }
 
@@ -83,6 +83,14 @@
 
 .add-button:hover {
     background-image: url('images/new/icon_add_hover_16x16.png');
+}
+
+.cancel-button {
+    background-image: url('images/new/icon_delete_16x16.png');
+}
+
+.cancel-button:hover {
+    background-image: url('images/new/icon_delete_hover_16x16.png');
 }
 
 .delete-button {
@@ -99,6 +107,14 @@
 
 .mute-button:hover {
     background-image: url('images/new/icon_speaker_unmuted_hover_16x16.png');
+}
+
+.outdial-button {
+    background-image: url('images/new/icon_add_16x16.png');
+}
+
+.outdial-button:hover {
+    background-image: url('images/new/icon_add_hover_16x16.png');
 }
 
 .schedule-button {
@@ -162,13 +178,13 @@
 /*    border-color: #666666;*/
     color: #FFFFFF;
 }
-
+/*
 #conference-list .panel-title {
     cursor: pointer;
-}
+}*/
 
 #conference-list .panel-content {
-    display: none;
+    display: block;
 /*    height: 15em;
     overflow: auto;*/
 }
@@ -416,6 +432,19 @@ li.odd {
 }
 
 /* dialogs & forms */
+
+.inline-dialog {
+    background-color: #FFFFFF;
+    border: 2px solid #1162AE;
+    display: none;
+    padding: 10px;
+    position: absolute;
+}
+
+.inline-dialog div {
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
 
 .dialog {
     display: none;

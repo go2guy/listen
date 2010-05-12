@@ -70,7 +70,19 @@ if(user != null && user.getIsAdministrator()) { %>
                 <div class="panel-header">
                   <div class="panel-title">Current Callers (<span id="conference-caller-count">0</span>)</div>
                   <div class="panel-menu">
-                    <button class="add-button" readonly="readonly" disabled="disabled">Add</button>
+                    <button id="outdial-show" name="outdial-show" class="outdial-button">Add</button>
+                    <div id="outdial-dialog" class="inline-dialog">
+                      <form name="outdial-form" id="outdial-form">
+                        <div class="form-error-message"></div>
+                        <div>
+                          <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/><br/>
+                        </div>
+                        <div>
+                          <button class="cancel-button" name="outdial-cancel" id="outdial-cancel">Cancel</button>
+                          <button class="outdial-button" name="outdial-submit" id="outdial-submit">Make Call</button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 </div>
                 <div class="panel-content">

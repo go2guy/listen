@@ -2,6 +2,7 @@ package com.interact.listen.httpclient;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -103,13 +104,23 @@ public class HttpClientImpl implements HttpClient
     private static String buildQueryString(Map<String, String> params)
     {
         StringBuilder builder = new StringBuilder();
-        for(Map.Entry<String, String> entry : params.entrySet())
+        try
         {
-            builder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+            for(Map.Entry<String, String> entry : params.entrySet())
+            {
+                builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                builder.append("=");
+                builder.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                builder.append("&");
+            }
+            if(params.size() > 0)
+            {
+                builder.deleteCharAt(builder.length() - 1); // delete last '&'
+            }
         }
-        if(params.size() > 0)
+        catch(UnsupportedEncodingException e)
         {
-            builder.deleteCharAt(builder.length() - 1); // delete last '&'
+            throw new AssertionError(e);
         }
         return builder.toString();
     }

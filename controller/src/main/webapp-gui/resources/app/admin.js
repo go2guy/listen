@@ -18,7 +18,7 @@ $(document).ready(function() {
     $('#create-new-account-button').click(function(event) {
         $('#provisionAccountDialog').dialog('open');
     });
-
+/*
     $('#conference-list .panel-title').click(function(event) {
         var content = $('#conference-list .panel-content')
         if(content.css('display') == 'none') {
@@ -27,7 +27,7 @@ $(document).ready(function() {
             content.slideUp(200);
         }
     });
-
+*/
     var list = new ConferenceList();
     var interval = setInterval(function() {
         $.getJSON('/getConferenceList', function(data) {
@@ -144,7 +144,7 @@ function ConferenceList() {
 }
 
 function viewConference(id) {
-    $('#conference-list .panel-content').slideUp(200);
+    //$('#conference-list .panel-content').slideUp(200);
     if(currentConference) {
         currentConference.hide(false);
     }
