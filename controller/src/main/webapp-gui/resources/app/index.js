@@ -284,12 +284,14 @@ function ConferenceHistoryList() {
                 }
             }
 
+            console.log("I = " + i);
+
             if(!found) {
                 var clone = $('#history-row-template').clone();
                 clone.attr('id', 'history-' + data.id);
                 clone.find('.history-content').text(data.dateCreated + ' - ' + data.description);
                 clone.css('opacity', 0);
-                clone.addClass(i % 2 == 1 ? 'odd' : 'even');
+                clone.addClass((list.length - i) % 2 == 0 ? 'odd' : 'even');
                 $('#history-list:first-child').prepend(clone);
                 clone.animate({ opacity: 1 }, 1000);
             }
