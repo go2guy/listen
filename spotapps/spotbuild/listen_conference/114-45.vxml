@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_conference/root.vxml"> <!-- Set location of root document -->
+    <!-- Last Modified 11/02/2009
+       *   @Name   runJavaScript.vxml
+       *   @Desc   Executes a user defined Javascript function -->
+
+    <var name="II_SB_nxtOpt" expr="'105-44'"/> <!-- The next vxml template -->
+
+    <script>    <!-- User's Javascript function will be written here -->
+        <![CDATA[
+            function II_SB_JS_function(phoneNumber)
+            {
+	                var digits = new String();
+    var strObj =  new String(phoneNumber);
+    var loc1 = 0;
+    var loc2 = phoneNumber.length;
+    if (strObj.indexOf('sip:')     != -1) {loc1 = strObj.indexOf('sip:')     + 4}
+    if (strObj.indexOf('sip:+')    != -1) {loc1 = strObj.indexOf('sip:+')    + 5}
+    if (strObj.indexOf('sip:ext')  != -1) {loc1 = strObj.indexOf('sip:ext')  + 7}
+    if (strObj.indexOf('sips:')    != -1) {loc1 = strObj.indexOf('sips:')    + 5}
+    if (strObj.indexOf('sips:+')   != -1) {loc1 = strObj.indexOf('sips:+')   + 6}
+    if (strObj.indexOf('sips:ext') != -1) {loc1 = strObj.indexOf('sips:ext') + 8}
+    if (strObj.indexOf('tel:')     != -1) {loc1 = strObj.indexOf('tel:')     + 4} 
+    if (strObj.indexOf('tel:/')    != -1) {loc1 = strObj.indexOf('tel:/')    + 5}
+    if (strObj.indexOf('tel://')   != -1) {loc1 = strObj.indexOf('tel://')   + 6}
+    if (strObj.indexOf(';')        != -1) {loc2 = strObj.indexOf(';')}
+    if (strObj.indexOf('@')        != -1) {loc2 = strObj.indexOf('@')}
+    digits = strObj.substring(loc1,loc2);
+    return digits
+            }
+        ]]>
+    </script>
+
+    <form id="beginDocument">
+        <block>
+            <log target="status">Set ANI</log>
+            <log>INFO: Entered run-javascript.vxml [114-45]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(phoneNumber)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="ANI" expr="II_SB_userJava" />   
+	        <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="exit">
+	    <block>
+		    <if cond="II_SB_nxtOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
+			    <goto expr="'file:' + II_SB_APP_PATH + II_SB_nxtOpt + '.vxml'"/>
+		    <else/> <!-- Exit to ccxml layer -->
+			    <assign name="II_SB_status" expr="'endCall'"/>
+			    <log>INFO: Next Node not set. Exit to CCXML.</log>
+			    <log>INFO: Return status [<value expr="II_SB_status"/>]</log>
+			    <exit namelist="II_SB_status"/>
+		    </if>
+	    </block>
+    </form>
+</vxml>
