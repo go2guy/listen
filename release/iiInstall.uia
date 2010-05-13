@@ -1,0 +1,83 @@
+<?xml version = "1.0"?>
+<uia>
+    <iiInstall version="4">
+        <system>
+            <name>xmlsecurity</name>
+            <group>webserver</group>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>collector</name>
+            <rpmRegex>statcollector-</rpmRegex>
+            <group>webserver</group>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>collector-dts</name>
+            <rpmRegex>statcollector_dts</rpmRegex>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>iiacs</name>
+            <rpmRegex>iiacs-V</rpmRegex>
+            <group>arcade</group>
+        </system>
+
+        <system>
+            <name>iiacs-audio</name>
+            <group>arcade</group>
+        </system>
+
+        <system>
+            <name>iiacs-softspot</name>
+            <group>arcade</group>
+        </system>
+
+        <system>
+            <name>iiserv</name>
+            <rpmRegex>iiserv-V</rpmRegex>
+            <group>arcade</group>
+        </system>
+
+        <system>
+            <name>iiserv-snmp</name>
+            <group>arcade</group>
+        </system>
+
+        <system>
+            <name>iiserv-tool</name>
+            <group>arcade</group>
+        </system>
+
+        <system>
+            <name>iixap</name>
+            <rpmRegex>iixap-V</rpmRegex>
+            <group>arcade</group>
+        </system>
+
+        <system>
+            <name>spotbuild-vip</name>
+            <group>arcade</group>
+        </system>
+
+        <system>
+            <name>spotapps</name>
+            <rpmRegex>listen-spotapps</rpmRegex>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>controller</name>
+            <rpmRegex>listen-controller</rpmRegex>
+            <group>webserver</group>
+            <group>all</group>
+        </system>
+    </iiInstall>
+</uia>

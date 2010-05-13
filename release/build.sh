@@ -138,8 +138,7 @@ then
     exit 1
 fi
 
-# Move iiInstall and iiLoader config files into place
-cp iiInstall.cfg $BUILDROOT/interact/packages/conf/
+cp iiInstall.uia $BUILDROOT/interact/packages/conf/
 
 export MANIFEST=`pwd`/files.mf
 rpmbuild -bb --buildroot $BUILDROOT listen.spec

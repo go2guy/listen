@@ -1,5 +1,5 @@
 # UIA Configuration files.
-/interact/packages/conf/iiInstall.cfg
+/interact/packages/conf/iiInstall.uia
 
 # Controller files
 /interact/packages/listen-controller-*.rpm
