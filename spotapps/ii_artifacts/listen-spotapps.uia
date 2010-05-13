@@ -64,9 +64,9 @@
                 </property>
             </question>
 
-            <question level="not_in_backup" severity="ask">
+            <question level="not_in_backup" severity="take_default">
                 <text>Enter the pin length</text>
-                <default>6</default>
+                <default>10</default>
                 <validateRegex preset="DIGITS"/>
 
                 <property format="ccvxml" action="update" quotes="yes">
