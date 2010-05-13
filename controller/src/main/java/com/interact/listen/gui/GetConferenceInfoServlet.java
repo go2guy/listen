@@ -135,7 +135,8 @@ public class GetConferenceInfoServlet extends HttpServlet
             .addReturnField("dateCreated")
             .addReturnField("description")
             .addReturnField("id")
-            .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING);
+            .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING)
+            .withMax(15);
         ResourceListService service = builder.build();
         return service.list();
     }
