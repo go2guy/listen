@@ -116,6 +116,9 @@ cat locations.mf | egrep -v "^[[:space:]]*(#|!|$)" | \
         esac
     done
 
+# Put iiInstall config file in place
+cp iiInstall.uia $BUILDROOT/interact/packages/conf/
+
 # Validate uia files against dtd...
 echo
 echo "Validating uia files against the dtd:"
@@ -137,8 +140,6 @@ then
     echo
     exit 1
 fi
-
-cp iiInstall.uia $BUILDROOT/interact/packages/conf/
 
 export MANIFEST=`pwd`/files.mf
 rpmbuild -bb --buildroot $BUILDROOT listen.spec
