@@ -162,9 +162,13 @@ public final class HibernateUtil
 
             String basePin = new DecimalFormat("000").format(i + 100);
 
-            Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
-            Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
-            Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
+            //Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
+            //Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
+            //Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
+
+            Pin activePin = Pin.newInstance(PinType.ACTIVE);
+            Pin adminPin = Pin.newInstance(PinType.ADMIN);
+            Pin passivePin = Pin.newInstance(PinType.PASSIVE);
 
             persistenceService.save(activePin);
             persistenceService.save(adminPin);
@@ -206,19 +210,19 @@ public final class HibernateUtil
         }
 
         // account for integration testing
-        Subscriber subscriber = new Subscriber();
-        subscriber.setNumber("347");
-        subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
-        subscriber.setVoicemailPin(subscriber.getNumber());
-        persistenceService.save(subscriber);
-
-        Pin activePin = Pin.newInstance("111", PinType.ACTIVE);
-        Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
-        Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
-
-        persistenceService.save(activePin);
-        persistenceService.save(adminPin);
-        persistenceService.save(passivePin);
+//        Subscriber subscriber = new Subscriber();
+//        subscriber.setNumber("347");
+//        subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
+//        subscriber.setVoicemailPin(subscriber.getNumber());
+//        persistenceService.save(subscriber);
+//
+//        Pin activePin = Pin.newInstance("111", PinType.ACTIVE);
+//        Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
+//        Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
+//
+//        persistenceService.save(activePin);
+//        persistenceService.save(adminPin);
+//        persistenceService.save(passivePin);
     }
 
     private static void createAdminUserIfNotPresent(Session session, PersistenceService persistenceService)

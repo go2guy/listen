@@ -3,6 +3,8 @@ package com.interact.listen.resource;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
+import java.text.DecimalFormat;
 
 import javax.persistence.*;
 
@@ -36,6 +38,15 @@ public class Pin extends Resource implements Serializable
     {
         Pin pin = new Pin();
         pin.setNumber(number);
+        pin.setType(type);
+        return pin;
+    }
+
+    // factory creation method
+    public static Pin newInstance(PinType type)
+    {
+        Pin pin = new Pin();
+        pin.setNumber(generateRandomPin());
         pin.setType(type);
         return pin;
     }
@@ -164,5 +175,18 @@ public class Pin extends Resource implements Serializable
         int hash = 1;
         hash *= prime + (getNumber() == null ? 0 : getNumber().hashCode());
         return hash;
+    }
+
+    public static String generateRandomPin()
+    {
+        int pinLength = Integer.parseInt(System.getProperty("com.interact.listen.pinLength", "10"));
+        SecureRandom random = new SecureRandom();
+
+        int max = (int)Math.pow(pinLength, 10) - 1;
+        int next = random.nextInt(max);
+
+        String format = String.format("%0" + pinLength + "d", 0);
+
+        return new DecimalFormat(format).format(next);
     }
 }
