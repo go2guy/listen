@@ -123,7 +123,7 @@ def main():
 
         # Send to all hosts
         for remotehost in hosts:
-            runRemote(remotehost, "mkdir -p %s %s %s" % (os.path.dirname(remoteprog), os.path.dirname(remotemaster), os.path.dirname(remoteuia))
+            runRemote(remotehost, "mkdir -p %s %s %s" % (os.path.dirname(remoteprog), os.path.dirname(remotemaster), os.path.dirname(remoteuia)))
             sftp(remotehost, localprog, remoteprog, 0700)
             sftp(remotehost, masterpkg, remotemaster, 0700)
             sftp(remotehost, uiapkg, remoteuia, 0700)
