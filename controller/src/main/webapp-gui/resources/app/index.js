@@ -454,6 +454,7 @@ function scheduleConference(event) {
     var scheduleConferenceTimeHour = $('#scheduleConferenceTimeHour');
     var scheduleConferenceTimeMinute = $('#scheduleConferenceTimeMinute');
     var scheduleConferenceTimeAmPm = $('#scheduleConferenceTimeAmPm');
+    var scheduleConferenceSubject = $('#scheduleConferenceSubject');
     var scheduleConferenceDescription = $('#scheduleConferenceDescription');
     var scheduleConferenceActiveParticipants = $('#scheduleConferenceActiveParticipants');
     var scheduleConferencePassiveParticipants = $('#scheduleConferencePassiveParticipants'); 
@@ -465,6 +466,7 @@ function scheduleConference(event) {
                 hour: scheduleConferenceTimeHour.val(),
                 minute: scheduleConferenceTimeMinute.val(),
                 amPm: scheduleConferenceTimeAmPm.val(),
+                subject: scheduleConferenceSubject.val(),
                 description: scheduleConferenceDescription.val(),
                 activeParticipants: scheduleConferenceActiveParticipants.val(),
                 passiveParticipants: scheduleConferencePassiveParticipants.val() },
@@ -474,6 +476,7 @@ function scheduleConference(event) {
             scheduleConferenceTimeHour.val('1');
             scheduleConferenceTimeMinute.val('00');
             scheduleConferenceTimeAmPm.val('AM');
+            scheduleConferenceSubject.val('');
             scheduleConferenceDescription.val('');
             scheduleConferenceActiveParticipants.val('');
             scheduleConferencePassiveParticipants.val('');

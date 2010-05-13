@@ -1,5 +1,6 @@
 package com.interact.listen;
 
+import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Pin;
 
@@ -28,9 +29,9 @@ public class EmailerService
                                      + "Pin: %s<br/>"
                                      + "</body></html>";
 
-    private final SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
+    private final SimpleDateFormat sdf = new SimpleDateFormat(FriendlyIso8601DateConverter.ISO8601_FORMAT);
 
-    private boolean sendEmail(InternetAddress[] toAddresses, String body, Date dateTime)
+    private boolean sendEmail(InternetAddress[] toAddresses, String body, String subjectPrepend, Date dateTime)
     {
         Properties props = new Properties();
         props.setProperty("mail.transport.protocol", "smtp");
@@ -47,7 +48,7 @@ public class EmailerService
 
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(fromAddress);
-            message.setSubject(EMAIL_SUBJECT);
+            message.setSubject(subjectPrepend + EMAIL_SUBJECT);
             message.setContent(body, "text/html; charset=UTF-8");
             message.addRecipients(MimeMessage.RecipientType.TO, toAddresses);
             
@@ -69,8 +70,9 @@ public class EmailerService
         return result;
     }
 
-    public boolean sendScheduleEmail(ArrayList<String> toAddressesList, String username, String description, 
-                                     Date dateTime, Conference conference, String phoneNumber, String protocol, String emailType)
+    public boolean sendScheduleEmail(ArrayList<String> toAddressesList, String username, String description,
+                                     Date dateTime, Conference conference, String phoneNumber, String protocol,
+                                     String subjectPrepend, String emailType)
     {
         String body  = "";
         boolean result = true;
@@ -89,7 +91,7 @@ public class EmailerService
         
         if(toAddresses.length > 0)
         {
-            result = sendEmail(toAddresses, body, dateTime);
+            result = sendEmail(toAddresses, body, subjectPrepend, dateTime);
         }
 
         return result;
@@ -123,6 +125,8 @@ public class EmailerService
     {
         String formattedDateTime = sdf.format(dateTime);
         String activePin = getPin(conference.getPins(), Pin.PinType.ACTIVE);
+        activePin = activePin + " (Active)";
+        
         String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, numberTitle,
                                                   phoneNumber, activePin);
         
@@ -134,6 +138,8 @@ public class EmailerService
     {
         String formattedDateTime = sdf.format(dateTime);
         String passivePin = getPin(conference.getPins(), Pin.PinType.PASSIVE);
+        passivePin = passivePin + " (Passive)";
+        
         String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, numberTitle,
                                                   phoneNumber, passivePin);
         

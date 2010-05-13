@@ -205,6 +205,11 @@ if(user != null && user.getIsAdministrator()) { %>
               </td>
             </tr>
             <tr>
+              <th><label for="scheduleConferenceSubject">Subject of email</label></th>
+              <td><textarea id="scheduleConferenceSubject" name="scheduleConferenceSubject"></textarea>
+            </tr>
+            <tr>
+            <tr>
               <th><label for="scheduleConferenceActiveParticipants">Active caller email addresses (comma-separated):</label></th>
               <td><textarea id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"></textarea></td>
             </tr>
