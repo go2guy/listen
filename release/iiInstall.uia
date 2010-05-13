@@ -27,43 +27,51 @@
             <name>iiacs</name>
             <rpmRegex>iiacs-V</rpmRegex>
             <group>arcade</group>
+            <group>all</group>
         </system>
 
         <system>
             <name>iiacs-audio</name>
             <group>arcade</group>
+            <group>all</group>
         </system>
 
         <system>
             <name>iiacs-softspot</name>
             <group>arcade</group>
+            <group>all</group>
         </system>
 
         <system>
             <name>iiserv</name>
             <rpmRegex>iiserv-V</rpmRegex>
             <group>arcade</group>
+            <group>all</group>
         </system>
 
         <system>
             <name>iiserv-snmp</name>
             <group>arcade</group>
+            <group>all</group>
         </system>
 
         <system>
             <name>iiserv-tool</name>
             <group>arcade</group>
+            <group>all</group>
         </system>
 
         <system>
             <name>iixap</name>
             <rpmRegex>iixap-V</rpmRegex>
             <group>arcade</group>
+            <group>all</group>
         </system>
 
         <system>
             <name>spotbuild-vip</name>
             <group>arcade</group>
+            <group>all</group>
         </system>
 
         <system>
