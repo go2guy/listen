@@ -28,6 +28,7 @@ public final class ServletUtil
         response.setStatus(statusCode);
         response.setContentType(contentType);
         response.setContentLength(content.length());
+        response.setHeader("Cache-Control", "no-cache");
 
         LOG.debug("Writing response content [ " + content + " ], type = [" + contentType + "], length = [" +
                   content.length() + "]");
