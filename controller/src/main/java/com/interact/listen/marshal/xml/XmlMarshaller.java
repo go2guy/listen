@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -19,6 +20,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class XmlMarshaller extends Marshaller
 {
+    private static final Logger LOG = Logger.getLogger(XmlMarshaller.class);
+
     @Override
     public String marshal(Resource resource)
     {
@@ -134,8 +137,8 @@ public class XmlMarshaller extends Marshaller
 
                 if(method == null || OMIT_METHODS.contains(method.getName()))
                 {
-                    System.out.println("Method [" + methodName + "] not found, or method is explicitly omitted, for [" +
-                                       resource.getClass() + "] when marshalling list");
+                    LOG.debug("Method [" + methodName + "] not found, or method is explicitly omitted, for [" +
+                              resource.getClass() + "] when marshalling list");
                     continue;
                 }
 

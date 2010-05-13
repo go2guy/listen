@@ -17,11 +17,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class UnmuteParticipantServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(UnmuteParticipantServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -78,7 +80,7 @@ public class UnmuteParticipantServlet extends HttpServlet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error("Error unmuting participant", e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "Error unmuting participant", "text/plain");
@@ -86,8 +88,7 @@ public class UnmuteParticipantServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: UnmuteParticipantServlet.doPost() took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            LOG.debug("UnmuteParticipantServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 

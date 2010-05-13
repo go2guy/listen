@@ -5,11 +5,15 @@ import java.io.IOException;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 /**
  * Writes stats-collector stats for various HTTP requests.
  */
 public class StatFilter implements Filter
 {
+    private static final Logger LOG = Logger.getLogger(StatFilter.class);
+
     private StatSender statSender = new InsaStatSender();
 
     public void setStatSender(StatSender statSender)
@@ -35,7 +39,7 @@ public class StatFilter implements Filter
             }
             catch(IllegalArgumentException e)
             {
-                System.out.println("Cannot write stat for [" + enumValue + "]");
+                LOG.error("Cannot write stat for [" + enumValue + "]", e);
             }
         }
 

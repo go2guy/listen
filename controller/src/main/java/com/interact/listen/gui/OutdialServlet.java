@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -22,6 +23,7 @@ import org.hibernate.criterion.Restrictions;
 
 public class OutdialServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(OutdialServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -59,7 +61,7 @@ public class OutdialServlet extends HttpServlet
             return;
         }
 
-        System.out.println("Outdialing to [" + number + "] for conference id [" + conferenceId + "]");
+        LOG.debug("Outdialing to [" + number + "] for conference id [" + conferenceId + "]");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
@@ -105,15 +107,14 @@ public class OutdialServlet extends HttpServlet
             }
             catch(Exception e)
             {
-                System.out.println("Error writing ConferenceHistory for outdial");
-                e.printStackTrace();
+                LOG.error("Error writing ConferenceHistory for outdial", e);
             }
 
             transaction.commit();
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error("Error outdialing number", e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "Error outdialing number", "text/plain");
@@ -121,7 +122,7 @@ public class OutdialServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: OutdialServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
+            LOG.debug("OutdialServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 

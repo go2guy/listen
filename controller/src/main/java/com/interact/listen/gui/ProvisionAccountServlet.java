@@ -14,11 +14,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
 
 public class ProvisionAccountServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(ProvisionAccountServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -122,7 +124,7 @@ public class ProvisionAccountServlet extends HttpServlet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error("Error provisioning account");
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "Error provisioning account", "text/plain");
@@ -130,8 +132,7 @@ public class ProvisionAccountServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: ProvisionAccountServlet.doPost() took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            LOG.debug("ProvisionAccountServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 }

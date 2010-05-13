@@ -7,6 +7,7 @@ import com.interact.listen.security.SecurityUtil;
 import java.io.File;
 import java.text.DecimalFormat;
 
+import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Projections;
@@ -14,6 +15,7 @@ import org.hibernate.criterion.Restrictions;
 
 public final class HibernateUtil
 {
+    private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
     private static final SessionFactory SESSION_FACTORY;
 
     private HibernateUtil()
@@ -30,7 +32,7 @@ public final class HibernateUtil
             config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
 
             String dburl = getDbConnectionString();
-            System.out.println("INIT: DB connection string is [" + dburl + "]");
+            LOG.debug("DB connection string is [" + dburl + "]");
 
             config.setProperty("hibernate.connection.url", dburl);
             config.setProperty("hibernate.connection.username", "sa");
@@ -72,7 +74,7 @@ public final class HibernateUtil
         }
         catch(Exception e)
         {
-            System.err.println("SessionFactory creation failed: " + e);
+            LOG.error("SessionFactory creation failed", e);
             throw new ExceptionInInitializerError(e);
         }
     }
@@ -96,10 +98,10 @@ public final class HibernateUtil
             File dir = new File(dirPath);
             if(!dir.exists())
             {
-                System.out.println("INIT: Creating data directory at [" + dir + "]");
+                LOG.debug("Creating data directory at [" + dir + "]");
                 if(!dir.mkdirs())
                 {
-                    System.out.println("Cannot create directory [" + dir + "]"); 
+                    LOG.error("Cannot create directory [" + dir + "]"); 
                 }
             }
             else if(dir.exists() && !dir.isDirectory())
@@ -111,7 +113,7 @@ public final class HibernateUtil
                     dir = new File(homeDir, ".com.interact.listen");
                     if(!dir.mkdirs())
                     {
-                        System.out.println("Cannot create directory [" + dir + "]");
+                        LOG.error("Cannot create directory [" + dir + "]");
                     }
                 }
                 else
@@ -119,7 +121,7 @@ public final class HibernateUtil
                     // then try temp directory
                     File temp = File.createTempFile("temp", "temp");
                     File tempDir = new File(temp.getParent(), "com.interact.listen");
-                    System.out.println("INIT: Cannot use [" + dir + "] for data directory, using [" + tempDir + "]");
+                    LOG.debug("Cannot use [" + dir + "] for data directory, using [" + tempDir + "]");
                     dir = tempDir;
                 }
             }
@@ -128,7 +130,7 @@ public final class HibernateUtil
         }
         catch(Exception e)
         {
-            System.out.println("INIT: Error initializing data directory, using current working directory");
+            LOG.error("Error initializing data directory, using current working directory", e);
         }
 
         return "jdbc:hsqldb:file:listendb";
@@ -184,7 +186,7 @@ public final class HibernateUtil
             user.addToConferences(conference);
             persistenceService.save(user);
 
-            System.out.println("BOOTSTRAP: Saved Conference " + conference.getId());
+            LOG.debug("Saved Conference " + conference.getId());
 
             for(int j = 0; j < 10; j++)
             {
@@ -199,7 +201,7 @@ public final class HibernateUtil
                 participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
                 persistenceService.save(participant);
 
-                System.out.println("BOOTSTRAP: Saved Participant " + participant.getId());
+                LOG.debug("Saved Participant " + participant.getId());
             }
         }
 
@@ -231,7 +233,7 @@ public final class HibernateUtil
 
         if(count == 0)
         {
-            System.out.println("BOOTSTRAP: Created admin User");
+            LOG.debug("Created admin User");
             User user = new User();
             user.setUsername("Admin");
             user.setPassword(SecurityUtil.hashPassword("conference4U!"));

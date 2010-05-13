@@ -8,12 +8,15 @@ import com.interact.listen.resource.Resource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class SaxContentHandler extends DefaultHandler
 {
+    private static final Logger LOG = Logger.getLogger(SaxContentHandler.class);
+
     private XmlMarshaller marshaller;
 
     private Resource resource;
@@ -86,7 +89,7 @@ public class SaxContentHandler extends DefaultHandler
 
                 if(method == null)
                 {
-                    System.out.println("method " + methodName + " does not exist for resource " + resource);
+                    LOG.warn("method " + methodName + " does not exist for resource " + resource);
                     throw new SAXException("Cannot set property " + qName);
                 }
 
@@ -100,7 +103,7 @@ public class SaxContentHandler extends DefaultHandler
                 }
                 else if(java.util.Collection.class.isAssignableFrom(parameterType))
                 {
-                    System.out.println("Skipping [" + qName + "] when unmarshalling, it is a Collection");
+                    LOG.debug("Skipping [" + qName + "] when unmarshalling, it is a Collection");
                 }
                 else
                 {

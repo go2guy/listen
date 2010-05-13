@@ -13,14 +13,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class ScheduleConferenceServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(ScheduleConferenceServlet.class);
     private static final long serialVersionUID = 1L;
 
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "REC_CATCH_EXCEPTION")
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     {
@@ -174,7 +177,7 @@ public class ScheduleConferenceServlet extends HttpServlet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error("Error scheduling conference");
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "Error scheduling conference", "text/plain");
@@ -183,8 +186,7 @@ public class ScheduleConferenceServlet extends HttpServlet
         finally
         {
             transaction.commit();
-            System.out.println("TIMER: ScheduleConferenceServlet.doPost() took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            LOG.debug("ScheduleConferenceServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
     

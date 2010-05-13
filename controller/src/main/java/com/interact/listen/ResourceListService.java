@@ -10,12 +10,15 @@ import com.interact.listen.resource.ResourceList;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 
 public final class ResourceListService
 {
+    private static final Logger LOG = Logger.getLogger(ResourceListService.class);
+
     private Class<? extends Resource> resourceClass;
     private Session session;
     private Marshaller marshaller;
@@ -197,8 +200,7 @@ public final class ResourceListService
             Method method = Marshaller.findMethod(getMethod, resourceClass);
             if(method == null)
             {
-                System.out.println("Resource [" + resourceClass + "] does not have getter for [" + key +
-                                   "], continuing");
+                LOG.warn("Resource [" + resourceClass + "] does not have getter for [" + key + "], continuing");
                 continue;
             }
 

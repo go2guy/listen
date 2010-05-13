@@ -16,11 +16,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class MuteParticipantServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(MuteParticipantServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -76,7 +78,7 @@ public class MuteParticipantServlet extends HttpServlet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error("Error muting participant", e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "Error muting participant", "text/plain");
@@ -84,8 +86,7 @@ public class MuteParticipantServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: MuteParticipantServlet.doPost() took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            LOG.debug("MuteParticipantServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 

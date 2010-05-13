@@ -16,11 +16,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class GetConferenceInfoServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(GetConferenceInfoServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -85,7 +87,7 @@ public class GetConferenceInfoServlet extends HttpServlet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error("Error getting conference info", e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage(),
                                       "text/plain");
@@ -93,8 +95,7 @@ public class GetConferenceInfoServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: GetConferenceInfoServlet.doGet() took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            LOG.debug("GetConferenceInfoServlet.doGet() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 

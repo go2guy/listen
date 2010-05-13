@@ -13,12 +13,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.*;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class JsonMarshaller extends Marshaller
 {
+    private static final Logger LOG = Logger.getLogger(JsonMarshaller.class);
+
     @Override
     public String marshal(Resource resource)
     {
@@ -128,8 +131,8 @@ public class JsonMarshaller extends Marshaller
 
                 if(method == null || OMIT_METHODS.contains(method.getName()))
                 {
-                    System.out.println("Method [" + methodName + "] not found, or method is explicitly omitted, for [" +
-                                       resource.getClass() + "] when marshalling list");
+                    LOG.debug("Method [" + methodName + "] not found, or method is explicitly omitted, for [" +
+                              resource.getClass() + "] when marshalling list");
                     continue;
                 }
 
@@ -233,7 +236,7 @@ public class JsonMarshaller extends Marshaller
                 }
                 else if(java.util.Collection.class.isAssignableFrom(parameterType))
                 {
-                    System.out.println("Skipping [" + key + "] when unmarshalling, it is a Collection");
+                    LOG.debug("Skipping [" + key + "] when unmarshalling, it is a Collection");
                 }
                 else
                 {

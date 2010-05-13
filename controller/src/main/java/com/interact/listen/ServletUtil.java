@@ -12,8 +12,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 public final class ServletUtil
 {
+    private static final Logger LOG = Logger.getLogger(ServletUtil.class);
+
     private ServletUtil()
     {
         throw new AssertionError("Cannot instantiate utility class ServletUtil");
@@ -25,8 +29,8 @@ public final class ServletUtil
         response.setContentType(contentType);
         response.setContentLength(content.length());
 
-        System.out.println("Writing response content [ " + content + " ], type = [" + contentType + "], length = [" +
-                           content.length() + "]");
+        LOG.debug("Writing response content [ " + content + " ], type = [" + contentType + "], length = [" +
+                  content.length() + "]");
 
         try
         {
@@ -35,7 +39,7 @@ public final class ServletUtil
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentLength(0);
         }
@@ -62,7 +66,7 @@ public final class ServletUtil
             String[] pair = param.split("=", 0);
             if(pair.length != 2)
             {
-                System.out.println("Warning, pair [" + Arrays.toString(pair) + "] had a length of one, skipping");
+                LOG.warn("Pair [" + Arrays.toString(pair) + "] had a length of one, skipping");
                 continue;
             }
 
@@ -84,13 +88,13 @@ public final class ServletUtil
     public static void forward(String to, HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
-        System.out.println("Forwarding to [" + to + "]");
+        LOG.debug("Forwarding to [" + to + "]");
         request.getRequestDispatcher(to).forward(request, response);
     }
 
     public static void redirect(String to, HttpServletResponse response) throws IOException
     {
-        System.out.println("Redirecting to [" + to + "]");
+        LOG.debug("Redirecting to [" + to + "]");
         response.sendRedirect(to);
     }
 }

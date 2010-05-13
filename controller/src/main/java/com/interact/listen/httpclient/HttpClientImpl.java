@@ -15,9 +15,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 public class HttpClientImpl implements HttpClient
 {
+    private static final Logger LOG = Logger.getLogger(HttpClientImpl.class);
     private boolean requestMade = false;
     private int responseStatus;
     private String responseEntity;
@@ -59,8 +61,8 @@ public class HttpClientImpl implements HttpClient
     private void performEntityEnclosingRequest(HttpEntityEnclosingRequestBase request, String entityContent)
         throws IOException
     {
-        System.out.println("Making HTTP " + request.getMethod() + " request to " + request.getURI() + " with entity [" +
-                           entityContent + "]");
+        LOG.debug("Making HTTP " + request.getMethod() + " request to " + request.getURI() + " with entity [" +
+                  entityContent + "]");
 
         try
         {
@@ -85,7 +87,7 @@ public class HttpClientImpl implements HttpClient
         this.responseStatus = response.getStatusLine().getStatusCode();
         this.responseEntity = getEntity(response);
 
-        System.out.println("Received " + responseStatus + " response with entity [" + responseEntity + "]");
+        LOG.debug("Received " + responseStatus + " response with entity [" + responseEntity + "]");
     }
 
     private static String getEntity(HttpResponse response) throws IOException

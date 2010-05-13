@@ -11,8 +11,11 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.*;
 
+import org.apache.log4j.Logger;
+
 public class EmailerService
 {
+    private static final Logger LOG = Logger.getLogger(EmailerService.class);
     private static final String EMAIL_SUBJECT = "Listen Conference Invitation";    
     private static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     
@@ -55,12 +58,12 @@ public class EmailerService
         catch(AddressException e)
         {
             result = false;
-            System.out.println("Error with com.interact.listen.mail.from.address.  Please configure a valid e-mail address: " + e);
+            LOG.error("Error with com.interact.listen.mail.from.address, please configure a valid e-mail address", e);
         }
         catch(MessagingException e)
         {
             result = false;
-            System.out.println("Error occurred sending email: " + e);
+            LOG.error("Error occurred sending email", e);
         }
 
         return result;
@@ -106,11 +109,11 @@ public class EmailerService
             }
             catch(AddressException e)
             {
-                System.out.println("To address " + email + " is not a valid e-mail address: " + e +
-                                   ".  Removing from the list of receipents.");
+                LOG.warn("To address " + email + " is not a valid e-mail address, removing from the list of " +
+                         "recipients", e);
             }
         }
-         
+
         InternetAddress[] returnArray = new InternetAddress[mailAddresses.size()];
         return mailAddresses.toArray(returnArray);
     }

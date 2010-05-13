@@ -14,11 +14,14 @@ import java.net.URLEncoder;
 import java.util.*;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 
 public abstract class Marshaller
 {
     /** Global names of methods that should be omitted when marshalling objects */
     protected static final List<String> OMIT_METHODS = new ArrayList<String>();
+
+    private static final Logger LOG = Logger.getLogger(Marshaller.class);
 
     /** Default Map of Converters that should be used when marshalling/unmarshalling certain data types */
     private static final Map<Class<?>, Class<? extends Converter>> DEFAULT_CONVERTERS = new HashMap<Class<?>, Class<? extends Converter>>();
@@ -153,13 +156,13 @@ public abstract class Marshaller
         }
         catch(InvocationTargetException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             throw new AssertionError("InvocationTargetException when calling [" + method.getName() + "] of Resource [" +
                                      resource.getClass().getName() + "]");
         }
         catch(IllegalAccessException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             throw new AssertionError("IllegalAccessException when calling [" + method.getName() + "] of Resource [" +
                                      resource.getClass().getName() + "]");
         }

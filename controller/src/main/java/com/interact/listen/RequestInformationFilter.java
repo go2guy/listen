@@ -5,8 +5,12 @@ import java.io.IOException;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 public class RequestInformationFilter implements Filter
 {
+    private static final Logger LOG = Logger.getLogger(RequestInformationFilter.class);
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException,
         IOException
@@ -24,7 +28,7 @@ public class RequestInformationFilter implements Filter
             info.append("?").append(req.getQueryString());
         }
 
-        System.out.println("--> [" + info + "]");
+        LOG.info("--> [" + info + "]");
 
         try
         {
@@ -32,7 +36,7 @@ public class RequestInformationFilter implements Filter
         }
         finally
         {
-            System.out.println("<-- [" + info + "] took " + (System.currentTimeMillis() - start) + "ms");
+            LOG.info("<-- [" + info + "] took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 

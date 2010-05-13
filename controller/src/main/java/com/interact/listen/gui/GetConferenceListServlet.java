@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -22,6 +23,7 @@ import org.hibernate.Transaction;
  */
 public class GetConferenceListServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(GetConferenceListServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -74,15 +76,14 @@ public class GetConferenceListServlet extends HttpServlet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error("Error getting conference list", e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "Error retrieving conference list", "text/plain");
         }
         finally
         {
-            System.out.println("TIMER: GetConferenceListServlet.toGet() took " + (System.currentTimeMillis() - start) +
-                               "ms");
+            LOG.debug("GetConferenceListServlet.toGet() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 }

@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -22,6 +23,7 @@ import org.hibernate.criterion.Restrictions;
 
 public class LoginServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(LoginServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -56,7 +58,7 @@ public class LoginServlet extends HttpServlet
             String username = request.getParameter("username");
             String password = request.getParameter("password");
 
-            System.out.println("POST LoginServlet username=" + username + "&password=*");
+            LOG.debug("POST LoginServlet username=" + username + "&password=*");
 
             Map<String, String> errors = new HashMap<String, String>();
 
@@ -95,7 +97,7 @@ public class LoginServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: LoginServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
+            LOG.debug("LoginServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 

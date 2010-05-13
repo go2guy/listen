@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
@@ -30,6 +31,8 @@ public class ApiServlet extends HttpServlet
 
     public static final long serialVersionUID = 1L;
     public static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+
+    private static final Logger LOG = Logger.getLogger(ApiServlet.class);
 
     // TODO it seems like there should be an easier way to manage the Hibernate session outside the scope of this Servlet,
     // perhaps inside of a Filter?
@@ -102,7 +105,7 @@ public class ApiServlet extends HttpServlet
                 {
                     transaction.commit();
                 }
-                System.out.println("TIMER: list() took " + (time() - s) + "ms");
+                LOG.debug("list() took " + (time() - s) + "ms");
             }
             else
             {
@@ -117,7 +120,7 @@ public class ApiServlet extends HttpServlet
                 long s = time();
                 Resource resource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
                 transaction.commit();
-                System.out.println("TIMER: list() took " + (time() - s) + "ms");
+                LOG.debug("list() took " + (time() - s) + "ms");
 
                 if(resource == null)
                 {
@@ -133,7 +136,7 @@ public class ApiServlet extends HttpServlet
 
                 s = time();
                 xml.append(marshaller.marshal(resource));
-                System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
+                LOG.debug("marshal() took " + (time() - s) + "ms");
 
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, xml.toString(),
                                           marshaller.getContentType());
@@ -141,20 +144,20 @@ public class ApiServlet extends HttpServlet
         }
         catch(ClassNotFoundException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         catch(CriteriaCreationException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "RUH ROH! Please contact the System Administrator", "text/plain");
@@ -162,7 +165,7 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: GET " + request.getRequestURL() + " took " + (time() - start) + "ms");
+            LOG.debug("GET " + request.getRequestURL() + " took " + (time() - start) + "ms");
         }
     }
 
@@ -201,7 +204,7 @@ public class ApiServlet extends HttpServlet
 
             long s = time();
             Resource resource = marshaller.unmarshal(request.getInputStream(), resourceClass.newInstance(), false);
-            System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
+            LOG.debug("unmarshal() took " + (time() - s) + "ms");
 
             if(!resource.validate() && resource.hasErrors())
             {
@@ -213,11 +216,11 @@ public class ApiServlet extends HttpServlet
 
             s = time();
             Long id = persistenceService.save(resource);
-            System.out.println("TIMER: save() took " + (time() - s) + "ms");
+            LOG.debug("save() took " + (time() - s) + "ms");
 
             s = time();
             resource = persistenceService.get(resourceClass, id);
-            System.out.println("TIMER: get() took " + (time() - s) + "ms");
+            LOG.debug("get() took " + (time() - s) + "ms");
 
             transaction.commit();
 
@@ -229,21 +232,21 @@ public class ApiServlet extends HttpServlet
 
             s = time();
             xml.append(marshaller.marshal(resource));
-            System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
+            LOG.debug("marshal() took " + (time() - s) + "ms");
 
             ServletUtil.writeResponse(response, HttpServletResponse.SC_CREATED, xml.toString(),
                                       marshaller.getContentType());
         }
         catch(ClassNotFoundException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "Error reading request body", "text/plain");
@@ -251,7 +254,7 @@ public class ApiServlet extends HttpServlet
         }
         catch(MalformedContentException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                                       "The content you provided was malformed, please fix it: " + e.getMessage(),
@@ -260,7 +263,7 @@ public class ApiServlet extends HttpServlet
         }
         catch(ConstraintViolationException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                                       "The content you provided causes a constraint violation, please fix it",
@@ -269,7 +272,7 @@ public class ApiServlet extends HttpServlet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "RUH ROH! Please contact the System Administrator", "text/plain");
@@ -277,7 +280,7 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: POST " + request.getRequestURL() + " took " + (time() - start) + "ms");
+            LOG.debug("POST " + request.getRequestURL() + " took " + (time() - start) + "ms");
         }
     }
 
@@ -327,7 +330,7 @@ public class ApiServlet extends HttpServlet
             
             long s = time();
             resource = marshaller.unmarshal(request.getInputStream(), resource, false);
-            System.out.println("TIMER: unmarshal() took " + (time() - s) + "ms");
+            LOG.debug("unmarshal() took " + (time() - s) + "ms");
 
             //updatedResource.setId(Long.parseLong(attributes.getId()));
 
@@ -335,7 +338,7 @@ public class ApiServlet extends HttpServlet
             {
                 s = time();
                 persistenceService.update(resource, original);
-                System.out.println("TIMER: update() took " + (time() - s) + "ms");
+                LOG.debug("update() took " + (time() - s) + "ms");
             }
 
             transaction.commit();
@@ -350,7 +353,7 @@ public class ApiServlet extends HttpServlet
 
                 s = time();
                 xml.append(marshaller.marshal(resource));
-                System.out.println("TIMER: marshal() took " + (time() - s) + "ms");
+                LOG.debug("marshal() took " + (time() - s) + "ms");
 
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, xml.toString(),
                                           marshaller.getContentType());
@@ -365,14 +368,14 @@ public class ApiServlet extends HttpServlet
         }
         catch(ClassNotFoundException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "Error reading request body", "text/plain");
@@ -387,7 +390,7 @@ public class ApiServlet extends HttpServlet
         }
         catch(ConstraintViolationException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                                       "The content you provided causes a constraint violation, please fix it: " 
@@ -397,7 +400,7 @@ public class ApiServlet extends HttpServlet
         }
         catch(MalformedContentException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
                                       "The content you provided was malformed, please fix it", "text/plain");
@@ -405,7 +408,7 @@ public class ApiServlet extends HttpServlet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "RUH ROH! Please contact the System Administrator", "text/plain");
@@ -413,7 +416,7 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: PUT " + request.getRequestURL() + " took " + (time() - start) + "ms");
+            LOG.debug("PUT " + request.getRequestURL() + " took " + (time() - start) + "ms");
         }
     }
 
@@ -457,7 +460,7 @@ public class ApiServlet extends HttpServlet
 
             long s = time();
             Resource resource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
-            System.out.println("TIMER: get() took " + (time() - s) + "ms");
+            LOG.debug("get() took " + (time() - s) + "ms");
 
             if(resource == null)
             {
@@ -467,21 +470,21 @@ public class ApiServlet extends HttpServlet
 
             s = time();
             persistenceService.delete(resource);
-            System.out.println("TIMER: delete() took " + (time() - s) + "ms");
+            LOG.debug("delete() took " + (time() - s) + "ms");
 
             transaction.commit();
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
         catch(ClassNotFoundException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error(e);
             transaction.rollback();
             ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                       "RUH ROH! Please contact the System Administrator", "text/plain");
@@ -489,7 +492,7 @@ public class ApiServlet extends HttpServlet
         }
         finally
         {
-            System.out.println("TIMER: DELETE took " + (time() - start) + "ms");
+            LOG.debug("DELETE took " + (time() - start) + "ms");
         }
     }
 
@@ -577,12 +580,12 @@ public class ApiServlet extends HttpServlet
     {
         try
         {
-            System.out.println("Creating Marshaller for 'Accept' content type of " + contentType);
+            LOG.debug("Creating Marshaller for 'Accept' content type of " + contentType);
             return Marshaller.createMarshaller(contentType);
         }
         catch(MarshallerNotFoundException e)
         {
-            System.out.println("Unrecognized content-type provided, assuming XML");
+            LOG.warn("Unrecognized content-type provided, assuming XML");
             return new XmlMarshaller();
         }
     }
