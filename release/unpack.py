@@ -66,12 +66,14 @@ def default(unpackdir, sipServer):
         supfile.write("CCVXML /interact/apps/spotbuild/listen_conference/root.vxml~update~sipURL~%s~SIP~var~expr~1~server name" % sipServer)
         supfile.close()
 
+    # Install uia
     run(["rpm", "-Uvh", "--replacepkgs", unpackdir + "/" + uiapkg])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--test", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "all"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "all"])
-#    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip"])
-#    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "ivrserver"])
-#    run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "controller"])
+
+    # Install listen packages
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--test", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
+
+    # Install Realize packages
     run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "realizeserver"])
     run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "realizeserver"])
 
