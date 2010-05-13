@@ -123,6 +123,7 @@ def main():
 
         # Send to all hosts
         for remotehost in hosts:
+            runRemote(remotehost, "mkdir -p %s %s %s" % (os.path.dirname(remoteprog), os.path.dirname(remotemaster), os.path.dirname(remoteuia))
             sftp(remotehost, localprog, remoteprog, 0700)
             sftp(remotehost, masterpkg, remotemaster, 0700)
             sftp(remotehost, uiapkg, remoteuia, 0700)
@@ -274,8 +275,6 @@ def all():
 
 
 def prep():
-    run(["mkdir", "-p", "/interact/packages/"])
-
     if hostname == controllerserver:
         print("Preparing for deployment")
         run(["service", "listen-controller", "stop"], failonerror=False)
@@ -342,6 +341,7 @@ def prep():
     # Clean interact directory
     pardon = ["/interact/xtt", uiapkg, masterpkg]
     removeFiles("/interact/", pardon)
+    removeFiles("/var/lib/com.interact.listen/")
 
     # remove interact user
     print("Removing interact user.")
