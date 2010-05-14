@@ -2,6 +2,7 @@
 try:
     import sys, os, re, md5, base64, datetime, subprocess
     from optparse import OptionParser, TitledHelpFormatter
+    from zipfile import ZipFile, is_zipfile
 
 except ImportError, e:
     raise "Unable to import required module: " + str(e)
@@ -69,13 +70,13 @@ def default(unpackdir, sipServer):
     # Install uia
     run(["rpm", "-Uvh", "--replacepkgs", unpackdir + "/" + uiapkg])
 
-    # Install listen packages
+    # Test listen and Realize packages
     run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--test", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "webserver"])
 
-    # Install Realize packages
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "realizeserver"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "realizeserver"])
+    # Install listen and Realize packages
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "webserver"])
 
 
 def start():
