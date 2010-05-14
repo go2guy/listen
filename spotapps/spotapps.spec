@@ -157,13 +157,14 @@ Requires: spotbuild-vip
     # Update iistart.ccxml link if it is currently non-existant or pointing to iidefault.ccxml or welcome.ccxml
     if [ ! -f /interact/apps/iistart.ccxml ] || \
        [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/iidefault.ccxml" ] || \
-       [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/spotbuild/welcome.ccxml" ]
+       [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/spotbuild/welcome.ccxml" ] || \
+       [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/spotbuild/SPOTbuild.ccxml" ]
     then
-        echo "iistart link either does not exist or points to iidefault or points to welcome. Changing to point to listen_conference file." >> ${debug}
+        echo "iistart link either does not exist or points to iidefault or welcome or SPOTbuild. Changing to point to listen_conference file." >> ${debug}
         rm -f /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
         ln -s /interact/apps/spotbuild/listen_conference/listen_conference.ccxml /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
     else
-        echo "iistart link exists and does not point to iidefault or welcome. iistart points to [ `readlink /interact/apps/iistart.ccxml` ]."  >> ${debug}
+        echo "iistart link exists and does not point to iidefault or welcome or SPOTbuild. iistart points to [ `readlink /interact/apps/iistart.ccxml` ]."  >> ${debug}
     fi
 
 #######################################################################
