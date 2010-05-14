@@ -60,8 +60,6 @@ if(user != null && user.getIsAdministrator()) { %>
             <div class="conference-header">
               <div id="conference-title" class="conference-title">Conference ###</div>
               <div class="conference-menu">
-                <div id="conference-status-icon"></div>
-                <div id="conference-status-message"></div>
                 <div class="buttons"><button id="schedule-button" class="schedule-button">Schedule</button></div>
               </div>
             </div>

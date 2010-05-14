@@ -97,29 +97,22 @@ function Conference(id) {
                     callers.update(data.participants.results);
                     history.update(data.history.results);
                     pins.update(data.pins.results);
-    
+
+                    var titleText = 'Conference ' + data.info.description;
                     var title = $('#conference-title');
-                    if(title.text() != 'Conference ' + data.info.description) {
-                        title.text('Conference ' + data.info.description);
+                    if(title.text() != titleText) {
+                        title.text(titleText);
                     }
-    
-                    // conference status icon and message
-                    var icon = $('#conference-status-icon');
-                    var message = $('#conference-status-message');
-    
-                    var onMessage = 'Started';
-                    var offMessage = 'Waiting for administrator';
-    
+
+                    var onMessage = titleText + ': Started';
+                    var offMessage = titleText + ': Waiting for administrator';
+
                     if(data.info.isStarted) {
-                        icon.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
-                        if(message.text() != onMessage) {
-                            message.text(onMessage);
-                        }
+                        title.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
+                        title.attr('title', onMessage);
                     } else {
-                        icon.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
-                        if(message.text() != offMessage) {
-                            message.text(offMessage);
-                        }
+                        title.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
+                        title.attr('title', offMessage);
                     }
                 }
             });

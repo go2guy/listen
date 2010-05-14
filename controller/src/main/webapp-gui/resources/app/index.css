@@ -231,10 +231,12 @@
 
 .conference-title {
     clear: right;
+    background-position: 3px 3px;
+    background-repeat: no-repeat;
     font-size: 125%;
     font-variant: small-caps;
     font-weight: bold;
-    padding-left: 6px;
+    padding-left: 23px;
 }
 
 .panel-content, .panel-title, .panel-menu {
@@ -256,21 +258,6 @@
 .conference-menu div.buttons {
     float: right;
     padding-right: 6px;
-}
-
-#conference-status-message {
-    color: #666666;
-    font-size: 75%;
-    font-style: italic;
-    margin-top: 5px;
-}
-
-#conference-status-icon {
-    background-position: 0 0;
-    background-repeat: no-repeat;
-    display: block;
-    height: 16px;
-    width: 16px;
 }
 
 li.odd {

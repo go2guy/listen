@@ -235,8 +235,6 @@ public class Participant extends Resource implements Serializable
         PersistenceService persistenceService = new PersistenceService(session);
         persistenceService.save(history);
         
-        //TODO add stat for certain participant types joining a conference ADMIN, ACTIVE, PASSIVE
-        
         if(isAdmin)
         {
             statSender.send(Stat.ADMIN_PARTICIPANT_JOIN);
@@ -264,11 +262,11 @@ public class Participant extends Resource implements Serializable
 
             if(isAdminMuted)
             {
-                history.setDescription(number + " was muted");
+                history.setDescription(number + " was placed in passive mode");
             }
             else
             {
-                history.setDescription(number + " was unmuted");
+                history.setDescription(number + " was placed in active mode");
             }
 
             PersistenceService persistenceService = new PersistenceService(session);
