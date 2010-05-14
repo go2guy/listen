@@ -38,6 +38,9 @@ def pack(name, files):
         print("An invalid number or rpm architectures was found in input files %s: found %d but should be 1." % (files, len(arch)))
         sys.exit()
 
+    if not os.path.exists(os.path.dirname(name)):
+        os.makedirs(os.path.dirname(name))
+
     outfile = open(name + "." + arch.keys()[-1], 'w')
     print("Creating output file [ %s ]." % os.path.basename(outfile.name))
 
@@ -121,7 +124,7 @@ def main():
     # Parse input parameters
     (opts, args) = parser.parse_args()
 
-    pack('listen', args)
+    pack(os.path.dirname(__file__) + '/ii_artifacts/listen', args)
 
 if __name__ == "__main__":
    main()
