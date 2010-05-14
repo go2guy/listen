@@ -78,23 +78,23 @@ def default(sipServer):
         sys.exit("Unable to find required packages in bundle.")
 
     # create default.sup if it doesn't exist...
-    os.utime(unpackdir + "/default.sup", None)
+    os.utime(packfile.packdir + "/default.sup", None)
 
     if sipServer != None and sipServer != "":
-        supfile = open(unpackdir + "/default.sup", "a")
+        supfile = open(packfile.packdir + "/default.sup", "a")
         supfile.write("CCVXML /interact/apps/spotbuild/listen_conference/root.vxml~update~sipURL~%s~SIP~var~expr~1~server name" % sipServer)
         supfile.close()
 
     # Install uia
-    run(["rpm", "-Uvh", "--replacepkgs", unpackdir + "/" + uiapkg])
+    run(["rpm", "-Uvh", "--replacepkgs", packfile.packdir + "/" + uiapkg])
 
     # Test listen and Realize packages
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--test", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "tomcat", "tomcat-native", "realize"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", packfile.packdir + "/default.sup", "--test", "--noinput", "--replacefiles", "--replacepkgs", packfile.packdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", packfile.packdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", packfile.packdir + "/" + realizepkg, "tomcat", "tomcat-native", "realize"])
 
     # Install listen and Realize packages
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "tomcat", "tomcat-native", "realize"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", packfile.packdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", packfile.packdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", packfile.packdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", packfile.packdir + "/" + realizepkg, "tomcat", "tomcat-native", "realize"])
 
 
 def start():
