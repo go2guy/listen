@@ -182,6 +182,9 @@ hang-up - hang-up
 117-8 - run-javascript
 117-7 - assign-variable
 117-6 - assign-variable
+105-52 - assign-variable
+105-53 - assign-variable
+105-54 - run-javascript
 91-52 - run-javascript
 91-50 - run-javascript
 91-55 - out-dial
@@ -265,7 +268,6 @@ hang-up - hang-up
 117-27 - assign-variable
 83-9 - decision
 83-5 - data-query
-114-31 - assign-variable
 83-3 - run-javascript
 84-3 - audio-input
 110-88 - math
@@ -289,7 +291,6 @@ begin - begin
 110-73 - audio-input
 110-79 - decision
 104-8 - audio-input
-114-45 - run-javascript
 111-25 - audio-input
 104-6 - assign-variable
 110-59 - audio-input
