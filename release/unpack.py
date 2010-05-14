@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 try:
-    import sys, os, re, md5, base64, datetime, subprocess
+    import sys, os, re, md5, base64, datetime, subprocess, socket
     from optparse import OptionParser, TitledHelpFormatter
     from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
     from StringIO import StringIO
@@ -9,6 +9,8 @@ except ImportError, e:
     raise "Unable to import required module: " + str(e)
 
 class packfile(object):
+    packdir = "/interact/packages"
+    docdir = "/interact/docs"
     name = None
     md5sum = None
     contents64 = None
@@ -26,14 +28,20 @@ class packfile(object):
             zipfile.write(base64.b64decode(line64))
 
         # Create a zip file from the in-memory file and dump contents
-        ziparch = ZipFile(zipfile)
-        ziparch.printdir()
-        self.contents = ziparch.read(self.name)
+        self.contents = ZipFile(zipfile).read(self.name)
 
-    def unpack(self, directory):
-        outfile = open(directory + "/" + self.name, "w+")
+    def unpack(self):
+        destdir = packfile.packdir
+        if self.name.endswith('.pdf') or self.name.endswith('.doc') or self.name.endswith('.docx'):
+            destdir = packfile.docdir
+
+        # Create the destination directory if necessary.
+        if not os.path.exists(destdir):
+            os.makedirs(destdir)
+
+        outfile = open(destdir + "/" + self.name, "w+")
         outfile.write("".join(self.contents))
-        print("Extracted [ %s ]." % self.name)
+        print("Extracted [ %s ] to [ %s ]." % (self.name, destdir))
 
         outfile.seek(0)
         newcontents = outfile.readlines()
@@ -44,9 +52,10 @@ class packfile(object):
 
 
 def load():
+    global packfiles
 
 
-def default(unpackdir, sipServer):
+def default(sipServer):
     # Should be 3 packs (uia, listen, and Realize)
     uiapkg = None
     listenpkg = None
@@ -126,11 +135,9 @@ def run(command, shell=False, failonerror=True):
 
 
 def main():
-    unpackdir = "/interact/packages"
-
     # Set up a parser object which defines how to parse the expected input.
     parser = OptionParser()
-    parser.description = """This program is self-extracting software package. Simply execute this file to extract its contents to the %s directory. You may also perform a default installation by specifying the appropriate options listed below.""" % unpackdir
+    parser.description = """This program is self-extracting software package. Simply execute this file to extract its contents to the %s and %s directories. You may also perform a default installation by specifying the appropriate options listed below.""" % (packfile.packdir, packfile.docdir)
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=30, width=90)
 
     parser.add_option(
@@ -163,10 +170,6 @@ def main():
 
     print
 
-    # Create unpack directory if necessary."
-    if not os.path.exists(unpackdir):
-        os.makedirs(unpackdir)
-
     # Load packages into memory.
     print("Loading package to memory...")
     begin = datetime.datetime.now()
@@ -176,20 +179,35 @@ def main():
     print
 
     # Write files to disk.
-    print("Unpacking bundle into [ %s ]..." % unpackdir)
+    print("Extracting package...")
     begin = datetime.datetime.now()
     for unpackfile in packfiles:
-        unpackfile.unpack(unpackdir)
+        unpackfile.unpack()
     end = datetime.datetime.now()
-    print("Unpacking bundle took [ %s ]." % str(end - begin))
+    print("Extracting package took [ %s ]." % str(end - begin))
     print
 
     # If default was specified, run default commands
     if opts.default:
-        default(unpackdir, opts.sipServer)
+        default(opts.sipServer)
+        print("Packages were successfully installed.")
+        print
 
         if opts.start:
             start()
+
+    print("""
+Documentation can be found in:
+  %s
+
+Documentation is also accessible via the web (if httpd is running on this machine):
+  http://%s/webstatcon/
+
+  default username: spot
+  default password: performance
+  documentation is under the "DOCS" tab.
+
+""" % (packfile.docdir, socket.gethostname()))
 
 if __name__ == "__main__":
    main()

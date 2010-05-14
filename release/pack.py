@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 try:
-    import os, md5, base64, re, rpm, sys, pwd
+    import os, md5, base64, re, rpm, sys, pwd, unpack
     from optparse import OptionParser, TitledHelpFormatter
     from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
     from StringIO import StringIO
@@ -48,13 +48,17 @@ def pack(name, files):
     print("  Adding template information from [ %s ] up to the \"load()\" method." % os.path.basename(template.name))
 
     # Write all of the template code into output file up to the "load" method.
+    readyForInsert = False
     templines = template.readlines()
     for index, templine in enumerate(templines):
         outfile.write(templine)
 
-        if re.search('def[\s]+load(.*):', templine) != None:
+        if readyForInsert:
             index += 1
-            break
+            break;
+
+        if re.search('def[\s]+load(.*):', templine) != None:
+            readyForInsert = True
 
     packfiles = [ ]
     for packfile in files:
@@ -77,7 +81,6 @@ def pack(name, files):
             encont.append(base64.b64encode(zipline))
         packfiles.append("packfile('%s','%s',['%s'])" % (os.path.basename(packfile.name), md5sum, "','".join(encont)))
 
-    outfile.write("    global packfiles" + "\n")
     outfile.write("    packfiles = [%s]" % ",".join(packfiles) + "\n")
 
     # Write all of the template code after the load method.
@@ -88,7 +91,7 @@ def pack(name, files):
     outfile.close()
 
     os.chmod(outfile.name, 0755)
-    print("finished writing to [ %s ]." % os.path.basename(outfile.name))
+    print("Finished writing to [ %s ]." % os.path.basename(outfile.name))
     print
 
     readfile = open(os.path.dirname(name) + '/README.txt', 'w')
@@ -103,7 +106,17 @@ def pack(name, files):
 # For full usage information (including additional installation options) run:
   %s -h
 
-""" % (os.path.basename(outfile.name), os.path.basename(outfile.name)))
+# After extraction, the full documentation can be found in:
+  %s
+
+# Documentation is also accessible via the web (if httpd is running on this machine):
+  http://localhost/webstatcon/
+
+#  default username: spot
+#  default password: performance
+#  documentation is under the "DOCS" tab.
+
+""" % (os.path.basename(outfile.name), os.path.basename(outfile.name), unpack.packfile.docdir))
     readfile.close()
     print
 
