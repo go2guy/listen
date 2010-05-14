@@ -81,11 +81,11 @@ def default(unpackdir, sipServer):
 
     # Test listen and Realize packages
     run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--test", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "webserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "tomcat", "tomcat-native", "realize"])
 
     # Install listen and Realize packages
     run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "webserver"])
+    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", unpackdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", unpackdir + "/" + realizepkg, "tomcat", "tomcat-native", "realize"])
 
 
 def start():
@@ -139,7 +139,7 @@ def main():
         dest="default",
         action="store_true",
         default=False,
-        help="Install using all default values.")
+        help="Install using all default values. If an install fails due to pre-requisites not being met, fix the pre-requisites and re-run the install.")
 
     parser.add_option(
         "",
