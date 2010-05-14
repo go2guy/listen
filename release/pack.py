@@ -103,7 +103,7 @@ def pack(name, files):
 # For full usage information (including additional installation options) run:
   %s -h
 
-""" % (os.path.basename(outfile.name), os.path.basename(outfile.name), os.path.basename(outfile.name), os.path.basename(outfile.name)))
+""" % (os.path.basename(outfile.name), os.path.basename(outfile.name)))
     readfile.close()
     print
 
