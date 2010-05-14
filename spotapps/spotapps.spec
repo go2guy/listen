@@ -124,13 +124,46 @@ Requires: spotbuild-vip
 # The post section lists actions to be performed after installation
 #######################################################################
 %post
+    debug=/interact/packages/logs/debug
+    if [ ! -d "`dirname ${debug}`" ]
+    then
+        debug=/dev/null
+    fi
+
+    info=/interact/packages/logs/info
+    if [ ! -f "`dirname ${info}`" ]
+    then
+        info=/dev/null
+    fi
+
+    warn=/interact/packages/logs/warn
+    if [ ! -f "`dirname ${warn}`" ]
+    then
+        warn=/dev/null
+    fi
+
+    error=/interact/packages/logs/error
+    if [ ! -f "`dirname ${error}`" ]
+    then
+        error=/dev/null
+    fi
+
+    fatal=/interact/packages/logs/fatal
+    if [ ! -f "`dirname ${fatal}`" ]
+    then
+        fatal=/dev/null
+    fi
+
     # Update iistart.ccxml link if it is currently non-existant or pointing to iidefault.ccxml or welcome.ccxml
     if [ ! -f /interact/apps/iistart.ccxml ] || \
        [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/iidefault.ccxml" ] || \
        [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/spotbuild/welcome.ccxml" ]
     then
-        rm -f /interact/apps/iistart.ccxml
-        ln -s /interact/apps/spotbuild/listen_conference/listen_conference.ccxml /interact/apps/iistart.ccxml
+        echo "iistart link either does not exist or points to iidefault or points to welcome. Changing to point to listen_conference file." >> ${debug}
+        rm -f /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
+        ln -s /interact/apps/spotbuild/listen_conference/listen_conference.ccxml /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
+    else
+        echo "iistart link exists and does not point to iidefault or welcome. iistart points to [ `readlink /interact/apps/iistart.ccxml` ]."  >> ${debug}
     fi
 
 #######################################################################
@@ -144,19 +177,55 @@ Requires: spotbuild-vip
 # un-installation
 #######################################################################
 %postun
+    debug=/interact/packages/logs/debug
+    if [ ! -d "`dirname ${debug}`" ]
+    then
+        debug=/dev/null
+    fi
+
+    info=/interact/packages/logs/info
+    if [ ! -f "`dirname ${info}`" ]
+    then
+        info=/dev/null
+    fi
+
+    warn=/interact/packages/logs/warn
+    if [ ! -f "`dirname ${warn}`" ]
+    then
+        warn=/dev/null
+    fi
+
+    error=/interact/packages/logs/error
+    if [ ! -f "`dirname ${error}`" ]
+    then
+        error=/dev/null
+    fi
+
+    fatal=/interact/packages/logs/fatal
+    if [ ! -f "`dirname ${fatal}`" ]
+    then
+        fatal=/dev/null
+    fi
+
     # If this is an uninstall and not an upgrade...
     if [ "$1" -le "0" ]
     then
+        echo "Uninstalling %{name}." >> ${debug}
+
         # Spotbuild apps are no longer valid
         rm -f /interact/apps/iistart.ccxml
 
         # Update iistart.ccxml to point back to either welcome.ccxml or iidefault.ccxml
         if [ -f /interact/apps/spotbuid/welcome.ccxml ]
         then
+            echo "Linking iistart back to welcome."  >> ${debug}
             ln -s /interact/apps/spotbuid/welcome.ccxml /interact/apps/iistart.ccxml
         elif [ -f /interact/apps/iidefault.ccxml ]
         then
+            echo "Linking iistart back to iidefault."  >> ${debug}
             ln -s /interact/apps/iidefault.ccxml /interact/apps/iistart.ccxml
+        else
+            echo "Can't relink iistart because iidefault does not exist."  >> ${debug}
         fi
     fi
 
