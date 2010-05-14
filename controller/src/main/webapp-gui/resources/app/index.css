@@ -484,3 +484,8 @@ li.odd {
 #scheduleConferenceDate {
     width: 10em;
 }
+
+/* TODO unhide these later, once the functionality is there */
+#conference-pins button {
+    display: none;
+}
