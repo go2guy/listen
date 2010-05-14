@@ -166,9 +166,9 @@ public final class HibernateUtil
             //Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
             //Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
 
-            Pin activePin = Pin.newInstance(PinType.ACTIVE);
-            Pin adminPin = Pin.newInstance(PinType.ADMIN);
-            Pin passivePin = Pin.newInstance(PinType.PASSIVE);
+            Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
+            Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
+            Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
 
             persistenceService.save(activePin);
             persistenceService.save(adminPin);

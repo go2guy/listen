@@ -2,6 +2,7 @@ package com.interact.listen.marshal.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
@@ -161,6 +162,20 @@ public class JsonMarshallerTest
         expected.append("}");
 
         assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
+    }
+
+    @Test
+    public void test_marshal_withNullList_throwsExceptionWithMessage()
+    {
+        try
+        {
+            marshaller.marshal(null, Subscriber.class);
+            fail("Expected IllegalArgumentException for marshal() with null list");
+        }
+        catch(IllegalArgumentException e)
+        {
+            assertEquals("List cannot be null", e.getMessage());
+        }
     }
 
     @Test

@@ -97,9 +97,9 @@ public class ProvisionAccountServlet extends HttpServlet
             subscriber.setNumber(number);
             persistenceService.save(subscriber);
 
-            Pin activePin = Pin.newInstance(PinType.ACTIVE);
-            Pin adminPin = Pin.newInstance(PinType.ADMIN);
-            Pin passivePin = Pin.newInstance(PinType.PASSIVE);
+            Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
+            Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
+            Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
 
             persistenceService.save(activePin);
             persistenceService.save(adminPin);

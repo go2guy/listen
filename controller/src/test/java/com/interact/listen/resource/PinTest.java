@@ -35,6 +35,16 @@ public class PinTest
     }
 
     @Test
+    public void test_newRandomInstance_returnsPopulatedPinWithRandomNumber()
+    {
+        final PinType type = PinType.ACTIVE;
+        pin = Pin.newRandomInstance(type);
+
+        assertEquals(10, pin.getNumber().length());
+        assertEquals(type, pin.getType());
+    }
+
+    @Test
     public void test_setNumber_withValidNumber_setsNumber()
     {
         final String number = String.valueOf(System.currentTimeMillis());
@@ -182,6 +192,48 @@ public class PinTest
         that.setNumber(number);
 
         assertTrue(pin.equals(that));
+    }
+
+    @Test
+    public void test_hashCode_returnsUniqueHashcodeForRelevantFields()
+    {
+        Pin obj = new Pin();
+
+        // hashcode-relevant properties set to static values for predictability
+        obj.setNumber("Vegetarian");
+
+        // set a property that has no effect on hashcode to something dynamic
+        obj.setId(System.currentTimeMillis());
+
+        assertEquals(93893341, obj.hashCode());
+    }
+
+    @Test
+    public void test_generateRandomPin_withoutSystemPropertySet_returnsTenDigitNumericPin()
+    {
+        assert System.getProperty("com.interact.listen.pinLength") == null;
+
+        String number = Pin.generateRandomPin();
+        assertTrue(number.matches("^[0-9]{10}$"));
+    }
+
+    @Test
+    public void test_generateRandomPin_withSystemPropertyOf30_returns30DigitNumericPin()
+    {
+        String origProperty = System.getProperty("com.interact.listen.pinLength");
+        try
+        {
+            System.setProperty("com.interact.listen.pinLength", "30");
+            String number = Pin.generateRandomPin();
+            assertTrue(number.matches("^[0-9]{30}$"));
+        }
+        finally
+        {
+            if(origProperty != null)
+            {
+                System.setProperty("com.interact.listen.pinLength", origProperty);
+            }
+        }
     }
 
     private Pin getPopulatedPin()

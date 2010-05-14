@@ -43,7 +43,7 @@ public class Pin extends Resource implements Serializable
     }
 
     // factory creation method
-    public static Pin newInstance(PinType type)
+    public static Pin newRandomInstance(PinType type)
     {
         Pin pin = new Pin();
         pin.setNumber(generateRandomPin());

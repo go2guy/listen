@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.resource.ListenSpotSubscriber.PhoneNumberProtocolType;
-import com.interact.listen.resource.Pin.PinType;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class ListenSpotSubscriberTest
 
         assertEquals(httpApi, listenSpotSubscriber.getHttpApi());
     }
-    
+
     @Test
     public void test_setPhoneNumber_withValidPhoneNumber_setsId()
     {
@@ -55,7 +54,7 @@ public class ListenSpotSubscriberTest
 
         assertEquals(phoneNumber, listenSpotSubscriber.getPhoneNumber());
     }
-    
+
     @Test
     public void test_setPhoneNumberProtocol_withValidProtocol_setsProtocol()
     {
@@ -68,6 +67,7 @@ public class ListenSpotSubscriberTest
     @Test
     public void test_validate_nullHttpApi_returnsFalseAndHasErrors()
     {
+        listenSpotSubscriber = getPopulatedListenSpotSubscriber();
         listenSpotSubscriber.setHttpApi(null);
 
         assertFalse(listenSpotSubscriber.validate());
@@ -77,6 +77,7 @@ public class ListenSpotSubscriberTest
     @Test
     public void test_validate_blankHttpApi_returnsFalseAndHasErrors()
     {
+        listenSpotSubscriber = getPopulatedListenSpotSubscriber();
         listenSpotSubscriber.setHttpApi("");
 
         assertFalse(listenSpotSubscriber.validate());
@@ -86,6 +87,7 @@ public class ListenSpotSubscriberTest
     @Test
     public void test_validate_whitespaceHttpApi_returnsFalseAndHasErrors()
     {
+        listenSpotSubscriber = getPopulatedListenSpotSubscriber();
         listenSpotSubscriber.setHttpApi(" ");
 
         assertFalse(listenSpotSubscriber.validate());
@@ -166,40 +168,59 @@ public class ListenSpotSubscriberTest
 
         assertTrue(listenSpotSubscriber.equals(that));
     }
-    
+
     @Test
     public void test_validate_nullPhoneNumber_returnsFalseAndHasErrors()
     {
+        listenSpotSubscriber = getPopulatedListenSpotSubscriber();
         listenSpotSubscriber.setPhoneNumber(null);
 
         assertFalse(listenSpotSubscriber.validate());
         assertTrue(listenSpotSubscriber.hasErrors());
     }
-    
+
     @Test
     public void test_validate_blankPhoneNumber_returnsFalseAndHasErrors()
     {
+        listenSpotSubscriber = getPopulatedListenSpotSubscriber();
         listenSpotSubscriber.setPhoneNumber("");
 
         assertFalse(listenSpotSubscriber.validate());
         assertTrue(listenSpotSubscriber.hasErrors());
     }
-    
+
     @Test
     public void test_validate_nullPhoneNumberProtocol_returnsFalseAndHasErrors()
     {
+        listenSpotSubscriber = getPopulatedListenSpotSubscriber();
         listenSpotSubscriber.setPhoneNumberProtocol(null);
 
         assertFalse(listenSpotSubscriber.validate());
         assertTrue(listenSpotSubscriber.hasErrors());
     }
 
+    @Test
+    public void test_hashCode_returnsUniqueHashCodeForRelevantFields()
+    {
+        ListenSpotSubscriber obj = new ListenSpotSubscriber();
+
+        // hashcode-relevant properties set to static values for predictability
+        obj.setHttpApi("Turkey Tom");
+
+        // set a property that has no effect on hashcode to something dynamic
+        obj.setPhoneNumber(String.valueOf(System.currentTimeMillis()));
+
+        assertEquals(-51183361, obj.hashCode());
+    }
+
     private ListenSpotSubscriber getPopulatedListenSpotSubscriber()
     {
-        ListenSpotSubscriber l = new ListenSpotSubscriber();
-        l.setHttpApi("/foo/bar/baz");
-        l.setId(System.currentTimeMillis());
-        l.setVersion(10);
-        return l;
+        ListenSpotSubscriber obj = new ListenSpotSubscriber();
+        obj.setHttpApi("/foo/bar/baz");
+        obj.setPhoneNumber("Club Tuna");
+        obj.setPhoneNumberProtocol(PhoneNumberProtocolType.PSTN);
+        obj.setId(System.currentTimeMillis());
+        obj.setVersion(10);
+        return obj;
     }
 }

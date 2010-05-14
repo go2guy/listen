@@ -128,7 +128,7 @@ public class ConferenceHistoryTest
     }
 
     @Test
-    public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
+    public void test_copy_withoutIdAndVersion_createsShallowCopyWithAllPropertiesExceptIdAndVersion()
     {
         ConferenceHistory original = getPopulatedConferenceHistory();
         ConferenceHistory copy = original.copy(false);
@@ -141,6 +141,16 @@ public class ConferenceHistoryTest
 
         assertNull(copy.getId());
         assertEquals(Integer.valueOf(0), copy.getVersion());
+    }
+
+    @Test
+    public void test_copy_withNullDateCreated_setsNullDateCreated()
+    {
+        ConferenceHistory original = getPopulatedConferenceHistory();
+        original.setDateCreated(null);
+        ConferenceHistory copy = original.copy(false);
+
+        assertNull(copy.getDateCreated());
     }
 
     @Test
@@ -235,6 +245,23 @@ public class ConferenceHistoryTest
         that.setUser(user);
 
         assertTrue(conferenceHistory.equals(that));
+    }
+
+    @Test
+    public void test_hashCode_returnsUniqueHashcodeForRelevantFields()
+    {
+        ConferenceHistory obj = new ConferenceHistory();
+
+        // hashcode-relevant properties set to static values for predictability
+        obj.setConference(new Conference());
+        obj.setDateCreated(new Date(Long.valueOf("1273861270512")));
+        obj.setDescription("Pepe");
+        obj.setUser("Big John");
+
+        // set a property that has no effect on hashcode to something dynamic
+        obj.setId(System.currentTimeMillis());
+
+        assertEquals(-1955306176, obj.hashCode());
     }
 
     private ConferenceHistory getPopulatedConferenceHistory()

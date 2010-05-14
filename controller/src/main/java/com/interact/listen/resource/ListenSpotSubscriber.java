@@ -21,9 +21,9 @@ public class ListenSpotSubscriber extends Resource
 
     @Column(nullable = false, unique = true)
     private String httpApi;
-    
+
     private String phoneNumber;
-    
+
     @Enumerated(EnumType.STRING)
     private PhoneNumberProtocolType phoneNumberProtocol;
 
@@ -63,7 +63,7 @@ public class ListenSpotSubscriber extends Resource
     {
         this.httpApi = httpApi;
     }
-    
+
     public String getPhoneNumber()
     {
         return phoneNumber;
@@ -73,7 +73,7 @@ public class ListenSpotSubscriber extends Resource
     {
         this.phoneNumber = phoneNumber;
     }
-    
+
     public PhoneNumberProtocolType getPhoneNumberProtocol()
     {
         return phoneNumberProtocol;
@@ -87,23 +87,22 @@ public class ListenSpotSubscriber extends Resource
     @Override
     public boolean validate()
     {
-        boolean isValid = true;
         if(httpApi == null || httpApi.trim().equals(""))
         {
             addToErrors("'httpApi' cannot be null or blank");
-            isValid = false;
         }
+
         if(phoneNumber == null || phoneNumber.trim().equals(""))
         {
             addToErrors("'phoneNumber' cannot be null or blank");
-            isValid = false;
         }
+
         if(phoneNumberProtocol == null)
         {
             addToErrors("'phoneNumberProtocol' cannot be null");
-            isValid = false;
         }
-        return isValid;
+
+        return !hasErrors();
     }
 
     @Override

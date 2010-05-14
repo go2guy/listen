@@ -10,5 +10,5 @@ public interface StatSender
      */
     public void send(Stat stat);
     
-    public void send(Stat stat, Long vlaue);
+    public void send(Stat stat, Long value);
 }

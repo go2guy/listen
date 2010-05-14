@@ -2,6 +2,8 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,6 +24,15 @@ public class ConferenceTest
     }
 
     @Test
+    public void test_setId_withValidId_setsId()
+    {
+        final Long id = System.currentTimeMillis();
+        conference.setId(id);
+
+        assertEquals(id, conference.getId());
+    }
+
+    @Test
     public void test_setIsStarted_withValidIsStarted_setsIsStarted()
     {
         final Boolean isStarted = true;
@@ -31,12 +42,20 @@ public class ConferenceTest
     }
 
     @Test
-    public void test_setId_withValidId_setsId()
+    public void test_setStartTime_withNull_setsNullStartTime()
     {
-        final Long id = System.currentTimeMillis();
-        conference.setId(id);
+        conference.setIsStarted(null);
+        assertEquals(null, conference.getIsStarted());
+    }
 
-        assertEquals(id, conference.getId());
+    @Test
+    public void test_setStartTime_withValidDate_setsDateWithDifferentInstance()
+    {
+        Date startTime = new Date();
+        conference.setStartTime(startTime);
+
+        assertEquals(startTime, conference.getStartTime());
+        assertFalse(startTime == conference.getStartTime()); // reference comparison
     }
 
     @Test
@@ -76,7 +95,7 @@ public class ConferenceTest
         assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
-    
+
     @Test
     public void test_validate_nullStartTime_returnsTrueAndHasErrors()
     {
@@ -180,6 +199,21 @@ public class ConferenceTest
         that.setUser(user);
 
         assertTrue(conference.equals(that));
+    }
+
+    @Test
+    public void test_hashCode_returnsUniqueHashCodeForRelevantFields()
+    {
+        Conference obj = new Conference();
+
+        // hashcode-relevant properties set to static values for predictability
+        obj.setDescription("Sorry Charlie");
+        obj.setUser(new User());
+
+        // set a property that has no effect on hashcode to something dynamic
+        obj.setStartTime(new Date());
+
+        assertEquals(1925950052, obj.hashCode());
     }
 
     private Conference getPopulatedConference()

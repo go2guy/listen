@@ -250,6 +250,20 @@ public class ParticipantTest
         assertTrue(participant.equals(that));
     }
 
+    @Test
+    public void test_hashCode_returnsUniqueHashCodeForRelevantFields()
+    {
+        Participant obj = new Participant();
+
+        // hashcode-relevant properties set to static values for predictability
+        obj.setSessionID("Vito");
+
+        // set a property that has no effect on hashcode to something dynamic
+        obj.setAudioResource(String.valueOf(System.currentTimeMillis()));
+
+        assertEquals(2666669, obj.hashCode());
+    }
+
     private Participant getPopulatedParticipant()
     {
         Conference c = new Conference();

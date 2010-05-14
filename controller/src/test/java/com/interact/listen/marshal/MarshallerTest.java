@@ -1,8 +1,6 @@
 package com.interact.listen.marshal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.marshal.xml.XmlMarshaller;
@@ -56,5 +54,32 @@ public class MarshallerTest
         {
             assertEquals("Marshaller not found for content type [" + contentType + "]", e.getMessage());
         }
+    }
+
+    @Test
+    public void test_getIdFromHref_withNullHref_returnsNull()
+    {
+        assertNull(Marshaller.getIdFromHref(null));
+    }
+
+    @Test
+    public void test_getIdFromHref_withHrefContainingOnlyResourceName_returnsNull()
+    {
+        final String href = "/foo";
+        assertNull(Marshaller.getIdFromHref(href));
+    }
+
+    @Test
+    public void test_getIdFromHref_withHrefContainingOnlyResourceNameWithTrailingSlash_returnsNull()
+    {
+        final String href = "/foo/";
+        assertNull(Marshaller.getIdFromHref(href));
+    }
+
+    @Test
+    public void test_getIdFromHref_withHrefContainingId_returnsIdPortion()
+    {
+        final String href = "/foo/431234";
+        assertEquals(Long.valueOf("431234"), Marshaller.getIdFromHref(href));
     }
 }

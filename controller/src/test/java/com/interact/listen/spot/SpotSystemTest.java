@@ -79,7 +79,7 @@ public class SpotSystemTest
     public void test_dropParticipant_whenSpotRespondsWith200_sendsStat() throws SpotCommunicationException, IOException
     {
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
-        spotSystem.dropParticipant(participant);        
+        spotSystem.dropParticipant(participant);
 
         verify(mockStatSender).send(Stat.PUBLISHED_EVENT_TO_SPOT);
     }
@@ -137,7 +137,7 @@ public class SpotSystemTest
     public void test_muteParticipant_whenSpotRespondsWith200_sendsStat() throws SpotCommunicationException, IOException
     {
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
-        spotSystem.muteParticipant(participant);        
+        spotSystem.muteParticipant(participant);
 
         verify(mockStatSender).send(Stat.PUBLISHED_EVENT_TO_SPOT);
     }
@@ -152,7 +152,67 @@ public class SpotSystemTest
         catch(SpotCommunicationException e)
         {
             // expected
-        }     
+        }
+
+        verify(mockStatSender).send(Stat.PUBLISHED_EVENT_TO_SPOT);
+    }
+
+    @Test
+    public void test_outdial_invokesPostWithParams() throws SpotCommunicationException, IOException
+    {
+        final String number = String.valueOf(System.currentTimeMillis());
+        final String adminSessionId = String.valueOf(System.currentTimeMillis());
+
+        Map<String, String> expectedParams = new HashMap<String, String>();
+        expectedParams.put("sessionid", adminSessionId);
+        expectedParams.put("name", "dialog.user.customEvent");
+        expectedParams.put("II_SB_eventToPass", "DIAL");
+        expectedParams.put("II_SB_valueToPass", number);
+
+        when(mockHttpClient.getResponseStatus()).thenReturn(200);
+
+        spotSystem.outdial(number, adminSessionId);
+
+        verify(mockHttpClient).post(httpInterfaceUri, expectedParams);
+    }
+
+    @Test
+    public void test_outdial_whenClientReturnsNon200Status_throwsSpotCommunicationExceptionWithMessage()
+        throws IOException
+    {
+        when(mockHttpClient.getResponseStatus()).thenReturn(400);
+
+        try
+        {
+            spotSystem.outdial("foo", "bar");
+            fail("Expected SpotCommunicationException for non-200 HTTP status");
+        }
+        catch(SpotCommunicationException e)
+        {
+            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + "]", e.getMessage());
+        }
+    }
+
+    @Test
+    public void test_outdial_whenSpotRespondsWith200_sendsStat() throws SpotCommunicationException, IOException
+    {
+        when(mockHttpClient.getResponseStatus()).thenReturn(200);
+        spotSystem.outdial("foo", "bar");
+
+        verify(mockStatSender).send(Stat.PUBLISHED_EVENT_TO_SPOT);
+    }
+
+    @Test
+    public void test_outdial_whenSpotRespondsWith400_sendsStat() throws SpotCommunicationException, IOException
+    {
+        try
+        {
+            spotSystem.outdial("foo", "bar");
+        }
+        catch(SpotCommunicationException e)
+        {
+            // expected
+        }
 
         verify(mockStatSender).send(Stat.PUBLISHED_EVENT_TO_SPOT);
     }
@@ -191,16 +251,18 @@ public class SpotSystemTest
     }
 
     @Test
-    public void test_unmuteParticipant_whenSpotRespondsWith200_sendsStat() throws SpotCommunicationException, IOException
+    public void test_unmuteParticipant_whenSpotRespondsWith200_sendsStat() throws SpotCommunicationException,
+        IOException
     {
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
-        spotSystem.unmuteParticipant(participant);        
+        spotSystem.unmuteParticipant(participant);
 
         verify(mockStatSender).send(Stat.PUBLISHED_EVENT_TO_SPOT);
     }
 
     @Test
-    public void test_unmuteParticipant_whenSpotRespondsWith400_sendsStat() throws SpotCommunicationException, IOException
+    public void test_unmuteParticipant_whenSpotRespondsWith400_sendsStat() throws SpotCommunicationException,
+        IOException
     {
         try
         {

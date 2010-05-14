@@ -183,6 +183,20 @@ public class SubscriberTest
         assertTrue(subscriber.equals(that));
     }
 
+    @Test
+    public void test_hashCode_returnsUniqueHashcodeForRelevantFields()
+    {
+        Subscriber obj = new Subscriber();
+
+        // hashcode-relevant properties set to static values for predictability
+        obj.setNumber("JJBLT");
+
+        // set a property that has no effect on hashcode to something dynamic
+        obj.setVoicemailGreetingLocation(String.valueOf(System.currentTimeMillis()));
+
+        assertEquals(70610985, obj.hashCode());
+    }
+
     private Subscriber getPopulatedSubscriber()
     {
         Subscriber s = new Subscriber();

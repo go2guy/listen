@@ -210,6 +210,21 @@ public class VoicemailTest
         assertTrue(voicemail.equals(that));
     }
 
+    @Test
+    public void test_hashCode_returnsUniqueHashcodeForRelevantFields()
+    {
+        Voicemail obj = new Voicemail();
+
+        // hashcode-relevant properties set to static values for predictability
+        obj.setSubscriber(new Subscriber());
+        obj.setFileLocation("Billy Club");
+
+        // set a property that has no effect on hashcode to something dynamic
+        obj.setDateCreated(new Date());
+
+        assertEquals(1619440250, obj.hashCode());
+    }
+
     private Voicemail getPopulatedVoicemail()
     {
         Subscriber s = new Subscriber();

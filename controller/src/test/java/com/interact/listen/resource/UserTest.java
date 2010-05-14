@@ -167,6 +167,20 @@ public class UserTest
         assertTrue(user.equals(that));
     }
 
+    @Test
+    public void test_hashCode_returnsUniqueHashcodeForRelevantFields()
+    {
+        User obj = new User();
+
+        // hashcode-relevant properties set to static values for predictability
+        obj.setUsername("Gourmet Smoked Ham Club");
+
+        // set a property that has no effect on hashcode to something dynamic
+        obj.setPassword(String.valueOf(System.currentTimeMillis()));
+
+        assertEquals(1335126499, obj.hashCode());
+    }
+
     private User getPopulatedUser()
     {
         Subscriber s = new Subscriber();

@@ -1,5 +1,8 @@
 package com.interact.listen.util;
 
+/**
+ * Provides utility methods for comparing objects.
+ */
 public final class ComparisonUtil
 {
     private ComparisonUtil()
@@ -7,7 +10,14 @@ public final class ComparisonUtil
         throw new AssertionError("Cannot instantiate utility class ComparisonUtil");
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE", justification = "object1 won't be null where FindBugs says it will, see the JUnit tests")
+    /**
+     * Compares two objects for equality, taking {@code null} values into consideration. Offered as a convenience for
+     * developers to avoid having to always check for {@code null} before performing {@code .equals()} comparisons.
+     * 
+     * @param object1 object to compare
+     * @param object2 object to compare
+     * @return {@code true} if objects are equal (or both {@code null}), {@code false} otherwise
+     */
     public static boolean isEqual(Object object1, Object object2)
     {
         if(object1 == null && object2 == null)
@@ -15,16 +25,11 @@ public final class ComparisonUtil
             return true;
         }
 
-        if(object1 == null && object2 != null)
+        if(object1 != null && object1.equals(object2))
         {
-            return false;
+            return true;
         }
 
-        if(object1 != null && object2 == null)
-        {
-            return false;
-        }
-
-        return object1.equals(object2);
+        return false;
     }
 }

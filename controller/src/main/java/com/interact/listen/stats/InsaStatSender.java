@@ -5,8 +5,12 @@ import com.interact.insa.client.StatsPublisher.Operator;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Sends statistic information to INSA systems.
+ */
 public class InsaStatSender implements StatSender
 {
+    /** Class logger */
     private static final Logger LOG = Logger.getLogger(InsaStatSender.class);
 
     @Override
@@ -14,14 +18,15 @@ public class InsaStatSender implements StatSender
     {
         send(stat, null);
     }
-    
+
     @Override
     public void send(Stat stat, Long value)
     {
         try
         {
-            StatsPublisher.send(stat.getStatId(), value == null ? 1 : value, value == null ? Operator.INCREMENT
-                                                                                          : Operator.SET);
+            Operator statOperation = value == null ? Operator.INCREMENT : Operator.SET;
+            Long statValue = value == null ? 1 : value;
+            StatsPublisher.send(stat.getStatId(), statValue, statOperation);
         }
         catch(Exception e)
         {

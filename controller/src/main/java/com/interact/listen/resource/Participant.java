@@ -151,8 +151,6 @@ public class Participant extends Resource implements Serializable
     @Override
     public boolean validate()
     {
-        boolean isValid = true;
-
         if(audioResource == null)
         {
             addToErrors("audioResource cannot be null");
