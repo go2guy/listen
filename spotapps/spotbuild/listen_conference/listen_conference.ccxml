@@ -29,6 +29,7 @@
     <var name="II_SB_type" expr="''"/>            <!-- II_SB_type. Contains the type of call - VOIP, PSTN -->
     <var name="II_SB_sessionID" expr="''"/>       <!-- II_SB_sessionID. Contains the ID of the ccxml session -->
     <var name="II_SB_obcallid" expr="''"/>
+    <var name="II_SB_importedValue" expr="''"/>
 
 	<!-- Disconnect variables -->
 	<var name="II_SB_disconnect.id" expr="''"/>			<!-- Contains the connection id of party that triggered connection.disconnected event -->
@@ -50,13 +51,14 @@
         <transition state="idle" event="VRU_AUTOSTART" name="alertEV">
             <log>INFO: Received VRU_AUTOSTART event</log>
             <assign name="II_SB_state" expr="'alerted'"/>
-            <assign name="II_SB_local" expr="alertEV.connection.local"/>
-            <assign name="II_SB_remote" expr="alertEV.connection.remote"/>
-            <assign name="II_SB_protocol" expr="alertEV.connection.protocol"/>
-            <assign name="II_SB_originator" expr="alertEV.connection.originator"/>
-            <assign name="II_SB_connectionID" expr="alertEV.connectionid"/>
+            <assign name="II_SB_local" expr="''"/>
+            <assign name="II_SB_remote" expr="''"/>
+            <assign name="II_SB_protocol" expr="''"/>
+            <assign name="II_SB_originator" expr="''"/>
+            <assign name="II_SB_connectionID" expr="''"/>
             <assign name="II_SB_type" expr="alertEV.info.type"/>
-            <fetch next="'file:' + II_SB_CODE_DIR + 'begin.ccxml'" namelist="II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_VXML_LIB II_SB_projectSource II_SB_obcallid"/> <!-- Fetch ccxml document -->
+            <assign name="II_SB_importedValue" expr="alertEV.importedValue"/>
+            <fetch next="'file:' + II_SB_CODE_DIR + 'begin.ccxml'" namelist="II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_VXML_LIB II_SB_projectSource II_SB_obcallid II_SB_importedValue"/> <!-- Fetch ccxml document -->
         </transition>
 
         <!-- Received connection.alerting -->

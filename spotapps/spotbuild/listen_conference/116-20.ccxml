@@ -202,8 +202,9 @@
                 <log>INFO: Transfering to a new program</log>
                 <var name="II_SB_transfer" expr="'yes'"/>
                 <assign name="II_SB_projectSource" expr="'listen_conference'"/>
+                <var name="II_SB_importedValue" expr="evt.values.II_SB_valueToPass"/>
 				<if cond="II_SB_NEXT_OPTION != ''">
-					<fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid"/>
+					<fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_importedValue"/>
 				<else/>
 					<assign name="II_SB_state" expr="'endCall'"/>
 					<send data="'dialog.user.endCall'" target="II_SB_sessionID"/>

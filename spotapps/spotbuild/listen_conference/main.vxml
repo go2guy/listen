@@ -18,6 +18,7 @@
     <var name="II_SB_NEXT_OPTION"/>
     <var name="II_SB_transfer"/>
     <var name="II_SB_projectSource"/>
+    <var name="II_SB_importedValue"/>
 	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_userID"/>
 	<var name="SB_UV_callType"/>
