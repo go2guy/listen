@@ -38,7 +38,7 @@ def pack(name, files):
         print("An invalid number or rpm architectures was found in input files %s: found %d but should be 1." % (files, len(arch)))
         sys.exit()
 
-    outfile = open(name + "." + arch.keys()[-1] + ".py", 'w')
+    outfile = open(name + "." + arch.keys()[-1], 'w')
     print("Creating output file [ %s ]." % os.path.basename(outfile.name))
 
     template = open('unpack.py', 'r')
@@ -97,14 +97,14 @@ def pack(name, files):
 
 # %s is a self-extracting, self-installing package.
 
-1.) For full usage information run:
-  %s -h
-
-2.) To extract everything from this archive run:
+1.) To extract everything from this archive run:
   %s
 
-3.) To extract and install using all defaults run:
+2.) To extract and install using all defaults run:
   %s --default
+
+3.) For full usage information (including additional installation options) run:
+  %s -h
 
 """ % (os.path.basename(outfile.name), os.path.basename(outfile.name), os.path.basename(outfile.name), os.path.basename(outfile.name)))
     readfile.close()
