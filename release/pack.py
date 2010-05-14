@@ -98,15 +98,9 @@ def pack(name, files):
 # Copyright (c) Interact Incorporated. All Rights Reserved.
 ##################################################################
 
-# %s is a self-extracting, self-installing package.
+%s is a self-extracting package.
 
-1.) To extract everything from this archive run:
-  %s
-
-2.) To extract and install using all defaults run:
-  %s --default
-
-3.) For full usage information (including additional installation options) run:
+For full usage information (including additional installation options) run:
   %s -h
 
 """ % (os.path.basename(outfile.name), os.path.basename(outfile.name), os.path.basename(outfile.name), os.path.basename(outfile.name)))

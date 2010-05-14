@@ -130,7 +130,7 @@ def main():
 
     # Set up a parser object which defines how to parse the expected input.
     parser = OptionParser()
-    parser.description = """This package is a self-extracting listen bundle. Execute this file to extract all packages to the %s directory. Specify the "default" directive to install the extracted packages using all defaults.""" % unpackdir
+    parser.description = """This program is self-extracting software package. Simply execute this file to extract its contents to the %s directory. You may also perform a default installation by specifying the appropriate options listed below.""" % unpackdir
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=30, width=90)
 
     parser.add_option(
