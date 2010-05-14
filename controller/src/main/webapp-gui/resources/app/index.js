@@ -193,13 +193,13 @@ function ConferenceCallerList() {
                 li.find('.caller-drop-icon').text('');
             }
         } else {
-            var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'server.unmuteCaller(' + data.id + ');' : 'server.muteCaller(' + data.id + ');return false;') + '"></button>';
+            var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'server.unmuteCaller(' + data.id + ');' : 'server.muteCaller(' + data.id + ');return false;') + '"/>';
             var mute = li.find('.caller-mute-icon');
             if(mute.html() != muteHtml) {
                 mute.html(muteHtml);
             }
 
-            var dropHtml = '<button class="delete-button" onclick="server.dropCaller(' + data.id + ');"></button>';
+            var dropHtml = '<button class="delete-button" onclick="server.dropCaller(' + data.id + ');"/>';
             var drop = li.find('.caller-drop-icon');
             if(drop.html() != dropHtml) {
                 drop.html(dropHtml);
@@ -340,7 +340,7 @@ function ConferencePinList() {
         li.find('.pin-number').html(data.number);
         li.find('.pin-type').html(data.type);
 
-        var removeHtml = '<button class="delete-button" readonly="readonly" disabled="disabled"></button>';
+        var removeHtml = '<button class="delete-button" readonly="readonly" disabled="disabled"/>';
         li.find('.pin-remove').html(removeHtml);
     };
 

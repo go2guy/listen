@@ -61,19 +61,23 @@
 
 .add-button, .cancel-button, .delete-button, .mute-button, .outdial-button, .schedule-button, .unmute-button, .unmute-button-disabled, .view-button {
     background-color: #EEEEEE;
-    background-position: 1px 1px;
+    background-position: 2px 2px;
     background-repeat: no-repeat;
     border: 1px solid #1162AE;
     border-radius: 4px;
     color: #1162AE;
     cursor: pointer;
-    height: 20px;
+    height: 22px;
     font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
     font-size: 13px;
     font-weight: bold;
     -moz-border-radius: 4px;
-    padding: 1px 1px 1px 18px;
+    padding: 1px 1px 1px 21px;
     -webkit-border-radius: 4px;
+}
+
+.delete-button, .mute-button, .unmute-button, .unmute-button-disabled {
+    width: 24px;
 }
 
 .add-button:hover, .cancel-button:hover, .delete-button:hover, .mute-button:hover, .outdial-button:hover, .schedule-button:hover, .unmute-button:hover, .view-button:hover {

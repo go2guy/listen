@@ -57,6 +57,7 @@ function provisionAccount(event) {
             $('#provisionAccountDialog').dialog('close');
             provisionAccountNumber.val('');
             provisionAccountPassword.val('');
+            provisionAccountPasswordConfirm.val('');
             provisionAccountUsername.val('');
             notify('Account provisioned');
         },
