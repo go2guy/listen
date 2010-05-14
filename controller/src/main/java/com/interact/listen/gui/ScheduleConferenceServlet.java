@@ -128,9 +128,9 @@ public class ScheduleConferenceServlet extends HttpServlet
             Conference userConference = (Conference)persistenceService.get(Conference.class, listConferences.get(0)
                                         .getId());
 
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyyhhmma");
-            String dateTime = date + hour + minute + amPm;
-
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h mm a");
+            String dateTime = date + " " + hour + " " + minute + " " + amPm;
+            
             String[] activeAddresses = activeParticipants.split(",");
             String[] passiveAddresses = passiveParticipants.split(",");
             ArrayList<String> serviceActiveAddresses = new ArrayList<String>();
