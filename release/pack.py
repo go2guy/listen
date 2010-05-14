@@ -91,7 +91,7 @@ def pack(name, files):
     print("finished writing to [ %s ]." % os.path.basename(outfile.name))
     print
 
-    readfile = open('README.txt', 'w')
+    readfile = open(os.path.dirname(name) + '/README.txt', 'w')
     print("Creating readme file [ %s ]." % os.path.basename(readfile.name))
     readfile.write("""
 ##################################################################
