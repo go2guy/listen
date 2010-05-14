@@ -2,7 +2,8 @@
 try:
     import sys, os, re, md5, base64, datetime, subprocess
     from optparse import OptionParser, TitledHelpFormatter
-    from zipfile import ZipFile, is_zipfile
+    from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
+    from StringIO import StringIO
 
 except ImportError, e:
     raise "Unable to import required module: " + str(e)
@@ -18,8 +19,16 @@ class packfile(object):
         self.md5sum = md5sum
         self.contents64 = contents64
         self.contents = []
+
+        # Decode and write to temporary in-memory file
+        zipfile = StringIO()
         for line64 in self.contents64:
-            self.contents.append(base64.b64decode(line64))
+            zipfile.write(base64.b64decode(line64))
+
+        # Create a zip file from the in-memory file and dump contents
+        ziparch = ZipFile(zipfile)
+        ziparch.printdir()
+        self.contents = ziparch.read(self.name)
 
     def unpack(self, directory):
         outfile = open(directory + "/" + self.name, "w+")

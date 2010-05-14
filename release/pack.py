@@ -3,6 +3,8 @@
 try:
     import os, md5, base64, re, rpm, sys, pwd
     from optparse import OptionParser, TitledHelpFormatter
+    from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
+    from StringIO import StringIO
 
 except ImportError, e:
     raise "Unable to import required module: " + str(e)
@@ -51,17 +53,26 @@ def pack(name, files):
             index += 1
             break
 
-    # Write all of the packages in base64
-    packfiles = []
+    packfiles = [ ]
     for packfile in files:
-        print("  Adding [ %s ] as a static, base64 encoded python object." % os.path.basename(packfile))
+        print("  Adding [ %s ] as a static, zipped, base64 encoded python object." % os.path.basename(packfile))
+
+        # md5sum the original file
         packfile = open(packfile, "r")
-        contents = []
+        md5sum = md5.new("".join(packfile.readlines())).hexdigest()
+
+        # Create in-memory zip file
+        zipfile = StringIO()
+        ziparch = ZipFile(zipfile, 'w', ZIP_DEFLATED)
+        ziparch.write(packfile.name, os.path.basename(packfile.name))
+        ziparch.close()
+        zipfile.seek(0)
+
+        # Base64 encode the zip file and write to the output
         encont = []
-        for packline in packfile.readlines():
-            contents.append(packline)
-            encont.append(base64.b64encode(packline))
-        packfiles.append("packfile('%s','%s',['%s'])" % (os.path.basename(packfile.name), md5.new("".join(contents)).hexdigest(), "','".join(encont)))
+        for zipline in zipfile.readlines():
+            encont.append(base64.b64encode(zipline))
+        packfiles.append("packfile('%s','%s',['%s'])" % (os.path.basename(packfile.name), md5sum, "','".join(encont)))
 
     outfile.write("    global packfiles" + "\n")
     outfile.write("    packfiles = [%s]" % ",".join(packfiles) + "\n")
