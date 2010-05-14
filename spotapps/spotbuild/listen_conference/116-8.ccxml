@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 04/23/2010
+    <!-- Last Modified 05/14/2010
        *   @Name	Conference.ccxml
        *   @Desc	Manages conference activities -->
 
@@ -177,7 +177,12 @@
             <assign name="II_SB_NEXT_OPTION" expr="II_SB_keyPressOpt"/>
             <log>INFO: User input [<value expr="II_SB_userEntry"/>]</log>
         	<unjoin id1="II_SB_confid" id2="II_SB_ibcallid"/>	<!-- Unjoin inbound leg from conference -->
-            <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>  <!-- and process requested action -->
+        </transition>
+
+        <transition state="exitMenu" event="conference.unjoined" name="evt" cond="evt.id2 == II_SB_ibcallid">
+            <!-- Our unjoin from the conference was successful. We need to check what our next action should be -->
+            <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
+            <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
         </transition>
 
         <transition event="connection.disconnected" name="evt" cond="evt.connectionid == II_SB_obcallid">
@@ -256,7 +261,8 @@
                 <log>INFO: Transfering to a new program</log>
                 <var name="II_SB_transfer" expr="'yes'"/>
                 <assign name="II_SB_projectSource" expr="'listen_conference'"/>
-		        <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type	II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid"/>
+                <var name="II_SB_importedValue" expr="evt.values.II_SB_valueToPass"/>
+		        <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type	II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_importedValue"/>
             <else/>
 		        <assign name="II_SB_passValues" expr="evt.values.II_SB_returnValues"/>
         		<log>INFO: II_SB_NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log>
@@ -269,9 +275,14 @@
             <!-- This transition is triggered when another ccxml session sends an event over. Here, we
             grab the data associated with the event and attempt to process it at the vxml layer -->
             <log>INFO: transition event [dialog.user.customEvent] state [<value expr="II_SB_state"/>]</log>
-            <unjoin id1="II_SB_confid" id2="II_SB_ibcallid"/>   <!-- First unjoin caller from conference -->
             <assign name="II_SB_state" expr="'customEvent'"/>
             <assign name="II_SB_passValues" expr="evt.II_SB_eventToPass + '|' + evt.II_SB_valueToPass"/>
+            <unjoin id1="II_SB_confid" id2="II_SB_ibcallid"/>   <!-- First unjoin caller from conference -->
+        </transition>
+
+        <transition state="customEvent" event="conference.unjoined" name="evt" cond="evt.id2 == II_SB_ibcallid">
+            <!-- Our unjoin from the conference was successful. We need to check what our next action should be -->
+            <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
             <if cond="II_SB_indialog == 'true'">    <!-- If caller is in a vxml dialog, terminate dialog -->
                 <send data="'dialog.user.termDialog'" target="II_SB_sessionID"/>
             <else/>
