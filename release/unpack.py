@@ -28,7 +28,10 @@ class packfile(object):
             zipfile.write(base64.b64decode(line64))
 
         # Create a zip file from the in-memory file and dump contents
-        self.contents = ZipFile(zipfile).read(self.name)
+        ziparch = ZipFile(zipfile)
+        self.contents = ziparch.read(self.name)
+        ziparch.close()
+        zipfile.close()
 
     def unpack(self):
         destdir = packfile.packdir
@@ -208,6 +211,7 @@ Documentation is also accessible via the web (if httpd is running on this machin
   documentation is under the "DOCS" tab.
 
 """ % (packfile.docdir, socket.gethostname()))
+
 
 if __name__ == "__main__":
    main()
