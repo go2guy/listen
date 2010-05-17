@@ -65,4 +65,17 @@ public class StatFilterTest
         verifyZeroInteractions(mockStatSender);
         verify(mockFilterChain).doFilter(request, response);
     }
+
+    @Test
+    public void test_doFilter_withNullResource_doesNotInvokeSendAndThrowsNoexceptionAndInvokesFilterChain()
+        throws IOException, ServletException
+    {
+        request.setPathInfo(null); // null pathInfo will yield null resource
+        request.setMethod("GET");
+
+        filter.doFilter(request, response, mockFilterChain);
+
+        verifyZeroInteractions(mockStatSender);
+        verify(mockFilterChain).doFilter(request, response);
+    }
 }

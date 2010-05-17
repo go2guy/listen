@@ -58,6 +58,7 @@ public class StatFilter implements Filter
     // not implemented
     }
 
+    // TODO this code is similar to ApiServlet#getResourceAttributes() - perhaps they can be combined?
     private String getResource(HttpServletRequest request)
     {
         String pathInfo = request.getPathInfo();
