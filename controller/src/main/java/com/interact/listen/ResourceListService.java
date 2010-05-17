@@ -15,6 +15,10 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 
+/**
+ * Helper service for working with lists of {@link Resource}s. Lists retrieved by the API should be paged, provide
+ * searching and sorting, and allow other common operations. This service provides the means to do these things.
+ */
 public final class ResourceListService
 {
     private static final Logger LOG = Logger.getLogger(ResourceListService.class);
@@ -169,7 +173,7 @@ public final class ResourceListService
     /**
      * Creates a {@link Criteria} from the properties in this service.
      * 
-     * @return criteria that can be used to list results
+     * @return {@code Criteria} that can be used to list results
      */
     private Criteria createCriteria(boolean forCount) throws CriteriaCreationException
     {

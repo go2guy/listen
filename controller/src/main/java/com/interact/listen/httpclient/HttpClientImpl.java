@@ -17,6 +17,11 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
+/**
+ * Basic HTTP client implementation.
+ * <p>
+ * Developer note: Only supports POST requests, as those are all that are currently needed to make requests to the IVR.
+ */
 public class HttpClientImpl implements HttpClient
 {
     private static final Logger LOG = Logger.getLogger(HttpClientImpl.class);

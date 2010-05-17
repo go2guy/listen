@@ -16,17 +16,21 @@ import java.util.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
+/**
+ * Marshals {@code Resource}s into various content types and unmarshals {@code String}s back into {@code Resource}s.
+ */
 public abstract class Marshaller
 {
     /** Global names of methods that should be omitted when marshalling objects */
     protected static final List<String> OMIT_METHODS = new ArrayList<String>();
 
+    /** Class logger */
     private static final Logger LOG = Logger.getLogger(Marshaller.class);
 
-    /** Default Map of Converters that should be used when marshalling/unmarshalling certain data types */
+    /** Default Converters that should be used when marshalling/unmarshalling certain data types */
     private static final Map<Class<?>, Class<? extends Converter>> DEFAULT_CONVERTERS = new HashMap<Class<?>, Class<? extends Converter>>();
 
-    /** Map of Converters that should be used when marshalling/unmarshalling certain data types */
+    /** Converters that should override default conferters when marshalling/unmarshalling certain data types */
     private Map<Class<?>, Class<? extends Converter>> converters = new HashMap<Class<?>, Class<? extends Converter>>();
 
     static
@@ -38,14 +42,15 @@ public abstract class Marshaller
         DEFAULT_CONVERTERS.put(Long.class, LongConverter.class);
         DEFAULT_CONVERTERS.put(Pin.PinType.class, PinTypeConverter.class);
         DEFAULT_CONVERTERS.put(String.class, StringConverter.class);
-        DEFAULT_CONVERTERS.put(ListenSpotSubscriber.PhoneNumberProtocolType.class, PhoneNumberProtocolTypeConverter.class);
+        DEFAULT_CONVERTERS.put(ListenSpotSubscriber.PhoneNumberProtocolType.class,
+                               PhoneNumberProtocolTypeConverter.class);
     }
 
     /**
      * Marshals the provided {@link Resource}.
      * 
      * @param resource {@code Resource} to marshal
-     * @return marshalled string
+     * @return marshalled {@code String}
      */
     public abstract String marshal(Resource resource);
 
@@ -54,7 +59,7 @@ public abstract class Marshaller
      * 
      * @param list list of resources
      * @param resourceClass resource class that the list contains
-     * @return marshalled string
+     * @return marshalled {@code String}
      */
     public abstract String marshal(ResourceList list, Class<? extends Resource> resourceClass);
 
@@ -70,7 +75,8 @@ public abstract class Marshaller
         throws MalformedContentException;
 
     /**
-     * Returns the content type that is marshalled by this marshaller.
+     * Returns the content type that is marshalled by this {@code Marshaller}.
+     * 
      * @return content type
      */
     public abstract String getContentType();
@@ -80,7 +86,7 @@ public abstract class Marshaller
      * 
      * @param contentType content type for which to create {@code Marshaller}
      * @return {@code Marshaller} implementation for the provided content type
-     * @throws MarshallerNotFoundException
+     * @throws MarshallerNotFoundException if no implementation is found for the provided content type
      */
     public static Marshaller createMarshaller(String contentType) throws MarshallerNotFoundException
     {
@@ -102,8 +108,8 @@ public abstract class Marshaller
     }
 
     /**
-     * Sorts the provided array of {@link Method}s. Note that the array provided as an argument is modified as a result
-     * of this operation.
+     * Sorts the provided array of {@link Method}s. <b>The {@code Method[]} array provided as an argument is modified as
+     * a result of this operation.</b>
      * 
      * @param methods {@code Method} array to sort
      */
@@ -168,31 +174,61 @@ public abstract class Marshaller
         }
     }
 
+    /**
+     * Registers a {@link Converter} class to be used for the provided {@code class} when marshalling/unmarshalling. The
+     * provided {@code Converter} will override any dfault {@code Converter}s that may be defined for that class.
+     * 
+     * @param forClass {@code class} to register {@code Converter} for
+     * @param converterClass {@code Converter} to use
+     */
     public final void registerConverterClass(Class<?> forClass, Class<? extends Converter> converterClass)
     {
         converters.put(forClass, converterClass);
     }
 
+    /**
+     * Retrieves the {@link Converter} class that should be used when marshalling/unmarshalling the provided {@code
+     * class}. {@code Converter}s registered with {@link #registerConverterClass(Class, Class)} are searched first, and
+     * if none are found the appropriate default {@code Converter} is returned. If no default is found, {@code null} is
+     * returned.
+     * 
+     * @param forClass {@code class} to get {@code Converter} for
+     * @return appropriate {@code Converter} class
+     */
     public final Class<? extends Converter> getConverterClass(Class<?> forClass)
     {
-        if(converters.containsKey(forClass))
+       if(converters.containsKey(forClass))
         {
             return converters.get(forClass);
         }
-        
+
         return Marshaller.getDefaultConverterClass(forClass);
     }
 
+    /**
+     * Retrieves the default {@link Converter} class for the provided {@code class}.
+     * 
+     * @param forClass {@code class} to get default {@code Converter} for
+     * @return default {@code Converter} class
+     */
     public static final Class<? extends Converter> getDefaultConverterClass(Class<?> forClass)
     {
         return DEFAULT_CONVERTERS.get(forClass);
     }
-    
+
+    /**
+     * Given an href, retrieves the id component of it. If the id cannot be found or the href is malformed, {@code null}
+     * is returned.
+     * 
+     * @param href href to parse id from
+     * @return id, or {@code null} if id cannot be parsed
+     * @throws NumberFormatException if the id is not parseable as a {@code Long}
+     */
     public static final Long getIdFromHref(String href)
     {
         if(href == null)
         {
-           return null;
+            return null;
         }
 
         boolean hasId = href.matches("\\/[^\\/]+\\/[^\\/]+");
@@ -205,6 +241,13 @@ public abstract class Marshaller
         return id;
     }
 
+    /**
+     * Given a {@code class}, looks for a method with the provided name.
+     *  
+     * @param name method name to search for
+     * @param clazz {@code class} to search for method on
+     * @return {@code Method} with provided name, or {@code null} if no method found
+     */
     public static final Method findMethod(String name, Class clazz)
     {
         for(Method method : clazz.getMethods())
@@ -217,6 +260,14 @@ public abstract class Marshaller
         return null;
     }
 
+    /**
+     * Marshals the provided value with the {@link Converter} for the provided {@code class}. The {@code Converter} used
+     * is determined by the same means as {@link #getConverterClass(Class)}.
+     * 
+     * @param forClass {@code class} to find {@code Converter} for to marshal value
+     * @param value value to marshal
+     * @return marshalled value
+     */
     public final String convert(Class<?> forClass, Object value)
     {
         try

@@ -6,6 +6,9 @@ import java.security.ProtectionDomain;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
+/**
+ * Provides a {@link #main(String[])} method for running this application within an embedded Jetty server.
+ */
 public final class EmbeddedJettyServer
 {
     private EmbeddedJettyServer()

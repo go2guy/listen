@@ -2,6 +2,9 @@ package com.interact.listen.marshal.converter;
 
 import com.interact.listen.resource.ListenSpotSubscriber.PhoneNumberProtocolType;
 
+/**
+ * Converts a {@link PhoneNumberProtocolType}.
+ */
 public class PhoneNumberProtocolTypeConverter implements Converter
 {
     @Override

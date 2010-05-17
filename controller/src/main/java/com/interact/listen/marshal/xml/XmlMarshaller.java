@@ -18,6 +18,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+/**
+ * Implementation of {@link Marshaller} for "application/xml" content.
+ */
 public class XmlMarshaller extends Marshaller
 {
     private static final Logger LOG = Logger.getLogger(XmlMarshaller.class);

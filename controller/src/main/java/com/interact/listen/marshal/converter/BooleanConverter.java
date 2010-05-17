@@ -1,5 +1,8 @@
 package com.interact.listen.marshal.converter;
 
+/**
+ * Converts a {@code Boolean}.
+ */
 public class BooleanConverter implements Converter
 {
     @Override

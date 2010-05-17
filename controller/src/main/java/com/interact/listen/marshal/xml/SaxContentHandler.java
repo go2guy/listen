@@ -13,6 +13,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * Handler implementation for unmarshalling XML content.
+ */
 public class SaxContentHandler extends DefaultHandler
 {
     private static final Logger LOG = Logger.getLogger(SaxContentHandler.class);

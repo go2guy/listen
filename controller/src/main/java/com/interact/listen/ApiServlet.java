@@ -20,6 +20,9 @@ import org.hibernate.StaleObjectStateException;
 import org.hibernate.Transaction;
 import org.hibernate.exception.ConstraintViolationException;
 
+/**
+ * Handles all API requests (DELETE, GET, POST, PUT).
+ */
 public class ApiServlet extends HttpServlet
 {
     static

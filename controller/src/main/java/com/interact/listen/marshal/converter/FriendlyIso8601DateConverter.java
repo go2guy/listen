@@ -4,8 +4,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Converts a Date to/from a readable ISO8601 format (readable = not containing 'T' or milliseconds).
+ */
 public class FriendlyIso8601DateConverter implements Converter
 {
+    /** Format to use when converting */
     public static final String ISO8601_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @Override

@@ -2,6 +2,10 @@ package com.interact.listen.stats;
 
 import com.interact.insa.client.StatId;
 
+/**
+ * Statistics specific to the Listen application. Each {@code Stat} is associated with its corresponding {@link StatId}
+ * constant.
+ */
 public enum Stat
 {
     API_CONFERENCE_DELETE(StatId.LISTEN_CONTROLLER_API_CONFERENCE_DELETE),

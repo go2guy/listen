@@ -18,6 +18,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+/**
+ * Implementation of {@link Marshaller} for "application/json" content.
+ */
 public class JsonMarshaller extends Marshaller
 {
     private static final Logger LOG = Logger.getLogger(JsonMarshaller.class);

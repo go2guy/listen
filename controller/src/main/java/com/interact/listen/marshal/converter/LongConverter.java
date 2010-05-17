@@ -1,5 +1,8 @@
 package com.interact.listen.marshal.converter;
 
+/**
+ * Converts a {@code Long}.
+ */
 public class LongConverter implements Converter
 {
     @Override

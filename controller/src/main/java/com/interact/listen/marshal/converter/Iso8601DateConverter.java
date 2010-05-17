@@ -4,8 +4,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Converts a Date to/from ISO8601 format.
+ */
 public class Iso8601DateConverter implements Converter
 {
+    /** Format to use when converting */
     public static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     @Override

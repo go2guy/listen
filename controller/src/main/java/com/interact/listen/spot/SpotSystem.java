@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a SPOT IVR system that this application can communicate with. Provides a defined set of operations that a
+ * SPOT system allows via HTTP request.
+ */
 public class SpotSystem
 {
     // e.g. "http://apps2/spot/ccxml/basichttp"
@@ -46,6 +50,13 @@ public class SpotSystem
         }
     }
 
+    /**
+     * Drops the provided {@link Participant} from the {@link Conference} they are in.
+     * 
+     * @param participant {@code Participant} to drop
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
     public void dropParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
         Map<String, String> params = new HashMap<String, String>();
@@ -56,6 +67,13 @@ public class SpotSystem
         sendSpotRequest(params);
     }
 
+    /**
+     * Mutes the provided {@link Participant}.
+     * 
+     * @param participant {@code Participant} to mute
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
     public void muteParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
         Map<String, String> params = new HashMap<String, String>();
@@ -66,6 +84,16 @@ public class SpotSystem
         sendSpotRequest(params);
     }
 
+    /**
+     * "Outdials" a caller into the {@code Conference} containing the provided administrator session id. This causes the
+     * SPOT system to make a phone call to the provided number. The called party receives a recorded message asking them
+     * to join the conference.
+     * 
+     * @param number phone number to call
+     * @param adminSessionId session id of the {@code Conference} administrator
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
     public void outdial(String number, String adminSessionId) throws IOException, SpotCommunicationException
     {
         Map<String, String> params = new HashMap<String, String>();
@@ -76,6 +104,13 @@ public class SpotSystem
         sendSpotRequest(params);
     }
 
+    /**
+     * Unmutes the provided {@link Participant}.
+     * 
+     * @param participant {@code Participant} to unmute
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
     public void unmuteParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
         Map<String, String> params = new HashMap<String, String>();

@@ -7,6 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Extracts information (e.g. remote IP address, requested resource) from the {@code ServletRequest} and writes a log.
+ * Also times the request and writes the elapsed time in a log.
+ */
 public class RequestInformationFilter implements Filter
 {
     private static final Logger LOG = Logger.getLogger(RequestInformationFilter.class);

@@ -7,6 +7,7 @@
   <property name="war.staging.dir" value="${target.dir}/staging/war"/>
   <property name="rpm.staging.dir" value="${target.dir}/staging/rpm"/>
   <property name="tools.dir"       value="${basedir}/tools"/>
+  <property name="doc.dir"         value="${basedir}/docs"/>
 
   <import file=".build-import-tools.xml"/><!-- import for tools like findbugs, checkstyle, and plots -->
 
@@ -49,6 +50,7 @@
     <delete failonerror="false">
       <fileset dir="ii_artifacts" includes="**/*.rpm"/>
     </delete>
+    <delete dir="${doc.dir}/javadoc" failonerror="false"/>
   </target>
 
 
@@ -63,6 +65,17 @@
        <src path="${src.dir}/main/java"/>
        <classpath refid="javac.classpath"/>
     </javac>
+  </target>
+
+
+  <target name="javadoc" description="--> Generates Javadoc documentation">
+    <delete dir="${doc.dir}/javadoc"/>
+    <mkdir dir="${doc.dir}/javadoc"/>
+    <javadoc use="true"
+             destdir="${doc.dir}/javadoc"
+             sourcepath="${src.dir}/main/java"
+             defaultexcludes="yes"
+             classpathref="javac.classpath"/>
   </target>
 
 
@@ -204,5 +217,5 @@
   </target>
 
 
-  <target name="hudson" depends="test, hudson-plots, rpm" description="target for hudson"/>
+  <target name="hudson" depends="test, javadoc, hudson-plots, rpm" description="target for hudson"/>
 </project>

@@ -4,6 +4,10 @@ import com.interact.listen.resource.Resource;
 
 import org.hibernate.Session;
 
+/**
+ * Wrapper service for performing operations that persist {@link Resource}s. This allows for invoking {@code Resource}
+ * callback methods (e.g. {@link Resource#afterSave(Session)} on persistence operations.
+ */
 public class PersistenceService
 {
     private Session session;

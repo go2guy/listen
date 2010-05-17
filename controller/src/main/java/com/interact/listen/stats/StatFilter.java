@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 
 /**
- * Writes stats-collector stats for various HTTP requests.
+ * Writes stat-collector statistics for various HTTP requests.
  */
 public class StatFilter implements Filter
 {

@@ -1,5 +1,8 @@
 package com.interact.listen.marshal.converter;
 
+/**
+ * Converts an {@code Integer}.
+ */
 public class IntegerConverter implements Converter
 {
     @Override

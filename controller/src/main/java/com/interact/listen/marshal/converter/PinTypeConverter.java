@@ -2,6 +2,9 @@ package com.interact.listen.marshal.converter;
 
 import com.interact.listen.resource.Pin.PinType;
 
+/**
+ * Converts a {@link PinType}.
+ */
 public class PinTypeConverter implements Converter
 {
     @Override
