@@ -12,24 +12,20 @@ import com.interact.listen.stats.StatSender;
 
 import java.util.Date;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class GetConferenceInfoServlet extends HttpServlet
 {
-    private static final Logger LOG = Logger.getLogger(GetConferenceInfoServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        long start = System.currentTimeMillis();
-
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
@@ -40,63 +36,51 @@ public class GetConferenceInfoServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in",
+                                      "text/plain");
             return;
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session);
 
+        String id = request.getParameter("id");
+
+        Marshaller marshaller = new JsonMarshaller();
+        marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
+
+        Conference conference = GuiServletUtil.getConferenceFromIdOrUser(id, user, persistenceService);
+
+        if(conference == null)
+        {
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found",
+                                      "text/plain");
+            return;
+        }
+
+        if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
+        {
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                      "Unauthorized - conference does not belong to user", "text/plain");
+            return;
+        }
+
+        StringBuilder content = new StringBuilder();
         try
         {
-            String id = request.getParameter("id");
-
-            Marshaller marshaller = new JsonMarshaller();
-            marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
-
-            Conference conference = GuiServletUtil.getConferenceFromIdOrUser(id, user, persistenceService);
-
-            if(conference == null)
-            {
-                transaction.rollback();
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                          "Conference not found", "text/plain");
-                return;
-            }
-
-            if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
-            {
-                transaction.rollback();
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - conference does not belong to user", "text/plain");
-                return;
-            }
-
-            StringBuilder content = new StringBuilder();
             content.append("{");
             content.append("\"info\":").append(getInfo(conference, marshaller)).append(",");
             content.append("\"participants\":").append(getParticipants(conference, marshaller, session)).append(",");
             content.append("\"pins\":").append(getPins(conference, marshaller, session)).append(",");
             content.append("\"history\":").append(getHistory(conference, marshaller, session));
             content.append("}");
-
-            transaction.commit();
-
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content.toString(),
-                                      marshaller.getContentType());
         }
-        catch(Exception e)
+        catch(CriteriaCreationException e)
         {
-            LOG.error("Error getting conference info", e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage(),
-                                      "text/plain");
-            return;
+            throw new ServletException(e);
         }
-        finally
-        {
-            LOG.debug("GetConferenceInfoServlet.doGet() took " + (System.currentTimeMillis() - start) + "ms");
-        }
+
+        ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content.toString(), marshaller.getContentType());
     }
 
     private String getInfo(Conference conference, Marshaller marshaller)

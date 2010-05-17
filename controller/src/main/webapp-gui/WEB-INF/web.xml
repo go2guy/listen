@@ -20,6 +20,27 @@
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>OpenSessionInViewFilter</filter-name>
+        <filter-class>com.interact.listen.OpenSessionInViewFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>OpenSessionInViewFilter</filter-name>
+        <url-pattern>/ajax/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>OpenSessionInViewFilter</filter-name>
+        <url-pattern>/index</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>OpenSessionInViewFilter</filter-name>
+        <url-pattern>/login</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>OpenSessionInViewFilter</filter-name>
+        <url-pattern>/logout</url-pattern>
+    </filter-mapping>
+
     <!-- servlet definitions -->
 
     <servlet>
@@ -96,26 +117,57 @@
 
     <!-- mappings -->
 
+    <!-- api -->
+
     <servlet-mapping>
         <servlet-name>ApiServlet</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
+    <!-- ajax -->
+
     <servlet-mapping>
         <servlet-name>DropParticipantServlet</servlet-name>
-        <url-pattern>/dropParticipant</url-pattern>    
+        <url-pattern>/ajax/dropParticipant</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
-        <url-pattern>/getConferenceInfo</url-pattern>
+        <url-pattern>/ajax/getConferenceInfo</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>GetConferenceListServlet</servlet-name>
-        <url-pattern>/getConferenceList</url-pattern>
+        <url-pattern>/ajax/getConferenceList</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>MuteParticipantServlet</servlet-name>
+        <url-pattern>/ajax/muteParticipant</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>OutdialServlet</servlet-name>
+        <url-pattern>/ajax/outdial</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ProvisionAccountServlet</servlet-name>
+        <url-pattern>/ajax/provisionAccount</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ScheduleConferenceServlet</servlet-name>
+        <url-pattern>/ajax/scheduleConference</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>UnmuteParticipantServlet</servlet-name>
+        <url-pattern>/ajax/unmuteParticipant</url-pattern>    
+    </servlet-mapping>
+
+    <!-- main pages -->
+    
     <servlet-mapping>
         <servlet-name>IndexServlet</servlet-name>
         <url-pattern>/index</url-pattern>
@@ -129,31 +181,6 @@
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>MuteParticipantServlet</servlet-name>
-        <url-pattern>/muteParticipant</url-pattern>    
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>OutdialServlet</servlet-name>
-        <url-pattern>/outdial</url-pattern>    
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>ProvisionAccountServlet</servlet-name>
-        <url-pattern>/provisionAccount</url-pattern>    
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>ScheduleConferenceServlet</servlet-name>
-        <url-pattern>/scheduleConference</url-pattern>    
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>UnmuteParticipantServlet</servlet-name>
-        <url-pattern>/unmuteParticipant</url-pattern>    
     </servlet-mapping>
 
     <!-- welcome files -->

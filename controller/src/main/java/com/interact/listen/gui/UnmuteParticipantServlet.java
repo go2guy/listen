@@ -6,31 +6,29 @@ import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
+import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class UnmuteParticipantServlet extends HttpServlet
 {
-    private static final Logger LOG = Logger.getLogger(UnmuteParticipantServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        long start = System.currentTimeMillis();
-
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
@@ -54,41 +52,30 @@ public class UnmuteParticipantServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session);
 
-        try
+        Participant participant = (Participant)persistenceService.get(Participant.class, Long.valueOf(id));
+        if(!isUserAllowedToUnmute(user, participant))
         {
-            Participant participant = (Participant)persistenceService.get(Participant.class, Long.valueOf(id));
-            if(!isUserAllowedToUnmute(user, participant))
-            {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                                          "Not allowed to unmute participant", "text/plain");
-                transaction.rollback();
-                return;
-            }
-
-            // send request to all SPOT subscribers
-            List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
-            for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
-            {
-                SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
-                spotSystem.unmuteParticipant(participant);
-            }
-
-            transaction.commit();
-        }
-        catch(Exception e)
-        {
-            LOG.error("Error unmuting participant", e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "Error unmuting participant", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                      "Not allowed to unmute participant", "text/plain");
             return;
         }
-        finally
+
+        // send request to all SPOT subscribers
+        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
+        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
         {
-            LOG.debug("UnmuteParticipantServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
+            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+            try
+            {
+
+                spotSystem.unmuteParticipant(participant);
+            }
+            catch(SpotCommunicationException e)
+            {
+                throw new ServletException(e);
+            }
         }
     }
 

@@ -6,29 +6,27 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class ScheduleConferenceServlet extends HttpServlet
 {
-    private static final Logger LOG = Logger.getLogger(ScheduleConferenceServlet.class);
     private static final long serialVersionUID = 1L;
 
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "REC_CATCH_EXCEPTION")
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        long start = System.currentTimeMillis();
-
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
@@ -115,100 +113,91 @@ public class ScheduleConferenceServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
 
+        EmailerService emailService = new EmailerService();
+        PersistenceService persistenceService = new PersistenceService(session);
+
+        // I would think I could just get the pins directly from the first conference in the ArrayList, but that is
+        // only providing one pin, for some reason. By querying explicitly, I get access to all the pins.
+        ArrayList<Conference> listConferences = new ArrayList<Conference>(user.getConferences());
+        Long id = listConferences.get(0).getId();
+        Conference userConference = (Conference)persistenceService.get(Conference.class, id);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h mm a");
+        String dateTime = date + " " + hour + " " + minute + " " + amPm;
+
+        String[] activeAddresses = activeParticipants.split(",");
+        String[] passiveAddresses = passiveParticipants.split(",");
+        ArrayList<String> serviceActiveAddresses = new ArrayList<String>();
+        ArrayList<String> servicePassiveAddresses = new ArrayList<String>();
+
+        List<Resource> listenSpotSubscribers = queryListenSpotSubscribers(session);
+        String phoneNumber = getConferencePhoneNumber(listenSpotSubscribers);
+        String protocol = getConferenceProtocol(listenSpotSubscribers);
+
+        if(phoneNumber.equals(""))
+        {
+            // ***
+            // Current implementation is a person has to have called into the spot system before the phone number is
+            // available
+            // We should still send the invites in my opinion
+            // ***
+            phoneNumber = "Contact the conference administrator for access number";
+
+            // want the label to say "Phone Number" in the e-mail when phone number is above message
+            protocol = "PSTN";
+        }
+
+        // attempting some validation here so the service doesn't error out on address without an '@' sign
+        for(String activeAddress : activeAddresses)
+        {
+            if(activeAddress.contains("@"))
+            {
+                serviceActiveAddresses.add(activeAddress);
+            }
+        }
+
+        for(String passiveAddress : passiveAddresses)
+        {
+            if(passiveAddress.contains("@"))
+            {
+                servicePassiveAddresses.add(passiveAddress);
+            }
+        }
+
+        boolean activeSuccess = true;
+        boolean passiveSuccess = true;
+
+        Date parsedDate;
         try
         {
-            EmailerService emailService = new EmailerService();
-            PersistenceService persistenceService = new PersistenceService(session);
-
-            // I would think I could just get the pins directly from the first conference in the ArrayList, but that is
-            // only providing one pin, for some reason. By querying explicitly, I get access to all the pins.
-            ArrayList<Conference> listConferences = new ArrayList<Conference>(user.getConferences());
-            Conference userConference = (Conference)persistenceService.get(Conference.class, listConferences.get(0)
-                                        .getId());
-
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h mm a");
-            String dateTime = date + " " + hour + " " + minute + " " + amPm;
-            
-            String[] activeAddresses = activeParticipants.split(",");
-            String[] passiveAddresses = passiveParticipants.split(",");
-            ArrayList<String> serviceActiveAddresses = new ArrayList<String>();
-            ArrayList<String> servicePassiveAddresses = new ArrayList<String>();
-
-            List<Resource> listenSpotSubscribers = queryListenSpotSubscribers(session);
-            String phoneNumber = getConferencePhoneNumber(listenSpotSubscribers);
-            String protocol = getConferenceProtocol(listenSpotSubscribers);
-            
-            if(phoneNumber.equals(""))
-            {
-                //***
-                // Current implementation is a person has to have called into the spot system before the phone number is available
-                // We should still send the invites in my opinion
-                //***
-                phoneNumber = "Contact the conference administrator for access number";
-                
-                //want the label to say "Phone Number" in the e-mail when phone number is above message
-                protocol = "PSTN";
-            }
-
-            // attempting some validation here so the service doesn't error out on address without an '@' sign
-            for(String activeAddress : activeAddresses)
-            {
-                if(activeAddress.contains("@"))
-                {
-                    serviceActiveAddresses.add(activeAddress);
-                }
-            }
-
-            for(String passiveAddress : passiveAddresses)
-            {
-                if(passiveAddress.contains("@"))
-                {
-                    servicePassiveAddresses.add(passiveAddress);
-                }
-            }
-
-            boolean activeSuccess = true;
-            boolean passiveSuccess = true;
-
-            if(!serviceActiveAddresses.isEmpty())
-            {
-                activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, user.getUsername(), description,
-                                                               sdf.parse(dateTime), userConference, phoneNumber,
-                                                               protocol, subjectPrepend.toString(), "ACTIVE");
-            }
-
-            if(!servicePassiveAddresses.isEmpty())
-            {
-                passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, user.getUsername(),
-                                                                description, sdf.parse(dateTime), userConference,
-                                                                phoneNumber, protocol, subjectPrepend.toString(),
-                                                                "PASSIVE");
-            }
-
-            if(!(activeSuccess && passiveSuccess))
-            {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                          "An error occurred sending the conference schedule e-mail", "text/plain");
-                transaction.commit();
-                return;
-            }
-
-            transaction.commit();
+            parsedDate = sdf.parse(dateTime);
         }
-        catch(Exception e)
+        catch(ParseException e)
         {
-            LOG.error("Error scheduling conference", e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "Error scheduling conference", "text/plain");
+            throw new ServletException(e);
+        }
+
+        if(!serviceActiveAddresses.isEmpty())
+        {
+            activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, user.getUsername(), description,
+                                                           parsedDate, userConference, phoneNumber, protocol,
+                                                           subjectPrepend.toString(), "ACTIVE");
+        }
+
+        if(!servicePassiveAddresses.isEmpty())
+        {
+            passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, user.getUsername(), description,
+                                                            parsedDate, userConference, phoneNumber, protocol,
+                                                            subjectPrepend.toString(), "PASSIVE");
+        }
+        if(!(activeSuccess && passiveSuccess))
+        {
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
+                                      "An error occurred sending the conference schedule e-mail", "text/plain");
             return;
         }
-        finally
-        {
-            LOG.debug("ScheduleConferenceServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
-        }
+
     }
 
     private List<Resource> queryListenSpotSubscribers(Session session)

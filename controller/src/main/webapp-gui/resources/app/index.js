@@ -12,7 +12,7 @@ var server = {
     dropCaller: function(id) {
         $.ajax({
             type: 'POST',
-            url: '/dropParticipant',
+            url: '/ajax/dropParticipant',
             data: { id: id },
             success: function(data) {
                 //noticeSuccess('Participant dropped');
@@ -26,7 +26,7 @@ var server = {
     muteCaller: function(id) {
         $.ajax({
             type: 'POST',
-            url: '/muteParticipant',
+            url: '/ajax/muteParticipant',
             data: { id: id },
             success: function(data) {
                 //noticeSuccess('Participant muted');
@@ -44,7 +44,7 @@ var server = {
 
         $.ajax({
             type: 'POST',
-            url: '/outdial',
+            url: '/ajax/outdial',
             data: { number: number,
                     conferenceId: conferenceId },
             success: function(data) {
@@ -62,7 +62,7 @@ var server = {
     unmuteCaller: function(id) {
         $.ajax({
             type: 'POST',
-            url: '/unmuteParticipant',
+            url: '/ajax/unmuteParticipant',
             data: { id: id },
             success: function(data) {
                 //noticeSuccess('Participant unmuted');
@@ -90,7 +90,7 @@ function Conference(id) {
     this.show = function(animate) {
         interval = setInterval(function() {
             $.ajax({
-                url: '/getConferenceInfo?id=' + conferenceId,
+                url: '/ajax/getConferenceInfo?id=' + conferenceId,
                 dataType: 'json',
                 cache: false,
                 success: function(data, textStatus, xhr) {
@@ -432,7 +432,7 @@ $(document).ready(function() {
         server.outdial($('#outdial-number').val(), currentConference.getConferenceId());
     });
 
-    $.getJSON('/getConferenceInfo', function(data) {
+    $.getJSON('/ajax/getConferenceInfo', function(data) {
         currentConference = new Conference(data.info.id);
         currentConference.show(true);
     });

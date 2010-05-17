@@ -136,7 +136,7 @@ if(user != null && user.getIsAdministrator()) { %>
 if(user != null && user.getIsAdministrator()) { %>
     <div id="provisionAccountDialog" class="dialog">
       <div class="form-error-message"></div>
-      <form id="provisionAccountForm" name="provisionAccountForm" method="POST" action="/provisionAccount">
+      <form id="provisionAccountForm" name="provisionAccountForm" method="POST" action="/ajax/provisionAccount">
         <table>
           <caption>Creates a new subscriber, user, and conference</caption>
           <tbody>
@@ -166,7 +166,7 @@ if(user != null && user.getIsAdministrator()) { %>
 } %>
     <div id="scheduleConferenceDialog" class="dialog">
       <div class="form-error-message"></div>
-      <form id="scheduleConferenceForm" name="scheduleConferenceForm" method="POST" action="/scheduleConference">
+      <form id="scheduleConferenceForm" name="scheduleConferenceForm" method="POST" action="/ajax/scheduleConference">
         <table>
           <caption>
           This will send an email to the specified recipients with a date, time, phone number, and pin number.

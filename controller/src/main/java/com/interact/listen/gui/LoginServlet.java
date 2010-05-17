@@ -18,7 +18,6 @@ import javax.servlet.http.*;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 public class LoginServlet extends HttpServlet
@@ -39,8 +38,6 @@ public class LoginServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
-        long start = System.currentTimeMillis();
-
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
@@ -49,55 +46,45 @@ public class LoginServlet extends HttpServlet
         statSender.send(Stat.GUI_LOGIN);
 
         Session hibernateSession = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = hibernateSession.beginTransaction();
 
-        try
+        HttpSession httpSession = request.getSession(true);
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        LOG.debug("POST LoginServlet username=" + username + "&password=*");
+
+        Map<String, String> errors = new HashMap<String, String>();
+
+        if(username == null || username.trim().equals(""))
         {
-            HttpSession httpSession = request.getSession(true);
-
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-
-            LOG.debug("POST LoginServlet username=" + username + "&password=*");
-
-            Map<String, String> errors = new HashMap<String, String>();
-
-            if(username == null || username.trim().equals(""))
-            {
-                errors.put("username", "Please provide a username");
-            }
-
-            if(password == null || password.trim().equals(""))
-            {
-                errors.put("password", "Please provide a password");
-            }
-
-            if(errors.size() == 0)
-            {
-                User user = findUserByUsername(username, hibernateSession);
-                if(user == null || !isValidPassword(user, password))
-                {
-                    errors.put("username", "Sorry, those aren't valid credentials");
-                }
-
-                httpSession.setAttribute("user", user);
-            }
-
-            transaction.commit();
-
-            if(errors.size() > 0)
-            {
-                httpSession.setAttribute("errors", errors);
-                ServletUtil.redirect("/login", response);
-            }
-            else
-            {
-                ServletUtil.redirect("/index", response);
-            }
+            errors.put("username", "Please provide a username");
         }
-        finally
+
+        if(password == null || password.trim().equals(""))
         {
-            LOG.debug("LoginServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
+            errors.put("password", "Please provide a password");
+        }
+
+        if(errors.size() == 0)
+        {
+            User user = findUserByUsername(username, hibernateSession);
+            if(user == null || !isValidPassword(user, password))
+            {
+                errors.put("username", "Sorry, those aren't valid credentials");
+            }
+
+            httpSession.setAttribute("user", user);
+        }
+
+        if(errors.size() > 0)
+        {
+            httpSession.setAttribute("errors", errors);
+            ServletUtil.redirect("/login", response);
+        }
+        else
+        {
+            ServletUtil.redirect("/index", response);
         }
     }
 

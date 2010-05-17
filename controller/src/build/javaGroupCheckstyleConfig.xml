@@ -103,6 +103,7 @@
         <module name="Indentation">
             <property name="severity" value="ignore"/>
         </module>
+        <module name="FileContentsHolder"/>
     </module>
     <module name="StrictDuplicateCode">
         <property name="min" value="35"/>
@@ -111,4 +112,5 @@
         <property name="severity" value="ignore"/>
         <property name="eachLine" value="true"/>
     </module>
+    <module name="SuppressWithNearbyCommentFilter"/>
 </module>

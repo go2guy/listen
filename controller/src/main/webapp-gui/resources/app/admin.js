@@ -30,7 +30,7 @@ $(document).ready(function() {
 */
     var list = new ConferenceList();
     var interval = setInterval(function() {
-        $.getJSON('/getConferenceList', function(data) {
+        $.getJSON('/ajax/getConferenceList', function(data) {
             list.update(data.results);
         });
     }, 1000);

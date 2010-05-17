@@ -14,20 +14,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
 
 public class ProvisionAccountServlet extends HttpServlet
 {
-    private static final Logger LOG = Logger.getLogger(ProvisionAccountServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     {
-        long start = System.currentTimeMillis();
-
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
@@ -88,51 +83,33 @@ public class ProvisionAccountServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session);
 
-        try
-        {
-            Subscriber subscriber = new Subscriber();
-            subscriber.setNumber(number);
-            persistenceService.save(subscriber);
+        Subscriber subscriber = new Subscriber();
+        subscriber.setNumber(number);
+        persistenceService.save(subscriber);
 
-            Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
-            Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
-            Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
+        Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
+        Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
+        Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
 
-            persistenceService.save(activePin);
-            persistenceService.save(adminPin);
-            persistenceService.save(passivePin);
+        persistenceService.save(activePin);
+        persistenceService.save(adminPin);
+        persistenceService.save(passivePin);
 
-            Conference conference = new Conference();
-            conference.setDescription(subscriber.getNumber());
-            conference.setIsStarted(Boolean.FALSE);
-            conference.addToPins(activePin);
-            conference.addToPins(adminPin);
-            conference.addToPins(passivePin);
-            persistenceService.save(conference);
+        Conference conference = new Conference();
+        conference.setDescription(subscriber.getNumber());
+        conference.setIsStarted(Boolean.FALSE);
+        conference.addToPins(activePin);
+        conference.addToPins(adminPin);
+        conference.addToPins(passivePin);
+        persistenceService.save(conference);
 
-            User user = new User();
-            user.setPassword(SecurityUtil.hashPassword(password));
-            user.setSubscriber(subscriber);
-            user.setUsername(username);
-            user.addToConferences(conference);
-            persistenceService.save(user);
-
-            transaction.commit();
-        }
-        catch(Exception e)
-        {
-            LOG.error("Error provisioning account");
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "Error provisioning account", "text/plain");
-            return;
-        }
-        finally
-        {
-            LOG.debug("ProvisionAccountServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
-        }
+        User user = new User();
+        user.setPassword(SecurityUtil.hashPassword(password));
+        user.setSubscriber(subscriber);
+        user.setUsername(username);
+        user.addToConferences(conference);
+        persistenceService.save(user);
     }
 }

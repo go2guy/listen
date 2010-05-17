@@ -4,13 +4,16 @@ import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.*;
+import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 public class OutdialServlet extends HttpServlet
@@ -27,10 +29,8 @@ public class OutdialServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        long start = System.currentTimeMillis();
-
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
@@ -64,69 +64,49 @@ public class OutdialServlet extends HttpServlet
         LOG.debug("Outdialing to [" + number + "] for conference id [" + conferenceId + "]");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session);
 
-        try
+        Conference conference = (Conference)session.get(Conference.class, Long.valueOf(conferenceId));
+
+        if(conference == null)
         {
-            Conference conference = (Conference)session.get(Conference.class, Long.valueOf(conferenceId));
-
-            if(conference == null)
-            {
-                transaction.rollback();
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Conference not found",
-                                          "text/plain");
-                return;
-            }
-
-            if(!isUserAllowedToOutdial(user, conference))
-            {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to outdial",
-                                          "text/plain");
-                transaction.rollback();
-                return;
-            }
-
-            String adminSessionId = getConferenceAdminSessionId(session, conference);
-
-            // send request to all SPOT subscribers
-            List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
-            for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
-            {
-                SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
-                spotSystem.outdial(number, adminSessionId);
-            }
-
-            try
-            {
-                ConferenceHistory history = new ConferenceHistory();
-                history.setConference(conference);
-                history.setDescription("Outdialed " + number);
-                history.setUser("Current user");
-                persistenceService.save(history);
-            }
-            catch(Exception e)
-            {
-                LOG.error("Error writing ConferenceHistory for outdial", e);
-            }
-
-            transaction.commit();
-        }
-        catch(Exception e)
-        {
-            LOG.error("Error outdialing number", e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "Error outdialing number", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Conference not found",
+                                      "text/plain");
             return;
         }
-        finally
+
+        if(!isUserAllowedToOutdial(user, conference))
         {
-            LOG.debug("OutdialServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to outdial",
+                                      "text/plain");
+            return;
         }
+
+        String adminSessionId = getConferenceAdminSessionId(session, conference);
+
+        // send request to all SPOT subscribers
+        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
+        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        {
+            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+            try
+            {
+                spotSystem.outdial(number, adminSessionId);
+            }
+            catch(SpotCommunicationException e)
+            {
+                throw new ServletException(e);
+            }
+        }
+
+        ConferenceHistory history = new ConferenceHistory();
+        history.setConference(conference);
+        history.setDescription("Outdialed " + number);
+        history.setUser("Current user");
+        persistenceService.save(history);
     }
 
-    private String getConferenceAdminSessionId(Session session, Conference conference) throws Exception
+    private String getConferenceAdminSessionId(Session session, Conference conference)
     {
         Criteria criteria = session.createCriteria(Participant.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -140,7 +120,8 @@ public class OutdialServlet extends HttpServlet
                 return participant.getSessionID();
             }
         }
-        throw new Exception("Could not find Admin participant for Conference"); // FIXME don't use Exception
+        throw new IllegalStateException("Could not find Admin participant for Conference"); // FIXME maybe use a checked
+        // exception here
     }
 
     private boolean isUserAllowedToOutdial(User user, Conference conference)

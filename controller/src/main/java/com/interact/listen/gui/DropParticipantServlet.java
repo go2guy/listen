@@ -5,31 +5,30 @@ import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
+import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class DropParticipantServlet extends HttpServlet
 {
-    private static final Logger LOG = Logger.getLogger(DropParticipantServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        long start = System.currentTimeMillis();
-
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
@@ -55,40 +54,30 @@ public class DropParticipantServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
-        try
+        Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
+        if(!isUserAllowedToDrop(user, participant))
         {
-            Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
-            if(!isUserAllowedToDrop(user, participant))
-            {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                                          "Not allowed to drop participant", "text/plain");
-                transaction.rollback();
-                return;
-            }
-
-            // FIXME what happens when the first one succeeds and the second one fails? do we "rollback" the first one?
-            // there's no way we can do it with 100% reliability (because the "rollback" might fail, too)
-            // - in all likelihood there will only be one Spot subscriber, but we should accommodate many
-            List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
-            for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
-            {
-                SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
-                spotSystem.dropParticipant(participant);
-            }
-
-            transaction.commit();
-        }
-        catch(Exception e)
-        {
-            LOG.error("Error dropping participant", e);
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to drop participant",
+                                      "text/plain");
             transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "Error dropping participant", "text/plain");
             return;
         }
-        finally
+
+        // FIXME what happens when the first one succeeds and the second one fails? do we "rollback" the first one?
+        // there's no way we can do it with 100% reliability (because the "rollback" might fail, too)
+        // - in all likelihood there will only be one Spot subscriber, but we should accommodate many
+        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
+        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
         {
-            LOG.debug("DropParticipantServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
+            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+            try
+            {
+                spotSystem.dropParticipant(participant);
+            }
+            catch(SpotCommunicationException e)
+            {
+                throw new ServletException(e);
+            }
         }
     }
 

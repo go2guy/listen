@@ -5,31 +5,29 @@ import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.User;
+import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class MuteParticipantServlet extends HttpServlet
 {
-    private static final Logger LOG = Logger.getLogger(MuteParticipantServlet.class);
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        long start = System.currentTimeMillis();
-
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
@@ -53,40 +51,28 @@ public class MuteParticipantServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
 
-        try
+        Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
+        if(!isUserAllowedToMute(user, participant))
         {
-            Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
-            if(!isUserAllowedToMute(user, participant))
-            {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                                          "Not allowed to mute participant", "text/plain");
-                transaction.rollback();
-                return;
-            }
-
-            // send request to all SPOT subscribers
-            List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
-            for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
-            {
-                SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
-                spotSystem.muteParticipant(participant);
-            }
-
-            transaction.commit();
-        }
-        catch(Exception e)
-        {
-            LOG.error("Error muting participant", e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "Error muting participant", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to mute participant",
+                                      "text/plain");
             return;
         }
-        finally
+
+        // send request to all SPOT subscribers
+        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
+        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
         {
-            LOG.debug("MuteParticipantServlet.doPost() took " + (System.currentTimeMillis() - start) + "ms");
+            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+            try
+            {
+                spotSystem.muteParticipant(participant);
+            }
+            catch(SpotCommunicationException e)
+            {
+                throw new ServletException(e);
+            }
         }
     }
 
