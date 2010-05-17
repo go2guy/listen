@@ -94,13 +94,13 @@ public class GetConferenceInfoServletTest
         user.addToConferences(conference);
         session.save(user);
 
-        tx.commit();
-
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute("user", user);
 
         request.setMethod("GET");
         servlet.service(request, response);
+
+        tx.commit();
 
         String hrefString = "\"href\":\"/conferences/" + conference.getId() + "\"";
         assertTrue(response.getContentAsString().contains(hrefString));

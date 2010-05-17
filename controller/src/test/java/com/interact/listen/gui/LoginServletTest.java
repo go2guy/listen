@@ -55,12 +55,13 @@ public class LoginServletTest
         Transaction tx = session.beginTransaction();
         session.save(subscriber);
         session.save(user);
-        tx.commit();
 
         request.setMethod("POST");
         request.setParameter("username", username);
         request.setParameter("password", password);
         servlet.service(request, response);
+
+        tx.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }

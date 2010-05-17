@@ -119,11 +119,11 @@ public class UnmuteParticipantServletTest
         participant.setSessionID(String.valueOf(System.currentTimeMillis()));
         session.save(participant);
 
-        tx.commit();
-
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(participant.getId()));
         servlet.service(request, response);
+
+        tx.commit();
 
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         assertEquals("text/plain", response.getContentType());
