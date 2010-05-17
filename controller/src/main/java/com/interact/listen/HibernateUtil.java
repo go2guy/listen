@@ -20,7 +20,7 @@ public final class HibernateUtil
 
     private HibernateUtil()
     {
-        throw new AssertionError("Cannot instantiate utility class " + this.getClass().getName());
+        throw new AssertionError("Cannot instantiate utility class HibernateUtil");
     }
 
     static

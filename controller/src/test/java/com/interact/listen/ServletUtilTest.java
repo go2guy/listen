@@ -1,8 +1,9 @@
 package com.interact.listen;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.junit.Before;
@@ -65,5 +66,25 @@ public class ServletUtilTest
         assertEquals(1, params.size());
         assertEquals("green", params.get("yellow"));
         assertFalse(params.containsKey("red"));
+    }
+
+    @Test
+    public void test_constructor_throwsAssertionErrorWithMessage() throws IllegalAccessException,
+        InstantiationException
+    {
+        Constructor<?> constructor = ServletUtil.class.getDeclaredConstructors()[0];
+        constructor.setAccessible(true);
+
+        try
+        {
+            constructor.newInstance();
+            fail("Expected InvocationTargetException with root cause of AssertionError for utility class constructor");
+        }
+        catch(InvocationTargetException e)
+        {
+            Throwable cause = e.getCause();
+            assertTrue(cause instanceof AssertionError);
+            assertEquals("Cannot instantiate utility class ServletUtil", cause.getMessage());
+        }
     }
 }
