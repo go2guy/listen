@@ -29,7 +29,7 @@ public class GetConferenceListServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in", "text/plain");
             return;
         }
 

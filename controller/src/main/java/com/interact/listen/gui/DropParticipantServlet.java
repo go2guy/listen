@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class DropParticipantServlet extends HttpServlet
 {
@@ -52,14 +51,12 @@ public class DropParticipantServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
 
         Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
         if(!isUserAllowedToDrop(user, participant))
         {
             ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to drop participant",
                                       "text/plain");
-            transaction.rollback();
             return;
         }
 

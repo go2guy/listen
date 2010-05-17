@@ -23,6 +23,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LogoutServletTest
 {
+    private static final String SESSION_USER_KEY = "user";
+
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
     private LogoutServlet servlet = new LogoutServlet();
@@ -35,19 +37,31 @@ public class LogoutServletTest
     }
 
     @Test
+    public void test_doGet_removesUserFromSessionAndReturns200() throws IOException, ServletException
+    {
+        User user = new User();
+        HttpSession session = request.getSession();
+        session.setAttribute(SESSION_USER_KEY, user);
+
+        request.setMethod("GET");
+        servlet.service(request, response);
+
+        assertNull(session.getAttribute(SESSION_USER_KEY));
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+    }
+
+    @Test
     public void test_doPost_removesUserFromSessionAndReturns200() throws IOException, ServletException
     {
-        final String sessionUserKey = "user";
-
         // put a user in the session first
         User user = new User();
         HttpSession session = request.getSession();
-        session.setAttribute(sessionUserKey, user);
+        session.setAttribute(SESSION_USER_KEY, user);
 
         request.setMethod("POST");
         servlet.service(request, response);
 
-        assertNull(session.getAttribute(sessionUserKey));
+        assertNull(session.getAttribute(SESSION_USER_KEY));
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 

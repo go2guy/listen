@@ -83,10 +83,170 @@ public class DropParticipantServletTest
     public void test_doPost_tryingToDropAdminParticipant_returnsUnauthorizedStatusWithTextPlainContent()
         throws IOException, ServletException
     {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        Subscriber subscriber = new Subscriber();
+        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        session.save(subscriber);
+
+        User user = new User();
+        user.setSubscriber(subscriber);
+        user.setUsername(String.valueOf(System.currentTimeMillis()));
+        user.setPassword(String.valueOf(System.currentTimeMillis()));
+        session.save(user);
+
+        request.getSession().setAttribute("user", user);
+
+        Conference conference = new Conference();
+        conference.setIsStarted(true);
+        conference.setId(System.currentTimeMillis());
+        conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        conference.setUser(user);
+
+        Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
+        session.save(pin);
+
+        conference.addToPins(pin);
+        session.save(conference);
+
+        user.addToConferences(conference);
+        session.save(user);
+
+        Participant participant = new Participant();
+        participant.setAudioResource("/foo/bar");
+        participant.setConference(conference);
+        participant.setIsAdmin(true);
+        participant.setIsAdminMuted(false);
+        participant.setIsMuted(false);
+        participant.setIsPassive(false);
+        participant.setNumber(String.valueOf(System.currentTimeMillis()));
+        participant.setSessionID(String.valueOf(System.currentTimeMillis()));
+        session.save(participant);
+
+        request.setMethod("POST");
+        request.setParameter("id", String.valueOf(participant.getId()));
+        servlet.service(request, response);
+
+        tx.commit();
+
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+        assertEquals("text/plain", response.getContentType());
+        assertEquals("Not allowed to drop participant", response.getContentAsString());
+    }
+
+    @Test
+    public void test_doPost_userDoesNotOwnConference_returnsUnauthorized() throws IOException, ServletException
+    {
         setSessionUser(request);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        Conference conference = new Conference();
+        conference.setIsStarted(true);
+        conference.setId(System.currentTimeMillis());
+        conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        session.save(conference);
+
+        Participant participant = new Participant();
+        participant.setAudioResource("/foo/bar");
+        participant.setConference(conference);
+        participant.setIsAdmin(false);
+        participant.setIsAdminMuted(false);
+        participant.setIsMuted(false);
+        participant.setIsPassive(false);
+        participant.setNumber(String.valueOf(System.currentTimeMillis()));
+        participant.setSessionID(String.valueOf(System.currentTimeMillis()));
+        session.save(participant);
+
+        request.setMethod("POST");
+        request.setParameter("id", String.valueOf(participant.getId()));
+        servlet.service(request, response);
+
+        tx.commit();
+
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+        assertEquals("text/plain", response.getContentType());
+        assertEquals("Not allowed to drop participant", response.getContentAsString());
+    }
+
+    @Test
+    public void test_doPost_userOwnsConferenceAndRequestValid_sendsSpotRequestAndReturns200() throws IOException,
+        ServletException
+    {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        Subscriber subscriber = new Subscriber();
+        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        session.save(subscriber);
+
+        User user = new User();
+        user.setSubscriber(subscriber);
+        user.setUsername(String.valueOf(System.currentTimeMillis()));
+        user.setPassword(String.valueOf(System.currentTimeMillis()));
+        user.setIsAdministrator(false);
+        session.save(user);
+
+        request.getSession().setAttribute("user", user);
+
+        Conference conference = new Conference();
+        conference.setIsStarted(true);
+        conference.setId(System.currentTimeMillis());
+        conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        conference.setUser(user);
+
+        Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
+        session.save(pin);
+
+        conference.addToPins(pin);
+        session.save(conference);
+
+        user.addToConferences(conference);
+        session.save(user);
+
+        Participant participant = new Participant();
+        participant.setAudioResource("/foo/bar");
+        participant.setConference(conference);
+        participant.setIsAdmin(false);
+        participant.setIsAdminMuted(false);
+        participant.setIsMuted(false);
+        participant.setIsPassive(false);
+        participant.setNumber(String.valueOf(System.currentTimeMillis()));
+        participant.setSessionID(String.valueOf(System.currentTimeMillis()));
+        session.save(participant);
+
+        request.setMethod("POST");
+        request.setParameter("id", String.valueOf(participant.getId()));
+        servlet.service(request, response);
+
+        tx.commit();
+
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+
+        // TODO assert that the spot system was called
+    }
+
+    @Test
+    public void test_doPost_userIsAdministratorButDoesNotOwnConferenceAndRequestValid_sendsSpotRequestAndReturns200()
+        throws IOException, ServletException
+    {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        Subscriber subscriber = new Subscriber();
+        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        session.save(subscriber);
+
+        User user = new User();
+        user.setSubscriber(subscriber);
+        user.setUsername(String.valueOf(System.currentTimeMillis()));
+        user.setPassword(String.valueOf(System.currentTimeMillis()));
+        user.setIsAdministrator(true);
+        session.save(user);
+
+        request.getSession().setAttribute("user", user);
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
@@ -102,7 +262,7 @@ public class DropParticipantServletTest
         Participant participant = new Participant();
         participant.setAudioResource("/foo/bar");
         participant.setConference(conference);
-        participant.setIsAdmin(true);
+        participant.setIsAdmin(false);
         participant.setIsAdminMuted(false);
         participant.setIsMuted(false);
         participant.setIsPassive(false);
@@ -110,15 +270,15 @@ public class DropParticipantServletTest
         participant.setSessionID(String.valueOf(System.currentTimeMillis()));
         session.save(participant);
 
-        tx.commit();
-
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(participant.getId()));
         servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals("Not allowed to drop participant", response.getContentAsString());
+        tx.commit();
+
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+
+        // TODO assert that the spot system was called
     }
 
     @Test
