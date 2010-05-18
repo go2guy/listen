@@ -127,7 +127,7 @@ def main():
             sftp(remotehost, localprog, remoteprog, 0700)
             sftp(remotehost, masterpkg, remotemaster, 0700)
             sftp(remotehost, uiapkg, remoteuia, 0700)
-            runRemote(remotehost, "%s %s" % (remoteprog, " ".join(sys.argv[1:])))
+            runRemote(remotehost, "%s --controllerserver=%s --ivrserver=%s --insaserver=%s --masterpkg=%s --uiapkg=%s --phase=%s" % (remoteprog, controllerserver, ivrserver, insaserver, remotemaster, remoteuia, options.phase))
 
     else:
         phases[options.phase]()
