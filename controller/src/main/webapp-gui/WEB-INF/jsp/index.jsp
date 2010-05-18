@@ -30,6 +30,15 @@ if(user != null && user.getIsAdministrator()) { %>
           <button id="create-new-account-button" class="add-button">Create New Account</button>
         </div><%
 } %>
+        <div id="main-menu">
+          <ul>
+            <li>Conferencing</li>
+            <li>Voicemail</li>
+            <li>Administration</li>
+          </ul>
+        </div>
+        <div id="main-menu-handle"></div>
+
         <div id="notification"></div>
         <div id="main"><%
 if(user != null && user.getIsAdministrator()) { %>

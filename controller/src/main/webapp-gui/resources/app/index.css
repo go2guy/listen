@@ -164,6 +164,44 @@
     width: 100%;
 }
 
+/* main menu */
+
+#main-menu {
+    background-color: #AAAAAA;
+    height: 2em;
+    width: 100%;
+}
+
+#main-menu ul {
+    display: block;
+    overflow: auto;
+}
+
+#main-menu ul li {
+    border-color: #DDDDDD;
+    border-style: solid;
+    border-width: 0 1px 0 0;
+    color: #1162AE;
+    cursor: pointer;
+    float: left;
+    font-weight: bold;
+    height: 2em;
+    padding: 0 1em;
+    text-align: center;
+}
+
+#main-menu ul li:hover {
+    background-color: #666666;
+    color: #FFFFFF;
+}
+
+#main-menu-handle {
+    background: #CCCCCC url('images/new/menu_handle_32x6.png') no-repeat center center;
+    cursor: pointer;
+    height: 6px;
+    width: 100%;
+}
+
 /* conference window */
 
 .window {

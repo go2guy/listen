@@ -432,6 +432,15 @@ $(document).ready(function() {
         server.outdial($('#outdial-number').val(), currentConference.getConferenceId());
     });
 
+    $('#main-menu-handle').click(function() {
+        var menu = $('#main-menu');
+        //if(menu.is(':visible')) {
+            menu.animate({
+                height: 'toggle'
+            }, 500);
+        //}
+    });
+
     $.getJSON('/ajax/getConferenceInfo', function(data) {
         currentConference = new Conference(data.info.id);
         currentConference.show(true);
