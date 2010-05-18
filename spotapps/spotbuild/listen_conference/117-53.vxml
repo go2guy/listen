@@ -6,7 +6,7 @@
        *   @Desc   Sets a conference participant as active or passive. 
 	   * 		   Also sets the entry audio flag for the participant -->
 
-    <var name="II_SB_nxtOpt" expr="'117-55'"/>  			<!-- Next template to be called -->
+    <var name="II_SB_nxtOpt" expr="'117-82'"/>  			<!-- Next template to be called -->
     <var name="II_SB_userStatus" expr="'Passive'"/>	<!-- User status for conference -->
     <var name="II_SB_playAudioFile" expr="'no change'"/>   <!-- Determines if audio file(s) is played when joining conference -->
 

@@ -157,7 +157,6 @@
         </transition>
 
         <transition state="customEvent" event="dialog.exit">
-            <log>PHILLIP: entered the broadcast Message with dialog.exit</log>
             <var name="II_SB_indialog" expr="'false'"/>
           	<assign name="II_SB_state" expr="'nextOptionRun'"/>
 	    	<dialogstart src="'file:' + II_SB_CODE_DIR + 'customEvent.vxml'" namelist="II_SB_ibcallid II_SB_passValues"/>

@@ -27,7 +27,7 @@
 				<assign name="II_SB_assign_NxtOpt" expr="'112-4'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'DROP'">
-				<assign name="II_SB_assign_NxtOpt" expr="'112-15'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'112-50'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'END'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112-35'"/>
