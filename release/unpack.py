@@ -128,7 +128,7 @@ def start():
     # Only try to start things if a license file exists
     if not os.path.exists('/interact/master/.iiXmlLicense'):
         print("Applications are not licensed.")
-        sys.exit()
+        return
 
     # Start all associated processes
     run(["/interact/program/iiMoap"])

@@ -1,3 +1,6 @@
 PROPSH /dev/null~upsert~controllerHost~localhost
 PROPSH /dev/null~insert~cc.host~localhost
 PROPSH /usr/local/tomcat/lib/insa.properties~update~eln.host~localhost
+PROPSH /interact/tomcat/conf/tomcat.properties~update~minMem~128
+PROPSH /interact/tomcat/conf/tomcat.properties~update~maxMem~512
+PROPSH /interact/tomcat/conf/tomcat.properties~update~maxPerm~64
