@@ -125,6 +125,9 @@ def default(sipServer):
 
 
 def start():
+    # Always make sure httpd is running so docs are available.
+    run(["service", "httpd", "start"])
+
     # Only try to start things if a license file exists
     if not os.path.exists('/interact/master/.iiXmlLicense'):
         print("Applications are not licensed.")
