@@ -15,6 +15,7 @@ Vendor: Interact Incorporated
 Packager: javagroup <javagroup@iivip.com>
 BuildArch: %{_arch}
 BuildRequires: jdk >= 1.6.0_00
+Requires: xmlsecurity
 
 %define __spec_install_post /usr/lib/rpm/brp-compress
 %define _topdir %(echo "${TOPDIR}")
