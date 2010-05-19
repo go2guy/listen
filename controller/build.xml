@@ -37,6 +37,7 @@
     <attribute name="in"/>
     <attribute name="out"/>
     <sequential>
+      <echo message="Minifying @{in}"/>
       <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
         <arg line="@{in} -o @{out}"/>
       </java>
@@ -147,10 +148,14 @@
     </copy>
     <minify in="${war.staging.dir}/resources/app/admin.js" out="${war.staging.dir}/resources/app/admin-min.js"/>
     <minify in="${war.staging.dir}/resources/app/all.css" out="${war.staging.dir}/resources/app/all-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/conferencing.js" out="${war.staging.dir}/resources/app/conferencing-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/conferencing-admin.js" out="${war.staging.dir}/resources/app/conferencing-admin-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/findme.js" out="${war.staging.dir}/resources/app/findme-min.js"/>
     <minify in="${war.staging.dir}/resources/app/login.css" out="${war.staging.dir}/resources/app/login-min.css"/>
     <minify in="${war.staging.dir}/resources/app/login.js" out="${war.staging.dir}/resources/app/login-min.js"/>
     <minify in="${war.staging.dir}/resources/app/index.css" out="${war.staging.dir}/resources/app/index-min.css"/>
     <minify in="${war.staging.dir}/resources/app/index.js" out="${war.staging.dir}/resources/app/index-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/voicemail.js" out="${war.staging.dir}/resources/app/voicemail-min.js"/>
     <unjar dest="${war.staging.dir}">
       <patternset>
         <exclude name="META-INF/**/*"/>

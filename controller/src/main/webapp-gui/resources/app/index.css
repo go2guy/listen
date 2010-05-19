@@ -204,12 +204,7 @@
 }
 
 .window {
-/*    border: 1px solid #DAE4EE;
-    border-radius: 8px;*/
-/*    display: none;*/
-/*    height: 100%;*/
     margin: 10px;
-/*    -moz-border-radius: 8px;*/
     overflow: hide;
     padding: 3px 3px 0 3px;
 }
@@ -222,17 +217,11 @@
 
 #conference-list .panel-header {
     background-color: #000000;
-/*    border-color: #666666;*/
     color: #FFFFFF;
 }
-/*
-#conference-list .panel-title {
-    cursor: pointer;
-}*/
 
 #conference-list .panel-content {
     display: block;
-/*    height: 15em;
     overflow: auto;*/
 }
 
@@ -249,10 +238,6 @@
     border: 1px solid #CCCCCC;
     padding: 3px;
 }
-
-/*#conference-window {
-    display: none;
-}*/
 
 #conference-window .left, #conference-window .right {
     float: left;
@@ -355,7 +340,6 @@ li.odd {
 /* conference caller list */
 
 .caller-row {
-    /*background: #FFFFFF url('images/new/caller_background.png') repeat-x bottom left;*/
     background-color: #DAE4EE;
     border-radius: .5em;
     color: #000000;

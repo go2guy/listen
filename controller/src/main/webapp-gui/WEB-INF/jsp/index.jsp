@@ -16,6 +16,18 @@ User user = (User)session.getAttribute("user"); %>
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
     <script type="text/javascript" src="./resources/app/index-min.js"></script><%
+if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
+    <script type="text/javascript" src="./resources/app/conferencing-min.js"></script><%
+    if(user != null && user.getIsAdministrator()) { %>
+    <script type="text/javascript" src="./resources/app/conferencing-admin-min.js"></script><%
+    }
+}
+if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
+    <script type="text/javascript" src="./resources/app/voicemail-min.js"></script><%
+}
+if(License.isLicensed(ListenFeature.FINDME)) { %>
+    <script type="text/javascript" src="./resources/app/findme-min.js"></script><%
+}
 if(user != null && user.getIsAdministrator()) { %>
     <script type="text/javascript" src="./resources/app/admin-min.js"></script><%
 } %>
@@ -53,6 +65,8 @@ if(License.isLicensed(ListenFeature.CONFERENCING)
         <div id="notification"></div>
         <div id="main">
 
+<%
+if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
           <div id="conference-application" class="application"><%
 if(user != null && user.getIsAdministrator()) { %>
             <div id="conference-list" class="window">
@@ -132,17 +146,19 @@ if(user != null && user.getIsAdministrator()) { %>
                 </div>
               </div>
             </div>
-          </div><!-- conference-application -->
-
-          <div id="voicemail-application" class="application">Voicemail Content</div>
-          <div id="findme-application" class="application">FindMe Content</div>
-          <div id="administration-application" class="application"><%
+          </div><!-- conference-application --><%
+}
+if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
+          <div id="voicemail-application" class="application">Voicemail Content</div><%
+}
+if(License.isLicensed(ListenFeature.FINDME)) { %>
+          <div id="findme-application" class="application">FindMe Content</div><%
+}
 if(user != null && user.getIsAdministrator()) { %>
-            <button id="create-new-account-button" class="add-button">Create New Account</button><%
-} else { %>
-            Administration Content<%
+          <div id="administration-application" class="application">
+            <button id="create-new-account-button" class="add-button">Create New Account</button>
+          </div><%
 } %>
-          </div>
         </div>
       </div><!-- wrapper-main -->
     </div><!-- wrapper -->
