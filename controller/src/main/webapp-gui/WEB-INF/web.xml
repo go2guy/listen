@@ -15,7 +15,7 @@
 
     <filter>
         <filter-name>ApiResourceLocatorFilter</filter-name>
-        <filter-class>com.interact.listen.ApiResourceLocatorFilter</filter-class>
+        <filter-class>com.interact.listen.api.ApiResourceLocatorFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>ApiResourceLocatorFilter</filter-name>
@@ -23,17 +23,17 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>StatFilter</filter-name>
-        <filter-class>com.interact.listen.stats.StatFilter</filter-class>
+        <filter-name>ApiStatFilter</filter-name>
+        <filter-class>com.interact.listen.api.stats.ApiStatFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>StatFilter</filter-name>
+        <filter-name>ApiStatFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
     <filter>
         <filter-name>ApiLicenseFilter</filter-name>
-        <filter-class>com.interact.listen.license.ApiLicenseFilter</filter-class>
+        <filter-class>com.interact.listen.api.license.ApiLicenseFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>ApiLicenseFilter</filter-name>
@@ -65,7 +65,7 @@
 
     <servlet>
         <servlet-name>ApiServlet</servlet-name>
-        <servlet-class>com.interact.listen.ApiServlet</servlet-class>
+        <servlet-class>com.interact.listen.api.ApiServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 

@@ -1,8 +1,9 @@
-package com.interact.listen;
+package com.interact.listen.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Conference;

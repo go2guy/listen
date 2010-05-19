@@ -1,10 +1,12 @@
-package com.interact.listen.stats;
+package com.interact.listen.api.stats;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 
@@ -16,11 +18,11 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class StatFilterTest
+public class ApiStatFilterTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-    private StatFilter filter;
+    private ApiStatFilter filter;
 
     private StatSender mockStatSender;
     private FilterChain mockFilterChain;
@@ -34,7 +36,7 @@ public class StatFilterTest
         mockStatSender = mock(StatSender.class);
         mockFilterChain = mock(FilterChain.class);
 
-        filter = new StatFilter();
+        filter = new ApiStatFilter();
         filter.setStatSender(mockStatSender);
     }
 

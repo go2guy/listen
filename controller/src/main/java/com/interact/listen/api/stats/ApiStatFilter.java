@@ -1,4 +1,8 @@
-package com.interact.listen.stats;
+package com.interact.listen.api.stats;
+
+import com.interact.listen.stats.InsaStatSender;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 
@@ -10,9 +14,9 @@ import org.apache.log4j.Logger;
 /**
  * Writes stat-collector statistics for various HTTP requests.
  */
-public class StatFilter implements Filter
+public class ApiStatFilter implements Filter
 {
-    private static final Logger LOG = Logger.getLogger(StatFilter.class);
+    private static final Logger LOG = Logger.getLogger(ApiStatFilter.class);
 
     private StatSender statSender = new InsaStatSender();
 

@@ -1,5 +1,6 @@
-package com.interact.listen;
+package com.interact.listen.api;
 
+import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;

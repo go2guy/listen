@@ -1,5 +1,6 @@
 package com.interact.listen;
 
+import com.interact.listen.api.ApiServlet;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.ConversionException;
 import com.interact.listen.marshal.converter.Converter;
@@ -133,7 +134,7 @@ public final class ResourceListService
         StringBuilder content = new StringBuilder();
         if(marshaller instanceof XmlMarshaller)
         {
-            content.append(ApiServlet.XML_TAG);
+            content.append(ApiServlet.XML_TAG); // FIXME this is gross, this constant should be elsewhere, perhaps Marshaller
         }
 
         Criteria criteria = createCriteria(false);

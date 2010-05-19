@@ -1,6 +1,9 @@
-package com.interact.listen.license;
+package com.interact.listen.api.license;
 
-import com.interact.listen.ApiResourceLocatorFilter;
+import com.interact.listen.api.ApiResourceLocatorFilter;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
+import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.Resource;
 
 import java.io.IOException;

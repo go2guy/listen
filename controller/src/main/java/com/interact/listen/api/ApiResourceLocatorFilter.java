@@ -1,4 +1,4 @@
-package com.interact.listen;
+package com.interact.listen.api;
 
 import com.interact.listen.resource.Resource;
 
