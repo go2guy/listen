@@ -24,12 +24,7 @@ if(user != null && user.getIsAdministrator()) { %>
         <div id="header">
           <div id="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
           <div id="userInfo">Hi, <%= user.getUsername() %>! | <a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
-        </div><%
-if(user != null && user.getIsAdministrator()) { %>
-        <div id="subheader">
-          <button id="create-new-account-button" class="add-button">Create New Account</button>
-        </div><%
-} %>
+        </div>
         <div id="main-menu">
           <ul>
             <li><a href="#" id="menu-conferencing">Conferencing</a></li>
@@ -125,7 +120,11 @@ if(user != null && user.getIsAdministrator()) { %>
 
           <div id="voicemail-application" class="application">Voicemail Content</div>
           <div id="findme-application" class="application">FindMe Content</div>
-          <div id="administration-application" class="application">Administration Content</div>
+          <div id="administration-application" class="application"><%
+if(user != null && user.getIsAdministrator()) { %>
+            <button id="create-new-account-button" class="add-button">Create New Account</button><%
+} %>
+          </div>
         </div>
       </div><!-- wrapper-main -->
     </div><!-- wrapper -->
