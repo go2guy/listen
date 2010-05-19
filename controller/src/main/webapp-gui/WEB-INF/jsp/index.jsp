@@ -32,93 +32,100 @@ if(user != null && user.getIsAdministrator()) { %>
 } %>
         <div id="main-menu">
           <ul>
-            <li>Conferencing</li>
-            <li>Voicemail</li>
-            <li>Administration</li>
+            <li><a href="#" id="menu-conferencing">Conferencing</a></li>
+            <li><a href="#" id="menu-voicemail">Voicemail</a></li>
+            <li><a href="#" id="menu-administration">Administration</a></li>
           </ul>
         </div>
         <div id="main-menu-handle"></div>
 
         <div id="notification"></div>
-        <div id="main"><%
+        <div id="main">
+        
+          <div id="conference-application" class="application"><%
 if(user != null && user.getIsAdministrator()) { %>
-          <div id="conference-list" class="window">
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Conference List</div>
-              </div>
-              <div class="panel-content">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Description</th>
-                      <th>Status</th><!--
-                      <th>Callers</th>
-                      <th>Duration</th>-->
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div><%
-} %>
-          <div id="conference-window" class="window">
-            <div class="conference-header">
-              <div id="conference-title" class="conference-title">Conference ###</div>
-              <div class="conference-menu">
-                <div class="buttons"><button id="schedule-button" class="schedule-button">Schedule</button></div>
-              </div>
-            </div>
-            <div class="left">
-              <div id="conference-callers" class="panel">
+            <div id="conference-list" class="window">
+              <div class="panel">
                 <div class="panel-header">
-                  <div class="panel-title">Current Callers (<span id="conference-caller-count">0</span>)</div>
-                  <div class="panel-menu">
-                    <button id="outdial-show" name="outdial-show" class="outdial-button">OnDemand</button>
-                    <div id="outdial-dialog" class="inline-dialog">
-                      <form name="outdial-form" id="outdial-form">
-                        <div class="form-error-message"></div>
-                        <div>
-                          <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
-                        </div>
-                        <div>
-                          <button class="cancel-button" name="outdial-cancel" id="outdial-cancel">Cancel</button>
-                          <button class="outdial-button" name="outdial-submit" id="outdial-submit">Make Call</button>
-                        </div>
-                      </form>
+                  <div class="panel-title">Conference List</div>
+                </div>
+                <div class="panel-content">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Status</th><!--
+                        <th>Callers</th>
+                        <th>Duration</th>-->
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div><%
+} %>
+            <div id="conference-window" class="window">
+              <div class="conference-header">
+                <div id="conference-title" class="conference-title">Conference ###</div>
+                <div class="conference-menu">
+                  <div class="buttons"><button id="schedule-button" class="schedule-button">Schedule</button></div>
+                </div>
+              </div>
+              <div class="left">
+                <div id="conference-callers" class="panel">
+                  <div class="panel-header">
+                    <div class="panel-title">Current Callers (<span id="conference-caller-count">0</span>)</div>
+                    <div class="panel-menu">
+                      <button id="outdial-show" name="outdial-show" class="outdial-button">OnDemand</button>
+                      <div id="outdial-dialog" class="inline-dialog">
+                        <form name="outdial-form" id="outdial-form">
+                          <div class="form-error-message"></div>
+                          <div>
+                            <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
+                          </div>
+                          <div>
+                            <button class="cancel-button" name="outdial-cancel" id="outdial-cancel">Cancel</button>
+                            <button class="outdial-button" name="outdial-submit" id="outdial-submit">Make Call</button>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="panel-content">
-                  <ul id="caller-list"></ul>
-                </div>
-              </div>
-            </div>
-            <div class="right">
-              <div id="conference-pins" class="panel">
-                <div class="panel-header">
-                  <div class="panel-title">Pins (<span id="conference-pin-count">0</span>)</div>
-                  <div class="panel-menu">
-                    <button class="add-button" readonly="readonly" disabled="disabled">Add</button>
+                  <div class="panel-content">
+                    <ul id="caller-list"></ul>
                   </div>
                 </div>
-                <div class="panel-content">
-                  <ul id="pin-list"></ul>
-                </div>
               </div>
-              <div id="conference-history" class="panel">
-                <div class="panel-header">
-                  <div class="panel-title">Recent History</div>
+              <div class="right">
+                <div id="conference-pins" class="panel">
+                  <div class="panel-header">
+                    <div class="panel-title">Pins (<span id="conference-pin-count">0</span>)</div>
+                    <div class="panel-menu">
+                      <button class="add-button" readonly="readonly" disabled="disabled">Add</button>
+                    </div>
+                  </div>
+                  <div class="panel-content">
+                    <ul id="pin-list"></ul>
+                  </div>
                 </div>
-                <div class="panel-content">
-                  <ul id="history-list"></ul>
+                <div id="conference-history" class="panel">
+                  <div class="panel-header">
+                    <div class="panel-title">Recent History</div>
+                  </div>
+                  <div class="panel-content">
+                    <ul id="history-list"></ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </div><!-- conference-application -->
+
+          <div id="voicemail-application" class="application">Voicemail Content</div>
+          <div id="findme-application" class="application">FindMe Content</div>
+          <div id="administration-application" class="application">Administration Content</div>
         </div>
       </div><!-- wrapper-main -->
     </div><!-- wrapper -->

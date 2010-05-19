@@ -146,9 +146,6 @@ function ConferenceList() {
 
 function viewConference(id) {
     //$('#conference-list .panel-content').slideUp(200);
-    if(currentConference) {
-        currentConference.hide(false);
-    }
-    currentConference = new Conference(id);
-    currentConference.show(false);
+    var conference = new Conference(id);
+    listen.setContent('conference', conference);
 }

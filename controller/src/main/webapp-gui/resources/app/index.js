@@ -8,6 +8,94 @@ $.ajaxSetup({
     }
 });
 
+var listen;
+
+$(document).ready(function() {
+    listen = function() {
+
+        function Application(windowId, menuId, position, content) {
+            var windowId = windowId;
+            var menuId = menuId;
+            var position = position;
+            this.content = content;
+
+            var windowDiv = $('#' + windowId);
+            var menuItem = $('#' + menuId);
+            if(menuItem && windowDiv) {
+                var application = this;
+                menuItem.click(function() {
+                    // use 'application' since 'this' will be in the function scope, not the parent object's scope
+                    pub.switchApp(application);
+                });
+            }
+
+            this.getPosition = function() {
+                return position;
+            };
+
+            this.swapWith = function(other) {
+                this.hide(position < other.getPosition() ? 'left' : 'right', function() {
+                    other.show(position < other.getPosition() ? 'right' : 'left');
+                });
+            };
+
+            this.hide = function(direction, callback) {
+                if(callback) {
+                    windowDiv.effect('slide', { direction: direction ? direction : 'left', mode: 'hide' }, 250, callback);
+                } else {
+                    windowDiv.effect('slide', { direction: direction ? direction : 'left', mode: 'hide' }, 250);
+                }
+                if(this.content) {
+                    this.content.unload();
+                }
+            };
+
+            this.show = function(direction) {
+                if(this.content) {
+                    this.content.load();
+                }
+                windowDiv.effect('slide', { direction: direction ? direction : 'right', mode: 'show' }, 250);
+            };
+        };
+
+        var appConference = new Application('conference-application', 'menu-conferencing', 1, new Conference());
+        var appVoicemail = new Application('voicemail-application', 'menu-voicemail', 2);
+        var appFindMe = new Application('findme-application', 'menu-findme', 3);
+        var appAdministration = new Application('administration-application', 'menu-administration', 4); 
+
+        var currentApplication;
+
+        var pub = {
+            switchApp: function(to) {
+                if(currentApplication) {
+                    currentApplication.swapWith(to);
+                } else {
+                    to.show();
+                }
+                currentApplication = to;
+            },
+
+            setContent: function(applicationName, content) {
+                var app;
+                switch(applicationName) {
+                    case 'conference':
+                        app = appConference;
+                        break;
+                }
+                if(app) {
+                    if(app.content) {
+                        app.content.unload();
+                    }
+                    app.content = content;
+                    app.content.load();
+                }
+            }
+        };
+
+        return pub;
+    }();
+});
+
 var server = {
     dropCaller: function(id) {
         $.ajax({
@@ -75,7 +163,17 @@ var server = {
 }
 
 function Conference(id) {
-    var conferenceId = id;
+    var conferenceId;
+
+    if(id) {
+        conferenceId = id;
+    } else {
+        $.getJSON('/ajax/getConferenceInfo', function(data) {
+            conferenceId = data.info.id;
+        });
+    }
+
+    currentConference = this;
 
     var callers = new ConferenceCallerList();
     var history = new ConferenceHistoryList();
@@ -87,7 +185,7 @@ function Conference(id) {
         return conferenceId;
     }
 
-    this.show = function(animate) {
+    this.load = function(animate) {
         interval = setInterval(function() {
             $.ajax({
                 url: '/ajax/getConferenceInfo?id=' + conferenceId,
@@ -118,7 +216,7 @@ function Conference(id) {
             });
         }, 1000);
 
-        setTimeout(function() {
+/*        setTimeout(function() {
             var window = $('#conference-window');
             if(animate) {
                 window.css('opacity', 0);
@@ -127,18 +225,18 @@ function Conference(id) {
             } else {
                 window.css('display', 'block');
             }
-        }, 1000);
+        }, 1000);*/
     };
 
-    this.hide = function(animate) {
+    this.unload = function(animate) {
         var window = $('#conference-window');
-        if(animate) {
+/*        if(animate) {
             window.animate({ opacity: 0 }, 1000, function() {
                 window.css('display', 'none');
             });
         } else {
             window.css('display', 'none');
-        }
+        }*/
         $('#caller-list').find('li').remove();
         $('#pin-list').find('li').remove();
         $('#history-list').find('li').remove();
@@ -209,7 +307,6 @@ function ConferenceCallerList() {
         if(callerCount.text() != list.length) {
             callerCount.text(list.length);
         }
-        //$('#conference-caller-count').text(list.length);
 
         var callers = $('#caller-list').find('.caller-row');
         var ids = [];
@@ -429,7 +526,7 @@ $(document).ready(function() {
     });
 
     $('#outdial-submit').click(function() {
-        server.outdial($('#outdial-number').val(), currentConference.getConferenceId());
+        server.outdial($('#outdial-number').val(), currentConference.getConferenceId()); // FIXME referencing a global here is gross
     });
 
     $('#main-menu-handle').click(function() {
@@ -439,11 +536,6 @@ $(document).ready(function() {
                 height: 'toggle'
             }, 500);
         //}
-    });
-
-    $.getJSON('/ajax/getConferenceInfo', function(data) {
-        currentConference = new Conference(data.info.id);
-        currentConference.show(true);
     });
 });
 

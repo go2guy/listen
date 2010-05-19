@@ -202,17 +202,25 @@
     width: 100%;
 }
 
-/* conference window */
+.application {
+    display: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
 
 .window {
 /*    border: 1px solid #DAE4EE;
     border-radius: 8px;*/
+/*    display: none;*/
 /*    height: 100%;*/
     margin: 10px;
 /*    -moz-border-radius: 8px;*/
     overflow: hide;
     padding: 3px 3px 0 3px;
 }
+
+/* conference window */
 
 #conference-list .panel {
     border-color: #666666;
@@ -248,9 +256,9 @@
     padding: 3px;
 }
 
-#conference-window {
+/*#conference-window {
     display: none;
-}
+}*/
 
 #conference-window .left, #conference-window .right {
     float: left;
