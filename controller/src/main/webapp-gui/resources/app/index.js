@@ -58,6 +58,7 @@ $(document).ready(function() {
             };
         };
 
+        // FIXME conditionally load applications based on user permissions/licensing
         var appConference = new Application('conference-application', 'menu-conferencing', 1, new Conference());
         var appVoicemail = new Application('voicemail-application', 'menu-voicemail', 2);
         var appFindMe = new Application('findme-application', 'menu-findme', 3);

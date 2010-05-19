@@ -29,6 +29,7 @@ if(user != null && user.getIsAdministrator()) { %>
           <ul>
             <li><a href="#" id="menu-conferencing">Conferencing</a></li>
             <li><a href="#" id="menu-voicemail">Voicemail</a></li>
+            <li><a href="#" id="menu-findme">FindMe</a></li>
             <li><a href="#" id="menu-administration">Administration</a></li>
           </ul>
         </div>
@@ -123,6 +124,8 @@ if(user != null && user.getIsAdministrator()) { %>
           <div id="administration-application" class="application"><%
 if(user != null && user.getIsAdministrator()) { %>
             <button id="create-new-account-button" class="add-button">Create New Account</button><%
+} else { %>
+            Administration Content<%
 } %>
           </div>
         </div>
