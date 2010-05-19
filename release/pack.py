@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 try:
-    import os, md5, base64, re, rpm, sys, pwd, unpack
+    import os, md5, base64, re, rpm, sys, pwd, zlib
     from optparse import OptionParser, TitledHelpFormatter
-    from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
     from StringIO import StringIO
 
 except ImportError, e:
@@ -66,20 +65,30 @@ def pack(name, files):
 
         # md5sum the original file
         packfile = open(packfile, "r")
-        md5sum = md5.new("".join(packfile.readlines())).hexdigest()
-
-        # Create in-memory zip file
-        zipfile = StringIO()
-        ziparch = ZipFile(zipfile, 'w', ZIP_DEFLATED)
-        ziparch.write(packfile.name, os.path.basename(packfile.name))
-        ziparch.close()
-        zipfile.seek(0)
 
         # Base64 encode the zip file and write to the output
-        encont = []
-        for zipline in zipfile.readlines():
-            encont.append(base64.b64encode(zipline))
-        packfiles.append("packfile('%s','%s',['%s'])" % (os.path.basename(packfile.name), md5sum, "','".join(encont)))
+        cont = []
+        contzip64 = []
+        compobj = zlib.compressobj(9)
+        for line in packfile.readlines():
+            cont.append(line)
+            contzip64.append(base64.b64encode(compobj.compress(line)))
+        contzip64.append(base64.b64encode(compobj.flush(zlib.Z_FULL_FLUSH)))
+
+        # Create destination name accordingly
+        packfilename = os.path.basename(packfile.name)
+        if packfilename.endswith('.pdf') or packfilename.endswith('.doc') or packfilename.endswith('.docx'):
+            packfilename = "/interact/docs/%s" % packfilename
+
+        elif packfilename.endswith('.rpm'):
+            transactionSet = rpm.TransactionSet()
+            tmphdr = transactionSet.hdrFromFdno(os.open(packfile.name, os.O_RDONLY))
+            packfilename = "/interact/packages/%s/%s" % (tmphdr[rpm.RPMTAG_NAME], packfilename)
+
+        else:
+            packfilename = "/interact/packages/%s" % packfilename
+
+        packfiles.append("packfile('%s','%s',['%s'])" % (packfilename, md5.new("".join(cont)).hexdigest(), "','".join(contzip64)))
 
     outfile.write("    packfiles = [%s]" % ",".join(packfiles) + "\n")
 
@@ -107,7 +116,7 @@ def pack(name, files):
   %s -h
 
 # After extraction, the full documentation can be found in:
-  %s
+  /interact/docs/
 
 # Documentation is also accessible via the web (if httpd is running on this machine):
   http://localhost/webstatcon/
@@ -116,7 +125,7 @@ def pack(name, files):
 #  default password: performance
 #  documentation is under the "DOCS" tab.
 
-""" % (os.path.basename(outfile.name), os.path.basename(outfile.name), unpack.packfile.docdir))
+""" % (os.path.basename(outfile.name), os.path.basename(outfile.name)))
     readfile.close()
     print
 

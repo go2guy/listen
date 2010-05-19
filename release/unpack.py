@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 try:
-    import sys, os, re, md5, base64, datetime, subprocess, socket
+    import sys, os, re, md5, base64, datetime, subprocess, socket, zlib, rpm
     from optparse import OptionParser, TitledHelpFormatter
-    from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
     from StringIO import StringIO
 
 except ImportError, e:
     raise "Unable to import required module: " + str(e)
 
+# Generic packfile object
 class packfile(object):
-    packdir = "/interact/packages"
-    docdir = "/interact/docs"
     name = None
     md5sum = None
     contents64 = None
@@ -23,28 +21,20 @@ class packfile(object):
         self.contents = []
 
         # Decode and write to temporary in-memory file
-        zipfile = StringIO()
+        decompobj = zlib.decompressobj()
         for line64 in self.contents64:
-            zipfile.write(base64.b64decode(line64))
+            self.contents.append(decompobj.decompress(base64.b64decode(line64)))
+        self.contents.append(decompobj.flush())
 
-        # Create a zip file from the in-memory file and dump contents
-        ziparch = ZipFile(zipfile)
-        self.contents = ziparch.read(self.name)
-        ziparch.close()
-        zipfile.close()
-
+    # Unpacks packfile to deistination diretory based on the file extension
     def unpack(self):
-        destdir = packfile.packdir
-        if self.name.endswith('.pdf') or self.name.endswith('.doc') or self.name.endswith('.docx'):
-            destdir = packfile.docdir
-
         # Create the destination directory if necessary.
-        if not os.path.exists(destdir):
-            os.makedirs(destdir)
+        if not os.path.exists(os.path.dirname(self.name)):
+            os.makedirs(os.path.dirname(self.name))
 
-        outfile = open(destdir + "/" + self.name, "w+")
+        outfile = open(self.name, "w+")
         outfile.write("".join(self.contents))
-        print("Extracted [ %s ] to [ %s ]." % (self.name, destdir))
+        print("Extracted [ %s ]." % self.name)
 
         outfile.seek(0)
         newcontents = outfile.readlines()
@@ -63,41 +53,75 @@ def default(sipServer):
     uiapkg = None
     listenpkg = None
     realizepkg = None
+    defaultsup = None
 
-    reuiapkg = re.compile("^uia-")
-    relistenpkg = re.compile("^listen-")
-    rerealizepkg = re.compile("^Realize-")
+    reuiapkg = re.compile("/uia-")
+    relistenpkg = re.compile("/listen-")
+    rerealizepkg = re.compile("/Realize-")
+    redefaultsup = re.compile("/default.sup")
     for pkgfile in packfiles:
-        if reuiapkg.match(pkgfile.name) != None:
+        if reuiapkg.search(pkgfile.name) != None:
             uiapkg = pkgfile.name
 
-        elif relistenpkg.match(pkgfile.name) != None:
+        elif relistenpkg.search(pkgfile.name) != None:
             listenpkg = pkgfile.name
 
-        elif rerealizepkg.match(pkgfile.name) != None:
+        elif rerealizepkg.search(pkgfile.name) != None:
             realizepkg = pkgfile.name
 
-    if uiapkg == None or listenpkg == None or realizepkg == None:
+        elif redefaultsup.search(pkgfile.name) != None:
+            defaultsup = pkgfile.name
+
+    # If any package do not exist, exit with error
+    if uiapkg == None or listenpkg == None or realizepkg == None or defaultsup == None:
         sys.exit("Unable to find required packages in bundle.")
 
-    # create default.sup if it doesn't exist...
-    os.utime(packfile.packdir + "/default.sup", None)
-
+    # Insert sipserver sup line if it was passed in on the command line.
     if sipServer != None and sipServer != "":
-        supfile = open(packfile.packdir + "/default.sup", "a")
+        supfile = open(defaultsup, "a")
         supfile.write("CCVXML /interact/apps/spotbuild/listen_conference/root.vxml~update~sipURL~%s~SIP~var~expr~1~server name" % sipServer)
         supfile.close()
 
-    # Install uia
-    run(["rpm", "-Uvh", "--replacepkgs", packfile.packdir + "/" + uiapkg])
+    # Create the command that will be used to install listen and Realize
+    listeninst = ["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", listenpkg, "spotbuild-vip", "ivrserver", "webserver"]
+    realizeinst = ["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", realizepkg, "tomcat", "tomcat-native", "realize"]
 
-    # Test listen and Realize packages
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", packfile.packdir + "/default.sup", "--test", "--noinput", "--replacefiles", "--replacepkgs", packfile.packdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", packfile.packdir + "/default.sup", "--noinput", "--test", "--replacefiles", "--replacepkgs", packfile.packdir + "/" + realizepkg, "tomcat", "tomcat-native", "realize"])
+    # Only use the default sup if the rpm is not currently installed.
+    for rpmpkg, instcmd in ([listenpkg, listeninst], [realizepkg, realizeinst]):
+        installed = False
+
+        # First query the name of the rpm
+        transactionSet = rpm.TransactionSet()
+        tmphdr = transactionSet.hdrFromFdno(os.open(rpmpkg, os.O_RDONLY))
+        rpmname = tmphdr[rpm.RPMTAG_NAME]
+
+        # Then query all installed rpms and search for the name
+        transactionSet = rpm.TransactionSet()
+        matchIterator = transactionSet.dbMatch()
+        for tmphdr in matchIterator:
+            if rpmname == tmphdr[rpm.RPMTAG_NAME]:
+                installed = True
+
+        if not installed:
+                instcmd.insert(2, "--supfile")
+                instcmd.insert(3, defaultsup)
+
+    # Install uia
+    run(["rpm", "-Uvh", "--replacepkgs", uiapkg])
+
+    # Clone install command and insert a --test. Then run it
+    testlisteninst = list(listeninst)
+    testlisteninst.insert(2, "--test")
+    run(testlisteninst)
+
+    # Clone install command and insert a --test. Then run it
+    testrealizeinst = list(realizeinst)
+    testrealizeinst.insert(2, "--test")
+    run(testrealizeinst)
 
     # Install listen and Realize packages
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", packfile.packdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", packfile.packdir + "/" + listenpkg, "spotbuild-vip", "ivrserver", "webserver"])
-    run(["/interact/packages/iiInstall.sh", "-i", "--supfile", packfile.packdir + "/default.sup", "--noinput", "--replacefiles", "--replacepkgs", packfile.packdir + "/" + realizepkg, "tomcat", "tomcat-native", "realize"])
+    run(listeninst)
+    run(realizeinst)
 
 
 def start():
@@ -140,7 +164,7 @@ def run(command, shell=False, failonerror=True):
 def main():
     # Set up a parser object which defines how to parse the expected input.
     parser = OptionParser()
-    parser.description = """This program is self-extracting software package. Simply execute this file to extract its contents to the %s and %s directories. You may also perform a default installation by specifying the appropriate options listed below.""" % (packfile.packdir, packfile.docdir)
+    parser.description = """This program is self-extracting software package. Simply execute this file to extract its contents to the /interact/docs/ and /interact/packages/ directories. You may also perform a default installation by specifying the appropriate options listed below."""
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=30, width=90)
 
     parser.add_option(
@@ -201,7 +225,7 @@ def main():
 
     print("""
 Documentation can be found in:
-  %s
+  /interact/docs/
 
 Documentation is also accessible via the web (if httpd is running on this machine):
   http://%s/webstatcon/
@@ -210,7 +234,7 @@ Documentation is also accessible via the web (if httpd is running on this machin
   default password: performance
   documentation is under the "DOCS" tab.
 
-""" % (packfile.docdir, socket.gethostname()))
+""" % socket.gethostname())
 
 
 if __name__ == "__main__":
