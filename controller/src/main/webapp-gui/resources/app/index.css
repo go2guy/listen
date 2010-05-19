@@ -180,8 +180,7 @@
     float: left;
     font-weight: bold;
     height: 2em;
-    margin-bottom: -.25em;
-    padding: .25em 1em 0 1em;
+    padding: 0 1em;
     text-align: center;
 }
 
