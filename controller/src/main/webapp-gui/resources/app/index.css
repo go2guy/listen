@@ -161,7 +161,7 @@
 /* main menu */
 
 #main-menu {
-    background-color: #AAAAAA;
+    background: #88B4EE url('images/new/mainmenu_background_10x54.png') repeat-x top left;
     height: 2em;
     width: 100%;
 }
@@ -175,18 +175,19 @@
     border-color: #DDDDDD;
     border-style: solid;
     border-width: 0 1px 0 0;
-    color: #1162AE;
+    color: #FFFFFF;
     cursor: pointer;
     float: left;
     font-weight: bold;
     height: 2em;
-    padding: 0 1em;
+    margin-bottom: -.25em;
+    padding: .25em 1em 0 1em;
     text-align: center;
 }
 
 #main-menu ul li:hover {
-    background-color: #666666;
-    color: #FFFFFF;
+    background: #FFFFFF url('images/new/title_header_bkg.png') repeat-x bottom left;
+    color: #1162AE;
 }
 
 #main-menu-handle {
