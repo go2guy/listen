@@ -41,7 +41,7 @@ if(user != null && user.getIsAdministrator()) { %>
 
         <div id="notification"></div>
         <div id="main">
-        
+
           <div id="conference-application" class="application"><%
 if(user != null && user.getIsAdministrator()) { %>
             <div id="conference-list" class="window">

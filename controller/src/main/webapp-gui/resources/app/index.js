@@ -215,32 +215,13 @@ function Conference(id) {
                 }
             });
         }, 1000);
-
-/*        setTimeout(function() {
-            var window = $('#conference-window');
-            if(animate) {
-                window.css('opacity', 0);
-                window.css('display', 'block');
-                window.animate({ opacity: 1 }, 1000);
-            } else {
-                window.css('display', 'block');
-            }
-        }, 1000);*/
     };
 
     this.unload = function(animate) {
         var window = $('#conference-window');
-/*        if(animate) {
-            window.animate({ opacity: 0 }, 1000, function() {
-                window.css('display', 'none');
-            });
-        } else {
-            window.css('display', 'none');
-        }*/
         $('#caller-list').find('li').remove();
         $('#pin-list').find('li').remove();
         $('#history-list').find('li').remove();
-
         if(interval) {
             clearInterval(interval);
         }
@@ -440,7 +421,6 @@ function ConferencePinList() {
         if(pinCount.text() != list.length) {
             pinCount.text(list.length);
         }
-        //$('#conference-pin-count').text(list.length);
 
         var pins = $('#pin-list').find('.pin-row');
         var ids = [];
@@ -530,12 +510,9 @@ $(document).ready(function() {
     });
 
     $('#main-menu-handle').click(function() {
-        var menu = $('#main-menu');
-        //if(menu.is(':visible')) {
-            menu.animate({
-                height: 'toggle'
-            }, 500);
-        //}
+        $('#main-menu').animate({
+            height: 'toggle'
+        }, 500);
     });
 });
 
