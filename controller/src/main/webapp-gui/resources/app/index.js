@@ -34,6 +34,9 @@ $(document).ready(function() {
             };
 
             this.swapWith = function(other) {
+                if(this === other) {
+                    return;
+                }
                 this.hide(position < other.getPosition() ? 'left' : 'right', function() {
                     other.show(position < other.getPosition() ? 'right' : 'left');
                 });
