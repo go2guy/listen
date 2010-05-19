@@ -18,8 +18,9 @@
                 <version>5.0.0</version>
             </rpm>
 
-             <rpm state="installed">
+             <rpm state="greater-than-or-equal">
                 <name>^jre$|^jdk$</name>
+                <version>1.6.0</version>
             </rpm>           
         </pre>
 
@@ -38,9 +39,10 @@
                 <version>5.0.0</version>
             </rpm>
 
-            <rpm state="installed">
+             <rpm state="greater-than-or-equal">
                 <name>^jre$|^jdk$</name>
-            </rpm>
+                <version>1.6.0</version>
+            </rpm>           
         </pre>
 
     </rollback>
