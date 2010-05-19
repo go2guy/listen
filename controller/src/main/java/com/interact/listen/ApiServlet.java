@@ -52,7 +52,7 @@ public class ApiServlet extends HttpServlet
         try
         {
             UriResourceAttributes attributes = getResourceAttributes(request);
-            if(attributes.getName() == null)
+            if(attributes.getResourceClass() == null)
             {
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, "Welcome to the Listen Controller API",
                                           "text/plain");
@@ -61,8 +61,7 @@ public class ApiServlet extends HttpServlet
 
             Marshaller marshaller = getMarshaller(request.getHeader("Accept"));
 
-            String className = getResourceClassName(attributes.getName());
-            Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
+            
 
             if(attributes.getId() == null)
             {
@@ -70,7 +69,7 @@ public class ApiServlet extends HttpServlet
 
                 Map<String, String> query = ServletUtil.getQueryParameters(request);
 
-                Builder builder = new ResourceListService.Builder(resourceClass, session, marshaller);
+                Builder builder = new ResourceListService.Builder(attributes.getResourceClass(), session, marshaller);
                 Map<String, String> searchProperties = getSearchProperties(query);
                 for(Map.Entry<String, String> entry : searchProperties.entrySet())
                 {
@@ -121,7 +120,7 @@ public class ApiServlet extends HttpServlet
                 }
 
                 long s = time();
-                Resource resource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
+                Resource resource = persistenceService.get(attributes.getResourceClass(), Long.parseLong(attributes.getId()));
                 transaction.commit();
                 LOG.debug("list() took " + (time() - s) + "ms");
 
@@ -144,13 +143,6 @@ public class ApiServlet extends HttpServlet
                 ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, xml.toString(),
                                           marshaller.getContentType());
             }
-        }
-        catch(ClassNotFoundException e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
         }
         catch(CriteriaCreationException e)
         {
@@ -179,10 +171,10 @@ public class ApiServlet extends HttpServlet
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
-        if(attributes.getName() == null || attributes.getName().trim().length() == 0)
+        if(attributes.getResourceClass() == null)
         {
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to [" +
-                                                                                    attributes.getName() + "]",
+                                                                                    attributes.getResourceClass() + "]",
                                       "text/plain");
             return;
         }
@@ -190,7 +182,7 @@ public class ApiServlet extends HttpServlet
         if(attributes.getId() != null)
         {
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Cannot POST to specific resource [" + request.getPathInfo() + "]", "text/plain");
+                                      "Cannot POST to specific resource [" + attributes.getResourceClass().getSimpleName() + "]", "text/plain");
             return;
         }
 
@@ -202,11 +194,8 @@ public class ApiServlet extends HttpServlet
         {
             Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
 
-            String className = getResourceClassName(attributes.getName());
-            Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
-
             long s = time();
-            Resource resource = marshaller.unmarshal(request.getInputStream(), resourceClass.newInstance(), false);
+            Resource resource = marshaller.unmarshal(request.getInputStream(), attributes.getResourceClass().newInstance(), false);
             LOG.debug("unmarshal() took " + (time() - s) + "ms");
 
             if(!resource.validate() && resource.hasErrors())
@@ -222,7 +211,7 @@ public class ApiServlet extends HttpServlet
             LOG.debug("save() took " + (time() - s) + "ms");
 
             s = time();
-            resource = persistenceService.get(resourceClass, id);
+            resource = persistenceService.get(attributes.getResourceClass(), id);
             LOG.debug("get() took " + (time() - s) + "ms");
 
             transaction.commit();
@@ -239,13 +228,6 @@ public class ApiServlet extends HttpServlet
 
             ServletUtil.writeResponse(response, HttpServletResponse.SC_CREATED, xml.toString(),
                                       marshaller.getContentType());
-        }
-        catch(ClassNotFoundException e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
         }
         catch(IOException e)
         {
@@ -297,7 +279,7 @@ public class ApiServlet extends HttpServlet
         if(attributes.getId() == null)
         {
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "PUT must be to a specific resource, not the list [" + request.getPathInfo() +
+                                      "PUT must be to a specific resource, not the list [" + attributes.getResourceClass().getSimpleName() +
                                           "]", "text/plain");
             return;
         }
@@ -310,16 +292,13 @@ public class ApiServlet extends HttpServlet
         {
             Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
 
-            String className = getResourceClassName(attributes.getName());
-            Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
-
             if(!isValidResourceId(attributes.getId()))
             {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
 
-            Resource resource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
+            Resource resource = persistenceService.get(attributes.getResourceClass(), Long.parseLong(attributes.getId()));
 
             if(resource == null)
             {
@@ -368,13 +347,6 @@ public class ApiServlet extends HttpServlet
                                           "Resource failed validation: " + resource.errors().toString(),
                                           "text/plain");
             }
-        }
-        catch(ClassNotFoundException e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
         }
         catch(IOException e)
         {
@@ -430,10 +402,10 @@ public class ApiServlet extends HttpServlet
 
         UriResourceAttributes attributes = getResourceAttributes(request);
 
-        if(attributes.getName() == null || attributes.getName().trim().length() == 0)
+        if(attributes.getResourceClass() == null)
         {
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" +
-                                                                                    attributes.getName() + "]",
+                                                                                    attributes.getResourceClass() + "]",
                                       "text/plain");
             return;
         }
@@ -441,7 +413,7 @@ public class ApiServlet extends HttpServlet
         if(attributes.getId() == null)
         {
             ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "DELETE must be on a specific resource, not the list [" + request.getPathInfo() +
+                                      "DELETE must be on a specific resource, not the list [" + attributes.getResourceClass().getSimpleName() +
                                           "]", "text/plain");
             return;
         }
@@ -452,9 +424,6 @@ public class ApiServlet extends HttpServlet
 
         try
         {
-            String className = getResourceClassName(attributes.getName());
-            Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
-
             if(!isValidResourceId(attributes.getId()))
             {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -462,7 +431,7 @@ public class ApiServlet extends HttpServlet
             }
 
             long s = time();
-            Resource resource = persistenceService.get(resourceClass, Long.parseLong(attributes.getId()));
+            Resource resource = persistenceService.get(attributes.getResourceClass(), Long.parseLong(attributes.getId()));
             LOG.debug("get() took " + (time() - s) + "ms");
 
             if(resource == null)
@@ -477,13 +446,6 @@ public class ApiServlet extends HttpServlet
 
             transaction.commit();
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        }
-        catch(ClassNotFoundException e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
         }
         catch(Exception e)
         {
@@ -500,77 +462,20 @@ public class ApiServlet extends HttpServlet
     }
 
     /**
-     * Given an {@link HttpServletRequest}, parses the path info from the URL and retrieves the relevant resource
-     * information.
+     * Given an {@link HttpServletRequest}, retrieves the relevant resource information.
      * 
-     * @param request request containing path information
+     * @param request request containing attributes set by {@link ApiResourceLocatorFilter}
      * @return
      */
     private UriResourceAttributes getResourceAttributes(HttpServletRequest request)
     {
-        String pathInfo = request.getPathInfo();
-        if(pathInfo == null || pathInfo.length() <= 1)
-        {
-            return new UriResourceAttributes();
-        }
-
-        pathInfo = stripLeadingSlash(pathInfo);
-        String[] parts = pathInfo.split("/");
-
         UriResourceAttributes attributes = new UriResourceAttributes();
-        attributes.setName(parts[0]);
-        if(parts.length > 1)
-        {
-            attributes.setId(parts[1]);
-        }
+        Class<? extends Resource> resourceClass = (Class<? extends Resource>)request.getAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY);
+        String id = (String)request.getAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY);
+
+        attributes.setResourceClass(resourceClass);
+        attributes.setId(id);
         return attributes;
-    }
-
-    /**
-     * Strips a leading "/" character from the provided {@code String} if one is present.
-     * 
-     * @param string string from which to strip leading slash
-     * @return string with leading slash removed, if necessary
-     */
-    private String stripLeadingSlash(String string)
-    {
-        if(string.startsWith("/"))
-        {
-            return string.substring(1);
-        }
-        return string;
-    }
-
-    /**
-     * Given a "name" from a URL (e.g. /subscribers/5 has a "name" of "subscribers"), returns the corresponding
-     * {@link Resource} implementation. Assumes that the name is at least two characters long and plural (ending with
-     * "s") - the last character will be stripped.
-     * 
-     * @param urlName name from URL
-     * @return fully-qualified {@code String} containing class name
-     */
-    private static String getResourceClassName(String urlName)
-    {
-        if(urlName == null)
-        {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
-
-        if(urlName.trim().length() == 0)
-        {
-            throw new IllegalArgumentException("Name cannot be blank");
-        }
-
-        String capitalized = urlName.substring(0, 1).toUpperCase();
-        if(urlName.length() > 1)
-        {
-            capitalized += urlName.substring(1);
-        }
-
-        // strip last character (it should be an "s")
-        capitalized = capitalized.substring(0, capitalized.length() - 1);
-        String qualified = "com.interact.listen.resource." + capitalized;
-        return qualified;
     }
 
     /**
@@ -669,12 +574,12 @@ public class ApiServlet extends HttpServlet
 
     private static class UriResourceAttributes
     {
-        private String name;
+        private Class<? extends Resource> resourceClass;
         private String id;
 
-        public String getName()
+        public Class<? extends Resource> getResourceClass()
         {
-            return name;
+            return resourceClass;
         }
 
         public String getId()
@@ -682,9 +587,9 @@ public class ApiServlet extends HttpServlet
             return id;
         }
 
-        public void setName(String name)
+        public void setResourceClass(Class<? extends Resource> resourceClass)
         {
-            this.name = name;
+            this.resourceClass = resourceClass;
         }
 
         public void setId(String id)

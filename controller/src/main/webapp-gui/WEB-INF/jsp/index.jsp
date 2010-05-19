@@ -1,4 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.interact.listen.license.License" %>
+<%@ page import="com.interact.listen.license.ListenFeature" %>
 <%@ page import="com.interact.listen.resource.User" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html><%
@@ -24,16 +26,29 @@ if(user != null && user.getIsAdministrator()) { %>
         <div id="header">
           <div id="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
           <div id="userInfo">Hi, <%= user.getUsername() %>! | <a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
-        </div>
+        </div><%
+if(License.isLicensed(ListenFeature.CONFERENCING)
+    || License.isLicensed(ListenFeature.VOICEMAIL)
+    || License.isLicensed(ListenFeature.FINDME)
+    || (user != null && user.getIsAdministrator())) { %>
         <div id="main-menu">
-          <ul>
-            <li><a href="#" id="menu-conferencing">Conferencing</a></li>
-            <li><a href="#" id="menu-voicemail">Voicemail</a></li>
-            <li><a href="#" id="menu-findme">FindMe</a></li>
-            <li><a href="#" id="menu-administration">Administration</a></li>
+          <ul><%
+    if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
+            <li><a href="#" id="menu-conferencing">Conferencing</a></li><%
+    }
+    if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
+            <li><a href="#" id="menu-voicemail">Voicemail</a></li><%
+    }
+    if(License.isLicensed(ListenFeature.FINDME)) { %>
+            <li><a href="#" id="menu-findme">FindMe</a></li><%
+    }
+    if(user != null && user.getIsAdministrator()) { %>
+            <li><a href="#" id="menu-administration">Administration</a></li><%
+    } %>
           </ul>
         </div>
-        <div id="main-menu-handle"></div>
+        <div id="main-menu-handle"></div><%
+} %>
 
         <div id="notification"></div>
         <div id="main">

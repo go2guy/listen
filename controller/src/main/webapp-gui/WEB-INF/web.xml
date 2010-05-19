@@ -11,12 +11,32 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- TODO Exception handler filter here -->
+
+    <filter>
+        <filter-name>ApiResourceLocatorFilter</filter-name>
+        <filter-class>com.interact.listen.ApiResourceLocatorFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ApiResourceLocatorFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
     <filter>
         <filter-name>StatFilter</filter-name>
         <filter-class>com.interact.listen.stats.StatFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>StatFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>ApiLicenseFilter</filter-name>
+        <filter-class>com.interact.listen.license.ApiLicenseFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ApiLicenseFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 

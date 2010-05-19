@@ -40,5 +40,7 @@
 	<classpathentry kind="lib" path="lib/build/jetty/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="lib" path="lib/build/jetty/jsp-api-2.1-glassfish-2.1.v20091210.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/license-client-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/joda-time-1.6.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>
