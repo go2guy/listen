@@ -147,5 +147,5 @@ function ConferenceList() {
 function viewConference(id) {
     //$('#conference-list .panel-content').slideUp(200);
     var conference = new Conference(id);
-    listen.setContent('conference', conference);
+    LISTEN.setContent('conference', conference);
 }

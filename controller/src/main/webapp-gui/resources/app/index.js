@@ -8,10 +8,10 @@ $.ajaxSetup({
     }
 });
 
-var listen;
+var LISTEN, SERVER;
 
 $(document).ready(function() {
-    listen = function() {
+    LISTEN = function() {
 
         function Application(windowId, menuId, position, content) {
             var windowId = windowId;
@@ -98,73 +98,73 @@ $(document).ready(function() {
 
         return pub;
     }();
+
+    SERVER = {
+        dropCaller: function(id) {
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/dropParticipant',
+                data: { id: id },
+                success: function(data) {
+                    //noticeSuccess('Participant dropped');
+                },
+                error: function(req) {
+                    //noticeError(req.responseText);
+                }
+            });
+        },
+    
+        muteCaller: function(id) {
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/muteParticipant',
+                data: { id: id },
+                success: function(data) {
+                    //noticeSuccess('Participant muted');
+                },
+                error: function(req) {
+                    //noticeError(req.responseText);
+                }
+            });
+        },
+    
+        outdial: function(number, conferenceId) {
+            var errorDiv = $('#outdial-dialog .form-error-message');
+            errorDiv.hide();
+            errorDiv.text('');
+    
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/outdial',
+                data: { number: number,
+                        conferenceId: conferenceId },
+                success: function(data) {
+                    $('#outdial-dialog').slideUp(200);
+                    notify('Number ' + number + ' is being dialed');
+                },
+                error: function(req) {
+                    errorDiv.text(req.responseText);
+                    errorDiv.slideDown(200);
+                    //notify('An error occurred dialing the number - please contact an Administrator.');
+                }
+            });
+        },
+    
+        unmuteCaller: function(id) {
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/unmuteParticipant',
+                data: { id: id },
+                success: function(data) {
+                    //noticeSuccess('Participant unmuted');
+                },
+                error: function(req) {
+                    //noticeError(req.responseText);
+                }
+            });
+        }
+    };
 });
-
-var server = {
-    dropCaller: function(id) {
-        $.ajax({
-            type: 'POST',
-            url: '/ajax/dropParticipant',
-            data: { id: id },
-            success: function(data) {
-                //noticeSuccess('Participant dropped');
-            },
-            error: function(req) {
-                //noticeError(req.responseText);
-            }
-        });
-    },
-
-    muteCaller: function(id) {
-        $.ajax({
-            type: 'POST',
-            url: '/ajax/muteParticipant',
-            data: { id: id },
-            success: function(data) {
-                //noticeSuccess('Participant muted');
-            },
-            error: function(req) {
-                //noticeError(req.responseText);
-            }
-        });
-    },
-
-    outdial: function(number, conferenceId) {
-        var errorDiv = $('#outdial-dialog .form-error-message');
-        errorDiv.hide();
-        errorDiv.text('');
-
-        $.ajax({
-            type: 'POST',
-            url: '/ajax/outdial',
-            data: { number: number,
-                    conferenceId: conferenceId },
-            success: function(data) {
-                $('#outdial-dialog').slideUp(200);
-                notify('Number ' + number + ' is being dialed');
-            },
-            error: function(req) {
-                errorDiv.text(req.responseText);
-                errorDiv.slideDown(200);
-                //notify('An error occurred dialing the number - please contact an Administrator.');
-            }
-        });
-    },
-
-    unmuteCaller: function(id) {
-        $.ajax({
-            type: 'POST',
-            url: '/ajax/unmuteParticipant',
-            data: { id: id },
-            success: function(data) {
-                //noticeSuccess('Participant unmuted');
-            },
-            error: function(req) {
-                //noticeError(req.responseText);
-            }
-        });
-    }
-}
 
 function Conference(id) {
     var conferenceId;
@@ -269,13 +269,13 @@ function ConferenceCallerList() {
                 li.find('.caller-drop-icon').text('');
             }
         } else {
-            var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'server.unmuteCaller(' + data.id + ');' : 'server.muteCaller(' + data.id + ');return false;') + '"/>';
+            var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '"/>';
             var mute = li.find('.caller-mute-icon');
             if(mute.html() != muteHtml) {
                 mute.html(muteHtml);
             }
 
-            var dropHtml = '<button class="delete-button" onclick="server.dropCaller(' + data.id + ');"/>';
+            var dropHtml = '<button class="delete-button" onclick="SERVER.dropCaller(' + data.id + ');"/>';
             var drop = li.find('.caller-drop-icon');
             if(drop.html() != dropHtml) {
                 drop.html(dropHtml);
@@ -510,7 +510,7 @@ $(document).ready(function() {
     });
 
     $('#outdial-submit').click(function() {
-        server.outdial($('#outdial-number').val(), currentConference.getConferenceId()); // FIXME referencing a global here is gross
+        SERVER.outdial($('#outdial-number').val(), currentConference.getConferenceId()); // FIXME referencing a global here is gross
     });
 
     $('#main-menu-handle').click(function() {
