@@ -20,7 +20,7 @@
 /* general layout & styles */
 
 #header {
-    background: #FFFFFF url('images/new/title_header_bkg.png') repeat-x top left;
+    background: #FFFFFF url('../images/new/title_header_bkg.png') repeat-x top left;
     border-bottom: 2px solid #989898;
     height: 26px;
     width: 100%;
@@ -34,7 +34,7 @@
 }
 
 #userInfo {
-    background: #000000 url('images/new/title_color_swatches_64x26.png') no-repeat top left;
+    background: #000000 url('../images/new/title_color_swatches_64x26.png') no-repeat top left;
     color: #FFFFFF;
     float: right;
     height: 100%;
@@ -79,71 +79,71 @@
 }
 
 .add-button {
-    background-image: url('images/new/icon_add_16x16.png');
+    background-image: url('../images/new/icon_add_16x16.png');
 }
 
 .add-button:hover {
-    background-image: url('images/new/icon_add_hover_16x16.png');
+    background-image: url('../images/new/icon_add_hover_16x16.png');
 }
 
 .cancel-button {
-    background-image: url('images/new/icon_cancel_16x16.png');
+    background-image: url('../images/new/icon_cancel_16x16.png');
 }
 
 .cancel-button:hover {
-    background-image: url('images/new/icon_cancel_hover_16x16.png');
+    background-image: url('../images/new/icon_cancel_hover_16x16.png');
 }
 
 .delete-button {
-    background-image: url('images/new/icon_delete_16x16.png');
+    background-image: url('../images/new/icon_delete_16x16.png');
 }
 
 .delete-button:hover {
-    background-image: url('images/new/icon_delete_hover_16x16.png');
+    background-image: url('../images/new/icon_delete_hover_16x16.png');
 }
 
 .mute-button {
-    background-image: url('images/new/icon_speaker_unmuted_16x16.png');
+    background-image: url('../images/new/icon_speaker_unmuted_16x16.png');
 }
 
 .mute-button:hover {
-    background-image: url('images/new/icon_speaker_unmuted_hover_16x16.png');
+    background-image: url('../images/new/icon_speaker_unmuted_hover_16x16.png');
 }
 
 .outdial-button {
-    background-image: url('images/new/icon_outdial_16x16.png');
+    background-image: url('../images/new/icon_outdial_16x16.png');
 }
 
 .outdial-button:hover {
-    background-image: url('images/new/icon_outdial_hover_16x16.png');
+    background-image: url('../images/new/icon_outdial_hover_16x16.png');
 }
 
 .schedule-button {
-    background-image: url('images/new/icon_schedule_16x16.png');
+    background-image: url('../images/new/icon_schedule_16x16.png');
 }
 
 .schedule-button:hover {
-    background-image: url('images/new/icon_schedule_hover_16x16.png');
+    background-image: url('../images/new/icon_schedule_hover_16x16.png');
 }
 
 .unmute-button {
-    background-image: url('images/new/icon_speaker_muted_16x16.png');
+    background-image: url('../images/new/icon_speaker_muted_16x16.png');
 }
 
 .unmute-button:hover {
-    background-image: url('images/new/icon_speaker_muted_hover_16x16.png');
+    background-image: url('../images/new/icon_speaker_muted_hover_16x16.png');
 }
 
 .unmute-button-disabled {
-    background-image: url('images/new/icon_speaker_muted_disabled_16x16.png');
+    background-image: url('../images/new/icon_speaker_muted_disabled_16x16.png');
 }
 
 .view-button {
-    background-image: url('images/new/icon_view_16x16.png');
+    background-image: url('../images/new/icon_view_16x16.png');
 }
 
 .view-button:hover {
-    background-image: url('images/new/icon_view_hover_16x16.png');
+    background-image: url('../images/new/icon_view_hover_16x16.png');
 }
 
 #notification {
@@ -161,7 +161,7 @@
 /* main menu */
 
 #main-menu {
-    background: #88B4EE url('images/new/mainmenu_background_10x54.png') repeat-x top left;
+    background: #88B4EE url('../images/new/mainmenu_background_10x54.png') repeat-x top left;
     height: 2em;
     width: 100%;
 }
@@ -185,12 +185,12 @@
 }
 
 #main-menu ul li:hover {
-    background: #FFFFFF url('images/new/title_header_bkg.png') repeat-x bottom left;
+    background: #FFFFFF url('../images/new/title_header_bkg.png') repeat-x bottom left;
     color: #1162AE;
 }
 
 #main-menu-handle {
-    background: #CCCCCC url('images/new/menu_handle_32x6.png') no-repeat center center;
+    background: #CCCCCC url('../images/new/menu_handle_32x6.png') no-repeat center center;
     cursor: pointer;
     height: 6px;
     width: 100%;
@@ -371,7 +371,7 @@ li.odd {
 }
 
 .caller-row-admin .caller-user-icon {
-    background-image: url('images/new/icon_admin_logo_16x16.png');
+    background-image: url('../images/new/icon_admin_logo_16x16.png');
     background-position: center center;
     background-repeat: no-repeat;
 }

@@ -78,19 +78,15 @@ $(document).ready(function() {
             },
 
             setContent: function(applicationName, content) {
-                var application;
-                for(var app in applications) {
-                    if(app.getName() == applicationName) {
-                        application = app;
+                for(var i = 0; i < applications.length; i++) {
+                    if(applications[i].name == applicationName) {
+                        if(applications[i].content) {
+                            applications[i].content.unload();
+                        }
+                        applications[i].content = content;
+                        applications[i].content.load();
                         break;
                     }
-                }
-                if(application) {
-                    if(application.content) {
-                        application.content.unload();
-                    }
-                    application.content = content;
-                    application.content.load();
                 }
             }
         };
