@@ -93,8 +93,8 @@ if(user != null && user.getIsAdministrator()) { %>
             </div><%
 } %>
             <div id="conference-window" class="window">
-              <div class="conference-header">
-                <div id="conference-title" class="conference-title">Conference ###</div>
+              <div class="window-header">
+                <div id="conference-title" class="window-title">Conference ###</div>
                 <div class="conference-menu">
                   <div class="buttons"><button id="schedule-button" class="schedule-button">Schedule</button></div>
                 </div>
@@ -156,7 +156,26 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
 }
 if(user != null && user.getIsAdministrator()) { %>
           <div id="administration-application" class="application">
-            <button id="create-new-account-button" class="add-button">Create New Account</button>
+            <div class="window">
+              <div class="window-header"><div class="window-title">System Configuration</div></div>
+
+              <div class="panel">
+                <div class="panel-header"><div class="panel-title">Random</div></div>
+                <div class="panel-content">
+                  <button id="create-new-account-button" class="add-button">Create New Account</button>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header"><div class="panel-title">SPOT IVR Settings</div></div>
+                <div class="panel-content">Content</div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header"><div class="panel-title">Mail Settings</div></div>
+                <div class="panel-content">Content</div>
+              </div>
+            </div>
           </div><%
 } %>
         </div>

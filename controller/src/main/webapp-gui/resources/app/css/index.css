@@ -1,3 +1,10 @@
+/* COLOR LEGEND
+ * 
+ * 1162AE - dark blue
+ * 81A8EA - middle blue
+ * DAE4EE - light blue
+ */
+
 /* floating footer */
 
 #wrapper {
@@ -161,7 +168,7 @@
 /* main menu */
 
 #main-menu {
-    background: #88B4EE url('../images/new/mainmenu_background_10x54.png') repeat-x top left;
+    background: #88B4EE url('../images/new/mainmenu_background_22x32.png') repeat-x top left;
     height: 2em;
     width: 100%;
 }
@@ -190,11 +197,17 @@
 }
 
 #main-menu-handle {
-    background: #CCCCCC url('../images/new/menu_handle_32x6.png') no-repeat center center;
+    background: #FFFFFF url('../images/new/pulltab_63x10.png') no-repeat center center;
     cursor: pointer;
-    height: 6px;
+    height: 10px;
     width: 100%;
 }
+
+#main-menu-handle:hover {
+    background-image: url('../images/new/pulltab_hover_63x10.png');
+}
+
+/* general styles for windows, panels, etc. */
 
 .application {
     display: none;
@@ -209,84 +222,26 @@
     padding: 3px 3px 0 3px;
 }
 
-/* conference window */
-
-#conference-list .panel {
-    border-color: #666666;
-}
-
-#conference-list .panel-header {
-    background-color: #000000;
-    color: #FFFFFF;
-}
-
-#conference-list .panel-content {
-    display: block;
-    overflow: auto;*/
-}
-
-#conference-list table {
-    border: 1px solid #CCCCCC;
-    border-collapse: collapse;
-}
-
-#conference-list table th {
-    font-weight: bold;
-}
-
-#conference-list table td, #conference-list table th {
-    border: 1px solid #CCCCCC;
-    padding: 3px;
-}
-
-#conference-window .left, #conference-window .right {
-    float: left;
-    width: 50%;
-}
-
-.conference-header {
-    background-color: #EEEEEE;
-    border: 2px solid #1162AE;
+.window-header {
+    background-color: #FFFFFF;
+    border: 2px solid #000000;
     border-radius: 8px;
-    color: #1162AE;
+    color: #000000;
     margin-bottom: 4px;
     -moz-border-radius: 8px;
     overflow: auto;
 }
 
-.conference-title {
+.window-title {
     clear: right;
-    background-position: 3px 3px;
-    background-repeat: no-repeat;
     font-size: 125%;
     font-variant: small-caps;
     font-weight: bold;
-    padding-left: 23px;
+    padding-left: 6px;
 }
 
 .panel-content, .panel-title, .panel-menu {
     padding: 6px;
-}
-
-.conference-menu {
-    border-color: #DAE4EE;
-    border-style: solid;
-    border-width: 1px 0 0 0;
-    clear: left;
-}
-
-.conference-menu div {
-    float: left;
-    margin: 3px 0 3px 6px;
-}
-
-.conference-menu div.buttons {
-    float: right;
-    padding-right: 6px;
-}
-
-li.odd {
-    background-color: #EEEEEE;
 }
 
 .left .panel {
@@ -298,7 +253,7 @@ li.odd {
 }
 
 .panel {
-    border: 2px solid #1162AE;
+    border: 2px solid #000000;
     border-radius: 8px;
     font-size: 90%;
     margin-bottom: 4px;
@@ -306,10 +261,10 @@ li.odd {
 }
 
 .panel-header {
-    background-color: #DAE4EE;
+    background-color: #CCCCCC;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    color: #1162AE;
+    color: #444444;
     font-weight: bold;
     margin-bottom: 2px;
     -moz-border-radius-topleft: 8px;
@@ -331,6 +286,82 @@ li.odd {
 
 .panel-content {
     overflow: auto;
+}
+
+li.odd {
+    background-color: #EEEEEE;
+}
+
+/* specific application styles */
+
+#conference-application .window-header {
+    border-color: #1162AE;
+    color: #1162AE;
+}
+
+#conference-application .panel {
+    border-color: #1162AE;
+}
+
+#conference-application .panel-header {
+    background-color: #DAE4EE;
+    color: #1162AE;
+}
+
+#conference-list .panel {
+    border-color: #666666;
+}
+
+#conference-list .panel-header {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+#conference-list .panel-content {
+    display: block;
+    overflow: auto;
+}
+
+#conference-list table {
+    border: 1px solid #CCCCCC;
+    border-collapse: collapse;
+}
+
+#conference-list table th {
+    font-weight: bold;
+}
+
+#conference-list table td, #conference-list table th {
+    border: 1px solid #CCCCCC;
+    padding: 3px;
+}
+
+#conference-window .left, #conference-window .right {
+    float: left;
+    width: 50%;
+}
+
+#conference-window .window-title {
+    background-position: 3px 3px;
+    background-repeat: no-repeat;
+    padding-left: 23px;
+}
+
+.conference-menu {
+    border-color: #DAE4EE;
+    border-style: solid;
+    border-width: 1px 0 0 0;
+    clear: left;
+}
+
+.conference-menu div {
+    float: left;
+    margin: 3px 0 3px 6px;
+}
+
+.conference-menu div.buttons {
+    float: right;
+    padding-right: 6px;
 }
 
 #templates {
