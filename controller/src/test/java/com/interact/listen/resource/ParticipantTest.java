@@ -269,6 +269,7 @@ public class ParticipantTest
         Conference c = new Conference();
         c.setId(System.currentTimeMillis());
         c.setIsStarted(Boolean.TRUE);
+        c.setIsRecording(Boolean.FALSE);
         c.setVersion(1);
 
         Participant p = new Participant();

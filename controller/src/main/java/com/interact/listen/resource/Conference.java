@@ -31,6 +31,9 @@ public class Conference extends Resource implements Serializable
     private Boolean isStarted;
     
     @Column(nullable = false)
+    private Boolean isRecording;
+    
+    @Column(nullable = false)
     private Date startTime = new Date();
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
@@ -53,6 +56,16 @@ public class Conference extends Resource implements Serializable
     public void setIsStarted(Boolean isStarted)
     {
         this.isStarted = isStarted;
+    }
+    
+    public Boolean getIsRecording()
+    {
+        return isRecording;
+    }
+
+    public void setIsRecording(Boolean isRecording)
+    {
+        this.isRecording = isRecording;
     }
 
     public Set<Pin> getPins()
@@ -166,6 +179,11 @@ public class Conference extends Resource implements Serializable
             addToErrors("isStarted cannot be null");
         }
         
+        if(isRecording == null)
+        {
+            addToErrors("isRecording cannot be null");
+        }
+        
         if(startTime == null)
         {
             addToErrors("startTime cannot be null");
@@ -188,6 +206,7 @@ public class Conference extends Resource implements Serializable
         copy.setStartTime(startTime);
         copy.setConferenceHistorys(conferenceHistorys);
         copy.setIsStarted(isStarted);
+        copy.setIsRecording(isRecording);
         copy.setParticipants(participants);
 
         for(Pin pin : pins)
@@ -215,6 +234,19 @@ public class Conference extends Resource implements Serializable
         if(isStarted.booleanValue())
         {
             statSender.send(Stat.CONFERENCE_START);
+        }
+        
+        if(isRecording.booleanValue())
+        {
+            history = new ConferenceHistory();
+            history.setConference(this);
+            history.setUser("Current User"); // FIXME
+            history.setDescription("Conference recording " + (isRecording ? "started" : "ended"));
+
+            persistenceService = new PersistenceService(session);
+            persistenceService.save(history);
+            
+            //TODO add recording started stat
         }
     }
 
@@ -247,6 +279,26 @@ public class Conference extends Resource implements Serializable
                 
                 //want conference length in seconds
                 statSender.send(Stat.CONFERENCE_LENGTH, conferenceLength / 1000);
+            }
+        }
+        
+        if(isRecording.booleanValue() != originalConference.getIsRecording().booleanValue())
+        {
+            ConferenceHistory history = new ConferenceHistory();
+            history.setConference(this);
+            history.setUser("Current User"); // FIXME
+            history.setDescription("Conference recording " + (isRecording ? "started" : "ended"));
+
+            PersistenceService persistenceService = new PersistenceService(session);
+            persistenceService.save(history);
+            
+            if(isRecording.booleanValue())
+            {
+                //TODO add recording started stat
+            }
+            else
+            {
+                //TODO add recording ended stat
             }
         }
     }

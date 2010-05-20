@@ -40,6 +40,15 @@ public class ConferenceTest
 
         assertEquals(isStarted, conference.getIsStarted());
     }
+    
+    @Test
+    public void test_setIsRecording_withValidIsRecording_setsIsRecording()
+    {
+        final Boolean isRecording = true;
+        conference.setIsRecording(isRecording);
+
+        assertEquals(isRecording, conference.getIsRecording());
+    }
 
     @Test
     public void test_setStartTime_withNull_setsNullStartTime()
@@ -115,6 +124,16 @@ public class ConferenceTest
         assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
+    
+    @Test
+    public void test_validate_nullIsRecording_returnsHasErrors()
+    {
+        conference = getPopulatedConference();
+        conference.setIsRecording(null);
+
+        assertFalse(conference.validate());
+        assertTrue(conference.hasErrors());
+    }
 
     @Test
     public void test_copy_withoutIdAndVersion_createsCopyWithoutIdAndVersion()
@@ -124,6 +143,7 @@ public class ConferenceTest
 
         assertTrue(original.getConferenceHistorys() == copy.getConferenceHistorys()); // same reference
         assertEquals(original.getIsStarted(), copy.getIsStarted());
+        assertEquals(original.getIsRecording(), copy.getIsRecording());
         assertTrue(original.getParticipants() == copy.getParticipants()); // same reference
 
         // pins cannot be the same reference - in fact, i don't think any collection can
@@ -222,6 +242,7 @@ public class ConferenceTest
         c.setDescription(String.valueOf(System.currentTimeMillis()));
         c.setId(System.currentTimeMillis());
         c.setIsStarted(Boolean.TRUE);
+        c.setIsRecording(Boolean.FALSE);
         c.setVersion(1);
         return c;
     }

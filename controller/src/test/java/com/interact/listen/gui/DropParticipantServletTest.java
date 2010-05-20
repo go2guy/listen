@@ -100,6 +100,7 @@ public class DropParticipantServletTest
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
+        conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
         conference.setUser(user);
@@ -145,6 +146,7 @@ public class DropParticipantServletTest
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
+        conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
         session.save(conference);
@@ -193,6 +195,7 @@ public class DropParticipantServletTest
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
+        conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
         conference.setUser(user);
@@ -250,6 +253,7 @@ public class DropParticipantServletTest
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
+        conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
 

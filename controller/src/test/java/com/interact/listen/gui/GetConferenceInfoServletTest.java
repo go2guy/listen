@@ -83,6 +83,7 @@ public class GetConferenceInfoServletTest
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
+        conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
         session.save(conference);

@@ -180,6 +180,7 @@ public final class HibernateUtil
             conference.addToPins(passivePin);
 
             conference.setIsStarted(true);
+            conference.setIsRecording(false);
             conference.setDescription(subscriber.getNumber());
             persistenceService.save(conference);
 

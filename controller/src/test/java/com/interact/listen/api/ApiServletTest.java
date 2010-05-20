@@ -308,6 +308,7 @@ public class ApiServletTest
         Conference conference = new Conference();
         conference.setId(System.currentTimeMillis());
         conference.setIsStarted(Boolean.FALSE);
+        conference.setIsRecording(Boolean.FALSE);
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         StringBuilder content = new StringBuilder();
@@ -337,6 +338,7 @@ public class ApiServletTest
         Conference conference = new Conference();
         conference.setId(System.currentTimeMillis());
         conference.setIsStarted(Boolean.FALSE);
+        conference.setIsRecording(Boolean.FALSE);
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         StringBuilder content = new StringBuilder();

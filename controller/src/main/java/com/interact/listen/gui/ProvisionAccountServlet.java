@@ -100,6 +100,7 @@ public class ProvisionAccountServlet extends HttpServlet
         Conference conference = new Conference();
         conference.setDescription(subscriber.getNumber());
         conference.setIsStarted(Boolean.FALSE);
+        conference.setIsRecording(Boolean.FALSE);
         conference.addToPins(activePin);
         conference.addToPins(adminPin);
         conference.addToPins(passivePin);
