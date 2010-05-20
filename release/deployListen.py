@@ -24,7 +24,7 @@ def main():
     global phase
     global controllerserver
     global ivrserver
-    global insaserver
+    global realizeserver
     global hostname
     global masterpkg
     global uiapkg
@@ -53,12 +53,12 @@ def main():
 
     parser.add_option(
         "",
-        "--insaserver",
-        dest="insaserver",
+        "--realizeserver",
+        dest="realizeserver",
         action="store",
         metavar="SERVER",
         default=None,
-        help="The name of the INSA server to use")
+        help="The name of the Realize server to use")
 
     parser.add_option(
         "",
@@ -95,8 +95,8 @@ def main():
     if options.ivrserver == None:
         parser.error("--ivrserver option not supplied")
 
-    if options.insaserver == None:
-        parser.error("--insaserver option not supplied")
+    if options.realizeserver == None:
+        parser.error("--realizeserver option not supplied")
 
     if options.phase == None:
         parser.error("--phase option not supplied")
@@ -109,7 +109,7 @@ def main():
 
     controllerserver,__,__ = socket.gethostbyaddr(options.controllerserver)
     ivrserver,__,__ = socket.gethostbyaddr(options.ivrserver)
-    insaserver,__,__ = socket.gethostbyaddr(options.insaserver)
+    realizeserver,__,__ = socket.gethostbyaddr(options.realizeserver)
     masterpkg = options.masterpkg
     uiapkg = options.uiapkg
 
@@ -127,7 +127,7 @@ def main():
             sftp(remotehost, localprog, remoteprog, 0700)
             sftp(remotehost, masterpkg, remotemaster, 0700)
             sftp(remotehost, uiapkg, remoteuia, 0700)
-            runRemote(remotehost, "%s --controllerserver=%s --ivrserver=%s --insaserver=%s --masterpkg=%s --uiapkg=%s --phase=%s" % (remoteprog, controllerserver, ivrserver, insaserver, remotemaster, remoteuia, options.phase))
+            runRemote(remotehost, "%s --controllerserver=%s --ivrserver=%s --realizeserver=%s --masterpkg=%s --uiapkg=%s --phase=%s" % (remoteprog, controllerserver, ivrserver, realizeserver, remotemaster, remoteuia, options.phase))
 
     else:
         phases[options.phase]()
@@ -302,7 +302,7 @@ def prep():
         fileHandle.write("\n")
 
         # Output host aliases
-        for host, alias in ([controllerserver, "defaultcontroller"], [ivrserver, "defaultivr"], [insaserver, "defaultinsa"]):
+        for host, alias in ([controllerserver, "defaultcontroller"], [ivrserver, "defaultivr"], [realizeserver, "defaultrealize"]):
             #loop through and lookup names for all hosts that
             #populated
             if host != None:
