@@ -59,7 +59,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)
     } %>
           </ul>
         </div>
-        <div id="main-menu-handle"></div><%
+        <div id="main-menu-handle" title="Show/Hide Menu"></div><%
 } %>
 
         <div id="notification"></div>
@@ -157,23 +157,38 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
 if(user != null && user.getIsAdministrator()) { %>
           <div id="administration-application" class="application">
             <div class="window">
-              <div class="window-header"><div class="window-title">System Configuration</div></div>
+              <div class="window-header"><div class="window-title">Administration</div></div>
 
               <div class="panel">
-                <div class="panel-header"><div class="panel-title">Random</div></div>
+                <div class="panel-header"><div class="panel-title">System Configuration</div></div>
                 <div class="panel-content">
-                  <button id="create-new-account-button" class="add-button">Create New Account</button>
+                  <fieldset id="dnis-mapping">
+                    <legend>DNIS Mapping</legend>
+                    <table>
+                      <tbody>
+                        <tr><td></td><td colspan="3" class="buttons"><button class="add-button" id="add-dnis-mapping">Add</button><button class="save-button">Save</button><button class="cancel-button">Reset</button></td></tr>
+                      </tbody>
+                    </table>
+                  </fieldset>
+
+                  <fieldset>
+                    <legend>Accounts</legend>
+                    <button id="create-new-account-button" class="add-button">Create New Account</button>
+                  </fieldset>
+
+                  <fieldset>
+                    <legend>Mail</legend>
+                    <table>
+                      <tbody>
+                        <tr><td><label for="smtp-server">SMTP Server</label></td><td><input type="text" id="smtp-server" name="smtp-server"/></td></tr>
+                        <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
+                        <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
+                        <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
+                        <tr><td></td><td class="buttons"><button class="save-button">Save</button><button class="cancel-button">Reset</button></td></tr>
+                      </tbody>
+                    </table>
+                  </fieldset>
                 </div>
-              </div>
-
-              <div class="panel">
-                <div class="panel-header"><div class="panel-title">SPOT IVR Settings</div></div>
-                <div class="panel-content">Content</div>
-              </div>
-
-              <div class="panel">
-                <div class="panel-header"><div class="panel-title">Mail Settings</div></div>
-                <div class="panel-content">Content</div>
               </div>
             </div>
           </div><%

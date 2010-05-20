@@ -32,6 +32,14 @@ $(document).ready(function() {
                     });
                 }
 
+                this.menuOff = function() {
+                    menuItem.removeClass('selected');
+                };
+                
+                this.menuOn = function() {
+                    menuItem.addClass('selected');
+                };
+
                 this.getPosition = function() {
                     return position;
                 };
@@ -70,8 +78,11 @@ $(document).ready(function() {
 
             switchApp: function(to) {
                 if(currentApplication) {
+                    currentApplication.menuOff();
+                    to.menuOn();
                     currentApplication.swapWith(to);
                 } else {
+                    to.menuOn();
                     to.show();
                 }
                 currentApplication = to;

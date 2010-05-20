@@ -211,7 +211,7 @@ function ConferenceCallerList() {
                 li.find('.caller-drop-icon').text('');
             }
         } else {
-            var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '"/>';
+            var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '"></button>';
             var mute = li.find('.caller-mute-icon');
             if(mute.html() != muteHtml) {
                 mute.html(muteHtml);
@@ -357,7 +357,7 @@ function ConferencePinList() {
         li.find('.pin-number').html(data.number);
         li.find('.pin-type').html(data.type);
 
-        var removeHtml = '<button class="delete-button" readonly="readonly" disabled="disabled"/>';
+        var removeHtml = '<button class="delete-button" readonly="readonly" disabled="disabled"></button>';
         li.find('.pin-remove').html(removeHtml);
     };
 

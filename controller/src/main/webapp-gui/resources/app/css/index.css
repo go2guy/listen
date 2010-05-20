@@ -60,7 +60,7 @@
     width: 100%;
 }
 
-.add-button, .cancel-button, .delete-button, .mute-button, .outdial-button, .schedule-button, .unmute-button, .unmute-button-disabled, .view-button {
+.add-button, .cancel-button, .delete-button, .mute-button, .outdial-button, .save-button, .schedule-button, .unmute-button, .unmute-button-disabled, .view-button {
     background-color: #EEEEEE;
     background-position: 2px 2px;
     background-repeat: no-repeat;
@@ -77,11 +77,11 @@
     -webkit-border-radius: 4px;
 }
 
-.delete-button, .mute-button, .unmute-button, .unmute-button-disabled {
+.delete-button, .mute-button, .unmute-button, .unmute-button-disabled { /* hack for IE to render buttons without text correctly */
     width: 24px;
 }
 
-.add-button:hover, .cancel-button:hover, .delete-button:hover, .mute-button:hover, .outdial-button:hover, .schedule-button:hover, .unmute-button:hover, .view-button:hover {
+.add-button:hover, .cancel-button:hover, .delete-button:hover, .mute-button:hover, .outdial-button:hover, .save-button:hover, .schedule-button:hover, .unmute-button:hover, .view-button:hover {
     background-color: #FFFFFF;
 }
 
@@ -123,6 +123,14 @@
 
 .outdial-button:hover {
     background-image: url('../images/new/icon_outdial_hover_16x16.png');
+}
+
+.save-button {
+    background-image: url('../images/new/icon_save_16x16.png');
+}
+
+.save-button:hover {
+    background-image: url('../images/new/icon_save_hover_16x16.png');
 }
 
 .schedule-button {
@@ -191,7 +199,7 @@
     text-align: center;
 }
 
-#main-menu ul li:hover {
+#main-menu ul li:hover, #main-menu ul li.selected {
     background: #FFFFFF url('../images/new/title_header_bkg.png') repeat-x bottom left;
     color: #1162AE;
 }
@@ -543,4 +551,32 @@ li.odd {
 /* TODO unhide these later, once the functionality is there */
 #conference-pins button {
     display: none;
+}
+
+/* FORMS */
+
+fieldset {
+    border: 1px solid #DDDDDD;
+    display: inline-block;
+    float: left;
+    padding: 6px;
+    margin: 3px;
+}
+
+fieldset legend {
+    color: #444444;
+    font-size: 125%;
+    font-weight: bold;
+    margin-bottom: 6px;
+    margin-left: 10px;
+    padding: 0 6px;
+}
+
+fieldset table td {
+    padding: 2px;
+    text-align: left;
+}
+
+fieldset table .buttons button {
+    margin-right: 6px;
 }

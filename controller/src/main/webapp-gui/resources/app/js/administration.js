@@ -20,6 +20,15 @@ $(document).ready(function() {
     $('#create-new-account-button').click(function(event) {
         $('#provisionAccountDialog').dialog('open');
     });
+
+    $('#add-dnis-mapping').click(function() {
+        //var clone = $('#dnis-mapping tbody tr:first').next().clone(true);
+        var node = $('<tr><td>Number</td><td><input type="text"/></td><td>maps to</td><td><select><option>Voicemail</option><option>Conferencing</option></select></td><td><button class="delete-button"></button></td></tr>');
+        $('.delete-button', node).click(function() {
+            $(this).parent().parent().remove();
+        });
+        $('#dnis-mapping tbody tr:last').before(node);
+    });
 });
 
 function provisionAccount(event) {
