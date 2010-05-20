@@ -59,6 +59,11 @@ Requires: spotbuild-vip
 
     # Install vxml & ccxml scripts
     mkdir -p %{buildroot}/interact/apps/
+    mkdir -p %{buildroot}/interact/artifacts/listen/conference/record/
+    mkdir -p %{buildroot}/interact/artifacts/listen/conference/rollcall/
+    mkdir -p %{buildroot}/interact/artifacts/listen/voicemail/greeting/
+    mkdir -p %{buildroot}/interact/artifacts/listen/voicemail/message/
+
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
 
     # Remove extras and listen_conference root.vxml
