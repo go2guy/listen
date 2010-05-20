@@ -9,10 +9,10 @@
     <title>Listen</title>
     <link rel="SHORTCUT ICON" href="./resources/app/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="./resources/yui-2.8.0r4/reset-fonts/reset-fonts.css">
-    <link rel="stylesheet" type="text/css" href="./resources/app/all-min.css">
-    <link rel="stylesheet" type="text/css" href="./resources/app/login-min.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/css/all-min.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/css/login-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="./resources/app/login-min.js"></script>
+    <script type="text/javascript" src="./resources/app/js/login-min.js"></script>
   </head>
   <body>
     <div id="left">

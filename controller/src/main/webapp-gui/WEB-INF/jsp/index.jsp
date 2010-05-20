@@ -11,25 +11,25 @@ User user = (User)session.getAttribute("user"); %>
     <link rel="SHORTCUT ICON" href="./resources/app/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="./resources/yui-2.8.0r4/reset-fonts/reset-fonts.css">
     <link rel="stylesheet" type="text/css" href="./resources/jquery/css/excite-bike/jquery-ui-1.8rc3.custom.css">
-    <link rel="stylesheet" type="text/css" href="./resources/app/all-min.css">
-    <link rel="stylesheet" type="text/css" href="./resources/app/index-min.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/css/all-min.css">
+    <link rel="stylesheet" type="text/css" href="./resources/app/css/index-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
-    <script type="text/javascript" src="./resources/app/index-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/index-min.js"></script><%
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
-    <script type="text/javascript" src="./resources/app/conferencing-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/conferencing-min.js"></script><%
     if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/conferencing-admin-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/conferencing-admin-min.js"></script><%
     }
 }
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-    <script type="text/javascript" src="./resources/app/voicemail-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/voicemail-min.js"></script><%
 }
 if(License.isLicensed(ListenFeature.FINDME)) { %>
-    <script type="text/javascript" src="./resources/app/findme-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/findme-min.js"></script><%
 }
 if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/admin-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/administration-min.js"></script><%
 } %>
   </head>
   <body>

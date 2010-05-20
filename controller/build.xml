@@ -146,16 +146,16 @@
     <copy todir="${war.staging.dir}">
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
     </copy>
-    <minify in="${war.staging.dir}/resources/app/admin.js" out="${war.staging.dir}/resources/app/admin-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/all.css" out="${war.staging.dir}/resources/app/all-min.css"/>
-    <minify in="${war.staging.dir}/resources/app/conferencing.js" out="${war.staging.dir}/resources/app/conferencing-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/conferencing-admin.js" out="${war.staging.dir}/resources/app/conferencing-admin-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/findme.js" out="${war.staging.dir}/resources/app/findme-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/login.css" out="${war.staging.dir}/resources/app/login-min.css"/>
-    <minify in="${war.staging.dir}/resources/app/login.js" out="${war.staging.dir}/resources/app/login-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/index.css" out="${war.staging.dir}/resources/app/index-min.css"/>
-    <minify in="${war.staging.dir}/resources/app/index.js" out="${war.staging.dir}/resources/app/index-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/voicemail.js" out="${war.staging.dir}/resources/app/voicemail-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/administration.js" out="${war.staging.dir}/resources/app/js/administration-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/conferencing.js" out="${war.staging.dir}/resources/app/js/conferencing-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/conferencing-admin.js" out="${war.staging.dir}/resources/app/js/conferencing-admin-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/findme.js" out="${war.staging.dir}/resources/app/js/findme-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/login.js" out="${war.staging.dir}/resources/app/js/login-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/index.js" out="${war.staging.dir}/resources/app/js/index-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/voicemail.js" out="${war.staging.dir}/resources/app/js/voicemail-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/css/all.css" out="${war.staging.dir}/resources/app/css/all-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/login.css" out="${war.staging.dir}/resources/app/css/login-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/index.css" out="${war.staging.dir}/resources/app/css/index-min.css"/>
     <unjar dest="${war.staging.dir}">
       <patternset>
         <exclude name="META-INF/**/*"/>
