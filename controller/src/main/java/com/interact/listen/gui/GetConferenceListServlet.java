@@ -2,12 +2,16 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.ServletUtil;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
+import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.*;
 
 import java.util.*;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,8 +28,13 @@ public class GetConferenceListServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
+        if(!License.isLicensed(ListenFeature.CONFERENCING))
+        {
+            throw new ServletException(new NotLicensedException(ListenFeature.CONFERENCING));
+        }
+
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {

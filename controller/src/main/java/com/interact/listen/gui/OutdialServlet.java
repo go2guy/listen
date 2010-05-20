@@ -3,6 +3,9 @@ package com.interact.listen.gui;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
+import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.*;
 import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
@@ -31,6 +34,11 @@ public class OutdialServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+        if(!License.isLicensed(ListenFeature.CONFERENCING))
+        {
+            throw new ServletException(new NotLicensedException(ListenFeature.CONFERENCING));
+        }
+
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {

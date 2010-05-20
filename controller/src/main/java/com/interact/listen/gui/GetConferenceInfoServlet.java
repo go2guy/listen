@@ -2,6 +2,9 @@ package com.interact.listen.gui;
 
 import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
+import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
@@ -26,6 +29,11 @@ public class GetConferenceInfoServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
+        if(!License.isLicensed(ListenFeature.CONFERENCING))
+        {
+            throw new ServletException(new NotLicensedException(ListenFeature.CONFERENCING));
+        }
+
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
         {
