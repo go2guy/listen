@@ -2,6 +2,8 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.resource.Pin.PinType;
 
 import org.junit.Before;
@@ -209,21 +211,12 @@ public class PinTest
     }
 
     @Test
-    public void test_generateRandomPin_withoutSystemPropertySet_returnsTenDigitNumericPin()
-    {
-        assert System.getProperty("com.interact.listen.pinLength") == null;
-
-        String number = Pin.generateRandomPin();
-        assertTrue(number.matches("^[0-9]{10}$"));
-    }
-
-    @Test
     public void test_generateRandomPin_withSystemPropertyOf30_returns30DigitNumericPin()
     {
-        String origProperty = System.getProperty("com.interact.listen.pinLength");
+        String origProperty = Configuration.get(Property.Key.PINLENGTH);
         try
         {
-            System.setProperty("com.interact.listen.pinLength", "30");
+            Configuration.set(Property.Key.PINLENGTH, "30");
             String number = Pin.generateRandomPin();
             assertTrue(number.matches("^[0-9]{30}$"));
         }
@@ -231,7 +224,7 @@ public class PinTest
         {
             if(origProperty != null)
             {
-                System.setProperty("com.interact.listen.pinLength", origProperty);
+                Configuration.set(Property.Key.PINLENGTH, origProperty);
             }
         }
     }

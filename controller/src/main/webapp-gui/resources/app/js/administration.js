@@ -1,5 +1,35 @@
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('administration', 'administration-application', 'menu-administration', 4));
+    var administration = new Administration();
+
+    LISTEN.registerApp(new LISTEN.Application('administration', 'administration-application', 'menu-administration', 4, administration));
+
+    function Administration() {
+        this.load = function() {
+            $.ajax({
+                url: '/ajax/getProperties',
+                dataType: 'json',
+                cache: false,
+                success: function(data, textStatus, xhr) {
+                    $('#smtp-server').val(data['com.interact.listen.mail.smtpHost']);
+                    $('#smtp-username').val(data['com.interact.listen.mail.smtpUsername']);
+                    $('#smtp-password').val(data['com.interact.listen.mail.smtpPassword']);
+                    $('#from-address').val(data['com.interact.listen.mail.fromAddress']);
+
+                    clearAllDnisRows();
+                    var dnis = data['com.interact.listen.dnisMapping'];
+                    var mappings = dnis.split(';');
+                    for(var i = 0; i < mappings.length; i++) {
+                        var mapping = mappings[i].split(':');
+                        addDnisRow(mapping[0], mapping[1]);
+                    }
+                }
+            });
+        };
+
+        this.unload = function() {
+            // no-op
+        };
+    };
 
     $('#provisionAccountDialog').dialog({
         autoOpen: false,
@@ -21,13 +51,68 @@ $(document).ready(function() {
         $('#provisionAccountDialog').dialog('open');
     });
 
-    $('#add-dnis-mapping').click(function() {
-        //var clone = $('#dnis-mapping tbody tr:first').next().clone(true);
-        var node = $('<tr><td>Number</td><td><input type="text"/></td><td>maps to</td><td><select><option>Voicemail</option><option>Conferencing</option></select></td><td><button class="delete-button"></button></td></tr>');
+    function clearAllDnisRows() {
+        $('#dnis-mapping-form tbody tr').not(':last').remove();
+    };
+
+    function addDnisRow(number, destination) {
+        var n = (number ? number : ''), d = (destination ? destination : '');
+        var node = $('<tr><td>Number</td><td><input type="text" value="' + n + '"/></td><td>maps to</td><td><select><option value="Voicemail"' + (d == 'Voicemail' ? ' selected="selected"' : '') + '>Voicemail</option><option value="Conferencing"' + (d == 'Conferencing' ? ' selected="selected"' : '') + '>Conferencing</option></select></td><td><button class="delete-button"></button></td></tr>');
         $('.delete-button', node).click(function() {
             $(this).parent().parent().remove();
         });
-        $('#dnis-mapping tbody tr:last').before(node);
+        $('#dnis-mapping-form tbody tr:last').before(node);
+    }
+
+    $('#add-dnis-mapping').click(function() {
+        addDnisRow();
+        return false;
+    });
+
+    $('#mail-form').submit(function() {
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/setProperties',
+            data: { 'com.interact.listen.mail.smtpHost': $('#smtp-server').val(),
+                    'com.interact.listen.mail.smtpUsername': $('#smtp-username').val(),
+                    'com.interact.listen.mail.smtpPassword': $('#smtp-password').val(),
+                    'com.interact.listen.mail.fromAddress': $('#from-address').val() },
+            success: function(data) {
+                administration.load();
+                notify('Mail settings updated');
+            }
+        });
+        return false;
+    });
+
+    $('#dnis-mapping-form').submit(function() {
+        var value = '';
+        var rows = $('#dnis-mapping-form tr');
+        var num = 0;
+        for(var i = 0; i < rows.length - 1; i++) {
+            var number = $('input:text', rows[i]).val();
+            if(number.length == 0) {
+                continue;
+            }
+            var destination = $('select', rows[i]).val();
+            value += number + ':' + destination + ';';
+            num++;
+        }
+        if(num > 0 && value.length > 0) {
+            value = value.substring(0, value.length - 1); // remove last semicolon
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/setProperties',
+            data: { 'com.interact.listen.dnisMapping': value },
+            success: function(data) {
+                administration.load();
+                notify('DNIS mappings updated');
+            }
+        });
+
+        return false;
     });
 });
 

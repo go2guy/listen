@@ -1,5 +1,6 @@
 package com.interact.listen;
 
+import com.interact.listen.config.Property;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
@@ -52,6 +53,7 @@ public final class HibernateUtil
             config.addAnnotatedClass(ListenSpotSubscriber.class);
             config.addAnnotatedClass(Participant.class);
             config.addAnnotatedClass(Pin.class);
+            config.addAnnotatedClass(Property.class);
             config.addAnnotatedClass(Subscriber.class);
             config.addAnnotatedClass(User.class);
             config.addAnnotatedClass(Voicemail.class);

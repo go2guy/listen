@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
@@ -179,7 +181,7 @@ public class Pin extends Resource implements Serializable
 
     public static String generateRandomPin()
     {
-        int pinLength = Integer.parseInt(System.getProperty("com.interact.listen.pinLength", "10"));
+        int pinLength = Integer.parseInt(Configuration.get(Property.Key.PINLENGTH));
         SecureRandom random = new SecureRandom();
 
         int max = (int)Math.pow(pinLength, 10) - 1;

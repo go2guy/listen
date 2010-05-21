@@ -1,5 +1,7 @@
 package com.interact.listen;
 
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Pin;
@@ -10,7 +12,9 @@ import java.util.*;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
 
@@ -35,16 +39,16 @@ public class EmailerService
     {
         Properties props = new Properties();
         props.setProperty("mail.transport.protocol", "smtp");
-        props.setProperty("mail.host", System.getProperty("com.interact.listen.mail.host", ""));
-        props.setProperty("mail.user", "");
-        props.setProperty("mail.password", "");
+        props.setProperty("mail.host", Configuration.get(Property.Key.MAIL_SMTPHOST));
+        props.setProperty("mail.user", Configuration.get(Property.Key.MAIL_SMTPUSERNAME));
+        props.setProperty("mail.password", Configuration.get(Property.Key.MAIL_SMTPPASSWORD));
         boolean result = true;
-        
+
         try
         {
             Session mailSession = Session.getDefaultInstance(props, null);
             Transport transport = mailSession.getTransport();
-            InternetAddress fromAddress = new InternetAddress(System.getProperty("com.interact.listen.mail.from.address", ""));
+            InternetAddress fromAddress = new InternetAddress(Configuration.get(Property.Key.MAIL_FROMADDRESS));
 
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(fromAddress);
