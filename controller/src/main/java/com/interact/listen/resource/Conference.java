@@ -294,11 +294,11 @@ public class Conference extends Resource implements Serializable
             
             if(isRecording.booleanValue())
             {
-                //TODO add recording started stat
+                statSender.send(Stat.CONFERENCE_RECORDING_START);
             }
             else
             {
-                //TODO add recording ended stat
+                statSender.send(Stat.CONFERENCE_RECORDING_STOP);
             }
         }
     }
