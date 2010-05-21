@@ -11,8 +11,13 @@ $(document).ready(function() {
 */
     var list = new ConferenceList();
     var interval = setInterval(function() {
-        $.getJSON('/ajax/getConferenceList', function(data) {
-            list.update(data.results);
+        $.ajax({
+            url: '/ajax/getConferenceList',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                list.update(data.results);
+            }
         });
     }, 1000);
 });
