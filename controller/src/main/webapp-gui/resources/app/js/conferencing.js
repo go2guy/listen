@@ -131,39 +131,45 @@ function Conference(id) {
         return conferenceId;
     }
 
-    this.load = function(animate) {
-        interval = setInterval(function() {
-            $.ajax({
-                url: '/ajax/getConferenceInfo?id=' + conferenceId,
-                dataType: 'json',
-                cache: false,
-                success: function(data, textStatus, xhr) {
-                    callers.update(data.participants.results);
-                    history.update(data.history.results);
-                    pins.update(data.pins.results);
-
-                    var titleText = 'Conference ' + data.info.description;
-                    var title = $('#conference-title');
-                    if(title.text() != titleText) {
-                        title.text(titleText);
+    this.load = function() {
+        if(conferenceId) {
+            interval = setInterval(function() {
+                $.ajax({
+                    url: '/ajax/getConferenceInfo?id=' + conferenceId,
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data, textStatus, xhr) {
+                        callers.update(data.participants.results);
+                        history.update(data.history.results);
+                        pins.update(data.pins.results);
+    
+                        var titleText = 'Conference ' + data.info.description;
+                        var title = $('#conference-title');
+                        if(title.text() != titleText) {
+                            title.text(titleText);
+                        }
+    
+                        var onMessage = titleText + ': Started';
+                        var offMessage = titleText + ': Waiting for administrator';
+    
+                        if(data.info.isStarted) {
+                            title.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
+                            title.attr('title', onMessage);
+                        } else {
+                            title.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
+                            title.attr('title', offMessage);
+                        }
                     }
-
-                    var onMessage = titleText + ': Started';
-                    var offMessage = titleText + ': Waiting for administrator';
-
-                    if(data.info.isStarted) {
-                        title.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
-                        title.attr('title', onMessage);
-                    } else {
-                        title.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
-                        title.attr('title', offMessage);
-                    }
-                }
-            });
-        }, 1000);
+                });
+            }, 1000);
+            var cwin = $('#conference-window');
+            if(cwin.is(':hidden')) {
+                cwin.show();
+            }
+        }
     };
 
-    this.unload = function(animate) {
+    this.unload = function() {
         var window = $('#conference-window');
         $('#caller-list').find('li').remove();
         $('#pin-list').find('li').remove();

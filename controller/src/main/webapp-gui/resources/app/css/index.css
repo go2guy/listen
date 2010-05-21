@@ -345,6 +345,10 @@ li.odd {
     padding: 3px;
 }
 
+#conference-window {
+    display: none;
+}
+
 #conference-window .left, #conference-window .right {
     float: left;
     width: 50%;
