@@ -57,7 +57,14 @@ $(document).ready(function() {
 
     function addDnisRow(number, destination) {
         var n = (number ? number : ''), d = (destination ? destination : '');
-        var node = $('<tr><td>Number</td><td><input type="text" value="' + n + '"/></td><td>maps to</td><td><select><option value="Voicemail"' + (d == 'Voicemail' ? ' selected="selected"' : '') + '>Voicemail</option><option value="Conferencing"' + (d == 'Conferencing' ? ' selected="selected"' : '') + '>Conferencing</option></select></td><td><button class="delete-button"></button></td></tr>');
+        var html = '<tr><td>Number</td><td><input type="text" value="' + n + '"/></td>';
+        html += '<td>maps to</td><td><select>';
+        html += '<option value="conferencing"' + (d == 'conferencing' ? ' selected="selected"' : '') + '>Conferencing</option>';
+        html += '<option value="mailbox"' + (d == 'mailbox' ? ' selected="selected"' : '') + '>Mailbox</option>';
+        html += '<option value="voicemail"' + (d == 'voicemail' ? ' selected="selected"' : '') + '>Voicemail</option>';
+        html += '</select></td>';
+        html += '<td><button class="delete-button"></button></td></tr>';
+        var node = $(html);
         $('.delete-button', node).click(function() {
             $(this).parent().parent().remove();
         });

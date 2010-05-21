@@ -88,6 +88,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetDnisServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.GetDnisServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetPropertiesServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetPropertiesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -154,6 +160,11 @@
     <servlet-mapping>
         <servlet-name>ApiServlet</servlet-name>
         <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetDnisServlet</servlet-name>
+        <url-pattern>/meta/getDnis</url-pattern>
     </servlet-mapping>
 
     <!-- ajax -->

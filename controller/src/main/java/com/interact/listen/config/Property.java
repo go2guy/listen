@@ -8,7 +8,7 @@ import javax.persistence.Id;
 public class Property
 {
     public static enum Key {
-        DNIS_MAPPING      ("com.interact.listen.dnisMapping", "1234:Voicemail;5678:Conferencing"),
+        DNIS_MAPPING      ("com.interact.listen.dnisMapping", ""),
         MAIL_SMTPHOST     ("com.interact.listen.mail.smtpHost", "localhost"),
         MAIL_SMTPUSERNAME ("com.interact.listen.mail.smtpUsername", ""),
         MAIL_SMTPPASSWORD ("com.interact.listen.mail.smtpPassword", ""),
