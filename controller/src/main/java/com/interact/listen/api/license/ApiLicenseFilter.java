@@ -23,7 +23,7 @@ public class ApiLicenseFilter implements Filter
         {
             if(!License.isLicensed(feature))
             {
-                throw new ServletException(new NotLicensedException(feature));
+                throw new NotLicensedException(feature);
             }
         }
 

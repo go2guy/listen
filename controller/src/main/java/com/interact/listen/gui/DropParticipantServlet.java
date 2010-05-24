@@ -1,7 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
-import com.interact.listen.ServletUtil;
+import com.interact.listen.ListenServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -33,7 +33,7 @@ public class DropParticipantServlet extends HttpServlet
     {
         if(!License.isLicensed(ListenFeature.CONFERENCING))
         {
-            throw new ServletException(new NotLicensedException(ListenFeature.CONFERENCING));
+            throw new NotLicensedException(ListenFeature.CONFERENCING);
         }
 
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
@@ -46,16 +46,13 @@ public class DropParticipantServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
         }
 
         String id = request.getParameter("id");
         if(id == null || id.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide an id",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide an id", "text/plain");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -63,9 +60,8 @@ public class DropParticipantServlet extends HttpServlet
         Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
         if(!isUserAllowedToDrop(user, participant))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to drop participant",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to drop participant",
+                                             "text/plain");
         }
 
         // FIXME what happens when the first one succeeds and the second one fails? do we "rollback" the first one?

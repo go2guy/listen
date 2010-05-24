@@ -2,8 +2,10 @@ package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenServletException;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.User;
 
@@ -16,12 +18,11 @@ import javax.servlet.http.HttpSession;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetConferenceListServletTest
 {
-    private MockHttpServletRequest request;
+    private InputStreamMockHttpServletRequest request;
     private MockHttpServletResponse response;
     private GetConferenceListServlet servlet = new GetConferenceListServlet();
 
@@ -33,13 +34,20 @@ public class GetConferenceListServletTest
     }
 
     @Test
-    public void test_doGet_withNoSessionUser_returnsUnauthorized() throws IOException, ServletException
+    public void test_doGet_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws IOException,
+        ServletException
     {
         request.setMethod("GET");
-        servlet.service(request, response);
-
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("Unauthorized - not logged in", response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("Unauthorized - not logged in", e.getContent());
+        }
     }
 
     @Test
@@ -50,7 +58,7 @@ public class GetConferenceListServletTest
         request.setMethod("GET");
         servlet.service(request, response);
 
-        assertTrue(response.getContentAsString().contains("_fields=description,id,isStarted"));
+        assertTrue(request.getOutputBufferString().contains("_fields=description,id,isStarted"));
     }
 
     // TODO test with administrator user

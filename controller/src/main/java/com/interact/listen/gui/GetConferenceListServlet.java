@@ -1,7 +1,8 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
-import com.interact.listen.ServletUtil;
+import com.interact.listen.ListenServletException;
+import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -32,14 +33,14 @@ public class GetConferenceListServlet extends HttpServlet
     {
         if(!License.isLicensed(ListenFeature.CONFERENCING))
         {
-            throw new ServletException(new NotLicensedException(ListenFeature.CONFERENCING));
+            throw new NotLicensedException(ListenFeature.CONFERENCING);
         }
 
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in",
+                                             "text/plain");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -71,7 +72,8 @@ public class GetConferenceListServlet extends HttpServlet
 
         Marshaller marshaller = new JsonMarshaller();
         String content = marshaller.marshal(list, Conference.class);
-        ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());
 
+        response.setStatus(HttpServletResponse.SC_OK);
+        OutputBufferFilter.append(request, content, marshaller.getContentType());
     }
 }

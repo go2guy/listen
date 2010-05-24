@@ -1,11 +1,13 @@
 package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenServletException;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.stats.Stat;
@@ -38,49 +40,67 @@ public class DropParticipantServletTest
     }
 
     @Test
-    public void test_doPost_withNoSessionUser_returnsUnauthorizedStatusAndTextPlainContent() throws IOException,
-        ServletException
+    public void test_doPost_withNoSessionUser_throwsListenServletExceptionUnauthorizedStatusAndTextPlainContent()
+        throws IOException, ServletException
     {
         request.setMethod("POST");
-        servlet.service(request, response);
-
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals("Unauthorized", response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("text/plain", e.getContentType());
+            assertEquals("Unauthorized", e.getContent());
+        }
     }
 
     @Test
-    public void test_doPost_withNullId_returnsBadRequestStatusAndTextPlainContent() throws IOException,
-        ServletException
+    public void test_doPost_withNullId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
+        throws IOException, ServletException
     {
         setSessionUser(request);
-
         request.setMethod("POST");
         request.setParameter("id", (String)null);
-        servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals("Please provide an id", response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("text/plain", e.getContentType());
+            assertEquals("Please provide an id", e.getContent());
+        }
     }
 
     @Test
-    public void test_doPost_withBlankId_returnsBadRequestStatusAndTextPlainContent() throws IOException,
-        ServletException
+    public void test_doPost_withBlankId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
+        throws IOException, ServletException
     {
         setSessionUser(request);
-
         request.setMethod("POST");
         request.setParameter("id", " ");
-        servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals("Please provide an id", response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("text/plain", e.getContentType());
+            assertEquals("Please provide an id", e.getContent());
+        }
     }
 
     @Test
-    public void test_doPost_tryingToDropAdminParticipant_returnsUnauthorizedStatusWithTextPlainContent()
+    public void test_doPost_tryingToDropAdminParticipant_throwsListenServletExceptionWithUnauthorizedStatusWithTextPlainContent()
         throws IOException, ServletException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -127,17 +147,27 @@ public class DropParticipantServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(participant.getId()));
-        servlet.service(request, response);
 
-        tx.commit();
-
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals("Not allowed to drop participant", response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("text/plain", e.getContentType());
+            assertEquals("Not allowed to drop participant", e.getContent());
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_userDoesNotOwnConference_returnsUnauthorized() throws IOException, ServletException
+    public void test_doPost_userDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized() throws IOException,
+        ServletException
     {
         setSessionUser(request);
 
@@ -164,13 +194,22 @@ public class DropParticipantServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(participant.getId()));
-        servlet.service(request, response);
 
-        tx.commit();
-
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals("Not allowed to drop participant", response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("text/plain", e.getContentType());
+            assertEquals("Not allowed to drop participant", e.getContent());
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
@@ -285,7 +324,7 @@ public class DropParticipantServletTest
         // TODO assert that the spot system was called
     }
 
-    @Test
+    @Test(expected = ListenServletException.class)
     public void test_doPost_sendsStat() throws IOException, ServletException
     {
         StatSender statSender = mock(StatSender.class);

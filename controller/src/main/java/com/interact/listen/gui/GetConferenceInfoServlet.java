@@ -44,9 +44,8 @@ public class GetConferenceInfoServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in",
+                                             "text/plain");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -61,16 +60,14 @@ public class GetConferenceInfoServlet extends HttpServlet
 
         if(conference == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found",
+                                             "text/plain");
         }
 
         if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                                      "Unauthorized - conference does not belong to user", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED,
+                                             "Unauthorized - conference does not belong to user", "text/plain");
         }
 
         StringBuilder content = new StringBuilder();
@@ -88,7 +85,8 @@ public class GetConferenceInfoServlet extends HttpServlet
             throw new ServletException(e);
         }
 
-        ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content.toString(), marshaller.getContentType());
+        response.setStatus(HttpServletResponse.SC_OK);
+        OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
     }
 
     private String getInfo(Conference conference, Marshaller marshaller)

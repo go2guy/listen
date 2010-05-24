@@ -32,7 +32,7 @@ public class ScheduleConferenceServlet extends HttpServlet
     {
         if(!License.isLicensed(ListenFeature.CONFERENCING))
         {
-            throw new ServletException(new NotLicensedException(ListenFeature.CONFERENCING));
+            throw new NotLicensedException(ListenFeature.CONFERENCING);
         }
 
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
@@ -46,48 +46,42 @@ public class ScheduleConferenceServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
         }
 
         String date = request.getParameter("date");
         if(date == null || date.equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a date",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a date", "text/plain");
         }
 
         String hour = request.getParameter("hour");
         if(hour == null || hour.equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Please provide an hour for the conference start time", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "Please provide an hour for the conference start time", "text/plain");
         }
 
         String minute = request.getParameter("minute");
         if(minute == null || minute.equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Please provide a minute for the conference start time", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "Please provide a minute for the conference start time", "text/plain");
         }
 
         String amPm = request.getParameter("amPm");
         if(amPm == null || amPm.equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Please provide an am/pm for the conference start time", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "Please provide an am/pm for the conference start time", "text/plain");
         }
 
         StringBuilder subjectPrepend = new StringBuilder(request.getParameter("subject"));
         if(subjectPrepend == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Please provide a subject for the conference invitiation e-mail", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "Please provide a subject for the conference invitation e-mail",
+                                             "text/plain");
         }
 
         if(subjectPrepend.length() > 0)
@@ -99,25 +93,24 @@ public class ScheduleConferenceServlet extends HttpServlet
         String description = request.getParameter("description");
         if(description == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a description",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a description",
+                                             "text/plain");
         }
 
         String activeParticipants = request.getParameter("activeParticipants");
         if(activeParticipants == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Please provide a comma-separated list of active participants", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "Please provide a comma-separated list of active participants",
+                                             "text/plain");
         }
 
         String passiveParticipants = request.getParameter("passiveParticipants");
         if(passiveParticipants == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Please provide a comma-separated list of passive participants", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "Please provide a comma-separated list of passive participants",
+                                             "text/plain");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -199,13 +192,12 @@ public class ScheduleConferenceServlet extends HttpServlet
                                                             parsedDate, userConference, phoneNumber, protocol,
                                                             subjectPrepend.toString(), "PASSIVE");
         }
+
         if(!(activeSuccess && passiveSuccess))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "An error occurred sending the conference schedule e-mail", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                             "An error occurred sending the conference schedule e-mail", "text/plain");
         }
-
     }
 
     private List<Resource> queryListenSpotSubscribers(Session session)

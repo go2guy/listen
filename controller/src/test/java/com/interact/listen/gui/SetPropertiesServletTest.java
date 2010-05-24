@@ -1,8 +1,10 @@
 package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenServletException;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.resource.Subscriber;
@@ -35,29 +37,46 @@ public class SetPropertiesServletTest
     }
 
     @Test
-    public void test_doPost_withNoSessionUser_returnsUnauthorized() throws ServletException, IOException
+    public void test_doPost_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws ServletException,
+        IOException
     {
         assert request.getSession().getAttribute("user") == null;
 
         request.setMethod("POST");
-        servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("Unauthorized", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("Unauthorized", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
     }
 
     @Test
-    public void test_doPost_withNonAdministratorSessionUser_returnsUnauthorized() throws ServletException, IOException
+    public void test_doPost_withNonAdministratorSessionUser_throwsListenServletExceptionWithUnauthorized()
+        throws ServletException, IOException
     {
         setSessionUser(request, false);
 
         request.setMethod("POST");
-        servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("Unauthorized", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("Unauthorized", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
     }
 
     @Test

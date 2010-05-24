@@ -11,6 +11,7 @@ import com.interact.listen.resource.Resource;
 import java.io.IOException;
 import java.util.*;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
-import org.hibernate.Transaction;
 import org.hibernate.exception.ConstraintViolationException;
 
 /**
@@ -36,430 +36,274 @@ public class ApiServlet extends HttpServlet
     public static final long serialVersionUID = 1L;
     public static final String XML_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
+    /** Class logger */
     private static final Logger LOG = Logger.getLogger(ApiServlet.class);
 
-    // TODO it seems like there should be an easier way to manage the Hibernate session outside the scope of this Servlet,
-    // perhaps inside of a Filter?
-
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        long start = time();
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session);
 
-        try
+        UriResourceAttributes attributes = getResourceAttributes(request);
+        if(attributes.getResourceClass() == null)
         {
-            UriResourceAttributes attributes = getResourceAttributes(request);
-            if(attributes.getResourceClass() == null)
+            response.setStatus(HttpServletResponse.SC_OK);
+            OutputBufferFilter.append(request, "Welcome to the Listen Controller API", "text/plain");
+            return;
+        }
+
+        Marshaller marshaller = getMarshaller(request.getHeader("Accept"));
+
+        if(attributes.getId() == null)
+        {
+            // no id, request is for a list of resources
+            Map<String, String> query = ServletUtil.getQueryParameters(request);
+
+            Builder builder = new ResourceListService.Builder(attributes.getResourceClass(), session, marshaller);
+            Map<String, String> searchProperties = getSearchProperties(query);
+            for(Map.Entry<String, String> entry : searchProperties.entrySet())
             {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, "Welcome to the Listen Controller API",
-                                          "text/plain");
+                builder.addSearchProperty(entry.getKey(), entry.getValue());
+            }
+            Set<String> returnFields = getFields(query);
+            for(String field : returnFields)
+            {
+                builder.addReturnField(field);
+            }
+            builder.withFirst(getFirst(query));
+            builder.withMax(getMax(query));
+            if(query.containsKey("_uniqueResult"))
+            {
+                builder.uniqueResult(Boolean.valueOf(query.get("_uniqueResult")));
+            }
+            if(query.containsKey("_or"))
+            {
+                builder.or(Boolean.valueOf(query.get("_or")));
+            }
+
+            ResourceListService listService = builder.build();
+            try
+            {
+                String content = listService.list();
+                response.setStatus(HttpServletResponse.SC_OK);
+                OutputBufferFilter.append(request, content, marshaller.getContentType());
+            }
+            catch(UniqueResultNotFoundException e)
+            {
+                throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
+            }
+            catch(CriteriaCreationException e)
+            {
+                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
+            }
+        }
+        else
+        {
+            // id provided, request is looking for a specific resource
+            if(!isValidResourceId(attributes.getId()))
+            {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
 
-            Marshaller marshaller = getMarshaller(request.getHeader("Accept"));
-
-            
-
-            if(attributes.getId() == null)
+            Resource resource = persistenceService.get(attributes.getResourceClass(),
+                                                       Long.parseLong(attributes.getId()));
+            if(resource == null)
             {
-                // no id, request is for a list of resources
-
-                Map<String, String> query = ServletUtil.getQueryParameters(request);
-
-                Builder builder = new ResourceListService.Builder(attributes.getResourceClass(), session, marshaller);
-                Map<String, String> searchProperties = getSearchProperties(query);
-                for(Map.Entry<String, String> entry : searchProperties.entrySet())
-                {
-                    builder.addSearchProperty(entry.getKey(), entry.getValue());
-                }
-                Set<String> returnFields = getFields(query);
-                for(String field : returnFields)
-                {
-                    builder.addReturnField(field);
-                }
-                builder.withFirst(getFirst(query));
-                builder.withMax(getMax(query));
-                if(query.containsKey("_uniqueResult"))
-                {
-                    builder.uniqueResult(Boolean.valueOf(query.get("_uniqueResult")));
-                }
-                if(query.containsKey("_or"))
-                {
-                    builder.or(Boolean.valueOf(query.get("_or")));
-                }
-
-                ResourceListService listService = builder.build();
-
-                long s = time();
-                try
-                {
-                    String content = listService.list();
-                    ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, content, marshaller.getContentType());
-                }
-                catch(UniqueResultNotFoundException e)
-                {
-                    ServletUtil.writeResponse(response, HttpServletResponse.SC_NOT_FOUND, "", "text/plain");
-                }
-                finally
-                {
-                    transaction.commit();
-                }
-                LOG.debug("list() took " + (time() - s) + "ms");
+                throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
             }
-            else
+
+            StringBuilder content = new StringBuilder();
+            if(marshaller instanceof XmlMarshaller)
             {
-                // id provided, request is looking for a specific resource
-
-                if(!isValidResourceId(attributes.getId()))
-                {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    return;
-                }
-
-                long s = time();
-                Resource resource = persistenceService.get(attributes.getResourceClass(), Long.parseLong(attributes.getId()));
-                transaction.commit();
-                LOG.debug("list() took " + (time() - s) + "ms");
-
-                if(resource == null)
-                {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    return;
-                }
-
-                StringBuilder xml = new StringBuilder();
-                if(marshaller instanceof XmlMarshaller)
-                {
-                    xml.append(XML_TAG);
-                }
-
-                s = time();
-                xml.append(marshaller.marshal(resource));
-                LOG.debug("marshal() took " + (time() - s) + "ms");
-
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, xml.toString(),
-                                          marshaller.getContentType());
+                content.append(XML_TAG);
             }
-        }
-        catch(CriteriaCreationException e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
-        }
-        catch(Exception e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "RUH ROH! Please contact the System Administrator", "text/plain");
-            return;
-        }
-        finally
-        {
-            LOG.debug("GET " + request.getRequestURL() + " took " + (time() - start) + "ms");
+
+            content.append(marshaller.marshal(resource));
+            response.setStatus(HttpServletResponse.SC_OK);
+            OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
         }
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        long start = time();
-
         UriResourceAttributes attributes = getResourceAttributes(request);
-
         if(attributes.getResourceClass() == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to [" +
-                                                                                    attributes.getResourceClass() + "]",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to [" +
+                                                                                 attributes.getResourceClass() + "]",
+                                             "text/plain");
         }
 
         if(attributes.getId() != null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Cannot POST to specific resource [" + attributes.getResourceClass().getSimpleName() + "]", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to specific resource [" +
+                                                                                 attributes.getResourceClass()
+                                                                                           .getSimpleName() + "]",
+                                             "text/plain");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session);
 
+        Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
         try
         {
-            Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
-
-            long s = time();
-            Resource resource = marshaller.unmarshal(request.getInputStream(), attributes.getResourceClass().newInstance(), false);
-            LOG.debug("unmarshal() took " + (time() - s) + "ms");
-
+            Resource resource = marshaller.unmarshal(request.getInputStream(), attributes.getResourceClass()
+                                                                                         .newInstance(), false);
             if(!resource.validate() && resource.hasErrors())
             {
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                          "The resource you sent was invalid: " + resource.errors().toString(),
-                                          "text/plain");
-                return;
+                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                                 "The resource you sent was invalid: " + resource.errors().toString(),
+                                                 "text/plain");
             }
 
-            s = time();
-            Long id = persistenceService.save(resource);
-            LOG.debug("save() took " + (time() - s) + "ms");
+            try
+            {
+                Long id = persistenceService.save(resource);
+                resource = persistenceService.get(attributes.getResourceClass(), id);
+            }
+            catch(ConstraintViolationException e)
+            {
+                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                                 "The content you provided causes a constraint violation, please fix it",
+                                                 "text/plain");
+            }
 
-            s = time();
-            resource = persistenceService.get(attributes.getResourceClass(), id);
-            LOG.debug("get() took " + (time() - s) + "ms");
-
-            transaction.commit();
-
-            StringBuilder xml = new StringBuilder();
+            StringBuilder content = new StringBuilder();
             if(marshaller instanceof XmlMarshaller)
             {
-                xml.append(XML_TAG);
+                content.append(XML_TAG);
             }
 
-            s = time();
-            xml.append(marshaller.marshal(resource));
-            LOG.debug("marshal() took " + (time() - s) + "ms");
-
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_CREATED, xml.toString(),
-                                      marshaller.getContentType());
+            content.append(marshaller.marshal(resource));
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
         }
-        catch(IOException e)
+        catch(IllegalAccessException e)
         {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "Error reading request body", "text/plain");
-            return;
+            throw new AssertionError(e);
+        }
+        catch(InstantiationException e)
+        {
+            throw new AssertionError(e);
         }
         catch(MalformedContentException e)
         {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "The content you provided was malformed, please fix it: " + e.getMessage(),
-                                      "text/plain");
-            return;
-        }
-        catch(ConstraintViolationException e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "The content you provided causes a constraint violation, please fix it",
-                                      "text/plain");
-            return;
-        }
-        catch(Exception e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "RUH ROH! Please contact the System Administrator", "text/plain");
-            return;
-        }
-        finally
-        {
-            LOG.debug("POST " + request.getRequestURL() + " took " + (time() - start) + "ms");
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "The content you provided was malformed, please fix it: " + e.getMessage(),
+                                             "text/plain");
         }
     }
 
     @Override
-    public void doPut(HttpServletRequest request, HttpServletResponse response)
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        long start = time();
-
         UriResourceAttributes attributes = getResourceAttributes(request);
-
         if(attributes.getId() == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "PUT must be to a specific resource, not the list [" + attributes.getResourceClass().getSimpleName() +
-                                          "]", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "PUT must be to a specific resource, not the list [" +
+                                                 attributes.getResourceClass().getSimpleName() + "]", "text/plain");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session);
+
+        Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
+        if(!isValidResourceId(attributes.getId()))
+        {
+            throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
+        }
+
+        Resource resource = persistenceService.get(attributes.getResourceClass(), Long.parseLong(attributes.getId()));
+        if(resource == null)
+        {
+            throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
+        }
+
+        Resource original = resource.copy(false);
+        try
+        {
+            resource = marshaller.unmarshal(request.getInputStream(), resource, false);
+        }
+        catch(MalformedContentException e)
+        {
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "The content you provided was malformed, please fix it", "text/plain");
+        }
+
+        if(!resource.validate())
+        {
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Resource failed validation: " +
+                                                                                 resource.errors().toString(),
+                                             "text/plain");
+        }
 
         try
         {
-            Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
-
-            if(!isValidResourceId(attributes.getId()))
-            {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-
-            Resource resource = persistenceService.get(attributes.getResourceClass(), Long.parseLong(attributes.getId()));
-
-            if(resource == null)
-            {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-
-            //session.evict(resource);
-
-            Resource original = resource.copy(false);
-            
-            long s = time();
-            resource = marshaller.unmarshal(request.getInputStream(), resource, false);
-            LOG.debug("unmarshal() took " + (time() - s) + "ms");
-
-            //updatedResource.setId(Long.parseLong(attributes.getId()));
-
-            if(resource.validate() && !resource.hasErrors())
-            {
-                s = time();
-                persistenceService.update(resource, original);
-                LOG.debug("update() took " + (time() - s) + "ms");
-            }
-
-            transaction.commit();
-
-            if(!resource.hasErrors())
-            {
-                StringBuilder xml = new StringBuilder();
-                if(marshaller instanceof XmlMarshaller)
-                {
-                    xml.append(XML_TAG);
-                }
-
-                s = time();
-                xml.append(marshaller.marshal(resource));
-                LOG.debug("marshal() took " + (time() - s) + "ms");
-
-                ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, xml.toString(),
-                                          marshaller.getContentType());
-            }
-            else
-            {
-                ServletUtil.writeResponse(response,
-                                          HttpServletResponse.SC_BAD_REQUEST,
-                                          "Resource failed validation: " + resource.errors().toString(),
-                                          "text/plain");
-            }
-        }
-        catch(IOException e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "Error reading request body", "text/plain");
-            return;
+            persistenceService.update(resource, original);
         }
         catch(StaleObjectStateException e)
         {
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_CONFLICT,
-                                      "Data in the reqest was stale.  Re-query resource before sending again",
-                                      "text/plain");
+            throw new ListenServletException(HttpServletResponse.SC_CONFLICT,
+                                             "Data in the reqest was stale.  Re-query resource before sending again",
+                                             "text/plain");
         }
         catch(ConstraintViolationException e)
         {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "The content you provided causes a constraint violation, please fix it: " 
-                                      + e.getConstraintName(),
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "The content you provided causes a constraint violation, please fix it: " +
+                                                 e.getConstraintName(), "text/plain");
         }
-        catch(MalformedContentException e)
+
+        StringBuilder content = new StringBuilder();
+        if(marshaller instanceof XmlMarshaller)
         {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "The content you provided was malformed, please fix it", "text/plain");
-            return;
+            content.append(XML_TAG);
         }
-        catch(Exception e)
-        {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "RUH ROH! Please contact the System Administrator", "text/plain");
-            return;
-        }
-        finally
-        {
-            LOG.debug("PUT " + request.getRequestURL() + " took " + (time() - start) + "ms");
-        }
+
+        content.append(marshaller.marshal(resource));
+        response.setStatus(HttpServletResponse.SC_OK);
+        OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
     }
 
     @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response)
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        long start = time();
-
         UriResourceAttributes attributes = getResourceAttributes(request);
-
         if(attributes.getResourceClass() == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" +
-                                                                                    attributes.getResourceClass() + "]",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" +
+                                             attributes.getResourceClass() + "]",
+                                             "text/plain");
         }
 
         if(attributes.getId() == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "DELETE must be on a specific resource, not the list [" + attributes.getResourceClass().getSimpleName() +
-                                          "]", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "DELETE must be on a specific resource, not the list [" + attributes.getResourceClass().getSimpleName() +
+                                             "]", "text/plain");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session);
 
-        try
+        if(!isValidResourceId(attributes.getId()))
         {
-            if(!isValidResourceId(attributes.getId()))
-            {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-
-            long s = time();
-            Resource resource = persistenceService.get(attributes.getResourceClass(), Long.parseLong(attributes.getId()));
-            LOG.debug("get() took " + (time() - s) + "ms");
-
-            if(resource == null)
-            {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-
-            s = time();
-            persistenceService.delete(resource);
-            LOG.debug("delete() took " + (time() - s) + "ms");
-
-            transaction.commit();
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
         }
-        catch(Exception e)
+
+        Resource resource = persistenceService.get(attributes.getResourceClass(), Long.parseLong(attributes.getId()));
+        if(resource == null)
         {
-            LOG.error(e);
-            transaction.rollback();
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                      "RUH ROH! Please contact the System Administrator", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
         }
-        finally
-        {
-            LOG.debug("DELETE took " + (time() - start) + "ms");
-        }
+
+        persistenceService.delete(resource);
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 
     /**
@@ -566,11 +410,6 @@ public class ApiServlet extends HttpServlet
         {
             return false;
         }
-    }
-
-    private long time()
-    {
-        return System.currentTimeMillis();
     }
 
     private static class UriResourceAttributes

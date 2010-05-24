@@ -1,11 +1,16 @@
 package com.interact.listen.license;
 
-public class NotLicensedException extends Exception
+import com.interact.listen.ListenServletException;
+
+import javax.servlet.http.HttpServletResponse;
+
+public class NotLicensedException extends ListenServletException
 {
     private static final long serialVersionUID = 1L;
 
     public NotLicensedException(ListenFeature feature)
     {
-        super("Feature " + feature.toString() + " is not licensed");
+        super(HttpServletResponse.SC_NOT_IMPLEMENTED, "Feature " + feature.toString() + " is not licensed",
+              "text/plain");
     }
 }

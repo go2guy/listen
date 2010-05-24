@@ -11,7 +11,23 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- TODO Exception handler filter here -->
+    <filter>
+        <filter-name>OutputBufferFilter</filter-name>
+        <filter-class>com.interact.listen.OutputBufferFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>OutputBufferFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>ExceptionHandlerFilter</filter-name>
+        <filter-class>com.interact.listen.ExceptionHandlerFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ExceptionHandlerFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>ApiResourceLocatorFilter</filter-name>
@@ -46,6 +62,10 @@
     </filter>
     <filter-mapping>
         <filter-name>OpenSessionInViewFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping><!--
+    <filter-mapping>
+        <filter-name>OpenSessionInViewFilter</filter-name>
         <url-pattern>/ajax/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
@@ -59,7 +79,7 @@
     <filter-mapping>
         <filter-name>OpenSessionInViewFilter</filter-name>
         <url-pattern>/logout</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
 
     <!-- servlet definitions -->
 

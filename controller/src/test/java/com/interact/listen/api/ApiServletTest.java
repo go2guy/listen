@@ -2,8 +2,11 @@ package com.interact.listen.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenServletException;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Conference;
@@ -17,6 +20,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.DelegatingServletInputStream;
@@ -40,33 +45,41 @@ public class ApiServletTest
 
     // TODO re-enable this test once we get the Exception handling filter in place (to handle the
     // ClassNotFoundException thrown from ResourceLocatorFilter)
-//    @Test
-//    public void test_doGet_nonExistantResource_returns404() throws IOException, ServletException
-//    {
-//        request.setPathInfo("/FAKE");
-//        request.setMethod("GET");
-//        request.setQueryString("");
-//        servlet.service(request, response);
-//
-//        assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
-//    }
+    // @Test
+    // public void test_doGet_nonExistantResource_returns404() throws IOException, ServletException
+    // {
+    // request.setPathInfo("/FAKE");
+    // request.setMethod("GET");
+    // request.setQueryString("");
+    // servlet.service(request, response);
+    //
+    // assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+    // }
 
     // POST with incorrect parameters
 
     @Test
-    public void test_doPost_nullAttributeName_returns400BadRequest() throws IOException, ServletException
+    public void test_doPost_nullAttributeName_throwsServletExceptionWith400BadRequest() throws IOException,
+        ServletException
     {
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, null);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, null);
         request.setMethod("POST");
-        servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+        }
     }
 
     @Test
-    public void test_doPost_contentNotMatchRequestedResource_returns400BadRequest() throws IOException,
-        ServletException
+    public void test_doPost_contentNotMatchRequestedResource_throwsListenServletExceptionWith400BadRequest()
+        throws IOException, ServletException
     {
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, Conference.class);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, null);
@@ -84,28 +97,53 @@ public class ApiServletTest
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
 
-        servlet.service(request, response);
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+        }
     }
 
     @Test
-    public void test_doPost_idPresentInHref_returns400BadRequest() throws IOException, ServletException
+    public void test_doPost_idPresentInHref_throwsListenServletExceptionWith400BadRequest() throws IOException,
+        ServletException
     {
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, Subscriber.class);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, "1");
         request.setMethod("POST");
-        servlet.service(request, response);
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+        }
     }
 
     @Test
-    public void test_doPut_idNotPresentInHref_returns400BadRequest() throws IOException, ServletException
+    public void test_doPut_idNotPresentInHref_throwsListenServletExceptionWith400BadRequest() throws IOException,
+        ServletException
     {
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, Subscriber.class);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, null);
         request.setMethod("PUT");
-        servlet.service(request, response);
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+        }
     }
 
     // no resource
@@ -121,52 +159,83 @@ public class ApiServletTest
 
         final String expectedMessage = "Welcome to the Listen Controller API";
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals(expectedMessage, response.getContentAsString());
+        assertEquals("text/plain", request.getOutputBufferType());
+        assertEquals(expectedMessage, request.getOutputBufferString());
     }
 
     @Test
-    public void test_doDelete_noAttributeName_returns400WithPlainTextMessage() throws IOException, ServletException
+    public void test_doDelete_noAttributeName_throwsListenervletExceptionWith400WithPlainTextMessage()
+        throws IOException, ServletException
     {
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, null);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, null);
         request.setMethod("DELETE");
-        servlet.service(request, response);
 
-        final String expectedMessage = "Cannot DELETE [null]";
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals(expectedMessage, response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            final String expectedMessage = "Cannot DELETE [null]";
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("text/plain", e.getContentType());
+            assertEquals(expectedMessage, e.getContent());
+        }
     }
 
     @Test
-    public void test_doDelete_noAttributeId_returns400WithPlainTextMessage() throws IOException, ServletException
+    public void test_doDelete_noAttributeId_throwsListenServletExceptionWith400WithPlainTextMessage()
+        throws IOException, ServletException
     {
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, Subscriber.class);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, null);
         request.setMethod("DELETE");
-        servlet.service(request, response);
 
-        final String expectedMessage = "DELETE must be on a specific resource, not the list [Subscriber]";
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("text/plain", response.getContentType());
-        assertEquals(expectedMessage, response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            final String expectedMessage = "DELETE must be on a specific resource, not the list [Subscriber]";
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("text/plain", e.getContentType());
+            assertEquals(expectedMessage, e.getContent());
+        }
     }
 
     // subscribers
 
     @Test
-    public void test_doGet_subscriberNotFound_returns404WithNoContent() throws IOException, ServletException
+    public void test_doGet_subscriberNotFound_throwsListenServletExceptionWith404WithNoContent() throws IOException,
+        ServletException
     {
         final Long id = System.currentTimeMillis();
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, Subscriber.class);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, String.valueOf(id));
         request.setMethod("GET");
         request.setQueryString("");
-        servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_NOT_FOUND, e.getStatus());
+            assertEquals("", e.getContent());
+        }
+        finally
+        {
+            transaction.commit();
+        }
     }
 
     @Test
@@ -178,13 +247,19 @@ public class ApiServletTest
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, null);
         request.setMethod("GET");
         request.setQueryString("");
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         servlet.service(request, response);
+
+        transaction.commit();
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         expectedXml += "<subscribers href=\"/subscribers?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertEquals("application/xml", response.getContentType());
-        assertEquals(expectedXml, response.getContentAsString());
+        assertEquals("application/xml", request.getOutputBufferType());
+        assertEquals(expectedXml, request.getOutputBufferString());
     }
 
     @Test
@@ -207,10 +282,15 @@ public class ApiServletTest
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
 
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         servlet.service(request, response);
 
+        transaction.commit();
+
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
-        assertEquals("application/xml", response.getContentType());
+        assertEquals("application/xml", request.getOutputBufferType());
         // TODO assert content
         // TODO delete the subscriber?
     }
@@ -237,13 +317,16 @@ public class ApiServletTest
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
 
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         servlet.service(request, response);
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
-        assertEquals("application/xml", response.getContentType());
+        assertEquals("application/xml", request.getOutputBufferType());
 
         // get the created subscriber's id
-        InputStream is = new ByteArrayInputStream(response.getContentAsByteArray());
+        InputStream is = new ByteArrayInputStream(request.getOutputBufferString().getBytes());
         subscriber = (Subscriber)marshaller.unmarshal(is, new Subscriber(), true);
         Long id = subscriber.getId();
 
@@ -254,7 +337,10 @@ public class ApiServletTest
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, Subscriber.class);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, String.valueOf(id));
         request.setMethod("DELETE");
+
         servlet.service(request, response);
+
+        transaction.commit();
 
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
     }
@@ -266,17 +352,32 @@ public class ApiServletTest
     // conferences
 
     @Test
-    public void test_doGet_conferenceNotFound_returns404WithNoContent() throws IOException, ServletException
+    public void test_doGet_conferenceNotFound_throwsListenServletExceptionWith404WithNoContent() throws IOException,
+        ServletException
     {
         final Long id = System.currentTimeMillis();
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, Conference.class);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, String.valueOf(id));
         request.setMethod("GET");
         request.setQueryString("");
-        servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_NOT_FOUND, e.getStatus());
+            assertEquals("", e.getContent());
+        }
+        finally
+        {
+            transaction.commit();
+        }
     }
 
     @Test
@@ -288,14 +389,20 @@ public class ApiServletTest
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, null);
         request.setMethod("GET");
         request.setQueryString("");
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         servlet.service(request, response);
+
+        transaction.commit();
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         expectedXml += "<conferences href=\"/conferences?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertEquals("application/xml", response.getContentType());
-        assertEquals(expectedXml, response.getContentAsString());
+        assertEquals("application/xml", request.getOutputBufferType());
+        assertEquals(expectedXml, request.getOutputBufferString());
     }
 
     @Test
@@ -319,10 +426,15 @@ public class ApiServletTest
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
 
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         servlet.service(request, response);
 
+        transaction.commit();
+
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
-        assertEquals("application/xml", response.getContentType());
+        assertEquals("application/xml", request.getOutputBufferType());
         // TODO assert content
         // TODO delete the conference?
     }
@@ -349,12 +461,15 @@ public class ApiServletTest
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
 
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
         servlet.service(request, response);
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
-        assertEquals("application/xml", response.getContentType());
+        assertEquals("application/xml", request.getOutputBufferType());
 
-        InputStream is = new ByteArrayInputStream(response.getContentAsByteArray());
+        InputStream is = new ByteArrayInputStream(request.getOutputBufferString().getBytes());
 
         conference = (Conference)marshaller.unmarshal(is, new Conference(), true);
 
@@ -377,9 +492,11 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
+        transaction.commit();
+
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertEquals("application/xml", response.getContentType());
-        assertTrue(response.getContentAsString().contains("<isStarted>true</isStarted>"));
+        assertEquals("application/xml", request.getOutputBufferType());
+        assertTrue(request.getOutputBufferString().contains("<isStarted>true</isStarted>"));
     }
 
     // participants

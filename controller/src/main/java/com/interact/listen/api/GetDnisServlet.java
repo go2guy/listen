@@ -1,6 +1,7 @@
 package com.interact.listen.api;
 
-import com.interact.listen.ServletUtil;
+import com.interact.listen.ListenServletException;
+import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.stats.InsaStatSender;
@@ -10,6 +11,7 @@ import com.interact.listen.stats.StatSender;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +21,7 @@ public class GetDnisServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
@@ -31,20 +33,19 @@ public class GetDnisServlet extends HttpServlet
         String number = request.getParameter("number");
         if(number == null || number.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a number",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a number", "text/plain");
         }
 
         String configuration = Configuration.get(Property.Key.DNIS_MAPPING);
         Map<String, String> mappings = dnisConfigurationToMap(configuration);
         if(mappings.containsKey(number))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_OK, mappings.get(number), "text/plain");
+            response.setStatus(HttpServletResponse.SC_OK);
+            OutputBufferFilter.append(request, mappings.get(number), "text/plain");
             return;
         }
 
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
     }
 
     private Map<String, String> dnisConfigurationToMap(String configurationValue)

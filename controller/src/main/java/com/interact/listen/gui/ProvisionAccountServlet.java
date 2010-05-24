@@ -1,8 +1,8 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.ListenServletException;
 import com.interact.listen.PersistenceService;
-import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
@@ -10,6 +10,7 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +22,7 @@ public class ProvisionAccountServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
         if(statSender == null)
@@ -33,53 +34,46 @@ public class ProvisionAccountServlet extends HttpServlet
         User currentUser = (User)(request.getSession().getAttribute("user"));
         if(currentUser == null)
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
         }
 
         if(!currentUser.getIsAdministrator())
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
         }
 
         String number = request.getParameter("number");
         if(number == null || number.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Number",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a Number",
+                                             "text/plain");
         }
 
         String username = request.getParameter("username");
         if(username == null || username.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username",
+                                             "text/plain");
         }
 
         String password = request.getParameter("password");
         if(password == null || password.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password",
-                                      "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password",
+                                             "text/plain");
         }
 
         String confirmPassword = request.getParameter("confirmPassword");
         if(confirmPassword == null || confirmPassword.trim().equals(""))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Please provide a Confirm Password", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a Confirm Password",
+                                             "text/plain");
         }
 
         if(!password.equals(confirmPassword))
         {
-            ServletUtil.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST,
-                                      "Password and Confirm Password do not match", "text/plain");
-            return;
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
+                                             "Password and Confirm Password do not match", "text/plain");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

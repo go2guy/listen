@@ -2,11 +2,11 @@ package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.*;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.User;
@@ -23,12 +23,11 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetConferenceInfoServletTest
 {
-    private MockHttpServletRequest request;
+    private InputStreamMockHttpServletRequest request;
     private MockHttpServletResponse response;
     private GetConferenceInfoServlet servlet = new GetConferenceInfoServlet();
 
@@ -40,17 +39,25 @@ public class GetConferenceInfoServletTest
     }
 
     @Test
-    public void test_doGet_withNoSessionUser_returnsUnauthorized() throws IOException, ServletException
+    public void test_doGet_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws IOException,
+        ServletException
     {
         request.setMethod("GET");
-        servlet.service(request, response);
-
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("Unauthorized - not logged in", response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("Unauthorized - not logged in", e.getContent());
+        }
     }
 
     @Test
-    public void test_doGet_withNonexistentConference_returns500() throws IOException, ServletException
+    public void test_doGet_withNonexistentConference_throwsListenServletExceptionWith500() throws IOException,
+        ServletException
     {
         final Long id = System.currentTimeMillis();
 
@@ -63,10 +70,17 @@ public class GetConferenceInfoServletTest
         session.setAttribute("user", user);
 
         request.setMethod("GET");
-        servlet.service(request, response);
 
-        assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-        assertEquals("Conference not found", response.getContentAsString());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getStatus());
+            assertEquals("Conference not found", e.getContent());
+        }
     }
 
     @Test
@@ -104,10 +118,10 @@ public class GetConferenceInfoServletTest
         tx.commit();
 
         String hrefString = "\"href\":\"/conferences/" + conference.getId() + "\"";
-        assertTrue(response.getContentAsString().contains(hrefString));
+        assertTrue(request.getOutputBufferString().contains(hrefString));
     }
 
-    @Test
+    @Test(expected = ListenServletException.class)
     public void test_doGet_sendsStat() throws IOException, ServletException
     {
         StatSender statSender = mock(StatSender.class);

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenServletException;
 import com.interact.listen.resource.*;
 import com.interact.listen.security.SecurityUtil;
 
@@ -106,7 +107,8 @@ public class ProvisionAccountServletTest
     }
 
     @Test
-    public void test_doPost_withNoSessionUser_returnsUnauthorized() throws ServletException, IOException
+    public void test_doPost_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws ServletException,
+        IOException
     {
         assert request.getSession().getAttribute("user") == null;
 
@@ -118,16 +120,27 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("Unauthorized", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("Unauthorized", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withoutAdministratorUser_returnsUnauthorized() throws ServletException, IOException
+    public void test_doPost_withoutAdministratorUser_throwsListenServletExceptionWithUnauthorized()
+        throws ServletException, IOException
     {
         setSessionUser(request, false);
 
@@ -139,16 +152,27 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals("Unauthorized", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
+            assertEquals("Unauthorized", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withNullNumber_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_withNullNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
+        IOException
     {
         setSessionUser(request, true);
 
@@ -160,16 +184,28 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Please provide a Number", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Number", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withBlankNumber_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_withBlankNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
+        IOException
     {
         setSessionUser(request, true);
 
@@ -181,16 +217,28 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Please provide a Number", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Number", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withNullUsername_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_withNullUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
+        IOException
     {
         setSessionUser(request, true);
 
@@ -202,16 +250,28 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Please provide a Username", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Username", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withBlankUsername_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_withBlankUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
+        IOException
     {
         setSessionUser(request, true);
 
@@ -223,16 +283,28 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Please provide a Username", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Username", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withNullPassword_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_withNullPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
+        IOException
     {
         setSessionUser(request, true);
 
@@ -244,16 +316,28 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Please provide a Password", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Password", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withBlankPassword_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_withBlankPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
+        IOException
     {
         setSessionUser(request, true);
 
@@ -265,16 +349,28 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Please provide a Password", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Password", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withNullConfirmPassword_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_withNullConfirmPassword_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
     {
         setSessionUser(request, true);
 
@@ -286,16 +382,28 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Please provide a Confirm Password", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Confirm Password", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_withBlankConfirmPassword_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_withBlankConfirmPassword_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
     {
         setSessionUser(request, true);
 
@@ -307,16 +415,28 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Please provide a Confirm Password", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Confirm Password", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     @Test
-    public void test_doPost_whenPasswordAndConfirmPasswordDontMatch_returnsBadRequest() throws ServletException, IOException
+    public void test_doPost_whenPasswordAndConfirmPasswordDontMatch_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
     {
         setSessionUser(request, true);
 
@@ -328,12 +448,22 @@ public class ProvisionAccountServletTest
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
-        servlet.service(request, response);
-        tx.commit();
 
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Password and Confirm Password do not match", response.getContentAsString());
-        assertEquals("text/plain", response.getContentType());
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Password and Confirm Password do not match", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+        finally
+        {
+            tx.commit();
+        }
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class
