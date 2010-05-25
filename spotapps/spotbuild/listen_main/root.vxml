@@ -31,7 +31,7 @@
     <!-- User Dertermined Globals -->
 	<var name="appToAccess" expr="''" />
 	<var name="DNIS" expr="'local'" />
-	<var name="cntrlURL" expr="''" />
+	<var name="cntrlURL" expr="''" /> <!-- Config Controller URL -->
 	<var name="subID" expr="''" />
 	<var name="passValues" expr="''" />
 	<var name="params" expr="''" />

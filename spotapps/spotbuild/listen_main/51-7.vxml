@@ -16,7 +16,7 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'conference'+',51-20|=,'+'mailbox'+',51-19|=,'+'voicemail'+',51-23|else,51-33'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_expList" expr="'=,'+'conferencing'+',51-20|=,'+'mailbox'+',51-19|=,'+'voicemail'+',51-23|else,51-33'"/>	<!-- List of expression to be evaluated -->
     <var name="II_SB_operand1" expr="appToAccess"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
@@ -27,7 +27,7 @@
 
 	<form id="beginDocument">
 		<block>
-    	    
+    	    <log target="status">check app</log>
 			<log>INFO: Entered decision.vxml [51-7]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>
