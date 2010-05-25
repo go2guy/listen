@@ -1,7 +1,6 @@
 package com.interact.listen;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
@@ -21,29 +20,6 @@ public final class ServletUtil
     private ServletUtil()
     {
         throw new AssertionError("Cannot instantiate utility class ServletUtil");
-    }
-
-    public static void writeResponse(HttpServletResponse response, int statusCode, String content, String contentType)
-    {
-        response.setStatus(statusCode);
-        response.setContentType(contentType);
-        response.setContentLength(content.length());
-        response.setHeader("Cache-Control", "no-cache");
-
-        LOG.debug("Writing response content [ " + content + " ], type = [" + contentType + "], length = [" +
-                  content.length() + "]");
-
-        try
-        {
-            PrintWriter writer = response.getWriter();
-            writer.print(content);
-        }
-        catch(IOException e)
-        {
-            LOG.error(e);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setContentLength(0);
-        }
     }
 
     public static Map<String, String> getQueryParameters(HttpServletRequest request)
