@@ -32,24 +32,20 @@
 	<var name="ANI" expr="'remote'" />
 	<var name="DNIS" expr="'local'" />
 	<var name="status" expr="''" />
-	<var name="fileLocation" expr="''" />
-	<var name="controller" expr="'http://apps2:8080/listen-controller'" />
-	<var name="referenceID" expr="''" />
+	<var name="fileLocation" expr="'/interact/artifacts/listen/voicemail/message/'" />
 	<var name="isNew" expr="'true'" />
 	<var name="subID" expr="''" />
-	<var name="dataItem" expr="''" />
-	<var name="whichRsrc" expr="'subscribers'" />
 	<var name="returnVal" expr="''" />
 	<var name="returnStr" expr="''" />
-	<var name="hostName" expr="'listenspotbuild:/interact/apps/spotbuild/listen_voicemail/audio/'" />
-	<var name="FILE1" expr="'/interact/apps/spotbuild/listen_voicemail/audio/'" />
+	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'stat'" />
 	<var name="request" expr="'get'" />
 	<var name="resource" expr="'subscribers'" />
 	<var name="params" expr="''" />
-	<var name="cntrlURL" expr="'http://apps4:8080/listen-controller'" />
+	<var name="cntrlURL" expr="''" />
 	<var name="audioURL" expr="''" />
-	<var name="filePath" expr="'/interact/apps/spotbuild/listen_voicemail/audio/'" />
+	<var name="index" expr="'0'" />
+	<var name="passedValue" expr="'importedValue'" />
 
 
     <!-- Conference Variables -->

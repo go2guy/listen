@@ -18,19 +18,15 @@
     <var name="II_SB_NEXT_OPTION"/>
     <var name="II_SB_transfer"/>
     <var name="II_SB_projectSource"/>
+    <var name="II_SB_importedValue"/>
 	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_DNIS"/>
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_fileLocation"/>
-	<var name="SB_UV_controller"/>
-	<var name="SB_UV_referenceID"/>
 	<var name="SB_UV_isNew"/>
 	<var name="SB_UV_subID"/>
-	<var name="SB_UV_dataItem"/>
-	<var name="SB_UV_whichRsrc"/>
 	<var name="SB_UV_returnVal"/>
 	<var name="SB_UV_returnStr"/>
-	<var name="SB_UV_hostName"/>
 	<var name="SB_UV_FILE1"/>
 	<var name="SB_UV_OPERATION"/>
 	<var name="SB_UV_request"/>
@@ -38,7 +34,8 @@
 	<var name="SB_UV_params"/>
 	<var name="SB_UV_cntrlURL"/>
 	<var name="SB_UV_audioURL"/>
-	<var name="SB_UV_filePath"/>
+	<var name="SB_UV_index"/>
+	<var name="SB_UV_passedValue"/>
 
     
     <form id="beginDocument">
@@ -51,6 +48,7 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
+			<assign name="passedValue" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_ANI != undefined">
 				<assign name="ANI" expr="SB_UV_ANI" />
@@ -64,32 +62,17 @@
 			<if cond="SB_UV_fileLocation != undefined">
 				<assign name="fileLocation" expr="SB_UV_fileLocation" />
 			</if>
-			<if cond="SB_UV_controller != undefined">
-				<assign name="controller" expr="SB_UV_controller" />
-			</if>
-			<if cond="SB_UV_referenceID != undefined">
-				<assign name="referenceID" expr="SB_UV_referenceID" />
-			</if>
 			<if cond="SB_UV_isNew != undefined">
 				<assign name="isNew" expr="SB_UV_isNew" />
 			</if>
 			<if cond="SB_UV_subID != undefined">
 				<assign name="subID" expr="SB_UV_subID" />
 			</if>
-			<if cond="SB_UV_dataItem != undefined">
-				<assign name="dataItem" expr="SB_UV_dataItem" />
-			</if>
-			<if cond="SB_UV_whichRsrc != undefined">
-				<assign name="whichRsrc" expr="SB_UV_whichRsrc" />
-			</if>
 			<if cond="SB_UV_returnVal != undefined">
 				<assign name="returnVal" expr="SB_UV_returnVal" />
 			</if>
 			<if cond="SB_UV_returnStr != undefined">
 				<assign name="returnStr" expr="SB_UV_returnStr" />
-			</if>
-			<if cond="SB_UV_hostName != undefined">
-				<assign name="hostName" expr="SB_UV_hostName" />
 			</if>
 			<if cond="SB_UV_FILE1 != undefined">
 				<assign name="FILE1" expr="SB_UV_FILE1" />
@@ -112,8 +95,11 @@
 			<if cond="SB_UV_audioURL != undefined">
 				<assign name="audioURL" expr="SB_UV_audioURL" />
 			</if>
-			<if cond="SB_UV_filePath != undefined">
-				<assign name="filePath" expr="SB_UV_filePath" />
+			<if cond="SB_UV_index != undefined">
+				<assign name="index" expr="SB_UV_index" />
+			</if>
+			<if cond="SB_UV_passedValue != undefined">
+				<assign name="passedValue" expr="SB_UV_passedValue" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
