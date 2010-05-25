@@ -67,15 +67,19 @@ Requires: spotbuild-vip
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
 
     # Remove extras and listen_conference root.vxml
-    rm -rf %{buildroot}/interact/apps/spotbuild/*.docx %{buildroot}/interact/apps/spotbuild/*mailbox
-    rm -rf %{buildroot}/interact/apps/spotbuild/*main %{buildroot}/interact/apps/spotbuild/*voicemail
-    rm -f %{buildroot}/interact/apps/spotbuild/listen_conference/root.vxml
+    rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
 
     # Run Encryption
-    /interact/program/iiXMLcrypt -e listenConf %{buildroot}/interact/apps/spotbuild/listen_conference
+    /interact/program/iiXMLcrypt -e "Listen Conference" %{buildroot}/interact/apps/spotbuild/listen_conference/
+    /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/
 
     # Add root.vxml
-    cp -r %{STARTDIR}/spotbuild/listen_conference/root.vxml %{buildroot}/interact/apps/spotbuild/listen_conference
+    for rootfile in `find %{STARTDIR}/spotbuild/listen* -name root.vxml`
+    do
+        listendir=`dirname ${rootfile}`
+        listendir=`basename ${listendir}`
+        /bin/cp ${rootfile} %{buildroot}/interact/apps/spotbuild/${listendir}/
+    done
 
     # Install php scripts
     mkdir -p %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen
@@ -159,18 +163,9 @@ Requires: spotbuild-vip
         fatal=/dev/null
     fi
 
-    # Update iistart.ccxml link if it is currently non-existant or pointing to iidefault.ccxml or welcome.ccxml
-    if [ ! -f /interact/apps/iistart.ccxml ] || \
-       [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/iidefault.ccxml" ] || \
-       [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/spotbuild/welcome.ccxml" ] || \
-       [ "`readlink /interact/apps/iistart.ccxml`" == "/interact/apps/spotbuild/SPOTbuild.ccxml" ]
-    then
-        echo "iistart link either does not exist or points to iidefault or welcome or SPOTbuild. Changing to point to listen_conference file." >> ${debug}
-        rm -f /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
-        ln -s /interact/apps/spotbuild/listen_conference/listen_conference.ccxml /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
-    else
-        echo "iistart link exists and does not point to iidefault or welcome or SPOTbuild. iistart points to [ `readlink /interact/apps/iistart.ccxml` ]."  >> ${debug}
-    fi
+    echo "iistart link currently points to [ `readlink /interact/apps/iistart.ccxml` ]. It will be wiped out and re-linked to [ /interact/apps/spotbuild/listen_main/listen_main.ccxml ]." >> ${debug}
+    rm -f /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
+    ln -s /interact/apps/spotbuild/listen_main/listen_main.ccxml /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
 
 #######################################################################
 # The preun section lists actions to be performed before
@@ -218,7 +213,7 @@ Requires: spotbuild-vip
     then
         echo "Uninstalling %{name}." >> ${debug}
 
-        # Spotbuild apps are no longer valid
+        # iistart should currently be pointing to this app (which is no longer installed)
         rm -f /interact/apps/iistart.ccxml
 
         # Update iistart.ccxml to point back to either welcome.ccxml or iidefault.ccxml

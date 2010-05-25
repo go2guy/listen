@@ -25,4 +25,4 @@ then
     exit 1
 fi
 
-rpmbuild -bb spotapps.spec
+rpmbuild -bi spotapps.spec
