@@ -11,13 +11,13 @@
         <![CDATA[
             function II_SB_JS_function(helpCnt,maxHelp,getInput)
             {
-	                var opts = new String("1,2,3");
-    if (opts.match(getInput))
-        return getInput;
-    else if ((getInput == '*') && (helpCnt < maxHelp))
-        return getInput;
-    else
-        return "ERROR";
+	            var opts = new String("1,2,3");
+if (opts.match(getInput))
+return getInput;
+else if ((getInput == '*') && (helpCnt < maxHelp))
+return getInput;
+else
+return "ERROR";
             }
         ]]>
     </script>

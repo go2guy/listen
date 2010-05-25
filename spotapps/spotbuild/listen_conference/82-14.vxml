@@ -13,11 +13,8 @@
             {
 	            var total_time;
 var my_data;
-
 total_time = (new Date().getTime() - startTime)/1000;
-
 my_data = "["+ (new Date())+"] ANI ["+ANI+"] Conference ID ["+confID+"] Total Time ["+total_time+"] Secs";
-
 return (my_data);
             }
         ]]>

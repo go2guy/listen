@@ -69,6 +69,15 @@
 	<var name="SB_UV_outBoundID"/>
 	<var name="SB_UV_pstnLength"/>
 	<var name="SB_UV_DNIS"/>
+	<var name="SB_UV_isRecording"/>
+	<var name="SB_UV_recPath"/>
+	<var name="SB_UV_recPartCnt"/>
+	<var name="SB_UV_recFile"/>
+	<var name="SB_UV_recSID"/>
+	<var name="SB_UV_passedValue"/>
+	<var name="SB_UV_isStarted"/>
+	<var name="SB_UV_entryTone"/>
+	<var name="SB_UV_timeStamp"/>
 
     
     <form id="beginDocument">
@@ -84,6 +93,7 @@
 			<assign name="userID" expr="II_SB_connectionID" />
 			<assign name="callType" expr="II_SB_type" />
 			<assign name="SID" expr="II_SB_sessionID" />
+			<assign name="passedValue" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_ANI != undefined">
 				<assign name="ANI" expr="SB_UV_ANI" />
@@ -234,6 +244,33 @@
 			</if>
 			<if cond="SB_UV_DNIS != undefined">
 				<assign name="DNIS" expr="SB_UV_DNIS" />
+			</if>
+			<if cond="SB_UV_isRecording != undefined">
+				<assign name="isRecording" expr="SB_UV_isRecording" />
+			</if>
+			<if cond="SB_UV_recPath != undefined">
+				<assign name="recPath" expr="SB_UV_recPath" />
+			</if>
+			<if cond="SB_UV_recPartCnt != undefined">
+				<assign name="recPartCnt" expr="SB_UV_recPartCnt" />
+			</if>
+			<if cond="SB_UV_recFile != undefined">
+				<assign name="recFile" expr="SB_UV_recFile" />
+			</if>
+			<if cond="SB_UV_recSID != undefined">
+				<assign name="recSID" expr="SB_UV_recSID" />
+			</if>
+			<if cond="SB_UV_passedValue != undefined">
+				<assign name="passedValue" expr="SB_UV_passedValue" />
+			</if>
+			<if cond="SB_UV_isStarted != undefined">
+				<assign name="isStarted" expr="SB_UV_isStarted" />
+			</if>
+			<if cond="SB_UV_entryTone != undefined">
+				<assign name="entryTone" expr="SB_UV_entryTone" />
+			</if>
+			<if cond="SB_UV_timeStamp != undefined">
+				<assign name="timeStamp" expr="SB_UV_timeStamp" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -5,7 +5,7 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'114-7'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'114-54'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
@@ -13,7 +13,6 @@
             {
 	            var str = new String(phoneNumber);
 var num = /^\d+$/;
-
 if ((sipURL.length > 0) && (num.test(str)))
 return phoneNumber + "@" + sipURL;
 else

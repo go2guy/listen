@@ -5,7 +5,7 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'85-8'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'85-38'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[

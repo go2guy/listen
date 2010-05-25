@@ -11,11 +11,12 @@
         <![CDATA[
             function II_SB_JS_function(getInput,isAdmin,isAdminMuted)
             {
-	            if(getInput == '1')
+	            var opts = new String("3,4,5");
+if (getInput == '1')
 return getInput;
-else if((getInput == '2') && ((isAdminMuted == 'false')))
+else if ((getInput == '2') && (isAdminMuted == 'false'))
 return getInput;
-else if((isAdmin == 'true') && (getInput == '3' || getInput == '4'))
+else if ((isAdmin == 'true') &&  (opts.match(getInput)))
 return getInput;
 else
 return "REJOIN";

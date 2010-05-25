@@ -17,32 +17,31 @@ var admin = 'true';
 var tmpVal = eval("("+returnVal+")");
 var isAdminStatus = tmpVal.results[index].isAdmin;
 var isPassiveStatus = tmpVal.results[index].isPassive;
-
 var options = new String("1,2,3");
 if(getInput == 4)
-    result = "RESTART";
+result = "RESTART";
 else if (whoAmI == admin)
 {
-    if (isAdminStatus && (options.match(getInput)))
-            result = "INVALID_ADMIN";
-    else if (isPassiveStatus && (options.match(getInput))){
-        if ((getInput == 1) || (getInput == 2))
-            result = "INVALID_PASSIVE";
-        else
-            result = "DROP";
-    }
-    else if ((options.match(getInput))){
-        if(getInput == 1) 
-            result = "MUTE";
-        else if (getInput == 2)
-            result = "UNMUTE";
-        else
-            result = "DROP";
-    }
+if (isAdminStatus && (options.match(getInput)))            result = "INVALID_ADMIN";
+else if (isPassiveStatus && (options.match(getInput)))
+{
+if ((getInput == 1) || (getInput == 2))
+result = "INVALID_PASSIVE";
+else
+result = "DROP";
+}
+else if (options.match(getInput))
+{
+if(getInput == 1)
+result = "MUTE";
+else if (getInput == 2)
+result = "UNMUTE";
+else
+result = "DROP";
+}
 }
 else
-    result = "REJOIN";
-
+result = "REJOIN";
 return result;
             }
         ]]>

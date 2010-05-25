@@ -13,7 +13,6 @@
             {
 	            var str = new String(phoneNumber);
 var num = /^\d+$/;
-
 if ((num.test(str)) && (sipURL.length > 0))
 return "sip:" + ANI + "@" + sipURL;
 else

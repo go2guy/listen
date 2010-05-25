@@ -23,6 +23,9 @@
             <assign name="II_SB_valueReceived" expr="getNextElement(1,II_SB_passValues,'|')"/>
             <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
 
+			<if cond="II_SB_eventReceived == 'STOP_REC'">
+				<assign name="II_SB_assign_NxtOpt" expr="'123-17'"/>
+			</if>
 			<if cond="II_SB_eventReceived == 'MUTE'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112-4'"/>
 			</if>
@@ -38,6 +41,9 @@
 			<if cond="II_SB_eventReceived == 'DIAL'">
 				<assign name="II_SB_assign_NxtOpt" expr="'114-5'"/>
 				<assign name="phoneNumber" expr="II_SB_valueReceived"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'ERR_REC'">
+				<assign name="II_SB_assign_NxtOpt" expr="'121-49'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'JOIN'">
 				<assign name="II_SB_assign_NxtOpt" expr="'86-22'"/>

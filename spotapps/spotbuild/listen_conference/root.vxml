@@ -45,14 +45,14 @@
 	<var name="maxHelp" expr="'3'" /> <!-- Config Help Max Help Count -->
 	<var name="MODE" expr="'APPEND'" />
 	<var name="DATA" expr="''" />
-	<var name="FILE" expr="'/interact/logs'" />
+	<var name="FILE" expr="'/interact/logs/'" />
 	<var name="isInfoSaved" expr="'false'" />
 	<var name="CONF_ID" expr="''" />
-	<var name="audioURL" expr="'/interact/apps/spotbuild/listen_conference/audio/'" />
+	<var name="audioURL" expr="'/interact/artifacts/listen/conference/rollcall/'" />
 	<var name="request" expr="'post'" />
 	<var name="params" expr="''" />
 	<var name="id" expr="''" />
-	<var name="cntrlURL" expr="''" /> <!-- Config Controller URL -->
+	<var name="cntrlURL" expr="''" />
 	<var name="resource" expr="'listenSpotSubscribers'" />
 	<var name="status" expr="''" />
 	<var name="returnVal" expr="''" />
@@ -69,7 +69,7 @@
 	<var name="isAdminMuted" expr="'false'" />
 	<var name="isPassive" expr="'false'" />
 	<var name="isActive" expr="'false'" />
-	<var name="pinLength" expr="'6'" /> <!-- Config Pin Length  -->
+	<var name="pinLength" expr="'10'" />
 	<var name="index" expr="'0'" />
 	<var name="memberCnt" expr="'0'" />
 	<var name="prevPath" expr="''" />
@@ -79,6 +79,15 @@
 	<var name="outBoundID" expr="''" />
 	<var name="pstnLength" expr="'10'" /> <!-- Config PSTN Minimum Digits Length -->
 	<var name="DNIS" expr="'local'" />
+	<var name="isRecording" expr="'false'" />
+	<var name="recPath" expr="'/interact/artifacts/listen/conference/record/'" />
+	<var name="recPartCnt" expr="'0'" />
+	<var name="recFile" expr="''" />
+	<var name="recSID" expr="''" />
+	<var name="passedValue" expr="'importedValue'" />
+	<var name="isStarted" expr="'false'" />
+	<var name="entryTone" expr="'/interact/apps/spotbuild/listen_conference/audio/confIn.00.wav'" />
+	<var name="timeStamp" expr="''" />
 
 
     <!-- Conference Variables -->

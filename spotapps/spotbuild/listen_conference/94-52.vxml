@@ -12,7 +12,7 @@
             function II_SB_JS_function(returnVal,reqCnt)
             {
 	            var result = eval("("+returnVal+")");
-if(result.total > (result.count + reqCnt))
+if (result.total > (result.count + reqCnt))
 return 1;
 else
 return 0;

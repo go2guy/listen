@@ -15,7 +15,7 @@
 <assign name="resource" expr="'pins'+''" />
 <log>INFO: Updated value [<value expr="resource"/>]</log>
 <log>INFO: Current value [<value expr="request"/>]</log>
-<assign name="request" expr="getInput+''" />
+<assign name="request" expr="'get'+''" />
 <log>INFO: Updated value [<value expr="request"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

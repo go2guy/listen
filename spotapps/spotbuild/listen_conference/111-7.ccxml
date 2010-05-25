@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
 
-    <!-- Last Modified 04/23/2010 -->
+    <!-- Last Modified 05/17/2010 -->
 
     <!--
       /**
@@ -60,7 +60,7 @@
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <assign name="II_SB_state" expr="'loaded'"/>
             <log>INFO: passValues [<value expr="II_SB_passValues"/>]</log>
-            <log>INFO: sessionID - <value expr="II_SB_sessionID"/></log>
+            <log>INFO: sessionID [<value expr="II_SB_sessionID"/>]</log>
 
             <!-- Populating Global Variables -->
             <assign name="II_SB_sessionToSendTo" expr="getNextElement(0,II_SB_passValues,'|')"/>
@@ -69,7 +69,7 @@
             <assign name="II_SB_NEXT_OPTION_SUCCESS" expr="getNextElement(3,II_SB_passValues,'|')"/>
             <assign name="II_SB_NEXT_OPTION_FAILURE" expr="getNextElement(4,II_SB_passValues,'|')"/>
             <log>INFO: NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log> 
-            <log>INFO: session to send to - <value expr="II_SB_sessionToSendTo"/></log>
+            <log>INFO: session to send to [<value expr="II_SB_sessionToSendTo"/>]</log>
             <if cond="II_SB_sessionToSendTo != ''">
                 <send data="'dialog.user.sendSessionId'" target="II_SB_sessionID"/>
             <else/>
@@ -78,7 +78,7 @@
     	</transition>
 
         <transition event="dialog.user.sendSessionId">
-            <log>INFO: Sending custom event to session</log>
+            <log>INFO: transition event [dialog.user.sendSessionId] state [<value expr="II_SB_state"/>]</log>
             <if cond="II_SB_sessionToSendTo != II_SB_sessionID">
                 <assign name="II_SB_state" expr="'sendingEvent'"/>
                 <send data="'dialog.user.customEvent'" target="II_SB_sessionToSendTo" namelist="II_SB_eventToPass II_SB_valueToPass"/>
@@ -89,14 +89,14 @@
         </transition>
 
         <transition state="sendingEvent" event="send.successful">
-            <log>INFO: Custom Event send Success</log>
+            <log>INFO: transition event [send.successful] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_state" expr="'sendingEventSuccess'"/>
             <assign name="II_SB_NEXT_OPTION" expr="II_SB_NEXT_OPTION_SUCCESS"/>
             <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>            
         </transition>
 
         <transition state="sendingEvent" event="error.send.targetunavailable">
-            <log>INFO: Custom Event send Failed</log>
+            <log>INFO: transition event [error.send.targetunavailable] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_state" expr="'sendingEventFailed'"/>
             <assign name="II_SB_NEXT_OPTION" expr="II_SB_NEXT_OPTION_FAILURE"/>            
             <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
@@ -104,7 +104,7 @@
 
         <!-- This option returns the call to the VXML so that whatever happens, this is the next transition -->
         <transition event="dialog.user.nextVXML">
-			<log>INFO: transition event [dialog.user.nextVXML]</log>
+            <log>INFO: transition event [dialog.user.nextVXML] state [<value expr="II_SB_state"/>]</log>
             <log>INFO: NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log>
             <if cond="II_SB_NEXT_OPTION == '' || II_SB_NEXT_OPTION == undefined">
                 <assign name="II_SB_state" expr="'endCall'"/>
@@ -145,7 +145,7 @@
 
         <!-- Custom Event Code -->
         <transition event="dialog.user.customEvent" name="evt">
-            <log>INFO: Received a customEvent</log>
+            <log>INFO: transition event [dialog.user.customEvent] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_state" expr="'customEvent'"/>
             <assign name="II_SB_passValues" expr="evt.II_SB_eventToPass + '|' + evt.II_SB_valueToPass"/>
             <if cond="II_SB_indialog == 'true'">
@@ -157,6 +157,7 @@
         </transition>
 
         <transition state="customEvent" event="dialog.exit">
+            <log>INFO: transition event [customEvent] state [<value expr="II_SB_state"/>]</log>
             <var name="II_SB_indialog" expr="'false'"/>
           	<assign name="II_SB_state" expr="'nextOptionRun'"/>
 	    	<dialogstart src="'file:' + II_SB_CODE_DIR + 'customEvent.vxml'" namelist="II_SB_ibcallid II_SB_passValues"/>
@@ -164,7 +165,7 @@
 
         <!-- Catch for the disconnect of the obcallid -->
         <transition event="connection.disconnected" name="evt" cond="evt.connectionid == II_SB_obcallid">
-            <log>INFO: caught the connection.disconnected from the hangup from connectionid - <value expr="II_SB_obcallid"/></log>
+            <log>INFO: transition event [connection.disconnected] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_obcallid" expr="''"/>
         </transition>
 

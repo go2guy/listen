@@ -17,7 +17,7 @@
 
     <!-- Edge Variables -->
     <var name="II_SB_drpKeyOpt" expr="''"/>        <!--  Where to go if a drop key is pressed -->
-    <var name="II_SB_ansOpt" expr="'114-14'"/>            <!--  Next option when call is answered -->
+    <var name="II_SB_ansOpt" expr="'114-58'"/>            <!--  Next option when call is answered -->
     <var name="II_SB_notAnsOpt" expr="''"/>  	<!--  Next option when call is not answered -->
     <var name="II_SB_failedOpt" expr="'114-16'"/>     <!--  Next option when connection attempt fails -->
     <var name="II_SB_maxTimeOpt" expr="''"/>      <!--  Next option when max time for call is reached -->

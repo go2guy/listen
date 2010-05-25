@@ -12,11 +12,8 @@
             function II_SB_JS_function(returnVal,index)
             {
 	            var result;
-var tmpVal = eval("("+returnVal+")");
- result = tmpVal.results[index].sessionID;
-if (result == null) {
-result = "";
-}
+var tmpVal = eval("("+returnVal+")"); result = tmpVal.results[index].sessionID;
+if (result == null) {result = "";}
 return result;
             }
         ]]>
