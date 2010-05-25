@@ -157,8 +157,6 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
 if(user != null && user.getIsAdministrator()) { %>
           <div id="administration-application" class="application">
             <div class="window">
-              <div class="window-header"><div class="window-title">Administration</div></div>
-
               <div class="panel">
                 <div class="panel-header"><div class="panel-title">System Configuration</div></div>
                 <div class="panel-content">
