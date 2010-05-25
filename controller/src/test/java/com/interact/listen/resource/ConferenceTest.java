@@ -142,6 +142,7 @@ public class ConferenceTest
         Conference copy = original.copy(false);
 
         assertTrue(original.getConferenceHistorys() == copy.getConferenceHistorys()); // same reference
+        assertTrue(original.getRecordings() == copy.getRecordings()); // same reference
         assertEquals(original.getIsStarted(), copy.getIsStarted());
         assertEquals(original.getIsRecording(), copy.getIsRecording());
         assertTrue(original.getParticipants() == copy.getParticipants()); // same reference

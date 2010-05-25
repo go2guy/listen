@@ -48,6 +48,7 @@ public final class HibernateUtil
             config.setProperty("hibernate.current_session_context_class", "thread");
 
             // application classes
+            config.addAnnotatedClass(Audio.class);
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(ConferenceHistory.class);
             config.addAnnotatedClass(ListenSpotSubscriber.class);

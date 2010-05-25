@@ -44,6 +44,9 @@ public class Conference extends Resource implements Serializable
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<ConferenceHistory> conferenceHistorys = new HashSet<ConferenceHistory>();
+    
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private Set<Audio> recordings = new HashSet<Audio>();
 
     @ManyToOne
     private User user;
@@ -155,6 +158,16 @@ public class Conference extends Resource implements Serializable
     {
         this.conferenceHistorys = conferenceHistorys;
     }
+    
+    public Set<Audio> getRecordings()
+    {
+        return recordings;
+    }
+
+    public void setRecordings(Set<Audio> recordings)
+    {
+        this.recordings = recordings;
+    }
 
     public User getUser()
     {
@@ -205,6 +218,7 @@ public class Conference extends Resource implements Serializable
         copy.setDescription(description);
         copy.setStartTime(startTime);
         copy.setConferenceHistorys(conferenceHistorys);
+        copy.setRecordings(recordings);
         copy.setIsStarted(isStarted);
         copy.setIsRecording(isRecording);
         copy.setParticipants(participants);
@@ -246,7 +260,7 @@ public class Conference extends Resource implements Serializable
             persistenceService = new PersistenceService(session);
             persistenceService.save(history);
             
-            //TODO add recording started stat
+            statSender.send(Stat.CONFERENCE_RECORDING_START);
         }
     }
 
@@ -274,7 +288,6 @@ public class Conference extends Resource implements Serializable
             else
             {
                 //Conference ended
-                // TODO add a conference length stat
                 Long conferenceLength = System.currentTimeMillis() - startTime.getTime();
                 
                 //want conference length in seconds
