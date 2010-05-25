@@ -1,6 +1,6 @@
 <?xml version="1.0"?>                                    
 <vxml version="2.0">
-    <!-- Last Modified 03/05/2010
+    <!-- Last Modified 03/22/2010
        *   @Name   root.vxml
        *   @Desc   This file contains global variable declarations and initializations.
                    These variables are available to all files that reference this document -->
@@ -29,12 +29,21 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
+	<var name="appToAccess" expr="''" />
+	<var name="DNIS" expr="'local'" />
+	<var name="cntrlURL" expr="''" />
+	<var name="subID" expr="''" />
+	<var name="passValues" expr="''" />
+	<var name="params" expr="''" />
+	<var name="resource" expr="'meta'" />
+	<var name="request" expr="'GET'" />
+	<var name="status" expr="''" />
 
 
     <!-- Conference Variables -->
     <var name="II_SB_CONF_NAME" expr="''"/>     	    <!-- Holds the conference information -->
     <var name="II_SB_confUserStatus" expr="'Active'"/>	<!-- Active, Passive -->
-    <var name="II_SB_entryTone" expr="'On'"/>           <!-- Determines if an entry tone is played on a conference -->
+    <var name="II_SB_playEntryAudio" expr="'Yes'"/>     <!-- Determines if an entry tone is played on a conference -->
 
     <!-- Call to java scripts -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->

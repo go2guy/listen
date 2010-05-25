@@ -1,6 +1,13 @@
 51-9 - end
-51-14 - switch-application
 begin - begin
+51-23 - switch-application
+51-33 - audio-input
 51-3 - incoming-call-action
+51-25 - run-javascript
 51-5 - data-query
+51-36 - run-javascript
 51-7 - decision
+51-40 - decision
+51-31 - assign-variable
+51-20 - switch-application
+51-19 - switch-application
