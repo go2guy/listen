@@ -70,8 +70,10 @@ Requires: spotbuild-vip
     rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
 
     # Run Encryption
+    /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/
     /interact/program/iiXMLcrypt -e "Listen Conference" %{buildroot}/interact/apps/spotbuild/listen_conference/
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/
+    /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
 
     # Add root.vxml
     for rootfile in `find %{STARTDIR}/spotbuild/listen* -name root.vxml`
