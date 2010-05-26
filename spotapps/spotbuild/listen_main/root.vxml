@@ -35,7 +35,7 @@
 	<var name="subID" expr="''" />
 	<var name="passValues" expr="''" />
 	<var name="params" expr="''" />
-	<var name="resource" expr="'meta'" />
+	<var name="resource" expr="'meta/'" />
 	<var name="request" expr="'GET'" />
 	<var name="status" expr="''" />
 

@@ -20,7 +20,7 @@
     $method = strtoupper($method);
     switch ($method) {
         case 'GET':
-            $destURL .= "/".$rsrc."/".$data;
+            $destURL .= "/".$rsrc.$data;
             $header = array("Accept: application/json");
             $options = array(CURLOPT_URL => $destURL,
                             CURLOPT_HTTPHEADER => $header,
