@@ -59,8 +59,11 @@ public class Conference extends Resource implements Serializable
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ConferenceHistory> conferenceHistorys = new HashSet<ConferenceHistory>();
     
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
-    private Set<Audio> recordings = new HashSet<Audio>();
+    @JoinTable(name = "CONFERENCE_CONFERENCE_RECORDING",
+               joinColumns = @JoinColumn(name = "CONFERENCE_ID", unique = true),
+               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_RECORDING_ID"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<ConferenceRecording> conferenceRecordings = new HashSet<ConferenceRecording>();
 
     @JoinTable(name = "USER_CONFERENCE",
                joinColumns = @JoinColumn(name = "CONFERENCE_ID"),
@@ -190,14 +193,14 @@ public class Conference extends Resource implements Serializable
         this.conferenceHistorys.remove(conferenceHistory);
     }
 
-    public Set<Audio> getRecordings()
+    public Set<ConferenceRecording> getConferenceRecordings()
     {
-        return recordings;
+        return conferenceRecordings;
     }
 
-    public void setRecordings(Set<Audio> recordings)
+    public void setConferenceRecordings(Set<ConferenceRecording> conferenceRecordings)
     {
-        this.recordings = recordings;
+        this.conferenceRecordings = conferenceRecordings;
     }
 
     public User getUser()
@@ -249,7 +252,7 @@ public class Conference extends Resource implements Serializable
         copy.setDescription(description);
         copy.setStartTime(startTime);
         copy.setConferenceHistorys(conferenceHistorys);
-        copy.setRecordings(recordings);
+        copy.setConferenceRecordings(conferenceRecordings);
         copy.setIsStarted(isStarted);
         copy.setIsRecording(isRecording);
         copy.setParticipants(participants);

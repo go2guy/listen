@@ -8,25 +8,31 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-public class Audio extends Resource implements Serializable
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "AUDIO")
+public abstract class Audio extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(nullable = false)
+    @Column(name = "URI", nullable = false)
     private String uri;
     
-    @Column(nullable = false)
+    @Column(name = "DESCRIPTION", nullable = false)
     private String description;
     
-    @Column(nullable = false)
+    @Column(name = "FILE_SIZE", nullable = false)
     private String fileSize;
 
-    @Column(nullable = false)
+    @Column(name = "DATE_CREATED", nullable = false)
     private Date dateCreated = new Date();
 
     @Override
@@ -115,23 +121,6 @@ public class Audio extends Resource implements Serializable
         }
         
         return !hasErrors();
-    }
-
-    @Override
-    public Audio copy(boolean withIdAndVersion)
-    {
-        Audio copy = new Audio();
-        if(withIdAndVersion)
-        {
-            copy.setId(id);
-            copy.setVersion(version);
-        }
-
-        copy.setDateCreated(dateCreated == null ? null : new Date(dateCreated.getTime()));
-        copy.setUri(uri);
-        copy.setDescription(description);
-        copy.setFileSize(fileSize);
-        return copy;
     }
 
     @Override
