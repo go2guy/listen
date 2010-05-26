@@ -7,15 +7,11 @@ import com.interact.license.client.validate.LicenseFileSignatureValidator;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
-
 /**
  * Provides the ability to determine whether or not specific {@link ListenFeature}s are licensed for this application.
  */
 public final class License
 {
-    private static final Logger LOG = Logger.getLogger(License.class);
-
     /** Single instance */
     private static final License INSTANCE = new License("/interact/master/.iiXmlLicense");
 
@@ -38,8 +34,6 @@ public final class License
      */
     public static boolean isLicensed(Feature feature)
     {
-        boolean isActuallyLicensed = INSTANCE.license.isFeatureLicensed(feature);
-        LOG.warn("Overriding feature license value of [" + isActuallyLicensed + "] with [true], temporarily");
-        return true; // FIXME once the features are available in Unleash, return the actual license value
+        return INSTANCE.license.isFeatureLicensed(feature);
     }
 }

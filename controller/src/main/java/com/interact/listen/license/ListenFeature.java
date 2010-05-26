@@ -11,9 +11,9 @@ import java.util.Set;
  */
 public enum ListenFeature implements Feature
 {
-    CONFERENCING("Listen Controller Conferencing", Conference.class, ConferenceHistory.class, Participant.class, Pin.class),
-    FINDME("Listen Controller FindMe"),
-    VOICEMAIL("Listen Controller Voicemail", Voicemail.class);
+    CONFERENCING("Listen Conferencing", Conference.class, ConferenceHistory.class, Participant.class, Pin.class),
+    FINDME("Listen Find Me"),
+    VOICEMAIL("Listen Voice Mail", Voicemail.class);
 
     /** How this feature is represented in the license file */
     private String licenseFileFeatureName;
