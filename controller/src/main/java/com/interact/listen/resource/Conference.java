@@ -14,41 +14,58 @@ import javax.persistence.*;
 import org.hibernate.Session;
 
 @Entity
+@Table(name = "CONFERENCE")
 public class Conference extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
     // TODO enforce unique description per User
-    @Column(nullable = false)
+    @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "IS_STARTED", nullable = false)
     private Boolean isStarted;
     
-    @Column(nullable = false)
+    @Column(name = "IS_RECORDING", nullable = false)
     private Boolean isRecording;
     
-    @Column(nullable = false)
+    @Column(name = "START_TIME", nullable = false)
     private Date startTime = new Date();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @JoinTable(name = "CONFERENCE_PIN",
+               joinColumns = @JoinColumn(name = "CONFERENCE_ID", unique = true),
+               inverseJoinColumns = @JoinColumn(name = "PIN_ID"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Pin> pins = new HashSet<Pin>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
-    private List<Participant> participants = new ArrayList<Participant>();
+    @JoinTable(name = "CONFERENCE_PARTICIPANT",
+               joinColumns = @JoinColumn(name = "CONFERENCE_ID", unique = true),
+               inverseJoinColumns = @JoinColumn(name = "PARTICIPANT_ID"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Participant> participants = new TreeSet<Participant>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "CONFERENCE_CONFERENCE_HISTORY",
+               joinColumns = @JoinColumn(name = "CONFERENCE_ID", unique = true),
+               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_HISTORY_ID"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ConferenceHistory> conferenceHistorys = new HashSet<ConferenceHistory>();
     
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Audio> recordings = new HashSet<Audio>();
 
-    @ManyToOne
+    @JoinTable(name = "USER_CONFERENCE",
+               joinColumns = @JoinColumn(name = "CONFERENCE_ID"),
+               inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+    @ManyToOne(optional = true)
     private User user;
 
     public Boolean getIsStarted()
@@ -79,22 +96,16 @@ public class Conference extends Resource implements Serializable
     public void setPins(Set<Pin> pins)
     {
         this.pins = pins;
-        for(Pin pin : pins)
-        {
-            pin.setConference(this);
-        }
     }
 
     public void addToPins(Pin pin)
     {
-        pin.setConference(this);
         this.pins.add(pin);
     }
 
     public void removeFromPins(Pin pin)
     {
         this.pins.remove(pin);
-        pin.setConference(null);
     }
 
     @Override
@@ -139,14 +150,24 @@ public class Conference extends Resource implements Serializable
         this.startTime = startTime == null ? null : new Date(startTime.getTime());
     }
 
-    public List<Participant> getParticipants()
+    public Set<Participant> getParticipants()
     {
         return participants;
     }
 
-    public void setParticipants(List<Participant> participants)
+    public void setParticipants(Set<Participant> participants)
     {
         this.participants = participants;
+    }
+
+    public void addToParticipants(Participant participant)
+    {
+        this.participants.add(participant);
+    }
+
+    public void removeFromParticipants(Participant participant)
+    {
+        this.participants.remove(participant);
     }
 
     public Set<ConferenceHistory> getConferenceHistorys()
@@ -158,7 +179,17 @@ public class Conference extends Resource implements Serializable
     {
         this.conferenceHistorys = conferenceHistorys;
     }
-    
+
+    public void addToConferenceHistorys(ConferenceHistory conferenceHistory)
+    {
+        this.conferenceHistorys.add(conferenceHistory);
+    }
+
+    public void removeFromConferenceHistorys(ConferenceHistory conferenceHistory)
+    {
+        this.conferenceHistorys.remove(conferenceHistory);
+    }
+
     public Set<Audio> getRecordings()
     {
         return recordings;
@@ -223,11 +254,12 @@ public class Conference extends Resource implements Serializable
         copy.setIsRecording(isRecording);
         copy.setParticipants(participants);
 
+        Set<Pin> newPins = new HashSet<Pin>();
         for(Pin pin : pins)
         {
-            copy.addToPins(pin.copy(false));
+            newPins.add(pin.copy(false));
         }
-
+        copy.setPins(newPins);
         copy.setUser(user);
 
         return copy;

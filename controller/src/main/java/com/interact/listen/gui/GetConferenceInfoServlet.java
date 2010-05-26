@@ -64,7 +64,7 @@ public class GetConferenceInfoServlet extends HttpServlet
                                              "text/plain");
         }
 
-        if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
+        if(!(user.equals(conference.getUser()) || user.getIsAdministrator()))
         {
             throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED,
                                              "Unauthorized - conference does not belong to user", "text/plain");

@@ -161,7 +161,7 @@ public class DropParticipantServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -208,7 +208,7 @@ public class DropParticipantServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -263,7 +263,7 @@ public class DropParticipantServletTest
         request.setParameter("id", String.valueOf(participant.getId()));
         servlet.service(request, response);
 
-        tx.commit();
+        tx.rollback();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
@@ -317,7 +317,7 @@ public class DropParticipantServletTest
         request.setParameter("id", String.valueOf(participant.getId()));
         servlet.service(request, response);
 
-        tx.commit();
+        tx.rollback();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 

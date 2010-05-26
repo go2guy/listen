@@ -103,7 +103,7 @@ public class ProvisionAccountServletTest
         assertTrue(admin);
         assertTrue(passive);
 
-        tx.commit();
+        tx.rollback();
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -166,7 +166,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -199,7 +199,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -232,7 +232,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -265,7 +265,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -298,7 +298,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -331,7 +331,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -364,7 +364,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -397,7 +397,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -430,7 +430,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 
@@ -462,7 +462,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.commit();
+            tx.rollback();
         }
     }
 

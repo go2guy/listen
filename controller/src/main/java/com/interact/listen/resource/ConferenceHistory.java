@@ -8,24 +8,33 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "CONFERENCE_HISTORY")
 public class ConferenceHistory extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
+    @Column(name = "DATE_CREATED")
     private Date dateCreated = new Date();
 
-    @ManyToOne
+    @JoinTable(name = "CONFERENCE_CONFERENCE_HISTORY",
+               joinColumns = @JoinColumn(name = "CONFERENCE_HISTORY_ID"),
+               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_ID"))
+    @ManyToOne(optional = true)
     private Conference conference;
 
-    @Column(nullable = false)
+    @Column(name = "USER", nullable = false)
     private String user;
 
-    @Column(nullable = false)
+    @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
     @Override

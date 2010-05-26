@@ -2,8 +2,13 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
+import com.interact.listen.HibernateUtil;
+
+import java.util.ArrayList;
 import java.util.Date;
 
+import org.hibernate.Transaction;
+import org.hibernate.classic.Session;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -237,6 +242,39 @@ public class ConferenceTest
         assertEquals(1925950052, obj.hashCode());
     }
 
+    @Test
+    public void test_conferenceUserHibernateAssociation_correctlySetsEntities()
+    {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        try
+        {
+            Conference conference = new Conference();
+            conference.setIsStarted(true);
+            conference.setIsRecording(false);
+            conference.setDescription(String.valueOf(System.currentTimeMillis()));
+
+            User user = new User();
+            user.setIsAdministrator(false);
+            user.setUsername(String.valueOf(System.currentTimeMillis()));
+            user.setPassword(String.valueOf(System.currentTimeMillis()));
+
+            user.addToConferences(conference);
+            conference.setUser(user);
+
+            session.save(conference);
+            session.save(user);
+
+            assertEquals(user, conference.getUser());
+            assertEquals(conference, new ArrayList<Conference>(user.getConferences()).get(0));
+        }
+        finally
+        {
+            transaction.rollback();
+        }
+    }
+    
     private Conference getPopulatedConference()
     {
         Conference c = new Conference();

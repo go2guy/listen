@@ -7,6 +7,8 @@ import com.interact.listen.security.SecurityUtil;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.*;
@@ -14,6 +16,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "REC_CATCH_EXCEPTION", justification = "Any error occurring here needs to throw ExceptionInInitializerError")
 public final class HibernateUtil
 {
     private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
@@ -29,9 +32,18 @@ public final class HibernateUtil
         try
         {
             AnnotationConfiguration config = new AnnotationConfiguration();
+
+            // hsqldb-specific
+
+            // TODO the dialect should match up with the DB URL and driver
             config.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
             config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
 
+            // only for HSQLDB, see https://forum.hibernate.org/viewtopic.php?p=2220295
+            // (if batching is enabled with HSQLDB, error messages from the driver are vague)
+            config.setProperty("hibernate.jdbc.batch_size", "0");
+
+            // general configuration
             String dburl = getDbConnectionString();
             LOG.debug("DB connection string is [" + dburl + "]");
 
@@ -75,10 +87,10 @@ public final class HibernateUtil
 
             transaction.commit();
         }
-        catch(Exception e)
+        catch(Throwable t) // SUPPRESS CHECKSTYLE IllegalCatchCheck
         {
-            LOG.error("SessionFactory creation failed", e);
-            throw new ExceptionInInitializerError(e);
+            LOG.error("SessionFactory creation failed", t);
+            throw new ExceptionInInitializerError(t);
         }
     }
 
@@ -165,26 +177,16 @@ public final class HibernateUtil
 
             String basePin = new DecimalFormat("000").format(i + 100);
 
-            //Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
-            //Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
-            //Pin passivePin = Pin.newInstance("000" + basePin, PinType.PASSIVE);
-
-            Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
-            Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
-            Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
-
-            persistenceService.save(activePin);
-            persistenceService.save(adminPin);
-            persistenceService.save(passivePin);
+            Set<Pin> pins = new HashSet<Pin>();
+            pins.add(Pin.newRandomInstance(PinType.ACTIVE));
+            pins.add(Pin.newRandomInstance(PinType.ADMIN));
+            pins.add(Pin.newRandomInstance(PinType.PASSIVE));
 
             Conference conference = new Conference();
-            conference.addToPins(activePin);
-            conference.addToPins(adminPin);
-            conference.addToPins(passivePin);
-
-            conference.setIsStarted(true);
-            conference.setIsRecording(false);
             conference.setDescription(subscriber.getNumber());
+            conference.setIsRecording(false);
+            conference.setIsStarted(true);
+            conference.setPins(pins);
             persistenceService.save(conference);
 
             User user = new User();
@@ -212,21 +214,6 @@ public final class HibernateUtil
                 LOG.debug("Saved Participant " + participant.getId());
             }
         }
-
-        // account for integration testing
-//        Subscriber subscriber = new Subscriber();
-//        subscriber.setNumber("347");
-//        subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
-//        subscriber.setVoicemailPin(subscriber.getNumber());
-//        persistenceService.save(subscriber);
-//
-//        Pin activePin = Pin.newInstance("111", PinType.ACTIVE);
-//        Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
-//        Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
-//
-//        persistenceService.save(activePin);
-//        persistenceService.save(adminPin);
-//        persistenceService.save(passivePin);
     }
 
     private static void createAdminUserIfNotPresent(Session session, PersistenceService persistenceService)

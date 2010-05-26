@@ -2,6 +2,7 @@ package com.interact.listen.resource;
 
 import com.interact.listen.util.ComparisonUtil;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.*;
@@ -10,20 +11,27 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 @Entity
-public class ListenSpotSubscriber extends Resource
+@Table(name = "LISTEN_SPOT_SUBSCRIBER")
+public class ListenSpotSubscriber extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "HTTP_API", nullable = false, unique = true)
     private String httpApi;
 
+    @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
 
+    @Column(name = "PHONE_NUMBER_PROTOCOL")
     @Enumerated(EnumType.STRING)
     private PhoneNumberProtocolType phoneNumberProtocol;
 

@@ -234,7 +234,7 @@ public class ApiServletTest
         }
         finally
         {
-            transaction.commit();
+            transaction.rollback();
         }
     }
 
@@ -253,7 +253,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.commit();
+        transaction.rollback();
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         expectedXml += "<subscribers href=\"/subscribers?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
@@ -287,7 +287,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.commit();
+        transaction.rollback();
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());
@@ -340,7 +340,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.commit();
+        transaction.rollback();
 
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
     }
@@ -376,7 +376,7 @@ public class ApiServletTest
         }
         finally
         {
-            transaction.commit();
+            transaction.rollback();
         }
     }
 
@@ -395,7 +395,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.commit();
+        transaction.rollback();
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         expectedXml += "<conferences href=\"/conferences?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
@@ -431,7 +431,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.commit();
+        transaction.rollback();
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());
@@ -492,7 +492,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.commit();
+        transaction.rollback();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());

@@ -3,29 +3,40 @@ package com.interact.listen.resource;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.*;
 
 @Entity
+@Table(name = "SUBSCRIBER")
 public class Subscriber extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "NUMBER", unique = true, nullable = false)
     private String number;
 
+    @Column(name = "VOICEMAIL_GREETING_LOCATION")
     private String voicemailGreetingLocation;
+
+    @Column(name = "VOICEMAIL_PIN")
     private String voicemailPin;
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    private List<Voicemail> voicemails = new ArrayList<Voicemail>();
+    @JoinTable(name = "SUBSCRIBER_VOICEMAIL",
+               joinColumns = @JoinColumn(name = "SUBSCRIBER_ID", unique = true),
+               inverseJoinColumns = @JoinColumn(name = "VOICEMAIL_ID"))
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Voicemail> voicemails = new HashSet<Voicemail>();
 
     public String getNumber()
     {
@@ -79,12 +90,12 @@ public class Subscriber extends Resource implements Serializable
         this.voicemailPin = voicemailPin;
     }
 
-    public List<Voicemail> getVoicemails()
+    public Set<Voicemail> getVoicemails()
     {
         return voicemails;
     }
 
-    public void setVoicemails(List<Voicemail> voicemails)
+    public void setVoicemails(Set<Voicemail> voicemails)
     {
         this.voicemails = voicemails;
     }

@@ -8,25 +8,33 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "VOICEMAIL")
 public class Voicemail extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @ManyToOne
+    @JoinTable(name = "SUBSCRIBER_VOICEMAIL",
+               joinColumns = @JoinColumn(name = "VOICEMAIL_ID"),
+               inverseJoinColumns = @JoinColumn(name = "SUBSCRIBER_ID"))
+    @ManyToOne(optional = true)
     private Subscriber subscriber;
 
-    @Column(nullable = false)
+    @Column(name = "FILE_LOCATION", nullable = false)
     private String fileLocation;
 
-    @Column(nullable = false)
+    @Column(name = "DATE_CREATED", nullable = false)
     private Date dateCreated = new Date();
 
-    @Column(nullable = false)
+    @Column(name = "IS_NEW", nullable = false)
     private Boolean isNew = Boolean.TRUE;
 
     @Override
