@@ -396,6 +396,7 @@ def install():
 
     if hostname == controllerserver:
         run(["/interact/packages/iiInstall.sh", "-i", "--noinput", masterpkg, "all"])
+        startlist["/etc/init.d/httpd"] = "start"
         startlist["/interact/program/iiMoap"] = ""
         startlist["/interact/program/iiSysSrvr"] = ""
         startlist["/etc/init.d/collector"] = "start"
