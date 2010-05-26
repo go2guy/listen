@@ -51,7 +51,7 @@
 
             <question level="not_in_backup" severity="take_default">
                 <text></text>
-                <default>http://${controllerHost}:9090/api</default>
+                <default>http://${controllerHost}:9090</default>
                 <validateRegex preset="URL"/>
 
                 <property format="ccvxml" action="update" quotes="yes">
