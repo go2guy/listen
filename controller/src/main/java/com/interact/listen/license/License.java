@@ -36,4 +36,15 @@ public final class License
     {
         return INSTANCE.license.isFeatureLicensed(feature);
     }
+
+    /**
+     * Sets the {@link com.interact.license.client.License} used for license checking. Primarily used for testing with
+     * mock licenses.
+     * 
+     * @param license license to set
+     */
+    public static void setLicense(com.interact.license.client.License license)
+    {
+        INSTANCE.license = license;
+    }
 }

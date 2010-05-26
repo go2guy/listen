@@ -6,6 +6,8 @@ import static org.junit.Assert.fail;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.ListenServletException;
+import com.interact.listen.license.AlwaysTrueMockLicense;
+import com.interact.listen.license.License;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.User;
 
@@ -31,6 +33,7 @@ public class GetConferenceListServletTest
     {
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
+        License.setLicense(new AlwaysTrueMockLicense());
     }
 
     @Test

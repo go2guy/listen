@@ -6,7 +6,11 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.*;
+import com.interact.listen.HibernateUtil;
+import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenServletException;
+import com.interact.listen.license.AlwaysTrueMockLicense;
+import com.interact.listen.license.License;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.User;
@@ -14,14 +18,11 @@ import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
@@ -39,6 +40,7 @@ public class GetConferenceInfoServletTest
     {
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
+        License.setLicense(new AlwaysTrueMockLicense());
     }
 
     @Test

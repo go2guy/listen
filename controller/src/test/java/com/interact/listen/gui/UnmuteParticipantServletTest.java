@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.ListenServletException;
+import com.interact.listen.license.AlwaysTrueMockLicense;
+import com.interact.listen.license.License;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.stats.Stat;
@@ -39,6 +41,7 @@ public class UnmuteParticipantServletTest
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
         servlet = new UnmuteParticipantServlet();
+        License.setLicense(new AlwaysTrueMockLicense());
     }
 
     @Test
