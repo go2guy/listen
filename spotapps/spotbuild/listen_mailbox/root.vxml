@@ -29,8 +29,6 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
-	<var name="mailboxNum" expr="''" />
-	<var name="host" expr="'listenspotbuild'" />
 	<var name="subID" expr="''" />
 	<var name="nxtPath" expr="''" />
 	<var name="maxErr" expr="'3'" />
@@ -38,19 +36,26 @@
 	<var name="FILE1" expr="''" />
 	<var name="FILE2" expr="''" />
 	<var name="OPERATION" expr="''" />
-	<var name="recDIR" expr="'/interact/apps/spotbuild/listen_mailbox/audio/'" />
+	<var name="recDIR" expr="'/interact/artifacts/listen/voicemail/greeting/'" />
 	<var name="status" expr="''" />
 	<var name="ANI" expr="'remote'" />
-	<var name="DNIS" expr="'local'" />
 	<var name="userInput" expr="''" />
 	<var name="request" expr="'get'" />
 	<var name="resource" expr="'subscribers'" />
 	<var name="params" expr="''" />
-	<var name="cntrlURL" expr="'http://apps2:8080/listen-controller'" />
+	<var name="cntrlURL" expr="''" />
 	<var name="id" expr="''" />
 	<var name="returnVal" expr="''" />
 	<var name="returnStr" expr="''" />
 	<var name="pin" expr="''" />
+	<var name="reason" expr="''" />
+	<var name="numOfVoicemails" expr="''" />
+	<var name="count" expr="'0'" />
+	<var name="voicemails" expr="''" />
+	<var name="result" expr="''" />
+	<var name="fileLocation" expr="''" />
+	<var name="menuOption" expr="''" />
+	<var name="passedValue" expr="'importedValue'" />
 
 
     <!-- Conference Variables -->

@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(subID,recDIR)
             {
-	            return recDIR+subID+"_greeting.wav";
+	            return recDIR+subID+"-greeting.wav";
             }
         ]]>
     </script>

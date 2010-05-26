@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'60-36'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'60-53'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(subID,recDIR)
             {
-	            return recDIR+subID+"_tmp.wav";
+	            return recDIR+subID+"-tmp.wav";
             }
         ]]>
     </script>

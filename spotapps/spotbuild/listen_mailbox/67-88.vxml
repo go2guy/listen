@@ -5,18 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'67-6'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'67-115'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var tmpVal = eval("("+returnVal+")");
-var result = tmpVal.results[0].voicemailPin;
-if (result == null) {
-  result = "";
-}
-return result;
+	            var tmpVal = eval("("+returnVal+")");var result = tmpVal.results[0].voicemailPin;if (result == null) {  result = "";}return result;
             }
         ]]>
     </script>

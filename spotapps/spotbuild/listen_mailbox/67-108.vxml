@@ -11,19 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var tmpVal = eval("("+returnVal+")");
-var result = tmpVal.results[0].voicemailGreetingLocation;
-if (result == null) {
-  result = "";
-}
-return result;
+	            var tmpVal = eval("("+returnVal+")");var result = tmpVal.results[0].voicemailGreetingLocation;if (result == null) {  result = "";}return result;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get vmURL</log>
+            <log target="status">Get greetingURL</log>
             <log>INFO: Entered run-javascript.vxml [67-108]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="FILE2" expr="II_SB_userJava" />   

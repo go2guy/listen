@@ -18,8 +18,7 @@
     <var name="II_SB_NEXT_OPTION"/>
     <var name="II_SB_transfer"/>
     <var name="II_SB_projectSource"/>
-	<var name="SB_UV_mailboxNum"/>
-	<var name="SB_UV_host"/>
+    <var name="II_SB_importedValue"/>
 	<var name="SB_UV_subID"/>
 	<var name="SB_UV_nxtPath"/>
 	<var name="SB_UV_maxErr"/>
@@ -30,7 +29,6 @@
 	<var name="SB_UV_recDIR"/>
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_ANI"/>
-	<var name="SB_UV_DNIS"/>
 	<var name="SB_UV_userInput"/>
 	<var name="SB_UV_request"/>
 	<var name="SB_UV_resource"/>
@@ -40,6 +38,14 @@
 	<var name="SB_UV_returnVal"/>
 	<var name="SB_UV_returnStr"/>
 	<var name="SB_UV_pin"/>
+	<var name="SB_UV_reason"/>
+	<var name="SB_UV_numOfVoicemails"/>
+	<var name="SB_UV_count"/>
+	<var name="SB_UV_voicemails"/>
+	<var name="SB_UV_result"/>
+	<var name="SB_UV_fileLocation"/>
+	<var name="SB_UV_menuOption"/>
+	<var name="SB_UV_passedValue"/>
 
     
     <form id="beginDocument">
@@ -50,15 +56,9 @@
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
-			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
+			<assign name="passedValue" expr="II_SB_importedValue" />
 
-			<if cond="SB_UV_mailboxNum != undefined">
-				<assign name="mailboxNum" expr="SB_UV_mailboxNum" />
-			</if>
-			<if cond="SB_UV_host != undefined">
-				<assign name="host" expr="SB_UV_host" />
-			</if>
 			<if cond="SB_UV_subID != undefined">
 				<assign name="subID" expr="SB_UV_subID" />
 			</if>
@@ -89,9 +89,6 @@
 			<if cond="SB_UV_ANI != undefined">
 				<assign name="ANI" expr="SB_UV_ANI" />
 			</if>
-			<if cond="SB_UV_DNIS != undefined">
-				<assign name="DNIS" expr="SB_UV_DNIS" />
-			</if>
 			<if cond="SB_UV_userInput != undefined">
 				<assign name="userInput" expr="SB_UV_userInput" />
 			</if>
@@ -118,6 +115,30 @@
 			</if>
 			<if cond="SB_UV_pin != undefined">
 				<assign name="pin" expr="SB_UV_pin" />
+			</if>
+			<if cond="SB_UV_reason != undefined">
+				<assign name="reason" expr="SB_UV_reason" />
+			</if>
+			<if cond="SB_UV_numOfVoicemails != undefined">
+				<assign name="numOfVoicemails" expr="SB_UV_numOfVoicemails" />
+			</if>
+			<if cond="SB_UV_count != undefined">
+				<assign name="count" expr="SB_UV_count" />
+			</if>
+			<if cond="SB_UV_voicemails != undefined">
+				<assign name="voicemails" expr="SB_UV_voicemails" />
+			</if>
+			<if cond="SB_UV_result != undefined">
+				<assign name="result" expr="SB_UV_result" />
+			</if>
+			<if cond="SB_UV_fileLocation != undefined">
+				<assign name="fileLocation" expr="SB_UV_fileLocation" />
+			</if>
+			<if cond="SB_UV_menuOption != undefined">
+				<assign name="menuOption" expr="SB_UV_menuOption" />
+			</if>
+			<if cond="SB_UV_passedValue != undefined">
+				<assign name="passedValue" expr="SB_UV_passedValue" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
