@@ -48,7 +48,8 @@
 	<var name="FILE" expr="'/interact/logs/'" />
 	<var name="isInfoSaved" expr="'false'" />
 	<var name="CONF_ID" expr="''" />
-	<var name="audioURL" expr="'/interact/artifacts/listen/conference/rollcall/'" />
+	<var name="audioURL" expr="''" />
+	<var name="rollcallPath" expr="'/interact/artifacts/listen/conference/rollcall/'" />
 	<var name="request" expr="'post'" />
 	<var name="params" expr="''" />
 	<var name="id" expr="''" />

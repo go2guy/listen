@@ -278,7 +278,6 @@ begin - begin
 117-48 - audio-input
 85-32 - assign-variable
 116-45 - assign-variable
-85-35 - assign-variable
 79-7 - decision
 79-5 - audio-input
 85-38 - record-audio

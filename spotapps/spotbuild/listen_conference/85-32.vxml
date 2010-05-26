@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Query Params</log>
+	    <log target="status">Set variables</log>
             <log>INFO: Entered assign-variable.vxml [85-32]</log>
             <log>INFO: Current value [<value expr="resource"/>]</log>
 <assign name="resource" expr="'participants'+''" />
@@ -17,6 +17,9 @@
 <log>INFO: Current value [<value expr="request"/>]</log>
 <assign name="request" expr="'post'+''" />
 <log>INFO: Updated value [<value expr="request"/>]</log>
+<log>INFO: Current value [<value expr="isInfoSaved"/>]</log>
+<assign name="isInfoSaved" expr="'true'+''" />
+<log>INFO: Updated value [<value expr="isInfoSaved"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

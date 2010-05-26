@@ -11,10 +11,7 @@
         <block>
 	    <log target="status">Set Variables</log>
             <log>INFO: Entered assign-variable.vxml [105-64]</log>
-            <log>INFO: Current value [<value expr="''"/>]</log>
-<assign name="''" expr="'/interact/apps/spotbuild/listen_conference/audio/'+audioURL" />
-<log>INFO: Updated value [<value expr="''"/>]</log>
-<log>INFO: Current value [<value expr="isActive"/>]</log>
+            <log>INFO: Current value [<value expr="isActive"/>]</log>
 <assign name="isActive" expr="'true'+''" />
 <log>INFO: Updated value [<value expr="isActive"/>]</log>
 
