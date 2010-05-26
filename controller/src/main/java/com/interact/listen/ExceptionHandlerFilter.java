@@ -22,14 +22,15 @@ public class ExceptionHandlerFilter implements Filter
 
         try
         {
+            resp.setStatus(HttpServletResponse.SC_OK); // default status is 200
             filterChain.doFilter(request, response);
         }
         catch(Throwable t) // SUPPRESS CHECKSTYLE IllegalCatchCheck
         {
             LOG.error("Handling throwable", t);
-            if(t.getCause() instanceof ListenServletException)
+            if(t instanceof ListenServletException || t.getCause() instanceof ListenServletException)
             {
-                ListenServletException e = (ListenServletException)t.getCause();
+                ListenServletException e = t instanceof ListenServletException ? (ListenServletException)t : (ListenServletException)t.getCause();
                 resp.setStatus(e.getStatus());
                 OutputBufferFilter.append(request, e.getContent(), e.getContentType());
             }

@@ -1,16 +1,47 @@
 package com.interact.listen.api;
 
+import com.interact.listen.ListenServletException;
 import com.interact.listen.resource.Resource;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
+/**
+ * Extracts information about an API {@link Resource} from the request path information. The extracted information is
+ * put into request attributes. The following are example paths and how they would be extracted into the request
+ * attributes.
+ * <table>
+ * <tr>
+ * <th>Path Info</th>
+ * <th>RESOURCE_CLASS</th>
+ * <th>RESOURCE_ID</th>
+ * </tr>
+ * <tr>
+ * <td>{@code /conferences}</td>
+ * <td>{@code com.interact.listen.resource.Conference.class}</td>
+ * <td>{@code null}</td>
+ * </tr>
+ * <tr>
+ * <td>{@code /conferences/15}</td>
+ * <td>{@code com.interact.listen.resource.Conference.class}</td>
+ * <td>{@code 15}</td>
+ * </tr>
+ * </table>
+ */
 public class ApiResourceLocatorFilter implements Filter
 {
     public static final String RESOURCE_CLASS_KEY = "RESOURCE_CLASS";
     public static final String RESOURCE_ID_KEY = "RESOURCE_ID";
+
+    /** Class logger */
+    private static final Logger LOG = Logger.getLogger(ApiResourceLocatorFilter.class);
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
@@ -19,27 +50,39 @@ public class ApiResourceLocatorFilter implements Filter
         request.setAttribute(RESOURCE_CLASS_KEY, null);
         request.setAttribute(RESOURCE_ID_KEY, null);
 
+        final String pathRegex = "/([A-Za-z]+s)(/([0-9]+)(/([A-Za-z]+))?)?";
         String pathInfo = ((HttpServletRequest)request).getPathInfo();
         if(pathInfo != null && pathInfo.length() > 1)
         {
-            pathInfo = stripLeadingSlash(pathInfo);
-            String[] parts = pathInfo.split("/");
+            Pattern pattern = Pattern.compile(pathRegex);
+            Matcher matcher = pattern.matcher(pathInfo);
 
-            String className = getResourceClassName(parts[0]);
-            try
+            if(!matcher.matches())
             {
-                Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
-                request.setAttribute(RESOURCE_CLASS_KEY, resourceClass);
-            }
-            catch(ClassNotFoundException e)
-            {
-                // TODO this should yield a 400 Bad Request - make sure that it does
-                throw new ServletException(e);
+                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Unparseable URL", "text/plain");
             }
 
-            if(parts.length > 1)
+            if(matcher.group(3) != null && !matcher.group(3).trim().equals(""))
             {
-                request.setAttribute(RESOURCE_ID_KEY, parts[1]);
+                request.setAttribute(RESOURCE_ID_KEY, matcher.group(3));
+                LOG.debug("Set [" + RESOURCE_ID_KEY + "] to [" + matcher.group(3) + "]");
+            }
+
+            if(matcher.group(1) != null && !matcher.group(1).trim().equals(""))
+            {
+                try
+                {
+                    String className = getResourceClassName(matcher.group(1));
+                    Class<? extends Resource> resourceClass = (Class<? extends Resource>)Class.forName(className);
+                    request.setAttribute(RESOURCE_CLASS_KEY, resourceClass);
+                    LOG.debug("Set [" + RESOURCE_CLASS_KEY + "] to [" + resourceClass + "]");
+                }
+                catch(ClassNotFoundException e)
+                {
+                    throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Resource not found for [" +
+                                                                                         matcher.group(1) + "]",
+                                                     "text/plain");
+                }
             }
         }
 
@@ -56,21 +99,6 @@ public class ApiResourceLocatorFilter implements Filter
     public void destroy()
     {
         // no default implementation
-    }
-
-    /**
-     * Strips a leading "/" character from the provided {@code String} if one is present.
-     * 
-     * @param string string from which to strip leading slash
-     * @return string with leading slash removed, if necessary
-     */
-    private String stripLeadingSlash(String string)
-    {
-        if(string.startsWith("/"))
-        {
-            return string.substring(1);
-        }
-        return string;
     }
 
     /**

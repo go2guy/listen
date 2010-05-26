@@ -48,7 +48,6 @@ public class ApiServlet extends HttpServlet
         UriResourceAttributes attributes = getResourceAttributes(request);
         if(attributes.getResourceClass() == null)
         {
-            response.setStatus(HttpServletResponse.SC_OK);
             OutputBufferFilter.append(request, "Welcome to the Listen Controller API", "text/plain");
             return;
         }
@@ -86,7 +85,6 @@ public class ApiServlet extends HttpServlet
             try
             {
                 String content = listService.list();
-                response.setStatus(HttpServletResponse.SC_OK);
                 OutputBufferFilter.append(request, content, marshaller.getContentType());
             }
             catch(UniqueResultNotFoundException e)
@@ -103,8 +101,7 @@ public class ApiServlet extends HttpServlet
             // id provided, request is looking for a specific resource
             if(!isValidResourceId(attributes.getId()))
             {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
+                throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
             }
 
             Resource resource = persistenceService.get(attributes.getResourceClass(),
@@ -121,7 +118,6 @@ public class ApiServlet extends HttpServlet
             }
 
             content.append(marshaller.marshal(resource));
-            response.setStatus(HttpServletResponse.SC_OK);
             OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
         }
     }
@@ -266,7 +262,6 @@ public class ApiServlet extends HttpServlet
         }
 
         content.append(marshaller.marshal(resource));
-        response.setStatus(HttpServletResponse.SC_OK);
         OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
     }
 
