@@ -96,7 +96,12 @@ if(user != null && user.getIsAdministrator()) { %>
               <div class="window-header">
                 <div id="conference-title" class="window-title">Conference ###</div>
                 <div class="conference-menu">
-                  <div class="buttons"><button id="schedule-button" class="schedule-button">Schedule</button></div>
+                  <div class="left-buttons" id="record-button-div">
+                    <button id="record-button" class="record-button">Record</button>
+                  </div>
+                  <div class="right-buttons">
+                    <button id="schedule-button" class="schedule-button">Schedule</button>
+                  </div>
                 </div>
               </div>
               <div class="left">

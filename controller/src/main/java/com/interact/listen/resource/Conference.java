@@ -40,6 +40,12 @@ public class Conference extends Resource implements Serializable
 
     @Column(name = "START_TIME", nullable = false)
     private Date startTime = new Date();
+    
+    @Column(name = "ARCADE_ID")
+    private String arcadeId;
+    
+    @Column(name = "RECORDING_SESSION_ID")
+    private String recordingSessionId;
 
     @OneToMany(mappedBy = "conference", fetch = FetchType.EAGER)
     private Set<Pin> pins = new HashSet<Pin>();
@@ -139,6 +145,26 @@ public class Conference extends Resource implements Serializable
     public void setDescription(String description)
     {
         this.description = description;
+    }
+    
+    public String getArcadeId()
+    {
+        return arcadeId;
+    }
+
+    public void setArcadeId(String arcadeId)
+    {
+        this.arcadeId = arcadeId;
+    }
+    
+    public String getRecordingSessionId()
+    {
+        return recordingSessionId;
+    }
+
+    public void setRecordingSessionId(String recordingSessionId)
+    {
+        this.recordingSessionId = recordingSessionId;
     }
     
     public Date getStartTime()
@@ -342,7 +368,7 @@ public class Conference extends Resource implements Serializable
             history = new ConferenceHistory();
             history.setConference(this);
             history.setUser("Current User"); // FIXME
-            history.setDescription("Conference recording " + (isRecording ? "started" : "ended"));
+            history.setDescription("Conference recording started");
 
             persistenceService = new PersistenceService(session);
             persistenceService.save(history);

@@ -92,6 +92,34 @@ var SERVER = {
             }
         });
     },
+    
+    startRecording: function(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/startRecording',
+            data: { id: id },
+            success: function(data) {
+                //noticeSuccess('Started Recording');
+            },
+            error: function(req) {
+                //noticeError(req.responseText);
+            }
+        });
+    },
+    
+    stopRecording: function(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/stopRecording',
+            data: { id: id },
+            success: function(data) {
+                //noticeSuccess('Stopped Recording');
+            },
+            error: function(req) {
+                //noticeError(req.responseText);
+            }
+        });
+    },
 
     unmuteCaller: function(id) {
         $.ajax({
@@ -151,13 +179,21 @@ function Conference(id) {
     
                         var onMessage = titleText + ': Started';
                         var offMessage = titleText + ': Waiting for administrator';
+                        var recordButton = $("#record-button-div");
     
                         if(data.info.isStarted) {
                             title.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
                             title.attr('title', onMessage);
+                            recordButton.show();
                         } else {
                             title.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
                             title.attr('title', offMessage);
+                            recordButton.hide();
+                        }
+                        
+                        var recordHtml = '<button class="' + (data.info.isRecording ? 'stop' : 'record') + '-button"' + 'onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';                        
+                        if(recordButton.html() != recordHtml) {
+                            recordButton.html(recordHtml);
                         }
                     }
                 });
@@ -207,6 +243,7 @@ function ConferenceCallerList() {
         }
 
         // mute & drop
+        // TODO can we get rid of this isAdmin block?
         if(data.isAdmin) {
             var mute = li.find('.caller-mute-icon');
             if(mute.text() != '') {

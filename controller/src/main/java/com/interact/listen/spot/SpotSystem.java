@@ -2,6 +2,7 @@ package com.interact.listen.spot;
 
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.httpclient.HttpClientImpl;
+import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -40,7 +41,8 @@ public class SpotSystem
 
     private enum SpotRequestEvent
     {
-        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), OUTDIAL("DIAL"), UNMUTE_PARTICIPANT("UNMUTE");
+        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), OUTDIAL("DIAL"), START_RECORDING("RECORD"), STOP_RECORDING("STOP_REC"),
+        UNMUTE_PARTICIPANT("UNMUTE");
 
         private String eventName;
 
@@ -64,7 +66,7 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.DROP_PARTICIPANT.eventName);
         params.put("II_SB_valueToPass", "");
-        sendSpotRequest(params);
+        sendBasicHttpRequest(params);
     }
 
     /**
@@ -81,7 +83,7 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.MUTE_PARTICIPANT.eventName);
         params.put("II_SB_valueToPass", "");
-        sendSpotRequest(params);
+        sendBasicHttpRequest(params);
     }
 
     /**
@@ -101,7 +103,43 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.OUTDIAL.eventName);
         params.put("II_SB_valueToPass", number);
-        sendSpotRequest(params);
+        sendBasicHttpRequest(params);
+    }
+    
+    /**
+     * Starts recording the provided {@code Conference}.
+     * 
+     * @param conference {@code Conference} to start recording
+     * @param adminSessionId session id of the {@code Conference} administrator
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
+    public void startRecording(Conference conference, String adminSessionId) throws IOException, SpotCommunicationException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("sessionid", adminSessionId);
+        params.put("name", "dialog.user.customEvent");
+        params.put("II_SB_eventToPass", SpotRequestEvent.START_RECORDING.eventName);
+        params.put("II_SB_valueToPass", "");
+        sendPhpRequest(params);
+    }
+    
+    /**
+     * Stops recording the provided {@code Conference}.
+     * 
+     * @param conference {@code Conference} to stop recording
+     * @param adminSessionId session id of the {@code Conference} administrator
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
+    public void stopRecording(Conference conference, String adminSessionId) throws IOException, SpotCommunicationException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("sessionid", adminSessionId);
+        params.put("name", "dialog.user.customEvent");
+        params.put("II_SB_eventToPass", SpotRequestEvent.STOP_RECORDING.eventName);
+        params.put("II_SB_valueToPass", "");
+        sendPhpRequest(params);
     }
 
     /**
@@ -118,12 +156,29 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.UNMUTE_PARTICIPANT.eventName);
         params.put("II_SB_valueToPass", "");
-        sendSpotRequest(params);
+        sendBasicHttpRequest(params);
     }
 
-    private void sendSpotRequest(Map<String, String> params) throws IOException, SpotCommunicationException
+    private void sendBasicHttpRequest(Map<String, String> params) throws IOException, SpotCommunicationException
     {
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
+        
+        String uri = httpInterfaceUri + "/spot/ccxml/basichttp";
+        httpClient.post(httpInterfaceUri, params);
+
+        int status = httpClient.getResponseStatus();
+        if(!isSuccessStatus(status))
+        {
+            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" +
+                                                 httpInterfaceUri + "]");
+        }
+    }
+    
+    private void sendPhpRequest(Map<String, String> params) throws IOException, SpotCommunicationException
+    {
+        statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
+        
+        String uri = httpInterfaceUri + "some funky php location";        
         httpClient.post(httpInterfaceUri, params);
 
         int status = httpClient.getResponseStatus();

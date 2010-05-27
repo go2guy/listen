@@ -150,6 +150,18 @@
         <servlet-class>com.interact.listen.gui.SetPropertiesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>StartRecordingServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.StartRecordingServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>StopRecordingServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.StopRecordingServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>UnmuteParticipantServlet</servlet-name>
@@ -216,6 +228,16 @@
     <servlet-mapping>
         <servlet-name>SetPropertiesServlet</servlet-name>
         <url-pattern>/ajax/setProperties</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>StartRecordingServlet</servlet-name>
+        <url-pattern>/ajax/startRecording</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>StopRecordingServlet</servlet-name>
+        <url-pattern>/ajax/stopRecording</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

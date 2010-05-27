@@ -60,7 +60,7 @@
     width: 100%;
 }
 
-.add-button, .cancel-button, .delete-button, .mute-button, .outdial-button, .save-button, .schedule-button, .unmute-button, .unmute-button-disabled, .view-button {
+.add-button, .cancel-button, .delete-button, .mute-button, .outdial-button, .record-button, .save-button, .schedule-button, .stop-button, .unmute-button, .unmute-button-disabled, .view-button {
     background-color: #EEEEEE;
     background-position: 2px 2px;
     background-repeat: no-repeat;
@@ -81,7 +81,7 @@
     width: 24px;
 }
 
-.add-button:hover, .cancel-button:hover, .delete-button:hover, .mute-button:hover, .outdial-button:hover, .save-button:hover, .schedule-button:hover, .unmute-button:hover, .view-button:hover {
+.add-button:hover, .cancel-button:hover, .delete-button:hover, .mute-button:hover, .outdial-button:hover, .record-button:hover, .save-button:hover, .schedule-button:hover, .stop-button:hover, .unmute-button:hover, .view-button:hover {
     background-color: #FFFFFF;
 }
 
@@ -125,6 +125,14 @@
     background-image: url('../images/new/icon_outdial_hover_16x16.png');
 }
 
+.record-button {
+    background-image: url('../images/new/icon_record_16x16.png');
+}
+
+.record-button:hover {
+    background-image: url('../images/new/icon_record_hover_16x16.png');
+}
+
 .save-button {
     background-image: url('../images/new/icon_save_16x16.png');
 }
@@ -139,6 +147,14 @@
 
 .schedule-button:hover {
     background-image: url('../images/new/icon_schedule_hover_16x16.png');
+}
+
+.stop-button {
+    background-image: url('../images/new/icon_stop_16x16.png');
+}
+
+.stop-button:hover {
+    background-image: url('../images/new/icon_stop_hover_16x16.png');
 }
 
 .unmute-button {
@@ -372,7 +388,12 @@ li.odd {
     margin: 3px 0 3px 6px;
 }
 
-.conference-menu div.buttons {
+.conference-menu div.left-buttons {
+    float: left;
+    padding-left: 6px;
+}
+
+.conference-menu div.right-buttons {
     float: right;
     padding-right: 6px;
 }
