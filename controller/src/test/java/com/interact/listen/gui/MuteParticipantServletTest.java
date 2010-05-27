@@ -131,12 +131,10 @@ public class MuteParticipantServletTest
         conference.setUser(user);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        session.save(pin);
-
-        conference.addToPins(pin);
+        conference.addPin(pin);
         session.save(conference);
 
-        user.addToConferences(conference);
+        user.addConference(conference);
         session.save(user);
 
         Participant participant = new Participant();
@@ -245,12 +243,10 @@ public class MuteParticipantServletTest
         conference.setUser(user);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        session.save(pin);
-
-        conference.addToPins(pin);
+        conference.addPin(pin);
         session.save(conference);
 
-        user.addToConferences(conference);
+        user.addConference(conference);
         session.save(user);
 
         Participant participant = new Participant();
@@ -302,9 +298,7 @@ public class MuteParticipantServletTest
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        session.save(pin);
-
-        conference.addToPins(pin);
+        conference.addPin(pin);
         session.save(conference);
 
         Participant participant = new Participant();

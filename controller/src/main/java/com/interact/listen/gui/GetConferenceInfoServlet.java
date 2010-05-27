@@ -1,7 +1,6 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.*;
-import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -13,7 +12,7 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.Date;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -75,7 +74,7 @@ public class GetConferenceInfoServlet extends HttpServlet
         {
             content.append("{");
             content.append("\"info\":").append(getInfo(conference, marshaller)).append(",");
-            content.append("\"participants\":").append(getParticipants(conference, marshaller, session)).append(",");
+            content.append("\"participants\":").append(getParticipants(conference, marshaller)).append(",");
             content.append("\"pins\":").append(getPins(conference, marshaller, session)).append(",");
             content.append("\"history\":").append(getHistory(conference, marshaller, session));
             content.append("}");
@@ -93,42 +92,58 @@ public class GetConferenceInfoServlet extends HttpServlet
     {
         return marshaller.marshal(conference);
     }
-
-    private String getParticipants(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
+    
+    private ResourceList getResourceList(ArrayList<Resource> content)
     {
-        Builder builder = new ResourceListService.Builder(Participant.class, session, marshaller)
-            .addSearchProperty("conference", "/conferences/" + conference.getId())
-            .addReturnField("id")
-            .addReturnField("isAdmin")
-            .addReturnField("isAdminMuted")
-            .addReturnField("isMuted")
-            .addReturnField("isPassive")
-            .addReturnField("number");
-        ResourceListService service = builder.build();
-        return service.list();
+        ResourceList list = new ResourceList();
+        list.setFirst(0);
+        list.setMax(content.size());
+        list.setTotal(Long.valueOf(content.size()));
+        list.setList(content);
+        return list;
+    }
+    
+    private String getParticipants(Conference conference, Marshaller marshaller) throws CriteriaCreationException
+    {
+        ResourceList list = getResourceList(new ArrayList<Resource>(conference.getParticipants()));
+
+        Set<String> fields = new HashSet<String>();
+        fields.add("id");
+        fields.add("isAdmin");
+        fields.add("isAdminMuted");
+        fields.add("isMuted");
+        fields.add("isPassive");
+        fields.add("number");
+        list.setFields(fields);
+
+        return marshaller.marshal(list, Participant.class);
     }
 
     private String getPins(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
     {
-        Builder builder = new ResourceListService.Builder(Pin.class, session, marshaller)
-            .addSearchProperty("conference", "/conferences/" + conference.getId())
-            .addReturnField("id")
-            .addReturnField("number")
-            .addReturnField("type");
-        ResourceListService service = builder.build();
-        return service.list();
+        ResourceList list = getResourceList(new ArrayList<Resource>(conference.getPins()));
+        
+        Set<String> fields = new HashSet<String>();
+        fields.add("id");
+        fields.add("number");
+        fields.add("type");
+        list.setFields(fields);
+        
+        return marshaller.marshal(list, Pin.class);
     }
 
     private String getHistory(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
     {
-        Builder builder = new ResourceListService.Builder(ConferenceHistory.class, session, marshaller)
-            .addSearchProperty("conference", "/conferences/" + conference.getId())
-            .addReturnField("dateCreated")
-            .addReturnField("description")
-            .addReturnField("id")
-            .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING)
-            .withMax(15);
-        ResourceListService service = builder.build();
-        return service.list();
+        ResourceList list = getResourceList(new ArrayList<Resource>(conference.getConferenceHistorys()));
+        
+        Set<String> fields = new HashSet<String>();
+        fields.add("dateCreated");
+        fields.add("description");
+        fields.add("id");
+        list.setFields(fields);
+
+        // FIXME make ConferenceHistorys a TreeSet sorted by dateCreated DESCENDING (on Conference)
+        // FIXME enforce max of 15
+        return marshaller.marshal(list, ConferenceHistory.class);
     }
 }

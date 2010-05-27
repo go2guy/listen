@@ -25,10 +25,7 @@ public class ConferenceHistory extends Resource implements Serializable
     @Column(name = "DATE_CREATED")
     private Date dateCreated = new Date();
 
-    @JoinTable(name = "CONFERENCE_CONFERENCE_HISTORY",
-               joinColumns = @JoinColumn(name = "CONFERENCE_HISTORY_ID"),
-               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_ID"))
-    @ManyToOne(optional = true)
+    @ManyToOne
     private Conference conference;
 
     @Column(name = "USER", nullable = false)

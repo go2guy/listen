@@ -146,16 +146,22 @@ public class ConferenceTest
         Conference original = getPopulatedConference();
         Conference copy = original.copy(false);
 
-        assertTrue(original.getConferenceHistorys() == copy.getConferenceHistorys()); // same reference
-        assertTrue(original.getConferenceRecordings() == copy.getConferenceRecordings()); // same reference
         assertEquals(original.getIsStarted(), copy.getIsStarted());
         assertEquals(original.getIsRecording(), copy.getIsRecording());
-        assertTrue(original.getParticipants() == copy.getParticipants()); // same reference
 
-        // pins cannot be the same reference - in fact, i don't think any collection can
         // FIXME make all collections and references deep copies
-        assertFalse(original.getPins() == copy.getPins()); // different reference
-        // TODO containsAll check here
+
+        assertEquals(original.getPins().size(), copy.getPins().size());
+        assertTrue(original.getPins().containsAll(copy.getPins()));
+
+        assertEquals(original.getParticipants().size(), copy.getParticipants().size());
+        assertTrue(original.getParticipants().containsAll(copy.getParticipants()));
+
+        assertEquals(original.getConferenceHistorys().size(), copy.getConferenceHistorys().size());
+        assertTrue(original.getConferenceHistorys().containsAll(copy.getConferenceHistorys()));
+
+        assertEquals(original.getConferenceRecordings().size(), copy.getConferenceRecordings().size());
+        assertTrue(original.getConferenceRecordings().containsAll(copy.getConferenceRecordings()));
 
         assertNull(copy.getId());
         assertEquals(Integer.valueOf(0), copy.getVersion());
@@ -260,7 +266,7 @@ public class ConferenceTest
             user.setUsername(String.valueOf(System.currentTimeMillis()));
             user.setPassword(String.valueOf(System.currentTimeMillis()));
 
-            user.addToConferences(conference);
+            user.addConference(conference);
             conference.setUser(user);
 
             session.save(conference);

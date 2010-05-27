@@ -34,41 +34,26 @@ public class Conference extends Resource implements Serializable
 
     @Column(name = "IS_STARTED", nullable = false)
     private Boolean isStarted;
-    
+
     @Column(name = "IS_RECORDING", nullable = false)
     private Boolean isRecording;
-    
+
     @Column(name = "START_TIME", nullable = false)
     private Date startTime = new Date();
 
-    @JoinTable(name = "CONFERENCE_PIN",
-               joinColumns = @JoinColumn(name = "CONFERENCE_ID", unique = true),
-               inverseJoinColumns = @JoinColumn(name = "PIN_ID"))
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "conference", fetch = FetchType.EAGER)
     private Set<Pin> pins = new HashSet<Pin>();
 
-    @JoinTable(name = "CONFERENCE_PARTICIPANT",
-               joinColumns = @JoinColumn(name = "CONFERENCE_ID", unique = true),
-               inverseJoinColumns = @JoinColumn(name = "PARTICIPANT_ID"))
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Participant> participants = new TreeSet<Participant>();
+    @OneToMany(mappedBy = "conference", fetch = FetchType.EAGER)
+    private Set<Participant> participants = new HashSet<Participant>();
 
-    @JoinTable(name = "CONFERENCE_CONFERENCE_HISTORY",
-               joinColumns = @JoinColumn(name = "CONFERENCE_ID", unique = true),
-               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_HISTORY_ID"))
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "conference", fetch = FetchType.EAGER)
     private Set<ConferenceHistory> conferenceHistorys = new HashSet<ConferenceHistory>();
-    
-    @JoinTable(name = "CONFERENCE_CONFERENCE_RECORDING",
-               joinColumns = @JoinColumn(name = "CONFERENCE_ID", unique = true),
-               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_RECORDING_ID"))
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+
+    @OneToMany(mappedBy = "conference", fetch = FetchType.EAGER)
     private Set<ConferenceRecording> conferenceRecordings = new HashSet<ConferenceRecording>();
 
-    @JoinTable(name = "USER_CONFERENCE",
-               joinColumns = @JoinColumn(name = "CONFERENCE_ID"),
-               inverseJoinColumns = @JoinColumn(name = "USER_ID"))
-    @ManyToOne(optional = true)
+    @ManyToOne
     private User user;
 
     public Boolean getIsStarted()
@@ -98,17 +83,30 @@ public class Conference extends Resource implements Serializable
 
     public void setPins(Set<Pin> pins)
     {
-        this.pins = pins;
+        for(Pin pin : this.pins)
+        {
+            removePin(pin);
+        }
+
+        if(pins != null)
+        {
+            for(Pin pin : pins)
+            {
+                addPin(pin);
+            }
+        }
     }
 
-    public void addToPins(Pin pin)
+    public void addPin(Pin pin)
     {
-        this.pins.add(pin);
+        pins.add(pin);
+        pin.setConference(this);
     }
 
-    public void removeFromPins(Pin pin)
+    public void removePin(Pin pin)
     {
-        this.pins.remove(pin);
+        pin.setConference(null);
+        pins.remove(pin);
     }
 
     @Override
@@ -160,16 +158,29 @@ public class Conference extends Resource implements Serializable
 
     public void setParticipants(Set<Participant> participants)
     {
-        this.participants = participants;
+        for(Participant participant : this.participants)
+        {
+            removeParticipant(participant);
+        }
+
+        if(participants != null)
+        {
+            for(Participant participant : participants)
+            {
+                addParticipant(participant);
+            }
+        }
     }
 
-    public void addToParticipants(Participant participant)
+    public void addParticipant(Participant participant)
     {
-        this.participants.add(participant);
+        participants.add(participant);
+        participant.setConference(this);
     }
 
-    public void removeFromParticipants(Participant participant)
+    public void removeParticipant(Participant participant)
     {
+        participant.setConference(null);
         this.participants.remove(participant);
     }
 
@@ -180,17 +191,30 @@ public class Conference extends Resource implements Serializable
 
     public void setConferenceHistorys(Set<ConferenceHistory> conferenceHistorys)
     {
-        this.conferenceHistorys = conferenceHistorys;
+        for(ConferenceHistory conferenceHistory : this.conferenceHistorys)
+        {
+            removeConferenceHistory(conferenceHistory);
+        }
+
+        if(conferenceHistorys != null)
+        {
+            for(ConferenceHistory conferenceHistory : conferenceHistorys)
+            {
+                addConferenceHistory(conferenceHistory);
+            }
+        }
     }
 
-    public void addToConferenceHistorys(ConferenceHistory conferenceHistory)
+    public void addConferenceHistory(ConferenceHistory conferenceHistory)
     {
-        this.conferenceHistorys.add(conferenceHistory);
+        conferenceHistorys.add(conferenceHistory);
+        conferenceHistory.setConference(this);
     }
 
-    public void removeFromConferenceHistorys(ConferenceHistory conferenceHistory)
+    public void removeConferenceHistory(ConferenceHistory conferenceHistory)
     {
-        this.conferenceHistorys.remove(conferenceHistory);
+        conferenceHistory.setConference(null);
+        conferenceHistorys.remove(conferenceHistory);
     }
 
     public Set<ConferenceRecording> getConferenceRecordings()
@@ -200,7 +224,30 @@ public class Conference extends Resource implements Serializable
 
     public void setConferenceRecordings(Set<ConferenceRecording> conferenceRecordings)
     {
-        this.conferenceRecordings = conferenceRecordings;
+        for(ConferenceRecording conferenceRecording : this.conferenceRecordings)
+        {
+            removeConferenceRecording(conferenceRecording);
+        }
+
+        if(conferenceRecordings != null)
+        {
+            for(ConferenceRecording conferenceRecording : conferenceRecordings)
+            {
+                addConferenceRecording(conferenceRecording);
+            }
+        }
+    }
+
+    public void addConferenceRecording(ConferenceRecording conferenceRecording)
+    {
+        conferenceRecordings.add(conferenceRecording);
+        conferenceRecording.setConference(this);
+    }
+
+    public void removeConferenceRecording(ConferenceRecording conferenceRecording)
+    {
+        conferenceRecording.setConference(null);
+        conferenceRecordings.remove(conferenceRecording);
     }
 
     public User getUser()
@@ -251,20 +298,25 @@ public class Conference extends Resource implements Serializable
 
         copy.setDescription(description);
         copy.setStartTime(startTime);
-        copy.setConferenceHistorys(conferenceHistorys);
-        copy.setConferenceRecordings(conferenceRecordings);
+        for(ConferenceHistory conferenceHistory : conferenceHistorys)
+        {
+            copy.addConferenceHistory(conferenceHistory);
+        }
+        for(ConferenceRecording conferenceRecording : conferenceRecordings)
+        {
+            copy.addConferenceRecording(conferenceRecording);
+        }
         copy.setIsStarted(isStarted);
         copy.setIsRecording(isRecording);
-        copy.setParticipants(participants);
-
-        Set<Pin> newPins = new HashSet<Pin>();
+        for(Participant participant : participants)
+        {
+            copy.addParticipant(participant);
+        }
         for(Pin pin : pins)
         {
-            newPins.add(pin.copy(false));
+            copy.addPin(pin);
         }
-        copy.setPins(newPins);
         copy.setUser(user);
-
         return copy;
     }
 

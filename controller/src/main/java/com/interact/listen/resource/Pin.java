@@ -37,10 +37,7 @@ public class Pin extends Resource implements Serializable
         ACTIVE, ADMIN, PASSIVE;
     }
 
-    @JoinTable(name = "CONFERENCE_PIN",
-               joinColumns = @JoinColumn(name = "PIN_ID"),
-               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_ID"))
-    @ManyToOne(optional = true)
+    @ManyToOne
     private Conference conference;
 
     // factory creation method

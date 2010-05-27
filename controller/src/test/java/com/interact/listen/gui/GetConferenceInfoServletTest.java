@@ -112,7 +112,7 @@ public class GetConferenceInfoServletTest
         user.setPassword(String.valueOf(System.currentTimeMillis()));
 
         conference.setUser(user);
-        user.addToConferences(conference);
+        user.addConference(conference);
 
         session.save(conference);
         session.save(user);

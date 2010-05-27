@@ -40,10 +40,7 @@ public class User extends Resource implements Serializable
     @Column(name = "IS_ADMINISTRATOR")
     private Boolean isAdministrator = Boolean.FALSE;
 
-    @JoinTable(name = "USER_CONFERENCE",
-               joinColumns = @JoinColumn(name = "USER_ID", unique = true),
-               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_ID"))
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
 
     @Override
@@ -125,17 +122,30 @@ public class User extends Resource implements Serializable
 
     public void setConferences(Set<Conference> conferences)
     {
-        this.conferences = conferences;
+        for(Conference conference : this.conferences)
+        {
+            removeConference(conference);
+        }
+
+        if(conferences != null)
+        {
+            for(Conference conference : conferences)
+            {
+                addConference(conference);
+            }
+        }
     }
 
-    public void addToConferences(Conference conference)
+    public void addConference(Conference conference)
     {
-        this.conferences.add(conference);
+        conferences.add(conference);
+        conference.setUser(this);
     }
 
-    public void removeFromConferences(Conference conference)
+    public void removeConference(Conference conference)
     {
-        this.conferences.remove(conference);
+        conference.setUser(null);
+        conferences.remove(conference);
     }
 
     @Override
@@ -182,7 +192,7 @@ public class User extends Resource implements Serializable
 
         for(Conference conference : conferences)
         {
-            copy.addToConferences(conference);
+            copy.addConference(conference);
         }
         return copy;
     }

@@ -24,6 +24,14 @@ public class ListenServletException extends ServletException
         this.contentType = contentType;
     }
 
+    public ListenServletException(int status, String content, String contentType, Throwable cause)
+    {
+        super(cause);
+        this.status = status;
+        this.content = content;
+        this.contentType = contentType;
+    }
+
     public int getStatus()
     {
         return status;
@@ -37,5 +45,11 @@ public class ListenServletException extends ServletException
     public String getContentType()
     {
         return contentType;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Status = [" + status + "], Content = [" + content + "], ContentType = [" + contentType + "]";
     }
 }

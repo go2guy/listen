@@ -9,10 +9,7 @@ public class ConferenceRecording extends Audio
 {
     private static final long serialVersionUID = 1L;
 
-    @JoinTable(name = "CONFERENCE_CONFERENCE_RECORDING",
-               joinColumns = @JoinColumn(name = "CONFERENCE_RECORDING_ID"),
-               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_ID"))
-    @ManyToOne(optional = true)
+    @ManyToOne
     private Conference conference;
 
     public Conference getConference()

@@ -130,12 +130,10 @@ public class UnmuteParticipantServletTest
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
         conference.setUser(user);
 
-        Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-
-        conference.getPins().add(pin);
+        conference.addPin(Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN));
         session.save(conference);
 
-        user.addToConferences(conference);
+        user.addConference(conference);
         session.save(user);
 
         Participant participant = new Participant();
@@ -244,12 +242,10 @@ public class UnmuteParticipantServletTest
         conference.setUser(user);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        session.save(pin);
-
-        conference.addToPins(pin);
+        conference.addPin(pin);
         session.save(conference);
 
-        user.addToConferences(conference);
+        user.addConference(conference);
         session.save(user);
 
         Participant participant = new Participant();
@@ -301,9 +297,7 @@ public class UnmuteParticipantServletTest
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        session.save(pin);
-
-        conference.addToPins(pin);
+        conference.addPin(pin);
         session.save(conference);
 
         Participant participant = new Participant();

@@ -30,10 +30,7 @@ public class Participant extends Resource implements Serializable
     @Column(name = "AUDIO_RESOURCE", nullable = false)
     private String audioResource;
 
-    @JoinTable(name = "CONFERENCE_PARTICIPANT",
-               joinColumns = @JoinColumn(name = "PARTICIPANT_ID"),
-               inverseJoinColumns = @JoinColumn(name = "CONFERENCE_ID"))
-    @ManyToOne(optional = true)
+    @ManyToOne
     private Conference conference;
 
     @Column(name = "IS_ADMIN", nullable = false)

@@ -190,7 +190,7 @@ public class ApiServlet extends HttpServlet
         {
             throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
                                              "The content you provided was malformed, please fix it: " + e.getMessage(),
-                                             "text/plain");
+                                             "text/plain", e);
         }
     }
 

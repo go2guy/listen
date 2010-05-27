@@ -7,8 +7,6 @@ import com.interact.listen.security.SecurityUtil;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.*;
@@ -178,26 +176,31 @@ public final class HibernateUtil
 
             String basePin = new DecimalFormat("000").format(i + 100);
 
-            Set<Pin> pins = new HashSet<Pin>();
-            pins.add(Pin.newRandomInstance(PinType.ACTIVE));
-            pins.add(Pin.newRandomInstance(PinType.ADMIN));
-            pins.add(Pin.newRandomInstance(PinType.PASSIVE));
-
             Conference conference = new Conference();
             conference.setDescription(subscriber.getNumber());
             conference.setIsRecording(false);
             conference.setIsStarted(true);
-            conference.setPins(pins);
+
+            Pin active = Pin.newRandomInstance(PinType.ACTIVE);
+            Pin admin = Pin.newRandomInstance(PinType.ADMIN);
+            Pin passive = Pin.newRandomInstance(PinType.PASSIVE);
+
+            persistenceService.save(active);
+            persistenceService.save(admin);
+            persistenceService.save(passive);
+
+            conference.addPin(active);
+            conference.addPin(admin);
+            conference.addPin(passive);
             persistenceService.save(conference);
 
             User user = new User();
             user.setPassword(SecurityUtil.hashPassword("super"));
             user.setSubscriber(subscriber);
             user.setUsername(subscriber.getNumber());
-            user.addToConferences(conference);
             persistenceService.save(user);
 
-            LOG.debug("Saved Conference " + conference.getId());
+            user.addConference(conference);
 
             for(int j = 0; j < 10; j++)
             {
@@ -212,8 +215,10 @@ public final class HibernateUtil
                 participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
                 persistenceService.save(participant);
 
-                LOG.debug("Saved Participant " + participant.getId());
+                conference.addParticipant(participant);
             }
+
+            LOG.debug("Saved User [" + user + "]");
         }
     }
 

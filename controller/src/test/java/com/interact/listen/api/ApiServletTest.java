@@ -11,6 +11,7 @@ import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.User;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -421,6 +422,8 @@ public class ApiServletTest
         StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         content.append(marshaller.marshal(conference));
+
+        System.out.println("CONTENT: [" + content + "]");
 
         InputStream stream = new ByteArrayInputStream(content.toString().getBytes());
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
