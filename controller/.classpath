@@ -33,8 +33,6 @@
 	<classpathentry kind="lib" path="lib/runtime/insa-stats-client.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/build/findbugs.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/jstl-impl-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/jstl-api-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/build/jetty/jetty-6.1.24.jar"/>
 	<classpathentry kind="lib" path="lib/build/jetty/jetty-util-6.1.24.jar"/>
 	<classpathentry kind="lib" path="lib/build/jetty/servlet-api-2.5-20081211.jar"/>
