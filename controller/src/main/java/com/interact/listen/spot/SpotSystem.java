@@ -163,7 +163,7 @@ public class SpotSystem
     {
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
         
-        String uri = httpInterfaceUri + "/spot/ccxml/basichttp";
+        //String uri = httpInterfaceUri + "/spot/ccxml/basichttp";
         httpClient.post(httpInterfaceUri, params);
 
         int status = httpClient.getResponseStatus();
@@ -179,13 +179,13 @@ public class SpotSystem
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
         
         String uri = httpInterfaceUri + "some funky php location";        
-        httpClient.post(httpInterfaceUri, params);
+        httpClient.post(uri, params);
 
         int status = httpClient.getResponseStatus();
         if(!isSuccessStatus(status))
         {
             throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" +
-                                                 httpInterfaceUri + "]");
+                                                 uri + "]");
         }
     }
 
