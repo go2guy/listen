@@ -11,19 +11,24 @@ import java.text.DecimalFormat;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "PIN")
 public class Pin extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "NUMBER", nullable = false, unique = true)
     private String number;
 
-    @Column(nullable = false)
+    @Column(name = "TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
     private PinType type = PinType.ACTIVE;
 
@@ -32,6 +37,7 @@ public class Pin extends Resource implements Serializable
         ACTIVE, ADMIN, PASSIVE;
     }
 
+    @JoinColumn(name = "CONFERENCE_ID")
     @ManyToOne
     private Conference conference;
 

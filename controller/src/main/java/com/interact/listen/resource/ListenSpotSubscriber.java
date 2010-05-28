@@ -10,20 +10,25 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 @Entity
+@Table(name = "LISTEN_SPOT_SUBSCRIBER")
 public class ListenSpotSubscriber extends Resource
 {
-    @Id
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "HTTP_API", nullable = false, unique = true)
     private String httpApi;
 
+    @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
 
+    @Column(name = "PHONE_NUMBER_PROTOCOL")
     @Enumerated(EnumType.STRING)
     private PhoneNumberProtocolType phoneNumberProtocol;
 

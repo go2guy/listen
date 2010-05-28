@@ -14,26 +14,31 @@ import javax.persistence.*;
 import org.hibernate.Session;
 
 @Entity
+@Table(name = "CONFERENCE")
 public class Conference extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
     // TODO enforce unique description per User
-    @Column(nullable = false)
+    @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "IS_STARTED", nullable = false)
     private Boolean isStarted;
     
-    @Column(nullable = false)
+    @Column(name = "IS_RECORDING", nullable = false)
     private Boolean isRecording;
     
-    @Column
+    @Column(name = "START_TIME", nullable = false)
     private Date startTime;
     
     @Column(name = "ARCADE_ID")
@@ -54,6 +59,7 @@ public class Conference extends Resource implements Serializable
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<ConferenceRecording> conferenceRecordings = new HashSet<ConferenceRecording>();
 
+    @JoinColumn(name = "USER_ID")
     @ManyToOne
     private User user;
 

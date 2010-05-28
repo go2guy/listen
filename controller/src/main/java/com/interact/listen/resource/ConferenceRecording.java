@@ -5,10 +5,12 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "CONFERENCE_RECORDING")
 public class ConferenceRecording extends Audio
 {
     private static final long serialVersionUID = 1L;
 
+    @JoinColumn(name = "CONFERENCE_ID")
     @ManyToOne
     private Conference conference;
 

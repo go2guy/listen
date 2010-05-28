@@ -9,19 +9,27 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "SUBSCRIBER")
 public class Subscriber extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "NUMBER", unique = true, nullable = false)
     private String number;
 
+    @Column(name = "VOICEMAIL_GREETING_LOCATION")
     private String voicemailGreetingLocation;
+
+    @Column(name = "VOICEMAIL_PIN")
     private String voicemailPin;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })

@@ -10,26 +10,34 @@ import java.util.Set;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "USER")
 public class User extends Resource implements Serializable
 {
-    @Id
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
+    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
+    @JoinColumn(name = "SUBSCRIBER_ID")
     @OneToOne
     private Subscriber subscriber;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "USERNAME", nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
 
+    @Column(name = "LAST_LOGIN")
     private Date lastLogin = new Date();
 
+    @Column(name = "IS_ADMINISTRATOR")
     private Boolean isAdministrator = Boolean.FALSE;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
