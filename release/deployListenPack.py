@@ -125,7 +125,7 @@ def all():
 
 def install():
     # Make it executable
-    os.chown(pack, 0700)
+    os.chmod(pack, 0700)
 
     # Extract so we can install arcade stuff...
     deployListen.run([pack])
