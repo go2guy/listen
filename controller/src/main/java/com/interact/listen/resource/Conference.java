@@ -38,7 +38,7 @@ public class Conference extends Resource implements Serializable
     @Column(name = "IS_RECORDING", nullable = false)
     private Boolean isRecording;
     
-    @Column(name = "START_TIME", nullable = false)
+    @Column(name = "START_TIME")
     private Date startTime;
     
     @Column(name = "ARCADE_ID")
