@@ -149,6 +149,14 @@ if(user != null && user.getIsAdministrator()) { %>
                     <ul id="history-list"></ul>
                   </div>
                 </div>
+                <div id="conference-recordings" class="panel">
+                  <div class="panel-header">
+                    <div class="panel-title">Recordings</div>
+                  </div>
+                  <div class="panel-content">
+                    <ul id="recordings-list"></ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div><!-- conference-application --><%
