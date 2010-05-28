@@ -11,7 +11,10 @@
         <![CDATA[
             function II_SB_JS_function(DNIS,fileLocation,returnVal)
             {
-	            var result;var tmpVal = eval("("+returnVal+")");result = tmpVal.results[0].id;return "{\\"href\\": \\"/voicemails/\\",\\"fileLocation\\": \\""+fileLocation+"\\",\\"isNew\\": true,\\"subscriber\\": { \\"href\\": \\"/subscribers/"+result+"\\"}}";
+	            var result;
+                var tmpVal = eval("("+returnVal+")");
+                result = tmpVal.results[0].id;
+                return "{\"href\": \"/voicemails/\",\"fileLocation\": \""+fileLocation+"\",\"isNew\": true,\"subscriber\": { \"href\": \"/subscribers/"+result+"\"}}";
             }
         ]]>
     </script>
