@@ -15,9 +15,14 @@ public class FriendlyIso8601DateConverter implements Converter
     @Override
     public String marshal(Object value)
     {
-        Date date = (Date)value;
-        SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
-        return sdf.format(date);
+        if(value != null)
+        {
+            Date date = (Date)value;
+            SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
+            return sdf.format(date);
+        }
+        
+        return null;
     }
 
     @Override

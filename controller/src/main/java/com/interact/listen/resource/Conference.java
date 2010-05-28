@@ -215,6 +215,7 @@ public class Conference extends Resource implements Serializable
 
         if(isStarted == null)
         {
+            
             addToErrors("isStarted cannot be null");
         }
         
@@ -268,6 +269,7 @@ public class Conference extends Resource implements Serializable
         
         if(isStarted.booleanValue())
         {
+            startTime = new Date();
             statSender.send(Stat.CONFERENCE_START);
         }
         
