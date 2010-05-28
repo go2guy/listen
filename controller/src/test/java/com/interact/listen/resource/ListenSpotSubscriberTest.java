@@ -122,7 +122,7 @@ public class ListenSpotSubscriberTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
         List<ListenSpotSubscriber> list = ListenSpotSubscriber.list(session);
-        transaction.rollback();
+        transaction.commit();
 
         assertEquals(0, list.size());
     }

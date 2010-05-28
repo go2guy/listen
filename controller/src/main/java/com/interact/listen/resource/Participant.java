@@ -13,42 +13,37 @@ import javax.persistence.*;
 import org.hibernate.Session;
 
 @Entity
-@Table(name = "PARTICIPANT")
 public class Participant extends Resource implements Serializable
 {
-    private static final long serialVersionUID = 1L;
-
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(name = "AUDIO_RESOURCE", nullable = false)
+    @Column(nullable = false)
     private String audioResource;
 
     @ManyToOne
     private Conference conference;
 
-    @Column(name = "IS_ADMIN", nullable = false)
+    @Column(nullable = false)
     private Boolean isAdmin;
 
-    @Column(name = "IS_ADMIN_MUTED", nullable = false)
+    @Column(nullable = false)
     private Boolean isAdminMuted;
 
-    @Column(name = "IS_MUTED", nullable = false)
+    @Column(nullable = false)
     private Boolean isMuted;
 
-    @Column(name = "IS_PASSIVE", nullable = false)
+    @Column(nullable = false)
     private Boolean isPassive;
 
-    @Column(name = "NUMBER", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String number;
 
-    @Column(name = "SESSION_ID", nullable = false)
+    @Column(nullable = false)
     private String sessionID;
 
     @Override

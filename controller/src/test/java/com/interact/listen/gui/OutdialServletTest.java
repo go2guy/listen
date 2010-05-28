@@ -65,7 +65,7 @@ public class OutdialServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -95,7 +95,7 @@ public class OutdialServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -125,7 +125,7 @@ public class OutdialServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -155,7 +155,7 @@ public class OutdialServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -185,7 +185,7 @@ public class OutdialServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -214,7 +214,7 @@ public class OutdialServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 

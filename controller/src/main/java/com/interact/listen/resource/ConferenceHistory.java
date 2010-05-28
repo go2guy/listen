@@ -8,30 +8,24 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CONFERENCE_HISTORY")
 public class ConferenceHistory extends Resource implements Serializable
 {
-    private static final long serialVersionUID = 1L;
-
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(name = "DATE_CREATED")
     private Date dateCreated = new Date();
 
     @ManyToOne
     private Conference conference;
 
-    @Column(name = "USER", nullable = false)
+    @Column(nullable = false)
     private String user;
 
-    @Column(name = "DESCRIPTION", nullable = false)
+    @Column(nullable = false)
     private String description;
 
     @Override

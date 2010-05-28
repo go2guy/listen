@@ -11,7 +11,6 @@ import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -235,7 +234,7 @@ public class ApiServletTest
         }
         finally
         {
-            transaction.rollback();
+            transaction.commit();
         }
     }
 
@@ -254,7 +253,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.rollback();
+        transaction.commit();
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         expectedXml += "<subscribers href=\"/subscribers?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
@@ -288,7 +287,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.rollback();
+        transaction.commit();
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());
@@ -341,7 +340,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.rollback();
+        transaction.commit();
 
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
     }
@@ -377,7 +376,7 @@ public class ApiServletTest
         }
         finally
         {
-            transaction.rollback();
+            transaction.commit();
         }
     }
 
@@ -396,7 +395,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.rollback();
+        transaction.commit();
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         expectedXml += "<conferences href=\"/conferences?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
@@ -423,8 +422,6 @@ public class ApiServletTest
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         content.append(marshaller.marshal(conference));
 
-        System.out.println("CONTENT: [" + content + "]");
-
         InputStream stream = new ByteArrayInputStream(content.toString().getBytes());
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
@@ -434,7 +431,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.rollback();
+        transaction.commit();
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());
@@ -495,7 +492,7 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.rollback();
+        transaction.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());

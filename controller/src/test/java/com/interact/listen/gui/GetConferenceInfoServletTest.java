@@ -88,33 +88,30 @@ public class GetConferenceInfoServletTest
         }
     }
 
-// @Test
-// this one is broken because there are already other conferences in the database
-// not sure why that's causing a constraint violation, though. 
+    @Test
     public void test_doGet_withExistingConference_returns200AndConferenceJSON() throws IOException, ServletException
     {
+        final Long id = System.currentTimeMillis();
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
 
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        subscriber.setNumber(String.valueOf(id));
         session.save(subscriber);
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setIsRecording(false);
+        conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        session.save(conference);
 
         User user = new User();
-        user.setIsAdministrator(false);
         user.setSubscriber(subscriber);
         user.setUsername(String.valueOf(System.currentTimeMillis()));
         user.setPassword(String.valueOf(System.currentTimeMillis()));
-
-        conference.setUser(user);
-        user.addConference(conference);
-
-        session.save(conference);
+        user.addToConferences(conference);
         session.save(user);
 
         HttpSession httpSession = request.getSession();
@@ -123,7 +120,7 @@ public class GetConferenceInfoServletTest
         request.setMethod("GET");
         servlet.service(request, response);
 
-        tx.rollback();
+        tx.commit();
 
         String hrefString = "\"href\":\"/conferences/" + conference.getId() + "\"";
         assertTrue(request.getOutputBufferString().contains(hrefString));

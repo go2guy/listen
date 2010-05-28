@@ -83,30 +83,28 @@ public class ProvisionAccountServlet extends HttpServlet
         subscriber.setNumber(number);
         persistenceService.save(subscriber);
 
+        Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
+        Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
+        Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
+
+        persistenceService.save(activePin);
+        persistenceService.save(adminPin);
+        persistenceService.save(passivePin);
+
         Conference conference = new Conference();
         conference.setDescription(subscriber.getNumber());
         conference.setIsStarted(Boolean.FALSE);
         conference.setIsRecording(Boolean.FALSE);
+        conference.addToPins(activePin);
+        conference.addToPins(adminPin);
+        conference.addToPins(passivePin);
         persistenceService.save(conference);
-
-        Pin active = Pin.newRandomInstance(PinType.ACTIVE);
-        Pin admin = Pin.newRandomInstance(PinType.ADMIN);
-        Pin passive = Pin.newRandomInstance(PinType.PASSIVE);
-
-        persistenceService.save(active);
-        persistenceService.save(admin);
-        persistenceService.save(passive);
-
-        conference.addPin(active);
-        conference.addPin(admin);
-        conference.addPin(passive);
 
         User user = new User();
         user.setPassword(SecurityUtil.hashPassword(password));
         user.setSubscriber(subscriber);
         user.setUsername(username);
+        user.addToConferences(conference);
         persistenceService.save(user);
-
-        user.addConference(conference);
     }
 }

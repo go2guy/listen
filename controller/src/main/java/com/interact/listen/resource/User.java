@@ -10,37 +10,29 @@ import java.util.Set;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER")
 public class User extends Resource implements Serializable
 {
-    private static final long serialVersionUID = 1L;
-
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "VERSION")
     @Version
     private Integer version = Integer.valueOf(0);
 
     @OneToOne
-    @PrimaryKeyJoinColumn
     private Subscriber subscriber;
 
-    @Column(name = "USERNAME", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "LAST_LOGIN")
     private Date lastLogin = new Date();
 
-    @Column(name = "IS_ADMINISTRATOR")
     private Boolean isAdministrator = Boolean.FALSE;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
 
     @Override
@@ -122,30 +114,23 @@ public class User extends Resource implements Serializable
 
     public void setConferences(Set<Conference> conferences)
     {
+        this.conferences = conferences;
         for(Conference conference : this.conferences)
         {
-            removeConference(conference);
-        }
-
-        if(conferences != null)
-        {
-            for(Conference conference : conferences)
-            {
-                addConference(conference);
-            }
+            conference.setUser(this);
         }
     }
 
-    public void addConference(Conference conference)
+    public void addToConferences(Conference conference)
     {
-        conferences.add(conference);
         conference.setUser(this);
+        this.conferences.add(conference);
     }
 
-    public void removeConference(Conference conference)
+    public void removeFromConferences(Conference conference)
     {
         conference.setUser(null);
-        conferences.remove(conference);
+        this.conferences.remove(conference);
     }
 
     @Override
@@ -192,7 +177,7 @@ public class User extends Resource implements Serializable
 
         for(Conference conference : conferences)
         {
-            copy.addConference(conference);
+            copy.addToConferences(conference);
         }
         return copy;
     }

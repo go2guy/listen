@@ -89,11 +89,11 @@ public class ApiServlet extends HttpServlet
             }
             catch(UniqueResultNotFoundException e)
             {
-                throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND);
+                throw new ListenServletException(HttpServletResponse.SC_NOT_FOUND, e);
             }
             catch(CriteriaCreationException e)
             {
-                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain");
+                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "text/plain", e);
             }
         }
         else
@@ -165,7 +165,7 @@ public class ApiServlet extends HttpServlet
             {
                 throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
                                                  "The content you provided causes a constraint violation, please fix it",
-                                                 "text/plain");
+                                                 "text/plain", e);
             }
 
             StringBuilder content = new StringBuilder();
@@ -228,7 +228,7 @@ public class ApiServlet extends HttpServlet
         catch(MalformedContentException e)
         {
             throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "The content you provided was malformed, please fix it", "text/plain");
+                                             "The content you provided was malformed, please fix it", "text/plain", e);
         }
 
         if(!resource.validate())
@@ -246,13 +246,13 @@ public class ApiServlet extends HttpServlet
         {
             throw new ListenServletException(HttpServletResponse.SC_CONFLICT,
                                              "Data in the reqest was stale.  Re-query resource before sending again",
-                                             "text/plain");
+                                             "text/plain", e);
         }
         catch(ConstraintViolationException e)
         {
             throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
                                              "The content you provided causes a constraint violation, please fix it: " +
-                                                 e.getConstraintName(), "text/plain");
+                                                 e.getConstraintName(), "text/plain", e);
         }
 
         StringBuilder content = new StringBuilder();

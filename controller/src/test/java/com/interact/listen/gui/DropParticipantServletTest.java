@@ -129,10 +129,12 @@ public class DropParticipantServletTest
         conference.setUser(user);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        conference.addPin(pin);
+        session.save(pin);
+
+        conference.addToPins(pin);
         session.save(conference);
 
-        user.addConference(conference);
+        user.addToConferences(conference);
         session.save(user);
 
         Participant participant = new Participant();
@@ -162,7 +164,7 @@ public class DropParticipantServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -209,7 +211,7 @@ public class DropParticipantServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -241,10 +243,12 @@ public class DropParticipantServletTest
         conference.setUser(user);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        conference.addPin(pin);
+        session.save(pin);
+
+        conference.addToPins(pin);
         session.save(conference);
 
-        user.addConference(conference);
+        user.addToConferences(conference);
         session.save(user);
 
         Participant participant = new Participant();
@@ -262,7 +266,7 @@ public class DropParticipantServletTest
         request.setParameter("id", String.valueOf(participant.getId()));
         servlet.service(request, response);
 
-        tx.rollback();
+        tx.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
@@ -296,7 +300,9 @@ public class DropParticipantServletTest
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        conference.addPin(pin);
+        session.save(pin);
+
+        conference.addToPins(pin);
         session.save(conference);
 
         Participant participant = new Participant();
@@ -314,7 +320,7 @@ public class DropParticipantServletTest
         request.setParameter("id", String.valueOf(participant.getId()));
         servlet.service(request, response);
 
-        tx.rollback();
+        tx.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 

@@ -2,13 +2,8 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
-import com.interact.listen.HibernateUtil;
-
-import java.util.ArrayList;
 import java.util.Date;
 
-import org.hibernate.Transaction;
-import org.hibernate.classic.Session;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -146,22 +141,16 @@ public class ConferenceTest
         Conference original = getPopulatedConference();
         Conference copy = original.copy(false);
 
+        assertTrue(original.getConferenceHistorys() == copy.getConferenceHistorys()); // same reference
+        assertTrue(original.getConferenceRecordings() == copy.getConferenceRecordings()); // same reference
         assertEquals(original.getIsStarted(), copy.getIsStarted());
         assertEquals(original.getIsRecording(), copy.getIsRecording());
+        assertTrue(original.getParticipants() == copy.getParticipants()); // same reference
 
+        // pins cannot be the same reference - in fact, i don't think any collection can
         // FIXME make all collections and references deep copies
-
-        assertEquals(original.getPins().size(), copy.getPins().size());
-        assertTrue(original.getPins().containsAll(copy.getPins()));
-
-        assertEquals(original.getParticipants().size(), copy.getParticipants().size());
-        assertTrue(original.getParticipants().containsAll(copy.getParticipants()));
-
-        assertEquals(original.getConferenceHistorys().size(), copy.getConferenceHistorys().size());
-        assertTrue(original.getConferenceHistorys().containsAll(copy.getConferenceHistorys()));
-
-        assertEquals(original.getConferenceRecordings().size(), copy.getConferenceRecordings().size());
-        assertTrue(original.getConferenceRecordings().containsAll(copy.getConferenceRecordings()));
+        assertFalse(original.getPins() == copy.getPins()); // different reference
+        // TODO containsAll check here
 
         assertNull(copy.getId());
         assertEquals(Integer.valueOf(0), copy.getVersion());
@@ -248,39 +237,6 @@ public class ConferenceTest
         assertEquals(1925950052, obj.hashCode());
     }
 
-    @Test
-    public void test_conferenceUserHibernateAssociation_correctlySetsEntities()
-    {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-
-        try
-        {
-            Conference conference = new Conference();
-            conference.setIsStarted(true);
-            conference.setIsRecording(false);
-            conference.setDescription(String.valueOf(System.currentTimeMillis()));
-
-            User user = new User();
-            user.setIsAdministrator(false);
-            user.setUsername(String.valueOf(System.currentTimeMillis()));
-            user.setPassword(String.valueOf(System.currentTimeMillis()));
-
-            user.addConference(conference);
-            conference.setUser(user);
-
-            session.save(conference);
-            session.save(user);
-
-            assertEquals(user, conference.getUser());
-            assertEquals(conference, new ArrayList<Conference>(user.getConferences()).get(0));
-        }
-        finally
-        {
-            transaction.rollback();
-        }
-    }
-    
     private Conference getPopulatedConference()
     {
         Conference c = new Conference();

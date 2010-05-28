@@ -66,7 +66,7 @@ public class LoginServletTest
         request.setParameter("password", password);
         servlet.service(request, response);
 
-        tx.rollback();
+        tx.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
@@ -96,7 +96,7 @@ public class LoginServletTest
         request.setParameter("password", "ninja");
         servlet.service(request, response);
 
-        tx.rollback();
+        tx.commit();
 
         HttpSession httpSession = request.getSession();
         Map<String, String> errors = (Map<String, String>)httpSession.getAttribute("errors");
@@ -117,7 +117,7 @@ public class LoginServletTest
         Session hibernateSession = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = hibernateSession.beginTransaction();
         servlet.service(request, response);
-        tx.rollback();
+        tx.commit();
 
         HttpSession session = request.getSession();
         Map<String, String> errors = (Map<String, String>)session.getAttribute("errors");

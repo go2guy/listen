@@ -170,10 +170,10 @@ public class StopRecordingServletTest
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
         session.save(pin);
 
-        conference.addPin(pin);
+        conference.addToPins(pin);
         session.save(conference);
 
-        user.addConference(conference);
+        user.addToConferences(conference);
         session.save(user);
 
         request.setMethod("POST");
@@ -226,10 +226,10 @@ public class StopRecordingServletTest
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
         session.save(pin);
 
-        conference.addPin(pin);
+        conference.addToPins(pin);
         session.save(conference);
 
-        user.addConference(conference);
+        user.addToConferences(conference);
         session.save(user);
 
         request.setMethod("POST");
@@ -272,7 +272,7 @@ public class StopRecordingServletTest
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
         session.save(pin);
 
-        conference.addPin(pin);
+        conference.addToPins(pin);
         session.save(conference);
 
         request.setMethod("POST");

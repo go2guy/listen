@@ -103,7 +103,7 @@ public class ProvisionAccountServletTest
         assertTrue(admin);
         assertTrue(passive);
 
-        tx.rollback();
+        tx.commit();
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -166,7 +166,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -199,7 +199,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -232,7 +232,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -265,7 +265,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -298,7 +298,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -331,7 +331,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -364,7 +364,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -397,7 +397,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -430,7 +430,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -462,7 +462,7 @@ public class ProvisionAccountServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 

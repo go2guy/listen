@@ -130,10 +130,13 @@ public class UnmuteParticipantServletTest
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
         conference.setUser(user);
 
-        conference.addPin(Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN));
+        Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
+        session.save(pin);
+
+        conference.addToPins(pin);
         session.save(conference);
 
-        user.addConference(conference);
+        user.addToConferences(conference);
         session.save(user);
 
         Participant participant = new Participant();
@@ -163,7 +166,7 @@ public class UnmuteParticipantServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -210,7 +213,7 @@ public class UnmuteParticipantServletTest
         }
         finally
         {
-            tx.rollback();
+            tx.commit();
         }
     }
 
@@ -242,10 +245,12 @@ public class UnmuteParticipantServletTest
         conference.setUser(user);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        conference.addPin(pin);
+        session.save(pin);
+
+        conference.addToPins(pin);
         session.save(conference);
 
-        user.addConference(conference);
+        user.addToConferences(conference);
         session.save(user);
 
         Participant participant = new Participant();
@@ -263,7 +268,7 @@ public class UnmuteParticipantServletTest
         request.setParameter("id", String.valueOf(participant.getId()));
         servlet.service(request, response);
 
-        tx.rollback();
+        tx.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
@@ -297,7 +302,9 @@ public class UnmuteParticipantServletTest
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
-        conference.addPin(pin);
+        session.save(pin);
+
+        conference.addToPins(pin);
         session.save(conference);
 
         Participant participant = new Participant();
@@ -315,7 +322,7 @@ public class UnmuteParticipantServletTest
         request.setParameter("id", String.valueOf(participant.getId()));
         servlet.service(request, response);
 
-        tx.rollback();
+        tx.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
