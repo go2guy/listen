@@ -2,7 +2,6 @@
 65-2 - end
 102-15 - audio-input
 hang-up - hang-up
-102-16 - end
 67-72 - data-query
 67-105 - run-javascript
 67-108 - run-javascript
@@ -25,6 +24,7 @@ hang-up - hang-up
 66-15 - audio-input
 66-16 - decision
 60-47 - assign-variable
+102-38 - decision
 103-36 - log
 103-32 - decision
 101-18 - audio-input
@@ -32,7 +32,6 @@ hang-up - hang-up
 103-34 - audio-input
 102-30 - assign-variable
 101-17 - decision
-101-13 - end
 65-15 - audio-input
 101-15 - run-javascript
 65-13 - audio-input
@@ -49,12 +48,13 @@ hang-up - hang-up
 65-11 - decision
 103-43 - audio-input
 64-8 - decision
+103-56 - decision
 56-49 - run-javascript
 103-51 - assign-variable
 68-3 - audio-input
 68-30 - run-javascript
-68-5 - data-query
 68-32 - data-query
+68-5 - data-query
 68-6 - decision
 67-23 - audio-input
 60-50 - assign-variable
@@ -68,6 +68,7 @@ hang-up - hang-up
 63-111 - assign-variable
 begin - begin
 67-98 - decision
+101-35 - decision
 101-30 - assign-variable
 101-3 - run-javascript
 66-59 - assign-variable

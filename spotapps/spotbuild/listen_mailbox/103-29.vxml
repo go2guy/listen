@@ -67,7 +67,7 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    
+    	    <log target="status">Delete Failed</log>
             <log>INFO: Entered audio-input.vxml [103-29]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
             <if cond="II_SB_cutIn == 'true'">

@@ -27,7 +27,7 @@
 
 	<form id="beginDocument">
 		<block>
-    	    
+    	    <log target="status">Chk Msg Cnt</log>
 			<log>INFO: Entered decision.vxml [103-32]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>

@@ -12,7 +12,7 @@
 	
     <form id="beginDocument">
         <block>
-    	    
+    	    <log target="status">Delete File</log>
             <log>INFO: Entered data-query.vxml [103-23]</log>
             <data name="fileOBJ" src="http://localhost/spot/cgi-bin/spotbuild/fileops.php" method="get" namelist="FILE1 OPERATION " fetchtimeout="II_SB_dataTimeOut"/>
 

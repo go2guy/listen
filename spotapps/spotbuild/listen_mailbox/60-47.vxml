@@ -11,9 +11,9 @@
         <block>
 	    <log target="status">Reset Err Cnt</log>
             <log>INFO: Entered assign-variable.vxml [60-47]</log>
-            <log>INFO: Current value [<value expr="'errCnt'"/>]</log>
-<assign name="'errCnt'" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="'errCnt'"/>]</log>
+            <log>INFO: Current value [<value expr="errCnt"/>]</log>
+<assign name="errCnt" expr="'0'+''" />
+<log>INFO: Updated value [<value expr="errCnt"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
