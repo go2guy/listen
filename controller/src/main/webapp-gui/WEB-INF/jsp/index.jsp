@@ -230,6 +230,9 @@ if(user != null && user.getIsAdministrator()) { %>
         <div class="pin-type"></div>
         <div class="pin-remove"></div>
       </li>
+      <li id="recording-row-template" class="recording-row">
+        <div class="recording-content"></div>
+      </li>
     </div><%
 if(user != null && user.getIsAdministrator()) { %>
     <div id="provisionAccountDialog" class="dialog">

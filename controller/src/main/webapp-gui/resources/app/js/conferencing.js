@@ -152,6 +152,7 @@ function Conference(id) {
     var callers = new ConferenceCallerList();
     var history = new ConferenceHistoryList();
     var pins = new ConferencePinList();
+    var recordings = new ConferenceRecordingsList();
 
     var interval;
 
@@ -170,6 +171,7 @@ function Conference(id) {
                         callers.update(data.participants.results);
                         history.update(data.history.results);
                         pins.update(data.pins.results);
+                        recordings.update(data.recordings.results);
     
                         var titleText = 'Conference ' + data.info.description;
                         var title = $('#conference-title');
@@ -210,6 +212,7 @@ function Conference(id) {
         $('#caller-list').find('li').remove();
         $('#pin-list').find('li').remove();
         $('#history-list').find('li').remove();
+        $('#recordings-list').find('li').remove();
         if(interval) {
             clearInterval(interval);
         }
@@ -369,6 +372,60 @@ function ConferenceHistoryList() {
 
             if(!found) {
                 history.animate({
+                    opacity: 0
+                }, 1000, function() {
+                    $(this).remove();
+                });
+            }
+        }
+    };
+}
+
+function ConferenceRecordingsList() {
+    this.update = function(list) {
+        var recordings = $('#recordings-list').find('.recording-row');
+        var ids = [];
+
+        for(var i = list.length - 1; i >= 0; i--) {
+            var found = false;
+            var data = list[i];
+            for(var j = 0; j < recordings.length; j++) {
+                var li = $(recordings[j]);
+                if(li.attr('id') == 'recording-' + data.id) {
+                    var content = data.dateCreated + ' - ' + data.description + ' [' + data.fileSize + ']';
+                    if(li.text() != content) {
+                        li.text(content);
+                    }
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found) {
+                var clone = $('#recording-row-template').clone();
+                clone.attr('id', 'recording-' + data.id);
+                clone.find('.recording-content').text(data.dateCreated + ' - ' + data.description + ' [' + data.fileSize + ']');
+                clone.css('opacity', 0);
+                clone.addClass(i % 2 == 0 ? 'odd' : 'even');
+                $('#recordings-list').append(clone);
+                clone.animate({ opacity: 1 }, 1000);
+            }
+
+            ids.push('recording-' + data.id);
+        }
+
+        for(var i = 0; i < recordings.length; i++) {
+            var found = false;
+            var recording = $(recordings[i]);
+            for(var j = 0; j < ids.length; j++) {
+                if(recording.attr('id') == ids[j]) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found) {
+                recording.animate({
                     opacity: 0
                 }, 1000, function() {
                     $(this).remove();
