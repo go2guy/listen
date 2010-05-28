@@ -12,7 +12,7 @@
 	    <log target="status">assign cntrlURL</log>
             <log>INFO: Entered assign-variable.vxml [51-31]</log>
             <log>INFO: Current value [<value expr="passValues"/>]</log>
-<assign name="passValues" expr="passValues+cntrlURL" />
+<assign name="passValues" expr="cntrlURL+''" />
 <log>INFO: Updated value [<value expr="passValues"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

@@ -39,6 +39,7 @@
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
+			<assign name="passValues" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_appToAccess != undefined">
 				<assign name="appToAccess" expr="SB_UV_appToAccess" />

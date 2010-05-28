@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 05/05/2010 
+    <!-- Last Modified 05/27/2010 
        *   @Name   begin.ccxml
        *   @Desc   Starts a ccxml dialog and calls main.vxml -->
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_main'"/> <!--  PROJECT_NAME. Project directory -->
-    <var name="II_SB_NEXT_OPTION" expr="'51-3'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
+    <var name="II_SB_NEXT_OPTION" expr="'51-67'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
     <var name="II_SB_MAIN_VXML" expr="'main.vxml'"/>    <!-- MAIN_VXML. Contains the file name of the document to start once ccxml is loaded -->
     <var name="II_SB_BASE_DIR" expr="'/interact/apps/spotbuild/'"/>                 <!-- BASE_DIR. Base directory -->
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
@@ -229,13 +229,31 @@
 
 		<transition event="connection.disconnected" name="evt" cond="evt.connectionid == II_SB_connectionID">
 			<log>INFO: transition event [connection.disconnected] state [<value expr="II_SB_state"/>]</log>
-            <var name="II_SB_file1" expr="II_SB_CODE_DIR + 'hang-up.vxml'"/>
-            <var name="II_SB_file2" expr="''"/>
-            <var name="II_SB_fileOprtn" expr="'stat'"/>
             <assign name="II_SB_ibcallid" expr="''"/>
 			<assign name="II_SB_discID" expr="evt.connectionid"/>
 			<assign name="II_SB_discReason" expr="evt.reason"/>
 			<assign name="II_SB_discOriginator" expr="evt.connection.originator"/>
+            <if cond="II_SB_indialog == 'true'">
+                <assign name="II_SB_state" expr="'terminatingDialog'"/>
+                <dialogterminate dialogid="II_SB_dialogID"/>
+            <else/>
+                <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="terminatingDialog" event="dialog.exit" name="evt">
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
+        </transition>
+
+		<transition event="dialog.user.hangup" name="evt">
+            <!-- This event checks for the hang up template. If we find one, we'll transition to it -->
+			<log>INFO: transition event [dialog.user.hangup] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Checking for hang up logic</log>
+            <var name="II_SB_file1" expr="II_SB_CODE_DIR + 'hang-up.vxml'"/>
+            <var name="II_SB_file2" expr="''"/>
+            <var name="II_SB_fileOprtn" expr="'stat'"/>
 			<assign name="II_SB_state" expr="'hangUp'"/>
             <dialogstart src="'file:' + II_SB_BASE_DIR + 'lib/vxml/fileUtil.vxml'" namelist="II_SB_file1 II_SB_file2 II_SB_fileOprtn"/> <!-- Check for Hangup logic -->
 		</transition>

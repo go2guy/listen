@@ -33,7 +33,7 @@
 	<var name="DNIS" expr="'local'" />
 	<var name="cntrlURL" expr="''" /> <!-- Config Controller URL -->
 	<var name="subID" expr="''" />
-	<var name="passValues" expr="''" />
+	<var name="passValues" expr="'importedValue'" />
 	<var name="params" expr="''" />
 	<var name="resource" expr="'meta/'" />
 	<var name="request" expr="'GET'" />
