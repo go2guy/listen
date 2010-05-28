@@ -33,8 +33,8 @@ public class Conference extends Resource implements Serializable
     @Column(nullable = false)
     private Boolean isRecording;
     
-    @Column(nullable = false)
-    private Date startTime = new Date();
+    @Column
+    private Date startTime;
     
     @Column(name = "ARCADE_ID")
     private String arcadeId;
@@ -223,11 +223,6 @@ public class Conference extends Resource implements Serializable
             addToErrors("isRecording cannot be null");
         }
         
-        if(startTime == null)
-        {
-            addToErrors("startTime cannot be null");
-        }
-
         return !hasErrors();
     }
 
