@@ -98,6 +98,7 @@ Requires: spotbuild-vip
     %defattr(777,interact,operator)
     /interact/apps/spotbuild/listen*
     /interact/apps/spotbuild/lib/cgi-bin/listen
+    /interact/artifacts/listen/*
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
