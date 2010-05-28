@@ -89,6 +89,7 @@
 	<var name="isStarted" expr="'false'" />
 	<var name="entryTone" expr="'/interact/apps/spotbuild/listen_conference/audio/confIn.00.wav'" />
 	<var name="timeStamp" expr="''" />
+	<var name="isInteractiveCall" expr="'true'" />
 
 
     <!-- Conference Variables -->

@@ -1,14 +1,9 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
 
-    <!-- Last Modified 04/23/2010 -->
-
-    <!--
-      /**
+    <!-- Last Modified 05/27/2010
        *   @Name   out-dial-end.ccxml
-       *   @Desc   ends and out-dial call
-       */
-    -->
+       *   @Desc   ends and out-dial call-->
 
     <!-- These variables are passed in from begin.ccxml -->
     <var name="II_SB_remote"/>
@@ -88,11 +83,24 @@
 			<assign name="II_SB_discID" expr="evt.connectionid"/>
 			<assign name="II_SB_discReason" expr="evt.reason"/>
 			<assign name="II_SB_discOriginator" expr="evt.connection.originator"/>
+            <if cond="II_SB_indialog == 'true'">
+                <assign name="II_SB_state" expr="'terminatingDialog'"/>
+                <dialogterminate dialogid="II_SB_dialogID"/>
+            <else/>
+                <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="terminatingDialog" event="dialog.exit" name="evt">
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
             <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
         </transition>
 
 		<transition event="dialog.user.hangup" name="evt">
+            <!-- This event checks for the hang up template. If we find one, we'll transition to it -->
 			<log>INFO: transition event [dialog.user.hangup] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Checking for hang up logic</log>
             <var name="II_SB_file1" expr="II_SB_CODE_DIR + 'hang-up.vxml'"/>
             <var name="II_SB_file2" expr="''"/>
             <var name="II_SB_fileOprtn" expr="'stat'"/>

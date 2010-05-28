@@ -79,6 +79,7 @@
 	<var name="SB_UV_isStarted"/>
 	<var name="SB_UV_entryTone"/>
 	<var name="SB_UV_timeStamp"/>
+	<var name="SB_UV_isInteractiveCall"/>
 
     
     <form id="beginDocument">
@@ -275,6 +276,9 @@
 			</if>
 			<if cond="SB_UV_timeStamp != undefined">
 				<assign name="timeStamp" expr="SB_UV_timeStamp" />
+			</if>
+			<if cond="SB_UV_isInteractiveCall != undefined">
+				<assign name="isInteractiveCall" expr="SB_UV_isInteractiveCall" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

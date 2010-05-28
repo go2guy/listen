@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 05/14/2010
+    <!-- Last Modified 05/27/2010
        *   @Name	Conference.ccxml
        *   @Desc	Manages conference activities -->
 
@@ -59,7 +59,7 @@
 
 	    <transition state="idle" event="ccxml.loaded" name="loadEv"> <!-- Load CCXML file. Log status and update state -->
             <log>INFO: Entered conference.ccxml [116-8]</log>
-            <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="state"/>]</log>
+            <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <assign name="II_SB_state" expr="'loaded'"/>
             <log>INFO: II_SB_passValues [<value expr="II_SB_passValues"/>]</log>
@@ -96,7 +96,7 @@
     	<transition state="creatConf" event="conference.created" name="evt">
             <!-- This transition occurs as a result of the <createconference> tag. Here we save off
             the system generated conference ID and call the join member transition -->
-            <log>INFO: transition event [conference.created] state [<value expr="state"/>]</log>
+            <log>INFO: transition event [conference.created] state [<value expr="II_SB_state"/>]</log>
 	        <log>INFO: Conference created</log>
 	        <log>INFO: II_SB_confid [<value expr="II_SB_confid"/>]</log>
 	        <log>INFO: II_SB_confName [<value expr="II_SB_confName"/>]</log>
@@ -106,7 +106,7 @@
 
         <transition event="dialog.user.joinMember">
             <!-- Here we attempt a join to the conference based on the user's active or passive status -->
-            <log>INFO: transition event [dialog.user.joinMember] state [<value expr="state"/>]</log>
+            <log>INFO: transition event [dialog.user.joinMember] state [<value expr="II_SB_state"/>]</log>
 	        <assign name="II_SB_state" expr="'joinConf'"/>
    	        <if cond="II_SB_confUserStatus == 'Passive'">
                 <log>INFO: Joining user as [Passive]</log>
@@ -132,7 +132,7 @@
 
         <transition event="dialog.user.announceMember">
             <!-- Here we play audio to the conference -->
-            <log>INFO: transition event [dialog.user.announceMember] state [<value expr="state"/>]</log>
+            <log>INFO: transition event [dialog.user.announceMember] state [<value expr="II_SB_state"/>]</log>
 	        <assign name="II_SB_state" expr="'announceMember'"/>
             <var name="II_SB_promptID" expr="II_SB_audioFile"/>
             <var name="II_SB_FLD_INTERRUPT" expr="'false'"/>
@@ -158,7 +158,7 @@
 
         <transition event="dialog.user.chkDropKey">
             <!-- Here we determine if member key presses should be monitored -->
-            <log>INFO: transition event [dialog.user.chkDropKey] state [<value expr="state"/>]</log>
+            <log>INFO: transition event [dialog.user.chkDropKey] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_state" expr="'exitMenu'"/>
             <if cond="II_SB_dropKey_enabled == 'true'">
             	<dialogstart src="'file:'+II_SB_VXML_LIB+'dropKey.vxml'" namelist="II_SB_drpKeyLength II_SB_drpKeyTime"/>
@@ -293,7 +293,7 @@
 
         <transition state="customEvent" event="dialog.exit">
             <!-- Returned from dialog terminate (after receiving a custom event). Call the custom event vxml logic -->
-			<log>INFO: transition event [dialog.exit] state [<value expr="state"/>]</log>
+			<log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
             <var name="II_SB_indialog" expr="'false'"/>
           	<assign name="II_SB_state" expr="'nextOptionRun'"/>
 	    	<dialogstart src="'file:' + II_SB_CODE_DIR + 'customEvent.vxml'" namelist="II_SB_ibcallid II_SB_passValues"/>
@@ -301,7 +301,7 @@
 
 		<transition event="dialog.user.hangup" name="evt">
             <!-- This transition calls a lib file that checks if there's a hang up vxml file for this project -->
-			<log>INFO: transition event [dialog.user.hangup] state [<value expr="state"/>]</log>
+			<log>INFO: transition event [dialog.user.hangup] state [<value expr="II_SB_state"/>]</log>
             <var name="II_SB_file1" expr="II_SB_CODE_DIR + 'hang-up.vxml'"/>
             <var name="II_SB_file2" expr="''"/>
             <var name="II_SB_fileOprtn" expr="'stat'"/>
@@ -312,7 +312,7 @@
         <transition state="hangUp" event="dialog.exit" name="evt">
             <!-- We've returned from checking for a hang up file. If we found one, we'll go run the hang up logic.
             Otherwise, we'll end the session -->
-            <log>INFO: transition event [dialog.exit] state [<value expr="state"/>]</log>
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_state" expr="'endCall'"/>
             <assign name="II_SB_indialog" expr="'false'"/>
             <if cond="evt.values.II_SB_status != 'Failure'">
@@ -328,7 +328,7 @@
         </transition>
 
         <transition event="fetch.done" name="evt">  <!-- Fetched ccxml document -->
-            <log>INFO: transition event [fetch.done] state [<value expr="state"/>]</log>
+            <log>INFO: transition event [fetch.done] state [<value expr="II_SB_state"/>]</log>
             <goto fetchid="evt.fetchid"/> <!-- Go to ccxml document -->
         </transition>
 

@@ -5,23 +5,14 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'104-8'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'125-3'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Variables</log>
-            <log>INFO: Entered assign-variable.vxml [104-55]</log>
-            <log>INFO: Current value [<value expr="errCnt"/>]</log>
-<assign name="errCnt" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="errCnt"/>]</log>
-<log>INFO: Current value [<value expr="helpCnt"/>]</log>
-<assign name="helpCnt" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="helpCnt"/>]</log>
-<log>INFO: Current value [<value expr="whichPath"/>]</log>
-<assign name="whichPath" expr="'mainMenu'+''" />
-<log>INFO: Updated value [<value expr="whichPath"/>]</log>
-<log>INFO: Current value [<value expr="isInteractiveCall"/>]</log>
-<assign name="isInteractiveCall" expr="'true'+''" />
+	    <log target="status">Set Automated Call</log>
+            <log>INFO: Entered assign-variable.vxml [125-35]</log>
+            <log>INFO: Current value [<value expr="isInteractiveCall"/>]</log>
+<assign name="isInteractiveCall" expr="'false'+''" />
 <log>INFO: Updated value [<value expr="isInteractiveCall"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

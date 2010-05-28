@@ -39,7 +39,7 @@
 				<assign name="II_SB_assign_NxtOpt" expr="'112-20'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'DIAL'">
-				<assign name="II_SB_assign_NxtOpt" expr="'114-5'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'114-64'"/>
 				<assign name="phoneNumber" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'ERR_REC'">
