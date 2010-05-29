@@ -119,37 +119,75 @@ def main():
 
 
 def all():
-    deployListen.prep()
+    prep()
     install()
+    post()
+
+
+def prep():
+    # Run deployListen's prep. Make sure we don't delete the pack file.
+    deployListen.prep(pardonfiles=["/interact/xtt", pack])
+
+    # Need to shutdown and clear out the mysql database for the realize install.
+    deployListen.run(["service", "mysqld", "stop"], failonerror=False)
+
+    killprocs = ["mysqld"]
+    for killproc in killprocs:
+        deployListen.run(["pkill", "-TERM", killproc], failonerror=False)
+
+    time.sleep(30)
+
+    for killproc in killprocs:
+        deployListen.run(["pkill", "-KILL", killproc], failonerror=False)
+
+    deployListen.removeFiles("/var/lib/mysql/")
 
 
 def install():
+    # Start up mysql - needed for realize install.
+    deployListen.run(["service", "mysqld", "start"])
+
     # Make it executable
     os.chmod(pack, 0700)
 
     # Extract so we can install arcade stuff...
     deployListen.run([pack])
 
-#    # install uia packages
-#    deployListen.run([pack, "-ds", "--sipServer=stl03a.netlogic.net"])
-#
-#    # define an empty list for startup commands
-#    startlist = {}
-#
-#    if deployListen.hostname == deployListen.controllerserver:
-#        deployListen.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", deployListen.masterpkg, "all"])
-#        startlist["/etc/init.d/httpd"] = "start"
-#        startlist["/interact/program/iiMoap"] = ""
-#        startlist["/interact/program/iiSysSrvr"] = ""
-#        startlist["/etc/init.d/collector"] = "start"
-#        startlist["/etc/init.d/listen-controller"] = "start"
-#
-#    # License the system before we try to start anything.
-#    deployListen.license()
-#
-#    # execute listed startup commands 
-#    for command,action in startlist.iteritems():
-#        deployListen.run([command, action])
+    # Find the extracted packages.
+    deployListen.uiapkg = getLatestFile("/interact/packages/uia/uia*.rpm")
+    if deployListen.uiapkg == None:
+        sys.exit("Unable to find latest uia package.")
+
+    deployListen.masterpkg = getLatestFile("/interact/packages/listen/listen*.rpm")
+    if deployListen.masterpkg == None:
+        sys.exit("Unable to find latest master package.")
+
+    # install uia packages
+    deployListen.run(["rpm", "-Uvh", deployListen.uiapkg])
+
+    # install arcade dependencies
+    deployListen.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", deployListen.masterpkg, "arcade"])
+
+    # License the app so it starts up
+    deployListen.license()
+
+    # Install using defaults and start all processes.
+    deployListen.run([pack, "-ds", "--sipServer=stl03a.netlogic.net"])
+
+
+def post():
+    deployListen.post()
+
+
+def getLatestFile(filename):
+    # get all files which match the filename, sort in reverse, return first entry or None.
+    files = glob.glob(filename)
+    if len(files) >= 1:
+        files.sort(reverse=True)
+        return files[0]
+
+    else:
+        return None
 
 
 if __name__ == "__main__":

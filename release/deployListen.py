@@ -274,7 +274,7 @@ def all():
     post()
 
 
-def prep():
+def prep(pardonfiles=["/interact/xtt"], pardonrpms=['xtt','xvm-tools']):
     if hostname == controllerserver:
         print("Preparing for deployment")
         run(["service", "listen-controller", "stop"], failonerror=False)
@@ -319,14 +319,13 @@ def prep():
         fileHandle.close()
 
     print("Removing old Interact rpm packages")
-    pardon = ['xtt','xvm-tools']
     deathrow = []
     transactionSet = rpm.TransactionSet()
     iterator = transactionSet.dbMatch('group', "Interact")
     if iterator != None:
         for current in iterator:
             currentfull = current['name'] + "-" + current['version'] + "-" + current['release']
-            if current['name'] in pardon:
+            if current['name'] in pardonrpms:
                 print("Ignoring removal of package [ %s ]." % currentfull)
             else:
                 print("Adding [ %s ] to list of rpms to be removed." % currentfull)
@@ -339,8 +338,9 @@ def prep():
         run(execute)
 
     # Clean interact directory
-    pardon = ["/interact/xtt", uiapkg, masterpkg]
-    removeFiles("/interact/", pardon)
+    pardonfiles.append(uiapkg)
+    pardonfiles.append(masterpkg)
+    removeFiles("/interact/", pardonfiles)
     removeFiles("/var/lib/com.interact.listen/")
 
     # remove interact user
@@ -349,7 +349,7 @@ def prep():
     run(["groupdel", "operator"], failonerror=False)
 
 
-def removeFiles(rootdir, pardon={}):
+def removeFiles(rootdir, pardon=[]):
     # Remove all files ignoring those in the pardon list.
     # remove everything except xtt and rpms
     print("Cleaning the [ %s ] directory." % rootdir)
