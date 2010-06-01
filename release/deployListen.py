@@ -163,7 +163,7 @@ def prep():
     deploy.createAlias(hostinfo)
     deploy.eraseInteractRpms()
 
-    deploy.removefiles("/interact/", pardonfiles=[uiapkg, masterpkg])
+    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
     deploy.removeFiles("/var/lib/com.interact.listen/")
 
 
