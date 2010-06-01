@@ -25,7 +25,7 @@ myName = os.path.basename(__file__)
 global myHost
 myHost = socket.gethostname()
 
-def sftp(remotehost, localfile, remotefile, mode=None):
+def sftp(remotehost, localfile, remotefile, mode=None, username='root', password='super'):
     try:
         import paramiko
 
@@ -47,7 +47,7 @@ def sftp(remotehost, localfile, remotefile, mode=None):
 #        print(str(pubkey))
 #        pubkey.from_private_key_file(filename=os.path.expanduser("~/.ssh/id_dsa.pub"))
 
-        connection.connect(username="root", password="super")
+        connection.connect(username=username, password=password)
         if not connection.is_active():
             print("Connection to [ %s ] is not active." % remotehost)
             sys.exit(1)
@@ -77,7 +77,7 @@ def sftp(remotehost, localfile, remotefile, mode=None):
     return retval
 
 
-def runRemote(remotehost, command, failonerror=True):
+def runRemote(remotehost, command, failonerror=True, username='root', password='super'):
     try:
         import paramiko
 
@@ -99,7 +99,7 @@ def runRemote(remotehost, command, failonerror=True):
 #        print(str(pubkey))
 #        pubkey.from_private_key_file(filename=os.path.expanduser("~/.ssh/id_dsa.pub"))
 
-        connection.connect(username="root", password="super")
+        connection.connect(username=username, password=password)
         if not connection.is_active():
             print("Connection to [ %s ] is not active." % remotehost)
             sys.exit(1)
@@ -363,4 +363,5 @@ def run(command, shell=False, failonerror=True):
             sys.exit(1)
 
     print
+
 
