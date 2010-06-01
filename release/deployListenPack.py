@@ -30,30 +30,12 @@ def main():
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
     parser.add_option(
         "",
-        "--controllerserver",
-        dest="controllerserver",
+        "--server",
+        dest="server",
         action="store",
         metavar="SERVER",
         default=None,
-        help="The name of the listen controller server to use")
-
-    parser.add_option(
-        "",
-        "--ivrserver",
-        dest="ivrserver",
-        action="store",
-        metavar="SERVER",
-        default=None,
-        help="The name of the ivr server to use")
-
-    parser.add_option(
-        "",
-        "--realizeserver",
-        dest="realizeserver",
-        action="store",
-        metavar="SERVER",
-        default=None,
-        help="The name of the Realize server to use")
+        help="The name of the listen server to use")
 
     parser.add_option(
         "",
@@ -75,14 +57,8 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    if options.controllerserver == None:
-        parser.error("--controllerserver option not supplied")
-
-    if options.ivrserver == None:
-        parser.error("--ivrserver option not supplied")
-
-    if options.realizeserver == None:
-        parser.error("--realizeserver option not supplied")
+    if options.server == None:
+        parser.error("--server option not supplied")
 
     if options.phase == None:
         parser.error("--phase option not supplied")
@@ -90,9 +66,9 @@ def main():
     if options.pack == None:
         parser.error("--pack option not supplied")
 
-    deployListen.controllerserver,__,__ = socket.gethostbyaddr(options.controllerserver)
-    deployListen.ivrserver,__,__ = socket.gethostbyaddr(options.ivrserver)
-    deployListen.realizeserver,__,__ = socket.gethostbyaddr(options.realizeserver)
+    deployListen.controllerserver,__,__ = socket.gethostbyaddr(options.server)
+    deployListen.ivrserver,__,__ = socket.gethostbyaddr(options.server)
+    deployListen.realizeserver,__,__ = socket.gethostbyaddr(options.server)
     deployListen.uiapkg = ""
     deployListen.masterpkg = ""
     pack = options.pack
@@ -112,7 +88,7 @@ def main():
             deployListen.sftp(remotehost, localimport, remoteimport, 0700)
             deployListen.sftp(remotehost, localprog, remoteprog, 0700)
             deployListen.sftp(remotehost, pack, remotepack, 0700)
-            deployListen.runRemote(remotehost, "%s --controllerserver=%s --ivrserver=%s --realizeserver=%s --pack=%s --phase=%s" % (remoteprog, deployListen.controllerserver, deployListen.ivrserver, deployListen.realizeserver, remotepack, options.phase))
+            deployListen.runRemote(remotehost, "%s --server=%s --pack=%s --phase=%s" % (remoteprog, deployListen.controllerserver, remotepack, options.phase))
 
     else:
         phases[options.phase]()
