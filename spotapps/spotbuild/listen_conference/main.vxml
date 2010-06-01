@@ -80,6 +80,7 @@
 	<var name="SB_UV_entryTone"/>
 	<var name="SB_UV_timeStamp"/>
 	<var name="SB_UV_isInteractiveCall"/>
+	<var name="SB_UV_destAudioFile"/>
 
     
     <form id="beginDocument">
@@ -279,6 +280,9 @@
 			</if>
 			<if cond="SB_UV_isInteractiveCall != undefined">
 				<assign name="isInteractiveCall" expr="SB_UV_isInteractiveCall" />
+			</if>
+			<if cond="SB_UV_destAudioFile != undefined">
+				<assign name="destAudioFile" expr="SB_UV_destAudioFile" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

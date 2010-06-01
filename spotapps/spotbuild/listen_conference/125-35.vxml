@@ -14,6 +14,9 @@
             <log>INFO: Current value [<value expr="isInteractiveCall"/>]</log>
 <assign name="isInteractiveCall" expr="'false'+''" />
 <log>INFO: Updated value [<value expr="isInteractiveCall"/>]</log>
+<log>INFO: Current value [<value expr="destAudioFile"/>]</log>
+<assign name="destAudioFile" expr="'getInviteDest'+''" />
+<log>INFO: Updated value [<value expr="destAudioFile"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

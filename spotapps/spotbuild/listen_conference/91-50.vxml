@@ -9,15 +9,15 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(getInput,sipURL)
+            function II_SB_JS_function(phoneNumber,sipURL)
             {
-	            var str = new String(getInput);
+	            var str = new String(phoneNumber);
 var num = /^\d+$/;
 
 if ((num.test(str)) && (sipURL.length > 0))
-return getInput + "@" + sipURL;
+return phoneNumber + "@" + sipURL;
 else
-return getInput;
+return phoneNumber;
             }
         ]]>
     </script>
@@ -26,7 +26,7 @@ return getInput;
         <block>
             <log target="status">Set Dest URL</log>
             <log>INFO: Entered run-javascript.vxml [91-50]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput,sipURL)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(phoneNumber,sipURL)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="phoneNumber" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

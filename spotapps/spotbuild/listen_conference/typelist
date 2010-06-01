@@ -190,6 +190,9 @@ hang-up - hang-up
 105-62 - assign-variable
 94-100 - math
 91-46 - decision
+125-65 - audio-input
+125-67 - assign-variable
+125-62 - audio-input
 116-36 - decision
 116-38 - decision
 111-31 - audio-input
