@@ -56,7 +56,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)
             <li id="menu-findme"><div>FindMe</div></li><%
     }
     if(user != null && user.getIsAdministrator()) { %>
-            <li id="menu-administration"><div>Administration</div></li><%
+            <li id="menu-administration"><div><img src="resources/app/images/new/button_administration_31x24.png"/></div><div>Administration</div></li><%
     } %>
           </ul>
         </div>
