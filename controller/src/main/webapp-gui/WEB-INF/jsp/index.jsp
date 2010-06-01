@@ -174,12 +174,13 @@ if(user != null && user.getIsAdministrator()) { %>
               <div class="panel">
                 <div class="panel-header"><div class="panel-title">System Configuration</div></div>
                 <div class="panel-content">
+
                   <form id="dnis-mapping-form">
                     <fieldset>
-                      <legend>DNIS Mapping</legend>
+                      <legend>DNIS Mappings</legend>
                       <table>
                         <tbody>
-                          <tr><td></td><td colspan="3" class="buttons"><button class="add-button" id="add-dnis-mapping">Add</button><button type="submit" class="save-button">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
+                          <tr><td></td><td colspan="3" class="buttons"><button class="add-button" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="save-button" title="Save DNIS mappings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
                         </tbody>
                       </table>
                     </fieldset>
@@ -199,11 +200,12 @@ if(user != null && user.getIsAdministrator()) { %>
                           <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
                           <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
                           <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
-                          <tr><td></td><td class="buttons"><button type="submit" class="save-button">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
+                          <tr><td></td><td class="buttons"><button type="submit" class="save-button" title="Save mail settings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
                         </tbody>
                       </table>
                     </fieldset>
                   </form>
+
                 </div>
               </div>
             </div>
