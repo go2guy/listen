@@ -119,16 +119,15 @@ def main():
     if hostname not in hosts:
         localimport = getattr(sys.modules['deploy'], "__file__")
         localprog = os.path.abspath(__file__)
-
         remoteimport = os.path.expanduser('~/' + os.path.basename(localimport))
         remoteprog = os.path.expanduser('~/' + os.path.basename(localprog))
-
         remotemaster = "/interact/" + os.path.basename(masterpkg)
         remoteuia = "/interact/" + os.path.basename(uiapkg)
 
         # Send to all hosts
         for remotehost in hosts:
             deploy.runRemote(remotehost, "mkdir -p %s %s %s" % (os.path.dirname(remoteprog), os.path.dirname(remotemaster), os.path.dirname(remoteuia)))
+            deploy.sftp(remotehost, localimport, remoteimport, 0700)
             deploy.sftp(remotehost, localprog, remoteprog, 0700)
             deploy.sftp(remotehost, masterpkg, remotemaster, 0700)
             deploy.sftp(remotehost, uiapkg, remoteuia, 0700)
