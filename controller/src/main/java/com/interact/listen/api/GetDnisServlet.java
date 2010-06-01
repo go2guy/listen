@@ -45,7 +45,7 @@ public class GetDnisServlet extends HttpServlet
         }
 
         response.setStatus(HttpServletResponse.SC_OK);
-        OutputBufferFilter.append(request, mappings.get(number), "text/plain");
+        OutputBufferFilter.append(request, mapping, "text/plain");
     }
 
     private String findMapping(String number, Map<String, String> mappings)
