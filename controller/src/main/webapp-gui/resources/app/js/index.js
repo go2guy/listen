@@ -112,6 +112,7 @@ $(document).ready(function() {
     });
 });
 
+// TODO namespace
 function notify(message, isError, stay) {
     var div = $('#notification');
     if(isError === true) {
@@ -127,4 +128,12 @@ function notify(message, isError, stay) {
             $('#notification').slideUp(200);
         }, 3000);
     }
+}
+
+// TODO namespace
+function withLoadingIndicator(callback, callbackArgs) {
+    var loading = $('#loading');
+    loading.show();
+    callback.apply(this, callbackArgs);
+    loading.hide();
 }

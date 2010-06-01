@@ -156,66 +156,68 @@ function Conference(id) {
 
     var interval;
 
+    var pollAndSet = function() {
+        $.ajax({
+            url: '/ajax/getConferenceInfo?id=' + conferenceId,
+            dataType: 'json',
+            cache: false,
+            success: function(data, textStatus, xhr) {
+                callers.update(data.participants.results);
+                history.update(data.history.results);
+                pins.update(data.pins.results);
+                recordings.update(data.recordings.results);
+
+                var titleText = 'Conference ' + data.info.description;
+                var title = $('#conference-title');
+                if(title.text() != titleText) {
+                    title.text(titleText);
+                }
+
+                var onMessage = titleText + ': Started';
+                var offMessage = titleText + ': Waiting for administrator';
+                var recordButton = $("#record-button-div");
+
+                if(data.info.isStarted) {
+                    title.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
+                    title.attr('title', onMessage);
+                    recordButton.show();
+                } else {
+                    title.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
+                    title.attr('title', offMessage);
+                    recordButton.hide();
+                }
+
+                var recordHtml = '<button class="' + (data.info.isRecording ? 'stop' : 'record') + '-button"' + 'onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';                        
+                if(recordButton.html() != recordHtml) {
+                    recordButton.html(recordHtml);
+                }
+            }
+        });
+    };
+
     this.getConferenceId = function() {
         return conferenceId;
     }
 
     this.load = function() {
         if(conferenceId) {
+            pollAndSet();
             interval = setInterval(function() {
-                $.ajax({
-                    url: '/ajax/getConferenceInfo?id=' + conferenceId,
-                    dataType: 'json',
-                    cache: false,
-                    success: function(data, textStatus, xhr) {
-                        callers.update(data.participants.results);
-                        history.update(data.history.results);
-                        pins.update(data.pins.results);
-                        recordings.update(data.recordings.results);
-    
-                        var titleText = 'Conference ' + data.info.description;
-                        var title = $('#conference-title');
-                        if(title.text() != titleText) {
-                            title.text(titleText);
-                        }
-    
-                        var onMessage = titleText + ': Started';
-                        var offMessage = titleText + ': Waiting for administrator';
-                        var recordButton = $("#record-button-div");
-    
-                        if(data.info.isStarted) {
-                            title.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
-                            title.attr('title', onMessage);
-                            recordButton.show();
-                        } else {
-                            title.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
-                            title.attr('title', offMessage);
-                            recordButton.hide();
-                        }
-                        
-                        var recordHtml = '<button class="' + (data.info.isRecording ? 'stop' : 'record') + '-button"' + 'onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';                        
-                        if(recordButton.html() != recordHtml) {
-                            recordButton.html(recordHtml);
-                        }
-                    }
-                });
+                pollAndSet();
             }, 1000);
-            var cwin = $('#conference-window');
-            if(cwin.is(':hidden')) {
-                cwin.show();
-            }
+            $('#conference-window').show();
         }
     };
 
     this.unload = function() {
-        var window = $('#conference-window');
+        if(interval) {
+            clearInterval(interval);
+        }
+        $('#conference-window').hide();
         $('#caller-list').find('li').remove();
         $('#pin-list').find('li').remove();
         $('#history-list').find('li').remove();
         $('#recordings-list').find('li').remove();
-        if(interval) {
-            clearInterval(interval);
-        }
     };
 }
 

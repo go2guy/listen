@@ -26,6 +26,24 @@
 
 /* general layout & styles */
 
+#loading-indicator {
+    background-color: #CCCC00;
+    bottom: 0;
+    color: #666666;
+    display: none;
+    font-weight: bold;
+    height: 18px;
+    opacity: .5;
+    position: absolute;
+    right: 0;
+    z-index: 100;
+}
+
+#loading-indicator div {
+    float: right;
+    margin: 2px 0 2px 5px; 
+}
+
 #header {
     background: #FFFFFF url('../images/new/title_header_bkg.png') repeat-x top left;
     border-bottom: 2px solid #989898;

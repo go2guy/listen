@@ -33,6 +33,7 @@ if(user != null && user.getIsAdministrator()) { %>
 } %>
   </head>
   <body>
+    <div id="loading-indicator"><div><img src="resources/app/images/new/spinner_16x16.gif"/></div><div>Loading</div></div>
     <div id="wrapper">
       <div id="wrapper-main">
         <div id="header">
