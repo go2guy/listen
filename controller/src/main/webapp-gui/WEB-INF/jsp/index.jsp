@@ -53,7 +53,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)
             <li id="menu-voicemail"><div><img src="resources/app/images/new/button_voicemail_26x24.png"/></div><div>Voicemail</div></li><%
     }
     if(License.isLicensed(ListenFeature.FINDME)) { %>
-            <li id="menu-findme"><div>FindMe</div></li><%
+            <li id="menu-findme"><div><img src="resources/app/images/new/button_findme_40x23.png"/></div><div>FindMe</div></li><%
     }
     if(user != null && user.getIsAdministrator()) { %>
             <li id="menu-administration"><div><img src="resources/app/images/new/button_administration_31x24.png"/></div><div>Administration</div></li><%
