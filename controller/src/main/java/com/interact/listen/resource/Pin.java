@@ -6,7 +6,6 @@ import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
-import java.text.DecimalFormat;
 
 import javax.persistence.*;
 
@@ -189,12 +188,11 @@ public class Pin extends Resource implements Serializable
     {
         int pinLength = Integer.parseInt(Configuration.get(Property.Key.PINLENGTH));
         SecureRandom random = new SecureRandom();
-
-        int max = (int)Math.pow(pinLength, 10) - 1;
-        int next = random.nextInt(max);
-
-        String format = String.format("%0" + pinLength + "d", 0);
-
-        return new DecimalFormat(format).format(next);
+        StringBuilder number = new StringBuilder();
+        while(number.length() < pinLength)
+        {
+            number.append(String.valueOf(random.nextInt(10)));
+        }
+        return number.toString();
     }
 }
