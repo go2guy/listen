@@ -90,6 +90,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetConferenceRecordingServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetConferenceRecordingServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>DropParticipantServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.DropParticipantServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -214,6 +220,11 @@
     <servlet-mapping>
         <servlet-name>GetConferenceListServlet</servlet-name>
         <url-pattern>/ajax/getConferenceList</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetConferenceRecordingServlet</servlet-name>
+        <url-pattern>/ajax/getConferenceRecording</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>

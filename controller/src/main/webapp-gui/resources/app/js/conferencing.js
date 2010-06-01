@@ -394,9 +394,9 @@ function ConferenceRecordingsList() {
             for(var j = 0; j < recordings.length; j++) {
                 var li = $(recordings[j]);
                 if(li.attr('id') == 'recording-' + data.id) {
-                    var content = data.dateCreated + ' - ' + data.description + ' [' + data.fileSize + ']';
-                    if(li.text() != content) {
-                        li.text(content);
+                    var content = data.dateCreated + ' - ' + '<a href="/ajax/getConferenceRecording?id=' + data.id + '">' + data.description + '</a>' + ' [' + data.fileSize + ']';
+                    if(li.html() != content) {
+                        li.html(content);
                     }
                     found = true;
                     break;
@@ -406,7 +406,7 @@ function ConferenceRecordingsList() {
             if(!found) {
                 var clone = $('#recording-row-template').clone();
                 clone.attr('id', 'recording-' + data.id);
-                clone.find('.recording-content').text(data.dateCreated + ' - ' + data.description + ' [' + data.fileSize + ']');
+                clone.find('.recording-content').html(data.dateCreated + ' - ' + '<a href="/ajax/getConferenceRecording?id=' + data.id + '">' + data.description + '</a>' + ' [' + data.fileSize + ']');
                 clone.css('opacity', 0);
                 clone.addClass(i % 2 == 0 ? 'odd' : 'even');
                 $('#recordings-list').append(clone);
