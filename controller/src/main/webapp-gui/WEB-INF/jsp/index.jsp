@@ -46,16 +46,16 @@ if(License.isLicensed(ListenFeature.CONFERENCING)
         <div id="main-menu">
           <ul><%
     if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
-            <li id="menu-conferencing">Conferencing</li><%
+            <li id="menu-conferencing"><div><img src="resources/app/images/new/button_conferencing_29x24.png"/></div><div>Conferencing</div></li><%
     }
     if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-            <li id="menu-voicemail">Voicemail</li><%
+            <li id="menu-voicemail"><div><img src="resources/app/images/new/button_voicemail_26x24.png"/></div><div>Voicemail</div></li><%
     }
     if(License.isLicensed(ListenFeature.FINDME)) { %>
-            <li id="menu-findme">FindMe</li><%
+            <li id="menu-findme"><div>FindMe</div></li><%
     }
     if(user != null && user.getIsAdministrator()) { %>
-            <li id="menu-administration">Administration</li><%
+            <li id="menu-administration"><div>Administration</div></li><%
     } %>
           </ul>
         </div>

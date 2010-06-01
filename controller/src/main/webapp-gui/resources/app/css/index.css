@@ -212,8 +212,12 @@
     float: left;
     font-weight: bold;
     height: 2em;
-    padding: 0 1em;
     text-align: center;
+}
+
+#main-menu ul li div {
+    float: left;
+    margin: .25em .25em 0 .25em;
 }
 
 #main-menu ul li:hover, #main-menu ul li.selected {
