@@ -1,7 +1,8 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -46,13 +47,13 @@ public class DropParticipantServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            throw new UnauthorizedServletException();
         }
 
         String id = request.getParameter("id");
         if(id == null || id.trim().equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide an id", "text/plain");
+            throw new BadRequestServletException("Please provide an id");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -60,8 +61,7 @@ public class DropParticipantServlet extends HttpServlet
         Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
         if(!isUserAllowedToDrop(user, participant))
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to drop participant",
-                                             "text/plain");
+            throw new UnauthorizedServletException("Not allowed to drop participant");
         }
 
         // FIXME what happens when the first one succeeds and the second one fails? do we "rollback" the first one?

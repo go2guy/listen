@@ -1,6 +1,6 @@
 package com.interact.listen.marshal.json;
 
-import com.interact.listen.ListenRuntimeException;
+import com.interact.listen.exception.ListenRuntimeException;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.ConversionException;

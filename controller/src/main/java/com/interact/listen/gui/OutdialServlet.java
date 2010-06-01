@@ -1,6 +1,10 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.*;
+import com.interact.listen.HibernateUtil;
+import com.interact.listen.PersistenceService;
+import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.ListenServletException;
+import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -47,14 +51,13 @@ public class OutdialServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            throw new UnauthorizedServletException();
         }
 
         String conferenceId = request.getParameter("conferenceId");
         if(conferenceId == null || conferenceId.trim().equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a conferenceId",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a conferenceId");
         }
 
         String number = request.getParameter("number");
@@ -78,8 +81,7 @@ public class OutdialServlet extends HttpServlet
 
         if(!isUserAllowedToOutdial(user, conference))
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to outdial",
-                                             "text/plain");
+            throw new UnauthorizedServletException("Not allowed to outdial");
         }
 
         String adminSessionId = getConferenceAdminSessionId(session, conference);

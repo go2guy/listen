@@ -1,7 +1,8 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -46,13 +47,13 @@ public class StopRecordingServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            throw new UnauthorizedServletException();
         }
 
         String id = request.getParameter("id");
         if(id == null || id.trim().equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide an id", "text/plain");
+            throw new BadRequestServletException("Please provide an id");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -62,16 +63,14 @@ public class StopRecordingServlet extends HttpServlet
         // System admins and owners of the conference are the only ones that can start recording.
         if(!user.getIsAdministrator() && !(user.getConferences().contains(conference)))
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Not allowed to stop recording",
-                                             "text/plain");
+            throw new UnauthorizedServletException("Not allowed to stop recording");
         }
         
         if(!conference.getIsStarted())
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Conference must be started for recording",
-                                             "text/plain");
+            throw new BadRequestServletException("Conference must be started for recording");
         }
-        
+
         String adminSessionId = getConferenceAdminSessionId(session, conference);
 
         // send request to all SPOT subscribers

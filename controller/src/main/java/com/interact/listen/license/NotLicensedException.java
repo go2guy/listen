@@ -1,6 +1,6 @@
 package com.interact.listen.license;
 
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.ListenServletException;
 
 import javax.servlet.http.HttpServletResponse;
 

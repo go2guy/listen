@@ -1,4 +1,4 @@
-package com.interact.listen;
+package com.interact.listen.exception;
 
 public class UniqueResultNotFoundException extends RuntimeException
 {

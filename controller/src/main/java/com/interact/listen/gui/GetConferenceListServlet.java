@@ -1,8 +1,8 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
-import com.interact.listen.ListenServletException;
 import com.interact.listen.OutputBufferFilter;
+import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -39,8 +39,7 @@ public class GetConferenceListServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in",
-                                             "text/plain");
+            throw new UnauthorizedServletException("Not logged in");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

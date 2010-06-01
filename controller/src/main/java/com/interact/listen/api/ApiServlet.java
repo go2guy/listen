@@ -2,6 +2,7 @@ package com.interact.listen.api;
 
 import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;
+import com.interact.listen.exception.*;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.MarshallerNotFoundException;
@@ -128,17 +129,13 @@ public class ApiServlet extends HttpServlet
         UriResourceAttributes attributes = getResourceAttributes(request);
         if(attributes.getResourceClass() == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to [" +
-                                                                                 attributes.getResourceClass() + "]",
-                                             "text/plain");
+            throw new BadRequestServletException("Cannot POST to [" + attributes.getResourceClass() + "]");
         }
 
         if(attributes.getId() != null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Cannot POST to specific resource [" +
-                                                                                 attributes.getResourceClass()
-                                                                                           .getSimpleName() + "]",
-                                             "text/plain");
+            throw new BadRequestServletException("Cannot POST to specific resource [" +
+                                                 attributes.getResourceClass().getSimpleName() + "]");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -151,9 +148,8 @@ public class ApiServlet extends HttpServlet
                                                                                          .newInstance(), false);
             if(!resource.validate() && resource.hasErrors())
             {
-                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                                 "The resource you sent was invalid: " + resource.errors().toString(),
-                                                 "text/plain");
+                throw new BadRequestServletException("The resource you sent was invalid: " +
+                                                     resource.errors().toString());
             }
 
             try
@@ -200,9 +196,8 @@ public class ApiServlet extends HttpServlet
         UriResourceAttributes attributes = getResourceAttributes(request);
         if(attributes.getId() == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "PUT must be to a specific resource, not the list [" +
-                                                 attributes.getResourceClass().getSimpleName() + "]", "text/plain");
+            throw new BadRequestServletException("PUT must be to a specific resource, not the list [" +
+                                                 attributes.getResourceClass().getSimpleName() + "]");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -271,16 +266,13 @@ public class ApiServlet extends HttpServlet
         UriResourceAttributes attributes = getResourceAttributes(request);
         if(attributes.getResourceClass() == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Cannot DELETE [" +
-                                             attributes.getResourceClass() + "]",
-                                             "text/plain");
+            throw new BadRequestServletException("Cannot DELETE [" + attributes.getResourceClass() + "]");
         }
 
         if(attributes.getId() == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "DELETE must be on a specific resource, not the list [" + attributes.getResourceClass().getSimpleName() +
-                                             "]", "text/plain");
+            throw new BadRequestServletException("DELETE must be on a specific resource, not the list [" +
+                                                 attributes.getResourceClass().getSimpleName() + "]");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

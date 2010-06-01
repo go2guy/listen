@@ -1,9 +1,10 @@
 package com.interact.listen.api;
 
-import com.interact.listen.ListenServletException;
 import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
+import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -32,8 +33,7 @@ public class GetDnisServlet extends HttpServlet
         String number = request.getParameter("number");
         if(number == null || number.trim().equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a number",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a number");
         }
 
         String configuration = Configuration.get(Property.Key.DNIS_MAPPING);

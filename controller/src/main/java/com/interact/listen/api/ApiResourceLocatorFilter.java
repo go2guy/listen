@@ -1,6 +1,6 @@
 package com.interact.listen.api;
 
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.resource.Resource;
 
 import java.io.IOException;
@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
@@ -59,7 +58,7 @@ public class ApiResourceLocatorFilter implements Filter
 
             if(!matcher.matches())
             {
-                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Unparseable URL", "text/plain");
+                throw new BadRequestServletException("Unparseable URL");
             }
 
             if(matcher.group(3) != null && !matcher.group(3).trim().equals(""))
@@ -79,9 +78,7 @@ public class ApiResourceLocatorFilter implements Filter
                 }
                 catch(ClassNotFoundException e)
                 {
-                    throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Resource not found for [" +
-                                                                                         matcher.group(1) + "]",
-                                                     "text/plain");
+                    throw new BadRequestServletException("Resource not found for [" + matcher.group(1) + "]");
                 }
             }
         }

@@ -1,8 +1,9 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
-import com.interact.listen.ListenServletException;
 import com.interact.listen.PersistenceService;
+import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
@@ -34,46 +35,41 @@ public class ProvisionAccountServlet extends HttpServlet
         User currentUser = (User)(request.getSession().getAttribute("user"));
         if(currentUser == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            throw new UnauthorizedServletException();
         }
 
         if(!currentUser.getIsAdministrator())
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            throw new UnauthorizedServletException();
         }
 
         String number = request.getParameter("number");
         if(number == null || number.trim().equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a Number",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a Number");
         }
 
         String username = request.getParameter("username");
         if(username == null || username.trim().equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a Username");
         }
 
         String password = request.getParameter("password");
         if(password == null || password.trim().equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a Password");
         }
 
         String confirmPassword = request.getParameter("confirmPassword");
         if(confirmPassword == null || confirmPassword.trim().equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a Confirm Password",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a Confirm Password");
         }
 
         if(!password.equals(confirmPassword))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "Password and Confirm Password do not match", "text/plain");
+            throw new BadRequestServletException("Password and Confirm Password do not match");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

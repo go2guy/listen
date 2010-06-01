@@ -1,6 +1,11 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.*;
+import com.interact.listen.EmailerService;
+import com.interact.listen.HibernateUtil;
+import com.interact.listen.PersistenceService;
+import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.ListenServletException;
+import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -46,42 +51,37 @@ public class ScheduleConferenceServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            throw new UnauthorizedServletException();
         }
 
         String date = request.getParameter("date");
         if(date == null || date.equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a date", "text/plain");
+            throw new BadRequestServletException("Please provide a date");
         }
 
         String hour = request.getParameter("hour");
         if(hour == null || hour.equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "Please provide an hour for the conference start time", "text/plain");
+            throw new BadRequestServletException("Please provide an hour for the conference start time");
         }
 
         String minute = request.getParameter("minute");
         if(minute == null || minute.equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "Please provide a minute for the conference start time", "text/plain");
+            throw new BadRequestServletException("Please provide a minute for the conference start time");
         }
 
         String amPm = request.getParameter("amPm");
         if(amPm == null || amPm.equals(""))
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "Please provide an am/pm for the conference start time", "text/plain");
+            throw new BadRequestServletException("Please provide an am/pm for the conference start time");
         }
 
         StringBuilder subjectPrepend = new StringBuilder(request.getParameter("subject"));
         if(subjectPrepend == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "Please provide a subject for the conference invitation e-mail",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a subject for the conference invitation e-mail");
         }
 
         if(subjectPrepend.length() > 0)
@@ -93,24 +93,19 @@ public class ScheduleConferenceServlet extends HttpServlet
         String description = request.getParameter("description");
         if(description == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a description",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a description");
         }
 
         String activeParticipants = request.getParameter("activeParticipants");
         if(activeParticipants == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "Please provide a comma-separated list of active participants",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a comma-separated list of active participants");
         }
 
         String passiveParticipants = request.getParameter("passiveParticipants");
         if(passiveParticipants == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST,
-                                             "Please provide a comma-separated list of passive participants",
-                                             "text/plain");
+            throw new BadRequestServletException("Please provide a comma-separated list of passive participants");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 import com.interact.listen.resource.Subscriber;
@@ -49,7 +49,7 @@ public class GetConferenceListServletTest
         catch(ListenServletException e)
         {
             assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("Unauthorized - not logged in", e.getContent());
+            assertEquals("Unauthorized - Not logged in", e.getContent());
         }
     }
 

@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Conference;

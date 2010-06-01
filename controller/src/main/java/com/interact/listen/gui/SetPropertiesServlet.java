@@ -1,8 +1,8 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.ListenServletException;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
+import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.User;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -36,12 +36,12 @@ public class SetPropertiesServlet extends HttpServlet
         User currentUser = (User)(request.getSession().getAttribute("user"));
         if(currentUser == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            throw new UnauthorizedServletException();
         }
 
         if(!currentUser.getIsAdministrator())
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "text/plain");
+            throw new UnauthorizedServletException();
         }
 
         for(String name : (List<String>)Collections.list(request.getParameterNames()))

@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenServletException;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
+import com.interact.listen.exception.ListenServletException;
 
 import java.io.IOException;
 

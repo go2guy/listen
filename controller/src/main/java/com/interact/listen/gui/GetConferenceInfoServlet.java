@@ -2,6 +2,9 @@ package com.interact.listen.gui;
 
 import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;
+import com.interact.listen.exception.CriteriaCreationException;
+import com.interact.listen.exception.ListenServletException;
+import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -44,8 +47,7 @@ public class GetConferenceInfoServlet extends HttpServlet
         User user = (User)(request.getSession().getAttribute("user"));
         if(user == null)
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - not logged in",
-                                             "text/plain");
+            throw new UnauthorizedServletException("Not logged in");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -66,8 +68,7 @@ public class GetConferenceInfoServlet extends HttpServlet
 
         if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
         {
-            throw new ListenServletException(HttpServletResponse.SC_UNAUTHORIZED,
-                                             "Unauthorized - conference does not belong to user", "text/plain");
+            throw new UnauthorizedServletException("Conference does not belong to user");
         }
 
         StringBuilder content = new StringBuilder();

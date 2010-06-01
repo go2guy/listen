@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 import com.interact.listen.resource.*;
@@ -160,7 +160,7 @@ public class DropParticipantServletTest
         {
             assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
             assertEquals("text/plain", e.getContentType());
-            assertEquals("Not allowed to drop participant", e.getContent());
+            assertEquals("Unauthorized - Not allowed to drop participant", e.getContent());
         }
         finally
         {
@@ -207,7 +207,7 @@ public class DropParticipantServletTest
         {
             assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
             assertEquals("text/plain", e.getContentType());
-            assertEquals("Not allowed to drop participant", e.getContent());
+            assertEquals("Unauthorized - Not allowed to drop participant", e.getContent());
         }
         finally
         {

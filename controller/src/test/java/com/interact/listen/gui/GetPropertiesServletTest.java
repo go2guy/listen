@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.User;
 

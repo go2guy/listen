@@ -1,6 +1,8 @@
 package com.interact.listen;
 
 import com.interact.listen.api.ApiServlet;
+import com.interact.listen.exception.CriteriaCreationException;
+import com.interact.listen.exception.UniqueResultNotFoundException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.ConversionException;
 import com.interact.listen.marshal.converter.Converter;

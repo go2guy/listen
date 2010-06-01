@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenServletException;
+import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.resource.*;
 import com.interact.listen.security.SecurityUtil;
 

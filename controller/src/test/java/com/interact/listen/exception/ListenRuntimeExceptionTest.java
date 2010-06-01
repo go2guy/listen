@@ -1,6 +1,8 @@
-package com.interact.listen;
+package com.interact.listen.exception;
 
 import static org.junit.Assert.assertEquals;
+
+import com.interact.listen.exception.ListenRuntimeException;
 
 import org.junit.Test;
 
