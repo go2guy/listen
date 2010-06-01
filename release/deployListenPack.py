@@ -100,13 +100,15 @@ def prep():
     # Set up info for stopping appropriate processes
     stopcmds = ["service listen-controller stop",
                 "service collector stop",
-                "service mysqld stop",
-                "service statistics stop"]
+                "service statistics stop",
+                "service tomcat stop",
+                "service mysqld stop"]
 
     killprocs = ["/interact/.*/iiMoap",
                  "/interact/.*/iiSysSrvr",
                  "/interact/.*/collector",
                  "java.*app=STATISTICS",
+                 "jsvc"
                  "/interact/.*/listen-controller",
                  "mysqld"]
 
