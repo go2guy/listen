@@ -42,7 +42,7 @@
 	<var name="II_SB_fldTermChar" expr="''"/>    <!--  DTMF Terminating Character. Identifies the terminating character of a DTMF input -->
 
     <!-- Prompt properties -->
-    <var name="II_SB_cutIn" expr="'true'"/>      <!--  Cut In. true / false - Controls if prompts are interruptable with a key press -->
+    <var name="II_SB_cutIn" expr="''"/>      <!--  Cut In. true / false - Controls if prompts are interruptable with a key press -->
     
     <!-- Misc Properties -->
     <var name="II_SB_mode" expr="'dtmf'"/>   <!--  Input Mode. This allows the system to detect either dtmf, voice or both voic and dtmf -->
@@ -67,7 +67,7 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    <log target="status">Error and Goodbye</log>
+    	    <log target="status">Service Error</log>
             <log>INFO: Entered audio-input.vxml [51-33]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
             <if cond="II_SB_cutIn == 'true'">
