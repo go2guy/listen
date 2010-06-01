@@ -193,7 +193,7 @@ function Conference(id) {
                             recordButton.hide();
                         }
                         
-                        var recordHtml = '<button class="' + (data.info.isRecording ? 'stop' : 'record') + '-button"' + 'onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';                        
+                        var recordHtml = '<button class="' + (data.info.isRecording ? 'stop' : 'record') + '-button"' + 'onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';                        
                         if(recordButton.html() != recordHtml) {
                             recordButton.html(recordHtml);
                         }
@@ -257,13 +257,13 @@ function ConferenceCallerList() {
                 li.find('.caller-drop-icon').text('');
             }
         } else {
-            var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '"></button>';
+            var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + (data.isPassive ? 'Cannot unmute ' + data.number + ' (passive caller)' : ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number)) + '"></button>';
             var mute = li.find('.caller-mute-icon');
             if(mute.html() != muteHtml) {
                 mute.html(muteHtml);
             }
 
-            var dropHtml = '<button class="delete-button" onclick="SERVER.dropCaller(' + data.id + ');"/>';
+            var dropHtml = '<button class="delete-button" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>';
             var drop = li.find('.caller-drop-icon');
             if(drop.html() != dropHtml) {
                 drop.html(dropHtml);

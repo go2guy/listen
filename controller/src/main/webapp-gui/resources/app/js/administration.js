@@ -63,7 +63,7 @@ $(document).ready(function() {
         html += '<option value="mailbox"' + (d == 'mailbox' ? ' selected="selected"' : '') + '>Mailbox</option>';
         html += '<option value="voicemail"' + (d == 'voicemail' ? ' selected="selected"' : '') + '>Voicemail</option>';
         html += '</select></td>';
-        html += '<td><button class="delete-button"></button></td></tr>';
+        html += '<td><button class="delete-button" title="Remove this DNIS mapping"></button></td></tr>';
         var node = $(html);
         $('.delete-button', node).click(function() {
             $(this).parent().parent().remove();
