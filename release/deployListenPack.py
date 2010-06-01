@@ -2,7 +2,7 @@
 
 try:
     import datetime
-    import deployListen
+    import deploy
     import glob
     import os
     import re
@@ -22,9 +22,11 @@ except ImportError, e:
 
 
 def main():
+    global server
     global pack
+    global hostname
 
-    phases = {"prep": deployListen.prep, "license": deployListen.license, "install": install, "post": deployListen.post, "all": all}
+    phases = {"prep": prep, "license": license, "install": install, "all": all}
 
     parser = OptionParser()
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
@@ -66,29 +68,24 @@ def main():
     if options.pack == None:
         parser.error("--pack option not supplied")
 
-    deployListen.controllerserver,__,__ = socket.gethostbyaddr(options.server)
-    deployListen.ivrserver,__,__ = socket.gethostbyaddr(options.server)
-    deployListen.realizeserver,__,__ = socket.gethostbyaddr(options.server)
-    deployListen.uiapkg = ""
-    deployListen.masterpkg = ""
+    server,__,__ = socket.gethostbyaddr(options.server)
     pack = options.pack
 
-    deployListen.hostname = socket.gethostname()
-    hosts = set([deployListen.controllerserver, deployListen.ivrserver])
-    if deployListen.hostname not in hosts:
-        localimport = getattr(sys.modules['deployListen'], "__file__")
+    hostname = socket.gethostname()
+    if not hostname == server:
+        # determine local and remote locations to use
+        localimport = getattr(sys.modules['deploy'], "__file__")
         localprog = os.path.abspath(__file__)
         remoteimport = os.path.expanduser('~/' + os.path.basename(localimport))
         remoteprog = os.path.expanduser('~/' + os.path.basename(localprog))
         remotepack = "/interact/" + os.path.basename(pack)
 
-        # Send to all hosts
-        for remotehost in hosts:
-            deployListen.runRemote(remotehost, "mkdir -p %s %s" % (os.path.dirname(remoteprog), os.path.dirname(remotepack)))
-            deployListen.sftp(remotehost, localimport, remoteimport, 0700)
-            deployListen.sftp(remotehost, localprog, remoteprog, 0700)
-            deployListen.sftp(remotehost, pack, remotepack, 0700)
-            deployListen.runRemote(remotehost, "%s --server=%s --pack=%s --phase=%s" % (remoteprog, deployListen.controllerserver, remotepack, options.phase))
+        # Send to remote location
+        deploy.runRemote(server, "mkdir -p %s %s" % (os.path.dirname(remoteprog), os.path.dirname(remotepack)))
+        deploy.sftp(server, localimport, remoteimport, 0700)
+        deploy.sftp(server, localprog, remoteprog, 0700)
+        deploy.sftp(server, pack, remotepack, 0700)
+        deploy.runRemote(server, "%s --server=%s --pack=%s --phase=%s" % (remoteprog, server, remotepack, options.phase))
 
     else:
         phases[options.phase]()
@@ -97,73 +94,76 @@ def main():
 def all():
     prep()
     install()
-    post()
 
 
 def prep():
-    # Run deployListen's prep. Make sure we don't delete the pack file.
-    deployListen.prep(pardonfiles=["/interact/xtt", pack])
+    # Set up info for stopping appropriate processes
+    stopcmds = ["service listen-controller stop",
+                "service collector stop",
+                "service mysqld stop"]
 
-    # Need to shutdown and clear out the mysql database for the realize install.
-    deployListen.run(["service", "mysqld", "stop"], failonerror=False)
 
-    killprocs = ["mysqld"]
-    for killproc in killprocs:
-        deployListen.run(["pkill", "-TERM", killproc], failonerror=False)
+    killprocs = ["/interact/.*/iiMoap",
+                 "/interact/.*/iiSysSrvr",
+                 "/interact/.*/collector",
+                 "/interact/.*/listen-controller",
+                 "mysqld"]
 
-    time.sleep(30)
+    deploy.stop(stopcmds, killprocs)
 
-    for killproc in killprocs:
-        deployListen.run(["pkill", "-KILL", killproc], failonerror=False)
+    # Set up necessary host info
+    hostinfo = {"defaultcontroller": server,
+                "defaultivr": server,
+                "defaultrealize": server}
 
-    deployListen.removeFiles("/var/lib/mysql/")
+    deploy.createAlias(hostinfo)
+    deploy.eraseInteractRpms()
+
+    # Remove package files
+    deploy.removeFiles("/interact/", pardonfiles=[pack])
+    deploy.removeFiles("/var/lib/com.interact.listen/")
+    deploy.removeFiles("/var/lib/mysql/")
+
+    # remove interact user
+    print("Removing interact user.")
+    deploy.run(["userdel", "interact"], failonerror=False)
+    deploy.run(["groupdel", "operator"], failonerror=False)
 
 
 def install():
     # Start up mysql - needed for realize install.
-    deployListen.run(["service", "mysqld", "start"])
+    deploy.run(["service", "mysqld", "start"])
 
     # Make it executable
     os.chmod(pack, 0700)
 
     # Extract so we can install arcade stuff...
-    deployListen.run([pack])
+    deploy.run([pack])
 
     # Find the extracted packages.
-    deployListen.uiapkg = getLatestFile("/interact/packages/uia/uia*.rpm")
-    if deployListen.uiapkg == None:
+    uiapkg = deploy.getLatestFile("/interact/packages/uia/uia*.rpm")
+    if uiapkg == None:
         sys.exit("Unable to find latest uia package.")
 
-    deployListen.masterpkg = getLatestFile("/interact/packages/listen/listen*.rpm")
-    if deployListen.masterpkg == None:
+    masterpkg = deploy.getLatestFile("/interact/packages/listen/listen*.rpm")
+    if masterpkg == None:
         sys.exit("Unable to find latest master package.")
 
     # install uia packages
-    deployListen.run(["rpm", "-Uvh", deployListen.uiapkg])
+    deploy.run(["rpm", "-Uvh", uiapkg])
 
     # install arcade dependencies
-    deployListen.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", deployListen.masterpkg, "arcade"])
+    deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", masterpkg, "arcade"])
 
     # License the app so it starts up
-    deployListen.license()
+    license()
 
     # Install using defaults and start all processes.
-    deployListen.run([pack, "-ds", "--sipServer=stl03a.netlogic.net"])
+    deploy.run([pack, "-ds", "--sipServer=stl03a.netlogic.net"])
 
 
-def post():
-    deployListen.post()
-
-
-def getLatestFile(filename):
-    # get all files which match the filename, sort in reverse, return first entry or None.
-    files = glob.glob(filename)
-    if len(files) >= 1:
-        files.sort(reverse=True)
-        return files[0]
-
-    else:
-        return None
+def license():
+    deploy.license(hostname)
 
 
 if __name__ == "__main__":
