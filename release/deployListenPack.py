@@ -108,7 +108,7 @@ def prep():
                  "/interact/.*/iiSysSrvr",
                  "/interact/.*/collector",
                  "java.*app=STATISTICS",
-                 "jsvc"
+                 "jsvc",
                  "/interact/.*/listen-controller",
                  "mysqld"]
 
