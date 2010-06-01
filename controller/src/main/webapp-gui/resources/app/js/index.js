@@ -55,12 +55,18 @@ $(document).ready(function() {
 
                 this.hide = function(direction, callback) {
                     if(callback) {
-                        windowDiv.hide('slide', { direction: direction ? direction : 'left' }, 250, callback);
+                        windowDiv.hide('slide', { direction: direction ? direction : 'left' }, 250, function() {
+                            callback.call();
+                            if(this.content) {
+                                this.content.unload();
+                            }
+                        });
                     } else {
-                        windowDiv.hide('slide', { direction: direction ? direction : 'left' }, 250);
-                    }
-                    if(this.content) {
-                        this.content.unload();
+                        windowDiv.hide('slide', { direction: direction ? direction : 'left' }, 250, function() {
+                            if(this.content) {
+                                this.content.unload();
+                            }
+                        });
                     }
                 };
 
