@@ -89,30 +89,30 @@ public class VoicemailTest
     }
 
     @Test
-    public void test_validate_nullFileLocation_returnsHasErrors()
+    public void test_validate_nullUri_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
-        voicemail.setFileLocation(null);
+        voicemail.setUri(null);
 
         assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
     }
 
     @Test
-    public void test_validate_blankFileLocation_returnsHasErrors()
+    public void test_validate_blankUri_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
-        voicemail.setFileLocation("");
+        voicemail.setUri("");
 
         assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
     }
 
     @Test
-    public void test_validate_whitespaceFileLocation_returnsHasErrors()
+    public void test_validate_whitespaceUri_returnsHasErrors()
     {
         voicemail = getPopulatedVoicemail();
-        voicemail.setFileLocation("  ");
+        voicemail.setUri("  ");
 
         assertFalse(voicemail.validate());
         assertTrue(voicemail.hasErrors());
@@ -136,7 +136,7 @@ public class VoicemailTest
 
         assertEquals(original.getDateCreated(), copy.getDateCreated());
         assertFalse(original.getDateCreated() == copy.getDateCreated()); // different reference
-        assertEquals(original.getFileLocation(), copy.getFileLocation());
+        assertEquals(original.getUri(), copy.getUri());
         assertEquals(original.getIsNew(), copy.getIsNew());
         assertTrue(original.getSubscriber() == copy.getSubscriber()); // same reference
 
@@ -173,23 +173,12 @@ public class VoicemailTest
     }
 
     @Test
-    public void test_equals_fileLocationNotEqual_returnsFalse()
+    public void test_equals_uriNotEqual_returnsFalse()
     {
-        voicemail.setFileLocation(String.valueOf(System.currentTimeMillis()));
+        voicemail.setUri(String.valueOf(System.currentTimeMillis()));
 
         Voicemail that = new Voicemail();
-        that.setFileLocation(null);
-
-        assertFalse(voicemail.equals(that));
-    }
-
-    @Test
-    public void test_equals_subscriberNotEqual_returnsFalse()
-    {
-        voicemail.setSubscriber(new Subscriber());
-
-        Voicemail that = new Voicemail();
-        that.setSubscriber(null);
+        that.setUri(null);
 
         assertFalse(voicemail.equals(that));
     }
@@ -197,15 +186,11 @@ public class VoicemailTest
     @Test
     public void test_equals_allPropertiesEqual_returnsTrue()
     {
-        String fileLocation = String.valueOf(System.currentTimeMillis());
-        Subscriber subscriber = new Subscriber();
-
-        voicemail.setFileLocation(fileLocation);
-        voicemail.setSubscriber(subscriber);
+        String uri = String.valueOf(System.currentTimeMillis());
+        voicemail.setUri(uri);
 
         Voicemail that = new Voicemail();
-        that.setFileLocation(fileLocation);
-        that.setSubscriber(subscriber);
+        that.setUri(uri);
 
         assertTrue(voicemail.equals(that));
     }
@@ -216,13 +201,12 @@ public class VoicemailTest
         Voicemail obj = new Voicemail();
 
         // hashcode-relevant properties set to static values for predictability
-        obj.setSubscriber(new Subscriber());
-        obj.setFileLocation("Billy Club");
+        obj.setUri("Billy Club");
 
         // set a property that has no effect on hashcode to something dynamic
         obj.setDateCreated(new Date());
 
-        assertEquals(1619440250, obj.hashCode());
+        assertEquals(-1082258653, obj.hashCode());
     }
 
     private Voicemail getPopulatedVoicemail()
@@ -234,7 +218,9 @@ public class VoicemailTest
 
         Voicemail v = new Voicemail();
         v.setDateCreated(new Date());
-        v.setFileLocation("/foo/bar/baz");
+        v.setDescription(String.valueOf(System.currentTimeMillis()));
+        v.setFileSize("1024");
+        v.setUri("/foo/bar/baz");
         v.setId(System.currentTimeMillis());
         v.setIsNew(Boolean.TRUE);
         v.setSubscriber(s);

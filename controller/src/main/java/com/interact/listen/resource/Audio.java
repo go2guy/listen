@@ -35,6 +35,9 @@ public abstract class Audio extends Resource implements Serializable
     @Column(name = "DATE_CREATED", nullable = false)
     private Date dateCreated = new Date();
 
+    @Column(name = "DURATION", nullable = true)
+    private String duration; // TODO make this a org.joda.Duration (or whatever the class is)
+
     @Override
     public Long getId()
     {
@@ -95,6 +98,16 @@ public abstract class Audio extends Resource implements Serializable
     public void setDateCreated(Date dateCreated)
     {
         this.dateCreated = dateCreated == null ? null : new Date(dateCreated.getTime());
+    }
+
+    public String getDuration()
+    {
+        return duration;
+    }
+
+    public void setDuration(String duration)
+    {
+        this.duration = duration;
     }
 
     @Override

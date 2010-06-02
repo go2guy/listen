@@ -33,9 +33,12 @@ public class XmlMarshallerTest
         subscriber.setNumber("foo" + System.currentTimeMillis());
 
         Voicemail voicemail = new Voicemail();
+        voicemail.setDescription(String.valueOf(System.currentTimeMillis()));
+        voicemail.setDuration("15:55");
+        voicemail.setFileSize("1024");
         voicemail.setId(System.currentTimeMillis());
         voicemail.setSubscriber(subscriber);
-        voicemail.setFileLocation("/foo/bar/baz/" + System.currentTimeMillis());
+        voicemail.setUri("/foo/bar/baz/" + System.currentTimeMillis());
         voicemail.setVersion(0);
 
         SimpleDateFormat sdf = new SimpleDateFormat(Iso8601DateConverter.ISO8601_FORMAT);
@@ -44,10 +47,13 @@ public class XmlMarshallerTest
         StringBuilder expected = new StringBuilder();
         expected.append("<voicemail href=\"/voicemails/").append(voicemail.getId()).append("\">");
         expected.append("<dateCreated>").append(formattedDate).append("</dateCreated>");
-        expected.append("<fileLocation>").append(voicemail.getFileLocation()).append("</fileLocation>");
+        expected.append("<description>").append(voicemail.getDescription()).append("</description>");
+        expected.append("<duration>").append(voicemail.getDuration()).append("</duration>");
+        expected.append("<fileSize>").append(voicemail.getFileSize()).append("</fileSize>");
         expected.append("<id>").append(voicemail.getId()).append("</id>");
         expected.append("<isNew>").append(voicemail.getIsNew()).append("</isNew>");
         expected.append("<subscriber href=\"/subscribers/").append(subscriber.getId()).append("\"/>");
+        expected.append("<uri>").append(voicemail.getUri()).append("</uri>");
         expected.append("<version>").append(voicemail.getVersion()).append("</version>");
         expected.append("</voicemail>");
 

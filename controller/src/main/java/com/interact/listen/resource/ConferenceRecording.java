@@ -37,6 +37,7 @@ public class ConferenceRecording extends Audio
         copy.setDateCreated(getDateCreated() == null ? null : new Date(getDateCreated().getTime()));
         copy.setUri(getUri());
         copy.setDescription(getDescription());
+        copy.setDuration(getDuration());
         copy.setFileSize(getFileSize());
         copy.setConference(conference);
         return copy;

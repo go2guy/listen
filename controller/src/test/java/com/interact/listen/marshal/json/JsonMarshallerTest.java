@@ -34,9 +34,12 @@ public class JsonMarshallerTest
         subscriber.setNumber("foo" + System.currentTimeMillis());
 
         Voicemail voicemail = new Voicemail();
+        voicemail.setDescription(String.valueOf(System.currentTimeMillis()));
+        voicemail.setDuration("15:55");
+        voicemail.setFileSize("1024");
         voicemail.setId(System.currentTimeMillis());
         voicemail.setSubscriber(subscriber);
-        voicemail.setFileLocation("/foo/bar/baz/" + System.currentTimeMillis());
+        voicemail.setUri("/foo/bar/baz/" + System.currentTimeMillis());
         voicemail.setVersion(0);
 
         SimpleDateFormat sdf = new SimpleDateFormat(Iso8601DateConverter.ISO8601_FORMAT);
@@ -46,10 +49,13 @@ public class JsonMarshallerTest
         expected.append("{");
         expected.append("\"href\":\"").append("/voicemails/").append(voicemail.getId()).append("\",");
         expected.append("\"dateCreated\":\"").append(formattedDate).append("\",");
-        expected.append("\"fileLocation\":\"").append(voicemail.getFileLocation()).append("\",");
+        expected.append("\"description\":\"").append(voicemail.getDescription()).append("\",");
+        expected.append("\"duration\":\"").append(voicemail.getDuration()).append("\",");
+        expected.append("\"fileSize\":\"").append(voicemail.getFileSize()).append("\",");
         expected.append("\"id\":").append(voicemail.getId()).append(",");
         expected.append("\"isNew\":").append(voicemail.getIsNew()).append(",");
         expected.append("\"subscriber\":{\"href\":\"/subscribers/").append(subscriber.getId()).append("\"},");
+        expected.append("\"uri\":\"").append(voicemail.getUri()).append("\",");
         expected.append("\"version\":").append(voicemail.getVersion());
         expected.append("}");
 
