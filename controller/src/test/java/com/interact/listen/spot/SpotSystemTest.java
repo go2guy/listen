@@ -27,7 +27,7 @@ public class SpotSystemTest
     private Participant participant;
 
     private final String httpInterfaceUri = "http://www.example.com";
-
+    private final String postStringAddition = "/ccxml/basichttp";
     @Before
     public void setUp()
     {
@@ -55,7 +55,7 @@ public class SpotSystemTest
 
         spotSystem.dropParticipant(participant);
 
-        verify(mockHttpClient).post(httpInterfaceUri, expectedParams);
+        verify(mockHttpClient).post(httpInterfaceUri + postStringAddition, expectedParams);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class SpotSystemTest
         }
         catch(SpotCommunicationException e)
         {
-            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + "]", e.getMessage());
+            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + postStringAddition + "]", e.getMessage());
         }
     }
 
@@ -113,7 +113,7 @@ public class SpotSystemTest
 
         spotSystem.muteParticipant(participant);
 
-        verify(mockHttpClient).post(httpInterfaceUri, expectedParams);
+        verify(mockHttpClient).post(httpInterfaceUri + postStringAddition, expectedParams);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class SpotSystemTest
         }
         catch(SpotCommunicationException e)
         {
-            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + "]", e.getMessage());
+            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + postStringAddition + "]", e.getMessage());
         }
     }
 
@@ -173,7 +173,7 @@ public class SpotSystemTest
 
         spotSystem.outdial(number, adminSessionId);
 
-        verify(mockHttpClient).post(httpInterfaceUri, expectedParams);
+        verify(mockHttpClient).post(httpInterfaceUri + postStringAddition, expectedParams);
     }
 
     @Test
@@ -189,7 +189,7 @@ public class SpotSystemTest
         }
         catch(SpotCommunicationException e)
         {
-            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + "]", e.getMessage());
+            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + postStringAddition + "]", e.getMessage());
         }
     }
 
@@ -230,7 +230,7 @@ public class SpotSystemTest
 
         spotSystem.unmuteParticipant(participant);
 
-        verify(mockHttpClient).post(httpInterfaceUri, expectedParams);
+        verify(mockHttpClient).post(httpInterfaceUri + postStringAddition, expectedParams);
     }
 
     @Test
@@ -246,7 +246,7 @@ public class SpotSystemTest
         }
         catch(SpotCommunicationException e)
         {
-            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + "]", e.getMessage());
+            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + postStringAddition + "]", e.getMessage());
         }
     }
 
