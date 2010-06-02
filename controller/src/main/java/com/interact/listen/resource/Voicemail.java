@@ -18,6 +18,9 @@ public class Voicemail extends Audio implements Serializable
     @Column(name = "IS_NEW", nullable = false)
     private Boolean isNew = Boolean.TRUE;
 
+    @Column(name = "LEFT_BY", nullable = true)
+    private String leftBy;
+
     public Subscriber getSubscriber()
     {
         return subscriber;
@@ -36,6 +39,16 @@ public class Voicemail extends Audio implements Serializable
     public void setIsNew(Boolean isNew)
     {
         this.isNew = isNew;
+    }
+
+    public String getLeftBy()
+    {
+        return leftBy;
+    }
+
+    public void setLeftBy(String leftBy)
+    {
+        this.leftBy = leftBy;
     }
 
     @Override
@@ -71,6 +84,7 @@ public class Voicemail extends Audio implements Serializable
         copy.setDuration(getDuration());
         copy.setFileSize(getFileSize());
         copy.setIsNew(isNew);
+        copy.setLeftBy(leftBy);
         copy.setSubscriber(subscriber);
         copy.setUri(getUri());
         return copy;
