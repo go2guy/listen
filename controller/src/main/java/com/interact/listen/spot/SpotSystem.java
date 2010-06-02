@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class SpotSystem
 {
-    // e.g. "http://apps2/spot/ccxml/basichttp"
+    // e.g. "http://apps2/spot"
     private String httpInterfaceUri;
 
     private HttpClient httpClient = new HttpClientImpl();
@@ -41,7 +41,7 @@ public class SpotSystem
 
     private enum SpotRequestEvent
     {
-        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), OUTDIAL("DIAL"), START_RECORDING("RECORD"), STOP_RECORDING("STOP_REC"),
+        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), OUTDIAL("DIAL"), START_RECORDING("START_REC"), STOP_RECORDING("STOP_REC"),
         UNMUTE_PARTICIPANT("UNMUTE");
 
         private String eventName;
@@ -121,7 +121,14 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.START_RECORDING.eventName);
         params.put("II_SB_valueToPass", "");
-        sendPhpRequest(params);
+        /*params.put("interface", "GUI");
+        params.put("recEvent", SpotRequestEvent.START_RECORDING.eventName);
+        params.put("conferenceId", String.valueOf(conference.getId()));
+        params.put("arcadeId", conference.getArcadeId());
+        params.put("recordingSessionId", conference.getRecordingSessionId());
+        params.put("startTime", "");*/
+        //sendPhpRequest(params);
+        sendBasicHttpRequest(params);
     }
     
     /**
@@ -139,7 +146,10 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.STOP_RECORDING.eventName);
         params.put("II_SB_valueToPass", "");
-        sendPhpRequest(params);
+        /*params.put("interface", "GUI");
+        params.put("recEvent", SpotRequestEvent.STOP_RECORDING.eventName);*/
+        //sendPhpRequest(params);
+        sendBasicHttpRequest(params);
     }
 
     /**
@@ -163,14 +173,14 @@ public class SpotSystem
     {
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
         
-        //String uri = httpInterfaceUri + "/spot/ccxml/basichttp";
-        httpClient.post(httpInterfaceUri, params);
+        String uri = httpInterfaceUri + "/ccxml/basichttp";
+        httpClient.post(uri, params);
 
         int status = httpClient.getResponseStatus();
         if(!isSuccessStatus(status))
         {
             throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" +
-                                                 httpInterfaceUri + "]");
+                                                 uri + "]");
         }
     }
     
@@ -178,7 +188,7 @@ public class SpotSystem
     {
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
         
-        String uri = httpInterfaceUri + "some funky php location";        
+        String uri = httpInterfaceUri + "/cgi-bin/spotbuild/listen/recordConf.php";
         httpClient.post(uri, params);
 
         int status = httpClient.getResponseStatus();

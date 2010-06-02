@@ -124,6 +124,17 @@ public class ConferenceTest
         assertFalse(conference.validate());
         assertTrue(conference.hasErrors());
     }
+    
+    @Test
+    public void test_validate_falseIsStartedAndIsRecording_returnsHasErrors()
+    {
+        conference = getPopulatedConference();
+        conference.setIsRecording(true);
+        conference.setIsStarted(false);
+
+        assertFalse(conference.validate());
+        assertTrue(conference.hasErrors());
+    }
 
     @Test
     public void test_copy_withoutIdAndVersion_createsCopyWithoutIdAndVersion()

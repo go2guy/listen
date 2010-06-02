@@ -221,13 +221,17 @@ public class Conference extends Resource implements Serializable
 
         if(isStarted == null)
         {
-            
             addToErrors("isStarted cannot be null");
         }
         
         if(isRecording == null)
         {
             addToErrors("isRecording cannot be null");
+        }
+        
+        if(isStarted != null && isRecording != null && !isStarted && isRecording)
+        {
+            addToErrors("cannot record a conferences that is not started");
         }
         
         return !hasErrors();
@@ -321,6 +325,9 @@ public class Conference extends Resource implements Serializable
                 
                 //want conference length in seconds
                 statSender.send(Stat.CONFERENCE_LENGTH, conferenceLength / 1000);
+                
+                //Spot will have stopped any recordings, just covering our bases here
+                isRecording = false;
             }
         }
         
