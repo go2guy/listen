@@ -137,6 +137,7 @@
 
 .outdial-button {
     background-image: url('../images/new/icon_outdial_16x16.png');
+    display: none;
 }
 
 .outdial-button:hover {

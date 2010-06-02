@@ -181,10 +181,12 @@ function Conference(id) {
                     title.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
                     title.attr('title', onMessage);
                     recordButton.show();
+                    $('#outdial-show').show();
                 } else {
                     title.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
                     title.attr('title', offMessage);
                     recordButton.hide();
+                    $('#outdial-show').hide();
                 }
 
                 var recordHtml = '<button class="' + (data.info.isRecording ? 'stop' : 'record') + '-button"' + 'onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';                        
