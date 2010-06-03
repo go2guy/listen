@@ -257,7 +257,7 @@ if(user != null && user.getIsAdministrator()) { %>
       </li>
       <!-- voicemail row -->
       <table><tbody><tr id="voicemail-row-template">
-        <!--<td class="voicemail-cell-new"></td>-->
+        <td class="voicemail-cell-readStatus"></td>
         <td class="voicemail-cell-from"></td>
         <td class="voicemail-cell-received"></td>
         <td class="voicemail-cell-download"></td>

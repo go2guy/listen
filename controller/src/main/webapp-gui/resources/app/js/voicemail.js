@@ -2,6 +2,18 @@ $(document).ready(function() {
     LISTEN.registerApp(new LISTEN.Application('voicemail', 'voicemail-application', 'menu-voicemail', 2, new Voicemail()));
 });
 
+var SERVER = {
+    markVoicemailReadStatus: function(id, readStatus) {
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/markVoicemailReadStatus',
+            data: { id: id, readStatus: readStatus },
+            success: function(data) { /* TODO anything? */ },
+            error: function(req) { /* TODO anything? */ }
+        });
+    }
+}
+
 function Voicemail() {
     var interval;
 
@@ -12,10 +24,16 @@ function Voicemail() {
 
         if(data.isNew) {
             tr.removeClass('voicemail-read');
-            tr.addClass('voicemail-new');
+            tr.addClass('voicemail-unread');
         } else {
-            tr.removeClass('voicemail-new');
+            tr.removeClass('voicemail-unread');
             tr.addClass('voicemail-read');
+        }
+
+        var readStatusCell = tr.find('.voicemail-cell-readStatus');
+        var buttonHtml = '<button class="' + (data.isNew ? 'mark-read-button' : 'mark-unread-button') + '" onclick="' + (data.isNew ? 'SERVER.markVoicemailReadStatus(' + data.id + ', true);' : 'SERVER.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as read' : 'Mark as unread') + '"></button>';
+        if(readStatusCell.html() != buttonHtml) {
+            readStatusCell.html(buttonHtml);
         }
 
         var fromColumn = tr.find('.voicemail-cell-from');

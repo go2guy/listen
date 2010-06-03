@@ -78,7 +78,7 @@
     width: 100%;
 }
 
-.add-button, .cancel-button, .delete-button, .mute-button, .outdial-button, .record-button, .save-button, .schedule-button, .stop-button, .unmute-button, .unmute-button-disabled, .view-button {
+.add-button, .cancel-button, .delete-button, .mark-read-button, .mark-unread-button, .mute-button, .outdial-button, .record-button, .save-button, .schedule-button, .stop-button, .unmute-button, .unmute-button-disabled, .view-button {
     background-color: #EEEEEE;
     background-position: 2px 2px;
     background-repeat: no-repeat;
@@ -95,11 +95,11 @@
     -webkit-border-radius: 4px;
 }
 
-.delete-button, .mute-button, .unmute-button, .unmute-button-disabled { /* hack for IE to render buttons without text correctly */
+.delete-button, .mark-read-button, .mark-unread-button, .mute-button, .unmute-button, .unmute-button-disabled { /* hack for IE to render buttons without text correctly */
     width: 24px;
 }
 
-.add-button:hover, .cancel-button:hover, .delete-button:hover, .mute-button:hover, .outdial-button:hover, .record-button:hover, .save-button:hover, .schedule-button:hover, .stop-button:hover, .unmute-button:hover, .view-button:hover {
+.add-button:hover, .cancel-button:hover, .delete-button:hover, .mark-read-button, .mark-unread-button, .mute-button:hover, .outdial-button:hover, .record-button:hover, .save-button:hover, .schedule-button:hover, .stop-button:hover, .unmute-button:hover, .view-button:hover {
     background-color: #FFFFFF;
 }
 
@@ -125,6 +125,14 @@
 
 .delete-button:hover {
     background-image: url('../images/new/icon_delete_hover_16x16.png');
+}
+
+.mark-read-button {
+    background-image: url('../images/new/icon_speaker_unmuted_16x16.png');
+}
+
+.mark-unread-button {
+    background-image: url('../images/new/icon_speaker_muted_16x16.png');
 }
 
 .mute-button {
@@ -561,7 +569,11 @@ li.odd {
     border-width: 0 0 1px 0;
 }
 
-tr.voicemail-new {
+td.voicemail-cell-readStatus {
+    width: 26px;
+}
+
+tr.voicemail-unread {
     background-color: #FFFFFF;
     color: #000000;
     font-weight: bold;

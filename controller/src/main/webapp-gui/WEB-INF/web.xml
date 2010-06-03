@@ -140,6 +140,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>MarkVoicemailReadStatusServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.MarkVoicemailReadStatusServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>MuteParticipantServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.MuteParticipantServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -236,6 +242,11 @@
     <servlet-mapping>
         <servlet-name>GetVoicemailListServlet</servlet-name>
         <url-pattern>/ajax/getVoicemailList</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MarkVoicemailReadStatusServlet</servlet-name>
+        <url-pattern>/ajax/markVoicemailReadStatus</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>
