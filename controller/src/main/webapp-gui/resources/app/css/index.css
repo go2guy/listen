@@ -547,12 +547,30 @@ li.odd {
     color: #D3AB00;
 }
 
+#voicemail-application .panel-content {
+    padding: 0;
+}
+
+#voicemail-application table {
+    border-width: 0;
+    width: 100%;
+}
+
 #voicemail-application table td, #voicemail-application table th {
-    border-color: #D3AB00;
+    border-color: #FFE472;
+    border-width: 0 0 1px 0;
 }
 
 tr.voicemail-new {
+    background-color: #FFFFFF;
+    color: #000000;
     font-weight: bold;
+}
+
+tr.voicemail-read {
+    background-color: #FFFFBB;
+    color: #AAAAAA;
+    font-weight: normal;
 }
 
 /* dialogs & forms */

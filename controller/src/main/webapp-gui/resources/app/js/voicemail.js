@@ -11,9 +11,11 @@ function Voicemail() {
         }
 
         if(data.isNew) {
+            tr.removeClass('voicemail-read');
             tr.addClass('voicemail-new');
         } else {
             tr.removeClass('voicemail-new');
+            tr.addClass('voicemail-read');
         }
 
         var fromColumn = tr.find('.voicemail-cell-from');
@@ -59,7 +61,8 @@ function Voicemail() {
                         var clone = $('#voicemail-row-template').clone();
                         updateMarkup(clone, serverItem, true);
                         clone.css('opacity', 0);
-                        var tbody = $('#voicemail-table tbody').prepend(clone);
+                        //clone.addClass((serverList.length - i) % 2 == 0 ? 'odd' : 'even');
+                        $('#voicemail-table tbody').prepend(clone);
                         clone.animate({ opacity: 1 }, 1000);
                     }
 
