@@ -6,7 +6,7 @@
        *   @Desc   Transfers application control to a new program -->
 
     <var name="II_SB_nextOpt" expr="'listen_mailbox'"/>  <!-- Name of next project -->
-    <var name="II_SB_valueToPass" expr="passValues"/> <!-- Value to pass -->
+    <var name="II_SB_valueToPass" expr="''"/> <!-- Value to pass -->
     
     <form id="beginDocument">
         <block>

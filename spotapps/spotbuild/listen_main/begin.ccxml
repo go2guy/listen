@@ -88,7 +88,11 @@
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
         		    <log>INFO: Inbound connection id [<value expr="II_SB_ibcallid"/>]</log>
-                    <send data="'dialog.user.alerting'" target="II_SB_sessionID"/>
+                    <if cond="II_SB_ibcallid.length &gt; 0">
+                        <send data="'dialog.user.alerting'" target="II_SB_sessionID"/>
+                    <else/> <!-- Assume there's currently no connection id associated with this session -->
+                        <send data="'dialog.user.startMain'" target="II_SB_sessionID"/>
+                    </if>
                 <elseif cond="II_SB_status == 'createSession'"/>
                     <log>INFO: Going to [<value expr="II_SB_newNxtOpt"/>.vxml]</log>
                     <assign name="II_SB_NEXT_OPTION" expr="II_SB_newNxtOpt"/>
