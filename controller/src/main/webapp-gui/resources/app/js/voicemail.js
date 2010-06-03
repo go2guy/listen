@@ -45,7 +45,7 @@ function Voicemail() {
                 var serverList = data.results;
                 var ids = [];
 
-                for(var i = 0; i < serverList.length; i++) {
+                for(var i = serverList.length - 1; i >= 0; i--) {
                     var found = false;
                     var serverItem = serverList[i];
                     for(var j = 0; j < tableRows.length; j++) {
