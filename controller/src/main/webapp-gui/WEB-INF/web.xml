@@ -74,8 +74,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>GetConferenceRecordingServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetConferenceRecordingServlet</servlet-class>
+        <servlet-name>DownloadVoicemailServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.DownloadVoicemailServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -94,6 +94,12 @@
     <servlet>
         <servlet-name>GetConferenceListServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceListServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GetConferenceRecordingServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetConferenceRecordingServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -196,6 +202,11 @@
     </servlet-mapping>
 
     <!-- ajax -->
+
+    <servlet-mapping>
+        <servlet-name>DownloadVoicemailServlet</servlet-name>
+        <url-pattern>/ajax/downloadVoicemail</url-pattern>    
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>DropParticipantServlet</servlet-name>
