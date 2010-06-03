@@ -15,7 +15,7 @@ public class Voicemail extends Audio implements Serializable
     @ManyToOne
     private Subscriber subscriber;
 
-    @Column(name = "IS_NEW", nullable = false)
+    @Column(name = "IS_NEW", nullable = true)
     private Boolean isNew = Boolean.TRUE;
 
     @Column(name = "LEFT_BY", nullable = true)

@@ -209,6 +209,20 @@
     width: 100%;
 }
 
+table {
+    border: 1px solid #CCCCCC;
+    border-collapse: collapse;
+}
+
+table th {
+    font-weight: bold;
+}
+
+table td, table th {
+    border: 1px solid #CCCCCC;
+    padding: 3px;
+}
+
 /* main menu */
 
 #main-menu {
@@ -370,20 +384,6 @@ li.odd {
     overflow: auto;
 }
 
-#conference-list table {
-    border: 1px solid #CCCCCC;
-    border-collapse: collapse;
-}
-
-#conference-list table th {
-    font-weight: bold;
-}
-
-#conference-list table td, #conference-list table th {
-    border: 1px solid #CCCCCC;
-    padding: 3px;
-}
-
 #conference-window {
     display: none;
 }
@@ -534,6 +534,25 @@ li.odd {
 
 .pin-remove button {
     margin-top: .25em;
+}
+
+/* voicemail */
+
+#voicemail-application .panel {
+    border-color: #D3AB00;
+}
+
+#voicemail-application .panel-header {
+    background-color: #FFE472;
+    color: #D3AB00;
+}
+
+#voicemail-application table td, #voicemail-application table th {
+    border-color: #D3AB00;
+}
+
+tr.voicemail-new {
+    font-weight: bold;
 }
 
 /* dialogs & forms */

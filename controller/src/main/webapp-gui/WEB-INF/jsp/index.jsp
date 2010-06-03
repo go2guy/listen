@@ -163,7 +163,26 @@ if(user != null && user.getIsAdministrator()) { %>
           </div><!-- conference-application --><%
 }
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-          <div id="voicemail-application" class="application">Voicemail Content</div><%
+          <div id="voicemail-application" class="application">
+            <div class="window">
+              <div class="panel">
+                <div class="panel-header"><div class="panel-title">Voicemail</div></div>
+                <div class="panel-content">
+                  <table id="voicemail-table"><!--
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>From</th>
+                        <th>Received</th>
+                        <th></th>
+                      </tr>
+                    </thead>-->
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div><%
 }
 if(License.isLicensed(ListenFeature.FINDME)) { %>
           <div id="findme-application" class="application">FindMe Content</div><%
@@ -236,6 +255,13 @@ if(user != null && user.getIsAdministrator()) { %>
       <li id="recording-row-template" class="recording-row">
         <div class="recording-content"></div>
       </li>
+      <!-- voicemail row -->
+      <table><tbody><tr id="voicemail-row-template">
+        <!--<td class="voicemail-cell-new"></td>-->
+        <td class="voicemail-cell-from"></td>
+        <td class="voicemail-cell-received"></td>
+        <td class="voicemail-cell-download"></td>
+      </tr></tbody></table>
     </div><%
 if(user != null && user.getIsAdministrator()) { %>
     <div id="provisionAccountDialog" class="dialog">

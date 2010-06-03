@@ -63,23 +63,7 @@
     <filter-mapping>
         <filter-name>OpenSessionInViewFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping><!--
-    <filter-mapping>
-        <filter-name>OpenSessionInViewFilter</filter-name>
-        <url-pattern>/ajax/*</url-pattern>
     </filter-mapping>
-    <filter-mapping>
-        <filter-name>OpenSessionInViewFilter</filter-name>
-        <url-pattern>/index</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>OpenSessionInViewFilter</filter-name>
-        <url-pattern>/login</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>OpenSessionInViewFilter</filter-name>
-        <url-pattern>/logout</url-pattern>
-    </filter-mapping>-->
 
     <!-- servlet definitions -->
 
@@ -122,6 +106,12 @@
     <servlet>
         <servlet-name>GetPropertiesServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetPropertiesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GetVoicemailListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetVoicemailListServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -230,6 +220,11 @@
     <servlet-mapping>
         <servlet-name>GetPropertiesServlet</servlet-name>
         <url-pattern>/ajax/getProperties</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetVoicemailListServlet</servlet-name>
+        <url-pattern>/ajax/getVoicemailList</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
