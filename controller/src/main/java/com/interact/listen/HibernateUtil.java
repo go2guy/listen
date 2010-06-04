@@ -246,7 +246,7 @@ public final class HibernateUtil
             LOG.debug("Created admin User");
             User user = new User();
             user.setUsername("Admin");
-            user.setPassword(SecurityUtil.hashPassword("conference4U!"));
+            user.setPassword(SecurityUtil.hashPassword("Int3ract!Inc"));
             user.setIsAdministrator(Boolean.TRUE);
             persistenceService.save(user);
         }
