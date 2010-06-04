@@ -670,6 +670,10 @@ fieldset legend {
     padding: 0 6px;
 }
 
+fieldset table, fieldset table td {
+    border-width: 0;
+}
+
 fieldset table td {
     padding: 2px;
     text-align: left;
