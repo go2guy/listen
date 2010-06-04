@@ -166,7 +166,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <div id="voicemail-application" class="application">
             <div class="window">
               <div class="panel">
-                <div class="panel-header"><div class="panel-title">Voicemail</div></div>
+                <div class="panel-header"><div class="panel-title">Voicemail (<span id="voicemail-new-count">0</span> New)</div></div>
                 <div class="panel-content">
                   <table id="voicemail-table"><!--
                     <thead>

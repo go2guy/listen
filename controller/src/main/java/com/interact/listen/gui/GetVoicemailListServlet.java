@@ -23,7 +23,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 public class GetVoicemailListServlet extends HttpServlet
 {
@@ -56,7 +59,7 @@ public class GetVoicemailListServlet extends HttpServlet
 
         if(user.getSubscriber() == null)
         {
-            String content = "{\"results\": []}";
+            String content = "{\"newCount\":0, \"list\": { \"results\": []} }";
             OutputBufferFilter.append(request, content, marshaller.getContentType());
             return;
         }
@@ -73,12 +76,27 @@ public class GetVoicemailListServlet extends HttpServlet
 
         try
         {
-            String content = service.list();
-            OutputBufferFilter.append(request, content, marshaller.getContentType());
+            StringBuilder content = new StringBuilder();
+            content.append("{");
+            content.append("\"newCount\":").append(getNewCount(session)).append(",");
+            content.append("\"list\":").append(service.list());
+            content.append("}");
+            OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
         }
         catch(CriteriaCreationException e)
         {
             throw new ServletException(e);
         }
+    }
+    
+    private Long getNewCount(Session session)
+    {
+        Criteria criteria = session.createCriteria(Voicemail.class);
+        criteria.add(Restrictions.eq("isNew", true));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setFirstResult(0);
+        criteria.setProjection(Projections.rowCount());
+        
+        return (Long)criteria.list().get(0);
     }
 }

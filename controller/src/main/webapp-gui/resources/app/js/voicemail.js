@@ -60,8 +60,13 @@ function Voicemail() {
             cache: 'false',
             success: function(data, textStatus, xhr) {
                 var tableRows = $('#voicemail-table tbody').find('tr');
-                var serverList = data.results;
+                var serverList = data.list.results;
                 var ids = [];
+
+                var countSpan = $('#voicemail-new-count');
+                if(countSpan.text() != data.newCount) {
+                    countSpan.text(data.newCount);
+                }
 
                 for(var i = serverList.length - 1; i >= 0; i--) {
                     var found = false;

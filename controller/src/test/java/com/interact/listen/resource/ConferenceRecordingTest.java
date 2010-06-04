@@ -107,26 +107,6 @@ public class ConferenceRecordingTest
     }
 
     @Test
-    public void test_validate_nullDescription_returnsTrueAndHasErrors()
-    {
-        conferenceRecording = getPopulatedConferenceRecording();
-        conferenceRecording.setDescription(null);
-
-        assertFalse(conferenceRecording.validate());
-        assertTrue(conferenceRecording.hasErrors());
-    }
-
-    @Test
-    public void test_validate_blankDescription_returnsTrueAndHasErrors()
-    {
-        conferenceRecording = getPopulatedConferenceRecording();
-        conferenceRecording.setDescription(" ");
-
-        assertFalse(conferenceRecording.validate());
-        assertTrue(conferenceRecording.hasErrors());
-    }
-
-    @Test
     public void test_validate_nullFileSize_returnsHasErrors()
     {
         conferenceRecording = getPopulatedConferenceRecording();

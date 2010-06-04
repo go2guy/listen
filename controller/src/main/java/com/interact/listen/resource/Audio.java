@@ -25,10 +25,10 @@ public abstract class Audio extends Resource implements Serializable
 
     @Column(name = "URI", nullable = false)
     private String uri;
-    
-    @Column(name = "DESCRIPTION", nullable = false)
+
+    @Column(name = "DESCRIPTION", nullable = true)
     private String description;
-    
+
     @Column(name = "FILE_SIZE", nullable = false)
     private String fileSize;
 
@@ -118,11 +118,6 @@ public abstract class Audio extends Resource implements Serializable
             addToErrors("uri cannot be null or blank");
         }
 
-        if(description == null || description.trim().equals(""))
-        {
-            addToErrors("description cannot be null or blank");
-        }
-        
         if(fileSize == null || fileSize.trim().equals(""))
         {
             addToErrors("fileSize cannot be null or blank");
