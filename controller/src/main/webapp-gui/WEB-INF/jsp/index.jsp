@@ -33,84 +33,46 @@ if(user != null && user.getIsAdministrator()) { %>
 } %>
   </head>
   <body>
-    <div id="loading-indicator"><div><img src="resources/app/images/new/spinner_16x16.gif"/></div><div>Loading</div></div>
-    <div id="wrapper">
-      <div id="wrapper-main">
-        <div id="header">
-          <div id="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
-          <div id="userInfo">Hi, <%= user.getUsername() %>! | <a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
-        </div><%
-if(License.isLicensed(ListenFeature.CONFERENCING)
-    || License.isLicensed(ListenFeature.VOICEMAIL)
-    || License.isLicensed(ListenFeature.FINDME)
-    || (user != null && user.getIsAdministrator())) { %>
-        <div id="main-menu">
-          <ul><%
-    if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
-            <li id="menu-conferencing"><div><img src="resources/app/images/new/button_conferencing_29x24.png"/></div><div>Conferencing</div></li><%
-    }
-    if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-            <li id="menu-voicemail"><div><img src="resources/app/images/new/button_voicemail_26x24.png"/></div><div>Voicemail</div></li><%
-    }
-    if(License.isLicensed(ListenFeature.FINDME)) { %>
-            <li id="menu-findme"><div><img src="resources/app/images/new/button_findme_40x23.png"/></div><div>FindMe</div></li><%
-    }
-    if(user != null && user.getIsAdministrator()) { %>
-            <li id="menu-administration"><div><img src="resources/app/images/new/button_administration_31x24.png"/></div><div>Administration</div></li><%
-    } %>
-          </ul>
-        </div>
-        <div id="main-menu-handle" title="Show/Hide Menu"></div><%
-} %>
+    <div id="header">
+      <div class="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
+      <div class="info"><b><%= user.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
+    </div>
+    <div class="column-mask">
+      <div class="two-column">
+        <div class="content-column-wrapper">
+          <div class="content-column">
+            <div id="notification"></div><%
 
-        <div id="notification"></div>
-        <div id="main">
-
-<%
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
-          <div id="conference-application" class="application"><%
-if(user != null && user.getIsAdministrator()) { %>
-            <div id="conference-list" class="window">
-              <div class="panel">
-                <div class="panel-header">
-                  <div class="panel-title">Conference List</div>
-                </div>
-                <div class="panel-content">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Description</th>
-                        <th>Status</th><!--
-                        <th>Callers</th>
-                        <th>Duration</th>-->
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div><%
-} %>
-            <div id="conference-window" class="window">
-              <div class="window-header">
-                <div id="conference-title" class="window-title">Conference</div>
-                <div class="conference-menu">
-                  <div class="left-buttons" id="record-button-div" style="display:none">
-                    <button id="record-button" class="record-button">Record</button>
+            <div id="conferencing-application" class="application">
+              <div class="application-header"><div class="title">Conferencing</div></div>
+              <div class="application-content">
+                <div class="left">
+                  <div class="panel">
+                    <div class="panel-content">
+                      <table>
+                        <tbody>
+                          <tr><td>Conference Description</td><td id="conference-info-description" class="conference-info-value"></td></tr>
+                          <tr><td>Conference Status</td><td id="conference-info-status" class="conference-info-value"></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                  <div class="right-buttons">
-                    <button id="schedule-button" class="schedule-button">Schedule</button>
+                  <div class="panel">
+                    <div class="panel-header"><div class="title">On The Call (<span id="conference-caller-count">0</span>)</div></div>
+                    <div class="panel-content">
+                      <table id="conference-caller-table"><tbody></tbody></table>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="left">
-                <div id="conference-callers" class="panel">
-                  <div class="panel-header">
-                    <div class="panel-title">Current Callers (<span id="conference-caller-count">0</span>)</div>
-                    <div class="panel-menu">
-                      <button id="outdial-show" name="outdial-show" class="outdial-button">OnDemand</button>
+                <div class="right">
+                  <div class="panel">
+                    <div class="panel-header"><div class="title">Control Panel</div></div>
+                    <div class="panel-content">
+                      <!-- outdial -->
+                      <div class="control-panel-button">
+                        <button id="outdial-show" name="outdial-show" class="outdial-button">OnDemand</button>
+                      </div>
                       <div id="outdial-dialog" class="inline-dialog">
                         <form name="outdial-form" id="outdial-form">
                           <div class="form-error-message"></div>
@@ -123,146 +85,187 @@ if(user != null && user.getIsAdministrator()) { %>
                           </div>
                         </form>
                       </div>
+                      <div id="record-button-div" class="control-panel-button">
+                        <button id="record-button" class="record-button">Record</button>
+                      </div>
+                      <div class="control-panel-button">
+                        <button id="schedule-button" class="schedule-button">Schedule</button>
+                      </div>
                     </div>
                   </div>
-                  <div class="panel-content">
-                    <ul id="caller-list"></ul>
-                  </div>
-                </div>
-              </div>
-              <div class="right">
-                <div id="conference-pins" class="panel">
-                  <div class="panel-header">
-                    <div class="panel-title">Pins (<span id="conference-pin-count">0</span>)</div>
-                    <div class="panel-menu">
-                      <button class="add-button" readonly="readonly" disabled="disabled">Add</button>
+                  <div class="panel">
+                    <div class="panel-header"><div class="title">Available PINs (<span id="conference-pin-count">0</span>)</div></div>
+                    <div class="panel-content">
+                      <table id="conference-pin-table"><tbody></tbody></table>
                     </div>
                   </div>
-                  <div class="panel-content">
-                    <ul id="pin-list"></ul>
+                  <div class="panel">
+                    <div class="panel-header"><div class="title">Recent History</div></div>
+                    <div class="panel-content">
+                      <table id="conference-history-table"><tbody></tbody></table>
+                    </div>
+                  </div>
+                  <div class="panel">
+                    <div class="panel-header"><div class="title">Recent Recordings</div></div>
+                    <div class="panel-content">
+                      <table id="conference-recording-table"><tbody></tbody></table>
+                    </div>
                   </div>
                 </div>
-                <div id="conference-history" class="panel">
-                  <div class="panel-header">
-                    <div class="panel-title">Recent History</div>
-                  </div>
-                  <div class="panel-content">
-                    <ul id="history-list"></ul>
-                  </div>
-                </div>
-                <div id="conference-recordings" class="panel">
-                  <div class="panel-header">
-                    <div class="panel-title">Recordings</div>
-                  </div>
-                  <div class="panel-content">
-                    <ul id="recordings-list"></ul>
-                  </div>
-                </div>
+                <div class="cleaner">&nbsp;</div>
               </div>
-            </div>
-          </div><!-- conference-application --><%
+            </div><%
 }
+
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-          <div id="voicemail-application" class="application">
-            <div class="window">
-              <div class="panel">
-                <div class="panel-header"><div class="panel-title">Voicemail (<span id="voicemail-new-count">0</span> New)</div></div>
-                <div class="panel-content">
-                  <table id="voicemail-table"><!--
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th>From</th>
-                        <th>Received</th>
-                        <th></th>
-                      </tr>
-                    </thead>-->
-                    <tbody></tbody>
-                  </table>
-                </div>
+            <div id="voicemail-application" class="application">
+              <div class="application-header"><div class="title">Voicemail (<span id="voicemail-new-count">0</span> New)</div></div>
+              <div class="application-content">
+                <table id="voicemail-table">
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div><%
+} 
+
+if(License.isLicensed(ListenFeature.FINDME)) { %>
+            <div id="findme-application" class="application">
+              <div class="application-header"><div class="title">FindMe</div></div>
+              <div class="application-content">
+                FindMe Stuff
+              </div>
+            </div><%
+}
+
+if(user != null && user.getIsAdministrator()) { %>
+            <div id="sysconfig-application" class="application">
+              <div class="application-header"><div class="title">Configuration</div></div>
+              <div class="application-content">
+
+                <form id="dnis-mapping-form">
+                  <fieldset>
+                    <legend>DNIS Mappings</legend>
+                    <table>
+                      <tbody>
+                        <tr><td></td><td colspan="3" class="buttons"><button class="add-button" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="save-button" title="Save DNIS mappings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
+                      </tbody>
+                    </table>
+                  </fieldset>
+                </form>
+
+                <fieldset>
+                  <legend>Accounts</legend>
+                  <button id="create-new-account-button" class="add-button">Create New Account</button>
+                </fieldset>
+
+                <form id="mail-form">
+                  <fieldset>
+                    <legend>Mail</legend>
+                    <table>
+                      <tbody>
+                        <tr><td><label for="smtp-server">SMTP Server</label></td><td><input type="text" id="smtp-server" name="smtp-server"/></td></tr>
+                        <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
+                        <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
+                        <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
+                        <tr><td></td><td class="buttons"><button type="submit" class="save-button" title="Save mail settings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
+                      </tbody>
+                    </table>
+                  </fieldset>
+                </form>
+
               </div>
             </div>
+            
+            <div id="conference-list-application" class="application">
+              <div class="application-header"><div class="title">Conference List</div></div>
+              <div class="application-content">
+                <table id="conference-list-table">
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Status</th><!--
+                      <th>Callers</th>
+                      <th>Duration</th>-->
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div><%
+} %>
+
+          </div>
+        </div>
+        <div class="menu-column"><%
+if(License.isLicensed(ListenFeature.CONFERENCING)
+    || License.isLicensed(ListenFeature.VOICEMAIL)
+    || License.isLicensed(ListenFeature.FINDME)) { %>
+          <div class="menu">
+            <ul><%
+    if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
+              <li id="menu-conferencing"><a href="#">Conferencing</a></li><%
+    }
+    if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
+              <li id="menu-voicemail"><a href="#">Voicemail</a></li><%
+    }
+    if(License.isLicensed(ListenFeature.FINDME)) { %>
+              <li id="menu-findme"><a href="#">FindMe</a></li><%
+    } %>
+            </ul>
           </div><%
 }
-if(License.isLicensed(ListenFeature.FINDME)) { %>
-          <div id="findme-application" class="application">FindMe Content</div><%
-}
+
 if(user != null && user.getIsAdministrator()) { %>
-          <div id="administration-application" class="application">
-            <div class="window">
-              <div class="panel">
-                <div class="panel-header"><div class="panel-title">System Configuration</div></div>
-                <div class="panel-content">
-
-                  <form id="dnis-mapping-form">
-                    <fieldset>
-                      <legend>DNIS Mappings</legend>
-                      <table>
-                        <tbody>
-                          <tr><td></td><td colspan="3" class="buttons"><button class="add-button" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="save-button" title="Save DNIS mappings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
-                        </tbody>
-                      </table>
-                    </fieldset>
-                  </form>
-
-                  <fieldset>
-                    <legend>Accounts</legend>
-                    <button id="create-new-account-button" class="add-button">Create New Account</button>
-                  </fieldset>
-
-                  <form id="mail-form">
-                    <fieldset>
-                      <legend>Mail</legend>
-                      <table>
-                        <tbody>
-                          <tr><td><label for="smtp-server">SMTP Server</label></td><td><input type="text" id="smtp-server" name="smtp-server"/></td></tr>
-                          <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
-                          <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
-                          <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
-                          <tr><td></td><td class="buttons"><button type="submit" class="save-button" title="Save mail settings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
-                        </tbody>
-                      </table>
-                    </fieldset>
-                  </form>
-
-                </div>
-              </div>
-            </div>
+          <hr style="width: 75%;"/>
+          <div class="menu">
+            <ul>
+              <li id="menu-sysconfig"><a href="#">Configuration</a></li>
+              <li id="menu-conference-list"><a href="#">Conferences</a></li>
+              <!--<li id="menu-users"><a href="#">Users</a></li>-->
+            </ul>
           </div><%
 } %>
         </div>
-      </div><!-- wrapper-main -->
-    </div><!-- wrapper -->
-    <div id="footer"><!--
-      Listen &copy;2010 <a href="http://www.iivip.com">Interact Incorporated</a> | <a href="#">Terms of Use</a>-->
+      </div>
+    </div>
+
+    <div id="footer">
+      Listen &copy;2010 Interact Incorporated, <a href="http://www.iivip.com/">iivip.com</a>
     </div>
 
     <div id="templates">
-      <li id="caller-row-template" class="caller-row">
-        <div class="caller-user-icon"></div>
-        <div class="caller-number"></div>
-        <div class="caller-drop-icon"></div>
-        <div class="caller-mute-icon"></div>
-      </li>
-      <li id="history-row-template" class="history-row">
-        <div class="history-content"></div>
-      </li>
-      <li id="pin-row-template" class="pin-row">
-        <div class="pin-number"></div>
-        <div class="pin-type"></div>
-        <div class="pin-remove"></div>
-      </li>
-      <li id="recording-row-template" class="recording-row">
-        <div class="recording-content"></div>
-      </li>
-      <!-- voicemail row -->
-      <table><tbody><tr id="voicemail-row-template">
-        <td class="voicemail-cell-readStatus"></td>
-        <td class="voicemail-cell-from"></td>
-        <td class="voicemail-cell-received"></td>
-        <td class="voicemail-cell-download"></td>
-      </tr></tbody></table>
+      <table><tbody>
+        <tr id="caller-row-template">
+          <td class="caller-cell-number"></td>
+          <td class="caller-cell-muteIcon"></td>
+          <td class="caller-cell-dropIcon"></td>
+        </tr>
+
+        <tr id="history-row-template">
+          <td class="history-cell-date"></td>
+          <td class="history-cell-description"></td>
+        </tr>
+
+        <tr id="pin-row-template">
+          <td class="pin-cell-type"></td>
+          <td class="pin-cell-number"></td>
+          <td class="pin-cell-removeIcon"></td>
+        </tr>
+
+        <tr id="recording-row-template">
+          <td class="recording-cell-description"></td>
+        </tr>
+
+        <tr id="voicemail-row-template">
+          <td class="voicemail-cell-readStatus"></td>
+          <td class="voicemail-cell-from"></td>
+          <td class="voicemail-cell-received"></td>
+          <td class="voicemail-cell-download"></td>
+        </tr>
+      </tbody></table>
     </div><%
+
 if(user != null && user.getIsAdministrator()) { %>
     <div id="provisionAccountDialog" class="dialog">
       <div class="form-error-message"></div>

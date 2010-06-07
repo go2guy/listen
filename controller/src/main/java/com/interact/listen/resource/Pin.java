@@ -34,6 +34,17 @@ public class Pin extends Resource implements Serializable
     public static enum PinType
     {
         ACTIVE, ADMIN, PASSIVE;
+
+        public String toFriendlyName()
+        {
+            String name = this.name();
+            return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        }
+
+        public static PinType fromFriendlyName(String friendlyName)
+        {
+            return PinType.valueOf(friendlyName.toUpperCase());
+        }
     }
 
     @JoinColumn(name = "CONFERENCE_ID")

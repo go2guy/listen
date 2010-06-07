@@ -1,7 +1,7 @@
 var currentConference;
 
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('conferencing', 'conference-application', 'menu-conferencing', 1, new Conference()));
+    LISTEN.registerApp(new LISTEN.Application('conferencing', 'conferencing-application', 'menu-conferencing', 1, new Conference()));
     
     $('#scheduleConferenceDialog').dialog({
         autoOpen: false,
@@ -167,24 +167,26 @@ function Conference(id) {
                 pins.update(data.pins.results);
                 recordings.update(data.recordings.results);
 
-                var titleText = 'Conference ' + data.info.description;
-                var title = $('#conference-title');
-                if(title.text() != titleText) {
-                    title.text(titleText);
+                var infoDescription = $('#conference-info-description');
+                if(infoDescription.text() != data.info.description) {
+                    infoDescription.text(data.info.description);
                 }
 
-                var onMessage = titleText + ': Started';
-                var offMessage = titleText + ': Waiting for administrator';
+                var infoStatus = $('#conference-info-status');
+                var onMessage = 'Started';
+                var offMessage = 'Waiting for administrator';
                 var recordButton = $("#record-button-div");
 
                 if(data.info.isStarted) {
-                    title.css('background-image', "url('resources/app/images/new/bullet_green_16x16.png')")
-                    title.attr('title', onMessage);
+                    infoStatus.text(onMessage);
+                    infoStatus.removeClass('conference-not-started');
+                    infoStatus.addClass('conference-started');
                     recordButton.show();
                     $('#outdial-show').show();
                 } else {
-                    title.css('background-image', "url('resources/app/images/new/bullet_red_16x16.png')")
-                    title.attr('title', offMessage);
+                    infoStatus.text(offMessage);
+                    infoStatus.removeClass('conference-started');
+                    infoStatus.addClass('conference-not-started');
                     recordButton.hide();
                     $('#outdial-show').hide();
                 }
@@ -207,7 +209,7 @@ function Conference(id) {
             interval = setInterval(function() {
                 pollAndSet();
             }, 1000);
-            $('#conference-window').show();
+            //$('#conference-application').show();
         }
     };
 
@@ -216,61 +218,61 @@ function Conference(id) {
             clearInterval(interval);
         }
         $('#conference-window').hide();
-        $('#caller-list').find('li').remove();
-        $('#pin-list').find('li').remove();
-        $('#history-list').find('li').remove();
-        $('#recordings-list').find('li').remove();
+        $('#conference-caller-table tbody').find('tr').remove();
+        $('#conference-pin-table tbody').find('tr').remove();
+        $('#conference-history-table tbody').find('tr').remove();
+        $('#conference-recording-table tbody').find('tr').remove();
     };
 }
 
 function ConferenceCallerList() {
-    function updateMarkup(li, data, setId) {
+    function updateMarkup(tr, data, setId) {
     
         // row properties
         if(setId) {
-            li.attr('id', 'caller-' + data.id);
+            tr.attr('id', 'caller-' + data.id);
         }
 
-        if(data.isAdmin && !li.hasClass('caller-row-admin')) {
-            li.addClass('caller-row-admin');
-        } else if(!data.isAdmin && li.hasClass('caller-row-admin')) {
-            li.removeClass('caller-row-admin');
+        if(data.isAdmin && !tr.hasClass('caller-row-admin')) {
+            tr.addClass('caller-row-admin');
+        } else if(!data.isAdmin && tr.hasClass('caller-row-admin')) {
+            tr.removeClass('caller-row-admin');
         }
 
-        if(data.isPassive && !li.hasClass('caller-row-passive')) {
-            li.addClass('caller-row-passive');
-        } else if(!data.isPassive && li.hasClass('caller-row-passive')) {
-            li.removeClass('caller-row-passive');
+        if(data.isPassive && !tr.hasClass('caller-row-passive')) {
+            tr.addClass('caller-row-passive');
+        } else if(!data.isPassive && tr.hasClass('caller-row-passive')) {
+            tr.removeClass('caller-row-passive');
         }
 
         // number
-        var number = li.find('.caller-number');
-        if(number.text() != data.number) {
-            number.text(data.number);
+        var numberCell = tr.find('.caller-cell-number');
+        if(numberCell.text() != data.number) {
+            numberCell.text(data.number);
         }
 
         // mute & drop
         // TODO can we get rid of this isAdmin block?
         if(data.isAdmin) {
-            var mute = li.find('.caller-mute-icon');
-            if(mute.text() != '') {
-                li.find('.caller-mute-icon').text('');
+            var muteIconCell = tr.find('.caller-cell-muteIcon');
+            if(muteIconCell.text() != '') {
+                muteIconCell.text('');
             }
-            var drop = li.find('.caller-drop-icon');
-            if(drop.text() != '') {
-                li.find('.caller-drop-icon').text('');
+            var dropIconCell = tr.find('.caller-cell-dropIcon');
+            if(dropIconCell.text() != '') {
+                dropIconCell.text('');
             }
         } else {
             var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + (data.isPassive ? 'Cannot unmute ' + data.number + ' (passive caller)' : ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number)) + '"></button>';
-            var mute = li.find('.caller-mute-icon');
-            if(mute.html() != muteHtml) {
-                mute.html(muteHtml);
+            var muteIconCell = tr.find('.caller-cell-muteIcon');
+            if(muteIconCell.html() != muteHtml) {
+                muteIconCell.html(muteHtml);
             }
 
             var dropHtml = '<button class="delete-button" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>';
-            var drop = li.find('.caller-drop-icon');
-            if(drop.html() != dropHtml) {
-                drop.html(dropHtml);
+            var dropIconCell = tr.find('.caller-cell-dropIcon');
+            if(dropIconCell.html() != dropHtml) {
+                dropIconCell.html(dropHtml);
             }
         }
     }
@@ -285,15 +287,15 @@ function ConferenceCallerList() {
             callerCount.text(list.length);
         }
 
-        var callers = $('#caller-list').find('.caller-row');
+        var callers = $('#conference-caller-table tbody').find('tr');
         var ids = [];
         for(var i = 0; i < list.length; i++) {
             var found = false;
             var data = list[i];
             for(var j = 0; j < callers.length; j++) {
-                var li = $(callers[j]);
-                if(li.attr('id') == 'caller-' + data.id) {
-                    updateMarkup(li, data, false);
+                var tr = $(callers[j]);
+                if(tr.attr('id') == 'caller-' + data.id) {
+                    updateMarkup(tr, data, false);
                     found = true;
                     break;
                 }
@@ -303,7 +305,7 @@ function ConferenceCallerList() {
                 var clone = $('#caller-row-template').clone();
                 updateMarkup(clone, data, true);
                 clone.css('opacity', 0);
-                $('#caller-list').append(clone);
+                $('#conference-caller-table tbody').append(clone);
                 clone.animate({ opacity: 1 }, 1000);
             }
 
@@ -332,20 +334,33 @@ function ConferenceCallerList() {
 }
 
 function ConferenceHistoryList() {
+    function updateMarkup(tr, data, setId) {
+        if(setId) {
+            tr.attr('id', 'history-' + data.id);
+        }
+
+        var dateCell = tr.find('.history-cell-date');
+        if(dateCell.text() != data.dateCreated) {
+            dateCell.text(data.dateCreated);
+        }
+
+        var descriptionCell = tr.find('.history-cell-description');
+        if(descriptionCell.text() != data.description) {
+            descriptionCell.text(data.description);
+        }
+    }
+
     this.update = function(list) {
-        var histories = $('#history-list').find('.history-row');
+        var histories = $('#conference-history-table tbody').find('tr');
         var ids = [];
 
         for(var i = list.length - 1; i >= 0; i--) {
             var found = false;
             var data = list[i];
             for(var j = 0; j < histories.length; j++) {
-                var li = $(histories[j]);
-                if(li.attr('id') == 'history-' + data.id) {
-                    var content = data.dateCreated + ' - ' + data.description;
-                    if(li.text() != content) {
-                        li.text(content);
-                    }
+                var tr = $(histories[j]);
+                if(tr.attr('id') == 'history-' + data.id) {
+                    updateMarkup(tr, data, false);
                     found = true;
                     break;
                 }
@@ -353,11 +368,10 @@ function ConferenceHistoryList() {
 
             if(!found) {
                 var clone = $('#history-row-template').clone();
-                clone.attr('id', 'history-' + data.id);
-                clone.find('.history-content').text(data.dateCreated + ' - ' + data.description);
+                updateMarkup(clone, data, true);
                 clone.css('opacity', 0);
                 clone.addClass((list.length - i) % 2 == 0 ? 'odd' : 'even');
-                $('#history-list:first-child').prepend(clone);
+                $('#conference-history-table tbody').prepend(clone);
                 clone.animate({ opacity: 1 }, 1000);
             }
 
@@ -386,20 +400,29 @@ function ConferenceHistoryList() {
 }
 
 function ConferenceRecordingsList() {
+    function updateMarkup(tr, data, setId) {
+        if(setId) {
+            tr.attr('id', 'recording-' + data.id);
+        }
+        
+        var description = data.dateCreated + ' - ' + '<a href="/ajax/getConferenceRecording?id=' + data.id + '">' + data.description + '</a>' + ' [' + data.fileSize + ']';
+        var descriptionCell = tr.find('.recording-cell-description');
+        if(descriptionCell.html() != description) {
+            descriptionCell.html(description);
+        }
+    }
+
     this.update = function(list) {
-        var recordings = $('#recordings-list').find('.recording-row');
+        var recordings = $('#conference-recording-table tbody').find('tr');
         var ids = [];
 
         for(var i = list.length - 1; i >= 0; i--) {
             var found = false;
             var data = list[i];
             for(var j = 0; j < recordings.length; j++) {
-                var li = $(recordings[j]);
-                if(li.attr('id') == 'recording-' + data.id) {
-                    var content = data.dateCreated + ' - ' + '<a href="/ajax/getConferenceRecording?id=' + data.id + '">' + data.description + '</a>' + ' [' + data.fileSize + ']';
-                    if(li.html() != content) {
-                        li.html(content);
-                    }
+                var tr = $(recordings[j]);
+                if(tr.attr('id') == 'recording-' + data.id) {
+                    updateMarkup(tr, data, false);
                     found = true;
                     break;
                 }
@@ -407,11 +430,10 @@ function ConferenceRecordingsList() {
 
             if(!found) {
                 var clone = $('#recording-row-template').clone();
-                clone.attr('id', 'recording-' + data.id);
-                clone.find('.recording-content').html(data.dateCreated + ' - ' + '<a href="/ajax/getConferenceRecording?id=' + data.id + '">' + data.description + '</a>' + ' [' + data.fileSize + ']');
+                updateMarkup(clone, data, true);
                 clone.css('opacity', 0);
                 clone.addClass(i % 2 == 0 ? 'odd' : 'even');
-                $('#recordings-list').append(clone);
+                $('#conference-recording-table tbody').append(clone);
                 clone.animate({ opacity: 1 }, 1000);
             }
 
@@ -440,29 +462,29 @@ function ConferenceRecordingsList() {
 }
 
 function ConferencePinList() {
-    function updateMarkup(li, data, setId) {
+    function updateMarkup(tr, data, setId) {
         // row properties
         if(setId) {
-            li.attr('id', 'pin-' + data.id);
+            tr.attr('id', 'pin-' + data.id);
         }
 
         if(data.type == 'ADMIN') {
-            li.addClass('pin-row-admin');
+            tr.addClass('pin-row-admin');
         } else {
-            li.removeClass('pin-row-admin');
+            tr.removeClass('pin-row-admin');
         }
 
         if(data.type == 'PASSIVE') {
-            li.addClass('pin-row-passive');
+            tr.addClass('pin-row-passive');
         } else {
-            li.removeClass('pin-row-passive');
+            tr.removeClass('pin-row-passive');
         }
 
-        li.find('.pin-number').html(data.number);
-        li.find('.pin-type').html(data.type);
+        tr.find('.pin-cell-number').html(data.number);
+        tr.find('.pin-cell-type').html(data.type);
 
         var removeHtml = '<button class="delete-button" readonly="readonly" disabled="disabled"></button>';
-        li.find('.pin-remove').html(removeHtml);
+        tr.find('.pin-cell-removeIcon').html(removeHtml);
     };
 
     this.update = function(list) {
@@ -472,16 +494,16 @@ function ConferencePinList() {
             pinCount.text(list.length);
         }
 
-        var pins = $('#pin-list').find('.pin-row');
+        var pins = $('#conference-pin-table tbody').find('tr');
         var ids = [];
 
         for(var i = list.length - 1; i >= 0; i--) {
             var found = false;
             var data = list[i];
             for(var j = 0; j < pins.length; j++) {
-                var li = $(pins[j]);
-                if(li.attr('id') == 'pin-' + data.id) {
-                    updateMarkup(li, data, false);
+                var tr = $(pins[j]);
+                if(tr.attr('id') == 'pin-' + data.id) {
+                    updateMarkup(tr, data, false);
                     found = true;
                     break;
                 }
@@ -492,7 +514,7 @@ function ConferencePinList() {
                 clone.attr('id', 'pin-' + data.id);
                 updateMarkup(clone, data, true);
                 clone.css('opacity', 0);
-                $('#pin-list').append(clone);
+                $('#conference-pin-table tbody').append(clone);
                 clone.animate({ opacity: 1 }, 1000);
             }
 

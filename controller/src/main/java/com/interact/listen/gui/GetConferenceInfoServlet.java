@@ -10,8 +10,10 @@ import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
+import com.interact.listen.marshal.converter.FriendlyPinTypeConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.*;
+import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -57,6 +59,7 @@ public class GetConferenceInfoServlet extends HttpServlet
 
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
+        marshaller.registerConverterClass(PinType.class, FriendlyPinTypeConverter.class);
 
         Conference conference = GuiServletUtil.getConferenceFromIdOrUser(id, user, persistenceService);
 

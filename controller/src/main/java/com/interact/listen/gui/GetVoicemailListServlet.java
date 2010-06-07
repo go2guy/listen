@@ -10,6 +10,7 @@ import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.User;
 import com.interact.listen.resource.Voicemail;
 import com.interact.listen.stats.InsaStatSender;
@@ -78,7 +79,7 @@ public class GetVoicemailListServlet extends HttpServlet
         {
             StringBuilder content = new StringBuilder();
             content.append("{");
-            content.append("\"newCount\":").append(getNewCount(session)).append(",");
+            content.append("\"newCount\":").append(getNewCount(session, user.getSubscriber())).append(",");
             content.append("\"list\":").append(service.list());
             content.append("}");
             OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
@@ -89,14 +90,21 @@ public class GetVoicemailListServlet extends HttpServlet
         }
     }
     
-    private Long getNewCount(Session session)
+    private Long getNewCount(Session session, Subscriber subscriber)
     {
         Criteria criteria = session.createCriteria(Voicemail.class);
+
+        // only new records
         criteria.add(Restrictions.eq("isNew", true));
+
+        // belonging to this subscriber
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setFirstResult(0);
         criteria.setProjection(Projections.rowCount());
-        
+
         return (Long)criteria.list().get(0);
     }
 }

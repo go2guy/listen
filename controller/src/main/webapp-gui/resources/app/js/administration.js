@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var administration = new Administration();
 
-    LISTEN.registerApp(new LISTEN.Application('administration', 'administration-application', 'menu-administration', 4, administration));
+    LISTEN.registerApp(new LISTEN.Application('sysconfig', 'sysconfig-application', 'menu-sysconfig', 4, administration));
 
     function Administration() {
         this.load = function() {
