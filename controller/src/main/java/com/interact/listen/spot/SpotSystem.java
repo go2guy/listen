@@ -126,15 +126,6 @@ public class SpotSystem
                                      String.valueOf(conference.getId()) + "?" + sdf.format(conference.getStartTime()) +
                                      "?GUI?null?" + conference.getArcadeId());
         params.put("II_SB_URI", "listen_main/listen_main.ccxml");
-        //params.put("II_SB_eventToPass", SpotRequestEvent.START_RECORDING.eventName);
-        //params.put("II_SB_valueToPass", "");
-        //params.put("interface", "GUI");
-        //params.put("recEvent", SpotRequestEvent.START_RECORDING.eventName);
-        //params.put("conferenceId", String.valueOf(conference.getId()));
-        //params.put("arcadeId", conference.getArcadeId() == null ? "" : conference.getArcadeId());
-        //params.put("recordingSessionId", conference.getRecordingSessionId());
-        //params.put("startTime", sdf.format(conference.getStartTime()));
-        //sendPhpRequest(params);
         sendBasicHttpRequest(params);
     }
     
@@ -156,16 +147,6 @@ public class SpotSystem
                                      String.valueOf(conference.getId()) + "?" + sdf.format(conference.getStartTime()) +
                                      "?GUI?" + conference.getRecordingSessionId() + "?" + conference.getArcadeId());
         params.put("II_SB_URI", "listen_main/listen_main.ccxml");
-        //params.put("II_SB_eventToPass", SpotRequestEvent.STOP_RECORDING.eventName);
-        //params.put("II_SB_valueToPass", "");
-        //params.put("interface", "GUI");
-        //params.put("recEvent", SpotRequestEvent.STOP_RECORDING.eventName);
-        //params.put("arcadeId", conference.getArcadeId());
-        //params.put("conferenceId", String.valueOf(conference.getId()));
-        //params.put("interface", "GUI");
-        //params.put("recordingSessionId", conference.getRecordingSessionId());
-        //params.put("startTime", sdf.format(conference.getStartTime()));
-        //sendPhpRequest(params);
         sendBasicHttpRequest(params);
     }
 
@@ -201,21 +182,6 @@ public class SpotSystem
         }
     }
     
-    private void sendPhpRequest(Map<String, String> params) throws IOException, SpotCommunicationException
-    {
-        statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
-        
-        String uri = httpInterfaceUri + "/cgi-bin/spotbuild/listen/recordConf.php";
-        httpClient.post(uri, params);
-
-        int status = httpClient.getResponseStatus();
-        if(!isSuccessStatus(status))
-        {
-            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" +
-                                                 uri + "]");
-        }
-    }
-
     private boolean isSuccessStatus(int status)
     {
         return status >= 200 && status <= 299;
