@@ -9,6 +9,7 @@ import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class SpotSystem
     private String httpInterfaceUri;
 
     private HttpClient httpClient = new HttpClientImpl();
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmssSSS");
     private StatSender statSender = new InsaStatSender();
 
     public SpotSystem(String httpInterfaceUri)
@@ -118,15 +120,20 @@ public class SpotSystem
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("sessionid", adminSessionId);
-        params.put("name", "dialog.user.customEvent");
-        params.put("II_SB_eventToPass", SpotRequestEvent.START_RECORDING.eventName);
-        params.put("II_SB_valueToPass", "");
-        /*params.put("interface", "GUI");
-        params.put("recEvent", SpotRequestEvent.START_RECORDING.eventName);
-        params.put("conferenceId", String.valueOf(conference.getId()));
-        params.put("arcadeId", conference.getArcadeId());
-        params.put("recordingSessionId", conference.getRecordingSessionId());
-        params.put("startTime", "");*/
+        params.put("name", "dialog.user.basichttp");
+        params.put("II_SB_basichttpEvent", "CREATESESSION");
+        params.put("II_SB_argument", "RECORD?" + SpotRequestEvent.START_RECORDING.eventName + "?" +
+                                     String.valueOf(conference.getId()) + "?" + sdf.format(conference.getStartTime()) +
+                                     "?GUI?null?" + conference.getArcadeId());
+        params.put("II_SB_URI", "listen_main/listen_main.ccxml");
+        //params.put("II_SB_eventToPass", SpotRequestEvent.START_RECORDING.eventName);
+        //params.put("II_SB_valueToPass", "");
+        //params.put("interface", "GUI");
+        //params.put("recEvent", SpotRequestEvent.START_RECORDING.eventName);
+        //params.put("conferenceId", String.valueOf(conference.getId()));
+        //params.put("arcadeId", conference.getArcadeId() == null ? "" : conference.getArcadeId());
+        //params.put("recordingSessionId", conference.getRecordingSessionId());
+        //params.put("startTime", sdf.format(conference.getStartTime()));
         //sendPhpRequest(params);
         sendBasicHttpRequest(params);
     }
@@ -143,11 +150,21 @@ public class SpotSystem
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("sessionid", adminSessionId);
-        params.put("name", "dialog.user.customEvent");
-        params.put("II_SB_eventToPass", SpotRequestEvent.STOP_RECORDING.eventName);
-        params.put("II_SB_valueToPass", "");
-        /*params.put("interface", "GUI");
-        params.put("recEvent", SpotRequestEvent.STOP_RECORDING.eventName);*/
+        params.put("name", "dialog.user.basichttp");
+        params.put("II_SB_basichttpEvent", "CREATESESSION");
+        params.put("II_SB_argument", "RECORD?" + SpotRequestEvent.STOP_RECORDING.eventName + "?" +
+                                     String.valueOf(conference.getId()) + "?" + sdf.format(conference.getStartTime()) +
+                                     "?GUI?" + conference.getRecordingSessionId() + "?" + conference.getArcadeId());
+        params.put("II_SB_URI", "listen_main/listen_main.ccxml");
+        //params.put("II_SB_eventToPass", SpotRequestEvent.STOP_RECORDING.eventName);
+        //params.put("II_SB_valueToPass", "");
+        //params.put("interface", "GUI");
+        //params.put("recEvent", SpotRequestEvent.STOP_RECORDING.eventName);
+        //params.put("arcadeId", conference.getArcadeId());
+        //params.put("conferenceId", String.valueOf(conference.getId()));
+        //params.put("interface", "GUI");
+        //params.put("recordingSessionId", conference.getRecordingSessionId());
+        //params.put("startTime", sdf.format(conference.getStartTime()));
         //sendPhpRequest(params);
         sendBasicHttpRequest(params);
     }

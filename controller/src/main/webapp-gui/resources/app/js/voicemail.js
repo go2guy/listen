@@ -2,7 +2,7 @@ $(document).ready(function() {
     LISTEN.registerApp(new LISTEN.Application('voicemail', 'voicemail-application', 'menu-voicemail', 2, new Voicemail()));
 });
 
-var SERVER = {
+var vSERVER = {
     markVoicemailReadStatus: function(id, readStatus) {
         $.ajax({
             type: 'POST',
@@ -31,7 +31,7 @@ function Voicemail() {
         }
 
         var readStatusCell = tr.find('.voicemail-cell-readStatus');
-        var buttonHtml = '<button class="' + (data.isNew ? 'mark-read-button' : 'mark-unread-button') + '" onclick="' + (data.isNew ? 'SERVER.markVoicemailReadStatus(' + data.id + ', true);' : 'SERVER.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as read' : 'Mark as unread') + '"></button>';
+        var buttonHtml = '<button class="' + (data.isNew ? 'mark-read-button' : 'mark-unread-button') + '" onclick="' + (data.isNew ? 'vSERVER.markVoicemailReadStatus(' + data.id + ', true);' : 'vSERVER.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as read' : 'Mark as unread') + '"></button>';
         if(readStatusCell.html() != buttonHtml) {
             readStatusCell.html(buttonHtml);
         }
