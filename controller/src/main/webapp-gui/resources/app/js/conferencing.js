@@ -156,16 +156,16 @@ function Conference(id) {
 
     var interval;
 
-    var pollAndSet = function() {
+    var pollAndSet = function(withAnimation) {
         $.ajax({
             url: '/ajax/getConferenceInfo?id=' + conferenceId,
             dataType: 'json',
             cache: false,
             success: function(data, textStatus, xhr) {
-                callers.update(data.participants.results);
-                history.update(data.history.results);
-                pins.update(data.pins.results);
-                recordings.update(data.recordings.results);
+                callers.update(data.participants.results, withAnimation);
+                history.update(data.history.results, withAnimation);
+                pins.update(data.pins.results, withAnimation);
+                recordings.update(data.recordings.results, withAnimation);
 
                 var infoDescription = $('#conference-info-description');
                 if(infoDescription.text() != data.info.description) {
@@ -205,9 +205,9 @@ function Conference(id) {
 
     this.load = function() {
         if(conferenceId) {
-            pollAndSet();
+            pollAndSet(false);
             interval = setInterval(function() {
-                pollAndSet();
+                pollAndSet(true);
             }, 1000);
             //$('#conference-application').show();
         }
@@ -280,7 +280,7 @@ function ConferenceCallerList() {
     /**
      * Updates the list with the provided data. Provided data should be an array of caller objects.
      */
-    this.update = function(list) {
+    this.update = function(list, withAnimation) {
         var callerCount = $('#conference-caller-count');
         // TODO move this out of the list functionality
         if(callerCount.text() != list.length) {
@@ -306,7 +306,7 @@ function ConferenceCallerList() {
                 updateMarkup(clone, data, true);
                 clone.css('opacity', 0);
                 $('#conference-caller-table tbody').append(clone);
-                clone.animate({ opacity: 1 }, 1000);
+                clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
             }
 
             ids.push('caller-' + data.id);
@@ -350,7 +350,7 @@ function ConferenceHistoryList() {
         }
     }
 
-    this.update = function(list) {
+    this.update = function(list, withAnimation) {
         var histories = $('#conference-history-table tbody').find('tr');
         var ids = [];
 
@@ -372,7 +372,7 @@ function ConferenceHistoryList() {
                 clone.css('opacity', 0);
                 clone.addClass((list.length - i) % 2 == 0 ? 'odd' : 'even');
                 $('#conference-history-table tbody').prepend(clone);
-                clone.animate({ opacity: 1 }, 1000);
+                clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
             }
 
             ids.push('history-' + data.id);
@@ -412,7 +412,7 @@ function ConferenceRecordingsList() {
         }
     }
 
-    this.update = function(list) {
+    this.update = function(list, withAnimation) {
         var recordings = $('#conference-recording-table tbody').find('tr');
         var ids = [];
 
@@ -434,7 +434,7 @@ function ConferenceRecordingsList() {
                 clone.css('opacity', 0);
                 clone.addClass(i % 2 == 0 ? 'odd' : 'even');
                 $('#conference-recording-table tbody').append(clone);
-                clone.animate({ opacity: 1 }, 1000);
+                clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
             }
 
             ids.push('recording-' + data.id);
@@ -487,7 +487,7 @@ function ConferencePinList() {
         tr.find('.pin-cell-removeIcon').html(removeHtml);
     };
 
-    this.update = function(list) {
+    this.update = function(list, withAnimation) {
         var pinCount = $('#conference-pin-count');
         // TODO move this out of the list functionality
         if(pinCount.text() != list.length) {
@@ -515,7 +515,7 @@ function ConferencePinList() {
                 updateMarkup(clone, data, true);
                 clone.css('opacity', 0);
                 $('#conference-pin-table tbody').append(clone);
-                clone.animate({ opacity: 1 }, 1000);
+                clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
             }
 
             ids.push('pin-' + data.id);

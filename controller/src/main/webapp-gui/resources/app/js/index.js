@@ -62,11 +62,11 @@ $(document).ready(function() {
 
                 this.hide = function(direction, callback) {
                     if(callback) {
-                        windowDiv.hide('slide', { direction: direction ? direction : 'left' }, 250, function() {
+                        windowDiv.hide(0, function() {
                             callback.call();
                         });
                     } else {
-                        windowDiv.hide('slide', { direction: direction ? direction : 'left' }, 250);
+                        windowDiv.hide();
                     }
                 };
 
@@ -74,7 +74,7 @@ $(document).ready(function() {
                     if(this.content) {
                         this.content.load();
                     }
-                    windowDiv.show('slide', { direction: direction ? direction : 'right' }, 250);
+                    windowDiv.show();
                 };
             },
 

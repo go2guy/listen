@@ -23,7 +23,7 @@ function ConferenceList() {
 
     var interval;
 
-    var pollAndSet = function() {
+    var pollAndSet = function(withAnimation) {
         $.ajax({
             url: '/ajax/getConferenceList',
             dataType: 'json',
@@ -58,7 +58,7 @@ function ConferenceList() {
                         updateMarkup(clone, serverItem, true);
                         clone.css('opacity', 0);
                         $('#conference-list-table tbody').append(clone);
-                        clone.animate({ opacity: 1 }, 1000);
+                        clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
                     }
         
                     ids.push('conference-' + serverItem.id);
@@ -87,9 +87,9 @@ function ConferenceList() {
     };
     
     this.load = function() {
-        pollAndSet();
+        pollAndSet(false);
         interval = setInterval(function() {
-            pollAndSet();
+            pollAndSet(true);
         }, 1000);
         //$('#conference-list-window').show();
     };
