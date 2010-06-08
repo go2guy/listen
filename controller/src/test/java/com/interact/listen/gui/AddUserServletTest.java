@@ -26,18 +26,18 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class ProvisionAccountServletTest
+public class AddUserServletTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-    private ProvisionAccountServlet servlet;
+    private AddUserServlet servlet;
 
     @Before
     public void setUp()
     {
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
-        servlet = new ProvisionAccountServlet();
+        servlet = new AddUserServlet();
     }
 
     @Test

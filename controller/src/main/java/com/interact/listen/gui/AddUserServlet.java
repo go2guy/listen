@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.classic.Session;
 
-public class ProvisionAccountServlet extends HttpServlet
+public class AddUserServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 

@@ -158,8 +158,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>ProvisionAccountServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.ProvisionAccountServlet</servlet-class>
+        <servlet-name>AddUserServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.AddUserServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -260,7 +260,7 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>ProvisionAccountServlet</servlet-name>
+        <servlet-name>AddUserServlet</servlet-name>
         <url-pattern>/ajax/provisionAccount</url-pattern>    
     </servlet-mapping>
 
