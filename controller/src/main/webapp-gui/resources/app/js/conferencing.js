@@ -2,7 +2,7 @@ var currentConference;
 
 $(document).ready(function() {
     LISTEN.registerApp(new LISTEN.Application('conferencing', 'conferencing-application', 'menu-conferencing', 1, new Conference()));
-    
+
     $('#scheduleConferenceDialog').dialog({
         autoOpen: false,
         draggable: false,
@@ -142,8 +142,18 @@ function Conference(id) {
     if(id) {
         conferenceId = id;
     } else {
+        var app = this;
         $.getJSON('/ajax/getConferenceInfo', function(data) {
             conferenceId = data.info.id;
+            // if conferencing is the first loaded application, the LISTEN object will try and load it;
+            // however, this ajax response might be returned AFTER the LISTEN object loads this application,
+            // which means that this.conferenceId will not be set and the load() function will not actually
+            // poll for the conference.
+            // therefore, if the current LISTEN application is this one (conferencing), we need to force it
+            // to re-load, since it now has the conferenceId
+            if(LISTEN.getCurrentApplication().name == 'conferencing') {
+                app.load();
+            }
         });
     }
 
@@ -209,7 +219,6 @@ function Conference(id) {
             interval = setInterval(function() {
                 pollAndSet(true);
             }, 1000);
-            //$('#conference-application').show();
         }
     };
 

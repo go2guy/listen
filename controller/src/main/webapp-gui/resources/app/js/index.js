@@ -78,8 +78,16 @@ $(document).ready(function() {
                 };
             },
 
+            getCurrentApplication: function() {
+                return currentApplication;
+            },
+
             registerApp: function(app) {
                 applications.push(app);
+                // if this is the first app registered, go ahead and load it
+                if(!currentApplication) {
+                    this.switchApp(app);
+                }
             },
 
             switchApp: function(to, withContent) {

@@ -71,7 +71,6 @@ function Voicemail() {
                 for(var i = serverList.length - 1; i >= 0; i--) {
                     var found = false;
                     var serverItem = serverList[i];
-                    console.log("SERVERITEM: " + serverItem);
                     for(var j = 0; j < tableRows.length; j++) {
                         var tableRow = $(tableRows[j]);
                         if(tableRow.attr('id') == 'voicemail-' + serverItem.id) {
