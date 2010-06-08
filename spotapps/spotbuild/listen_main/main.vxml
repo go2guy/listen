@@ -22,6 +22,7 @@
 	<var name="SB_UV_appToAccess"/>
 	<var name="SB_UV_DNIS"/>
 	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_hostName"/>
 	<var name="SB_UV_subID"/>
 	<var name="SB_UV_passValues"/>
 	<var name="SB_UV_params"/>
@@ -49,6 +50,9 @@
 			</if>
 			<if cond="SB_UV_cntrlURL != undefined">
 				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
+			</if>
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
 			</if>
 			<if cond="SB_UV_subID != undefined">
 				<assign name="subID" expr="SB_UV_subID" />

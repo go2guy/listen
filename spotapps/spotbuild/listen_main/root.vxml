@@ -32,6 +32,7 @@
 	<var name="appToAccess" expr="''" />
 	<var name="DNIS" expr="'local'" />
 	<var name="cntrlURL" expr="''" /> <!-- Config Controller URL -->
+	<var name="hostName" expr="''" /> <!-- Config System Local Host Name -->
 	<var name="subID" expr="''" />
 	<var name="passValues" expr="'importedValue'" />
 	<var name="params" expr="''" />

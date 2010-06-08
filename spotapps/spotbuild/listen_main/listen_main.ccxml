@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
 
-    <!-- Last Modified 05/28/2010
+    <!-- Last Modified 06/04/2010
        *   @Name   SPOTbuild.ccxml
        *   @desc   Default entry point for all SPOTbuild projects -->
 
@@ -40,6 +40,20 @@
             <log>INFO: Entered listen_main.ccxml [51-2]</log>
             <log>INFO: transition event [<value expr="loadEV.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
+        </transition>
+
+        <transition event="CCXML_CREATEHTTP_MSG" name="httpEv">
+            <!-- Received CCXML_CREATEHTTP_MSG -->
+            <log>INFO: transition event [CCXML_CREATEHTTP_MSG] state [<value expr="II_SB_state"/>]</log>
+            <accept/>
+            <assign name="II_SB_state" expr="'alerted'"/>
+            <assign name="II_SB_local" expr="''"/>
+            <assign name="II_SB_remote" expr="''"/>
+            <assign name="II_SB_protocol" expr="''"/>
+            <assign name="II_SB_originator" expr="''"/>
+            <assign name="II_SB_connectionID" expr="''"/>
+            <assign name="II_SB_importedValue" expr="httpEv.II_SB_importedValue"/>
+            <fetch next="'file:' + II_SB_CODE_DIR + 'begin.ccxml'" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_VXML_LIB II_SB_projectSource II_SB_obcallid II_SB_importedValue"/> <!-- Fetch ccxml document -->
         </transition>
 
         <!-- Received VRU_AUTOSTART -->

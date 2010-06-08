@@ -12,4 +12,6 @@ begin - begin
 51-7 - decision
 51-40 - decision
 51-20 - switch-application
+51-71 - assign-variable
 51-19 - switch-application
+51-73 - run-javascript
