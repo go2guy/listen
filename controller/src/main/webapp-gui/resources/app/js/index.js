@@ -78,6 +78,77 @@ $(document).ready(function() {
                 };
             },
 
+            DynamicTable: function(args) {
+                var interval;
+                var args = args;
+
+                this.update = function(data, withAnimation) {
+                    var tableRows = $('#' + args.tableId + ' tbody').find('tr');
+                    var serverList = args.retrieveList.call(this, data);
+                    var ids = [];
+
+                    if(args.countContainer && args.retrieveCount) {
+                        var container = $('#' + args.countContainer);
+                        var count = args.retrieveCount.call(this, data);
+                        if(container.text() != count) {
+                            container.text(count);
+                        }
+                    }
+
+                    for(var i = (args.reverse ? serverList.length - 1 : 0); (args.reverse ? i >= 0 : i < serverList.length); (args.reverse ? i-- : i++)) {
+                        var found = false;
+                        var serverItem = serverList[i];
+                        for(var j = 0; j < tableRows.length; j++) {
+                            var tableRow = $(tableRows[j]);
+                            if(tableRow.attr('id') == args.tableId + '-row-' + serverItem.id) {
+                                args.updateRowCallback.call(this, tableRow, serverItem, false);
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if(!found) {
+                            var clone = $('#' + args.templateId).clone();
+                            args.updateRowCallback.call(this, clone, serverItem, true);
+                            clone.css('opacity', 0);
+                            if(args.alternateRowColors) {
+                                if(args.reverse) {
+                                    clone.addClass((serverList.length - i) % 2 == 0 ? 'odd' : 'even');
+                                } else {
+                                    clone.addClass(i % 2 == 0 ? 'odd' : 'even');
+                                }
+                            }
+                            if(args.reverse) {
+                                $('#' + args.tableId + ' tbody').prepend(clone);
+                            } else {
+                                $('#' + args.tableId + ' tbody').append(clone);
+                            }
+                            clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
+                        }
+                        
+                        ids.push(args.tableId + '-row-' + serverItem.id);
+                    }
+
+                    // remove table rows that no longer exist on the server
+                    for(var i = 0; i < tableRows.length; i++) {
+                        var found = false;
+                        var row = $(tableRows[i]);
+                        for(var j = 0; j < ids.length; j++) {
+                            if(row.attr('id') == ids[j]) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if(!found) {
+                            row.animate({ opacity: 0 }, (withAnimation ? 1000 : 0), function() {
+                                $(this).remove();
+                            });
+                        }
+                    }
+                };
+            },
+
             getCurrentApplication: function() {
                 return currentApplication;
             },

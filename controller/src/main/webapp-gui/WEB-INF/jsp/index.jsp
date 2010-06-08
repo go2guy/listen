@@ -258,6 +258,12 @@ if(user != null && user.getIsAdministrator()) { %>
           <td class="recording-cell-description"></td>
         </tr>
 
+        <tr id="conference-row-template">
+          <td class="conference-cell-description"></td>
+          <td class="conference-cell-status"></td>
+          <td class="conference-cell-view"></td>
+        </tr>
+
         <tr id="voicemail-row-template">
           <td class="voicemail-cell-readStatus"></td>
           <td class="voicemail-cell-from"></td>
