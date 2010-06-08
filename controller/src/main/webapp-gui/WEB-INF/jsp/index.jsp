@@ -19,7 +19,7 @@ User user = (User)session.getAttribute("user"); %>
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
     <script type="text/javascript" src="./resources/app/js/conferencing-min.js"></script><%
     if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/js/conferencing-admin-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/conference-list-min.js"></script><%
     }
 }
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
@@ -29,7 +29,7 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
     <script type="text/javascript" src="./resources/app/js/findme-min.js"></script><%
 }
 if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/js/administration-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/system-configuration-min.js"></script><%
 } %>
   </head>
   <body>
