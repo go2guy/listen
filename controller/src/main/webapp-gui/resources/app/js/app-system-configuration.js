@@ -1,9 +1,9 @@
 $(document).ready(function() {
-    var administration = new Administration();
+    var application = new SystemConfigurationApplication();
 
-    LISTEN.registerApp(new LISTEN.Application('sysconfig', 'sysconfig-application', 'menu-sysconfig', 4, administration));
+    LISTEN.registerApp(new LISTEN.Application('sysconfig', 'sysconfig-application', 'menu-sysconfig', 4, application));
 
-    function Administration() {
+    function SystemConfigurationApplication() {
         this.load = function() {
             $.ajax({
                 url: '/ajax/getProperties',
@@ -86,7 +86,7 @@ $(document).ready(function() {
                     'com.interact.listen.mail.smtpPassword': $('#smtp-password').val(),
                     'com.interact.listen.mail.fromAddress': $('#from-address').val() },
             success: function(data) {
-                administration.load();
+                application.load();
                 notify('Mail settings updated');
             }
         });
@@ -115,7 +115,7 @@ $(document).ready(function() {
             url: '/ajax/setProperties',
             data: { 'com.interact.listen.dnisMapping': value },
             success: function(data) {
-                administration.load();
+                application.load();
                 notify('DNIS mappings updated');
             }
         });
