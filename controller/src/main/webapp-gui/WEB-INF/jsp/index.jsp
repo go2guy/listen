@@ -15,7 +15,8 @@ User user = (User)session.getAttribute("user"); %>
     <link rel="stylesheet" type="text/css" href="./resources/app/css/index-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
-    <script type="text/javascript" src="./resources/app/js/index-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/index-min.js"></script>
+    <script type="text/javascript" src="./resources/app/js/server-min.js"></script><%
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
     <script type="text/javascript" src="./resources/app/js/app-conferencing-min.js"></script><%
     if(user != null && user.getIsAdministrator()) { %>
