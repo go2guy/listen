@@ -17,19 +17,19 @@ User user = (User)session.getAttribute("user"); %>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
     <script type="text/javascript" src="./resources/app/js/index-min.js"></script><%
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
-    <script type="text/javascript" src="./resources/app/js/conferencing-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-conferencing-min.js"></script><%
     if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/js/conference-list-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-conference-list-min.js"></script><%
     }
 }
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-    <script type="text/javascript" src="./resources/app/js/voicemail-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-voicemail-min.js"></script><%
 }
 if(License.isLicensed(ListenFeature.FINDME)) { %>
-    <script type="text/javascript" src="./resources/app/js/findme-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-findme-min.js"></script><%
 }
 if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/js/system-configuration-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-system-configuration-min.js"></script><%
 } %>
   </head>
   <body>
