@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_record/root.vxml"> <!--  Set location of root document -->
+	<!-- Last Modified 05/20/2010
+	   *   @Name   record-audio.vxml
+	   *   @Desc   Records an audio file -->
+
+    <!-- Node Variables -->
+	<var name="II_SB_nextOpt" expr="''"/>               <!--  Name of next vxml template -->
+	<var name="II_SB_playBeep" expr="''"/>      <!--  Play beep before recording starts -->
+    <var name="II_SB_dtmfTerm" expr="''"/>  <!--  Allow dtfm key press to terminate recording -->
+
+    <!-- Edge Variables -->
+    <var name="II_SB_errorNxtOpt" expr="'129-4'"/>       <!-- Next option when record is terminated by an error -->
+    <var name="II_SB_dtmfNxtOpt" expr="''"/>      <!-- Next option when record is terminated by dtmf -->
+    <var name="II_SB_hangUpNxtOpt" expr="'128-7'"/>     <!-- Next option when record is terminated by hang up -->
+    <var name="II_SB_maxTimeNxtOpt" expr="'128-7'"/>    <!-- Next option when record is terminated by max time -->
+    <var name="II_SB_silenceNxtOpt" expr="'128-7'"/>   <!-- Next option when record is terminated by silence -->
+
+    <var name="II_SB_SYS_PATH" expr="'/interact/apps/spotbuild/audio/system/'"/>    <!-- Audio system directory path -->
+    <var name="II_SB_AUDIO_EXT" expr="'.'+II_SB_PROMPT_GRP+'.'+II_SB_PRMT_CODE"/>   <!-- Audio file extension -->
+    <var name="II_SB_whichPath" expr="II_SB_AUDIO_PATH"/>   <!-- Default audio path for current project -->
+    <var name="II_SB_rec_duration" expr="''"/>              <!-- Length of recording -->
+    <var name="II_SB_rec_termChar" expr="''"/>              <!-- Key press used to terminate recording -->
+    <var name="II_SB_rec_size" expr="''"/>                  <!-- Size of recording in bytes -->
+    <var name="II_SB_rec_time" expr="'false'"/>             <!-- Flag for when recording reaches max allowed time -->
+	<var name="II_SB_message" expr="''"/>                   <!-- Recorded file -->
+    
+	<form id="beginDocument">
+	    <block>
+    	    <log target="status">Recording Conference</log>
+	        <log>INFO: Entered record-audio.vxml [127-9]</log>
+            <!-- Check if user has specified custom location or prompt group for recorded file.
+                 If so, use that location for file url and prompt group in file name -->
+            <if cond="inString('/',recFile,'')">
+                <assign name="II_SB_whichPath" expr="''"/>
+            </if>
+            <if cond="inString('.',recFile,'')">
+                <assign name="II_SB_AUDIO_EXT" expr="''"/>
+            </if>
+            <log>INFO: Location of recorded file will be [<value expr="II_SB_whichPath+recFile+II_SB_AUDIO_EXT"/>]</log>
+		    <goto next="#recordMsg"/>
+	    </block>
+	</form>
+
+	<form id="recordMsg">
+		<block>
+			<log>INFO: Entered recordMsg</log>
+		    <prompt cond="II_SB_playBeep == 'true'" bargein="false">
+        	    <audio expr="II_SB_SYS_PATH + 'beep.00.wav'"/>
+		    </prompt>
+		</block>
+		<record name="record_1" cond="II_SB_dtmfTerm == 'true'" type="audio/wav" maxtime="7200s" beep="false" finalsilence="900s" destexpr="II_SB_whichPath+recFile+II_SB_AUDIO_EXT" dtmfterm="true">
+		</record>
+		<record name="record_2" cond="II_SB_dtmfTerm != 'true'" type="audio/wav" maxtime="7200s" beep="false" finalsilence="900s" destexpr="II_SB_whichPath+recFile+II_SB_AUDIO_EXT" dtmfterm="false">
+		</record>
+		<block>
+            <if cond="II_SB_dtmfTerm == 'true'">
+        	    <assign name="II_SB_rec_duration" expr="record_1$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_1$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_1$.maxtime"/>
+                <if cond="record_1$.termchar != undefined">
+    			    <assign name="II_SB_rec_termChar" expr="record_1$.termchar"/>
+                    <assign name="II_SB_nextOpt" expr="II_SB_dtmfNxtOpt"/>
+        			<log>INFO: Taking DTMF terminate option</log>
+                </if>
+			    <assign name="II_SB_message" expr="record_1"/>
+            <else/>
+        	    <assign name="II_SB_rec_duration" expr="record_2$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_2$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_2$.maxtime"/>
+			    <assign name="II_SB_message" expr="record_2"/>
+            </if>
+            <if cond="II_SB_rec_time == 0">
+                <assign name="II_SB_rec_time" expr="'false'"/>
+                <if cond="II_SB_nextOpt.length == 0">
+        			<log>INFO: Taking silence timeout option</log>
+                    <assign name="II_SB_nextOpt" expr="II_SB_silenceNxtOpt"/>
+                </if>
+            <else/>
+      			<log>INFO: Taking max record time option</log>
+                <assign name="II_SB_rec_time" expr="'true'"/>
+                <assign name="II_SB_nextOpt" expr="II_SB_maxTimeNxtOpt"/>
+            </if>
+			<goto next="#exit"/>
+		</block>
+        <error>
+            <log>Error: [<value expr='_event'/>]</log>
+   			<log>INFO: Taking error option</log>
+            <assign name="II_SB_nextOpt" expr="II_SB_errorNxtOpt"/>
+	        <goto next="#exit"/>
+        </error>
+	</form>
+
+	<form id="exit">
+		<block>
+			<log>INFO: Duration [<value expr="II_SB_rec_duration"/>] ms</log>
+			<log>INFO: Size [<value expr="II_SB_rec_size"/>] bytes</log>
+			<log>INFO: Max time [<value expr="II_SB_rec_time"/>]</log>
+			<log>INFO: Term Key [<value expr="II_SB_rec_termChar"/>]</log>
+			<assign name="recSize" expr="II_SB_rec_size" />
+<assign name="recLength" expr="II_SB_rec_duration" />
+
+    		<if cond="II_SB_nextOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>
+	    		<goto expr="'file:' + II_SB_APP_PATH + II_SB_nextOpt + '.vxml'"/>
+			<else/> <!-- Exit to ccxml layer -->
+				<assign name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set. Exit to CCXML.</log>
+				<log>INFO: Return status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+		</block>
+	</form>
+
+	<catch event="connection.disconnect.hangup">
+		<log>INFO: Got a hang up</log>
+		<if cond="((record_1 == undefined) &amp;&amp; (record_2 == undefined))">  <!-- User did not record a msg before hanging up -->
+    		<log>INFO: No recorded audio</log>
+		<else/>
+    		<log>INFO: Found recorded audio</log>
+            <if cond="II_SB_dtmfTerm == 'true'">
+        	    <assign name="II_SB_rec_duration" expr="record_1$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_1$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_1$.maxtime"/>
+                <if cond="record_1$.termchar != undefined">
+    			    <assign name="II_SB_rec_termChar" expr="record_1$.termchar"/>
+                </if>
+			    <assign name="II_SB_message" expr="record_1"/>
+            <else/>
+        	    <assign name="II_SB_rec_duration" expr="record_2$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_2$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_2$.maxtime"/>
+			    <assign name="II_SB_message" expr="record_2"/>
+            </if>
+		</if>
+   		<log>INFO: Taking hang up option</log>
+        <assign name="II_SB_nextOpt" expr="II_SB_hangUpNxtOpt"/>
+	    <goto next="#exit"/>
+	</catch>
+</vxml>

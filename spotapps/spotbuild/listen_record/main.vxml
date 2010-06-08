@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_record/root.vxml"> <!--  Set location of root document -->
+    <!-- Last Modified 10/21/2009
+       *   @Name   main.vxml
+       *   @Desc   Sets up call parameters -->
+
+    <!-- Passed in from CCXML -->
+    <var name="II_SB_local"/>
+    <var name="II_SB_remote"/>
+    <var name="II_SB_originator"/>
+    <var name="II_SB_protocol"/>
+    <var name="II_SB_connectionID"/>
+    <var name="II_SB_type"/>
+    <var name="II_SB_line"/>
+    <var name="II_SB_sessionID"/>
+    <var name="II_SB_CODE_DIR"/>
+    <var name="II_SB_NEXT_OPTION"/>
+    <var name="II_SB_transfer"/>
+    <var name="II_SB_projectSource"/>
+    <var name="II_SB_importedValue"/>
+	<var name="SB_UV_argList"/>
+	<var name="SB_UV_recEvent"/>
+	<var name="SB_UV_arcadeID"/>
+	<var name="SB_UV_recSID"/>
+	<var name="SB_UV_recFile"/>
+	<var name="SB_UV_recPath"/>
+	<var name="SB_UV_recSize"/>
+	<var name="SB_UV_recLength"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_request"/>
+	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_params"/>
+	<var name="SB_UV_id"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_isRecording"/>
+	<var name="SB_UV_isStarted"/>
+	<var name="SB_UV_FILE1"/>
+	<var name="SB_UV_OPERATION"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_confID"/>
+	<var name="SB_UV_recInfo"/>
+
+    
+    <form id="beginDocument">
+        <block>
+	        <log target="status">Begin Session</log>
+            <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
+            <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
+            <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
+            <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
+            <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="argList" expr="II_SB_importedValue" />
+
+			<if cond="SB_UV_argList != undefined">
+				<assign name="argList" expr="SB_UV_argList" />
+			</if>
+			<if cond="SB_UV_recEvent != undefined">
+				<assign name="recEvent" expr="SB_UV_recEvent" />
+			</if>
+			<if cond="SB_UV_arcadeID != undefined">
+				<assign name="arcadeID" expr="SB_UV_arcadeID" />
+			</if>
+			<if cond="SB_UV_recSID != undefined">
+				<assign name="recSID" expr="SB_UV_recSID" />
+			</if>
+			<if cond="SB_UV_recFile != undefined">
+				<assign name="recFile" expr="SB_UV_recFile" />
+			</if>
+			<if cond="SB_UV_recPath != undefined">
+				<assign name="recPath" expr="SB_UV_recPath" />
+			</if>
+			<if cond="SB_UV_recSize != undefined">
+				<assign name="recSize" expr="SB_UV_recSize" />
+			</if>
+			<if cond="SB_UV_recLength != undefined">
+				<assign name="recLength" expr="SB_UV_recLength" />
+			</if>
+			<if cond="SB_UV_resource != undefined">
+				<assign name="resource" expr="SB_UV_resource" />
+			</if>
+			<if cond="SB_UV_request != undefined">
+				<assign name="request" expr="SB_UV_request" />
+			</if>
+			<if cond="SB_UV_cntrlURL != undefined">
+				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
+			</if>
+			<if cond="SB_UV_params != undefined">
+				<assign name="params" expr="SB_UV_params" />
+			</if>
+			<if cond="SB_UV_id != undefined">
+				<assign name="id" expr="SB_UV_id" />
+			</if>
+			<if cond="SB_UV_status != undefined">
+				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_returnVal != undefined">
+				<assign name="returnVal" expr="SB_UV_returnVal" />
+			</if>
+			<if cond="SB_UV_returnStr != undefined">
+				<assign name="returnStr" expr="SB_UV_returnStr" />
+			</if>
+			<if cond="SB_UV_isRecording != undefined">
+				<assign name="isRecording" expr="SB_UV_isRecording" />
+			</if>
+			<if cond="SB_UV_isStarted != undefined">
+				<assign name="isStarted" expr="SB_UV_isStarted" />
+			</if>
+			<if cond="SB_UV_FILE1 != undefined">
+				<assign name="FILE1" expr="SB_UV_FILE1" />
+			</if>
+			<if cond="SB_UV_OPERATION != undefined">
+				<assign name="OPERATION" expr="SB_UV_OPERATION" />
+			</if>
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_confID != undefined">
+				<assign name="confID" expr="SB_UV_confID" />
+			</if>
+			<if cond="SB_UV_recInfo != undefined">
+				<assign name="recInfo" expr="SB_UV_recInfo" />
+			</if>
+
+            <log>INFO: Completed global variable setup</log>
+			<if cond="II_SB_nextOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>
+				<goto expr="'file:'+II_SB_APP_PATH + II_SB_nextOpt +'.vxml'"/>
+			<else/> <!-- Exit to ccxml layer -->
+				<assign name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set. Exit to CCXML.</log>
+				<log>INFO: Exit Status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+        </block>
+    </form>
+</vxml>
