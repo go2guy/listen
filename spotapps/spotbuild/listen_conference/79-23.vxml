@@ -11,7 +11,8 @@
         <![CDATA[
             function II_SB_JS_function(helpCnt,maxHelp,getInput,pinLength)
             {
-	            if (getInput.length == pinLength)      return getInput;
+	            if (getInput.length == pinLength)
+return getInput;
 else if ((getInput == '*') && (helpCnt < maxHelp))
 return getInput;
 else

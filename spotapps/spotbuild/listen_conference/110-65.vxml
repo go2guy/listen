@@ -12,8 +12,9 @@
             function II_SB_JS_function(returnVal,index,audioURL)
             {
 	            var result;
-var tmpVal = eval("("+returnVal+")"); result = tmpVal.results[index].audioResource;
-if ((result == null) || (result == audioURL))
+var tmpVal = eval("("+returnVal+")");
+result = tmpVal.results[index].audioResource;
+if ((result == null) || (result == audioURL)) 
 {result = "";}
 return result;
             }

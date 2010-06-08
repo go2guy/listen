@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 05/27/2010
+    <!-- Last Modified 06/04/2010
        *   @Name	Conference.ccxml
        *   @Desc	Manages conference activities -->
 
@@ -118,11 +118,19 @@
         </transition>
 
         <transition state="joinConf" event="conference.joined" name="evt" cond="evt.id1 == II_SB_ibcallid">
-            <!-- Our join attempt was successful. We track the conference member count and check if we need
-            to play audio to the conference or just continue -->
+            <!-- Our join attempt was successful. We track the conference member count and update the vxml
+            layer with the conference id and member count -->
             <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
             <log>INFO: Member count [<value expr="evt.membercount"/>]</log>
 	        <assign name="II_SB_memberCount" expr="evt.membercount"/>
+            <assign name="II_SB_state" expr="'setVXML'"/>
+            <var name="II_SB_fromCCXML" expr="'setVars'"/>
+  		    <dialogstart src="'file:' + II_SB_CODE_DIR + '116-14.vxml'" namelist="II_SB_conferenceID II_SB_memberCount II_SB_fromCCXML"/>
+        </transition>
+
+        <transition state="setVXML" event="dialog.exit" name="event">
+            <!-- Back from setting the variables in vxml. Let's check what our next action should be -->
+    	    <log>INFO: transition event [<value expr="event.name"/>] state [<value expr="II_SB_state"/>]</log>
             <if cond="((II_SB_playEntryAudio == 'Yes') &amp;&amp; (II_SB_audioFile.length &gt; 0))">
                 <send data="'dialog.user.announceMember'" target="II_SB_sessionID"/>
             <else/>
@@ -267,7 +275,24 @@
 		        <assign name="II_SB_passValues" expr="evt.values.II_SB_returnValues"/>
         		<log>INFO: II_SB_NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log>
         		<log>INFO: II_SB_passValues [<value expr="II_SB_passValues"/>]</log>
-        		<fetch next="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_NEXT_OPTION II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_CODE_DIR II_SB_BASE_DIR II_SB_ibcallid confid II_SB_passValues II_SB_projectSource II_SB_obcallid"/>
+        		<fetch next="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_NEXT_OPTION II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_CODE_DIR II_SB_BASE_DIR II_SB_ibcallid II_SB_confid II_SB_passValues II_SB_projectSource II_SB_obcallid"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.basichttp" name="evt">
+            <!-- This transition is triggered when an external component sends an event to the ccxml session.
+            Here, we grab the data associated with the event and attempt to process it at the ccxml layer -->
+            <log>INFO: transition event [dialog.user.basichttp] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Event [<value expr="evt.II_SB_basichttpEvent"/>]</log>
+            <if cond="evt.II_SB_basichttpEvent == 'CREATESESSION'">
+                <log>INFO: uri [<value expr="evt.II_SB_URI"/>]</log>
+                <log>INFO: argument [<value expr="evt.II_SB_argument"/>]</log>
+                <var name="uri" expr="'file:' + II_SB_BASE_DIR + evt.II_SB_URI"/>
+                <assign name="II_SB_importedValue" expr="evt.II_SB_argument + '?' + II_SB_conferenceID + '?' + II_SB_memberCount"/>
+                <log>INFO: Sending: [<value expr="uri + ' ' + II_SB_importedValue"/>]</log>
+                <send data="'httpCreateSession'" targettype="'basichttp'" target="'http://localhost/spot/ccxml/createsession'" namelist="uri II_SB_importedValue"/>
+            <else/>
+                <!-- Future events -->
             </if>
         </transition>
 
@@ -282,7 +307,7 @@
 
         <transition state="customEvent" event="conference.unjoined" name="evt" cond="evt.id2 == II_SB_ibcallid">
             <!-- Our unjoin from the conference was successful. We need to check what our next action should be -->
-            <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: transition event [conference.unjoined] state [<value expr="II_SB_state"/>]</log>
             <if cond="II_SB_indialog == 'true'">    <!-- If caller is in a vxml dialog, terminate dialog -->
                 <send data="'dialog.user.termDialog'" target="II_SB_sessionID"/>
             <else/>

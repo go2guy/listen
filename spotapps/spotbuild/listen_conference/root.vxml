@@ -49,7 +49,7 @@
 	<var name="isInfoSaved" expr="'false'" />
 	<var name="CONF_ID" expr="''" />
 	<var name="audioURL" expr="''" />
-	<var name="rollcallPath" expr="'/interact/artifacts/listen/conference/rollcall/'" />
+	<var name="rollcallPath" expr="'/var/www/html/listen/artifacts/conference/roll'" />
 	<var name="request" expr="'post'" />
 	<var name="params" expr="''" />
 	<var name="id" expr="''" />
@@ -76,16 +76,16 @@
 	<var name="prevPath" expr="''" />
 	<var name="phoneNumber" expr="''" />
 	<var name="whichEvent" expr="''" />
-	<var name="hostName" expr="''" /> <!-- Config System Local Host Name -->
+	<var name="hostName" expr="''" />
 	<var name="outBoundID" expr="''" />
 	<var name="pstnLength" expr="'10'" /> <!-- Config PSTN Minimum Digits Length -->
 	<var name="DNIS" expr="'local'" />
 	<var name="isRecording" expr="'false'" />
-	<var name="recPath" expr="'/interact/artifacts/listen/conference/record/'" />
+	<var name="recPath" expr="'/var/www/html/listen/artifacts/conference/record/'" />
 	<var name="recPartCnt" expr="'0'" />
 	<var name="recFile" expr="''" />
 	<var name="recSID" expr="''" />
-	<var name="passedValue" expr="'importedValue'" />
+	<var name="passValues" expr="'importedValue'" />
 	<var name="isStarted" expr="'false'" />
 	<var name="entryTone" expr="'/interact/apps/spotbuild/listen_conference/audio/confIn.00.wav'" />
 	<var name="timeStamp" expr="''" />

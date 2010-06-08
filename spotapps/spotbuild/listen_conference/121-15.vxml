@@ -14,8 +14,8 @@
     <var name="II_SB_errorNxtOpt" expr="'121-25'"/>       <!-- Next option when record is terminated by an error -->
     <var name="II_SB_dtmfNxtOpt" expr="''"/>      <!-- Next option when record is terminated by dtmf -->
     <var name="II_SB_hangUpNxtOpt" expr="''"/>     <!-- Next option when record is terminated by hang up -->
-    <var name="II_SB_maxTimeNxtOpt" expr="'123-17'"/>    <!-- Next option when record is terminated by max time -->
-    <var name="II_SB_silenceNxtOpt" expr="'123-17'"/>   <!-- Next option when record is terminated by silence -->
+    <var name="II_SB_maxTimeNxtOpt" expr="'123-43'"/>    <!-- Next option when record is terminated by max time -->
+    <var name="II_SB_silenceNxtOpt" expr="'123-43'"/>   <!-- Next option when record is terminated by silence -->
 
     <var name="II_SB_SYS_PATH" expr="'/interact/apps/spotbuild/audio/system/'"/>    <!-- Audio system directory path -->
     <var name="II_SB_AUDIO_EXT" expr="'.'+II_SB_PROMPT_GRP+'.'+II_SB_PRMT_CODE"/>   <!-- Audio file extension -->
@@ -84,31 +84,6 @@
             </if>
 			<goto next="#exit"/>
 		</block>
-		<catch event="connection.disconnect.hangup">
-			<log>INFO: Got a hang up</log>
-			<if cond="((record_1 == undefined) &amp;&amp; (record_2 == undefined))">  <!-- User did not record a msg before hanging up -->
-    			<log>INFO: No recorded audio</log>
-			<else/>
-    			<log>INFO: Found recorded audio</log>
-                <if cond="II_SB_dtmfTerm == 'true'">
-        	        <assign name="II_SB_rec_duration" expr="record_1$.duration"/>
-			        <assign name="II_SB_rec_size" expr="record_1$.size"/>
-  			        <assign name="II_SB_rec_time" expr="record_1$.maxtime"/>
-                    <if cond="record_1$.termchar != undefined">
-    			        <assign name="II_SB_rec_termChar" expr="record_1$.termchar"/>
-                    </if>
-			        <assign name="II_SB_message" expr="record_1"/>
-                <else/>
-        	        <assign name="II_SB_rec_duration" expr="record_2$.duration"/>
-			        <assign name="II_SB_rec_size" expr="record_2$.size"/>
-  			        <assign name="II_SB_rec_time" expr="record_2$.maxtime"/>
-			        <assign name="II_SB_message" expr="record_2"/>
-                </if>
-			</if>
-   			<log>INFO: Taking hang up option</log>
-            <assign name="II_SB_nextOpt" expr="II_SB_hangUpNxtOpt"/>
-	        <goto next="#exit"/>
-		</catch>
         <error>
             <log>Error: [<value expr='_event'/>]</log>
    			<log>INFO: Taking error option</log>
@@ -123,7 +98,8 @@
 			<log>INFO: Size [<value expr="II_SB_rec_size"/>] bytes</log>
 			<log>INFO: Max time [<value expr="II_SB_rec_time"/>]</log>
 			<log>INFO: Term Key [<value expr="II_SB_rec_termChar"/>]</log>
-			
+			<assign name="recSize" expr="II_SB_rec_size" />
+
     		<if cond="II_SB_nextOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>
 	    		<goto expr="'file:' + II_SB_APP_PATH + II_SB_nextOpt + '.vxml'"/>
@@ -135,4 +111,30 @@
 			</if>
 		</block>
 	</form>
+
+	<catch event="connection.disconnect.hangup">
+		<log>INFO: Got a hang up</log>
+		<if cond="((record_1 == undefined) &amp;&amp; (record_2 == undefined))">  <!-- User did not record a msg before hanging up -->
+    		<log>INFO: No recorded audio</log>
+		<else/>
+    		<log>INFO: Found recorded audio</log>
+            <if cond="II_SB_dtmfTerm == 'true'">
+        	    <assign name="II_SB_rec_duration" expr="record_1$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_1$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_1$.maxtime"/>
+                <if cond="record_1$.termchar != undefined">
+    			    <assign name="II_SB_rec_termChar" expr="record_1$.termchar"/>
+                </if>
+			    <assign name="II_SB_message" expr="record_1"/>
+            <else/>
+        	    <assign name="II_SB_rec_duration" expr="record_2$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_2$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_2$.maxtime"/>
+			    <assign name="II_SB_message" expr="record_2"/>
+            </if>
+		</if>
+   		<log>INFO: Taking hang up option</log>
+        <assign name="II_SB_nextOpt" expr="II_SB_hangUpNxtOpt"/>
+	    <goto next="#exit"/>
+	</catch>
 </vxml>

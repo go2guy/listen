@@ -14,6 +14,9 @@
             <log>INFO: Current value [<value expr="isRecording"/>]</log>
 <assign name="isRecording" expr="'true'+''" />
 <log>INFO: Updated value [<value expr="isRecording"/>]</log>
+<log>INFO: Current value [<value expr="status"/>]</log>
+<assign name="status" expr="'START_RECORD'+''" />
+<log>INFO: Updated value [<value expr="status"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

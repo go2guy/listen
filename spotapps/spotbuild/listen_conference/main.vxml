@@ -39,7 +39,6 @@
 	<var name="SB_UV_isInfoSaved"/>
 	<var name="SB_UV_CONF_ID"/>
 	<var name="SB_UV_audioURL"/>
-	<var name="SB_UV_rollcallPath"/>
 	<var name="SB_UV_request"/>
 	<var name="SB_UV_params"/>
 	<var name="SB_UV_id"/>
@@ -75,12 +74,12 @@
 	<var name="SB_UV_recPartCnt"/>
 	<var name="SB_UV_recFile"/>
 	<var name="SB_UV_recSID"/>
-	<var name="SB_UV_passedValue"/>
-	<var name="SB_UV_isStarted"/>
+	<var name="SB_UV_passValues"/>
 	<var name="SB_UV_entryTone"/>
-	<var name="SB_UV_timeStamp"/>
 	<var name="SB_UV_isInteractiveCall"/>
 	<var name="SB_UV_destAudioFile"/>
+	<var name="SB_UV_timeStamp"/>
+	<var name="SB_UV_rollcallPath"/>
 
     
     <form id="beginDocument">
@@ -96,7 +95,7 @@
 			<assign name="userID" expr="II_SB_connectionID" />
 			<assign name="callType" expr="II_SB_type" />
 			<assign name="SID" expr="II_SB_sessionID" />
-			<assign name="passedValue" expr="II_SB_importedValue" />
+			<assign name="passValues" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_ANI != undefined">
 				<assign name="ANI" expr="SB_UV_ANI" />
@@ -157,9 +156,6 @@
 			</if>
 			<if cond="SB_UV_audioURL != undefined">
 				<assign name="audioURL" expr="SB_UV_audioURL" />
-			</if>
-			<if cond="SB_UV_rollcallPath != undefined">
-				<assign name="rollcallPath" expr="SB_UV_rollcallPath" />
 			</if>
 			<if cond="SB_UV_request != undefined">
 				<assign name="request" expr="SB_UV_request" />
@@ -266,23 +262,23 @@
 			<if cond="SB_UV_recSID != undefined">
 				<assign name="recSID" expr="SB_UV_recSID" />
 			</if>
-			<if cond="SB_UV_passedValue != undefined">
-				<assign name="passedValue" expr="SB_UV_passedValue" />
-			</if>
-			<if cond="SB_UV_isStarted != undefined">
-				<assign name="isStarted" expr="SB_UV_isStarted" />
+			<if cond="SB_UV_passValues != undefined">
+				<assign name="passValues" expr="SB_UV_passValues" />
 			</if>
 			<if cond="SB_UV_entryTone != undefined">
 				<assign name="entryTone" expr="SB_UV_entryTone" />
-			</if>
-			<if cond="SB_UV_timeStamp != undefined">
-				<assign name="timeStamp" expr="SB_UV_timeStamp" />
 			</if>
 			<if cond="SB_UV_isInteractiveCall != undefined">
 				<assign name="isInteractiveCall" expr="SB_UV_isInteractiveCall" />
 			</if>
 			<if cond="SB_UV_destAudioFile != undefined">
 				<assign name="destAudioFile" expr="SB_UV_destAudioFile" />
+			</if>
+			<if cond="SB_UV_timeStamp != undefined">
+				<assign name="timeStamp" expr="SB_UV_timeStamp" />
+			</if>
+			<if cond="SB_UV_rollcallPath != undefined">
+				<assign name="rollcallPath" expr="SB_UV_rollcallPath" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

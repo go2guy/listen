@@ -22,11 +22,12 @@ if(getInput == 4)
 result = "RESTART";
 else if (whoAmI == admin)
 {
-if (isAdminStatus && (options.match(getInput)))            result = "INVALID_ADMIN";
+if (isAdminStatus && (options.match(getInput)))
+result = "INVALID_ADMIN";
 else if (isPassiveStatus && (options.match(getInput)))
 {
 if ((getInput == 1) || (getInput == 2))
-result = "INVALID_PASSIVE";
+result ="INVALID_PASSIVE";
 else
 result = "DROP";
 }

@@ -9,9 +9,10 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(audioURL,entryTone)
+            function II_SB_JS_function(audioURL)
             {
-	            return entryTone+ " " + audioURL;
+	            var tmp = "/interact/apps/spotbuild/listen_conference/audio/confIn.00.wav";
+return tmp + " " + audioURL;
             }
         ]]>
     </script>
@@ -20,7 +21,7 @@
         <block>
             <log target="status">Set Entry Tone</log>
             <log>INFO: Entered run-javascript.vxml [116-6]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(audioURL,entryTone)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(audioURL)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="fileName" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

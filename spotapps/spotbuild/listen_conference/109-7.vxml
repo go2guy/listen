@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(hostName,DNIS,callType)
             {
-	            return "{\"httpApi\": \"http://"+hostName+"/spot/ccxml/basichttp\", \"phoneNumber\":\""+DNIS+"\", \"phoneNumberProtocol\": \""+callType+"\" }";
+	            return "{\"httpApi\": \"http://"+hostName+"/spot\", \"phoneNumber\":\""+DNIS+"\", \"phoneNumberProtocol\": \""+callType+"\" }";
             }
         ]]>
     </script>

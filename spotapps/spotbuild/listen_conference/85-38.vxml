@@ -84,31 +84,6 @@
             </if>
 			<goto next="#exit"/>
 		</block>
-		<catch event="connection.disconnect.hangup">
-			<log>INFO: Got a hang up</log>
-			<if cond="((record_1 == undefined) &amp;&amp; (record_2 == undefined))">  <!-- User did not record a msg before hanging up -->
-    			<log>INFO: No recorded audio</log>
-			<else/>
-    			<log>INFO: Found recorded audio</log>
-                <if cond="II_SB_dtmfTerm == 'true'">
-        	        <assign name="II_SB_rec_duration" expr="record_1$.duration"/>
-			        <assign name="II_SB_rec_size" expr="record_1$.size"/>
-  			        <assign name="II_SB_rec_time" expr="record_1$.maxtime"/>
-                    <if cond="record_1$.termchar != undefined">
-    			        <assign name="II_SB_rec_termChar" expr="record_1$.termchar"/>
-                    </if>
-			        <assign name="II_SB_message" expr="record_1"/>
-                <else/>
-        	        <assign name="II_SB_rec_duration" expr="record_2$.duration"/>
-			        <assign name="II_SB_rec_size" expr="record_2$.size"/>
-  			        <assign name="II_SB_rec_time" expr="record_2$.maxtime"/>
-			        <assign name="II_SB_message" expr="record_2"/>
-                </if>
-			</if>
-   			<log>INFO: Taking hang up option</log>
-            <assign name="II_SB_nextOpt" expr="II_SB_hangUpNxtOpt"/>
-	        <goto next="#exit"/>
-		</catch>
         <error>
             <log>Error: [<value expr='_event'/>]</log>
    			<log>INFO: Taking error option</log>
@@ -135,4 +110,30 @@
 			</if>
 		</block>
 	</form>
+
+	<catch event="connection.disconnect.hangup">
+		<log>INFO: Got a hang up</log>
+		<if cond="((record_1 == undefined) &amp;&amp; (record_2 == undefined))">  <!-- User did not record a msg before hanging up -->
+    		<log>INFO: No recorded audio</log>
+		<else/>
+    		<log>INFO: Found recorded audio</log>
+            <if cond="II_SB_dtmfTerm == 'true'">
+        	    <assign name="II_SB_rec_duration" expr="record_1$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_1$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_1$.maxtime"/>
+                <if cond="record_1$.termchar != undefined">
+    			    <assign name="II_SB_rec_termChar" expr="record_1$.termchar"/>
+                </if>
+			    <assign name="II_SB_message" expr="record_1"/>
+            <else/>
+        	    <assign name="II_SB_rec_duration" expr="record_2$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_2$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_2$.maxtime"/>
+			    <assign name="II_SB_message" expr="record_2"/>
+            </if>
+		</if>
+   		<log>INFO: Taking hang up option</log>
+        <assign name="II_SB_nextOpt" expr="II_SB_hangUpNxtOpt"/>
+	    <goto next="#exit"/>
+	</catch>
 </vxml>

@@ -14,7 +14,8 @@
 	            var result;
 var tmpVal = eval("("+returnVal+")");
 result =  tmpVal.results[index].sessionID;
-if ((result == null) || (result == SID)) {result = "";}
+if ((result == null) || (result == SID))
+{result = "";}
 return result;
             }
         ]]>
