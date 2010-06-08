@@ -59,10 +59,10 @@ Requires: spotbuild-vip
 
     # Install vxml & ccxml scripts
     mkdir -p %{buildroot}/interact/apps/
-    mkdir -p %{buildroot}/interact/artifacts/listen/conference/record/
-    mkdir -p %{buildroot}/interact/artifacts/listen/conference/rollcall/
-    mkdir -p %{buildroot}/interact/artifacts/listen/voicemail/greeting/
-    mkdir -p %{buildroot}/interact/artifacts/listen/voicemail/message/
+    mkdir -p %{buildroot}/var/www/html/listen/artifacts/conference/record/
+    mkdir -p %{buildroot}/var/www/html/listen/artifacts/conference/rollcall/
+    mkdir -p %{buildroot}/var/www/html/listen/artifacts/voicemail/greeting/
+    mkdir -p %{buildroot}/var/www/html/listen/artifacts/voicemail/message/
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
 
@@ -71,7 +71,7 @@ Requires: spotbuild-vip
 
     # Run Encryption
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/
-    /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/
+    /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/
     /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
 
@@ -98,7 +98,7 @@ Requires: spotbuild-vip
     %defattr(777,interact,operator)
     /interact/apps/spotbuild/listen*
     /interact/apps/spotbuild/lib/cgi-bin/listen
-    /interact/artifacts/listen/*
+    /var/www/html/listen/artifacts/*
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
