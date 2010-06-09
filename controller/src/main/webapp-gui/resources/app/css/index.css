@@ -224,12 +224,12 @@ table td, table th {
 
 #conferencing-application .application-header {
     background-color: #DAE4EE;
-    color: #1162AE;
+    color: #1C55A7;
 }
 
 #conference-caller-table td {
     background-color: #E8EEF4;
-    border-color: #1162AE;
+    border-color: #1C55A7;
     border-style: solid;
     border-width: 0 0 1px 0;
     height: 2em;
@@ -320,9 +320,9 @@ td.voicemail-cell-readStatus {
     background-color: #EEEEEE;
     background-position: 2px 2px;
     background-repeat: no-repeat;
-    border: 1px solid #1162AE;
+    border: 1px solid #1C55A7;
     border-radius: 4px;
-    color: #1162AE;
+    color: #1C55A7;
     cursor: pointer;
     height: 22px;
     font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
@@ -445,7 +445,7 @@ td.voicemail-cell-readStatus {
 
 .inline-dialog {
     background-color: #FFFFFF;
-    border: 1px solid #1162AE;
+    border: 1px solid #1C55A7;
     display: none;
     padding: 5px;
     position: absolute;
