@@ -77,6 +77,5 @@ function Voicemail() {
         if(interval) {
             clearInterval(interval);
         }
-        //$('#voicemail-table tbody').find('tr').remove();
     };
 }
