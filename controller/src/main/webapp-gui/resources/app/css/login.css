@@ -40,6 +40,7 @@
 fieldset {
     display: block;
     border-width: 0;
+    font-size: 125%;
 }
 
 fieldset label {
@@ -75,6 +76,7 @@ fieldset input.button {
     color: #1162AE;
     display: block;
     margin-top: .5em;
+    padding: 3px .25em;
 }
 
 fieldset input.error {
