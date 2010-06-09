@@ -49,7 +49,7 @@ var SERVER = {
                     conferenceId: conferenceId },
             success: function(data) {
                 $('#outdial-dialog').slideUp(200);
-                notify('Number ' + number + ' is being dialed');
+                LISTEN.notify('Number ' + number + ' is being dialed');
             },
             error: function(req) {
                 errorDiv.text(req.responseText);

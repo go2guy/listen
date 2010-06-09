@@ -78,6 +78,18 @@ $(document).ready(function() {
                 };
             },
 
+            /**
+             * Given a set of data, adds/updates/removes rows from a table.
+             * Available args:
+             *  - tableId: id of table node to update
+             *  - countContainer: id of node that should be updated with the row count (optional)
+             *  - retrieveCount(data): function callback that returns the row count from the data (optional)
+             *  - reverse: whether or not to reverse the table order, putting the last rows in the data first
+             *             (optional, default = false)
+             *  - updateRowCallback(row, data, setId): function callback that updates a specific row
+             *  - retrieveList(data): function callback that returns the actual list of data from the provided data
+             *  - templateId: id of row node containing template for a data row in this table
+             */
             DynamicTable: function(args) {
                 var interval;
                 var args = args;
@@ -181,9 +193,9 @@ $(document).ready(function() {
                     toApp.show();
                 }
                 currentApplication = toApp;
-            }/*,
+            },
 
-            setContent: function(applicationName, content) {
+            /*setContent: function(applicationName, content) {
                 for(var i = 0; i < applications.length; i++) {
                     if(applications[i].name == applicationName) {
                         if(applications[i].content) {
@@ -195,6 +207,23 @@ $(document).ready(function() {
                     }
                 }
             }*/
+
+            notify: function(message, isError, stay) {
+                var div = $('#notification');
+                if(isError === true) {
+                    div.addClass('error');
+                } else {
+                    div.removeClass('error');
+                }
+                $('#notification').text(message);
+                $('#notification').slideDown(200);
+
+                if(stay !== true) {
+                    setTimeout(function() {
+                        $('#notification').slideUp(200);
+                    }, 3000);
+                }
+            }
         };
 
         return pub;
@@ -208,22 +237,7 @@ $(document).ready(function() {
 });
 
 // TODO namespace
-function notify(message, isError, stay) {
-    var div = $('#notification');
-    if(isError === true) {
-        div.addClass('error');
-    } else {
-        div.removeClass('error');
-    }
-    $('#notification').text(message);
-    $('#notification').slideDown(200);
 
-    if(stay !== true) {
-        setTimeout(function() {
-            $('#notification').slideUp(200);
-        }, 3000);
-    }
-}
 
 // TODO namespace
 function withLoadingIndicator(callback, callbackArgs) {

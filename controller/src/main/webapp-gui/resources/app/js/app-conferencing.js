@@ -306,7 +306,7 @@ function scheduleConference(event) {
             scheduleConferenceDescription.val('');
             scheduleConferenceActiveParticipants.val('');
             scheduleConferencePassiveParticipants.val('');
-            notify('Emails have been sent to the provided addresses');
+            LISTEN.notify('Emails have been sent to the provided addresses');
         },
         error: function(data, status) {
             var div = $('#scheduleConferenceDialog .form-error-message');

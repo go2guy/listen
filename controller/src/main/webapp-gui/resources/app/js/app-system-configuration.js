@@ -87,7 +87,7 @@ $(document).ready(function() {
                     'com.interact.listen.mail.fromAddress': $('#from-address').val() },
             success: function(data) {
                 application.load();
-                notify('Mail settings updated');
+                LISTEN.notify('Mail settings updated');
             }
         });
         return false;
@@ -116,7 +116,7 @@ $(document).ready(function() {
             data: { 'com.interact.listen.dnisMapping': value },
             success: function(data) {
                 application.load();
-                notify('DNIS mappings updated');
+                LISTEN.notify('DNIS mappings updated');
             }
         });
 
@@ -147,7 +147,7 @@ function provisionAccount(event) {
             provisionAccountPassword.val('');
             provisionAccountPasswordConfirm.val('');
             provisionAccountUsername.val('');
-            notify('Account provisioned');
+            LISTEN.notify('Account provisioned');
         },
         error: function(data, status) {
             var div = $('#provisionAccountDialog .form-error-message');
