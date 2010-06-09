@@ -11,10 +11,7 @@ function ConferenceList() {
         retrieveList: function(data) {
             return data.results;
         },
-        updateRowCallback: function(row, data, setId) {
-            if(setId) {
-                row.attr('id', 'conference-list-table-row-' + data.id);
-            }
+        updateRowCallback: function(row, data) {
             row.find('.conference-cell-description').text(data.description);
             row.find('.conference-cell-status').text(data.isStarted ? 'Started' : 'Not Started');
 

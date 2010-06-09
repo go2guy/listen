@@ -150,11 +150,12 @@
     <minify in="${war.staging.dir}/resources/app/js/app-conference-list.js" out="${war.staging.dir}/resources/app/js/app-conference-list-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-conferencing.js" out="${war.staging.dir}/resources/app/js/app-conferencing-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-findme.js" out="${war.staging.dir}/resources/app/js/app-findme-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-system-configuration.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-users.js" out="${war.staging.dir}/resources/app/js/app-users-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-voicemail.js" out="${war.staging.dir}/resources/app/js/app-voicemail-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/login.js" out="${war.staging.dir}/resources/app/js/login-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/index.js" out="${war.staging.dir}/resources/app/js/index-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/server.js" out="${war.staging.dir}/resources/app/js/server-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/js/app-system-configuration.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/js/app-voicemail.js" out="${war.staging.dir}/resources/app/js/app-voicemail-min.js"/>
     <minify in="${war.staging.dir}/resources/app/css/all.css" out="${war.staging.dir}/resources/app/css/all-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/login.css" out="${war.staging.dir}/resources/app/css/login-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/index.css" out="${war.staging.dir}/resources/app/css/index-min.css"/>

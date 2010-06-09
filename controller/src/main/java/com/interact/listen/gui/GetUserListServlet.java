@@ -3,17 +3,18 @@ package com.interact.listen.gui;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.exception.UnauthorizedServletException;
-import com.interact.listen.license.License;
-import com.interact.listen.license.ListenFeature;
-import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.json.JsonMarshaller;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Resource;
+import com.interact.listen.resource.ResourceList;
+import com.interact.listen.resource.User;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,19 +25,19 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 /**
- * Provides a GET implementation that retrieves a list of Conferences for the current session user. If the user is an
- * Administrator, all conferences are returned. Otherwise, only conferences associated with the user are returned.
+ * Provides a GET implementation that retrieves a list of Users.
  */
-public class GetConferenceListServlet extends HttpServlet
+public class GetUserListServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        if(!License.isLicensed(ListenFeature.CONFERENCING))
+        User user = (User)(request.getSession().getAttribute("user"));
+        if(user == null)
         {
-            throw new NotLicensedException(ListenFeature.CONFERENCING);
+            throw new UnauthorizedServletException("Not logged in");
         }
 
         StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
@@ -44,43 +45,33 @@ public class GetConferenceListServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_GET_CONFERENCE_LIST);
+        statSender.send(Stat.GUI_GET_USER_LIST);
 
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        if(!user.getIsAdministrator())
         {
-            throw new UnauthorizedServletException("Not logged in");
+            throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        List<Resource> conferences;
-
-        if(user.getIsAdministrator())
-        {
-            Criteria criteria = session.createCriteria(Conference.class);
-            criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-            conferences = (List<Resource>)criteria.list();
-        }
-        else
-        {
-            conferences = new ArrayList<Resource>(user.getConferences());
-        }
+        Criteria criteria = session.createCriteria(User.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        List<Resource> users = (List<Resource>)criteria.list();
 
         Set<String> fields = new HashSet<String>();
-        fields.add("description");
         fields.add("id");
-        fields.add("isStarted");
+        fields.add("lastLogin");
+        fields.add("username");
 
         ResourceList list = new ResourceList();
         list.setFields(fields);
         list.setFirst(0);
-        list.setList(conferences);
-        list.setMax(conferences.size());
-        list.setTotal(Long.valueOf(conferences.size()));
+        list.setList(users);
+        list.setMax(users.size());
+        list.setTotal(Long.valueOf(users.size()));
 
         Marshaller marshaller = new JsonMarshaller();
-        String content = marshaller.marshal(list, Conference.class);
+        String content = marshaller.marshal(list, User.class);
 
         response.setStatus(HttpServletResponse.SC_OK);
         OutputBufferFilter.append(request, content, marshaller.getContentType());

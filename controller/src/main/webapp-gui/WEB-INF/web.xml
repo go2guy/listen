@@ -116,6 +116,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetUserListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetUserListServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetVoicemailListServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetVoicemailListServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -237,6 +243,11 @@
     <servlet-mapping>
         <servlet-name>GetPropertiesServlet</servlet-name>
         <url-pattern>/ajax/getProperties</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetUserListServlet</servlet-name>
+        <url-pattern>/ajax/getUserList</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

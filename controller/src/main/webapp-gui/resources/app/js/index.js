@@ -121,6 +121,7 @@ $(document).ready(function() {
 
                         if(!found) {
                             var clone = $('#' + args.templateId).clone();
+                            clone.attr('id', args.tableId + '-row-' + serverItem.id);
                             args.updateRowCallback.call(this, clone, serverItem, true);
                             clone.css('opacity', 0);
                             if(args.alternateRowColors) {

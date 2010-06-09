@@ -79,11 +79,7 @@ function Conference(id) {
         retrieveCount: function(data) {
             return data.length;
         },
-        updateRowCallback: function(row, data, setId) {
-            if(setId) {
-                row.attr('id', 'conference-caller-table-row-' + data.id);
-            }
-            
+        updateRowCallback: function(row, data) {
             if(data.isAdmin && !row.hasClass('caller-row-admin')) {
                 row.addClass('caller-row-admin');
             } else if(!data.isAdmin && row.hasClass('caller-row-admin')) {
@@ -134,11 +130,7 @@ function Conference(id) {
         },
         alternateRowColors: true,
         reverse: true,
-        updateRowCallback: function(row, data, setId) {
-            if(setId) {
-                row.attr('id', 'conference-history-table-row-' + data.id);
-            }
-    
+        updateRowCallback: function(row, data) {
             var dateCell = row.find('.history-cell-date');
             if(dateCell.text() != data.dateCreated) {
                 dateCell.text(data.dateCreated);
@@ -161,11 +153,7 @@ function Conference(id) {
         retrieveCount: function(data) {
             return data.length;
         },
-        updateRowCallback: function(row, data, setId) {
-            if(setId) {
-                row.attr('id', 'conference-pin-table-row-' + data.id);
-            }
-
+        updateRowCallback: function(row, data) {
             if(data.type == 'ADMIN') {
                 row.addClass('pin-row-admin');
             } else {
@@ -193,11 +181,7 @@ function Conference(id) {
             return data;
         },
         alternateRowColors: true,
-        updateRowCallback: function(row, data, setId) {
-            if(setId) {
-                row.attr('id', 'conference-recording-table-row-' + data.id);
-            }
-
+        updateRowCallback: function(row, data) {
             var description = data.dateCreated + ' - ' + '<a href="/ajax/getConferenceRecording?id=' + data.id + '">' + data.description + '</a>' + ' [' + data.fileSize + ']';
             var descriptionCell = row.find('.recording-cell-description');
             if(descriptionCell.html() != description) {

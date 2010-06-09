@@ -20,6 +20,7 @@ a {
 
 table {
     border-collapse: collapse;
+    border-width: 0;
     width: 100%;
 }
 
@@ -216,6 +217,10 @@ table td, table th {
     width: 100%;
 }
 
+.left .panel {
+    margin-left: 3px;
+}
+
 /* application - conferencing */
 
 #conferencing-application {
@@ -229,15 +234,11 @@ table td, table th {
 
 #conference-caller-table td {
     background-color: #E8EEF4;
-    border-color: #1C55A7;
+    border-color: #FFFFFF;/*#1C55A7;*/
     border-style: solid;
     border-width: 0 0 1px 0;
     height: 2em;
     font-weight: bold;
-}
-
-#conferencing-application .left .panel {
-    margin-left: 3px;
 }
 
 td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
@@ -283,10 +284,6 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 #voicemail-application .application-header {
     background-color: #FFE472;
     color: #D3AB00;
-}
-
-#voicemail-table {
-    border-width: 0;
 }
 
 #voicemail-table td {
@@ -441,7 +438,7 @@ td.voicemail-cell-readStatus {
     background-image: url('../images/new/icon_view_hover_16x16.png');
 }
 
-/* dialogs and forms */
+/* dialogs, forms, tables */
 
 .inline-dialog {
     background-color: #FFFFFF;
@@ -532,11 +529,19 @@ fieldset table .buttons button {
     margin-right: 6px;
 }
 
-/* other */
+table.data-table {
+    border: 1px solid #CCCCCC;
+}
 
-.odd {
+table.data-table td, table.data-table th {
+    border: 1px solid #CCCCCC;
+}
+
+table.data-table tr.odd {
     background-color: #EEEEEE;
 }
+
+/* other */
 
 #templates {
     display: none;

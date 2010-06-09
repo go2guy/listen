@@ -20,7 +20,8 @@ User user = (User)session.getAttribute("user"); %>
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
     <script type="text/javascript" src="./resources/app/js/app-conferencing-min.js"></script><%
     if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/js/app-conference-list-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-conference-list-min.js"></script>
+    <script type="text/javascript" src="./resources/app/js/app-users-min.js"></script><%
     }
 }
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
@@ -198,7 +199,7 @@ if(user != null && user.getIsAdministrator()) { %>
             <div id="conference-list-application" class="application">
               <div class="application-header"><div class="title">Conference List</div></div>
               <div class="application-content">
-                <table id="conference-list-table">
+                <table id="conference-list-table" class="data-table">
                   <thead>
                     <tr>
                       <th>Description</th>
@@ -212,6 +213,26 @@ if(user != null && user.getIsAdministrator()) { %>
                     <tr class="placeholder"><td colspan="2">No conferences</td></tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+
+            <div id="users-application" class="application">
+              <div class="application-header"><div class="title">Users</div></div>
+              <div class="application-content">
+                <div class="left">
+                  <div class="panel">
+                    <table id="users-table" class="data-table">
+                      <thead>
+                        <tr>
+                          <th>Username</th>
+                          <th>Last Login</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="cleaner">&nbsp;</div>
               </div>
             </div><%
 } %>
@@ -243,7 +264,7 @@ if(user != null && user.getIsAdministrator()) { %>
             <ul>
               <li id="menu-sysconfig"><a href="#">Configuration</a></li>
               <li id="menu-conference-list"><a href="#">Conferences</a></li>
-              <!--<li id="menu-users"><a href="#">Users</a></li>-->
+              <li id="menu-users"><a href="#">Users</a></li>
             </ul>
           </div><%
 } %>
@@ -282,6 +303,11 @@ if(user != null && user.getIsAdministrator()) { %>
           <td class="conference-cell-description"></td>
           <td class="conference-cell-status"></td>
           <td class="conference-cell-view"></td>
+        </tr>
+
+        <tr id="user-row-template">
+          <td class="user-cell-username"></td>
+          <td class="user-cell-lastLogin"></td>
         </tr>
 
         <tr id="voicemail-row-template">

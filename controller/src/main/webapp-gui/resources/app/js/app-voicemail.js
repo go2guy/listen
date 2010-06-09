@@ -16,11 +16,7 @@ function Voicemail() {
             return data.newCount;
         },
         reverse: true,
-        updateRowCallback: function(row, data, setId) {
-            if(setId) {
-                row.attr('id', 'voicemail-table-row-' + data.id);
-            }
-
+        updateRowCallback: function(row, data) {
             if(data.isNew) {
                 row.removeClass('voicemail-read');
                 row.addClass('voicemail-unread');
