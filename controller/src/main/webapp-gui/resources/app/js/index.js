@@ -200,19 +200,6 @@ $(document).ready(function() {
                 currentApplication = toApp;
             },
 
-            /*setContent: function(applicationName, content) {
-                for(var i = 0; i < applications.length; i++) {
-                    if(applications[i].name == applicationName) {
-                        if(applications[i].content) {
-                            applications[i].content.unload();
-                        }
-                        applications[i].content = content;
-                        applications[i].content.load();
-                        break;
-                    }
-                }
-            }*/
-
             notify: function(message, isError, stay) {
                 var div = $('#notification');
                 if(isError === true) {
@@ -254,9 +241,6 @@ $(document).ready(function() {
         }, 500);
     });
 });
-
-// TODO namespace
-
 
 // TODO namespace
 function withLoadingIndicator(callback, callbackArgs) {
