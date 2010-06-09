@@ -311,6 +311,12 @@ td.voicemail-cell-readStatus {
 
 /* application - system configuration */
 
+/* application - users */
+
+#users-application fieldset {
+    border-width: 0;
+}
+
 /* buttons */
 
 .add-button, .cancel-button, .delete-button, .mark-read-button, .mark-unread-button, .mute-button, .outdial-button, .record-button, .save-button, .schedule-button, .stop-button, .unmute-button, .unmute-button-disabled, .view-button {

@@ -221,15 +221,35 @@ if(user != null && user.getIsAdministrator()) { %>
               <div class="application-content">
                 <div class="left">
                   <div class="panel">
+                    <div class="panel-header"><div class="title">User List</div></div>
                     <table id="users-table" class="data-table">
                       <thead>
                         <tr>
                           <th>Username</th>
+                          <th>Subscriber #</th>
                           <th>Last Login</th>
                         </tr>
                       </thead>
                       <tbody></tbody>
                     </table>
+                  </div>
+                </div>
+                <div class="right">
+                  <div class="panel">
+                    <div class="panel-header"><div class="title">User Info</div></div>
+                    <form id="user-form">
+                      <fieldset>
+                        <table>
+                          <tbody>
+                            <tr><td><label for="user-form-username">Username</label></td><td><input type="text" id="user-form-username" name="user-form-username"/></td></tr>
+                            <tr><td><label for="user-form-password">Password</label></td><td><input type="password" id="user-form-password" name="user-form-password"/></td></tr>
+                            <tr><td><label for="user-form-passwordConfirm">Confirm Password</label></td><td><input type="password" id="user-form-passwordConfirm" name="user-form-passwordConfirm"/></td></tr>
+                            <tr><td><label for="user-form-subscriber">Subscriber</label></td><td><input type="text" id="user-form-subscriber" name="user-form-subscriber"/></td></tr>
+                            <tr><td></td><td class="buttons"><button type="submit" class="save-button" title="Save">Save</button><button class="cancel-button">Cancel</button></td></tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
                   </div>
                 </div>
                 <div class="cleaner">&nbsp;</div>
@@ -307,6 +327,7 @@ if(user != null && user.getIsAdministrator()) { %>
 
         <tr id="user-row-template">
           <td class="user-cell-username"></td>
+          <td class="user-cell-subscriber"></td>
           <td class="user-cell-lastLogin"></td>
         </tr>
 

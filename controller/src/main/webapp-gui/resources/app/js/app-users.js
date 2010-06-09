@@ -7,12 +7,17 @@ $(document).ready(function() {
             tableId: 'users-table',
             templateId: 'user-row-template',
             retrieveList: function(data) {
-                return data.results;
+                return data;
             },
             updateRowCallback: function(row, data) {
                 var usernameCell = row.find('.user-cell-username');
                 if(usernameCell.text() != data.username) {
                     usernameCell.text(data.username);
+                }
+
+                var subscriberCell = row.find('.user-cell-subscriber');
+                if(subscriberCell.text() != data.subscriber) {
+                    subscriberCell.text(data.subscriber);
                 }
 
                 var lastLoginCell = row.find('.user-cell-lastLogin');

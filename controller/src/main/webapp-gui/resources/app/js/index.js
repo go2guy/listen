@@ -4,6 +4,8 @@ $(document).ready(function() {
         error: function(xhr, textStatus, errorThrown) {
             if(xhr && xhr.status == 401) {
                 window.location = '/logout';
+            } else {
+                LISTEN.log('ERROR: textStatus = [' + textStatus + '], xhrStatus = [' + xhr.status + ']');
             }
         }
     });
