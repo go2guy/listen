@@ -5,6 +5,7 @@ $(document).ready(function() {
 
     function SystemConfigurationApplication() {
         this.load = function() {
+            LISTEN.log('Loading system configuration');
             $.ajax({
                 url: '/ajax/getProperties',
                 dataType: 'json',
@@ -27,6 +28,7 @@ $(document).ready(function() {
         };
 
         this.unload = function() {
+            LISTEN.log('Unloading system configuration');
             // no-op
         };
     };

@@ -1,4 +1,3 @@
-var enableLogging = true;
 var LISTEN;
 $(document).ready(function() {
     $.ajaxSetup({
@@ -16,6 +15,14 @@ $(document).ready(function() {
 
         var pub = {
 
+            enableLogging: true,
+
+            bind: function(scope, fn) {
+                return function () {
+                    fn.apply(scope, arguments);
+                };
+            },
+
             Application: function(name, windowId, menuId, content) {
                 this.name = name;
                 var windowId = windowId;
@@ -25,11 +32,9 @@ $(document).ready(function() {
                 var windowDiv = $('#' + windowId);
                 var menuItem = $('#' + menuId);
                 if(menuItem && windowDiv) {
-                    var application = this;
-                    menuItem.click(function() {
-                        // use 'application' since 'this' will be in the function scope, not the parent object's scope
-                        pub.switchApp(application);
-                    });
+                    menuItem.click(LISTEN.bind(this, function() {
+                        pub.switchApp(this);
+                    }));
                 }
 
                 this.menuOff = function() {
@@ -41,35 +46,34 @@ $(document).ready(function() {
                 };
 
                 this.swapWith = function(other, withContent) {
+                    LISTEN.log('Swapping, this = [' + this.name + '], other = [' + other.name + ']');
                     if(this === other) {
+                        LISTEN.log('Tried to switch to same application, no switch will be performed');
                         return;
                     }
-                    this.hide(function() {
+                    this.hide(LISTEN.bind(this, function() {
                         if(this.content) {
                             this.content.unload();
                         }
                         if(withContent) {
-                            this.content = withContent;
-                            this.content.load();
+                            other.content = withContent;
+                        }
+                        if(other.content) {
+                            other.content.load();
                         }
                         other.show();
-                    });
+                    }));
                 };
 
                 this.hide = function(callback) {
                     if(callback) {
-                        windowDiv.hide(0, function() {
-                            callback.call();
-                        });
+                        windowDiv.hide(0, callback);
                     } else {
                         windowDiv.hide();
                     }
                 };
 
                 this.show = function() {
-                    if(this.content) {
-                        this.content.load();
-                    }
                     windowDiv.show();
                 };
             },
@@ -185,7 +189,6 @@ $(document).ready(function() {
                         }
                     }
                 }
-
                 if(currentApplication) {
                     currentApplication.menuOff();
                     toApp.menuOn();
@@ -228,8 +231,16 @@ $(document).ready(function() {
             },
 
             log: function(message) {
-                if(console && enableLogging) {
-                    console.log(message);
+                if(LISTEN.enableLogging) {
+                    try {
+                        console.log(message);
+                        return true;
+                    } catch(e) {
+                        try {
+                            opera.postError(message);
+                            return true;
+                        } catch(e2) { }
+                    }
                 }
             }
         };

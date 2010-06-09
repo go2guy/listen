@@ -46,11 +46,13 @@ function Conference(id) {
     var conferenceId;
 
     if(id) {
+        LISTEN.log('Constructing conference, id provided [' + id + ']')
         conferenceId = id;
     } else {
-        var app = this;
-        $.getJSON('/ajax/getConferenceInfo', function(data) {
+        LISTEN.log('Constructing conference without id; asking server');
+        $.getJSON('/ajax/getConferenceInfo', LISTEN.bind(this, function(data) {
             conferenceId = data.info.id;
+            LISTEN.log('Got id [' + conferenceId + '] from server');
             // if conferencing is the first loaded application, the LISTEN object will try and load it;
             // however, this ajax response might be returned AFTER the LISTEN object loads this application,
             // which means that this.conferenceId will not be set and the load() function will not actually
@@ -58,9 +60,10 @@ function Conference(id) {
             // therefore, if the current LISTEN application is this one (conferencing), we need to force it
             // to re-load, since it now has the conferenceId
             if(LISTEN.getCurrentApplication().name == 'conferencing') {
-                app.load();
+                LISTEN.log("Current application is 'conferencing', forcing load()");
+                this.load();
             }
-        });
+        }));
     }
 
     currentConference = this;
@@ -251,6 +254,7 @@ function Conference(id) {
     }
 
     this.load = function() {
+        LISTEN.log('Loading conferencing');
         if(conferenceId) {
             pollAndSet(false);
             interval = setInterval(function() {
@@ -260,14 +264,15 @@ function Conference(id) {
     };
 
     this.unload = function() {
+        LISTEN.log('Unloading conferencing');
         if(interval) {
             clearInterval(interval);
         }
-        $('#conference-window').hide();
-        $('#conference-caller-table tbody').find('tr').remove();
-        $('#conference-pin-table tbody').find('tr').remove();
-        $('#conference-history-table tbody').find('tr').remove();
-        $('#conference-recording-table tbody').find('tr').remove();
+//        $('#conference-window').hide();
+//        $('#conference-caller-table tbody').find('tr').remove();
+//        $('#conference-pin-table tbody').find('tr').remove();
+//        $('#conference-history-table tbody').find('tr').remove();
+//        $('#conference-recording-table tbody').find('tr').remove();
     };
 }
 

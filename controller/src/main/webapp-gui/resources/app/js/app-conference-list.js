@@ -38,14 +38,15 @@ function ConferenceList() {
     };
 
     this.load = function() {
+        LISTEN.log('Loading conference list');
         pollAndSet(false);
         interval = setInterval(function() {
             pollAndSet(true);
         }, 1000);
-        //$('#conference-list-window').show();
     };
 
     this.unload = function() {
+        LISTEN.log('Unloading conference-list');
         if(interval) {
             clearInterval(interval);
         }

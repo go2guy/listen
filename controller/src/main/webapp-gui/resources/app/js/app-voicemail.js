@@ -65,6 +65,7 @@ function Voicemail() {
     };
 
     this.load = function() {
+        LISTEN.log('Loading voicemail');
         pollAndSet(false);
         interval = setInterval(function() {
             pollAndSet(true);
@@ -72,6 +73,7 @@ function Voicemail() {
     };
 
     this.unload = function() {
+        LISTEN.log('Unloading voicemail');
         if(interval) {
             clearInterval(interval);
         }
