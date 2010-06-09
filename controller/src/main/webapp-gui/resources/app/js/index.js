@@ -91,7 +91,7 @@ $(document).ready(function() {
                 var args = args;
 
                 this.update = function(data, withAnimation) {
-                    var tableRows = $('#' + args.tableId + ' tbody').find('tr');
+                    var tableRows = $('#' + args.tableId + ' tbody').find('tr:not(.placeholder)');
                     var serverList = args.retrieveList.call(this, data);
                     var ids = [];
 
@@ -133,7 +133,7 @@ $(document).ready(function() {
                             }
                             clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
                         }
-                        
+
                         ids.push(args.tableId + '-row-' + serverItem.id);
                     }
 
@@ -153,6 +153,12 @@ $(document).ready(function() {
                                 $(this).remove();
                             });
                         }
+                    }
+
+                    if(serverList.length == 0) {
+                        $('#' + args.tableId).find('.placeholder').show();
+                    } else {
+                        $('#' + args.tableId).find('.placeholder').hide();
                     }
                 };
             },

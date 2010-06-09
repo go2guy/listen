@@ -62,7 +62,11 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                   <div class="panel">
                     <div class="panel-header"><div class="title">On The Call (<span id="conference-caller-count">0</span>)</div></div>
                     <div class="panel-content">
-                      <table id="conference-caller-table"><tbody></tbody></table>
+                      <table id="conference-caller-table">
+                        <tbody>
+                          <tr class="placeholder"><td colspan="3">Nobody</td></tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -97,19 +101,31 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                   <div class="panel">
                     <div class="panel-header"><div class="title">Available PINs (<span id="conference-pin-count">0</span>)</div></div>
                     <div class="panel-content">
-                      <table id="conference-pin-table"><tbody></tbody></table>
+                      <table id="conference-pin-table">
+                        <tbody>
+                          <tr class="placeholder"><td colspan="3">No PINs available</td></tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                   <div class="panel">
                     <div class="panel-header"><div class="title">Recent History</div></div>
                     <div class="panel-content">
-                      <table id="conference-history-table"><tbody></tbody></table>
+                      <table id="conference-history-table">
+                        <tbody>
+                          <tr class="placeholder"><td colspan="2">No history records</td></tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                   <div class="panel">
                     <div class="panel-header"><div class="title">Recent Recordings</div></div>
                     <div class="panel-content">
-                      <table id="conference-recording-table"><tbody></tbody></table>
+                      <table id="conference-recording-table">
+                        <tbody>
+                          <tr class="placeholder"><td colspan="1">No recordings</td></tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -123,7 +139,9 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
               <div class="application-header"><div class="title">Voicemail (<span id="voicemail-new-count">0</span> New)</div></div>
               <div class="application-content">
                 <table id="voicemail-table">
-                  <tbody></tbody>
+                  <tbody>
+                    <tr class="placeholder"><td colspan="3">No voicemail</td></tr>
+                  </tbody>
                 </table>
               </div>
             </div><%
@@ -190,7 +208,9 @@ if(user != null && user.getIsAdministrator()) { %>
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                    <tr class="placeholder"><td colspan="2">No conferences</td></tr>
+                  </tbody>
                 </table>
               </div>
             </div><%
