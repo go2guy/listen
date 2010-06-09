@@ -1,7 +1,7 @@
 var currentConference;
 
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('conferencing', 'conferencing-application', 'menu-conferencing', 1, new Conference()));
+    LISTEN.registerApp(new LISTEN.Application('conferencing', 'conferencing-application', 'menu-conferencing', new Conference()));
 
     $('#scheduleConferenceDialog').dialog({
         autoOpen: false,

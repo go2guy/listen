@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var application = new SystemConfigurationApplication();
 
-    LISTEN.registerApp(new LISTEN.Application('sysconfig', 'sysconfig-application', 'menu-sysconfig', 4, application));
+    LISTEN.registerApp(new LISTEN.Application('sysconfig', 'sysconfig-application', 'menu-sysconfig', application));
 
     function SystemConfigurationApplication() {
         this.load = function() {

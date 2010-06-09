@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('conference-list', 'conference-list-application', 'menu-conference-list', 5, new ConferenceList()));
+    LISTEN.registerApp(new LISTEN.Application('conference-list', 'conference-list-application', 'menu-conference-list', new ConferenceList()));
 });
 
 function ConferenceList() {

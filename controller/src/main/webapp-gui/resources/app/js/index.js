@@ -1,3 +1,4 @@
+var enableLogging = true;
 var LISTEN;
 $(document).ready(function() {
     $.ajaxSetup({
@@ -15,11 +16,10 @@ $(document).ready(function() {
 
         var pub = {
 
-            Application: function(name, windowId, menuId, position, content) {
+            Application: function(name, windowId, menuId, content) {
                 this.name = name;
                 var windowId = windowId;
                 var menuId = menuId;
-                var position = position;
                 this.content = content;
 
                 var windowDiv = $('#' + windowId);
@@ -40,15 +40,11 @@ $(document).ready(function() {
                     menuItem.addClass('current');
                 };
 
-                this.getPosition = function() {
-                    return position;
-                };
-
                 this.swapWith = function(other, withContent) {
                     if(this === other) {
                         return;
                     }
-                    this.hide(position < other.getPosition() ? 'left' : 'right', function() {
+                    this.hide(function() {
                         if(this.content) {
                             this.content.unload();
                         }
@@ -56,11 +52,11 @@ $(document).ready(function() {
                             this.content = withContent;
                             this.content.load();
                         }
-                        other.show(position < other.getPosition() ? 'right' : 'left');
+                        other.show();
                     });
                 };
 
-                this.hide = function(direction, callback) {
+                this.hide = function(callback) {
                     if(callback) {
                         windowDiv.hide(0, function() {
                             callback.call();
@@ -70,7 +66,7 @@ $(document).ready(function() {
                     }
                 };
 
-                this.show = function(direction) {
+                this.show = function() {
                     if(this.content) {
                         this.content.load();
                     }
@@ -222,6 +218,12 @@ $(document).ready(function() {
                     setTimeout(function() {
                         $('#notification').slideUp(200);
                     }, 3000);
+                }
+            },
+
+            log: function(message) {
+                if(console && enableLogging) {
+                    console.log(message);
                 }
             }
         };

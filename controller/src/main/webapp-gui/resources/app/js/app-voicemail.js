@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('voicemail', 'voicemail-application', 'menu-voicemail', 2, new Voicemail()));
+    LISTEN.registerApp(new LISTEN.Application('voicemail', 'voicemail-application', 'menu-voicemail', new Voicemail()));
 });
 
 function Voicemail() {
