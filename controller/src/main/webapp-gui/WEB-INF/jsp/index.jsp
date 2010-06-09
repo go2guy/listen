@@ -266,13 +266,13 @@ if(License.isLicensed(ListenFeature.CONFERENCING)
           <div class="menu">
             <ul><%
     if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
-              <li id="menu-conferencing"><a href="#">Conferencing</a></li><%
+              <li id="menu-conferencing">Conferencing</li><%
     }
     if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-              <li id="menu-voicemail"><a href="#">Voicemail</a></li><%
+              <li id="menu-voicemail">Voicemail</li><%
     }
     if(License.isLicensed(ListenFeature.FINDME)) { %>
-              <li id="menu-findme"><a href="#">FindMe</a></li><%
+              <li id="menu-findme">FindMe</li><%
     } %>
             </ul>
           </div><%
@@ -282,9 +282,9 @@ if(user != null && user.getIsAdministrator()) { %>
           <hr style="width: 75%;"/>
           <div class="menu">
             <ul>
-              <li id="menu-sysconfig"><a href="#">Configuration</a></li>
-              <li id="menu-conference-list"><a href="#">Conferences</a></li>
-              <li id="menu-users"><a href="#">Users</a></li>
+              <li id="menu-sysconfig">Configuration</li>
+              <li id="menu-conference-list">Conferences</li>
+              <li id="menu-users">Users</li>
             </ul>
           </div><%
 } %>

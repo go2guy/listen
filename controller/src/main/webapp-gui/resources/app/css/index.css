@@ -119,54 +119,51 @@ table td, table th {
 }
 
 .menu ul li {
-    cursor: hand;
+    border: 1px solid #24629B;
+    background-color: #84B4E2;
+    color: #24629B;
+    cursor: pointer;
     display: block;
-    padding: .25em;
-    border: 1px solid #AAAAAA;
-    background-color: #DDDDDD;
-    margin-bottom: .25em;
-}
-
-.menu ul li.current {
-    background-color: #FFFFFF;
-    color: #FFFFFF;
-    cursor: default;
     font-weight: bold;
+    margin-bottom: .25em;
+    padding: .25em;
 }
 
-.menu ul li a {
-    text-decoration: none;
-}
-
-.menu ul li.current a, .menu ul li.current a:hover {
-    color: #000000;
+.menu ul li:hover, .menu ul li.current, .menu ul li.current:hover {
+    background-color: #FFFFFF;
+/*    color: #000000;*/
     cursor: default;
+/*    font-weight: bold;*/
+}
+
+.menu ul li:hover {
+    cursor: pointer;
 }
 
 /* application area */
 
 .application {
-    border: 2px solid #AAAAAA;
-/*    border-radius: 4px;*/
+    border: 2px solid #84B4E2;
+    border-radius: 4px;
     display: none;
     margin: 0;
-/*    -moz-border-radius: 4px;*/
+    -moz-border-radius: 4px;
     padding: 0;
-/*    -webkit-border-radius: 4px;*/
+    -webkit-border-radius: 4px;
     width: 99%;
 }
 
 .application-header {
-    background-color: #DDDDDD;
-/*    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;*/
-    color: #AAAAAA;
+    background: #24629B url('../images/new/header_gradient_blue_30x10.png') repeat-x bottom left;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    color: #FFFFFF;
     font-weight: bold;
-/*    -moz-border-radius-topleft: 4px;
-    -moz-border-radius-topright: 4px;*/
+    -moz-border-radius-topleft: 2px;
+    -moz-border-radius-topright: 2px;
     overflow: auto;
-/*    -webkit-border-top-left-radius: 4px;
-    -webkit-border-top-right-radius: 4px;*/
+    -webkit-border-top-left-radius: 2px;
+    -webkit-border-top-right-radius: 2px;
 }
 
 .application-header .title {
@@ -222,7 +219,7 @@ table td, table th {
 }
 
 /* application - conferencing */
-
+/*
 #conferencing-application {
     border-color: #DAE4EE;
 }
@@ -231,7 +228,7 @@ table td, table th {
     background-color: #DAE4EE;
     color: #1C55A7;
 }
-
+*/
 #conference-caller-table td {
     background-color: #E8EEF4;
     border-color: #FFFFFF;/*#1C55A7;*/
@@ -282,8 +279,18 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 }
 
 #voicemail-application .application-header {
+    background: #E8BB2B url('../images/new/header_gradient_orange_30x10.png') repeat-x bottom left;
+    color: #000000;
+}
+
+#menu-voicemail {
     background-color: #FFE472;
-    color: #D3AB00;
+    border-color: #E8BB2B;
+    color: #E8BB2B;
+}
+
+#menu-voicemail.current, #menu-voicemail:hover {
+    background-color: #FFFFFF;
 }
 
 #voicemail-table td {
