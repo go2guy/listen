@@ -14,9 +14,6 @@
             <log>INFO: Current value [<value expr="id"/>]</log>
 <assign name="id" expr="params+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
-<log>INFO: Current value [<value expr="FILE1"/>]</log>
-<assign name="FILE1" expr="FILE1+'.00.wav'" />
-<log>INFO: Updated value [<value expr="FILE1"/>]</log>
 <log>INFO: Current value [<value expr="request"/>]</log>
 <assign name="request" expr="'delete'+''" />
 <log>INFO: Updated value [<value expr="request"/>]</log>

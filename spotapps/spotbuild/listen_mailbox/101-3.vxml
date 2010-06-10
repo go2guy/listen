@@ -12,7 +12,7 @@
             function II_SB_JS_function(subID)
             {
 	            var result;
-result = "?number="+subID;
+result = "?number="+subID+"&isNew=true";
 return result;
             }
         ]]>
@@ -20,7 +20,7 @@ return result;
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Parameter</log>
+            <log target="status">Set Parameter New</log>
             <log>INFO: Entered run-javascript.vxml [101-3]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(subID)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   

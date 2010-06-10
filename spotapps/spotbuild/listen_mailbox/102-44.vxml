@@ -9,16 +9,16 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">New vm Setup</log>
-            <log>INFO: Entered assign-variable.vxml [102-27]</log>
+	    <log target="status">Old vm Setup</log>
+            <log>INFO: Entered assign-variable.vxml [102-44]</log>
             <log>INFO: Current value [<value expr="count"/>]</log>
 <assign name="count" expr="'0'+''" />
 <log>INFO: Updated value [<value expr="count"/>]</log>
 <log>INFO: Current value [<value expr="returnVal"/>]</log>
-<assign name="returnVal" expr="newResult+''" />
+<assign name="returnVal" expr="oldResult+''" />
 <log>INFO: Updated value [<value expr="returnVal"/>]</log>
 <log>INFO: Current value [<value expr="numOfVoicemails"/>]</log>
-<assign name="numOfVoicemails" expr="newCount+''" />
+<assign name="numOfVoicemails" expr="oldCount+''" />
 <log>INFO: Updated value [<value expr="numOfVoicemails"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

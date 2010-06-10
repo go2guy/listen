@@ -6,7 +6,7 @@
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_mailbox'"/> <!--  PROJECT_NAME. Project directory -->
-    <var name="II_SB_NEXT_OPTION" expr="'56-66'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
+    <var name="II_SB_NEXT_OPTION" expr="'56-71'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
     <var name="II_SB_MAIN_VXML" expr="'main.vxml'"/>    <!-- MAIN_VXML. Contains the file name of the document to start once ccxml is loaded -->
     <var name="II_SB_BASE_DIR" expr="'/interact/apps/spotbuild/'"/>                 <!-- BASE_DIR. Base directory -->
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
@@ -53,7 +53,14 @@
 	<var name="SB_UV_result"/>
 	<var name="SB_UV_fileLocation"/>
 	<var name="SB_UV_menuOption"/>
-	<var name="SB_UV_passedValue"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_passValues"/>
+	<var name="SB_UV_vmPathPrefix"/>
+	<var name="SB_UV_newResult"/>
+	<var name="SB_UV_oldResult"/>
+	<var name="SB_UV_newCount"/>
+	<var name="SB_UV_oldCount"/>
+	<var name="SB_UV_vmPathOption"/>
 
 
     <!-- Global variables -->
@@ -101,12 +108,16 @@
             <assign name="II_SB_state" expr="'alerted'"/>
             <if cond="((II_SB_transfer == undefined) &amp;&amp; (II_SB_status == undefined))">
                 <assign name="II_SB_ibcallid" expr="II_SB_connectionID"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_subID SB_UV_nxtPath SB_UV_maxErr SB_UV_errCnt SB_UV_FILE1 SB_UV_FILE2 SB_UV_OPERATION SB_UV_recDIR SB_UV_status SB_UV_ANI SB_UV_userInput SB_UV_request SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_returnStr SB_UV_pin SB_UV_reason SB_UV_numOfVoicemails SB_UV_count SB_UV_voicemails SB_UV_result SB_UV_fileLocation SB_UV_menuOption SB_UV_passedValue"/> <!-- Start vxml dialog -->
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_subID SB_UV_nxtPath SB_UV_maxErr SB_UV_errCnt SB_UV_FILE1 SB_UV_FILE2 SB_UV_OPERATION SB_UV_recDIR SB_UV_status SB_UV_ANI SB_UV_userInput SB_UV_request SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_returnStr SB_UV_pin SB_UV_reason SB_UV_numOfVoicemails SB_UV_count SB_UV_voicemails SB_UV_result SB_UV_fileLocation SB_UV_menuOption SB_UV_hostName SB_UV_passValues SB_UV_vmPathPrefix SB_UV_newResult SB_UV_oldResult SB_UV_newCount SB_UV_oldCount SB_UV_vmPathOption"/> <!-- Start vxml dialog -->
             <else/>
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
         		    <log>INFO: Inbound connection id [<value expr="II_SB_ibcallid"/>]</log>
-                    <send data="'dialog.user.alerting'" target="II_SB_sessionID"/>
+                    <if cond="II_SB_ibcallid.length &gt; 0">
+                        <send data="'dialog.user.alerting'" target="II_SB_sessionID"/>
+                    <else/> <!-- Assume there's currently no connection id associated with this session -->
+                        <send data="'dialog.user.startMain'" target="II_SB_sessionID"/>
+                    </if>
                 <elseif cond="II_SB_status == 'createSession'"/>
                     <log>INFO: Going to [<value expr="II_SB_newNxtOpt"/>.vxml]</log>
                     <assign name="II_SB_NEXT_OPTION" expr="II_SB_newNxtOpt"/>
@@ -140,12 +151,12 @@
 
         <transition event="dialog.user.startMain" name="alertEV" cond="II_SB_ibcallid.length &gt; 0">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_subID SB_UV_nxtPath SB_UV_maxErr SB_UV_errCnt SB_UV_FILE1 SB_UV_FILE2 SB_UV_OPERATION SB_UV_recDIR SB_UV_status SB_UV_ANI SB_UV_userInput SB_UV_request SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_returnStr SB_UV_pin SB_UV_reason SB_UV_numOfVoicemails SB_UV_count SB_UV_voicemails SB_UV_result SB_UV_fileLocation SB_UV_menuOption SB_UV_passedValue"/> <!-- Start vxml dialog -->
+            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_subID SB_UV_nxtPath SB_UV_maxErr SB_UV_errCnt SB_UV_FILE1 SB_UV_FILE2 SB_UV_OPERATION SB_UV_recDIR SB_UV_status SB_UV_ANI SB_UV_userInput SB_UV_request SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_returnStr SB_UV_pin SB_UV_reason SB_UV_numOfVoicemails SB_UV_count SB_UV_voicemails SB_UV_result SB_UV_fileLocation SB_UV_menuOption SB_UV_hostName SB_UV_passValues SB_UV_vmPathPrefix SB_UV_newResult SB_UV_oldResult SB_UV_newCount SB_UV_oldCount SB_UV_vmPathOption"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.user.startMain" name="alertEV">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_subID SB_UV_nxtPath SB_UV_maxErr SB_UV_errCnt SB_UV_FILE1 SB_UV_FILE2 SB_UV_OPERATION SB_UV_recDIR SB_UV_status SB_UV_ANI SB_UV_userInput SB_UV_request SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_returnStr SB_UV_pin SB_UV_reason SB_UV_numOfVoicemails SB_UV_count SB_UV_voicemails SB_UV_result SB_UV_fileLocation SB_UV_menuOption SB_UV_passedValue"/> <!-- Start vxml dialog -->
+            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_subID SB_UV_nxtPath SB_UV_maxErr SB_UV_errCnt SB_UV_FILE1 SB_UV_FILE2 SB_UV_OPERATION SB_UV_recDIR SB_UV_status SB_UV_ANI SB_UV_userInput SB_UV_request SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_returnStr SB_UV_pin SB_UV_reason SB_UV_numOfVoicemails SB_UV_count SB_UV_voicemails SB_UV_result SB_UV_fileLocation SB_UV_menuOption SB_UV_hostName SB_UV_passValues SB_UV_vmPathPrefix SB_UV_newResult SB_UV_oldResult SB_UV_newCount SB_UV_oldCount SB_UV_vmPathOption"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->

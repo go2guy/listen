@@ -45,7 +45,14 @@
 	<var name="SB_UV_result"/>
 	<var name="SB_UV_fileLocation"/>
 	<var name="SB_UV_menuOption"/>
-	<var name="SB_UV_passedValue"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_passValues"/>
+	<var name="SB_UV_vmPathPrefix"/>
+	<var name="SB_UV_newResult"/>
+	<var name="SB_UV_oldResult"/>
+	<var name="SB_UV_newCount"/>
+	<var name="SB_UV_oldCount"/>
+	<var name="SB_UV_vmPathOption"/>
 
     
     <form id="beginDocument">
@@ -57,7 +64,7 @@
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="ANI" expr="II_SB_remote" />
-			<assign name="passedValue" expr="II_SB_importedValue" />
+			<assign name="passValues" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_subID != undefined">
 				<assign name="subID" expr="SB_UV_subID" />
@@ -137,8 +144,29 @@
 			<if cond="SB_UV_menuOption != undefined">
 				<assign name="menuOption" expr="SB_UV_menuOption" />
 			</if>
-			<if cond="SB_UV_passedValue != undefined">
-				<assign name="passedValue" expr="SB_UV_passedValue" />
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_passValues != undefined">
+				<assign name="passValues" expr="SB_UV_passValues" />
+			</if>
+			<if cond="SB_UV_vmPathPrefix != undefined">
+				<assign name="vmPathPrefix" expr="SB_UV_vmPathPrefix" />
+			</if>
+			<if cond="SB_UV_newResult != undefined">
+				<assign name="newResult" expr="SB_UV_newResult" />
+			</if>
+			<if cond="SB_UV_oldResult != undefined">
+				<assign name="oldResult" expr="SB_UV_oldResult" />
+			</if>
+			<if cond="SB_UV_newCount != undefined">
+				<assign name="newCount" expr="SB_UV_newCount" />
+			</if>
+			<if cond="SB_UV_oldCount != undefined">
+				<assign name="oldCount" expr="SB_UV_oldCount" />
+			</if>
+			<if cond="SB_UV_vmPathOption != undefined">
+				<assign name="vmPathOption" expr="SB_UV_vmPathOption" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

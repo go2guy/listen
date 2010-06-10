@@ -36,7 +36,7 @@
 	<var name="FILE1" expr="''" />
 	<var name="FILE2" expr="''" />
 	<var name="OPERATION" expr="''" />
-	<var name="recDIR" expr="'/interact/artifacts/listen/voicemail/greeting/'" />
+	<var name="recDIR" expr="'/var/www/html/listen/artifacts/voicemail/greeting/'" />
 	<var name="status" expr="''" />
 	<var name="ANI" expr="'remote'" />
 	<var name="userInput" expr="''" />
@@ -55,7 +55,14 @@
 	<var name="result" expr="''" />
 	<var name="fileLocation" expr="''" />
 	<var name="menuOption" expr="''" />
-	<var name="passedValue" expr="'importedValue'" />
+	<var name="hostName" expr="''" />
+	<var name="passValues" expr="'importedValue'" />
+	<var name="vmPathPrefix" expr="'/var/www/html'" />
+	<var name="newResult" expr="''" />
+	<var name="oldResult" expr="''" />
+	<var name="newCount" expr="''" />
+	<var name="oldCount" expr="''" />
+	<var name="vmPathOption" expr="''" />
 
 
     <!-- Conference Variables -->
