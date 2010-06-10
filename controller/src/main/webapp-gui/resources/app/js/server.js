@@ -1,4 +1,22 @@
 var SERVER = {
+    addUser: function(args) {
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/addUser',
+            data: args.properties,
+            success: function(data, textStatus, xhr) {
+                if(args.successCallback) {
+                    args.successCallback.call(this);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                if(args.errorCallback) {
+                    args.errorCallback.call(this, xhr.responseText);
+                }
+            }
+        });
+    },
+
     dropCaller: function(id) {
         $.ajax({
             type: 'POST',

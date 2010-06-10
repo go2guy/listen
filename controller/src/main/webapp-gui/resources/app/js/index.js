@@ -220,7 +220,19 @@ $(document).ready(function() {
                 }
             },
 
+            trace: function(message) {
+                if(LISTEN.enableLogging) {
+                    this.writeLog('TRACE: ' + message);
+                }
+            },
+
             log: function(message) {
+                if(LISTEN.enableLogging) {
+                    this.writeLog('LOG:   ' + message);
+                }
+            },
+
+            writeLog: function(message) {
                 if(LISTEN.enableLogging) {
                     try {
                         console.log(message);
@@ -237,12 +249,6 @@ $(document).ready(function() {
 
         return pub;
     }();
-
-    $('#main-menu-handle').click(function() {
-        $('#main-menu').animate({
-            height: 'toggle'
-        }, 500);
-    });
 });
 
 // TODO namespace

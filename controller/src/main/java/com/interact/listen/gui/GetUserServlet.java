@@ -2,6 +2,7 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
+import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
@@ -12,7 +13,6 @@ import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,7 +25,7 @@ import org.hibernate.Session;
 /**
  * Provides a GET implementation that retrieves a list of Users.
  */
-public class GetUserListServlet extends HttpServlet
+public class GetUserServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
@@ -43,36 +43,54 @@ public class GetUserListServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_GET_USER_LIST);
+        statSender.send(Stat.GUI_GET_USER);
 
         if(!user.getIsAdministrator())
         {
             throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
         }
 
+        if(request.getParameter("id") == null || request.getParameter("id").trim().equals(""))
+        {
+            throw new BadRequestServletException("Please provide an id");
+        }
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
         Criteria criteria = session.createCriteria(User.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        List<User> users = (List<User>)criteria.list();
+        User u = (User)session.get(User.class, Long.parseLong(request.getParameter("id")));
 
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 
-        StringBuilder json = new StringBuilder();
-        json.append("[");
-        for(User u : users)
-        {
-            json.append(GetUserServlet.marshalUserToJson(u, marshaller));
-            json.append(",");
-        }
-        if(users.size() > 0)
-        {
-            json.deleteCharAt(json.length() - 1); // last comma
-        }
-        json.append("]");
+        String content = marshalUserToJson(u, marshaller);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        OutputBufferFilter.append(request, json.toString(), marshaller.getContentType());
+        OutputBufferFilter.append(request, content, marshaller.getContentType());
+    }
+
+    public static String marshalUserToJson(User user, Marshaller marshaller)
+    {
+        StringBuilder json = new StringBuilder();
+
+        json.append("{");
+        json.append("\"id\":").append(user.getId()).append(",");
+
+        String username = marshaller.convert(String.class, user.getUsername());
+        json.append("\"username\":\"").append(username).append("\",");
+
+        String lastLogin = marshaller.convert(Date.class, user.getLastLogin());
+        json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
+
+        if(user.getSubscriber() != null)
+        {
+            json.append(",");
+            String number = marshaller.convert(String.class, user.getSubscriber().getNumber());
+            json.append("\"number\":\"").append(number).append("\"");
+        }
+
+        json.append("}");
+        return json.toString();
     }
 }

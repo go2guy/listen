@@ -349,9 +349,13 @@ td.voicemail-cell-readStatus {
     border-width: 0;
 }
 
+#user-form-edit-button, #user-form-cancel-button {
+    display: none;
+}
+
 /* buttons */
 
-.add-button, .cancel-button, .delete-button, .mark-read-button, .mark-unread-button, .mute-button, .outdial-button, .record-button, .save-button, .schedule-button, .stop-button, .unmute-button, .unmute-button-disabled, .view-button {
+.add-button, .cancel-button, .delete-button, .edit-button, .mark-read-button, .mark-unread-button, .mute-button, .outdial-button, .record-button, .save-button, .schedule-button, .stop-button, .unmute-button, .unmute-button-disabled, .view-button {
     background-color: #EEEEEE;
     background-position: 2px 2px;
     background-repeat: no-repeat;
@@ -372,7 +376,7 @@ td.voicemail-cell-readStatus {
     width: 24px;
 }
 
-.add-button:hover, .cancel-button:hover, .delete-button:hover, .mark-read-button, .mark-unread-button, .mute-button:hover, .outdial-button:hover, .record-button:hover, .save-button:hover, .schedule-button:hover, .stop-button:hover, .unmute-button:hover, .view-button:hover {
+.add-button:hover, .cancel-button:hover, .delete-button:hover, .edit-button:hover, .mark-read-button:hover, .mark-unread-button:hover, .mute-button:hover, .outdial-button:hover, .record-button:hover, .save-button:hover, .schedule-button:hover, .stop-button:hover, .unmute-button:hover, .view-button:hover {
     background-color: #FFFFFF;
 }
 
@@ -398,6 +402,14 @@ td.voicemail-cell-readStatus {
 
 .delete-button:hover {
     background-image: url('../images/new/icon_delete_hover_16x16.png');
+}
+
+.edit-button {
+    background-image: url('../images/new/icon_add_16x16.png');
+}
+
+.edit-button:hover {
+    background-image: url('../images/new/icon_add_hover_16x16.png');
 }
 
 .mark-read-button {
@@ -528,7 +540,6 @@ td.voicemail-cell-readStatus {
     background-color: #CC0000;
     color: #FFFFFF;
     display: none;
-    padding: .25em;
     text-align: center;
     width: 100%;
 }

@@ -226,8 +226,9 @@ if(user != null && user.getIsAdministrator()) { %>
                       <thead>
                         <tr>
                           <th>Username</th>
-                          <th>Subscriber #</th>
+                          <th>Number</th>
                           <th>Last Login</th>
+                          <th></th>
                         </tr>
                       </thead>
                       <tbody></tbody>
@@ -237,15 +238,24 @@ if(user != null && user.getIsAdministrator()) { %>
                 <div class="right">
                   <div class="panel">
                     <div class="panel-header"><div class="title">User Info</div></div>
-                    <form id="user-form">
+                    <form id="user-form" onsubmit="return false;">
+                      <div class="form-error-message"></div>
                       <fieldset>
+                        <input type="hidden" id="user-form-id" name="user-form-id"/>
                         <table>
                           <tbody>
                             <tr><td><label for="user-form-username">Username</label></td><td><input type="text" id="user-form-username" name="user-form-username"/></td></tr>
                             <tr><td><label for="user-form-password">Password</label></td><td><input type="password" id="user-form-password" name="user-form-password"/></td></tr>
-                            <tr><td><label for="user-form-passwordConfirm">Confirm Password</label></td><td><input type="password" id="user-form-passwordConfirm" name="user-form-passwordConfirm"/></td></tr>
-                            <tr><td><label for="user-form-subscriber">Subscriber</label></td><td><input type="text" id="user-form-subscriber" name="user-form-subscriber"/></td></tr>
-                            <tr><td></td><td class="buttons"><button type="submit" class="save-button" title="Save">Save</button><button class="cancel-button">Cancel</button></td></tr>
+                            <tr><td><label for="user-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="user-form-confirmPassword" name="user-form-confirmPassword"/></td></tr>
+                            <tr><td><label for="user-form-number">Number</label></td><td><input type="text" id="user-form-number" name="user-form-number"/></td></tr>
+                            <tr>
+                              <td></td>
+                              <td class="buttons">
+                                <button class="save-button" id="user-form-add-button" name="user-form-add-button" title="Add" onclick="LISTEN.USERS.addUser();return false;">Add</button>
+                                <button class="edit-button" id="user-form-edit-button" name="user-form-edit-button" title="Edit" onclick="LISTEN.USERS.editUser();return false;">Edit</button>
+                                <button class="cancel-button" id="user-form-cancel-button" name="user-form-cancel-button" title="Cancel Edit" onclick="LISTEN.USERS.resetForm();return false;">Cancel Edit</button>
+                              </td>
+                            </tr>
                           </tbody>
                         </table>
                       </fieldset>
@@ -327,8 +337,9 @@ if(user != null && user.getIsAdministrator()) { %>
 
         <tr id="user-row-template">
           <td class="user-cell-username"></td>
-          <td class="user-cell-subscriber"></td>
+          <td class="user-cell-number"></td>
           <td class="user-cell-lastLogin"></td>
+          <td class="user-cell-editButton"></td>
         </tr>
 
         <tr id="voicemail-row-template">
@@ -338,39 +349,8 @@ if(user != null && user.getIsAdministrator()) { %>
           <td class="voicemail-cell-download"></td>
         </tr>
       </tbody></table>
-    </div><%
+    </div>
 
-if(user != null && user.getIsAdministrator()) { %>
-    <div id="provisionAccountDialog" class="dialog">
-      <div class="form-error-message"></div>
-      <form id="provisionAccountForm" name="provisionAccountForm" method="POST" action="/ajax/provisionAccount">
-        <table>
-          <caption>Creates a new subscriber, user, and conference</caption>
-          <tbody>
-            <tr>
-              <th><label for="number">Subscriber Number</label></th>
-              <td><input type="text" id="provisionAccountNumber" name="provisionAccountNumber"/></td>
-            </tr>
-            <tr>
-              <th><label for="provisionAccountUsername">Username</label></th>
-              <td><input type="text" id="provisionAccountUsername" name="provisionAccountUsername"/></td>
-            </tr>
-            <tr>
-              <th><label for="provisionAccountPassword">Password</label></th>
-              <td><input type="password" id="provisionAccountPassword" name="provisionAccountPassword"/></td>
-            </tr>
-            <tr>
-              <th><label for="provisionAccountPasswordConfirm">Confirm Password</label></th>
-              <td><input type="password" id="provisionAccountPasswordConfirm" name="provisionAccountPasswordConfirm"/></td>
-            </tr>
-            <tr>
-              <td colspan="2" class="buttons"><input type="submit" id="provisionAccountSubmit" name="provisionAccountSubmit" value="Create New Account"/></td>
-            </tr>
-          </tbody>
-        </table>
-      </form>
-    </div><%
-} %>
     <div id="scheduleConferenceDialog" class="dialog">
       <div class="form-error-message"></div>
       <form id="scheduleConferenceForm" name="scheduleConferenceForm" method="POST" action="/ajax/scheduleConference">
