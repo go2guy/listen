@@ -121,7 +121,7 @@ table td, table th {
 .menu ul li {
     border: 1px solid #8A8988;
     background-color: #FFFFFF;
-    color: #8A8988;
+    color: #666666;/*#8A8988;*/
     cursor: pointer;
     display: block;
     font-weight: bold;
@@ -229,7 +229,7 @@ table td, table th {
 
 #menu-conferencing {
     border-color: #379EDC;
-    color: #379EDC;
+    color: #666666;/*#379EDC;*/
 }
 
 #menu-conferencing.current, #menu-conferencing:hover {
@@ -292,7 +292,7 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 
 #menu-voicemail {
     border-color: #E8BB2B;
-    color: #E8BB2B;
+    color: #666666;/*#E8BB2B;*/
 }
 
 #menu-voicemail.current, #menu-voicemail:hover {
@@ -335,7 +335,7 @@ td.voicemail-cell-readStatus {
 
 #menu-findme {
     border-color: #D73B3B;
-    color: #D73B3B;
+    color: #666666;/*#D73B3B;*/
 }
 
 #menu-findme.current, #menu-findme:hover {
