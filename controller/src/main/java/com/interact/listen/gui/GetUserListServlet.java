@@ -4,6 +4,7 @@ import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
+import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.User;
 import com.interact.listen.stats.InsaStatSender;
@@ -56,6 +57,8 @@ public class GetUserListServlet extends HttpServlet
         List<User> users = (List<User>)criteria.list();
 
         Marshaller marshaller = new JsonMarshaller();
+        marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
+
         StringBuilder json = new StringBuilder();
         json.append("[");
         for(User u : users)

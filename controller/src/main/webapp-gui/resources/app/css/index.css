@@ -119,9 +119,9 @@ table td, table th {
 }
 
 .menu ul li {
-    border: 1px solid #24629B;
+    border: 1px solid #8A8988;
     background-color: #FFFFFF;
-    color: #24629B;
+    color: #8A8988;
     cursor: pointer;
     display: block;
     font-weight: bold;
@@ -130,10 +130,9 @@ table td, table th {
 }
 
 .menu ul li:hover, .menu ul li.current, .menu ul li.current:hover {
-    background-color: #24629B;
+    background-color: #8A8988;
     color: #FFFFFF;
     cursor: default;
-/*    font-weight: bold;*/
 }
 
 .menu ul li:hover {
@@ -143,7 +142,7 @@ table td, table th {
 /* application area */
 
 .application {
-    border: 2px solid #84B4E2;
+    border: 2px solid #AAAAAA;
     border-radius: 4px;
     display: none;
     margin: 0;
@@ -154,7 +153,7 @@ table td, table th {
 }
 
 .application-header {
-    background: #24629B url('../images/new/header_gradient_blue_30x10.png') repeat-x bottom left;
+    background: #8A8988 url('../images/new/header_gradient_gray_30x10.png') repeat-x bottom left;
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
     color: #FFFFFF;
@@ -219,16 +218,25 @@ table td, table th {
 }
 
 /* application - conferencing */
-/*
+
 #conferencing-application {
-    border-color: #DAE4EE;
+    border-color: #84B4E2;
 }
 
 #conferencing-application .application-header {
-    background-color: #DAE4EE;
-    color: #1C55A7;
+    background: #379EDC url('../images/new/header_gradient_lightblue_30x10.png') repeat-x bottom left;
 }
-*/
+
+#menu-conferencing {
+    border-color: #379EDC;
+    color: #379EDC;
+}
+
+#menu-conferencing.current, #menu-conferencing:hover {
+    background-color: #379EDC;
+    color: #FFFFFF;
+}
+
 #conference-caller-table td {
     background-color: #E8EEF4;
     border-color: #FFFFFF;/*#1C55A7;*/
@@ -280,7 +288,6 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 
 #voicemail-application .application-header {
     background: #E8BB2B url('../images/new/header_gradient_orange_30x10.png') repeat-x bottom left;
-    color: #000000;
 }
 
 #menu-voicemail {
@@ -316,7 +323,25 @@ td.voicemail-cell-readStatus {
     width: 26px;
 }
 
-/* application - system configuration */
+/* application - findme */
+
+#findme-application {
+    border-color: #DD0000;
+}
+
+#findme-application .application-header {
+    background: #D73B3B url('../images/new/header_gradient_red_30x10.png') repeat-x bottom left;
+}
+
+#menu-findme {
+    border-color: #D73B3B;
+    color: #D73B3B;
+}
+
+#menu-findme.current, #menu-findme:hover {
+    background-color: #D73B3B;
+    color: #FFFFFF;
+}
 
 /* application - users */
 
