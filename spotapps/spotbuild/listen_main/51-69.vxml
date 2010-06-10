@@ -10,7 +10,7 @@
     
     <form id="beginDocument">
         <block>
-	        <log target="status">Record</log>
+	        <log target="status">Record App</log>
             <log>INFO: Entered switch-application.vxml [51-69]</log>
 			<if cond="II_SB_nextOpt != ''">
 				<log>INFO: Switch application to [/interact/apps/spotbuild/<value expr="II_SB_nextOpt"/>/main.ccxml]</log>
