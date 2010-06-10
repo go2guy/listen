@@ -40,6 +40,5 @@
 	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/license-client-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/joda-time-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/humantime.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>
