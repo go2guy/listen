@@ -397,7 +397,7 @@ public class EditUserServletTest
     }
 
     @Test
-    public void test_doPost_withNullPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
+    public void test_doPost_withNullPasswordIfPasswordConfirmPresent_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -417,7 +417,7 @@ public class EditUserServletTest
         request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", (String)null);
-        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("confirmPassword", "password");
 
         try
         {
@@ -440,7 +440,7 @@ public class EditUserServletTest
     }
 
     //@Test
-    public void test_doPost_withBlankPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
+    public void test_doPost_withBlankPasswordAndConfirmPasswordPresent_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -460,7 +460,7 @@ public class EditUserServletTest
         request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", " ");
-        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("confirmPassword", "password");
 
         try
         {
@@ -483,7 +483,7 @@ public class EditUserServletTest
     }
 
     @Test
-    public void test_doPost_withNullConfirmPassword_throwsListenServletExceptionWithBadRequest()
+    public void test_doPost_withNullConfirmPasswordWhenPasswordPresent_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -526,7 +526,7 @@ public class EditUserServletTest
     }
 
     @Test
-    public void test_doPost_withBlankConfirmPassword_throwsListenServletExceptionWithBadRequest()
+    public void test_doPost_withBlankConfirmPasswordWhenPasswordPresent_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

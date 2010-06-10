@@ -1,8 +1,8 @@
 var SERVER = {
-    addUser: function(args) {
+    post: function(args) {
         $.ajax({
             type: 'POST',
-            url: '/ajax/addUser',
+            url: args.url,
             data: args.properties,
             success: function(data, textStatus, xhr) {
                 if(args.successCallback) {

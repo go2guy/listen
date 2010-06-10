@@ -83,7 +83,7 @@ $(document).ready(function() {
 
             resetForm: function() {
                 LISTEN.trace('LISTEN.USERS.resetForm');
-                LISTEN.USERS.clearErrors();
+                LISTEN.USERS.clearError();
                 $('#user-form')[0].reset();
                 $('#user-form-cancel-button').hide();
                 $('#user-form-edit-button').hide();
@@ -92,7 +92,8 @@ $(document).ready(function() {
 
             addUser: function() {
                 LISTEN.trace('LISTEN.USERS.addUser');
-                SERVER.addUser({
+                SERVER.post({
+                    url: '/ajax/addUser',
                     properties: {
                         username: $('#user-form-username').val(),
                         password: $('#user-form-password').val(),
@@ -103,25 +104,39 @@ $(document).ready(function() {
                         LISTEN.USERS.resetForm();
                     },
                     errorCallback: function(message) {
-                        var error = $('#user-form .form-error-message');
-                        error.text(message);
-                        error.slideDown(100);
+                        LISTEN.USERS.showError(message);
                     }
                 });
             },
 
             editUser: function() {
                 LISTEN.trace('LISTEN.USERS.editUser');
-                SERVER.editUser($('#user-form-id').val(),
-                                $('#user-form-username').val(),
-                                $('#user-form-password').val(),
-                                $('#user-form-confirmPassword').val(),
-                                $('#user-form-number').val());
+                SERVER.post({
+                    url: '/ajax/editUser',
+                    properties: {
+                        id: $('#user-form-id').val(),
+                        username: $('#user-form-username').val(),
+                        password: $('#user-form-password').val(),
+                        confirmPassword: $('#user-form-confirmPassword').val(),
+                        number: $('#user-form-number').val()
+                    },
+                    successCallback: function() {
+                        LISTEN.USERS.resetForm();
+                    },
+                    errorCallback: function(message) {
+                        LISTEN.USERS.showError(message);
+                    }
+                });
             },
 
-            clearErrors: function() {
-                LISTEN.trace('LISTEN.USERS.clearErrors');
+            clearError: function() {
+                LISTEN.trace('LISTEN.USERS.clearError');
                 $('#user-form .form-error-message').text('').hide();
+            },
+
+            showError: function(message) {
+                LISTEN.trace('LISTEN.USERS.showError');
+                $('#user-form .form-error-message').text(message).slideDown(100);
             }
         }
     }();

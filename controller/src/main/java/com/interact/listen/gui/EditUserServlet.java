@@ -50,11 +50,14 @@ public class EditUserServlet extends HttpServlet
         {
             throw new UnauthorizedServletException();
         }
-        
+
+        // require number if they're not an admin
         String number = request.getParameter("number");
-        if(number == null || number.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a Number");
+        if(!userToEdit.getIsAdministrator()) {
+            if(number == null || number.trim().equals(""))
+            {
+                throw new BadRequestServletException("Please provide a Number");
+            }
         }
 
         String username = request.getParameter("username");
@@ -64,36 +67,40 @@ public class EditUserServlet extends HttpServlet
         }
 
         String password = request.getParameter("password");
-        if(password == null || password.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a Password");
-        }
-
         String confirmPassword = request.getParameter("confirmPassword");
-        if(confirmPassword == null || confirmPassword.trim().equals(""))
+        if((password != null && !password.trim().equals("")) ||
+           (confirmPassword != null && !confirmPassword.trim().equals("")))
         {
-            throw new BadRequestServletException("Please provide a Confirm Password");
-        }
+            if(password == null || password.trim().equals(""))
+            {
+                throw new BadRequestServletException("Please provide a Password");
+            }
 
-        if(!password.equals(confirmPassword))
-        {
-            throw new BadRequestServletException("Password and Confirm Password do not match");
+            if(confirmPassword == null || confirmPassword.trim().equals(""))
+            {
+                throw new BadRequestServletException("Please provide a Confirm Password");
+            }
+
+            if(!password.equals(confirmPassword))
+            {
+                throw new BadRequestServletException("Password and Confirm Password do not match");
+            }
         }
 
         PersistenceService persistenceService = new PersistenceService(session);
 
         //Only admin can change the subscriber associated with a user
-        if(currentUser.getIsAdministrator())
+        if(currentUser.getIsAdministrator() && number != null)
         {
             Subscriber currentSubscriber = findSubscriberByNumber(number, session);
-            
+
             if(currentSubscriber == null)
             {
                 currentSubscriber = new Subscriber();
                 currentSubscriber.setNumber(number);
                 persistenceService.save(currentSubscriber);
             }
-            
+
             userToEdit.setSubscriber(currentSubscriber);
         }
         
