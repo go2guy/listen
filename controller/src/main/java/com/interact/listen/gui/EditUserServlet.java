@@ -85,6 +85,8 @@ public class EditUserServlet extends HttpServlet
             {
                 throw new BadRequestServletException("Password and Confirm Password do not match");
             }
+
+            userToEdit.setPassword(SecurityUtil.hashPassword(password));
         }
 
         PersistenceService persistenceService = new PersistenceService(session);
@@ -103,8 +105,7 @@ public class EditUserServlet extends HttpServlet
 
             userToEdit.setSubscriber(currentSubscriber);
         }
-        
-        userToEdit.setPassword(SecurityUtil.hashPassword(password));
+
         userToEdit.setUsername(username);
         persistenceService.save(userToEdit);
     }
