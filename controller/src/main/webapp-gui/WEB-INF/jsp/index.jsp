@@ -173,11 +173,6 @@ if(user != null && user.getIsAdministrator()) { %>
                   </fieldset>
                 </form>
 
-                <fieldset>
-                  <legend>Accounts</legend>
-                  <button id="create-new-account-button" class="add-button">Create New Account</button>
-                </fieldset>
-
                 <form id="mail-form">
                   <fieldset>
                     <legend>Mail</legend>
