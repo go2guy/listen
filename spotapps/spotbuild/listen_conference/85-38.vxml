@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_conference/root.vxml"> <!--  Set location of root document -->
-	<!-- Last Modified 05/20/2010
+	<!-- Last Modified 06/08/2010
 	   *   @Name   record-audio.vxml
 	   *   @Desc   Records an audio file -->
 

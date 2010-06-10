@@ -80,6 +80,8 @@
 	<var name="SB_UV_destAudioFile"/>
 	<var name="SB_UV_timeStamp"/>
 	<var name="SB_UV_rollcallPath"/>
+	<var name="SB_UV_isConfidUpdated"/>
+	<var name="SB_UV_isStarted"/>
 
     
     <form id="beginDocument">
@@ -279,6 +281,12 @@
 			</if>
 			<if cond="SB_UV_rollcallPath != undefined">
 				<assign name="rollcallPath" expr="SB_UV_rollcallPath" />
+			</if>
+			<if cond="SB_UV_isConfidUpdated != undefined">
+				<assign name="isConfidUpdated" expr="SB_UV_isConfidUpdated" />
+			</if>
+			<if cond="SB_UV_isStarted != undefined">
+				<assign name="isStarted" expr="SB_UV_isStarted" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

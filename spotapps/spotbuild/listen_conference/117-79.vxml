@@ -23,6 +23,12 @@
 <log>INFO: Current value [<value expr="id"/>]</log>
 <assign name="id" expr="confID+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
+<log>INFO: Current value [<value expr="isStarted"/>]</log>
+<assign name="isStarted" expr="'false'+''" />
+<log>INFO: Updated value [<value expr="isStarted"/>]</log>
+<log>INFO: Current value [<value expr="isRecording"/>]</log>
+<assign name="isRecording" expr="'false'+''" />
+<log>INFO: Updated value [<value expr="isRecording"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

@@ -9,7 +9,7 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(getInput,isAdmin,isAdminMuted)
+            function II_SB_JS_function(getInput,isAdmin,isAdminMuted,isRecording)
             {
 	            var opts = new String("3,4,5");
 if (getInput == '1')
@@ -17,7 +17,12 @@ return getInput;
 else if ((getInput == '2') && (isAdminMuted == 'false'))
 return getInput;
 else if ((isAdmin == 'true') &&  (opts.match(getInput)))
+{
+if ((getInput == '3') && (isRecording == "ERROR"))
+return "REJOIN";
+else
 return getInput;
+}
 else
 return "REJOIN";
             }
@@ -28,7 +33,7 @@ return "REJOIN";
         <block>
             <log target="status">Key Press</log>
             <log>INFO: Entered run-javascript.vxml [90-59]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput,isAdmin,isAdminMuted)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput,isAdmin,isAdminMuted,isRecording)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

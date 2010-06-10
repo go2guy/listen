@@ -9,9 +9,10 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(confID,isRecording)
+            function II_SB_JS_function(confID,isRecording,isStarted)
             {
-	            return "{\"href\": \"/conferences/"+confID+"\", \"id\":"+confID+", \"isRecording\":"+isRecording+", \"isStarted\": \"false\"}";
+	            var tmpVal = new String('null');
+return "{\"href\": \"/conferences/"+confID+"\", \"id\":"+confID+",\"arcadeId\":\""+tmpVal+"\", \"isRecording\":"+isRecording+", \"isStarted\": \""+isStarted+"\"}";
             }
         ]]>
     </script>
@@ -20,7 +21,7 @@
         <block>
             <log target="status">Set Params</log>
             <log>INFO: Entered run-javascript.vxml [117-28]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(confID,isRecording)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(confID,isRecording,isStarted)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

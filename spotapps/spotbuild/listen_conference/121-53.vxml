@@ -6,11 +6,11 @@
        *   @Desc   Calls the create session ccxml template -->
 
     <!-- Node Variables -->
-    <var name="II_SB_whichID" expr="CONF_ID"/>  <!-- Connection or conference ID used in new session -->
+    <var name="II_SB_whichID" expr="''"/>  <!-- Connection or conference ID used in new session -->
 
     <!-- Edge Variables -->
-    <var name="II_SB_oldNxtOpt" expr="'131-5'"/>       <!-- Next option for original session -->
-    <var name="II_SB_newNxtOpt" expr="'121-15'"/>        <!-- Next option for new session -->
+    <var name="II_SB_oldNxtOpt" expr="'121-68'"/>       <!-- Next option for original session -->
+    <var name="II_SB_newNxtOpt" expr="'121-66'"/>        <!-- Next option for new session -->
     <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
     <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
 
@@ -23,14 +23,13 @@
 
     <form id="beginDocument">
         <block>
-	        <log target="status">Start Record Session</log> 
+	        <log target="status">Start New Session</log> 
             <log>INFO: Entered create-session.vxml [121-53]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>
-                <exit namelist="recFile SID confID hostName recPartCnt cntrlURL"/>
+                <exit namelist="passValues"/>
             <elseif cond="II_SB_action == 'nextOpt'"/>
-    	    <assign name="recSID" expr="II_SB_newSID" />
-
+    	    
                 <log>INFO: Next option [<value expr="II_SB_whichOpt"/>.vxml]</log>
     		    <goto expr="'file:' + II_SB_APP_PATH + II_SB_whichOpt + '.vxml'"/>
             <else/>

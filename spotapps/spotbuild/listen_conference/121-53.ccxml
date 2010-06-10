@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
 
-    <!-- Last Modified 05/27/2010
+    <!-- Last Modified 06/08/2010
        *   @Name   create-session.ccxml
        *   @Desc   Creates a ccxml session -->
 
@@ -80,16 +80,11 @@
             and pass any identified variables along -->
             <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_indialog" expr="'false'"/>
-			<var name="SB_UV_recFile" expr="evt.values.recFile"/>
-			<var name="SB_UV_SID" expr="evt.values.SID"/>
-			<var name="SB_UV_confID" expr="evt.values.confID"/>
-			<var name="SB_UV_hostName" expr="evt.values.hostName"/>
-			<var name="SB_UV_recPartCnt" expr="evt.values.recPartCnt"/>
-			<var name="SB_UV_cntrlURL" expr="evt.values.cntrlURL"/>
+			<var name="SB_UV_passValues" expr="evt.values.passValues"/>
         
             <assign name="II_SB_state" expr="'createSession'"/>
 	        <assign name="II_SB_status" expr="'createSession'"/>
-    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_recFile SB_UV_SID SB_UV_confID SB_UV_hostName SB_UV_recPartCnt SB_UV_cntrlURL"/>
+    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_passValues"/>
 	    </transition>
 
 	    <transition state="createSession" event="ccxml.created" name="evt" cond="(II_SB_whichID == II_SB_obcallid) &amp;&amp; (II_SB_obcallid.length != 0)">
@@ -256,6 +251,26 @@
 					<assign name="II_SB_state" expr="'endCall'"/>
 					<send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
 				</if>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.basichttp" name="evt">
+            <!-- This transition is triggered when an external component sends an event to the ccxml session.
+            Here, we grab the data associated with the event and attempt to process it at the ccxml layer. NOTE:
+            the expected input items are II_SB_basichttpEvent, II_SB_URI and II_SB_argument. The URI should be
+            a relative file path to the first ccxml file of the project. So, /interact/apps/spotbuild/II_SB_URI will be
+            full path to the file. II_SB_argument is assumed to be a string delimited by question marks ('?')-->
+            <log>INFO: transition event [dialog.user.basichttp] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Event [<value expr="evt.II_SB_basichttpEvent"/>]</log>
+            <if cond="evt.II_SB_basichttpEvent == 'CREATESESSION'">
+                <log>INFO: uri [<value expr="evt.II_SB_URI"/>]</log>
+                <log>INFO: argument [<value expr="evt.II_SB_argument"/>]</log>
+                <var name="uri" expr="'file:' + II_SB_BASE_DIR + evt.II_SB_URI"/>
+                <assign name="II_SB_importedValue" expr="evt.II_SB_argument + '?' + II_SB_startedSID"/>
+                <log>INFO: Sending: [<value expr="uri + ' ' + II_SB_importedValue"/>]</log>
+                <send data="'httpCreateSession'" targettype="'basichttp'" target="'http://localhost/spot/ccxml/createsession'" namelist="uri II_SB_importedValue"/>
+            <else/>
+                <!-- Future events -->
             </if>
         </transition>
 

@@ -1,14 +1,9 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
 
-    <!-- Last Modified 05/17/2010 -->
-
-    <!--
-      /**
+    <!-- Last Modified 06/08/2010
        *   @Name   send-custom-event.ccxml
-       *   @desc   Send a Custom Event to a given session ID
-       */
-    -->
+       *   @desc   Send a Custom Event to a given session ID -->
 
     <!-- These variables are passed in from begin.ccxml -->
     <var name="II_SB_status"/>
@@ -142,6 +137,27 @@
         		<fetch next="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_NEXT_OPTION II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_CODE_DIR II_SB_BASE_DIR II_SB_ibcallid II_SB_passValues II_SB_projectSource II_SB_obcallid"/>
             </if>
         </transition>
+
+        <transition event="dialog.user.basichttp" name="evt">
+            <!-- This transition is triggered when an external component sends an event to the ccxml session.
+            Here, we grab the data associated with the event and attempt to process it at the ccxml layer. NOTE:
+            the expected input items are II_SB_basichttpEvent, II_SB_URI and II_SB_argument. The URI should be
+            a relative file path to the first ccxml file of the project. So, /interact/apps/spotbuild/II_SB_URI will be
+            full path to the file. II_SB_argument is assumed to be a string delimited by question marks ('?')-->
+            <log>INFO: transition event [dialog.user.basichttp] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Event [<value expr="evt.II_SB_basichttpEvent"/>]</log>
+            <if cond="evt.II_SB_basichttpEvent == 'CREATESESSION'">
+                <log>INFO: uri [<value expr="evt.II_SB_URI"/>]</log>
+                <log>INFO: argument [<value expr="evt.II_SB_argument"/>]</log>
+                <var name="uri" expr="'file:' + II_SB_BASE_DIR + evt.II_SB_URI"/>
+                <assign name="II_SB_importedValue" expr="evt.II_SB_argument"/>
+                <log>INFO: Sending: [<value expr="uri + ' ' + II_SB_importedValue"/>]</log>
+                <send data="'httpCreateSession'" targettype="'basichttp'" target="'http://localhost/spot/ccxml/createsession'" namelist="uri II_SB_importedValue"/>
+            <else/>
+                <!-- Future events -->
+            </if>
+        </transition>
+
 
         <!-- Custom Event Code -->
         <transition event="dialog.user.customEvent" name="evt">

@@ -9,19 +9,19 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(recPartCnt,confID,recPath,recFile,timeStamp)
+            function II_SB_JS_function(CONF_ID,confID,timeStamp,SID,hostName,cntrlURL)
             {
-	            return recPath+confID+"-"+timeStamp+"-Part"+recPartCnt+".wav";
+	            return getNextElement(0,cntrlURL,'/api') + "?" + hostName + "?RECORD?START_REC?" + confID + "?" + timeStamp + "?TUI?null?" + CONF_ID + "?" + SID;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set File Name</log>
+            <log target="status">Set passValues</log>
             <log>INFO: Entered run-javascript.vxml [121-7]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(recPartCnt,confID,recPath,recFile,timeStamp)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="recFile" expr="II_SB_userJava" />   
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(CONF_ID,confID,timeStamp,SID,hostName,cntrlURL)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
