@@ -120,7 +120,7 @@ table td, table th {
 
 .menu ul li {
     border: 1px solid #24629B;
-    background-color: #84B4E2;
+    background-color: #FFFFFF;
     color: #24629B;
     cursor: pointer;
     display: block;
@@ -130,8 +130,8 @@ table td, table th {
 }
 
 .menu ul li:hover, .menu ul li.current, .menu ul li.current:hover {
-    background-color: #FFFFFF;
-/*    color: #000000;*/
+    background-color: #24629B;
+    color: #FFFFFF;
     cursor: default;
 /*    font-weight: bold;*/
 }
@@ -284,13 +284,13 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 }
 
 #menu-voicemail {
-    background-color: #FFE472;
     border-color: #E8BB2B;
     color: #E8BB2B;
 }
 
 #menu-voicemail.current, #menu-voicemail:hover {
-    background-color: #FFFFFF;
+    background-color: #E8BB2B;
+    color: #FFFFFF;
 }
 
 #voicemail-table td {
