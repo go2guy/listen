@@ -84,6 +84,12 @@
         <servlet-class>com.interact.listen.gui.DropParticipantServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>EditUserServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.EditUserServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
@@ -229,6 +235,11 @@
     <servlet-mapping>
         <servlet-name>DropParticipantServlet</servlet-name>
         <url-pattern>/ajax/dropParticipant</url-pattern>    
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>EditUserServlet</servlet-name>
+        <url-pattern>/ajax/editUser</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>
