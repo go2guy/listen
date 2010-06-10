@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_record/root.vxml"> <!--  Set location of root document -->
-	<!-- Last Modified 05/20/2010
+	<!-- Last Modified 06/08/2010
 	   *   @Name   record-audio.vxml
 	   *   @Desc   Records an audio file -->
 
@@ -11,7 +11,7 @@
     <var name="II_SB_dtmfTerm" expr="''"/>  <!--  Allow dtfm key press to terminate recording -->
 
     <!-- Edge Variables -->
-    <var name="II_SB_errorNxtOpt" expr="'129-4'"/>       <!-- Next option when record is terminated by an error -->
+    <var name="II_SB_errorNxtOpt" expr="'127-34'"/>       <!-- Next option when record is terminated by an error -->
     <var name="II_SB_dtmfNxtOpt" expr="''"/>      <!-- Next option when record is terminated by dtmf -->
     <var name="II_SB_hangUpNxtOpt" expr="'128-7'"/>     <!-- Next option when record is terminated by hang up -->
     <var name="II_SB_maxTimeNxtOpt" expr="'128-7'"/>    <!-- Next option when record is terminated by max time -->

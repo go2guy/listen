@@ -11,19 +11,19 @@
     -->
 
     <var name="II_SB_valueToPass" expr="''"/>   <!-- Config: Name of file confrence creates -->
-    <var name="II_SB_eventToPass" expr="'STOP_RECORDING'"/>
-    <var name="II_SB_sessionID" expr="recSID"/>        <!-- Config: Session ID for the message to send -->
-    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'128-10'"/>
-    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'128-22'"/>
-    <var name="II_SB_nextOpt" expr="'128-5'"/>
+    <var name="II_SB_eventToPass" expr="'ERR_REC_START'"/>
+    <var name="II_SB_sessionID" expr="status"/>        <!-- Config: Session ID for the message to send -->
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'129-4'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'129-4'"/>
+    <var name="II_SB_nextOpt" expr="'127-33'"/>
 
     <var name="II_SB_returnValues" expr="''"/>
     <var name="II_SB_userEntry"/>
     
     <form id="beginDocument">
         <block>
-    	    <log target="status">Send Stop Event</log>
-            <log>INFO: Entered send-custom-event.vxml [128-5]</log>
+    	    <log target="status">Record Start Error</log>
+            <log>INFO: Entered send-custom-event.vxml [127-33]</log>
             <log>INFO: Entered beginDocument</log>
             <var name="II_SB_returnValues" expr="II_SB_sessionID + '|' + II_SB_eventToPass + '|' + II_SB_valueToPass + '|' + II_SB_NEXT_OPTION_SUCCESS + '|' + II_SB_NEXT_OPTION_FAILURE"/>
             <var name="II_SB_status" expr="'conferenceEnd'"/>

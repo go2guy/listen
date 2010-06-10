@@ -51,7 +51,7 @@
         <!-- Load CCXML file. Log status and update state -->
 		<transition state="idle" event="ccxml.loaded" name="loadEv">
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
-            <log>INFO: Entered send-custom-event with id 128-5</log>
+            <log>INFO: Entered send-custom-event with id 128-24</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <assign name="II_SB_state" expr="'loaded'"/>
             <log>INFO: passValues [<value expr="II_SB_passValues"/>]</log>
