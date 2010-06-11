@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Path New Only</log>
+	    <log target="status">Path Old</log>
             <log>INFO: Entered assign-variable.vxml [103-70]</log>
             <log>INFO: Current value [<value expr="vmPathOption"/>]</log>
 <assign name="vmPathOption" expr="'old'+''" />

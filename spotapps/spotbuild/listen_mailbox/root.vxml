@@ -63,6 +63,9 @@
 	<var name="newCount" expr="''" />
 	<var name="oldCount" expr="''" />
 	<var name="vmPathOption" expr="''" />
+	<var name="vmDateCreated" expr="''" />
+	<var name="date" expr="''" />
+	<var name="time" expr="''" />
 
 
     <!-- Conference Variables -->

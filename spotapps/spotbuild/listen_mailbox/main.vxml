@@ -53,6 +53,9 @@
 	<var name="SB_UV_newCount"/>
 	<var name="SB_UV_oldCount"/>
 	<var name="SB_UV_vmPathOption"/>
+	<var name="SB_UV_vmDateCreated"/>
+	<var name="SB_UV_date"/>
+	<var name="SB_UV_time"/>
 
     
     <form id="beginDocument">
@@ -167,6 +170,15 @@
 			</if>
 			<if cond="SB_UV_vmPathOption != undefined">
 				<assign name="vmPathOption" expr="SB_UV_vmPathOption" />
+			</if>
+			<if cond="SB_UV_vmDateCreated != undefined">
+				<assign name="vmDateCreated" expr="SB_UV_vmDateCreated" />
+			</if>
+			<if cond="SB_UV_date != undefined">
+				<assign name="date" expr="SB_UV_date" />
+			</if>
+			<if cond="SB_UV_time != undefined">
+				<assign name="time" expr="SB_UV_time" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
