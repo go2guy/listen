@@ -7,6 +7,7 @@ import com.interact.listen.resource.Resource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -26,7 +27,7 @@ public class SaxContentHandler extends DefaultHandler
     private String resourceElement;
     private boolean unmarshalId = false;
 
-    private String value;
+    private StringBuilder value = new StringBuilder();
     private Attributes attributes;
 
     public SaxContentHandler(XmlMarshaller marshaller, Resource resource, boolean unmarshalId)
@@ -45,7 +46,7 @@ public class SaxContentHandler extends DefaultHandler
     @Override
     public void startElement(String uri, String localName, String qName, Attributes theAttributes)
     {
-        this.value = null;
+        this.value = new StringBuilder();
         this.attributes = theAttributes;
 
         // resourceElement not loaded yet, assume this is the first element
@@ -68,13 +69,13 @@ public class SaxContentHandler extends DefaultHandler
     @Override
     public void characters(char[] ch, int start, int length)
     {
-        value = new String(ch, start, length);
+        value.append(new String(ch, start, length));
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException
     {
-        if(!qName.equals(resourceElement) && (value != null || attributes.getValue("href") != null))
+        if(!qName.equals(resourceElement) && (value.length() > 0 || attributes.getValue("href") != null))
         {
             if(!unmarshalId && qName.equals("id"))
             {
@@ -117,8 +118,10 @@ public class SaxContentHandler extends DefaultHandler
                                                  "], you should probably write one");
                     }
 
+                    LOG.debug("ROB: value in SAXContentHandler is [" + value + "]");
+                    
                     Converter converter = converterClass.newInstance();
-                    Object convertedValue = converter.unmarshal(value);
+                    Object convertedValue = converter.unmarshal(value.toString());
                     method.invoke(resource, convertedValue);
                 }
             }
