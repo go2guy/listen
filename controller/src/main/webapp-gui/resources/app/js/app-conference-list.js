@@ -12,8 +12,18 @@ function ConferenceList() {
             return data.results;
         },
         updateRowCallback: function(row, data) {
-            row.find('.conference-cell-description').text(data.description);
-            row.find('.conference-cell-status').text(data.isStarted ? 'Started' : 'Not Started');
+            var descriptionCell = row.find('.conference-cell-description');
+            if(descriptionCell.text() != data.description) {
+                descriptionCell.text(data.description);
+                this.highlight(descriptionCell);
+            }
+
+            var statusCell = row.find('.conference-cell-status');
+            var statusText = (data.isStarted ? 'Started' : 'Not Started');
+            if(statusCell.text() != statusText) {
+                statusCell.text(statusText);
+                this.highlight(statusCell);
+            }
 
             var viewHtml = '<button class="view-button" onclick="viewConference(' + data.id + ');">View</button>';
             var viewCell = row.find('.conference-cell-view');

@@ -14,16 +14,19 @@ $(document).ready(function() {
                         var usernameCell = row.find('.user-cell-username');
                         if(usernameCell.text() != data.username) {
                             usernameCell.text(data.username);
+                            this.highlight(usernameCell);
                         }
 
                         var numberCell = row.find('.user-cell-number');
                         if(numberCell.text() != data.number) {
                             numberCell.text(data.number);
+                            this.highlight(numberCell);
                         }
 
                         var lastLoginCell = row.find('.user-cell-lastLogin');
                         if(lastLoginCell.text() != data.lastLogin) {
                             lastLoginCell.text(data.lastLogin);
+                            this.highlight(lastLoginCell);
                         }
 
                         var editButtonCell = row.find('.user-cell-editButton');
@@ -92,6 +95,7 @@ $(document).ready(function() {
 
             addUser: function() {
                 LISTEN.trace('LISTEN.USERS.addUser');
+                LISTEN.USERS.disableButtons();
                 SERVER.post({
                     url: '/ajax/addUser',
                     properties: {
@@ -102,6 +106,8 @@ $(document).ready(function() {
                     },
                     successCallback: function() {
                         LISTEN.USERS.resetForm();
+                        LISTEN.notify('User added');
+                        LISTEN.USERS.enableButtons();
                     },
                     errorCallback: function(message) {
                         LISTEN.USERS.showError(message);
@@ -111,6 +117,7 @@ $(document).ready(function() {
 
             editUser: function() {
                 LISTEN.trace('LISTEN.USERS.editUser');
+                LISTEN.USERS.disableButtons();
                 SERVER.post({
                     url: '/ajax/editUser',
                     properties: {
@@ -122,6 +129,8 @@ $(document).ready(function() {
                     },
                     successCallback: function() {
                         LISTEN.USERS.resetForm();
+                        LISTEN.notify('User updated');
+                        LISTEN.USERS.enableButtons();
                     },
                     errorCallback: function(message) {
                         LISTEN.USERS.showError(message);
@@ -137,6 +146,16 @@ $(document).ready(function() {
             showError: function(message) {
                 LISTEN.trace('LISTEN.USERS.showError');
                 $('#user-form .form-error-message').text(message).slideDown(100);
+            },
+
+            disableButtons: function() {
+                LISTEN.trace('LISTEN.USERS.disableButtons');
+                $('#user-form button').attr('readonly', 'readonly');
+            },
+
+            enableButtons: function() {
+                LISTEN.trace('LISTEN.USERS.enableButtons');
+                $('#user-form button').removeAttr('readonly');
             }
         }
     }();

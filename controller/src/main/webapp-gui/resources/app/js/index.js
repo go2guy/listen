@@ -168,6 +168,15 @@ $(document).ready(function() {
                         $('#' + args.tableId).find('.placeholder').hide();
                     }
                 };
+
+                this.highlight = function(elem) {
+                    elem.css('background-color', '#FFFFBB');
+                    elem.animate({
+                        backgroundColor: '#FFFFFF'
+                    }, 2000, 'linear', function() {
+                        elem.css('background-color', 'inherit');
+                    });
+                };
             },
 
             getCurrentApplication: function() {
