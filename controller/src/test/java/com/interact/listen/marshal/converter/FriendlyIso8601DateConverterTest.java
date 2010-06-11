@@ -31,6 +31,12 @@ public class FriendlyIso8601DateConverterTest
     }
 
     @Test
+    public void test_marshal_withNullDate_returnsEmptyString()
+    {
+        assertEquals("", converter.marshal(null));
+    }
+
+    @Test
     public void test_unmarshal_withValidDateString_returnsDate() throws ConversionException
     {
         Date date = new Date();
@@ -38,7 +44,7 @@ public class FriendlyIso8601DateConverterTest
         c.setTime(date);
         c.set(Calendar.MILLISECOND, 0);
         date = new Date(c.getTimeInMillis());
-        
+
         final String toUnmarshal = new SimpleDateFormat(FriendlyIso8601DateConverter.ISO8601_FORMAT).format(date);
 
         assertEquals(date, converter.unmarshal(toUnmarshal));

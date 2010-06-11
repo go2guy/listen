@@ -44,6 +44,13 @@ public class UserTest
     }
 
     @Test
+    public void test_construct_setsLastLoginToNull()
+    {
+        user = new User();
+        assertNull(user.getLastLogin());
+    }
+
+    @Test
     public void test_setVersion_withValidVersion_setsVersion()
     {
         final Integer version = 1;

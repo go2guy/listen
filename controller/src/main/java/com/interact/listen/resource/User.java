@@ -35,7 +35,7 @@ public class User extends Resource implements Serializable
     private String password;
 
     @Column(name = "LAST_LOGIN")
-    private Date lastLogin = new Date();
+    private Date lastLogin;
 
     @Column(name = "IS_ADMINISTRATOR")
     private Boolean isAdministrator = Boolean.FALSE;

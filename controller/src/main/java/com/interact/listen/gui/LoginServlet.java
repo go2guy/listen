@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.resource.User;
 import com.interact.listen.security.SecurityUtil;
@@ -9,6 +10,7 @@ import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,6 +76,12 @@ public class LoginServlet extends HttpServlet
                 errors.put("username", "Sorry, those aren't valid credentials");
             }
 
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            PersistenceService persistenceService = new PersistenceService(session);
+            User original = user.copy(true);
+            user.setLastLogin(new Date());
+            persistenceService.update(user, original);
+            
             httpSession.setAttribute("user", user);
         }
 

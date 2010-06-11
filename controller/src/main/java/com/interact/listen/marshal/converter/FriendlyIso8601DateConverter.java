@@ -21,8 +21,8 @@ public class FriendlyIso8601DateConverter implements Converter
             SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
             return sdf.format(date);
         }
-        
-        return null;
+
+        return "";
     }
 
     @Override
