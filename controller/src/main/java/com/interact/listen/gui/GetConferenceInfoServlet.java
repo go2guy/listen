@@ -144,6 +144,7 @@ public class GetConferenceInfoServlet extends HttpServlet
             .addSearchProperty("conference", "/conferences/" + conference.getId())
             .addReturnField("dateCreated")
             .addReturnField("description")
+            .addReturnField("duration")
             .addReturnField("fileSize")
             .addReturnField("id")
             .sortBy("dateCreated", ResourceListService.SortOrder.ASCENDING)

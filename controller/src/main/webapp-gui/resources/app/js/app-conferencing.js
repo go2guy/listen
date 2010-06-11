@@ -182,10 +182,33 @@ function Conference(id) {
         },
         alternateRowColors: true,
         updateRowCallback: function(row, data) {
-            var description = data.dateCreated + ' - ' + '<a href="/ajax/getConferenceRecording?id=' + data.id + '">' + data.description + '</a>' + ' [' + data.fileSize + ']';
-            var descriptionCell = row.find('.recording-cell-description');
-            if(descriptionCell.html() != description) {
-                descriptionCell.html(description);
+            var dateCreatedCell = row.find('.recording-cell-dateCreated');
+            if(dateCreatedCell.text() != data.dateCreated) {
+                dateCreatedCell.text(data.dateCreated);
+                this.highlight(dateCreatedCell);
+            }
+
+            if(data.duration && data.duration != '') {
+                var durationCell = row.find('.recording-cell-duration');
+                var d = parseInt(data.duration);
+                var durationText = (d < 60 ? '0' : (Math.floor(d / 60))) + ":" + (d % 60 < 10 ? '0' : '') + (d % 60);
+                if(durationCell.text() != durationText) {
+                    durationCell.text(durationText);
+                    this.highlight(durationCell);
+                }
+            }
+
+            var fileSizeCell = row.find('.recording-cell-fileSize');
+            var fileSizeText = (Math.floor((parseInt(data.fileSize) / 1024) * 100) / 100) + "KB";
+            if(fileSizeCell.text() != fileSizeText) {
+                fileSizeCell.text(fileSizeText);
+                this.highlight(fileSizeCell);
+            }
+
+            var downloadCell = row.find('.recording-cell-download');
+            var downloadHtml = '<a href="/ajax/getConferenceRecording?id=' + data.id + '">Download</a>';
+            if(downloadCell.html() != downloadHtml) {
+                downloadCell.html(downloadHtml);
             }
         }
     });

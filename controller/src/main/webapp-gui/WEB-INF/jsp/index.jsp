@@ -123,9 +123,17 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                   <div class="panel">
                     <div class="panel-header"><div class="title">Recent Recordings</div></div>
                     <div class="panel-content">
-                      <table id="conference-recording-table">
+                      <table id="conference-recording-table" class="data-table">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Duration</th>
+                            <th>Size</th>
+                            <th></th>
+                          </tr>
+                        </thead>
                         <tbody>
-                          <tr class="placeholder"><td colspan="1">No recordings</td></tr>
+                          <tr class="placeholder"><td colspan="4">No recordings</td></tr>
                         </tbody>
                       </table>
                     </div>
@@ -323,7 +331,10 @@ if(user != null && user.getIsAdministrator()) { %>
         </tr>
 
         <tr id="recording-row-template">
-          <td class="recording-cell-description"></td>
+          <td class="recording-cell-dateCreated"></td>
+          <td class="recording-cell-duration"></td>
+          <td class="recording-cell-fileSize"></td>
+          <td class="recording-cell-download"></td>
         </tr>
 
         <tr id="conference-row-template">
