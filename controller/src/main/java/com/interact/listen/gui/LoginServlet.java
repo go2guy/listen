@@ -76,12 +76,15 @@ public class LoginServlet extends HttpServlet
                 errors.put("username", "Sorry, those aren't valid credentials");
             }
 
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            PersistenceService persistenceService = new PersistenceService(session);
-            User original = user.copy(true);
-            user.setLastLogin(new Date());
-            persistenceService.update(user, original);
-            
+            if(user != null)
+            {
+                Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+                PersistenceService persistenceService = new PersistenceService(session);
+                User original = user.copy(true);
+                user.setLastLogin(new Date());
+                persistenceService.update(user, original);
+            }
+
             httpSession.setAttribute("user", user);
         }
 
