@@ -119,7 +119,8 @@ public class GetConferenceInfoServlet extends HttpServlet
             .addSearchProperty("conference", "/conferences/" + conference.getId())
             .addReturnField("id")
             .addReturnField("number")
-            .addReturnField("type");
+            .addReturnField("type")
+            .sortBy("type", ResourceListService.SortOrder.ASCENDING);
         ResourceListService service = builder.build();
         return service.list();
     }
