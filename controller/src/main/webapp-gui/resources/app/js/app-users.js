@@ -106,7 +106,7 @@ $(document).ready(function() {
                     },
                     successCallback: function() {
                         LISTEN.USERS.resetForm();
-                        LISTEN.notify('User added');
+                        LISTEN.USERS.showSuccess('User added');
                         LISTEN.USERS.enableButtons();
                     },
                     errorCallback: function(message) {
@@ -129,7 +129,7 @@ $(document).ready(function() {
                     },
                     successCallback: function() {
                         LISTEN.USERS.resetForm();
-                        LISTEN.notify('User updated');
+                        LISTEN.USERS.showSuccess('User updated');
                         LISTEN.USERS.enableButtons();
                     },
                     errorCallback: function(message) {
@@ -146,6 +146,15 @@ $(document).ready(function() {
             showError: function(message) {
                 LISTEN.trace('LISTEN.USERS.showError');
                 $('#user-form .form-error-message').text(message).slideDown(100);
+            },
+
+            showSuccess: function(message) {
+                LISTEN.trace('LISTEN.USERS.showSuccess');
+                var elem = $('#user-form .form-success-message');
+                elem.text(message).slideDown(100);
+                setTimeout(function() {
+                    elem.slideUp(100);
+                }, 2000);
             },
 
             disableButtons: function() {

@@ -236,6 +236,7 @@ if(user != null && user.getIsAdministrator()) { %>
                     <div class="panel-header"><div class="title">User Info</div></div>
                     <form id="user-form" onsubmit="return false;">
                       <div class="form-error-message"></div>
+                      <div class="form-success-message"></div>
                       <fieldset>
                         <input type="hidden" id="user-form-id" name="user-form-id"/>
                         <table>
