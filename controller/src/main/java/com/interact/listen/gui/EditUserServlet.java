@@ -10,6 +10,8 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
@@ -107,6 +109,19 @@ public class EditUserServlet extends HttpServlet
         }
 
         userToEdit.setUsername(username);
+        
+        ArrayList<Conference> conferenceList = new ArrayList<Conference>(userToEdit.getConferences());
+        
+        if(conferenceList.size() > 0)
+        {
+            //Users only have one conference at this time, so just get the first entry for update
+            Conference conferenceToEdit = conferenceList.get(0);
+            Conference originalConference = conferenceToEdit.copy(true);
+            
+            conferenceToEdit.setDescription(userToEdit.getSubscriber().getNumber());
+            persistenceService.update(conferenceToEdit, originalConference);
+        }
+        
         persistenceService.save(userToEdit);
     }
     
