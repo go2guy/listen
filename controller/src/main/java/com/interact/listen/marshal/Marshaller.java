@@ -13,7 +13,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -80,6 +79,15 @@ public abstract class Marshaller
      * @return content type
      */
     public abstract String getContentType();
+
+    /**
+     * Escapes the provided value according to the marshaller's escaping needs. For example, a JSON marshaller might
+     * add backslashes before double-quotes if values are typically already enclosed in quotes.
+     * 
+     * @param value value to escape
+     * @return escaped value
+     */
+    public abstract String escape(String value);
 
     /**
      * Factory method for retrieving the correct {@code Marshaller} implementation for a given content type.
@@ -262,19 +270,21 @@ public abstract class Marshaller
 
     /**
      * Marshals the provided value with the {@link Converter} for the provided {@code class}. The {@code Converter} used
-     * is determined by the same means as {@link #getConverterClass(Class)}.
+     * is determined by the same means as {@link #getConverterClass(Class)}. Also escapes the value according to the
+     * implementation's {{@link #escape(String)} method.
      * 
      * @param forClass {@code class} to find {@code Converter} for to marshal value
      * @param value value to marshal
-     * @return marshalled value
+     * @return marshalled and escaped value
      */
-    public final String convert(Class<?> forClass, Object value)
+    public final String convertAndEscape(Class<?> forClass, Object value)
     {
         try
         {
             Class<? extends Converter> converterClass = getConverterClass(forClass);
             Converter converter = converterClass.newInstance();
-            return converter.marshal(value);
+            String marshalled = converter.marshal(value);
+            return escape(marshalled);
         }
         catch(IllegalAccessException e)
         {
@@ -284,11 +294,6 @@ public abstract class Marshaller
         {
             throw new AssertionError(e);
         }
-    }
-
-    public static final String escapeXml(String toEscape)
-    {
-        return StringEscapeUtils.escapeXml(toEscape);
     }
 
     public static final String encodeUrl(String toEncode)

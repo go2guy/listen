@@ -223,4 +223,24 @@ public class JsonMarshallerTest
     {
         assertEquals("application/json", marshaller.getContentType());
     }
+
+    @Test
+    public void test_escape_withQuoteInValue_escapesQuote()
+    {
+        final String value = "fo\"o";
+        assertEquals("fo\\\"o", marshaller.escape(value));
+    }
+
+    @Test
+    public void test_escape_withNullValue_returnsNull()
+    {
+        assertNull(marshaller.escape(null));
+    }
+
+    @Test
+    public void test_escape_withNonQuotedValue_returnsValue()
+    {
+        final String value = "foo";
+        assertEquals(value, marshaller.escape(value));
+    }
 }

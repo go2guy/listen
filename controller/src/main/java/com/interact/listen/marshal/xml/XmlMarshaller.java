@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -69,12 +70,12 @@ public class XmlMarshaller extends Marshaller
 
                 String collectionHref = buildSpecificHref(resourceTag + "s", resource.getId());
                 String href = buildListHref(associatedTag + "s", 0, 100, null, resourceTag + "=" + encodeUrl(collectionHref));
-                href = escapeXml(href);
+                href = escape(href);
                 xml.append("<").append(propertyTag).append(" href=\"").append(href).append("\"/>");
             }
             else
             {
-                String resultString = convert(returnType, result);
+                String resultString = convertAndEscape(returnType, result);
                 xml.append(marshalTag(propertyTag, resultString));
             }
         }
@@ -98,7 +99,7 @@ public class XmlMarshaller extends Marshaller
 
         String href = buildListHref(tag, list.getFirst(), list.getMax(), list.getFieldsForQuery(),
                                     list.getSearchPropertiesForQuery());
-        href = escapeXml(href);
+        href = escape(href);
         xml.append("<").append(tag).append(" href=\"").append(href).append("\"");
 
         int count = list.getList().size();
@@ -111,7 +112,7 @@ public class XmlMarshaller extends Marshaller
             {
                 String next = buildListHref(tag, list.getMax() + list.getFirst(), list.getMax(),
                                             list.getFieldsForQuery(), list.getSearchPropertiesForQuery());
-                next = escapeXml(next);
+                next = escape(next);
                 xml.append(" next=\"").append(next).append("\"");
             }
         }
@@ -130,7 +131,7 @@ public class XmlMarshaller extends Marshaller
             String classTag = getTagForClass(resource.getClass().getSimpleName());
 
             String itemHref = buildSpecificHref(classTag + "s", resource.getId());
-            itemHref = escapeXml(itemHref);
+            itemHref = escape(itemHref);
             xml.append("<").append(classTag).append(" href=\"").append(itemHref).append("\"");
 
             for(String field : list.getFields())
@@ -161,7 +162,7 @@ public class XmlMarshaller extends Marshaller
                     {
                         String associatedTag = getTagForClass(returnType.getSimpleName());
                         String resourceHref = buildSpecificHref(associatedTag + "s", ((Resource)result).getId());
-                        resourceHref = escapeXml(resourceHref);
+                        resourceHref = escape(resourceHref);
                         xml.append(resourceHref);
                     }
                 }
@@ -177,7 +178,7 @@ public class XmlMarshaller extends Marshaller
                 }
                 else
                 {
-                    String resultString = convert(returnType, result);
+                    String resultString = convertAndEscape(returnType, result);
                     xml.append(resultString);
                 }
 
@@ -207,7 +208,7 @@ public class XmlMarshaller extends Marshaller
         String classTag = getTagForClass(resource.getClass().getSimpleName());
 
         String href = buildSpecificHref(classTag + "s", resource.getId());
-        href = escapeXml(href);
+        href = escape(href);
 
         StringBuilder xml = new StringBuilder();
         xml.append("<").append(classTag).append(" ");
@@ -250,7 +251,7 @@ public class XmlMarshaller extends Marshaller
         else
         {
             xml.append("<").append(tagName).append(">");
-            xml.append(escapeXml(value.toString()));
+            xml.append(value.toString());
             xml.append("</").append(tagName).append(">");
         }
         return xml.toString();
@@ -290,5 +291,15 @@ public class XmlMarshaller extends Marshaller
     public String getContentType()
     {
         return "application/xml";
+    }
+
+    @Override
+    public String escape(String value)
+    {
+        if(value == null)
+        {
+            return null;
+        }
+        return StringEscapeUtils.escapeXml(value);
     }
 }

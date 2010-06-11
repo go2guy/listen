@@ -205,4 +205,38 @@ public class XmlMarshallerTest
     {
         assertEquals("application/xml", marshaller.getContentType());
     }
+
+    @Test
+    public void test_escape_withLeftAngleBracket_escapesLeftAngleBracket()
+    {
+        final String value = "fo<o";
+        assertEquals("fo&lt;o", marshaller.escape(value));
+    }
+
+    @Test
+    public void test_escape_withRightAngleBracket_escapesRightAngleBracket()
+    {
+        final String value = "fo>o";
+        assertEquals("fo&gt;o", marshaller.escape(value));
+    }
+
+    @Test
+    public void test_escape_withAmpersand_escapesAmpersand()
+    {
+        final String value = "fo&o";
+        assertEquals("fo&amp;o", marshaller.escape(value));
+    }
+
+    @Test
+    public void test_escape_withNullValue_returnsNull()
+    {
+        assertNull(marshaller.escape(null));
+    }
+
+    @Test
+    public void test_escape_withValueNotNeedingEscaping_returnsValue()
+    {
+        final String value = "foo";
+        assertEquals(value, marshaller.escape(value));
+    }
 }

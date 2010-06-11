@@ -77,16 +77,16 @@ public class GetUserServlet extends HttpServlet
         json.append("{");
         json.append("\"id\":").append(user.getId()).append(",");
 
-        String username = marshaller.convert(String.class, user.getUsername());
+        String username = marshaller.convertAndEscape(String.class, user.getUsername());
         json.append("\"username\":\"").append(username).append("\",");
 
-        String lastLogin = marshaller.convert(Date.class, user.getLastLogin());
+        String lastLogin = marshaller.convertAndEscape(Date.class, user.getLastLogin());
         json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
 
         if(user.getSubscriber() != null)
         {
             json.append(",");
-            String number = marshaller.convert(String.class, user.getSubscriber().getNumber());
+            String number = marshaller.convertAndEscape(String.class, user.getSubscriber().getNumber());
             json.append("\"number\":\"").append(number).append("\"");
         }
 

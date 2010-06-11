@@ -75,7 +75,7 @@ public class JsonMarshaller extends Marshaller
             }
             else
             {
-                String resultString = convert(returnType, result);
+                String resultString = convertAndEscape(returnType, result);
                 json.append(conditionallyQuote(resultString, returnType));
             }
 
@@ -169,7 +169,7 @@ public class JsonMarshaller extends Marshaller
                 }
                 else
                 {
-                    String resultString = convert(returnType, result);
+                    String resultString = convertAndEscape(returnType, result);
                     json.append(conditionallyQuote(resultString, returnType));
                 }
             }
@@ -287,6 +287,16 @@ public class JsonMarshaller extends Marshaller
     public String getContentType()
     {
         return "application/json";
+    }
+
+    @Override
+    public String escape(String value)
+    {
+        if(value == null)
+        {
+            return null;
+        }
+        return value.replaceAll("\"", "\\\\\"");
     }
 
     private String conditionallyQuote(String value, Class<?> clazz)
