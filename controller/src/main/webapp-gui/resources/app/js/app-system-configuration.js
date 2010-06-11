@@ -40,18 +40,14 @@ $(document).ready(function() {
     function addDnisRow(number, destination) {
         var n = (number ? number : '');
         var d = (destination ? destination : '');
-        var html = '<tr><td>Number</td><td><input type="text" value="' + n + '"/></td>';
-        html += '<td>maps to</td><td><select>';
-        html += '<option value="conferencing"' + (d == 'conferencing' ? ' selected="selected"' : '') + '>Conferencing</option>';
-        html += '<option value="mailbox"' + (d == 'mailbox' ? ' selected="selected"' : '') + '>Mailbox</option>';
-        html += '<option value="voicemail"' + (d == 'voicemail' ? ' selected="selected"' : '') + '>Voicemail</option>';
-        html += '</select></td>';
-        html += '<td><button class="delete-button" title="Remove this DNIS mapping"></button></td></tr>';
-        var node = $(html);
-        $('.delete-button', node).click(function() {
+
+        var clone = $('#dnis-row-template').clone();
+        $('input', clone).val(n);
+        $('select option[value=\'' + d + '\']', clone).attr('selected', 'selected');
+        $('.delete-button', clone).click(function() {
             $(this).parent().parent().remove();
         });
-        $('#dnis-mapping-form tbody tr:last').before(node);
+        $('#dnis-mapping-form tbody tr:last').before(clone);
     }
 
     $('#add-dnis-mapping').click(function() {
