@@ -167,4 +167,28 @@ public abstract class Audio extends Resource implements Serializable
         hash *= prime + (getUri() == null ? 0 : getUri().hashCode());
         return hash;
     }
+
+    /**
+     * Primitive method for detecting content type based on the URI extension. Open to future improvement.
+     * 
+     * @return audio MIME type based on uri extension; returns "audio/x-wav" if unable to determine type
+     */
+    public String detectContentType()
+    {
+        if(uri.indexOf(".") >= 0)
+        {
+            String extension = uri.substring(uri.lastIndexOf(".") + 1);
+            if(extension.equals("wav"))
+            {
+                return "audio/x-wav";
+            }
+
+            if(extension.equals("mp3"))
+            {
+                return "audio/mpeg";
+            }
+        }
+
+        return "audio/x-wav";
+    }
 }

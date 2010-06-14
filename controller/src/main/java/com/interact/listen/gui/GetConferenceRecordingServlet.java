@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
@@ -84,13 +85,15 @@ public class GetConferenceRecordingServlet extends HttpServlet
             // output
             OutputStream output = response.getOutputStream();
             response.setContentLength(Integer.parseInt(recording.getFileSize()));
-            response.setContentType("audio/x-wav");
+            response.setContentType(recording.detectContentType());
             response.setHeader("Content-disposition", "attachment; filename=" + getFileName(recording));
 
+            request.setAttribute(OutputBufferFilter.OUTPUT_SUPPRESS_KEY, Boolean.TRUE);
             IOUtils.copy(input, output);
         }
         catch(MalformedURLException e)
         {
+            request.setAttribute(OutputBufferFilter.OUTPUT_SUPPRESS_KEY, Boolean.FALSE);
             throw new ListenServletException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
         }
         finally
@@ -114,4 +117,5 @@ public class GetConferenceRecordingServlet extends HttpServlet
         String uri = recording.getUri();
         return uri.substring(uri.lastIndexOf("/") + 1);
     }
+
 }
