@@ -96,8 +96,64 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                         <button id="record-button" class="record-button">Record</button>
                       </div>
                       <div class="control-panel-button">
-                        <button id="schedule-button" class="schedule-button">Schedule</button>
+                        <button id="schedule-show" class="schedule-button">Schedule</button>
                       </div>
+                        <div id="scheduleConferenceDialog" class="inline-dialog">
+                          <div class="form-error-message"></div>
+                          <form id="scheduleConferenceForm">
+                            <table>
+                              <caption>This will send an email to the specified recipients with a date, time, phone number, and PIN.</caption>
+                              <tbody>
+                                <tr>
+                                  <th><label for="scheduleConferenceDate">Date &amp; Time</label></th>
+                                  <td>
+                                    <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/><br/>
+                                    <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour"><%
+for(int i = 1; i <= 12; i++) { %>
+                                      <option value="<%= i %>"><%= i %></option><%
+} %>
+                                    </select>
+                                    <select id="scheduleConferenceTimeMinute" name="scheduleConferenceTimeMinute">
+                                      <option value="00">00</option>
+                                      <option value="15">15</option>
+                                      <option value="30">30</option>
+                                      <option value="45">45</option>
+                                    </select>
+                                    <select id="scheduleConferenceTimeAmPm" name="scheduleConferenceTimeAmPm">
+                                      <option value="AM">AM</option>
+                                      <option value="PM">PM</option>
+                                    </select>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th><label for="scheduleConferenceSubject">Subject of email</label></th>
+                                  <td><input type="text" id="scheduleConferenceSubject" name="scheduleConferenceSubject"/></td>
+                                </tr>
+                                <tr>
+                                  <th><label for="scheduleConferenceDescription">Memo to include in email</label></th>
+                                  <td><textarea id="scheduleConferenceDescription" name="scheduleConferenceDescription"></textarea>
+                                </tr>
+                                <tr>
+                                  <td colspan="2">Enter the email addresses (comma-separated) for participants who should receive the appropriate PIN in the fields below.</td>
+                                </tr>
+                                <tr>
+                                  <th><label for="scheduleConferenceActiveParticipants">Active PIN</label></th>
+                                  <td><textarea id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"></textarea></td>
+                                </tr>
+                                <tr>
+                                  <th><label for="scheduleConferencePassiveParticipants">Passive PIN</label></th>
+                                  <td><textarea id="scheduleConferencePassiveParticipants" name="scheduleConferencePassiveParticipants"></textarea></td>
+                                </tr>
+                                <tr>
+                                  <td colspan="2" class="buttons">
+                                    <button class="cancel-button">Cancel</button>
+                                    <button class="schedule-button">Send Emails</button>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </form>
+                        </div><!-- schedule conference dialog -->
                     </div>
                   </div>
                   <div class="panel">
@@ -377,67 +433,5 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
       </tbody></table>
     </div>
 
-    <div id="scheduleConferenceDialog" class="dialog">
-      <div class="form-error-message"></div>
-      <form id="scheduleConferenceForm" name="scheduleConferenceForm" method="POST" action="/ajax/scheduleConference">
-        <table>
-          <caption>
-          This will send an email to the specified recipients with a date, time, phone number, and pin number.
-          </caption>
-          <tbody>
-            <tr>
-              <th><label for="scheduleConferenceDate">Date & Time</label></th>
-              <td>
-                <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/><br/>
-                <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                  <option value="11">11</option>
-                  <option value="12">12</option>
-                </select>
-                <select id="scheduleConferenceTimeMinute" name="scheduleConferenceTimeMinute">
-                  <option value="00">00</option>
-                  <option value="15">15</option>
-                  <option value="30">30</option>
-                  <option value="45">45</option>
-                </select>
-                <select id="scheduleConferenceTimeAmPm" name="scheduleConferenceTimeAmPm">
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <th><label for="scheduleConferenceSubject">Subject of email</label></th>
-              <td><textarea id="scheduleConferenceSubject" name="scheduleConferenceSubject"></textarea>
-            </tr>
-            <tr>
-            <tr>
-              <th><label for="scheduleConferenceActiveParticipants">Active caller email addresses (comma-separated):</label></th>
-              <td><textarea id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"></textarea></td>
-            </tr>
-            <tr>
-              <th><label for="scheduleConferencePassiveParticipants">Passive caller email addresses (comma-separated):</label></th>
-              <td><textarea id="scheduleConferencePassiveParticipants" name="scheduleConferencePassiveParticipants"></textarea></td>
-            </tr>
-            <tr>
-              <th><label for="scheduleConferenceDescription">Memo to include in email</label></th>
-              <td><textarea id="scheduleConferenceDescription" name="scheduleConferenceDescription"></textarea>
-            </tr>
-            <tr>
-              <td colspan="2" class="buttons"><input type="submit" id="scheduleConferenceSubmit" name="scheduleConferenceSubmit" value="Schedule Conference"/></td>
-            </tr>
-          </tbody>
-        </table>
-      </form>
-    </div>
   </body>
 </html>

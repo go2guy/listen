@@ -3,26 +3,26 @@ var currentConference;
 $(document).ready(function() {
     LISTEN.registerApp(new LISTEN.Application('conferencing', 'conferencing-application', 'menu-conferencing', new Conference()));
 
-    $('#scheduleConferenceDialog').dialog({
-        autoOpen: false,
-        draggable: false,
-        height: 600,
-        modal: true,
-        position: 'center',
-        resizable: false,
-        title: 'Schedule Conference',
-        width: 600
+    // schedule
+
+    $('#schedule-show').click(function(event) {
+        $('#scheduleConferenceDialog').slideDown(200);
     });
 
-    $('#scheduleConferenceForm').submit(function(event) {
+    $('#scheduleConferenceForm').submit(function(event) { return false; });
+
+    $('#scheduleConferenceDialog .cancel-button').click(function(event) {
+        $('#scheduleConferenceDialog').slideUp(200);
+        $('#scheduleConferenceDialog .form-error-message').hide().text('');
+    });
+
+    $('#scheduleConferenceDialog .schedule-button').click(function(event) {
         scheduleConference(event);
-        return false;
     });
 
-    $('#schedule-button').click(function(event) {
-        $('#scheduleConferenceDialog').dialog('open');
-    });
     $("#scheduleConferenceDate").datepicker();
+
+    // outdial
 
     $('#outdial-show').click(function() {
         $('#outdial-dialog').slideDown(200);
@@ -299,7 +299,7 @@ function scheduleConference(event) {
 
     $.ajax({
         type: 'POST',
-        url: event.target.action,
+        url: '/ajax/scheduleConference',
         data: { date: scheduleConferenceDate.val(),
                 hour: scheduleConferenceTimeHour.val(),
                 minute: scheduleConferenceTimeMinute.val(),
@@ -309,7 +309,7 @@ function scheduleConference(event) {
                 activeParticipants: scheduleConferenceActiveParticipants.val(),
                 passiveParticipants: scheduleConferencePassiveParticipants.val() },
         success: function(data) {
-            $('#scheduleConferenceDialog').dialog('close');
+            $('#scheduleConferenceDialog').slideUp(200);
             scheduleConferenceDate.val('');
             scheduleConferenceTimeHour.val('1');
             scheduleConferenceTimeMinute.val('00');

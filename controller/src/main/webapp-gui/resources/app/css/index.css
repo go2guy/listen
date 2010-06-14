@@ -502,37 +502,35 @@ td.voicemail-cell-readStatus {
     padding: 3px 0;
 }
 
-.dialog {
-    display: none;
-}
-
 .ui-widget-overlay {
     background: #5d5d5d;
     opacity: .5;
 }
 
-.dialog table {
+
+#scheduleConferenceDialog table {
     width: 100%;
 }
 
-.dialog table caption {
+#scheduleConferenceDialog table caption {
     font-style: italic;
 }
 
-.dialog table th {
+#scheduleConferenceDialog table th {
     width: 33%;
 }
 
-.dialog table td, .dialog table th {
+#scheduleConferenceDialog table td, #schedulConferenceDialog table th {
     padding: 10px 3px;
     text-align: left;
 }
 
-.dialog table td.buttons {
+#scheduleConferenceDialog table td.buttons {
     text-align: center;
 }
 
-.dialog table td textarea {
+#scheduleConferenceDialog textarea {
+    height: 4em;
     width: 100%;
 }
 
