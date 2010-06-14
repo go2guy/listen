@@ -66,7 +66,6 @@ hang-up - hang-up
 68-32 - data-query
 68-5 - data-query
 68-6 - decision
-102-55 - audio-input
 67-23 - audio-input
 60-50 - assign-variable
 103-65 - assign-variable
