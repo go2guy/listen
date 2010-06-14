@@ -21,8 +21,7 @@ User user = (User)session.getAttribute("user"); %>
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
     <script type="text/javascript" src="./resources/app/js/app-conferencing-min.js"></script><%
     if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/js/app-conference-list-min.js"></script>
-    <script type="text/javascript" src="./resources/app/js/app-users-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-conference-list-min.js"></script><%
     }
 }
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
@@ -32,7 +31,8 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
     <script type="text/javascript" src="./resources/app/js/app-findme-min.js"></script><%
 }
 if(user != null && user.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/js/app-system-configuration-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-system-configuration-min.js"></script>
+    <script type="text/javascript" src="./resources/app/js/app-users-min.js"></script><%
 } %>
   </head>
   <body>
@@ -353,8 +353,10 @@ if(user != null && user.getIsAdministrator()) { %>
           <hr style="width: 75%;"/>
           <div class="menu">
             <ul>
-              <li id="menu-sysconfig">Configuration</li>
-              <li id="menu-conference-list">Conferences</li>
+              <li id="menu-sysconfig">Configuration</li><%
+    if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
+              <li id="menu-conference-list">Conferences</li><%
+    } %>
               <li id="menu-users">Users</li>
             </ul>
           </div><%
