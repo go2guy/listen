@@ -12,7 +12,6 @@
     <link rel="stylesheet" type="text/css" href="./resources/app/css/all-min.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/css/login-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="./resources/app/js/login-min.js"></script>
   </head>
   <body>
     <div id="left">
@@ -59,5 +58,6 @@ if(errors.containsKey("password"))
         </form>
       </div>
     </div>
+    <script type="text/javascript">$('#username').focus();</script>
   </body>
 </html>
