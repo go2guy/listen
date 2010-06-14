@@ -7,7 +7,6 @@ import com.interact.listen.resource.Resource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
