@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml"> <!--  Set location of root document -->
-	<!-- Last Modified 05/20/2010
+	<!-- Last Modified 06/08/2010
 	   *   @Name   record-audio.vxml
 	   *   @Desc   Records an audio file -->
 
@@ -84,31 +84,6 @@
             </if>
 			<goto next="#exit"/>
 		</block>
-		<catch event="connection.disconnect.hangup">
-			<log>INFO: Got a hang up</log>
-			<if cond="((record_1 == undefined) &amp;&amp; (record_2 == undefined))">  <!-- User did not record a msg before hanging up -->
-    			<log>INFO: No recorded audio</log>
-			<else/>
-    			<log>INFO: Found recorded audio</log>
-                <if cond="II_SB_dtmfTerm == 'true'">
-        	        <assign name="II_SB_rec_duration" expr="record_1$.duration"/>
-			        <assign name="II_SB_rec_size" expr="record_1$.size"/>
-  			        <assign name="II_SB_rec_time" expr="record_1$.maxtime"/>
-                    <if cond="record_1$.termchar != undefined">
-    			        <assign name="II_SB_rec_termChar" expr="record_1$.termchar"/>
-                    </if>
-			        <assign name="II_SB_message" expr="record_1"/>
-                <else/>
-        	        <assign name="II_SB_rec_duration" expr="record_2$.duration"/>
-			        <assign name="II_SB_rec_size" expr="record_2$.size"/>
-  			        <assign name="II_SB_rec_time" expr="record_2$.maxtime"/>
-			        <assign name="II_SB_message" expr="record_2"/>
-                </if>
-			</if>
-   			<log>INFO: Taking hang up option</log>
-            <assign name="II_SB_nextOpt" expr="II_SB_hangUpNxtOpt"/>
-	        <goto next="#exit"/>
-		</catch>
         <error>
             <log>Error: [<value expr='_event'/>]</log>
    			<log>INFO: Taking error option</log>
@@ -123,7 +98,9 @@
 			<log>INFO: Size [<value expr="II_SB_rec_size"/>] bytes</log>
 			<log>INFO: Max time [<value expr="II_SB_rec_time"/>]</log>
 			<log>INFO: Term Key [<value expr="II_SB_rec_termChar"/>]</log>
-			
+			<assign name="duration" expr="II_SB_rec_duration" />
+<assign name="fileSize" expr="II_SB_rec_size" />
+
     		<if cond="II_SB_nextOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>
 	    		<goto expr="'file:' + II_SB_APP_PATH + II_SB_nextOpt + '.vxml'"/>
@@ -135,4 +112,30 @@
 			</if>
 		</block>
 	</form>
+
+	<catch event="connection.disconnect.hangup">
+		<log>INFO: Got a hang up</log>
+		<if cond="((record_1 == undefined) &amp;&amp; (record_2 == undefined))">  <!-- User did not record a msg before hanging up -->
+    		<log>INFO: No recorded audio</log>
+		<else/>
+    		<log>INFO: Found recorded audio</log>
+            <if cond="II_SB_dtmfTerm == 'true'">
+        	    <assign name="II_SB_rec_duration" expr="record_1$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_1$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_1$.maxtime"/>
+                <if cond="record_1$.termchar != undefined">
+    			    <assign name="II_SB_rec_termChar" expr="record_1$.termchar"/>
+                </if>
+			    <assign name="II_SB_message" expr="record_1"/>
+            <else/>
+        	    <assign name="II_SB_rec_duration" expr="record_2$.duration"/>
+			    <assign name="II_SB_rec_size" expr="record_2$.size"/>
+  			    <assign name="II_SB_rec_time" expr="record_2$.maxtime"/>
+			    <assign name="II_SB_message" expr="record_2"/>
+            </if>
+		</if>
+   		<log>INFO: Taking hang up option</log>
+        <assign name="II_SB_nextOpt" expr="II_SB_hangUpNxtOpt"/>
+	    <goto next="#exit"/>
+	</catch>
 </vxml>

@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'54-51'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'53-4'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(ANI,subID,fileLocation)
+            function II_SB_JS_function(passValues)
             {
-	            return fileLocation + getnum(ANI) + "-" + getTimeStamp(1) + "-" + subID + ".wav";
+	            return getNextElement(1,passValues,'?');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Filename</log>
-            <log>INFO: Entered run-javascript.vxml [54-31]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(ANI,subID,fileLocation)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="fileLocation" expr="II_SB_userJava" />   
+            <log target="status">Get HostName</log>
+            <log>INFO: Entered run-javascript.vxml [53-87]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="hostName" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

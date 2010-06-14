@@ -1,6 +1,6 @@
 <?xml version="1.0"?>                                    
 <vxml version="2.0">
-    <!-- Last Modified 03/22/2010
+    <!-- Last Modified 06/14/2010
        *   @Name   root.vxml
        *   @Desc   This file contains global variable declarations and initializations.
                    These variables are available to all files that reference this document -->
@@ -32,7 +32,7 @@
 	<var name="ANI" expr="'remote'" />
 	<var name="DNIS" expr="'local'" />
 	<var name="status" expr="''" />
-	<var name="fileLocation" expr="'/interact/artifacts/listen/voicemail/message/'" />
+	<var name="fileLocation" expr="'/var/www/html/listen/artifacts/voicemail/message/'" />
 	<var name="isNew" expr="'true'" />
 	<var name="subID" expr="''" />
 	<var name="returnVal" expr="''" />
@@ -45,7 +45,10 @@
 	<var name="cntrlURL" expr="''" />
 	<var name="audioURL" expr="''" />
 	<var name="index" expr="'0'" />
-	<var name="passedValue" expr="'importedValue'" />
+	<var name="hostName" expr="''" />
+	<var name="passValues" expr="'importedValue'" />
+	<var name="duration" expr="''" />
+	<var name="fileSize" expr="''" />
 
 
     <!-- Conference Variables -->

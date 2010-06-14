@@ -35,7 +35,10 @@
 	<var name="SB_UV_cntrlURL"/>
 	<var name="SB_UV_audioURL"/>
 	<var name="SB_UV_index"/>
-	<var name="SB_UV_passedValue"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_passValues"/>
+	<var name="SB_UV_duration"/>
+	<var name="SB_UV_fileSize"/>
 
     
     <form id="beginDocument">
@@ -48,7 +51,7 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
-			<assign name="passedValue" expr="II_SB_importedValue" />
+			<assign name="passValues" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_ANI != undefined">
 				<assign name="ANI" expr="SB_UV_ANI" />
@@ -98,8 +101,17 @@
 			<if cond="SB_UV_index != undefined">
 				<assign name="index" expr="SB_UV_index" />
 			</if>
-			<if cond="SB_UV_passedValue != undefined">
-				<assign name="passedValue" expr="SB_UV_passedValue" />
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_passValues != undefined">
+				<assign name="passValues" expr="SB_UV_passValues" />
+			</if>
+			<if cond="SB_UV_duration != undefined">
+				<assign name="duration" expr="SB_UV_duration" />
+			</if>
+			<if cond="SB_UV_fileSize != undefined">
+				<assign name="fileSize" expr="SB_UV_fileSize" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
