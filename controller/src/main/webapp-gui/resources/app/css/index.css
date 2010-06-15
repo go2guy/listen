@@ -515,6 +515,9 @@ td.voicemail-cell-readStatus {
     opacity: .5;
 }
 
+#scheduleConferenceDialog {
+    margin: 2em;
+}
 
 #scheduleConferenceDialog table {
     width: 100%;

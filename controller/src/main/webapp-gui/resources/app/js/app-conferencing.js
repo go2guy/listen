@@ -6,18 +6,25 @@ $(document).ready(function() {
     // schedule
 
     $('#schedule-show').click(function(event) {
-        $('#scheduleConferenceDialog').slideDown(200);
+        $.modal($('#scheduleConferenceDialog'), {
+            overlayCss: {
+                'background-color': '#CCCCCC',
+                'opacity': .5
+            }
+        });
     });
 
     $('#scheduleConferenceForm').submit(function(event) { return false; });
 
     $('#scheduleConferenceDialog .cancel-button').click(function(event) {
-        $('#scheduleConferenceDialog').slideUp(200);
+        $.modal.close();
         $('#scheduleConferenceDialog .form-error-message').hide().text('');
+        return false;
     });
 
     $('#scheduleConferenceDialog .schedule-button').click(function(event) {
         scheduleConference(event);
+        return false;
     });
 
     $("#scheduleConferenceDate").datepicker();
@@ -35,10 +42,12 @@ $(document).ready(function() {
         $('#outdial-dialog').slideUp(200);
         $('#outdial-dialog .form-error-message').hide();
         $('#outdial-dialog .form-error-message').text('');
+        return false;
     });
 
     $('#outdial-submit').click(function() {
         SERVER.outdial($('#outdial-number').val(), currentConference.getConferenceId()); // FIXME referencing a global here is gross
+        return false;
     });
 });
 
