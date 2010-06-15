@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_autoDial/root.vxml"> <!--  Set location of root document -->
+    <!-- Last Modified 10/21/2009
+       *   @Name   main.vxml
+       *   @Desc   Sets up call parameters -->
+
+    <!-- Passed in from CCXML -->
+    <var name="II_SB_local"/>
+    <var name="II_SB_remote"/>
+    <var name="II_SB_originator"/>
+    <var name="II_SB_protocol"/>
+    <var name="II_SB_connectionID"/>
+    <var name="II_SB_type"/>
+    <var name="II_SB_line"/>
+    <var name="II_SB_sessionID"/>
+    <var name="II_SB_CODE_DIR"/>
+    <var name="II_SB_NEXT_OPTION"/>
+    <var name="II_SB_transfer"/>
+    <var name="II_SB_projectSource"/>
+    <var name="II_SB_importedValue"/>
+	<var name="SB_UV_argList"/>
+	<var name="SB_UV_audioURL"/>
+	<var name="SB_UV_phoneNumber"/>
+	<var name="SB_UV_outBoundID"/>
+	<var name="SB_UV_confID"/>
+	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_userID"/>
+	<var name="SB_UV_maxErr"/>
+	<var name="SB_UV_errCnt"/>
+	<var name="SB_UV_getInput"/>
+	<var name="SB_UV_index"/>
+
+    
+    <form id="beginDocument">
+        <block>
+	        <log target="status">Begin Session</log>
+            <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
+            <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
+            <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
+            <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
+            <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="argList" expr="II_SB_importedValue" />
+
+			<if cond="SB_UV_argList != undefined">
+				<assign name="argList" expr="SB_UV_argList" />
+			</if>
+			<if cond="SB_UV_audioURL != undefined">
+				<assign name="audioURL" expr="SB_UV_audioURL" />
+			</if>
+			<if cond="SB_UV_phoneNumber != undefined">
+				<assign name="phoneNumber" expr="SB_UV_phoneNumber" />
+			</if>
+			<if cond="SB_UV_outBoundID != undefined">
+				<assign name="outBoundID" expr="SB_UV_outBoundID" />
+			</if>
+			<if cond="SB_UV_confID != undefined">
+				<assign name="confID" expr="SB_UV_confID" />
+			</if>
+			<if cond="SB_UV_cntrlURL != undefined">
+				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
+			</if>
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_userID != undefined">
+				<assign name="userID" expr="SB_UV_userID" />
+			</if>
+			<if cond="SB_UV_maxErr != undefined">
+				<assign name="maxErr" expr="SB_UV_maxErr" />
+			</if>
+			<if cond="SB_UV_errCnt != undefined">
+				<assign name="errCnt" expr="SB_UV_errCnt" />
+			</if>
+			<if cond="SB_UV_getInput != undefined">
+				<assign name="getInput" expr="SB_UV_getInput" />
+			</if>
+			<if cond="SB_UV_index != undefined">
+				<assign name="index" expr="SB_UV_index" />
+			</if>
+
+            <log>INFO: Completed global variable setup</log>
+			<if cond="II_SB_nextOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>
+				<goto expr="'file:'+II_SB_APP_PATH + II_SB_nextOpt +'.vxml'"/>
+			<else/> <!-- Exit to ccxml layer -->
+				<assign name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set. Exit to CCXML.</log>
+				<log>INFO: Exit Status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+        </block>
+    </form>
+</vxml>
