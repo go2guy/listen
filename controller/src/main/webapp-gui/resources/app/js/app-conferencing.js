@@ -199,7 +199,7 @@ function Conference(id) {
 
             if(data.duration && data.duration != '') {
                 var durationCell = row.find('.recording-cell-duration');
-                var d = parseInt(data.duration);
+                var d = Math.floor(parseInt(data.duration) / 1000);
                 var durationText = (d < 60 ? '0' : (Math.floor(d / 60))) + ":" + (d % 60 < 10 ? '0' : '') + (d % 60);
                 if(durationCell.text() != durationText) {
                     durationCell.text(durationText);
