@@ -66,6 +66,8 @@ public class OutdialServlet extends HttpServlet
             throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a number",
                                              "text/plain");
         }
+        
+        number = removeWhitespace(number);
 
         LOG.debug("Outdialing to [" + number + "] for conference id [" + conferenceId + "]");
 
@@ -93,7 +95,7 @@ public class OutdialServlet extends HttpServlet
             SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
             try
             {
-                spotSystem.outdial(number, adminSessionId);
+                spotSystem.outdial(number, adminSessionId, conference.getId(), conference.getUser().getSubscriber().getNumber());
             }
             catch(SpotCommunicationException e)
             {
@@ -140,5 +142,21 @@ public class OutdialServlet extends HttpServlet
         }
 
         return false;
+    }
+    
+    private String removeWhitespace(String theString)
+    {
+        char[] theChars = theString.toCharArray();
+        StringBuilder returnString = new StringBuilder();
+        
+        for(int i = 0; i < theChars.length; i++)
+        {
+            if(theChars[i] != ' ')
+            {
+                returnString.append(theChars[i]);
+            }
+        }
+        
+        return returnString.toString();
     }
 }

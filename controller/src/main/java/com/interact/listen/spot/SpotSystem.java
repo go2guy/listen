@@ -43,7 +43,7 @@ public class SpotSystem
 
     private enum SpotRequestEvent
     {
-        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), OUTDIAL("DIAL"), START_RECORDING("START_REC"), STOP_RECORDING("STOP_REC"),
+        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), OUTDIAL("AUTO_DIAL"), START_RECORDING("START_REC"), STOP_RECORDING("STOP_REC"),
         UNMUTE_PARTICIPANT("UNMUTE");
 
         private String eventName;
@@ -68,7 +68,7 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.DROP_PARTICIPANT.eventName);
         params.put("II_SB_valueToPass", "");
-        sendBasicHttpRequest(params);
+        sendBasicHttpRequest(params, "basichttp");
     }
 
     /**
@@ -85,7 +85,7 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.MUTE_PARTICIPANT.eventName);
         params.put("II_SB_valueToPass", "");
-        sendBasicHttpRequest(params);
+        sendBasicHttpRequest(params, "basichttp");
     }
 
     /**
@@ -93,19 +93,21 @@ public class SpotSystem
      * SPOT system to make a phone call to the provided number. The called party receives a recorded message asking them
      * to join the conference.
      * 
-     * @param number phone number to call
+     * @param numbers phone number to call
      * @param adminSessionId session id of the {@code Conference} administrator
      * @throws IOException if an HTTP error occurs
      * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
      */
-    public void outdial(String number, String adminSessionId) throws IOException, SpotCommunicationException
+    public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber) throws IOException, SpotCommunicationException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("sessionid", adminSessionId);
-        params.put("name", "dialog.user.customEvent");
-        params.put("II_SB_eventToPass", SpotRequestEvent.OUTDIAL.eventName);
-        params.put("II_SB_valueToPass", number);
-        sendBasicHttpRequest(params);
+        params.put("uri", "/interact/apps/iistart.ccxml");
+        params.put("II_SB_importedValue", "{\"application\":\"" + SpotRequestEvent.OUTDIAL.eventName +
+                                          "\",\"sessionid\":\"" + adminSessionId + "\",\"destination\":\"" + numbers +
+                                          "\",\"conferenceId\":\"" + String.valueOf(conferenceId) + "\",\"ani\":\"" +
+                                          requestingNumber + "\"}");
+        
+        sendBasicHttpRequest(params, "createsession");
     }
     
     /**
@@ -122,11 +124,16 @@ public class SpotSystem
         params.put("sessionid", adminSessionId);
         params.put("name", "dialog.user.basichttp");
         params.put("II_SB_basichttpEvent", "CREATESESSION");
-        params.put("II_SB_argument", "RECORD?" + SpotRequestEvent.START_RECORDING.eventName + "?" +
-                                     String.valueOf(conference.getId()) + "?" + sdf.format(conference.getStartTime()) +
-                                     "?GUI?null?" + conference.getArcadeId());
+        params.put("II_SB_argument", "{\"application\":\"RECORD\",\"action\":\"" +
+                                     SpotRequestEvent.START_RECORDING.eventName + "\",\"conferenceId\":\"" +
+                                     String.valueOf(conference.getId()) + "\",\"startTime\":\"" +
+                                     sdf.format(conference.getStartTime()) +
+                                     "\",\"interface\":\"GUI\",\"recordingSessionId\":\"" +
+                                     conference.getRecordingSessionId() + "\",\"arcadeId\":\"" +
+                                     conference.getArcadeId() + "\",\"adminSID\":\"" + adminSessionId + "\"}");
         params.put("II_SB_URI", "listen_main/listen_main.ccxml");
-        sendBasicHttpRequest(params);
+        
+        sendBasicHttpRequest(params, "basichttp");
     }
     
     /**
@@ -143,11 +150,16 @@ public class SpotSystem
         params.put("sessionid", adminSessionId);
         params.put("name", "dialog.user.basichttp");
         params.put("II_SB_basichttpEvent", "CREATESESSION");
-        params.put("II_SB_argument", "RECORD?" + SpotRequestEvent.STOP_RECORDING.eventName + "?" +
-                                     String.valueOf(conference.getId()) + "?" + sdf.format(conference.getStartTime()) +
-                                     "?GUI?" + conference.getRecordingSessionId() + "?" + conference.getArcadeId());
+        params.put("II_SB_argument", "{\"application\":\"RECORD\",\"action\":\"" +
+                   SpotRequestEvent.STOP_RECORDING.eventName + "\",\"conferenceId\":\"" +
+                   String.valueOf(conference.getId()) + "\",\"startTime\":\"" +
+                   sdf.format(conference.getStartTime()) +
+                   "\",\"interface\":\"GUI\",\"recordingSessionId\":\"" +
+                   conference.getRecordingSessionId() + "\",\"arcadeId\":\"" +
+                   conference.getArcadeId() + "\",\"adminSID\":\"" + adminSessionId + "\"}");
         params.put("II_SB_URI", "listen_main/listen_main.ccxml");
-        sendBasicHttpRequest(params);
+        
+        sendBasicHttpRequest(params, "basichttp");
     }
 
     /**
@@ -164,14 +176,14 @@ public class SpotSystem
         params.put("name", "dialog.user.customEvent");
         params.put("II_SB_eventToPass", SpotRequestEvent.UNMUTE_PARTICIPANT.eventName);
         params.put("II_SB_valueToPass", "");
-        sendBasicHttpRequest(params);
+        sendBasicHttpRequest(params, "basichttp");
     }
 
-    private void sendBasicHttpRequest(Map<String, String> params) throws IOException, SpotCommunicationException
+    private void sendBasicHttpRequest(Map<String, String> params, String target) throws IOException, SpotCommunicationException
     {
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
         
-        String uri = httpInterfaceUri + "/ccxml/basichttp";
+        String uri = httpInterfaceUri + "/ccxml/" + target;
         httpClient.post(uri, params);
 
         int status = httpClient.getResponseStatus();

@@ -162,18 +162,21 @@ public class SpotSystemTest
     {
         final String number = String.valueOf(System.currentTimeMillis());
         final String adminSessionId = String.valueOf(System.currentTimeMillis());
+        final Long conferenceId = Long.valueOf(System.currentTimeMillis());
+        final String requestingNumber = String.valueOf(System.currentTimeMillis());
 
         Map<String, String> expectedParams = new HashMap<String, String>();
-        expectedParams.put("sessionid", adminSessionId);
-        expectedParams.put("name", "dialog.user.customEvent");
-        expectedParams.put("II_SB_eventToPass", "DIAL");
-        expectedParams.put("II_SB_valueToPass", number);
+        expectedParams.put("uri", "/interact/apps/iistart.ccxml");
+        expectedParams.put("II_SB_importedValue", "{\"application\":\"AUTO_DIAL\",\"sessionid\":\"" + adminSessionId +
+                                                  "\",\"destination\":\"" + number + "\",\"conferenceId\":\"" +
+                                                  String.valueOf(conferenceId) + "\",\"ani\":\"" + requestingNumber +
+                                                  "\"}");
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 
-        spotSystem.outdial(number, adminSessionId);
+        spotSystem.outdial(number, adminSessionId, conferenceId, requestingNumber);
 
-        verify(mockHttpClient).post(httpInterfaceUri + postStringAddition, expectedParams);
+        verify(mockHttpClient).post(httpInterfaceUri + "/ccxml/createsession", expectedParams);
     }
 
     @Test
@@ -184,12 +187,12 @@ public class SpotSystemTest
 
         try
         {
-            spotSystem.outdial("foo", "bar");
+            spotSystem.outdial("foo", "bar", 1L, "baz");
             fail("Expected SpotCommunicationException for non-200 HTTP status");
         }
         catch(SpotCommunicationException e)
         {
-            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + postStringAddition + "]", e.getMessage());
+            assertEquals("Received HTTP Status 400 from SPOT System at [" + httpInterfaceUri + "/ccxml/createsession]", e.getMessage());
         }
     }
 
@@ -197,7 +200,7 @@ public class SpotSystemTest
     public void test_outdial_whenSpotRespondsWith200_sendsStat() throws SpotCommunicationException, IOException
     {
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
-        spotSystem.outdial("foo", "bar");
+        spotSystem.outdial("foo", "bar", 1L, "baz");
 
         verify(mockStatSender).send(Stat.PUBLISHED_EVENT_TO_SPOT);
     }
@@ -207,7 +210,7 @@ public class SpotSystemTest
     {
         try
         {
-            spotSystem.outdial("foo", "bar");
+            spotSystem.outdial("foo", "bar", 1L, "baz");
         }
         catch(SpotCommunicationException e)
         {
