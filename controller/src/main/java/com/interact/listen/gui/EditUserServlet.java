@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Restrictions;
@@ -22,6 +23,9 @@ import org.hibernate.criterion.Restrictions;
 public class EditUserServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
+
+    /** Class logger */
+    private static final Logger LOG = Logger.getLogger(EditUserServlet.class);
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
@@ -93,19 +97,37 @@ public class EditUserServlet extends HttpServlet
 
         PersistenceService persistenceService = new PersistenceService(session);
 
-        //Only admin can change the subscriber associated with a user
+        // Only admin can change the subscriber associated with a user
         if(currentUser.getIsAdministrator() && number != null)
         {
-            Subscriber currentSubscriber = findSubscriberByNumber(number, session);
+            Subscriber existingSubscriber = findSubscriberByNumber(number, session);
+            Subscriber userSubscriber = userToEdit.getSubscriber();
 
-            if(currentSubscriber == null)
+            LOG.debug("existingSubscriber = [" + (existingSubscriber == null ? "null" : existingSubscriber.getNumber() + "]"));
+            LOG.debug("userSubscriber =     [" + (userSubscriber == null ? "null" : userSubscriber.getNumber() + "]"));
+
+            if(existingSubscriber != null && (userSubscriber == null || !userSubscriber.getNumber().equals(number)))
             {
-                currentSubscriber = new Subscriber();
-                currentSubscriber.setNumber(number);
-                persistenceService.save(currentSubscriber);
+                // if a subscriber exists and:
+                // - the user doesn't have a subscriber (so we'd have to create one)
+                // - or, the user has a subscriber with a different number (we'd have to change it to an existing one)
+                // then the request is invalid
+                throw new BadRequestServletException("That number is currently in use");
             }
 
-            userToEdit.setSubscriber(currentSubscriber);
+            if(userSubscriber == null)
+            {
+                Subscriber subscriber = new Subscriber();
+                subscriber.setNumber(number);
+                persistenceService.save(subscriber);
+                userToEdit.setSubscriber(subscriber);
+            }
+            else
+            {
+                userSubscriber.setNumber(number);
+                Subscriber copy = userSubscriber.copy(true);
+                persistenceService.update(userSubscriber, copy);
+            }
         }
 
         userToEdit.setUsername(username);
