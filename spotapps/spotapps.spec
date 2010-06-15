@@ -66,12 +66,12 @@ Requires: spotbuild-vip
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
 
-    # Remove extras and listen_conference root.vxml
+    # Remove extras
     rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
 
     # Run Encryption
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/
-    /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/
+    /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/ %{buildroot}/interact/apps/spotbuild/listen_autoDial/
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/
     /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
 
