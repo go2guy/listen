@@ -80,7 +80,6 @@
 	<var name="SB_UV_destAudioFile"/>
 	<var name="SB_UV_timeStamp"/>
 	<var name="SB_UV_rollcallPath"/>
-	<var name="SB_UV_isConfidUpdated"/>
 	<var name="SB_UV_isStarted"/>
 
     
@@ -94,8 +93,8 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
-			<assign name="userID" expr="II_SB_connectionID" />
 			<assign name="callType" expr="II_SB_type" />
+			<assign name="userID" expr="II_SB_line" />
 			<assign name="SID" expr="II_SB_sessionID" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
@@ -281,9 +280,6 @@
 			</if>
 			<if cond="SB_UV_rollcallPath != undefined">
 				<assign name="rollcallPath" expr="SB_UV_rollcallPath" />
-			</if>
-			<if cond="SB_UV_isConfidUpdated != undefined">
-				<assign name="isConfidUpdated" expr="SB_UV_isConfidUpdated" />
 			</if>
 			<if cond="SB_UV_isStarted != undefined">
 				<assign name="isStarted" expr="SB_UV_isStarted" />

@@ -5,23 +5,24 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'123-97'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'105-44'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(CONF_ID,confID,timeStamp,SID,hostName,cntrlURL,recSID)
+            function II_SB_JS_function(passValues)
             {
-	            return "{\"cntrlURL\":\""+cntrlURL+"\", \"hostName\":\""+hostName+"\",\"application\":\"RECORD\", \"action\":\"STOP_REC\", \"conferenceId\":"+confID+", \"startTime\":\""+timeStamp+"\", \"interface\":\"TUI\",\"recordingSessionId\":\""+recSID+"\", \"arcadeId\":\""+CONF_ID+"\", \"adminSID\":\""+SID+"\"}";
+	            var result = eval("("+passValues+")");
+return result.conferenceId
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set passValues</log>
-            <log>INFO: Entered run-javascript.vxml [123-74]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(CONF_ID,confID,timeStamp,SID,hostName,cntrlURL,recSID)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="passValues" expr="II_SB_userJava" />   
+            <log target="status">Set confID</log>
+            <log>INFO: Entered run-javascript.vxml [109-42]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="confID" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

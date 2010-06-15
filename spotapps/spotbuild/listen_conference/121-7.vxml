@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(CONF_ID,confID,timeStamp,SID,hostName,cntrlURL)
             {
-	            return getNextElement(0,cntrlURL,'/api') + "?" + hostName + "?RECORD?START_REC?" + confID + "?" + timeStamp + "?TUI?null?" + CONF_ID + "?" + SID;
+	            return "{\"cntrlURL\":\""+cntrlURL+"\", \"hostName\":\""+hostName+"\",\"application\":\"RECORD\", \"action\":\"START_REC\", \"conferenceId\":"+confID+", \"startTime\":\""+timeStamp+"\", \"interface\":\"TUI\",\"recordingSessionId\":null, \"arcadeId\":\""+CONF_ID+"\", \"adminSID\":\""+SID+"\"}";
             }
         ]]>
     </script>

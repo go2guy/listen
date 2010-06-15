@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 06/08/2010
+    <!-- Last Modified 06/14/2010
        *   @Name	Conference.ccxml
        *   @Desc	Manages conference activities -->
 
@@ -53,6 +53,7 @@
 
     <!-- load javascript library -->
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"></script>
 
     <!-- Begin executable code -->
     <eventprocessor statevariable="II_SB_state">
@@ -270,7 +271,7 @@
                 <var name="II_SB_transfer" expr="'yes'"/>
                 <assign name="II_SB_projectSource" expr="'listen_conference'"/>
                 <var name="II_SB_importedValue" expr="evt.values.II_SB_valueToPass"/>
-		        <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type	II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_importedValue"/>
+                <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
             <else/>
 		        <assign name="II_SB_passValues" expr="evt.values.II_SB_returnValues"/>
         		<log>INFO: II_SB_NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log>
@@ -291,7 +292,8 @@
                 <log>INFO: uri [<value expr="evt.II_SB_URI"/>]</log>
                 <log>INFO: argument [<value expr="evt.II_SB_argument"/>]</log>
                 <var name="uri" expr="'file:' + II_SB_BASE_DIR + evt.II_SB_URI"/>
-                <assign name="II_SB_importedValue" expr="evt.II_SB_argument + '?' + II_SB_conferenceID + '?' + II_SB_memberCount"/>
+                <var name="II_SB_tmpArray" expr="'ConferenceID:'+II_SB_conferenceID+'|MemberCount:'+II_SB_memberCount"/>
+                <assign name="II_SB_importedValue" expr="extendJsonObj(evt.II_SB_argument,II_SB_tmpArray)"/>
                 <log>INFO: Sending: [<value expr="uri + ' ' + II_SB_importedValue"/>]</log>
                 <send data="'httpCreateSession'" targettype="'basichttp'" target="'http://localhost/spot/ccxml/createsession'" namelist="uri II_SB_importedValue"/>
             <else/>

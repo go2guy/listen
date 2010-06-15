@@ -14,8 +14,10 @@
 	            var result;
 var tmpVal = eval("("+returnVal+")");
 result = tmpVal.results[index].audioResource;
-if ((result == null) || (result == audioURL)) 
-{result = "";}
+if ((result == null) || (result == audioURL))
+{
+result = "";
+}
 return result;
             }
         ]]>

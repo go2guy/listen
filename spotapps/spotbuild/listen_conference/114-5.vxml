@@ -5,28 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'114-3'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'114-54'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(phoneNumber,sipURL,ANI)
+            function II_SB_JS_function(phoneNumber,ANI,SID,confID)
             {
-	            var str = new String(phoneNumber);
-var num = /^\d+$/;
-if ((num.test(str)) && (sipURL.length > 0))
-return "sip:" + ANI + "@" + sipURL;
-else
-return "sip:" + ANI + "@iipbx";
+	            return "{\"application\":\"AUTO_DIAL\", \"sessionid\":\""+SID+"\", \"destination\":\""+phoneNumber+"\", \"conferenceId\":"+confID+", \"ani\":"+ANI+"}";
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set ID</log>
+            <log target="status">Set passValues</log>
             <log>INFO: Entered run-javascript.vxml [114-5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(phoneNumber,sipURL,ANI)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="outBoundID" expr="II_SB_userJava" />   
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(phoneNumber,ANI,SID,confID)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
