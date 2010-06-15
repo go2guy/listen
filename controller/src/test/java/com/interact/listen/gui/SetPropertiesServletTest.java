@@ -87,10 +87,10 @@ public class SetPropertiesServletTest
         final String value = String.valueOf(System.currentTimeMillis());
 
         request.setMethod("POST");
-        request.setParameter(Property.Key.DNIS_MAPPING.getKey(), value);
+        request.setParameter(Property.Key.MAIL_FROMADDRESS.getKey(), value);
         servlet.service(request, response);
 
-        assertEquals(value, Configuration.get(Property.Key.DNIS_MAPPING));
+        assertEquals(value, Configuration.get(Property.Key.MAIL_FROMADDRESS));
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class
