@@ -11,7 +11,8 @@
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            return getNextElement(0,passValues,'?') + "/api";
+	            var result = eval("("+passValues+")");
+return result.cntrlURL;
             }
         ]]>
     </script>

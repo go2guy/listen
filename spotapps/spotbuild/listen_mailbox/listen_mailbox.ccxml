@@ -6,6 +6,7 @@
        *   @desc   Default entry point for all SPOTbuild projects -->
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>         <!-- Location of java script file -->
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"></script>	<!-- Location of java script file -->
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_mailbox'"/>         <!-- Config: PROJECT_NAME. Project directory -->

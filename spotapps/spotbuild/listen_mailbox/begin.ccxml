@@ -12,6 +12,7 @@
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>     <!-- Location of java script file -->
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"></script>
 
     <!-- Passed in from another ccxml -->
     <var name="II_SB_VXML_LIB"/>
