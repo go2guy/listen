@@ -12,7 +12,7 @@
     <var name="II_SB_dialType" expr="'VOIP'"/>           <!--  VOIP/PSTN -->
     <var name="II_SB_allowDropKey" expr="''"/>    <!--  Whether drop keys are enabled -->
     <var name="II_SB_drpKeyLength" expr="'1'"/>        <!--  Number of keys used for drop key -->
-    <var name="II_SB_drpKeyTime" expr="'3s'"/>          <!--  Time between drop key presses -->
+    <var name="II_SB_drpKeyTime" expr="'0s'"/>          <!--  Time between drop key presses -->
     <var name="II_SB_callerID" expr="outBoundID"/>                <!--  Caller ID -->
 
     <!-- Edge Variables -->
