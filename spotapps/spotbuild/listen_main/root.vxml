@@ -39,6 +39,7 @@
 	<var name="resource" expr="'meta/'" />
 	<var name="request" expr="'GET'" />
 	<var name="status" expr="''" />
+	<var name="sipURL" expr="'null'" /> <!-- Config SIP Server Name -->
 
 
     <!-- Conference Variables -->
@@ -48,6 +49,7 @@
 
     <!-- Call to java scripts -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	<!-- Location of java script file -->
 
     <!-- Catch hang up event. User must have hung up -->
     <catch event="connection.disconnect.hangup">

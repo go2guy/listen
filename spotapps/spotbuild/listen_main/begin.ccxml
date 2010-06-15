@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 06/08/2010 
+    <!-- Last Modified 06/14/2010
        *   @Name   begin.ccxml
        *   @Desc   Starts a ccxml dialog and calls main.vxml -->
 
@@ -12,6 +12,7 @@
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>     <!-- Location of java script file -->
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"></script>
 
     <!-- Passed in from another ccxml -->
     <var name="II_SB_VXML_LIB"/>
@@ -37,6 +38,7 @@
 	<var name="SB_UV_resource"/>
 	<var name="SB_UV_request"/>
 	<var name="SB_UV_status"/>
+	<var name="SB_UV_sipURL"/>
 
 
     <!-- Global variables -->
@@ -84,7 +86,7 @@
             <assign name="II_SB_state" expr="'alerted'"/>
             <if cond="((II_SB_transfer == undefined) &amp;&amp; (II_SB_status == undefined))">
                 <assign name="II_SB_ibcallid" expr="II_SB_connectionID"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status"/> <!-- Start vxml dialog -->
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL"/> <!-- Start vxml dialog -->
             <else/>
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
@@ -128,12 +130,12 @@
 
         <transition event="dialog.user.startMain" name="alertEV" cond="II_SB_ibcallid.length &gt; 0">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status"/> <!-- Start vxml dialog -->
+            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.user.startMain" name="alertEV">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status"/> <!-- Start vxml dialog -->
+            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->
@@ -167,7 +169,7 @@
                 <var name="II_SB_transfer" expr="'yes'"/>
                 <assign name="II_SB_projectSource" expr="'listen_main'"/>
                 <assign name="II_SB_importedValue" expr="evt.values.II_SB_valueToPass"/>
-                <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_ibcallid II_SB_projectSource II_SB_importedValue II_SB_obcallid"/>
+                <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
             <else/>
                 <log>INFO: Inbound call action is set to [<value expr="II_SB_status"/>]</log>
                 <assign name="II_SB_state" expr="'inboundAction'"/>

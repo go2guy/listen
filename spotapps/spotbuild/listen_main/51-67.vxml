@@ -11,7 +11,15 @@
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            return getNextElement(0, passValues, '?');
+	            var appList = new String("AUTO_DIAL, RECORD");
+if(passValues == undefined)
+return "DEFAULT";
+else
+var result = eval("("+passValues+")");
+if (appList.match(result.application)) 
+return result.application;
+else
+return "DEFAULT";
             }
         ]]>
     </script>

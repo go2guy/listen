@@ -16,7 +16,7 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'!,'+'RECORD'+',51-3|else,51-73'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_expList" expr="'=,'+'DEFAULT'+',51-3|=,'+'RECORD'+',51-73|=,'+'AUTO_DIAL'+',51-77'"/>	<!-- List of expression to be evaluated -->
     <var name="II_SB_operand1" expr="status"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
@@ -27,7 +27,7 @@
 
 	<form id="beginDocument">
 		<block>
-    	    <log target="status">Record App</log>
+    	    <log target="status">Which App</log>
 			<log>INFO: Entered decision.vxml [51-65]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>

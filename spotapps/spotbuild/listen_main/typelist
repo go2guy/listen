@@ -1,5 +1,7 @@
+51-79 - run-javascript
 51-9 - end
 51-65 - decision
+51-77 - run-javascript
 51-67 - run-javascript
 51-69 - switch-application
 begin - begin
@@ -12,6 +14,6 @@ begin - begin
 51-7 - decision
 51-40 - decision
 51-20 - switch-application
-51-71 - assign-variable
 51-19 - switch-application
+51-75 - switch-application
 51-73 - run-javascript

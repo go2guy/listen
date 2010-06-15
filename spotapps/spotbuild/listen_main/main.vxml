@@ -29,6 +29,7 @@
 	<var name="SB_UV_resource"/>
 	<var name="SB_UV_request"/>
 	<var name="SB_UV_status"/>
+	<var name="SB_UV_sipURL"/>
 
     
     <form id="beginDocument">
@@ -71,6 +72,9 @@
 			</if>
 			<if cond="SB_UV_status != undefined">
 				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_sipURL != undefined">
+				<assign name="sipURL" expr="SB_UV_sipURL" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
