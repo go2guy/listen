@@ -11,10 +11,10 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var tmpVal = getNextElement(6,argList,'?');
+	            var result = eval("("+argList+")");
 
-if (tmpVal == 'TUI')
-return getNextElement(9,argList,'?');
+if (result.interface == 'TUI')
+return result.adminSID;
 else
 return "GUI";
             }

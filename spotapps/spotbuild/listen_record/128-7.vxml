@@ -11,7 +11,8 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            return getNextElement(7,argList,'?');
+	            var result = eval("("+argList+")");
+return result.recordingSessionId;
             }
         ]]>
     </script>

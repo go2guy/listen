@@ -11,7 +11,8 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            return getNextElement(0,argList,'?') + "/api";
+	            var result = eval("("+argList+")");
+return result.cntrlURL;
             }
         ]]>
     </script>

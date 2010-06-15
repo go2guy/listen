@@ -11,11 +11,11 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var tmpVal = getNextElement(8, argList, '?');
-if (tmpVal == 'null')
-return getNextElement(9, argList, '?');
+	            var result = eval("("+argList+")");
+if (result.arcadeId == 'null')
+return result.ConferenceID;
 else
-return tmpVal;
+return result.arcadeId;
             }
         ]]>
     </script>
