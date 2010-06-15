@@ -175,6 +175,8 @@ if(user != null && user.getIsAdministrator()) { %>
                 <form id="dnis-mapping-form">
                   <fieldset>
                     <legend>DNIS Mappings</legend>
+                    <div class="form-error-message"></div>
+                    <div class="form-success-message"></div>
                     <table>
                       <tbody>
                         <tr><td></td><td colspan="3" class="buttons"><button class="add-button" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="save-button" title="Save DNIS mappings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
@@ -186,6 +188,8 @@ if(user != null && user.getIsAdministrator()) { %>
                 <form id="mail-form">
                   <fieldset>
                     <legend>Mail</legend>
+                    <div class="form-error-message"></div>
+                    <div class="form-success-message"></div>
                     <table>
                       <tbody>
                         <tr><td><label for="smtp-server">SMTP Server</label></td><td><input type="text" id="smtp-server" name="smtp-server"/></td></tr>

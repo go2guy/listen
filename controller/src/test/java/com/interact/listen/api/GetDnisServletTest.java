@@ -113,4 +113,48 @@ public class GetDnisServletTest
             Configuration.set(Property.Key.DNIS_MAPPING, originalDnisValue);
         }
     }
+
+    @Test
+    public void test_doGet_wildcardFirstButLookingForLaterNumber_returnsLaterNumber() throws ServletException,
+        IOException
+    {
+        final String originalDnisValue = Configuration.get(Property.Key.DNIS_MAPPING);
+        try
+        {
+            Configuration.set(Property.Key.DNIS_MAPPING, "*:voicemail;1800AWESOME:conferencing;4242:conferencing");
+            request.setMethod("GET");
+            request.setParameter("number", "4242");
+            servlet.service(request, response);
+
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            assertEquals("text/plain", request.getOutputBufferType());
+            assertEquals("conferencing", request.getOutputBufferString());
+        }
+        finally
+        {
+            Configuration.set(Property.Key.DNIS_MAPPING, originalDnisValue);
+        }
+    }
+
+    @Test
+    public void test_doGet_configurationHasWildcardAndNotQueryString_returnsWildcardMapping() throws ServletException,
+        IOException
+    {
+        final String originalDnisValue = Configuration.get(Property.Key.DNIS_MAPPING);
+        try
+        {
+            Configuration.set(Property.Key.DNIS_MAPPING, "*:voicemail;1800AWESOME:conferencing;4242:conferencing");
+            request.setMethod("GET");
+            request.setParameter("number", "9999");
+            servlet.service(request, response);
+
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            assertEquals("text/plain", request.getOutputBufferType());
+            assertEquals("voicemail", request.getOutputBufferString());
+        }
+        finally
+        {
+            Configuration.set(Property.Key.DNIS_MAPPING, originalDnisValue);
+        }
+    }
 }

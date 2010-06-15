@@ -65,13 +65,21 @@ $(document).ready(function() {
                     'com.interact.listen.mail.fromAddress': $('#from-address').val() },
             success: function(data) {
                 application.load();
-                LISTEN.notify('Mail settings updated');
+                var elem = $('#mail-form .form-success-message')
+                elem.text('Mail settings updated').slideDown(100);
+                setTimeout(function() {
+                    elem.slideUp(100);
+                }, 2000);
+            },
+            error: function(xhr) {
+                $('#mail-form .form-error-message').text(xhr.responseText).slideDown(100);
             }
         });
         return false;
     });
 
     $('#dnis-mapping-form').submit(function() {
+        $('#dnis-mapping-form .form-error-message').text('').hide();
         var value = '';
         var rows = $('#dnis-mapping-form tr');
         var num = 0;
@@ -94,7 +102,14 @@ $(document).ready(function() {
             data: { 'com.interact.listen.dnisMapping': value },
             success: function(data) {
                 application.load();
-                LISTEN.notify('DNIS mappings updated');
+                var elem = $('#dnis-mapping-form .form-success-message')
+                elem.text('DNIS mappings updated').slideDown(100);
+                setTimeout(function() {
+                    elem.slideUp(100);
+                }, 2000);
+            },
+            error: function(xhr) {
+                $('#dnis-mapping-form .form-error-message').text(xhr.responseText).slideDown(100);
             }
         });
 

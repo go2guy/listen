@@ -97,7 +97,7 @@ public class GetDnisServlet extends HttpServlet
         return null;
     }
 
-    private Map<String, String> dnisConfigurationToMap(String configurationValue)
+    public static Map<String, String> dnisConfigurationToMap(String configurationValue)
     {
         Map<String, String> map = new HashMap<String, String>();
         if(configurationValue == null || configurationValue.trim().equals(""))
