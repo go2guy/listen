@@ -413,11 +413,19 @@ td.voicemail-cell-readStatus {
 }
 
 .mark-read-button {
-    background-image: url('../images/new/icon_speaker_unmuted_16x16.png');
+    background-image: url('../images/new/icon_message_unread_16x16.png');
+}
+
+.mark-read-button:hover {
+    background-image: url('../images/new/icon_message_unread_hover_16x16.png');
 }
 
 .mark-unread-button {
-    background-image: url('../images/new/icon_speaker_muted_16x16.png');
+    background-image: url('../images/new/icon_message_read_16x16.png');
+}
+
+.mark-unread-button:hover {
+    background-image: url('../images/new/icon_message_read_hover_16x16.png');
 }
 
 .mute-button {
