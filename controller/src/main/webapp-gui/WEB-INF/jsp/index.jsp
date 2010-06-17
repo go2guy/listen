@@ -366,7 +366,7 @@ if(user != null && user.getIsAdministrator()) { %>
 
         <tr id="dnis-row-template">
           <td>Number</td>
-          <td><input type="text" value=""/></td>
+          <td><input type="text" value="" class="dnis-mapping-number"/></td>
           <td>maps to</td>
           <td>
             <select><%
@@ -377,8 +377,10 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
               <option value="mailbox">Mailbox</option>
               <option value="voicemail">Voicemail</option><%
 } %>
+              <option value="custom">Custom</option>
             </select>
           </td>
+          <td><input type="text" value="" class="dnis-mapping-custom-destination"/></td>
           <td><button class="delete-button" title="Remove this DNIS mapping"></button></td>
         </tr>
       </tbody></table>

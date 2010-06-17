@@ -353,6 +353,12 @@ td.voicemail-cell-readStatus {
     display: none;
 }
 
+/* application - system configuration */
+
+.dnis-mapping-custom-destination {
+    display: none;
+}
+
 /* buttons */
 
 .add-button, .cancel-button, .delete-button, .edit-button, .mark-read-button, .mark-unread-button, .mute-button, .outdial-button, .record-button, .save-button, .schedule-button, .stop-button, .unmute-button, .unmute-button-disabled, .view-button {

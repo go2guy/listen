@@ -42,12 +42,26 @@ $(document).ready(function() {
         var d = (destination ? destination : '');
 
         var clone = $('#dnis-row-template').clone();
-        $('input', clone).val(n);
-        $('select option[value=\'' + d + '\']', clone).attr('selected', 'selected');
+        $('.dnis-mapping-number', clone).val(n);
+
+        $('#dnis-mapping-form tbody tr:last').before(clone);
+        if(d != 'voicemail' && d != 'mailbox' && d != 'conferencing') { // assume custom
+            $('select option[value=\'custom\']', clone).attr('selected', 'selected');
+            $('.dnis-mapping-custom-destination', clone).val(d).show();
+        } else {
+            $('select option[value=\'' + d + '\']', clone).attr('selected', 'selected');
+        }
         $('.delete-button', clone).click(function() {
             $(this).parent().parent().remove();
         });
-        $('#dnis-mapping-form tbody tr:last').before(clone);
+        $('select', clone).change(function() {
+            var input = $('.dnis-mapping-custom-destination', $(this).parent().parent());
+            if($(this).val() == 'custom') {
+                input.show();
+            } else {
+                input.hide().val('');
+            }
+        });
     }
 
     $('#add-dnis-mapping').click(function() {
@@ -84,12 +98,18 @@ $(document).ready(function() {
         var rows = $('#dnis-mapping-form tr');
         var num = 0;
         for(var i = 0; i < rows.length - 1; i++) {
-            var number = $('input:text', rows[i]).val();
+            var number = $('.dnis-mapping-number', rows[i]).val();
             if(number.length == 0) {
                 continue;
             }
             var destination = $('select', rows[i]).val();
-            value += number + ':' + destination + ';';
+            value += number + ':';
+            if(destination != 'voicemail' && destination != 'mailbox' && destination != 'conferencing') {
+                value += $('.dnis-mapping-custom-destination', rows[i]).val();
+            } else {
+                value += destination;
+            }
+            value += ';';
             num++;
         }
         if(num > 0 && value.length > 0) {
