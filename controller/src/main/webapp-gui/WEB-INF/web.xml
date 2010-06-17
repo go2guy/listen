@@ -92,6 +92,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetCallHistoryListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetCallHistoryListServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceInfoServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -240,6 +246,11 @@
     <servlet-mapping>
         <servlet-name>EditUserServlet</servlet-name>
         <url-pattern>/ajax/editUser</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetCallHistoryListServlet</servlet-name>
+        <url-pattern>/ajax/getCallHistoryList</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

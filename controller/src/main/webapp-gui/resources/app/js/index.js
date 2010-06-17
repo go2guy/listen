@@ -126,13 +126,13 @@ $(document).ready(function() {
                             clone.attr('id', args.tableId + '-row-' + serverItem.id);
                             args.updateRowCallback.call(this, clone, serverItem, true);
                             clone.css('opacity', 0);
-                            if(args.alternateRowColors) {
-                                if(args.reverse) {
-                                    clone.addClass((serverList.length - i) % 2 == 0 ? 'odd' : 'even');
-                                } else {
-                                    clone.addClass(i % 2 == 0 ? 'odd' : 'even');
-                                }
-                            }
+//                            if(args.alternateRowColors) {
+//                                if(args.reverse) {
+//                                    clone.addClass((serverList.length - i) % 2 == 0 ? 'odd' : 'even');
+//                                } else {
+//                                    clone.addClass(i % 2 == 0 ? 'odd' : 'even');
+//                                }
+//                            }
                             if(args.reverse) {
                                 $('#' + args.tableId + ' tbody').prepend(clone);
                             } else {

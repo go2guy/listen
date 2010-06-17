@@ -50,6 +50,7 @@ public final class HibernateUtil
 
             // application classes
             config.addAnnotatedClass(Audio.class);
+            config.addAnnotatedClass(CallDetailRecord.class);
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(ConferenceHistory.class);
             config.addAnnotatedClass(ConferenceRecording.class);
