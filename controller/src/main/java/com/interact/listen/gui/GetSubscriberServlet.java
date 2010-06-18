@@ -7,6 +7,7 @@ import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
+import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -45,11 +46,6 @@ public class GetSubscriberServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_GET_SUBSCRIBER);
 
-        if(!subscriber.getIsAdministrator())
-        {
-            throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
-        }
-
         if(request.getParameter("id") == null || request.getParameter("id").trim().equals(""))
         {
             throw new BadRequestServletException("Please provide an id");
@@ -61,6 +57,11 @@ public class GetSubscriberServlet extends HttpServlet
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         Subscriber s = (Subscriber)session.get(Subscriber.class, Long.parseLong(request.getParameter("id")));
 
+        if(!(subscriber.getIsAdministrator() || s.equals(subscriber)))
+        {
+            throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
+        }
+        
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 
@@ -87,6 +88,17 @@ public class GetSubscriberServlet extends HttpServlet
         String number = marshaller.convertAndEscape(String.class, subscriber.getNumber());
         json.append("\"number\":\"").append(number).append("\"");
 
+        json.append(",");
+        json.append("\"accessNumbers\":[");
+        for(AccessNumber accessNumber : subscriber.getAccessNumbers())
+        {
+            json.append("\"").append(accessNumber.getNumber()).append("\",");
+        }
+        if(subscriber.getAccessNumbers().size() > 0)
+        {
+            json.deleteCharAt(json.length() - 1); // last comma
+        }
+        json.append("]");
         json.append("}");
         return json.toString();
     }

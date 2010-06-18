@@ -25,6 +25,9 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "NUMBER", unique = true, nullable = false)
     private String number;
 
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    private Set<AccessNumber> accessNumbers = new HashSet<AccessNumber>();
+
     @Column(name = "VOICEMAIL_GREETING_LOCATION")
     private String voicemailGreetingLocation;
 
@@ -57,6 +60,46 @@ public class Subscriber extends Resource implements Serializable
     public void setNumber(String number)
     {
         this.number = number;
+    }
+
+    public Set<AccessNumber> getAccessNumbers()
+    {
+        return accessNumbers;
+    }
+
+    public void setAccessNumbers(Set<AccessNumber> accessNumbers)
+    {
+        this.accessNumbers = accessNumbers;
+        for(AccessNumber accessNumber : accessNumbers)
+        {
+            accessNumber.setSubscriber(this);
+        }
+    }
+
+    public void addToAccessNumbers(AccessNumber accessNumber)
+    {
+        accessNumber.setSubscriber(this);
+        this.accessNumbers.add(accessNumber);
+    }
+
+    public void removeFromAccessNumbers(AccessNumber accessNumber)
+    {
+        this.accessNumbers.remove(accessNumber);
+        accessNumber.setSubscriber(null);
+    }
+
+    public String accessNumberString()
+    {
+        StringBuilder numbers = new StringBuilder();
+        for(AccessNumber accessNumber : accessNumbers)
+        {
+            numbers.append(accessNumber.getNumber()).append(",");
+        }
+        if(accessNumbers.size() > 0)
+        {
+            numbers.deleteCharAt(numbers.length() - 1); // last comma
+        }
+        return numbers.toString();
     }
 
     @Override
@@ -216,6 +259,10 @@ public class Subscriber extends Resource implements Serializable
         copy.setIsAdministrator(isAdministrator);
         copy.setLastLogin(lastLogin);
         copy.setNumber(number);
+        for(AccessNumber accessNumber : accessNumbers)
+        {
+            copy.addToAccessNumbers(accessNumber.copy(false));
+        }
         copy.setPassword(password);
         copy.setUsername(username);
         copy.setVoicemailGreetingLocation(voicemailGreetingLocation);

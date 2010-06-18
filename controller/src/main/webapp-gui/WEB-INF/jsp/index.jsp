@@ -244,7 +244,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                 </table>
               </div>
             </div><%
-} 
+}
 if(subscriber != null) { %>
             <div id="profile-application" class="application">
               <div class="application-header"><div class="title">Profile Info</div></div>
@@ -261,7 +261,14 @@ if(subscriber != null) { %>
                         <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
                         <tr><td><label for="subscriber-form-number">Number</label></td><td><input type="text" id="subscriber-form-number" name="subscriber-form-number"/></td></tr>
                         <tr>
-                        
+                          <td><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
+                          <td><%
+if(subscriber.getIsAdministrator()) { %>
+                            <textarea rows="4" cols="50" id="subscriber-form-accessNumbers" name="subscriber-form-accessNumbers"></textarea><%
+} else { %>
+                            <%= subscriber.accessNumberString() %><%
+} %>
+                          </td>
                         </tr>
                         <tr>
                           <td></td>

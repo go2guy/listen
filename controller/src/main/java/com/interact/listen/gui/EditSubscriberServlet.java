@@ -4,6 +4,7 @@ import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
@@ -105,15 +106,10 @@ public class EditSubscriberServlet extends HttpServlet
 
         PersistenceService persistenceService = new PersistenceService(session);
 
-        if(currentSubscriber.getIsAdministrator())
+        String accessNumbers = request.getParameter("accessNumbers");
+        if(currentSubscriber.getIsAdministrator() && accessNumbers != null && accessNumbers.trim().length() > 0)
         {
-            Subscriber existingSubscriber = findSubscriberByNumber(number, session);
-            if(existingSubscriber != null && (subscriberToEdit == null || !subscriberToEdit.getNumber().equals(number)))
-            {
-                throw new BadRequestServletException("That number is currently in use");
-            }
-
-            subscriberToEdit.setNumber(number);
+            updateSubscriberAccessNumbers(subscriberToEdit, accessNumbers, session, persistenceService);
         }
 
         subscriberToEdit.setUsername(username);
@@ -140,12 +136,32 @@ public class EditSubscriberServlet extends HttpServlet
         criteria.setMaxResults(1);
         return (Subscriber)criteria.uniqueResult();
     }
-    
-    private Subscriber findSubscriberByNumber(String number, Session session)
+
+    public static void updateSubscriberAccessNumbers(Subscriber subscriber, String accessNumberString, Session session,
+                                                     PersistenceService persistenceService)
+        throws BadRequestServletException
     {
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("number", number));
-        criteria.setMaxResults(1);
-        return (Subscriber)criteria.uniqueResult();
+        String[] split = accessNumberString.split(",");
+        for(String an : split)
+        {
+            Criteria criteria = session.createCriteria(AccessNumber.class);
+            criteria.add(Restrictions.eq("number", an));
+            criteria.setMaxResults(1);
+            AccessNumber result = (AccessNumber)criteria.uniqueResult();
+
+            if(result != null && !result.getSubscriber().equals(subscriber))
+            {
+                throw new BadRequestServletException("Access number [" + an + "] is already in use by another account");
+            }
+            else if(result == null)
+            {
+                AccessNumber newNumber = new AccessNumber();
+                newNumber.setNumber(an);
+                newNumber.setSubscriber(subscriber);
+
+                persistenceService.save(newNumber);
+                subscriber.addToAccessNumbers(newNumber);
+            }
+        }
     }
 }

@@ -49,6 +49,7 @@ public final class HibernateUtil
             config.setProperty("hibernate.current_session_context_class", "thread");
 
             // application classes
+            config.addAnnotatedClass(AccessNumber.class);
             config.addAnnotatedClass(Audio.class);
             config.addAnnotatedClass(CallDetailRecord.class);
             config.addAnnotatedClass(Conference.class);
@@ -159,15 +160,23 @@ public final class HibernateUtil
         // dummy accounts
         for(int i = 0; i < 5; i++)
         {
+            String extension = new DecimalFormat("000").format(100 + i);
+
             Subscriber subscriber = new Subscriber();
-            subscriber.setNumber(new DecimalFormat("000").format(100 + i));
+            subscriber.setNumber(extension);
             subscriber.setPassword(SecurityUtil.hashPassword("super"));
-            subscriber.setUsername(subscriber.getNumber());
-            subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
-            subscriber.setVoicemailPin(subscriber.getNumber());
+            subscriber.setUsername(extension);
+            subscriber.setVoicemailGreetingLocation("/greetings/" + extension);
+            subscriber.setVoicemailPin(extension);
             persistenceService.save(subscriber);
 
-            String basePin = new DecimalFormat("000").format(i + 100);
+            AccessNumber accessNumber = new AccessNumber();
+            accessNumber.setGreetingLocation("/greetings/" + extension);
+            accessNumber.setNumber(extension);
+            accessNumber.setSubscriber(subscriber);
+            persistenceService.save(accessNumber);
+
+            subscriber.addToAccessNumbers(accessNumber);
 
             //Pin activePin = Pin.newInstance("111" + basePin, PinType.ACTIVE);
             //Pin adminPin = Pin.newInstance("999" + basePin, PinType.ADMIN);
@@ -204,7 +213,7 @@ public final class HibernateUtil
                 participant.setIsAdminMuted(false);
                 participant.setIsMuted(false);
                 participant.setIsPassive(j == 6);
-                participant.setNumber("402" + basePin + new DecimalFormat("0000").format(j));
+                participant.setNumber("402" + extension + new DecimalFormat("0000").format(j));
                 participant.setSessionID(participant.getNumber() + String.valueOf(System.currentTimeMillis()));
                 persistenceService.save(participant);
 

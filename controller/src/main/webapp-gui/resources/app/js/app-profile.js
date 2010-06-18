@@ -25,6 +25,14 @@ $(document).ready(function() {
                         $('#subscriber-form-id').val(data.id);
                         $('#subscriber-form-username').val(data.username);
                         $('#subscriber-form-number').val(data.number);
+                        var numbers = '';
+                        for(var i = 0; i < data.accessNumbers.length; i++) {
+                            numbers += data.accessNumbers[i];
+                            if(i < data.accessNumbers.length - 1) {
+                                numbers += ',';
+                            }
+                        }
+                        $('#subscriber-form-accessNumbers').val(numbers);
 
                         $('#subscriber-form-add-button').hide();
                         $('#subscriber-form-edit-button').show();
@@ -53,7 +61,8 @@ $(document).ready(function() {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        number: $('#subscriber-form-number').val()
+                        number: $('#subscriber-form-number').val(),
+                        accessNumbers: $('#subscriber-form-accessNumbers').val()
                     },
                     successCallback: function() {
                         LISTEN.PROFILE.resetForm();
@@ -76,7 +85,8 @@ $(document).ready(function() {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        number: $('#subscriber-form-number').val()
+                        number: $('#subscriber-form-number').val(),
+                        accessNumbers: $('#subscriber-form-accessNumbers').val()
                     },
                     successCallback: function() {
                         //LISTEN.PROFILE.resetForm();

@@ -81,6 +81,13 @@ public class AddSubscriberServlet extends HttpServlet
         subscriber.setUsername(username);
         persistenceService.save(subscriber);
 
+        String accessNumbers = request.getParameter("accessNumbers");
+        if(accessNumbers != null && accessNumbers.length() > 0)
+        {
+            EditSubscriberServlet.updateSubscriberAccessNumbers(subscriber, accessNumbers, session,
+                                                                persistenceService);
+        }
+
         Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
         Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
         Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
@@ -90,7 +97,7 @@ public class AddSubscriberServlet extends HttpServlet
         persistenceService.save(passivePin);
 
         Conference conference = new Conference();
-        conference.setDescription(subscriber.getNumber() + "'s Conference");
+        conference.setDescription(subscriber.getUsername() + "'s Conference");
         conference.setIsStarted(Boolean.FALSE);
         conference.setIsRecording(Boolean.FALSE);
         conference.addToPins(activePin);
