@@ -77,26 +77,6 @@ public class SubscriberTest
     }
 
     @Test
-    public void test_validate_blankVoicemailGreetingLocation_returnsNoErrors()
-    {
-        subscriber = getPopulatedSubscriber();
-        subscriber.setVoicemailGreetingLocation("");
-
-        assertTrue(subscriber.validate());
-        assertFalse(subscriber.hasErrors());
-    }
-
-    @Test
-    public void test_validate_nullVoicemailGreetingLocation_returnsNoErrors()
-    {
-        subscriber = getPopulatedSubscriber();
-        subscriber.setVoicemailGreetingLocation(null);
-
-        assertTrue(subscriber.validate());
-        assertFalse(subscriber.hasErrors());
-    }
-
-    @Test
     public void test_validate_blankNumber_returnsHasErrors()
     {
         subscriber = getPopulatedSubscriber();
@@ -123,7 +103,6 @@ public class SubscriberTest
         Subscriber copy = original.copy(false);
 
         assertEquals(original.getNumber(), copy.getNumber());
-        assertEquals(original.getVoicemailGreetingLocation(), copy.getVoicemailGreetingLocation());
         assertEquals(original.getVoicemailPin(), copy.getVoicemailPin());
         assertTrue(original.getVoicemails() == copy.getVoicemails()); // same reference
 
@@ -192,7 +171,7 @@ public class SubscriberTest
         obj.setUsername("JJBLT");
 
         // set a property that has no effect on hashcode to something dynamic
-        obj.setVoicemailGreetingLocation(String.valueOf(System.currentTimeMillis()));
+        obj.setPassword(String.valueOf(System.currentTimeMillis()));
 
         assertEquals(70610985, obj.hashCode());
     }
@@ -205,7 +184,6 @@ public class SubscriberTest
         s.setPassword(String.valueOf(System.currentTimeMillis()));
         s.setUsername(String.valueOf(System.currentTimeMillis()));
         s.setVersion(1);
-        s.setVoicemailGreetingLocation("foo/bar/baz/biz");
         return s;
     }
 }

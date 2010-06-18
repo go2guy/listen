@@ -565,7 +565,6 @@ public class EditSubscriberServletTest
         s.setPassword("password");
         s.setUsername("username");
         s.setVersion(1);
-        s.setVoicemailGreetingLocation("foo/bar/baz/biz");
         return s;
     }
 

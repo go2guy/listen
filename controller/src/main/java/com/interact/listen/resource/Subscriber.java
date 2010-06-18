@@ -28,9 +28,6 @@ public class Subscriber extends Resource implements Serializable
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<AccessNumber> accessNumbers = new HashSet<AccessNumber>();
 
-    @Column(name = "VOICEMAIL_GREETING_LOCATION")
-    private String voicemailGreetingLocation;
-
     @Column(name = "VOICEMAIL_PIN")
     private String voicemailPin;
 
@@ -122,16 +119,6 @@ public class Subscriber extends Resource implements Serializable
     public void setVersion(Integer version)
     {
         this.version = version;
-    }
-
-    public String getVoicemailGreetingLocation()
-    {
-        return voicemailGreetingLocation;
-    }
-
-    public void setVoicemailGreetingLocation(String voicemailGreetingLocation)
-    {
-        this.voicemailGreetingLocation = voicemailGreetingLocation;
     }
 
     public String getVoicemailPin()
@@ -265,7 +252,6 @@ public class Subscriber extends Resource implements Serializable
         }
         copy.setPassword(password);
         copy.setUsername(username);
-        copy.setVoicemailGreetingLocation(voicemailGreetingLocation);
         copy.setVoicemailPin(voicemailPin);
         copy.setVoicemails(voicemails);
         return copy;

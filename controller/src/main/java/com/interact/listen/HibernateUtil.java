@@ -166,7 +166,6 @@ public final class HibernateUtil
             subscriber.setNumber(extension);
             subscriber.setPassword(SecurityUtil.hashPassword("super"));
             subscriber.setUsername(extension);
-            subscriber.setVoicemailGreetingLocation("/greetings/" + extension);
             subscriber.setVoicemailPin(extension);
             persistenceService.save(subscriber);
 
