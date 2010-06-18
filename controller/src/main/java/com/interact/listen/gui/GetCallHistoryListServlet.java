@@ -35,7 +35,7 @@ public class GetCallHistoryListServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_GET_CALLHISTORY_LIST);
+        statSender.send(Stat.GUI_GET_CALLDETAILRECORD_LIST);
 
         Subscriber subscriber = (Subscriber)request.getSession().getAttribute("subscriber");
         if(subscriber == null)
