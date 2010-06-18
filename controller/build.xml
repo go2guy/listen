@@ -153,7 +153,7 @@
     <minify in="${war.staging.dir}/resources/app/js/app-findme.js" out="${war.staging.dir}/resources/app/js/app-findme-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-profile.js" out="${war.staging.dir}/resources/app/js/app-profile-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-system-configuration.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/js/app-users.js" out="${war.staging.dir}/resources/app/js/app-users-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-subscribers.js" out="${war.staging.dir}/resources/app/js/app-subscribers-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-voicemail.js" out="${war.staging.dir}/resources/app/js/app-voicemail-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/index.js" out="${war.staging.dir}/resources/app/js/index-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/server.js" out="${war.staging.dir}/resources/app/js/server-min.js"/>

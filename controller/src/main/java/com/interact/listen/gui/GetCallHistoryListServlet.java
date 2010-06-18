@@ -7,7 +7,7 @@ import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.CallDetailRecord;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -37,13 +37,13 @@ public class GetCallHistoryListServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_GET_CALLHISTORY_LIST);
 
-        User user = (User)request.getSession().getAttribute("user");
-        if(user == null)
+        Subscriber subscriber = (Subscriber)request.getSession().getAttribute("subscriber");
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        if(!user.getIsAdministrator())
+        if(!subscriber.getIsAdministrator())
         {
             throw new UnauthorizedServletException("Insufficient privileges");
         }

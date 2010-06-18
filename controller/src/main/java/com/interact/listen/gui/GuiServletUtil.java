@@ -2,7 +2,7 @@ package com.interact.listen.gui;
 
 import com.interact.listen.PersistenceService;
 import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 
 import java.util.ArrayList;
 
@@ -13,13 +13,14 @@ public final class GuiServletUtil
         throw new AssertionError("Cannot instantiate utility class GuiServletUtil");
     }
 
-    public static Conference getConferenceFromIdOrUser(String id, User user, PersistenceService persistenceService)
+    public static Conference getConferenceFromIdOrSubscriber(String id, Subscriber subscriber,
+                                                             PersistenceService persistenceService)
     {
         if(id == null)
         {
-            if(user.getConferences().size() > 0)
+            if(subscriber.getConferences().size() > 0)
             {
-                return new ArrayList<Conference>(user.getConferences()).get(0);
+                return new ArrayList<Conference>(subscriber.getConferences()).get(0);
             }
         }
         else

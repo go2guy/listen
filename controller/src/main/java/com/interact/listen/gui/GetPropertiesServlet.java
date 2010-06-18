@@ -4,7 +4,7 @@ import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.UnauthorizedServletException;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -27,13 +27,13 @@ public class GetPropertiesServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_GET_PROPERTIES);
 
-        User currentUser = (User)(request.getSession().getAttribute("user"));
-        if(currentUser == null)
+        Subscriber currentSubscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(currentSubscriber == null)
         {
             throw new UnauthorizedServletException();
         }
 
-        if(!currentUser.getIsAdministrator())
+        if(!currentSubscriber.getIsAdministrator())
         {
             throw new UnauthorizedServletException();
         }

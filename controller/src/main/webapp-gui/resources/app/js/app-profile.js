@@ -14,21 +14,21 @@ $(document).ready(function() {
                 };
             },
 
-            loadUser: function(id) {
-                LISTEN.trace('LISTEN.PROFILE.loadUser ' + id);
+            loadSubscriber: function(id) {
+                LISTEN.trace('LISTEN.PROFILE.loadSubscriber ' + id);
                 LISTEN.PROFILE.resetForm();
                 $.ajax({
-                    url: '/ajax/getUser?id=' + id,
+                    url: '/ajax/getSubscriber?id=' + id,
                     dataType: 'json',
                     cache: 'false',
                     success: function(data, textStatus, xhr) {
-                        $('#user-form-id').val(data.id);
-                        $('#user-form-username').val(data.username);
-                        $('#user-form-number').val(data.number);
+                        $('#subscriber-form-id').val(data.id);
+                        $('#subscriber-form-username').val(data.username);
+                        $('#subscriber-form-number').val(data.number);
 
-                        $('#user-form-add-button').hide();
-                        $('#user-form-edit-button').show();
-                        $('#user-form-cancel-button').show();
+                        $('#subscriber-form-add-button').hide();
+                        $('#subscriber-form-edit-button').show();
+                        $('#subscriber-form-cancel-button').show();
                         
                         LISTEN.switchApp('profile');
                     }
@@ -39,25 +39,25 @@ $(document).ready(function() {
                 LISTEN.trace('LISTEN.PROFILE.resetForm');
                 LISTEN.PROFILE.clearError();
                 $('#profile-form')[0].reset();
-                $('#user-form-cancel-button').hide();
-                $('#user-form-edit-button').hide();
-                $('#user-form-add-button').show();
+                $('#subscriber-form-cancel-button').hide();
+                $('#subscriber-form-edit-button').hide();
+                $('#subscriber-form-add-button').show();
             },
 
-            addUser: function() {
-                LISTEN.trace('LISTEN.PROFILE.addUser');
+            addSubscriber: function() {
+                LISTEN.trace('LISTEN.PROFILE.addSubscriber');
                 LISTEN.PROFILE.disableButtons();
                 SERVER.post({
-                    url: '/ajax/addUser',
+                    url: '/ajax/addSubscriber',
                     properties: {
-                        username: $('#user-form-username').val(),
-                        password: $('#user-form-password').val(),
-                        confirmPassword: $('#user-form-confirmPassword').val(),
-                        number: $('#user-form-number').val()
+                        username: $('#subscriber-form-username').val(),
+                        password: $('#subscriber-form-password').val(),
+                        confirmPassword: $('#subscriber-form-confirmPassword').val(),
+                        number: $('#subscriber-form-number').val()
                     },
                     successCallback: function() {
                         LISTEN.PROFILE.resetForm();
-                        LISTEN.PROFILE.showSuccess('User added');
+                        LISTEN.PROFILE.showSuccess('Subscriber added');
                         LISTEN.PROFILE.enableButtons();
                     },
                     errorCallback: function(message) {
@@ -66,21 +66,21 @@ $(document).ready(function() {
                 });
             },
 
-            editUser: function() {
-                LISTEN.trace('LISTEN.PROFILE.editUser');
+            editSubscriber: function() {
+                LISTEN.trace('LISTEN.PROFILE.editSubscriber');
                 LISTEN.PROFILE.disableButtons();
                 SERVER.post({
-                    url: '/ajax/editUser',
+                    url: '/ajax/editSubscriber',
                     properties: {
-                        id: $('#user-form-id').val(),
-                        username: $('#user-form-username').val(),
-                        password: $('#user-form-password').val(),
-                        confirmPassword: $('#user-form-confirmPassword').val(),
-                        number: $('#user-form-number').val()
+                        id: $('#subscriber-form-id').val(),
+                        username: $('#subscriber-form-username').val(),
+                        password: $('#subscriber-form-password').val(),
+                        confirmPassword: $('#subscriber-form-confirmPassword').val(),
+                        number: $('#subscriber-form-number').val()
                     },
                     successCallback: function() {
                         //LISTEN.PROFILE.resetForm();
-                        LISTEN.PROFILE.showSuccess('User updated');
+                        LISTEN.PROFILE.showSuccess('Subscriber updated');
                         LISTEN.PROFILE.enableButtons();
                     },
                     errorCallback: function(message) {
@@ -110,12 +110,12 @@ $(document).ready(function() {
 
             disableButtons: function() {
                 LISTEN.trace('LISTEN.PROFILE.disableButtons');
-                $('#user-form button').attr('readonly', 'readonly');
+                $('#subscriber-form button').attr('readonly', 'readonly');
             },
 
             enableButtons: function() {
                 LISTEN.trace('LISTEN.PROFILE.enableButtons');
-                $('#user-form button').removeAttr('readonly');
+                $('#subscriber-form button').removeAttr('readonly');
             }
         }
     }();

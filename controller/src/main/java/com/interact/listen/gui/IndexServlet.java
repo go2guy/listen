@@ -1,7 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.ServletUtil;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
 
@@ -16,9 +16,9 @@ public class IndexServlet extends HttpServlet
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         HttpSession session = request.getSession();
-        User user = (User)session.getAttribute("user");
+        Subscriber subscriber = (Subscriber)session.getAttribute("subscriber");
 
-        if(user == null)
+        if(subscriber == null)
         {
             ServletUtil.redirect("/login", response);
             return;

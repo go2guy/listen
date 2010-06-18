@@ -1,11 +1,13 @@
 package com.interact.listen.gui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.exception.ListenServletException;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 
 import java.io.IOException;
@@ -24,12 +26,11 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class EditUserServletTest
+public class EditSubscriberServletTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-    private EditUserServlet servlet;
-    private User user;
+    private EditSubscriberServlet servlet;
     private Subscriber subscriber;
 
     @Before
@@ -37,23 +38,21 @@ public class EditUserServletTest
     {
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
-        servlet = new EditUserServlet();
+        servlet = new EditSubscriberServlet();
     }
 
     @Test
-    public void test_doPost_adminUserWithValidParameters_editsAccount() throws ServletException, IOException
+    public void test_doPost_adminSubscriberWithValidParameters_editsAccount() throws ServletException, IOException
     {
-        setSessionUser(request, true); // admin user
+        setSessionSubscriber(request, true); // admin subscriber
         
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
         session.save(subscriber);
-        user = getPopulatedUser();
-        session.save(user);
 
-        final String id = String.valueOf(user.getId());
+        final String id = String.valueOf(subscriber.getId());
         final String number = randomString();
         final String username = randomString();
         final String password = randomString();
@@ -68,24 +67,14 @@ public class EditUserServletTest
 
         servlet.service(request, response);
 
-        // verify a subscriber was created with the provided number since admin is changing the subscriber number
         Criteria criteria = session.createCriteria(Subscriber.class);
         criteria.add(Restrictions.eq("number", number));
         Subscriber subscriber = (Subscriber)criteria.uniqueResult();
         assertNotNull(subscriber);
+        assertEquals(username, subscriber.getUsername());
+        assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
 
-        // verify a user was modified for the username and is associated with the created subscriber
-        criteria = session.createCriteria(User.class);
-        criteria.add(Restrictions.eq("username", username));
-        User user = (User)criteria.uniqueResult();
-        assertNotNull(user);
-        assertEquals(username, user.getUsername());
-        assertEquals(SecurityUtil.hashPassword(password), user.getPassword());
-        assertEquals(subscriber, user.getSubscriber());
-        
-        session.delete(user);
         session.delete(subscriber);
-
         tx.commit();
     }
     
@@ -96,15 +85,13 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
 
-        final String id = String.valueOf(user.getId());
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("subscriber", subscriber);
+
+        final String id = String.valueOf(subscriber.getId());
         final String number = randomString();
         final String username = randomString();
         final String password = randomString();
@@ -119,25 +106,15 @@ public class EditUserServletTest
 
         servlet.service(request, response);
 
-        // verify a subscriber was NOT created with the provided number since non-admin is making the edit request
+        // verify a subscriber was modified for the username and is associated with the created subscriber
         Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("number", number));
-        Subscriber dbSubscriber = (Subscriber)criteria.uniqueResult();
-        assertNull(dbSubscriber);
-        assertEquals(user.getSubscriber().getNumber(), subscriber.getNumber());
-
-        // verify a user was modified for the username and is associated with the created subscriber
-        criteria = session.createCriteria(User.class);
         criteria.add(Restrictions.eq("username", username));
-        User user = (User)criteria.uniqueResult();
-        assertNotNull(user);
-        assertEquals(username, user.getUsername());
-        assertEquals(SecurityUtil.hashPassword(password), user.getPassword());
-        assertEquals(subscriber, user.getSubscriber());
-        
-        session.delete(user);
-        session.delete(subscriber);
+        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        assertNotNull(subscriber);
+        assertEquals(username, subscriber.getUsername());
+        assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
 
+        session.delete(subscriber);
         tx.commit();
     }
     
@@ -149,18 +126,16 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
-        User user2 = getPopulatedUser();
-        
-        HttpSession httpSession = request.getSession();
-        // Put a different user as the person trying to edit user
-        httpSession.setAttribute("user", user2);
+        Subscriber subscriber2 = getPopulatedSubscriber();
 
-        final String id = String.valueOf(user.getId());
+        HttpSession httpSession = request.getSession();
+        // Put a different subscriber as the person trying to edit subscriber
+        httpSession.setAttribute("subscriber", subscriber2);
+
+        final String id = String.valueOf(subscriber.getId());
         final String number = randomString();
         final String username = randomString();
         final String password = randomString();
@@ -186,17 +161,16 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
     }
 
     @Test
-    public void test_doPost_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws ServletException,
+    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws ServletException,
         IOException
     {
-        assert request.getSession().getAttribute("user") == null;
+        assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -232,16 +206,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", (String)null);
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
@@ -261,7 +233,6 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
@@ -275,16 +246,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", " ");
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
@@ -304,7 +273,6 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
@@ -318,16 +286,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", randomString());
         request.setParameter("username", (String)null);
         request.setParameter("password", randomString());
@@ -347,7 +313,6 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
@@ -361,16 +326,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", randomString());
         request.setParameter("username", " ");
         request.setParameter("password", randomString());
@@ -390,7 +353,6 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
@@ -404,16 +366,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", (String)null);
@@ -433,7 +393,6 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
@@ -447,16 +406,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", " ");
@@ -476,7 +433,6 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
@@ -490,16 +446,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
@@ -519,7 +473,6 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
@@ -533,16 +486,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
@@ -562,7 +513,6 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
@@ -576,16 +526,14 @@ public class EditUserServletTest
         Transaction tx = session.beginTransaction();
         
         subscriber = getPopulatedSubscriber();
+        subscriber.setIsAdministrator(Boolean.FALSE);
         session.save(subscriber);
-        user = getPopulatedUser();
-        user.setIsAdministrator(Boolean.FALSE);
-        session.save(user);
         
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("POST");
-        request.setParameter("id", String.valueOf(user.getId()));
+        request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
@@ -604,46 +552,32 @@ public class EditUserServletTest
         }
         finally
         {
-            session.delete(user);
             session.delete(subscriber);
             tx.commit();
         }
     }
-    
-    private User getPopulatedUser()
-    {
-        User u = new User();
-        u.setId(System.currentTimeMillis());
-        u.setSubscriber(subscriber);
-        u.setUsername("username");
-        u.setPassword("password");
-        u.setVersion(1);
-        
-        return u;
-    }
-    
+
     private Subscriber getPopulatedSubscriber()
     {
         Subscriber s = new Subscriber();
         s.setId(System.currentTimeMillis());
-        s.setVersion(1);
         s.setNumber(String.valueOf(System.currentTimeMillis()));
+        s.setPassword("password");
+        s.setUsername("username");
+        s.setVersion(1);
         s.setVoicemailGreetingLocation("foo/bar/baz/biz");
-        
         return s;
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionUser(HttpServletRequest request, boolean isAdmin)
+    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
-        User user = new User();
-        user.setIsAdministrator(isAdmin);
-        user.setSubscriber(subscriber);
+        subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", user);
+        session.setAttribute("subscriber", subscriber);
     }
 
     // TODO refactor this out into test utils

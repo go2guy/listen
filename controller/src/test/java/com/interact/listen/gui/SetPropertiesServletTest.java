@@ -8,7 +8,6 @@ import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
 
 import java.io.IOException;
 
@@ -37,10 +36,10 @@ public class SetPropertiesServletTest
     }
 
     @Test
-    public void test_doPost_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws ServletException,
+    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws ServletException,
         IOException
     {
-        assert request.getSession().getAttribute("user") == null;
+        assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
 
@@ -59,10 +58,10 @@ public class SetPropertiesServletTest
     }
 
     @Test
-    public void test_doPost_withNonAdministratorSessionUser_throwsListenServletExceptionWithUnauthorized()
+    public void test_doPost_withNonAdministratorSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        setSessionUser(request, false);
+        setSessionSubscriber(request, false);
 
         request.setMethod("POST");
 
@@ -82,7 +81,7 @@ public class SetPropertiesServletTest
     @Test
     public void test_doPost_withProperty_setsProperty() throws ServletException, IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         final String value = String.valueOf(System.currentTimeMillis());
 
@@ -94,15 +93,13 @@ public class SetPropertiesServletTest
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionUser(HttpServletRequest request, boolean isAdmin)
+    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
-        User user = new User();
-        user.setIsAdministrator(isAdmin);
-        user.setSubscriber(subscriber);
+        subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", user);
+        session.setAttribute("subscriber", subscriber);
     }
 }

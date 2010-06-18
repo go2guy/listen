@@ -86,8 +86,8 @@
     </servlet>
     
     <servlet>
-        <servlet-name>EditUserServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.EditUserServlet</servlet-class>
+        <servlet-name>EditSubscriberServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.EditSubscriberServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -128,14 +128,14 @@
     </servlet>
 
     <servlet>
-        <servlet-name>GetUserServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetUserServlet</servlet-class>
+        <servlet-name>GetSubscriberServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetSubscriberServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
-        <servlet-name>GetUserListServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetUserListServlet</servlet-class>
+        <servlet-name>GetSubscriberListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetSubscriberListServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -182,8 +182,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>AddUserServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.AddUserServlet</servlet-class>
+        <servlet-name>AddSubscriberServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.AddSubscriberServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -244,8 +244,8 @@
     </servlet-mapping>
     
     <servlet-mapping>
-        <servlet-name>EditUserServlet</servlet-name>
-        <url-pattern>/ajax/editUser</url-pattern>    
+        <servlet-name>EditSubscriberServlet</servlet-name>
+        <url-pattern>/ajax/editSubscriber</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>
@@ -274,13 +274,13 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>GetUserServlet</servlet-name>
-        <url-pattern>/ajax/getUser</url-pattern>
+        <servlet-name>GetSubscriberServlet</servlet-name>
+        <url-pattern>/ajax/getSubscriber</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>GetUserListServlet</servlet-name>
-        <url-pattern>/ajax/getUserList</url-pattern>
+        <servlet-name>GetSubscriberListServlet</servlet-name>
+        <url-pattern>/ajax/getSubscriberList</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -304,8 +304,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>AddUserServlet</servlet-name>
-        <url-pattern>/ajax/addUser</url-pattern>    
+        <servlet-name>AddSubscriberServlet</servlet-name>
+        <url-pattern>/ajax/addSubscriber</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>

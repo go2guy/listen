@@ -9,7 +9,7 @@ import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.ConferenceRecording;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -51,8 +51,8 @@ public class GetConferenceRecordingServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_GET_CONFERENCE_RECORDING);
 
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
@@ -66,7 +66,7 @@ public class GetConferenceRecordingServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
         ConferenceRecording recording = (ConferenceRecording)session.get(ConferenceRecording.class, Long.valueOf(id));
-        if(!(user.getIsAdministrator() || user.getConferences().contains(recording.getConference())))
+        if(!(subscriber.getIsAdministrator() || subscriber.getConferences().contains(recording.getConference())))
         {
             throw new UnauthorizedServletException("Not allowed to download recording");
         }

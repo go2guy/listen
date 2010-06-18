@@ -60,12 +60,12 @@ public class ConferenceHistoryTest
     }
 
     @Test
-    public void test_setUser_withValidUser_setsUser()
+    public void test_setSubscriber_withValidSubscriber_setsSubscriber()
     {
-        final String user = String.valueOf(System.currentTimeMillis());
-        conferenceHistory.setUser(user);
+        final String subscriber = String.valueOf(System.currentTimeMillis());
+        conferenceHistory.setSubscriber(subscriber);
 
-        assertEquals(user, conferenceHistory.getUser());
+        assertEquals(subscriber, conferenceHistory.getSubscriber());
     }
 
     @Test
@@ -88,20 +88,20 @@ public class ConferenceHistoryTest
     }
 
     @Test
-    public void test_validate_withNullUser_returnsFalseAndHasErrors()
+    public void test_validate_withNullSubscriber_returnsFalseAndHasErrors()
     {
         conferenceHistory = getPopulatedConferenceHistory();
-        conferenceHistory.setUser(null);
+        conferenceHistory.setSubscriber(null);
 
         assertFalse(conferenceHistory.validate());
         assertTrue(conferenceHistory.hasErrors());
     }
 
     @Test
-    public void test_validate_withBlankUser_returnsFalseAndHasErrors()
+    public void test_validate_withBlankSubscriber_returnsFalseAndHasErrors()
     {
         conferenceHistory = getPopulatedConferenceHistory();
-        conferenceHistory.setUser(" ");
+        conferenceHistory.setSubscriber(" ");
 
         assertFalse(conferenceHistory.validate());
         assertTrue(conferenceHistory.hasErrors());
@@ -137,7 +137,7 @@ public class ConferenceHistoryTest
         assertEquals(original.getDateCreated(), copy.getDateCreated());
         assertFalse(original.getDateCreated() == copy.getDateCreated()); // different reference
         assertEquals(original.getDescription(), copy.getDescription());
-        assertTrue(original.getUser() == copy.getUser()); // same reference
+        assertTrue(original.getSubscriber() == copy.getSubscriber()); // same reference
 
         assertNull(copy.getId());
         assertEquals(Integer.valueOf(0), copy.getVersion());
@@ -215,12 +215,12 @@ public class ConferenceHistoryTest
     }
 
     @Test
-    public void test_equals_userNotEqual_returnsFalse()
+    public void test_equals_subscriberNotEqual_returnsFalse()
     {
-        conferenceHistory.setUser(String.valueOf(System.currentTimeMillis()));
+        conferenceHistory.setSubscriber(String.valueOf(System.currentTimeMillis()));
 
         ConferenceHistory that = new ConferenceHistory();
-        that.setUser(null);
+        that.setSubscriber(null);
 
         assertFalse(conferenceHistory.equals(that));
     }
@@ -231,18 +231,18 @@ public class ConferenceHistoryTest
         Conference conference = new Conference();
         Date dateCreated = new Date();
         String description = String.valueOf(System.currentTimeMillis());
-        String user = String.valueOf(System.currentTimeMillis());
+        String subscriber = String.valueOf(System.currentTimeMillis());
 
         conferenceHistory.setConference(conference);
         conferenceHistory.setDateCreated(dateCreated);
         conferenceHistory.setDescription(description);
-        conferenceHistory.setUser(user);
+        conferenceHistory.setSubscriber(subscriber);
 
         ConferenceHistory that = new ConferenceHistory();
         that.setConference(conference);
         that.setDateCreated(dateCreated);
         that.setDescription(description);
-        that.setUser(user);
+        that.setSubscriber(subscriber);
 
         assertTrue(conferenceHistory.equals(that));
     }
@@ -256,7 +256,7 @@ public class ConferenceHistoryTest
         obj.setConference(new Conference());
         obj.setDateCreated(new Date(Long.valueOf("1273861270512")));
         obj.setDescription("Pepe");
-        obj.setUser("Big John");
+        obj.setSubscriber("Big John");
 
         // set a property that has no effect on hashcode to something dynamic
         obj.setId(System.currentTimeMillis());
@@ -270,7 +270,7 @@ public class ConferenceHistoryTest
         history.setId(System.currentTimeMillis());
         history.setVersion(1);
         history.setDescription("All Cows Eat Grass");
-        history.setUser("Good Boys Do Fine Always");
+        history.setSubscriber("Good Boys Do Fine Always");
         history.setConference(new Conference());
         return history;
     }

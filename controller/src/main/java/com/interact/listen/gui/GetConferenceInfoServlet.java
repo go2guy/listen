@@ -46,8 +46,8 @@ public class GetConferenceInfoServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_GET_CONFERENCE_INFO);
 
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
@@ -61,7 +61,7 @@ public class GetConferenceInfoServlet extends HttpServlet
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
         marshaller.registerConverterClass(PinType.class, FriendlyPinTypeConverter.class);
 
-        Conference conference = GuiServletUtil.getConferenceFromIdOrUser(id, user, persistenceService);
+        Conference conference = GuiServletUtil.getConferenceFromIdOrSubscriber(id, subscriber, persistenceService);
 
         if(conference == null)
         {
@@ -69,9 +69,9 @@ public class GetConferenceInfoServlet extends HttpServlet
                                              "text/plain");
         }
 
-        if(!user.equals(conference.getUser()) && !user.getIsAdministrator())
+        if(!subscriber.equals(conference.getSubscriber()) && !subscriber.getIsAdministrator())
         {
-            throw new UnauthorizedServletException("Conference does not belong to user");
+            throw new UnauthorizedServletException("Conference does not belong to subscriber");
         }
 
         StringBuilder content = new StringBuilder();

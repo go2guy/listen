@@ -192,6 +192,7 @@ public class JsonMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setNumber("foo" + System.currentTimeMillis());
+        subscriber.setLastLogin(new Date());
 
         String json = marshaller.marshal(subscriber);
         InputStream stream = new ByteArrayInputStream(json.getBytes());
@@ -208,6 +209,7 @@ public class JsonMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setNumber("foo" + System.currentTimeMillis());
+        subscriber.setLastLogin(new Date());
 
         String json = marshaller.marshal(subscriber);
         InputStream stream = new ByteArrayInputStream(json.getBytes());

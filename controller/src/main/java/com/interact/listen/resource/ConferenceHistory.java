@@ -29,8 +29,8 @@ public class ConferenceHistory extends Resource implements Serializable
     @ManyToOne
     private Conference conference;
 
-    @Column(name = "USER", nullable = false)
-    private String user;
+    @Column(name = "SUBSCRIBER", nullable = false)
+    private String subscriber;
 
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
@@ -77,14 +77,14 @@ public class ConferenceHistory extends Resource implements Serializable
         this.conference = conference;
     }
 
-    public String getUser()
+    public String getSubscriber()
     {
-        return user;
+        return subscriber;
     }
 
-    public void setUser(String user)
+    public void setSubscriber(String subscriber)
     {
-        this.user = user;
+        this.subscriber = subscriber;
     }
 
     public String getDescription()
@@ -107,9 +107,9 @@ public class ConferenceHistory extends Resource implements Serializable
             isValid = false;
         }
 
-        if(user == null || user.trim().equals(""))
+        if(subscriber == null || subscriber.trim().equals(""))
         {
-            addToErrors("user cannot be null or blank");
+            addToErrors("subscriber cannot be null or blank");
             isValid = false;
         }
 
@@ -135,7 +135,7 @@ public class ConferenceHistory extends Resource implements Serializable
         copy.setConference(conference);
         copy.setDateCreated(dateCreated == null ? null : new Date(dateCreated.getTime()));
         copy.setDescription(description);
-        copy.setUser(user);
+        copy.setSubscriber(subscriber);
         return copy;
     }
 
@@ -174,7 +174,7 @@ public class ConferenceHistory extends Resource implements Serializable
             return false;
         }
 
-        if(!ComparisonUtil.isEqual(conferenceHistory.getUser(), getUser()))
+        if(!ComparisonUtil.isEqual(conferenceHistory.getSubscriber(), getSubscriber()))
         {
             return false;
         }
@@ -190,7 +190,7 @@ public class ConferenceHistory extends Resource implements Serializable
         hash *= prime + (getConference() == null ? 0 : getConference().hashCode());
         hash *= prime + (getDateCreated() == null ? 0 : getDateCreated().hashCode());
         hash *= prime + (getDescription() == null ? 0 : getDescription().hashCode());
-        hash *= prime + (getUser() == null ? 0 : getUser().hashCode());
+        hash *= prime + (getSubscriber() == null ? 0 : getSubscriber().hashCode());
         return hash;
     }
 }

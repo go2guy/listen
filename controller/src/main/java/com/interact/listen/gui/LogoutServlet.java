@@ -37,7 +37,7 @@ public class LogoutServlet extends HttpServlet
         statSender.send(Stat.GUI_LOGOUT);
 
         HttpSession session = request.getSession();
-        session.removeAttribute("user");
+        session.removeAttribute("subscriber");
 
         ServletUtil.redirect("/login", response);
     }

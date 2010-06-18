@@ -343,13 +343,13 @@ td.voicemail-cell-readStatus {
     color: #FFFFFF;
 }
 
-/* application - users */
+/* application - subscribers */
 
-#users-application fieldset {
+#subscribers-application fieldset {
     border-width: 0;
 }
 
-#user-form-edit-button, #user-form-cancel-button {
+#subscriber-form-edit-button, #subscriber-form-cancel-button {
     display: none;
 }
 

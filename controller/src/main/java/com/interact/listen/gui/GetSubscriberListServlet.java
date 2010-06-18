@@ -6,7 +6,7 @@ import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -23,17 +23,17 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 /**
- * Provides a GET implementation that retrieves a list of Users.
+ * Provides a GET implementation that retrieves a list of Subscribers.
  */
-public class GetUserListServlet extends HttpServlet
+public class GetSubscriberListServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
@@ -43,30 +43,30 @@ public class GetUserListServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_GET_USER_LIST);
+        statSender.send(Stat.GUI_GET_SUBSCRIBER_LIST);
 
-        if(!user.getIsAdministrator())
+        if(!subscriber.getIsAdministrator())
         {
             throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        Criteria criteria = session.createCriteria(User.class);
+        Criteria criteria = session.createCriteria(Subscriber.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        List<User> users = (List<User>)criteria.list();
+        List<Subscriber> subscribers = (List<Subscriber>)criteria.list();
 
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 
         StringBuilder json = new StringBuilder();
         json.append("[");
-        for(User u : users)
+        for(Subscriber s : subscribers)
         {
-            json.append(GetUserServlet.marshalUserToJson(u, marshaller));
+            json.append(GetSubscriberServlet.marshalSubscriberToJson(s, marshaller));
             json.append(",");
         }
-        if(users.size() > 0)
+        if(subscribers.size() > 0)
         {
             json.deleteCharAt(json.length() - 1); // last comma
         }

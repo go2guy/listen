@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.classic.Session;
 
-public class AddUserServlet extends HttpServlet
+public class AddSubscriberServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
@@ -30,15 +30,15 @@ public class AddUserServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_PROVISION_ACCOUNT);
+        statSender.send(Stat.GUI_ADD_SUBSCRIBER);
 
-        User currentUser = (User)(request.getSession().getAttribute("user"));
-        if(currentUser == null)
+        Subscriber currentSubscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(currentSubscriber == null)
         {
             throw new UnauthorizedServletException();
         }
 
-        if(!currentUser.getIsAdministrator())
+        if(!currentSubscriber.getIsAdministrator())
         {
             throw new UnauthorizedServletException();
         }
@@ -77,6 +77,8 @@ public class AddUserServlet extends HttpServlet
 
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(number);
+        subscriber.setPassword(SecurityUtil.hashPassword(password));
+        subscriber.setUsername(username);
         persistenceService.save(subscriber);
 
         Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
@@ -88,7 +90,7 @@ public class AddUserServlet extends HttpServlet
         persistenceService.save(passivePin);
 
         Conference conference = new Conference();
-        conference.setDescription(subscriber.getNumber());
+        conference.setDescription(subscriber.getNumber() + "'s Conference");
         conference.setIsStarted(Boolean.FALSE);
         conference.setIsRecording(Boolean.FALSE);
         conference.addToPins(activePin);
@@ -96,11 +98,6 @@ public class AddUserServlet extends HttpServlet
         conference.addToPins(passivePin);
         persistenceService.save(conference);
 
-        User user = new User();
-        user.setPassword(SecurityUtil.hashPassword(password));
-        user.setSubscriber(subscriber);
-        user.setUsername(username);
-        user.addToConferences(conference);
-        persistenceService.save(user);
+        subscriber.addToConferences(conference);
     }
 }

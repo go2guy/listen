@@ -9,7 +9,6 @@ import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
 
 import java.io.IOException;
 
@@ -40,10 +39,10 @@ public class OutdialServletTest
     }
 
     @Test
-    public void test_doPost_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws ServletException,
+    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws ServletException,
         IOException
     {
-        assert request.getSession().getAttribute("user") == null;
+        assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
         request.setParameter("conferenceId", randomString());
@@ -73,7 +72,7 @@ public class OutdialServletTest
     public void test_doPost_withNullConferenceId_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("conferenceId", (String)null);
@@ -103,7 +102,7 @@ public class OutdialServletTest
     public void test_doPost_withBlankConferenceId_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("conferenceId", " ");
@@ -133,7 +132,7 @@ public class OutdialServletTest
     public void test_doPost_withNullNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("conferenceId", randomString());
@@ -163,7 +162,7 @@ public class OutdialServletTest
     public void test_doPost_withBlankNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("conferenceId", randomString());
@@ -192,7 +191,7 @@ public class OutdialServletTest
     @Test
     public void test_doPost_withConferenceNotFound_throwsListenServletExceptionWithBadRequest() throws ServletException, IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("conferenceId", randomString()); // hopefully doesn't exist
@@ -219,16 +218,14 @@ public class OutdialServletTest
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionUser(HttpServletRequest request, boolean isAdmin)
+    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
-        User user = new User();
-        user.setIsAdministrator(isAdmin);
-        user.setSubscriber(subscriber);
+        subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", user);
+        session.setAttribute("subscriber", subscriber);
     }
 
     // TODO refactor this out into test utils

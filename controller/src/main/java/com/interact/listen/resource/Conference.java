@@ -28,7 +28,7 @@ public class Conference extends Resource implements Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
-    // TODO enforce unique description per User
+    // TODO enforce unique description per Subscriber
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
@@ -59,9 +59,9 @@ public class Conference extends Resource implements Serializable
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<ConferenceRecording> conferenceRecordings = new HashSet<ConferenceRecording>();
 
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "SUBSCRIBER_ID")
     @ManyToOne
-    private User user;
+    private Subscriber subscriber;
 
     public Boolean getIsStarted()
     {
@@ -201,14 +201,14 @@ public class Conference extends Resource implements Serializable
         this.conferenceRecordings = conferenceRecordings;
     }
 
-    public User getUser()
+    public Subscriber getSubscriber()
     {
-        return user;
+        return subscriber;
     }
 
-    public void setUser(User user)
+    public void setSubscriber(Subscriber subscriber)
     {
-        this.user = user;
+        this.subscriber = subscriber;
     }
 
     @Override
@@ -260,7 +260,7 @@ public class Conference extends Resource implements Serializable
             copy.addToPins(pin.copy(false));
         }
 
-        copy.setUser(user);
+        copy.setSubscriber(subscriber);
 
         return copy;
     }
@@ -271,7 +271,7 @@ public class Conference extends Resource implements Serializable
         StatSender statSender = StatSenderFactory.getStatSender();
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(this);
-        history.setUser("Current User"); // FIXME
+        history.setSubscriber("Current Subscriber"); // FIXME
         history.setDescription("Conference created");
 
         PersistenceService persistenceService = new PersistenceService(session);
@@ -287,7 +287,7 @@ public class Conference extends Resource implements Serializable
         {
             history = new ConferenceHistory();
             history.setConference(this);
-            history.setUser("Current User"); // FIXME
+            history.setSubscriber("Current Subscriber"); // FIXME
             history.setDescription("Conference recording started");
 
             persistenceService = new PersistenceService(session);
@@ -306,7 +306,7 @@ public class Conference extends Resource implements Serializable
         {
             ConferenceHistory history = new ConferenceHistory();
             history.setConference(this);
-            history.setUser("Current User"); // FIXME
+            history.setSubscriber("Current Subscriber"); // FIXME
             history.setDescription("Conference " + (isStarted ? "started" : "ended"));
 
             PersistenceService persistenceService = new PersistenceService(session);
@@ -335,7 +335,7 @@ public class Conference extends Resource implements Serializable
         {
             ConferenceHistory history = new ConferenceHistory();
             history.setConference(this);
-            history.setUser("Current User"); // FIXME
+            history.setSubscriber("Current Subscriber"); // FIXME
             history.setDescription("Conference recording " + (isRecording ? "started" : "ended"));
 
             PersistenceService persistenceService = new PersistenceService(session);
@@ -384,7 +384,7 @@ public class Conference extends Resource implements Serializable
             return false;
         }
 
-        if(!ComparisonUtil.isEqual(conference.getUser(), getUser()))
+        if(!ComparisonUtil.isEqual(conference.getSubscriber(), getSubscriber()))
         {
             return false;
         }
@@ -398,7 +398,7 @@ public class Conference extends Resource implements Serializable
         final int prime = 31;
         int hash = 1;
         hash *= prime + (getDescription() == null ? 0 : getDescription().hashCode());
-        hash *= prime + (getUser() == null ? 0 : getUser().hashCode());
+        hash *= prime + (getSubscriber() == null ? 0 : getSubscriber().hashCode());
         return hash;
     }
 }

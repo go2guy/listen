@@ -26,24 +26,24 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class AddUserServletTest
+public class AddSubscriberServletTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
-    private AddUserServlet servlet;
+    private AddSubscriberServlet servlet;
 
     @Before
     public void setUp()
     {
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
-        servlet = new AddUserServlet();
+        servlet = new AddSubscriberServlet();
     }
 
     @Test
     public void test_doPost_withValidParameters_provisionsNewAccount() throws ServletException, IOException
     {
-        setSessionUser(request, true); // admin user
+        setSessionSubscriber(request, true); // admin subscriber
 
         final String number = randomString();
         final String username = randomString();
@@ -60,23 +60,16 @@ public class AddUserServletTest
         Transaction tx = session.beginTransaction();
         servlet.service(request, response);
 
-        // verify a subscriber was created with the provided number
+        // verify a subscriber was created for the username and is associated with the created subscriber
         Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("number", number));
+        criteria.add(Restrictions.eq("username", username));
         Subscriber subscriber = (Subscriber)criteria.uniqueResult();
         assertNotNull(subscriber);
-
-        // verify a user was created for the username and is associated with the created subscriber
-        criteria = session.createCriteria(User.class);
-        criteria.add(Restrictions.eq("username", username));
-        User user = (User)criteria.uniqueResult();
-        assertNotNull(user);
-        assertEquals(SecurityUtil.hashPassword(password), user.getPassword());
-        assertEquals(subscriber, user.getSubscriber());
+        assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
 
         // verify that a conference was created
-        Conference conference = new ArrayList<Conference>(user.getConferences()).get(0);
-        assertEquals(number, conference.getDescription());
+        Conference conference = new ArrayList<Conference>(subscriber.getConferences()).get(0);
+        assertEquals(number + "'s Conference", conference.getDescription());
         assertFalse(conference.getIsStarted());
 
         // verify that the conference has three random pins, one of each type
@@ -107,10 +100,10 @@ public class AddUserServletTest
     }
 
     @Test
-    public void test_doPost_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws ServletException,
+    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws ServletException,
         IOException
     {
-        assert request.getSession().getAttribute("user") == null;
+        assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -139,10 +132,10 @@ public class AddUserServletTest
     }
 
     @Test
-    public void test_doPost_withoutAdministratorUser_throwsListenServletExceptionWithUnauthorized()
+    public void test_doPost_withoutAdministratorSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        setSessionUser(request, false);
+        setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -174,7 +167,7 @@ public class AddUserServletTest
     public void test_doPost_withNullNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", (String)null);
@@ -207,7 +200,7 @@ public class AddUserServletTest
     public void test_doPost_withBlankNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", " ");
@@ -240,7 +233,7 @@ public class AddUserServletTest
     public void test_doPost_withNullUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -273,7 +266,7 @@ public class AddUserServletTest
     public void test_doPost_withBlankUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -306,7 +299,7 @@ public class AddUserServletTest
     public void test_doPost_withNullPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -339,7 +332,7 @@ public class AddUserServletTest
     public void test_doPost_withBlankPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -372,7 +365,7 @@ public class AddUserServletTest
     public void test_doPost_withNullConfirmPassword_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -405,7 +398,7 @@ public class AddUserServletTest
     public void test_doPost_withBlankConfirmPassword_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -438,7 +431,7 @@ public class AddUserServletTest
     public void test_doPost_whenPasswordAndConfirmPasswordDontMatch_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("POST");
         request.setParameter("number", randomString());
@@ -467,16 +460,14 @@ public class AddUserServletTest
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionUser(HttpServletRequest request, boolean isAdmin)
+    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
-        User user = new User();
-        user.setIsAdministrator(isAdmin);
-        user.setSubscriber(subscriber);
+        subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", user);
+        session.setAttribute("subscriber", subscriber);
     }
 
     // TODO refactor this out into test utils

@@ -160,12 +160,12 @@ public class SubscriberTest
     }
 
     @Test
-    public void test_equals_numberNotEqual_returnsFalse()
+    public void test_equals_usernameNotEqual_returnsFalse()
     {
-        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
 
         Subscriber that = new Subscriber();
-        that.setNumber(null);
+        that.setUsername(null);
 
         assertFalse(subscriber.equals(that));
     }
@@ -189,7 +189,7 @@ public class SubscriberTest
         Subscriber obj = new Subscriber();
 
         // hashcode-relevant properties set to static values for predictability
-        obj.setNumber("JJBLT");
+        obj.setUsername("JJBLT");
 
         // set a property that has no effect on hashcode to something dynamic
         obj.setVoicemailGreetingLocation(String.valueOf(System.currentTimeMillis()));
@@ -201,8 +201,10 @@ public class SubscriberTest
     {
         Subscriber s = new Subscriber();
         s.setId(System.currentTimeMillis());
-        s.setVersion(1);
         s.setNumber(String.valueOf(System.currentTimeMillis()));
+        s.setPassword(String.valueOf(System.currentTimeMillis()));
+        s.setUsername(String.valueOf(System.currentTimeMillis()));
+        s.setVersion(1);
         s.setVoicemailGreetingLocation("foo/bar/baz/biz");
         return s;
     }

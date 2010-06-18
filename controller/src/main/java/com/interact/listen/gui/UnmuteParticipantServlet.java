@@ -9,7 +9,7 @@ import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Participant;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.InsaStatSender;
@@ -45,8 +45,8 @@ public class UnmuteParticipantServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_UNMUTE_PARTICIPANT);
 
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException();
         }
@@ -61,7 +61,7 @@ public class UnmuteParticipantServlet extends HttpServlet
         PersistenceService persistenceService = new PersistenceService(session);
 
         Participant participant = (Participant)persistenceService.get(Participant.class, Long.valueOf(id));
-        if(!isUserAllowedToUnmute(user, participant))
+        if(!isSubscriberAllowedToUnmute(subscriber, participant))
         {
             throw new UnauthorizedServletException("Not allowed to unmute participant");
         }
@@ -82,7 +82,7 @@ public class UnmuteParticipantServlet extends HttpServlet
         }
     }
 
-    private boolean isUserAllowedToUnmute(User user, Participant participant)
+    private boolean isSubscriberAllowedToUnmute(Subscriber subscriber, Participant participant)
     {
         // admins cannot be admin muted
         if(participant.getIsAdmin())
@@ -90,13 +90,13 @@ public class UnmuteParticipantServlet extends HttpServlet
             return false;
         }
 
-        if(user.getIsAdministrator())
+        if(subscriber.getIsAdministrator())
         {
             return true;
         }
 
-        // does the current user own the conference?
-        if(user.getConferences().contains(participant.getConference()))
+        // does the current subscriber own the conference?
+        if(subscriber.getConferences().contains(participant.getConference()))
         {
             return true;
         }

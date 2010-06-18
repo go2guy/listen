@@ -1,10 +1,10 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.interact.listen.license.License" %>
 <%@ page import="com.interact.listen.license.ListenFeature" %>
-<%@ page import="com.interact.listen.resource.User" %>
+<%@ page import="com.interact.listen.resource.Subscriber" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html><%
-User user = (User)session.getAttribute("user"); %>
+Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>Listen</title>
@@ -21,7 +21,7 @@ User user = (User)session.getAttribute("user"); %>
     <script type="text/javascript" src="./resources/app/js/server-min.js"></script><%
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
     <script type="text/javascript" src="./resources/app/js/app-conferencing-min.js"></script><%
-    if(user != null && user.getIsAdministrator()) { %>
+    if(subscriber != null && subscriber.getIsAdministrator()) { %>
     <script type="text/javascript" src="./resources/app/js/app-conference-list-min.js"></script><%
     }
 }
@@ -31,9 +31,9 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
 if(License.isLicensed(ListenFeature.FINDME)) { %>
     <script type="text/javascript" src="./resources/app/js/app-findme-min.js"></script><%
 }
-if(user != null && user.getIsAdministrator()) { %>
+if(subscriber != null && subscriber.getIsAdministrator()) { %>
     <script type="text/javascript" src="./resources/app/js/app-system-configuration-min.js"></script>
-    <script type="text/javascript" src="./resources/app/js/app-users-min.js"></script>
+    <script type="text/javascript" src="./resources/app/js/app-subscribers-min.js"></script>
     <script type="text/javascript" src="./resources/app/js/app-callhistory-min.js"></script><%
 } %>
     <script type="text/javascript" src="./resources/app/js/app-profile-min.js"></script>
@@ -41,7 +41,7 @@ if(user != null && user.getIsAdministrator()) { %>
   <body>
     <div id="header">
       <div class="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
-      <div class="info"><b><%= user.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="#" id="profileButton" name="profileButton" title="Settings" onclick="LISTEN.PROFILE.loadUser(<%= user.getId() %>);return false;">Settings</a>&nbsp;<a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
+      <div class="info"><b><%= subscriber.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="#" id="profileButton" name="profileButton" title="Settings" onclick="LISTEN.PROFILE.loadSubscriber(<%= subscriber.getId() %>);return false;">Settings</a>&nbsp;<a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
     </div>
     <div class="column-mask">
       <div class="two-column">
@@ -169,7 +169,7 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
             </div><%
 }
 
-if(user != null && user.getIsAdministrator()) { %>
+if(subscriber != null && subscriber.getIsAdministrator()) { %>
             <div id="sysconfig-application" class="application">
               <div class="application-header"><div class="title">Configuration</div></div>
               <div class="application-content">
@@ -227,11 +227,11 @@ if(user != null && user.getIsAdministrator()) { %>
               </div>
             </div>
 
-            <div id="users-application" class="application">
-              <div class="application-header"><div class="title">Users</div></div>
+            <div id="subscribers-application" class="application">
+              <div class="application-header"><div class="title">Subscribers</div></div>
               <div class="application-content">
-                <div class="title">User List</div>
-                <table id="users-table" class="data-table">
+                <div class="title">Subscriber List</div>
+                <table id="subscribers-table" class="data-table">
                   <thead>
                     <tr>
                       <th>Username</th>
@@ -245,7 +245,7 @@ if(user != null && user.getIsAdministrator()) { %>
               </div>
             </div><%
 } 
-if(user != null) { %>
+if(subscriber != null) { %>
             <div id="profile-application" class="application">
               <div class="application-header"><div class="title">Profile Info</div></div>
               <div class="application-content">
@@ -253,19 +253,22 @@ if(user != null) { %>
                   <div class="form-error-message"></div>
                   <div class="form-success-message"></div>
                   <fieldset>
-                    <input type="hidden" id="user-form-id" name="user-form-id"/>
+                    <input type="hidden" id="subscriber-form-id" name="subscriber-form-id"/>
                     <table>
                       <tbody>
-                        <tr><td><label for="user-form-username">Username</label></td><td><input type="text" id="user-form-username" name="user-form-username"/></td></tr>
-                        <tr><td><label for="user-form-password">Password</label></td><td><input type="password" id="user-form-password" name="user-form-password"/></td></tr>
-                        <tr><td><label for="user-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="user-form-confirmPassword" name="user-form-confirmPassword"/></td></tr>
-                        <tr><td><label for="user-form-number">Number</label></td><td><input type="text" id="user-form-number" name="user-form-number"/></td></tr>
+                        <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
+                        <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
+                        <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
+                        <tr><td><label for="subscriber-form-number">Number</label></td><td><input type="text" id="subscriber-form-number" name="subscriber-form-number"/></td></tr>
+                        <tr>
+                        
+                        </tr>
                         <tr>
                           <td></td>
                           <td class="buttons">
-                            <button class="save-button" id="user-form-add-button" name="user-form-add-button" title="Add" onclick="LISTEN.PROFILE.addUser();return false;">Add</button>
-                            <button class="edit-button" id="user-form-edit-button" name="user-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editUser();return false;">Edit</button>
-                            <button class="cancel-button" id="user-form-cancel-button" name="user-form-cancel-button" title="Cancel Edit" onclick="LISTEN.PROFILE.resetForm();return false;">Cancel Edit</button>
+                            <button class="save-button" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.PROFILE.addSubscriber();return false;">Add</button>
+                            <button class="edit-button" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
+                            <button class="cancel-button" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.PROFILE.resetForm();return false;">Cancel Edit</button>
                           </td>
                         </tr>
                       </tbody>
@@ -317,7 +320,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)
           </div><%
 }
 
-if(user != null && user.getIsAdministrator()) { %>
+if(subscriber != null && subscriber.getIsAdministrator()) { %>
           <hr style="width: 75%;"/>
           <div class="menu">
             <ul>
@@ -325,7 +328,7 @@ if(user != null && user.getIsAdministrator()) { %>
     if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
               <li id="menu-conference-list">Conferences</li><%
     } %>
-              <li id="menu-users">Users</li>
+              <li id="menu-subscribers">Subscribers</li>
               <li id="menu-callhistory">Call History</li>
             </ul>
           </div><%
@@ -370,11 +373,11 @@ if(user != null && user.getIsAdministrator()) { %>
           <td class="conference-cell-view"></td>
         </tr>
 
-        <tr id="user-row-template">
-          <td class="user-cell-username"></td>
-          <td class="user-cell-number"></td>
-          <td class="user-cell-lastLogin"></td>
-          <td class="user-cell-editButton"></td>
+        <tr id="subscriber-row-template">
+          <td class="subscriber-cell-username"></td>
+          <td class="subscriber-cell-number"></td>
+          <td class="subscriber-cell-lastLogin"></td>
+          <td class="subscriber-cell-editButton"></td>
         </tr>
 
         <tr id="voicemail-row-template">

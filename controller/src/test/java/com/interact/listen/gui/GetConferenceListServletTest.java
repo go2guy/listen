@@ -9,7 +9,6 @@ import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
 
 import java.io.IOException;
 
@@ -37,7 +36,7 @@ public class GetConferenceListServletTest
     }
 
     @Test
-    public void test_doGet_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws IOException,
+    public void test_doGet_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws IOException,
         ServletException
     {
         request.setMethod("GET");
@@ -56,7 +55,7 @@ public class GetConferenceListServletTest
     @Test
     public void test_doGet_returnsListWithNecessaryFields() throws IOException, ServletException
     {
-        setSessionUser(request);
+        setSessionSubscriber(request, false);
 
         request.setMethod("GET");
         servlet.service(request, response);
@@ -64,17 +63,16 @@ public class GetConferenceListServletTest
         assertTrue(request.getOutputBufferString().contains("_fields=description,id,isStarted"));
     }
 
-    // TODO test with administrator user
-    // TODO test with non-administrator user
+    // TODO test with administrator subscriber
+    // TODO test with non-administrator subscriber
 
-    private void setSessionUser(HttpServletRequest request)
+    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
-        User user = new User();
-        user.setSubscriber(subscriber);
+        subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", user);
+        session.setAttribute("subscriber", subscriber);
     }
 }

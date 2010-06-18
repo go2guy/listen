@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
@@ -23,7 +23,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LogoutServletTest
 {
-    private static final String SESSION_USER_KEY = "user";
+    private static final String SESSION_SUBSCRIBER_KEY = "subscriber";
 
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -37,31 +37,31 @@ public class LogoutServletTest
     }
 
     @Test
-    public void test_doGet_removesUserFromSessionAndReturns200() throws IOException, ServletException
+    public void test_doGet_removesSubscriberFromSessionAndReturns200() throws IOException, ServletException
     {
-        User user = new User();
+        Subscriber subscriber = new Subscriber();
         HttpSession session = request.getSession();
-        session.setAttribute(SESSION_USER_KEY, user);
+        session.setAttribute(SESSION_SUBSCRIBER_KEY, subscriber);
 
         request.setMethod("GET");
         servlet.service(request, response);
 
-        assertNull(session.getAttribute(SESSION_USER_KEY));
+        assertNull(session.getAttribute(SESSION_SUBSCRIBER_KEY));
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 
     @Test
-    public void test_doPost_removesUserFromSessionAndReturns200() throws IOException, ServletException
+    public void test_doPost_removesSubscriberFromSessionAndReturns200() throws IOException, ServletException
     {
-        // put a user in the session first
-        User user = new User();
+        // put a subscriber in the session first
+        Subscriber subscriber = new Subscriber();
         HttpSession session = request.getSession();
-        session.setAttribute(SESSION_USER_KEY, user);
+        session.setAttribute(SESSION_SUBSCRIBER_KEY, subscriber);
 
         request.setMethod("POST");
         servlet.service(request, response);
 
-        assertNull(session.getAttribute(SESSION_USER_KEY));
+        assertNull(session.getAttribute(SESSION_SUBSCRIBER_KEY));
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 

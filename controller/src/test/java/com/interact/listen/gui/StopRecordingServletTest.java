@@ -10,7 +10,9 @@ import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Pin;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -45,7 +47,7 @@ public class StopRecordingServletTest
     }
 
     @Test
-    public void test_doPost_withNoSessionUser_throwsListenServletExceptionUnauthorizedStatusAndTextPlainContent()
+    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionUnauthorizedStatusAndTextPlainContent()
         throws IOException, ServletException
     {
         request.setMethod("POST");
@@ -66,7 +68,7 @@ public class StopRecordingServletTest
     public void test_doPost_withNullId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
         throws IOException, ServletException
     {
-        setSessionUser(request);
+        setSessionSubscriber(request, false);
         request.setMethod("POST");
         request.setParameter("id", (String)null);
 
@@ -87,7 +89,7 @@ public class StopRecordingServletTest
     public void test_doPost_withBlankId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
         throws IOException, ServletException
     {
-        setSessionUser(request);
+        setSessionSubscriber(request, false);
         request.setMethod("POST");
         request.setParameter("id", " ");
 
@@ -105,10 +107,10 @@ public class StopRecordingServletTest
     }
 
     @Test
-    public void test_doPost_userDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized() throws IOException,
+    public void test_doPost_subscriberDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized() throws IOException,
         ServletException
     {
-        setSessionUser(request);
+        setSessionSubscriber(request, false);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -148,24 +150,20 @@ public class StopRecordingServletTest
         Transaction tx = session.beginTransaction();
 
         Subscriber subscriber = new Subscriber();
+        subscriber.setIsAdministrator(false);
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
+        subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
         session.save(subscriber);
 
-        User user = new User();
-        user.setSubscriber(subscriber);
-        user.setUsername(String.valueOf(System.currentTimeMillis()));
-        user.setPassword(String.valueOf(System.currentTimeMillis()));
-        user.setIsAdministrator(false);
-        session.save(user);
-
-        request.getSession().setAttribute("user", user);
+        request.getSession().setAttribute("subscriber", subscriber);
 
         Conference conference = new Conference();
         conference.setIsStarted(false);
         conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
-        conference.setUser(user);
+        conference.setSubscriber(subscriber);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
         session.save(pin);
@@ -173,8 +171,7 @@ public class StopRecordingServletTest
         conference.addToPins(pin);
         session.save(conference);
 
-        user.addToConferences(conference);
-        session.save(user);
+        subscriber.addToConferences(conference);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(conference.getId()));
@@ -197,31 +194,27 @@ public class StopRecordingServletTest
     }
 
     //@Test
-    public void test_doPost_userOwnsConferenceAndRequestValid_sendsSpotRequestAndReturns200() throws IOException,
+    public void test_doPost_subscriberOwnsConferenceAndRequestValid_sendsSpotRequestAndReturns200() throws IOException,
         ServletException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
 
         Subscriber subscriber = new Subscriber();
+        subscriber.setIsAdministrator(false);
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
+        subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
         session.save(subscriber);
 
-        User user = new User();
-        user.setSubscriber(subscriber);
-        user.setUsername(String.valueOf(System.currentTimeMillis()));
-        user.setPassword(String.valueOf(System.currentTimeMillis()));
-        user.setIsAdministrator(false);
-        session.save(user);
-
-        request.getSession().setAttribute("user", user);
+        request.getSession().setAttribute("subscriber", subscriber);
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
-        conference.setUser(user);
+        conference.setSubscriber(subscriber);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
         session.save(pin);
@@ -229,8 +222,7 @@ public class StopRecordingServletTest
         conference.addToPins(pin);
         session.save(conference);
 
-        user.addToConferences(conference);
-        session.save(user);
+        subscriber.addToConferences(conference);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(conference.getId()));
@@ -244,7 +236,7 @@ public class StopRecordingServletTest
     }
 
     //@Test
-    public void test_doPost_userIsAdministratorButDoesNotOwnConferenceAndRequestValid_sendsSpotRequestAndReturns200()
+    public void test_doPost_subscriberIsAdministratorButDoesNotOwnConferenceAndRequestValid_sendsSpotRequestAndReturns200()
         throws IOException, ServletException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -252,16 +244,12 @@ public class StopRecordingServletTest
 
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
+        subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
+        subscriber.setIsAdministrator(true);
         session.save(subscriber);
 
-        User user = new User();
-        user.setSubscriber(subscriber);
-        user.setUsername(String.valueOf(System.currentTimeMillis()));
-        user.setPassword(String.valueOf(System.currentTimeMillis()));
-        user.setIsAdministrator(true);
-        session.save(user);
-
-        request.getSession().setAttribute("user", user);
+        request.getSession().setAttribute("subscriber", subscriber);
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
@@ -298,14 +286,13 @@ public class StopRecordingServletTest
         verify(statSender).send(Stat.GUI_STOP_RECORDING);
     }
 
-    private void setSessionUser(HttpServletRequest request)
+    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
-        User user = new User();
-        user.setSubscriber(subscriber);
+        subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", user);
+        session.setAttribute("subscriber", subscriber);
     }
 }

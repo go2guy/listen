@@ -197,12 +197,12 @@ public class ConferenceTest
     }
 
     @Test
-    public void test_equals_userNotEqual_returnsFalse()
+    public void test_equals_subscriberNotEqual_returnsFalse()
     {
-        conference.setUser(new User());
+        conference.setSubscriber(new Subscriber());
 
         Conference that = new Conference();
-        that.setUser(null);
+        that.setSubscriber(null);
 
         assertFalse(conference.equals(that));
     }
@@ -210,15 +210,15 @@ public class ConferenceTest
     @Test
     public void test_equals_allPropertiesEqual_returnsTrue()
     {
-        User user = new User();
+        Subscriber subscriber = new Subscriber();
         String description = String.valueOf(System.currentTimeMillis());
 
         conference.setDescription(description);
-        conference.setUser(user);
+        conference.setSubscriber(subscriber);
 
         Conference that = new Conference();
         that.setDescription(description);
-        that.setUser(user);
+        that.setSubscriber(subscriber);
 
         assertTrue(conference.equals(that));
     }
@@ -230,7 +230,7 @@ public class ConferenceTest
 
         // hashcode-relevant properties set to static values for predictability
         obj.setDescription("Sorry Charlie");
-        obj.setUser(new User());
+        obj.setSubscriber(new Subscriber());
 
         // set a property that has no effect on hashcode to something dynamic
         obj.setStartTime(new Date());

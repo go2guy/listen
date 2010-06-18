@@ -59,7 +59,6 @@ public final class HibernateUtil
             config.addAnnotatedClass(Pin.class);
             config.addAnnotatedClass(Property.class);
             config.addAnnotatedClass(Subscriber.class);
-            config.addAnnotatedClass(User.class);
             config.addAnnotatedClass(Voicemail.class);
 
             SESSION_FACTORY = config.buildSessionFactory();
@@ -69,7 +68,7 @@ public final class HibernateUtil
 
             PersistenceService persistenceService = new PersistenceService(session);
 
-            createAdminUserIfNotPresent(session, persistenceService);
+            createAdminSubscriberIfNotPresent(session, persistenceService);
 
             if(Boolean.valueOf(System.getProperty("bootstrap", "false")))
             {
@@ -162,6 +161,8 @@ public final class HibernateUtil
         {
             Subscriber subscriber = new Subscriber();
             subscriber.setNumber(new DecimalFormat("000").format(100 + i));
+            subscriber.setPassword(SecurityUtil.hashPassword("super"));
+            subscriber.setUsername(subscriber.getNumber());
             subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
             subscriber.setVoicemailPin(subscriber.getNumber());
             persistenceService.save(subscriber);
@@ -190,12 +191,7 @@ public final class HibernateUtil
             conference.setDescription(subscriber.getNumber());
             persistenceService.save(conference);
 
-            User user = new User();
-            user.setPassword(SecurityUtil.hashPassword("super"));
-            user.setSubscriber(subscriber);
-            user.setUsername(subscriber.getNumber());
-            user.addToConferences(conference);
-            persistenceService.save(user);
+            subscriber.addToConferences(conference);
 
             LOG.debug("Saved Conference " + conference.getId());
 
@@ -215,26 +211,11 @@ public final class HibernateUtil
                 LOG.debug("Saved Participant " + participant.getId());
             }
         }
-
-        // account for integration testing
-//        Subscriber subscriber = new Subscriber();
-//        subscriber.setNumber("347");
-//        subscriber.setVoicemailGreetingLocation("/greetings/" + subscriber.getNumber());
-//        subscriber.setVoicemailPin(subscriber.getNumber());
-//        persistenceService.save(subscriber);
-//
-//        Pin activePin = Pin.newInstance("111", PinType.ACTIVE);
-//        Pin adminPin = Pin.newInstance("347", PinType.ADMIN);
-//        Pin passivePin = Pin.newInstance("000", PinType.PASSIVE);
-//
-//        persistenceService.save(activePin);
-//        persistenceService.save(adminPin);
-//        persistenceService.save(passivePin);
     }
 
-    private static void createAdminUserIfNotPresent(Session session, PersistenceService persistenceService)
+    private static void createAdminSubscriberIfNotPresent(Session session, PersistenceService persistenceService)
     {
-        Criteria criteria = session.createCriteria(User.class);
+        Criteria criteria = session.createCriteria(Subscriber.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setFirstResult(0);
         criteria.setProjection(Projections.rowCount());
@@ -244,12 +225,13 @@ public final class HibernateUtil
 
         if(count == 0)
         {
-            LOG.debug("Created admin User");
-            User user = new User();
-            user.setUsername("Admin");
-            user.setPassword(SecurityUtil.hashPassword("Int3ract!Inc"));
-            user.setIsAdministrator(Boolean.TRUE);
-            persistenceService.save(user);
+            LOG.debug("Created admin Subscriber");
+            Subscriber subscriber = new Subscriber();
+            subscriber.setIsAdministrator(Boolean.TRUE);
+            subscriber.setNumber("1");
+            subscriber.setPassword(SecurityUtil.hashPassword("Int3ract!Inc"));
+            subscriber.setUsername("Admin");
+            persistenceService.save(subscriber);
         }
     }
 }

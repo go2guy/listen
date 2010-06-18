@@ -24,8 +24,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 /**
- * Provides a GET implementation that retrieves a list of Conferences for the current session user. If the user is an
- * Administrator, all conferences are returned. Otherwise, only conferences associated with the user are returned.
+ * Provides a GET implementation that retrieves a list of Conferences for the current session subscriber. If the
+ * subscriber is an Administrator, all conferences are returned. Otherwise, only conferences associated with the
+ * subscriber are returned.
  */
 public class GetConferenceListServlet extends HttpServlet
 {
@@ -46,8 +47,8 @@ public class GetConferenceListServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_GET_CONFERENCE_LIST);
 
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
@@ -56,7 +57,7 @@ public class GetConferenceListServlet extends HttpServlet
 
         List<Resource> conferences;
 
-        if(user.getIsAdministrator())
+        if(subscriber.getIsAdministrator())
         {
             Criteria criteria = session.createCriteria(Conference.class);
             criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -64,7 +65,7 @@ public class GetConferenceListServlet extends HttpServlet
         }
         else
         {
-            conferences = new ArrayList<Resource>(user.getConferences());
+            conferences = new ArrayList<Resource>(subscriber.getConferences());
         }
 
         Set<String> fields = new HashSet<String>();

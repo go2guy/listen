@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -45,21 +44,18 @@ public class LoginServletTest
     @Test
     public void test_doPost_validCredentials_returns200() throws IOException, ServletException
     {
-        final Long userId = System.currentTimeMillis();
+        final Long subscriberId = System.currentTimeMillis();
         final String username = String.valueOf(System.currentTimeMillis());
         final String password = "bar";
-
+        
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(userId));
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(SecurityUtil.hashPassword(password));
-        user.setSubscriber(subscriber);
+        subscriber.setNumber(String.valueOf(subscriberId));
+        subscriber.setPassword(SecurityUtil.hashPassword(password));
+        subscriber.setUsername(username);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         session.save(subscriber);
-        session.save(user);
 
         request.setMethod("POST");
         request.setParameter("username", username);
@@ -72,24 +68,21 @@ public class LoginServletTest
     }
 
     @Test
-    public void test_doPost_validUserButWrongPassword_populatesSessionErrorMapAndRedirectsToGet() throws IOException,
+    public void test_doPost_validSubscriberButWrongPassword_populatesSessionErrorMapAndRedirectsToGet() throws IOException,
         ServletException
     {
-        final Long userId = System.currentTimeMillis();
+        final Long subscriberId = System.currentTimeMillis();
         final String username = String.valueOf(System.currentTimeMillis());
         final String password = String.valueOf(System.currentTimeMillis());
-
+        
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(userId));
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(SecurityUtil.hashPassword(password));
-        user.setSubscriber(subscriber);
+        subscriber.setNumber(String.valueOf(subscriberId));
+        subscriber.setPassword(SecurityUtil.hashPassword(password));
+        subscriber.setUsername(username);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         session.save(subscriber);
-        session.save(user);
 
         request.setMethod("POST");
         request.setParameter("username", username);
@@ -107,7 +100,7 @@ public class LoginServletTest
     }
 
     @Test
-    public void test_doPost_userNotFound_populatesSessionErrorMapAndRedirectsToGet() throws IOException,
+    public void test_doPost_subscriberNotFound_populatesSessionErrorMapAndRedirectsToGet() throws IOException,
         ServletException
     {
         request.setMethod("POST");

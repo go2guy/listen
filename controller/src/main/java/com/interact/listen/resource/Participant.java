@@ -233,7 +233,7 @@ public class Participant extends Resource implements Serializable
         StatSender statSender = StatSenderFactory.getStatSender();
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(conference);
-        history.setUser("Current User"); // FIXME
+        history.setSubscriber("Current Subscriber"); // FIXME
         history.setDescription(number + " joined");
 
         PersistenceService persistenceService = new PersistenceService(session);
@@ -262,7 +262,7 @@ public class Participant extends Resource implements Serializable
         {
             ConferenceHistory history = new ConferenceHistory();
             history.setConference(conference);
-            history.setUser("Current User"); // FIXME
+            history.setSubscriber("Current Subscriber"); // FIXME
 
             if(isAdminMuted)
             {
@@ -283,7 +283,7 @@ public class Participant extends Resource implements Serializable
     {
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(conference);
-        history.setUser("Current User"); // FIXME
+        history.setSubscriber("Current Subscriber"); // FIXME
         history.setDescription(number + " was dropped");
 
         PersistenceService persistenceService = new PersistenceService(session);

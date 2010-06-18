@@ -7,7 +7,7 @@ import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -23,17 +23,17 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 /**
- * Provides a GET implementation that retrieves a list of Users.
+ * Provides a GET implementation that retrieves a list of {@link Subscribers}.
  */
-public class GetUserServlet extends HttpServlet
+public class GetSubscriberServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
@@ -43,9 +43,9 @@ public class GetUserServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_GET_USER);
+        statSender.send(Stat.GUI_GET_SUBSCRIBER);
 
-        if(!user.getIsAdministrator())
+        if(!subscriber.getIsAdministrator())
         {
             throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
         }
@@ -57,38 +57,35 @@ public class GetUserServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        Criteria criteria = session.createCriteria(User.class);
+        Criteria criteria = session.createCriteria(Subscriber.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        User u = (User)session.get(User.class, Long.parseLong(request.getParameter("id")));
+        Subscriber s = (Subscriber)session.get(Subscriber.class, Long.parseLong(request.getParameter("id")));
 
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 
-        String content = marshalUserToJson(u, marshaller);
+        String content = marshalSubscriberToJson(s, marshaller);
 
         response.setStatus(HttpServletResponse.SC_OK);
         OutputBufferFilter.append(request, content, marshaller.getContentType());
     }
 
-    public static String marshalUserToJson(User user, Marshaller marshaller)
+    public static String marshalSubscriberToJson(Subscriber subscriber, Marshaller marshaller)
     {
         StringBuilder json = new StringBuilder();
 
         json.append("{");
-        json.append("\"id\":").append(user.getId()).append(",");
+        json.append("\"id\":").append(subscriber.getId()).append(",");
 
-        String username = marshaller.convertAndEscape(String.class, user.getUsername());
+        String username = marshaller.convertAndEscape(String.class, subscriber.getUsername());
         json.append("\"username\":\"").append(username).append("\",");
 
-        String lastLogin = marshaller.convertAndEscape(Date.class, user.getLastLogin());
+        String lastLogin = marshaller.convertAndEscape(Date.class, subscriber.getLastLogin());
         json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
 
-        if(user.getSubscriber() != null)
-        {
-            json.append(",");
-            String number = marshaller.convertAndEscape(String.class, user.getSubscriber().getNumber());
-            json.append("\"number\":\"").append(number).append("\"");
-        }
+        json.append(",");
+        String number = marshaller.convertAndEscape(String.class, subscriber.getNumber());
+        json.append("\"number\":\"").append(number).append("\"");
 
         json.append("}");
         return json.toString();

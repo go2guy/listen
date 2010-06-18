@@ -10,7 +10,7 @@ import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.Audio;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -53,8 +53,8 @@ public class DownloadVoicemailServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_DOWNLOAD_VOICEMAIL);
 
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
@@ -69,8 +69,7 @@ public class DownloadVoicemailServlet extends HttpServlet
         PersistenceService persistenceService = new PersistenceService(session);
 
         Voicemail voicemail = (Voicemail)session.get(Voicemail.class, Long.valueOf(id));
-        if(!(user.getIsAdministrator() || user.getSubscriber() != null || user.getSubscriber()
-                                                                              .equals(voicemail.getSubscriber())))
+        if(!(subscriber.getIsAdministrator() || subscriber.equals(voicemail.getSubscriber())))
         {
             throw new UnauthorizedServletException("Not allowed to download voicemail");
         }

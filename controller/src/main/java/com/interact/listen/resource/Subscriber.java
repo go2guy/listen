@@ -3,8 +3,7 @@ package com.interact.listen.resource;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -34,6 +33,21 @@ public class Subscriber extends Resource implements Serializable
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
+
+    @Column(name = "USERNAME", nullable = false, unique = true)
+    private String username;
+
+    @Column(name = "PASSWORD", nullable = false)
+    private String password;
+
+    @Column(name = "LAST_LOGIN")
+    private Date lastLogin;
+
+    @Column(name = "IS_ADMINISTRATOR")
+    private Boolean isAdministrator = Boolean.FALSE;
+
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    private Set<Conference> conferences = new HashSet<Conference>();
 
     public String getNumber()
     {
@@ -97,16 +111,96 @@ public class Subscriber extends Resource implements Serializable
         this.voicemails = voicemails;
     }
 
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public void setUsername(String username)
+    {
+        this.username = username;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
+    public Date getLastLogin()
+    {
+        return lastLogin == null ? null : new Date(lastLogin.getTime());
+    }
+
+    public void setLastLogin(Date lastLogin)
+    {
+        this.lastLogin = lastLogin == null ? null : new Date(lastLogin.getTime());
+    }
+
+    public Boolean getIsAdministrator()
+    {
+        return isAdministrator;
+    }
+
+    public void setIsAdministrator(Boolean isAdministrator)
+    {
+        this.isAdministrator = isAdministrator;
+    }
+
+    public Set<Conference> getConferences()
+    {
+        return conferences;
+    }
+
+    public void setConferences(Set<Conference> conferences)
+    {
+        this.conferences = conferences;
+        for(Conference conference : this.conferences)
+        {
+            conference.setSubscriber(this);
+        }
+    }
+
+    public void addToConferences(Conference conference)
+    {
+        conference.setSubscriber(this);
+        this.conferences.add(conference);
+    }
+
+    public void removeFromConferences(Conference conference)
+    {
+        conference.setSubscriber(null);
+        this.conferences.remove(conference);
+    }
+
     @Override
     public boolean validate()
     {
-        boolean isValid = true;
+        if(isAdministrator == null)
+        {
+            addToErrors("isAdministrator cannot be null");
+        }
+
         if(number == null || number.trim().equals(""))
         {
             addToErrors("Subscriber must have a number");
-            isValid = false;
         }
-        return isValid;
+
+        if(password == null)
+        {
+            addToErrors("password cannot be null");
+        }
+
+        if(username == null)
+        {
+            addToErrors("username cannot be null");
+        }
+
+        return !hasErrors();
     }
 
     @Override
@@ -119,7 +213,11 @@ public class Subscriber extends Resource implements Serializable
             copy.setVersion(version);
         }
 
+        copy.setIsAdministrator(isAdministrator);
+        copy.setLastLogin(lastLogin);
         copy.setNumber(number);
+        copy.setPassword(password);
+        copy.setUsername(username);
         copy.setVoicemailGreetingLocation(voicemailGreetingLocation);
         copy.setVoicemailPin(voicemailPin);
         copy.setVoicemails(voicemails);
@@ -146,7 +244,7 @@ public class Subscriber extends Resource implements Serializable
 
         Subscriber subscriber = (Subscriber)that;
 
-        if(!ComparisonUtil.isEqual(subscriber.getNumber(), getNumber()))
+        if(!ComparisonUtil.isEqual(subscriber.getUsername(), getUsername()))
         {
             return false;
         }
@@ -159,7 +257,7 @@ public class Subscriber extends Resource implements Serializable
     {
         final int prime = 31;
         int hash = 1;
-        hash *= prime + (getNumber() == null ? 0 : getNumber().hashCode());
+        hash *= prime + (getUsername() == null ? 0 : getUsername().hashCode());
         return hash;
     }
 }

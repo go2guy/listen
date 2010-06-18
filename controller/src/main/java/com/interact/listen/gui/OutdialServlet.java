@@ -48,8 +48,8 @@ public class OutdialServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_OUTDIAL);
 
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException();
         }
@@ -81,7 +81,7 @@ public class OutdialServlet extends HttpServlet
             throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Conference not found", "text/plain");
         }
 
-        if(!isUserAllowedToOutdial(user, conference))
+        if(!isSubscriberAllowedToOutdial(subscriber, conference))
         {
             throw new UnauthorizedServletException("Not allowed to outdial");
         }
@@ -95,7 +95,7 @@ public class OutdialServlet extends HttpServlet
             SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
             try
             {
-                spotSystem.outdial(number, adminSessionId, conference.getId(), conference.getUser().getSubscriber().getNumber());
+                spotSystem.outdial(number, adminSessionId, conference.getId(), conference.getSubscriber().getNumber());
             }
             catch(SpotCommunicationException e)
             {
@@ -106,7 +106,7 @@ public class OutdialServlet extends HttpServlet
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(conference);
         history.setDescription("Outdialed " + number);
-        history.setUser("Current user");
+        history.setSubscriber("Current subscriber");
         persistenceService.save(history);
     }
 
@@ -128,15 +128,15 @@ public class OutdialServlet extends HttpServlet
         // exception here
     }
 
-    private boolean isUserAllowedToOutdial(User user, Conference conference)
+    private boolean isSubscriberAllowedToOutdial(Subscriber subscriber, Conference conference)
     {
-        if(user.getIsAdministrator())
+        if(subscriber.getIsAdministrator())
         {
             return true;
         }
 
-        // does the current user own the conference?
-        if(user.getConferences().contains(conference))
+        // does the current subscriber own the conference?
+        if(subscriber.getConferences().contains(conference))
         {
             return true;
         }

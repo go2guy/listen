@@ -1,13 +1,12 @@
 package com.interact.listen.gui;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
 
 import java.io.IOException;
 
@@ -35,10 +34,10 @@ public class GetPropertiesServletTest
     }
 
     @Test
-    public void test_doGet_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws ServletException,
+    public void test_doGet_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws ServletException,
         IOException
     {
-        assert request.getSession().getAttribute("user") == null;
+        assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("GET");
         try
@@ -55,10 +54,10 @@ public class GetPropertiesServletTest
     }
 
     @Test
-    public void test_doGet_withNonAdministratorSessionUser_throwsListenServletExceptionWithUnauthorized()
+    public void test_doGet_withNonAdministratorSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        setSessionUser(request, false);
+        setSessionSubscriber(request, false);
         request.setMethod("GET");
 
         try
@@ -78,7 +77,7 @@ public class GetPropertiesServletTest
     public void test_doGet_withValidPermissions_returnsJsonObjectWithCorrectContentType() throws ServletException,
         IOException
     {
-        setSessionUser(request, true);
+        setSessionSubscriber(request, true);
 
         request.setMethod("GET");
         servlet.service(request, response);
@@ -90,15 +89,13 @@ public class GetPropertiesServletTest
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionUser(HttpServletRequest request, boolean isAdmin)
+    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
-        User user = new User();
-        user.setIsAdministrator(isAdmin);
-        user.setSubscriber(subscriber);
+        subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", user);
+        session.setAttribute("subscriber", subscriber);
     }
 }

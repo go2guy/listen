@@ -13,7 +13,6 @@ import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.User;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
@@ -44,7 +43,7 @@ public class GetConferenceInfoServletTest
     }
 
     @Test
-    public void test_doGet_withNoSessionUser_throwsListenServletExceptionWithUnauthorized() throws IOException,
+    public void test_doGet_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws IOException,
         ServletException
     {
         request.setMethod("GET");
@@ -68,11 +67,9 @@ public class GetConferenceInfoServletTest
 
         Subscriber subscriber = new Subscriber();
         subscriber.setNumber(String.valueOf(id));
-        User user = new User();
-        user.setSubscriber(subscriber);
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", user);
+        session.setAttribute("subscriber", subscriber);
 
         request.setMethod("GET");
 
@@ -96,10 +93,6 @@ public class GetConferenceInfoServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
 
-        Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(id));
-        session.save(subscriber);
-
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setIsRecording(false);
@@ -107,15 +100,15 @@ public class GetConferenceInfoServletTest
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
         session.save(conference);
 
-        User user = new User();
-        user.setSubscriber(subscriber);
-        user.setUsername(String.valueOf(System.currentTimeMillis()));
-        user.setPassword(String.valueOf(System.currentTimeMillis()));
-        user.addToConferences(conference);
-        session.save(user);
+        Subscriber subscriber = new Subscriber();
+        subscriber.setNumber(String.valueOf(id));
+        subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
+        subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.addToConferences(conference);
+        session.save(subscriber);
 
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", user);
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("GET");
         servlet.service(request, response);

@@ -3,7 +3,7 @@ package com.interact.listen.gui;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
-import com.interact.listen.resource.User;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -70,22 +70,22 @@ public class LoginServlet extends HttpServlet
 
         if(errors.size() == 0)
         {
-            User user = findUserByUsername(username, hibernateSession);
-            if(user == null || !isValidPassword(user, password))
+            Subscriber subscriber = findSubscriberByUsername(username, hibernateSession);
+            if(subscriber == null || !isValidPassword(subscriber, password))
             {
                 errors.put("username", "Sorry, those aren't valid credentials");
             }
 
-            if(user != null)
+            if(subscriber != null)
             {
                 Session session = HibernateUtil.getSessionFactory().getCurrentSession();
                 PersistenceService persistenceService = new PersistenceService(session);
-                User original = user.copy(true);
-                user.setLastLogin(new Date());
-                persistenceService.update(user, original);
+                Subscriber original = subscriber.copy(true);
+                subscriber.setLastLogin(new Date());
+                persistenceService.update(subscriber, original);
             }
 
-            httpSession.setAttribute("user", user);
+            httpSession.setAttribute("subscriber", subscriber);
         }
 
         if(errors.size() > 0)
@@ -99,16 +99,16 @@ public class LoginServlet extends HttpServlet
         }
     }
 
-    private User findUserByUsername(String username, Session session)
+    private Subscriber findSubscriberByUsername(String username, Session session)
     {
-        Criteria criteria = session.createCriteria(User.class);
+        Criteria criteria = session.createCriteria(Subscriber.class);
         criteria.add(Restrictions.eq("username", username));
         criteria.setMaxResults(1);
-        return (User)criteria.uniqueResult();
+        return (Subscriber)criteria.uniqueResult();
     }
 
-    private boolean isValidPassword(User user, String password)
+    private boolean isValidPassword(Subscriber subscriber, String password)
     {
-        return user.getPassword().equals(SecurityUtil.hashPassword(password));
+        return subscriber.getPassword().equals(SecurityUtil.hashPassword(password));
     }
 }

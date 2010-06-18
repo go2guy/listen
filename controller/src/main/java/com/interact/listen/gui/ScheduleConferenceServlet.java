@@ -48,8 +48,8 @@ public class ScheduleConferenceServlet extends HttpServlet
 
         statSender.send(Stat.GUI_SCHEDULE_CONFERENCE);
 
-        User user = (User)(request.getSession().getAttribute("user"));
-        if(user == null)
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
         {
             throw new UnauthorizedServletException();
         }
@@ -115,9 +115,9 @@ public class ScheduleConferenceServlet extends HttpServlet
 
         // I would think I could just get the pins directly from the first conference in the ArrayList, but that is
         // only providing one pin, for some reason. By querying explicitly, I get access to all the pins.
-        ArrayList<Conference> listConferences = new ArrayList<Conference>(user.getConferences());
+        ArrayList<Conference> listConferences = new ArrayList<Conference>(subscriber.getConferences());
         Long id = listConferences.get(0).getId();
-        Conference userConference = (Conference)persistenceService.get(Conference.class, id);
+        Conference subscriberConference = (Conference)persistenceService.get(Conference.class, id);
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h mm a");
         String dateTime = date + " " + hour + " " + minute + " " + amPm;
@@ -176,15 +176,15 @@ public class ScheduleConferenceServlet extends HttpServlet
 
         if(!serviceActiveAddresses.isEmpty())
         {
-            activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, user.getUsername(), description,
-                                                           parsedDate, userConference, phoneNumber, protocol,
+            activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, subscriber.getUsername(), description,
+                                                           parsedDate, subscriberConference, phoneNumber, protocol,
                                                            subjectPrepend.toString(), "ACTIVE");
         }
 
         if(!servicePassiveAddresses.isEmpty())
         {
-            passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, user.getUsername(), description,
-                                                            parsedDate, userConference, phoneNumber, protocol,
+            passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, subscriber.getUsername(), description,
+                                                            parsedDate, subscriberConference, phoneNumber, protocol,
                                                             subjectPrepend.toString(), "PASSIVE");
         }
 

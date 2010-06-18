@@ -4,7 +4,8 @@ import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -13,19 +14,21 @@ import com.interact.listen.stats.StatSender;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Restrictions;
 
-public class EditUserServlet extends HttpServlet
+public class EditSubscriberServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
     /** Class logger */
-    private static final Logger LOG = Logger.getLogger(EditUserServlet.class);
+    private static final Logger LOG = Logger.getLogger(EditSubscriberServlet.class);
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
@@ -35,10 +38,10 @@ public class EditUserServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_EDIT_USER);
+        statSender.send(Stat.GUI_EDIT_SUBSCRIBER);
 
-        User currentUser = (User)(request.getSession().getAttribute("user"));
-        if(currentUser == null)
+        Subscriber currentSubscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(currentSubscriber == null)
         {
             throw new UnauthorizedServletException();
         }
@@ -46,20 +49,25 @@ public class EditUserServlet extends HttpServlet
         String id = request.getParameter("id");
         if(id == null || id.trim().equals(""))
         {
-            throw new BadRequestServletException("Please provide a user id");
+            throw new BadRequestServletException("Please provide an id");
         }
         
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        User userToEdit = findUserById(id, session);
+        Subscriber subscriberToEdit = findSubscriberById(id, session);
+        
+        if(subscriberToEdit == null)
+        {
+            throw new BadRequestServletException("Subscriber not found");
+        }
 
-        if(!currentUser.getIsAdministrator() && !currentUser.getId().equals(userToEdit.getId()))
+        if(!currentSubscriber.getIsAdministrator() && !currentSubscriber.getId().equals(subscriberToEdit.getId()))
         {
             throw new UnauthorizedServletException();
         }
 
         // require number if they're not an admin
         String number = request.getParameter("number");
-        if(!userToEdit.getIsAdministrator()) {
+        if(!subscriberToEdit.getIsAdministrator()) {
             if(number == null || number.trim().equals(""))
             {
                 throw new BadRequestServletException("Please provide a Number");
@@ -92,67 +100,45 @@ public class EditUserServlet extends HttpServlet
                 throw new BadRequestServletException("Password and Confirm Password do not match");
             }
 
-            userToEdit.setPassword(SecurityUtil.hashPassword(password));
+            subscriberToEdit.setPassword(SecurityUtil.hashPassword(password));
         }
 
         PersistenceService persistenceService = new PersistenceService(session);
 
-        // Only admin can change the subscriber associated with a user
-        if(currentUser.getIsAdministrator() && number != null)
+        if(currentSubscriber.getIsAdministrator())
         {
             Subscriber existingSubscriber = findSubscriberByNumber(number, session);
-            Subscriber userSubscriber = userToEdit.getSubscriber();
-
-            LOG.debug("existingSubscriber = [" + (existingSubscriber == null ? "null" : existingSubscriber.getNumber() + "]"));
-            LOG.debug("userSubscriber =     [" + (userSubscriber == null ? "null" : userSubscriber.getNumber() + "]"));
-
-            if(existingSubscriber != null && (userSubscriber == null || !userSubscriber.getNumber().equals(number)))
+            if(existingSubscriber != null && (subscriberToEdit == null || !subscriberToEdit.getNumber().equals(number)))
             {
-                // if a subscriber exists and:
-                // - the user doesn't have a subscriber (so we'd have to create one)
-                // - or, the user has a subscriber with a different number (we'd have to change it to an existing one)
-                // then the request is invalid
                 throw new BadRequestServletException("That number is currently in use");
             }
 
-            if(userSubscriber == null)
-            {
-                Subscriber subscriber = new Subscriber();
-                subscriber.setNumber(number);
-                persistenceService.save(subscriber);
-                userToEdit.setSubscriber(subscriber);
-            }
-            else
-            {
-                userSubscriber.setNumber(number);
-                Subscriber copy = userSubscriber.copy(true);
-                persistenceService.update(userSubscriber, copy);
-            }
+            subscriberToEdit.setNumber(number);
         }
 
-        userToEdit.setUsername(username);
+        subscriberToEdit.setUsername(username);
         
-        ArrayList<Conference> conferenceList = new ArrayList<Conference>(userToEdit.getConferences());
-        
+        ArrayList<Conference> conferenceList = new ArrayList<Conference>(subscriberToEdit.getConferences());
+
         if(conferenceList.size() > 0)
         {
-            //Users only have one conference at this time, so just get the first entry for update
+            // subscribers only have one conference at this time, so just get the first entry for update
             Conference conferenceToEdit = conferenceList.get(0);
             Conference originalConference = conferenceToEdit.copy(true);
-            
-            conferenceToEdit.setDescription(userToEdit.getSubscriber().getNumber());
+
+            conferenceToEdit.setDescription(subscriberToEdit.getNumber());
             persistenceService.update(conferenceToEdit, originalConference);
         }
         
-        persistenceService.save(userToEdit);
+        persistenceService.save(subscriberToEdit);
     }
     
-    private User findUserById(String id, Session session)
+    private Subscriber findSubscriberById(String id, Session session)
     {
-        Criteria criteria = session.createCriteria(User.class);
+        Criteria criteria = session.createCriteria(Subscriber.class);
         criteria.add(Restrictions.eq("id", Long.valueOf(id)));
         criteria.setMaxResults(1);
-        return (User)criteria.uniqueResult();
+        return (Subscriber)criteria.uniqueResult();
     }
     
     private Subscriber findSubscriberByNumber(String number, Session session)
