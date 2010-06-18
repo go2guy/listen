@@ -36,11 +36,12 @@ if(user != null && user.getIsAdministrator()) { %>
     <script type="text/javascript" src="./resources/app/js/app-users-min.js"></script>
     <script type="text/javascript" src="./resources/app/js/app-callhistory-min.js"></script><%
 } %>
+    <script type="text/javascript" src="./resources/app/js/app-profile-min.js"></script>
   </head>
   <body>
     <div id="header">
       <div class="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
-      <div class="info"><b><%= user.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
+      <div class="info"><b><%= user.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="#" id="profileButton" name="profileButton" title="Settings" onclick="LISTEN.PROFILE.loadUser(<%= user.getId() %>);return false;">Settings</a>&nbsp;<a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
     </div>
     <div class="column-mask">
       <div class="two-column">
@@ -229,51 +230,48 @@ if(user != null && user.getIsAdministrator()) { %>
             <div id="users-application" class="application">
               <div class="application-header"><div class="title">Users</div></div>
               <div class="application-content">
-                <div class="left">
-                  <div class="panel">
-                    <div class="panel-header"><div class="title">User List</div></div>
-                    <table id="users-table" class="data-table">
-                      <thead>
+                <div class="title">User List</div>
+                <table id="users-table" class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Number</th>
+                      <th>Last Login</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div><%
+} 
+if(user != null) { %>
+            <div id="profile-application" class="application">
+              <div class="application-header"><div class="title">Profile Info</div></div>
+              <div class="application-content">
+                <form id="profile-form" onsubmit="return false;">
+                  <div class="form-error-message"></div>
+                  <div class="form-success-message"></div>
+                  <fieldset>
+                    <input type="hidden" id="user-form-id" name="user-form-id"/>
+                    <table>
+                      <tbody>
+                        <tr><td><label for="user-form-username">Username</label></td><td><input type="text" id="user-form-username" name="user-form-username"/></td></tr>
+                        <tr><td><label for="user-form-password">Password</label></td><td><input type="password" id="user-form-password" name="user-form-password"/></td></tr>
+                        <tr><td><label for="user-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="user-form-confirmPassword" name="user-form-confirmPassword"/></td></tr>
+                        <tr><td><label for="user-form-number">Number</label></td><td><input type="text" id="user-form-number" name="user-form-number"/></td></tr>
                         <tr>
-                          <th>Username</th>
-                          <th>Number</th>
-                          <th>Last Login</th>
-                          <th></th>
+                          <td></td>
+                          <td class="buttons">
+                            <button class="save-button" id="user-form-add-button" name="user-form-add-button" title="Add" onclick="LISTEN.PROFILE.addUser();return false;">Add</button>
+                            <button class="edit-button" id="user-form-edit-button" name="user-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editUser();return false;">Edit</button>
+                            <button class="cancel-button" id="user-form-cancel-button" name="user-form-cancel-button" title="Cancel Edit" onclick="LISTEN.PROFILE.resetForm();return false;">Cancel Edit</button>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody></tbody>
+                      </tbody>
                     </table>
-                  </div>
-                </div>
-                <div class="right">
-                  <div class="panel">
-                    <div class="panel-header"><div class="title">User Info</div></div>
-                    <form id="user-form" onsubmit="return false;">
-                      <div class="form-error-message"></div>
-                      <div class="form-success-message"></div>
-                      <fieldset>
-                        <input type="hidden" id="user-form-id" name="user-form-id"/>
-                        <table>
-                          <tbody>
-                            <tr><td><label for="user-form-username">Username</label></td><td><input type="text" id="user-form-username" name="user-form-username"/></td></tr>
-                            <tr><td><label for="user-form-password">Password</label></td><td><input type="password" id="user-form-password" name="user-form-password"/></td></tr>
-                            <tr><td><label for="user-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="user-form-confirmPassword" name="user-form-confirmPassword"/></td></tr>
-                            <tr><td><label for="user-form-number">Number</label></td><td><input type="text" id="user-form-number" name="user-form-number"/></td></tr>
-                            <tr>
-                              <td></td>
-                              <td class="buttons">
-                                <button class="save-button" id="user-form-add-button" name="user-form-add-button" title="Add" onclick="LISTEN.USERS.addUser();return false;">Add</button>
-                                <button class="edit-button" id="user-form-edit-button" name="user-form-edit-button" title="Edit" onclick="LISTEN.USERS.editUser();return false;">Edit</button>
-                                <button class="cancel-button" id="user-form-cancel-button" name="user-form-cancel-button" title="Cancel Edit" onclick="LISTEN.USERS.resetForm();return false;">Cancel Edit</button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </fieldset>
-                    </form>
-                  </div>
-                </div>
-                <div class="cleaner">&nbsp;</div>
+                  </fieldset>
+                </form>
               </div>
             </div>
             
@@ -298,7 +296,6 @@ if(user != null && user.getIsAdministrator()) { %>
               </div>
             </div><%
 } %>
-
           </div>
         </div>
         <div class="menu-column"><%

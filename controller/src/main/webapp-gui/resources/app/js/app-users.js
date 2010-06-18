@@ -30,7 +30,7 @@ $(document).ready(function() {
                         }
 
                         var editButtonCell = row.find('.user-cell-editButton');
-                        var editButtonHtml = '<button class="edit-button" title="Edit user" onclick="LISTEN.USERS.loadUser(' + data.id + ');return false;">Edit</button>';
+                        var editButtonHtml = '<button class="edit-button" title="Edit user" onclick="LISTEN.PROFILE.loadUser(' + data.id + ');return false;">Edit</button>';
                         if(editButtonCell.html() != editButtonHtml) {
                             editButtonCell.html(editButtonHtml);
                         }
@@ -80,14 +80,18 @@ $(document).ready(function() {
                         $('#user-form-add-button').hide();
                         $('#user-form-edit-button').show();
                         $('#user-form-cancel-button').show();
+                        
+                        var profile = new LISTEN.PROFILE.ProfileApplication(id);
+                        LISTEN.switchApp('profile', profile);
                     }
                 });
+                
             },
 
             resetForm: function() {
                 LISTEN.trace('LISTEN.USERS.resetForm');
                 LISTEN.USERS.clearError();
-                $('#user-form')[0].reset();
+                $('#profile-form')[0].reset();
                 $('#user-form-cancel-button').hide();
                 $('#user-form-edit-button').hide();
                 $('#user-form-add-button').show();
