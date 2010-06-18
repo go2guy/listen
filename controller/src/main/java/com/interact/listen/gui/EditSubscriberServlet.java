@@ -112,8 +112,9 @@ public class EditSubscriberServlet extends HttpServlet
             updateSubscriberAccessNumbers(subscriberToEdit, accessNumbers, session, persistenceService);
         }
 
+        subscriberToEdit.setNumber(number);
         subscriberToEdit.setUsername(username);
-        
+
         ArrayList<Conference> conferenceList = new ArrayList<Conference>(subscriberToEdit.getConferences());
 
         if(conferenceList.size() > 0)
