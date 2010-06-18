@@ -66,7 +66,6 @@ public class GetConferenceInfoServletTest
         final Long id = System.currentTimeMillis();
 
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(id));
 
         HttpSession session = request.getSession();
         session.setAttribute("subscriber", subscriber);
@@ -101,7 +100,6 @@ public class GetConferenceInfoServletTest
         session.save(conference);
 
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(id));
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
         subscriber.addToConferences(conference);

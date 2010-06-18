@@ -151,7 +151,6 @@ public class StartRecordingServletTest
 
         Subscriber subscriber = new Subscriber();
         subscriber.setIsAdministrator(false);
-        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
         session.save(subscriber);
@@ -202,7 +201,6 @@ public class StartRecordingServletTest
 
         Subscriber subscriber = new Subscriber();
         subscriber.setIsAdministrator(false);
-        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
         session.save(subscriber);
@@ -244,7 +242,6 @@ public class StartRecordingServletTest
 
         Subscriber subscriber = new Subscriber();
         subscriber.setIsAdministrator(true);
-        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
         session.save(subscriber);
@@ -289,7 +286,6 @@ public class StartRecordingServletTest
     private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
         subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();

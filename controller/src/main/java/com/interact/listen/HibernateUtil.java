@@ -163,7 +163,6 @@ public final class HibernateUtil
             String extension = new DecimalFormat("000").format(100 + i);
 
             Subscriber subscriber = new Subscriber();
-            subscriber.setNumber(extension);
             subscriber.setPassword(SecurityUtil.hashPassword("super"));
             subscriber.setUsername(extension);
             subscriber.setVoicemailPin(extension);
@@ -196,7 +195,7 @@ public final class HibernateUtil
 
             conference.setIsStarted(true);
             conference.setIsRecording(false);
-            conference.setDescription(subscriber.getNumber());
+            conference.setDescription(subscriber.getUsername() + "'s Conference");
             persistenceService.save(conference);
 
             subscriber.addToConferences(conference);
@@ -236,7 +235,6 @@ public final class HibernateUtil
             LOG.debug("Created admin Subscriber");
             Subscriber subscriber = new Subscriber();
             subscriber.setIsAdministrator(Boolean.TRUE);
-            subscriber.setNumber("1");
             subscriber.setPassword(SecurityUtil.hashPassword("Int3ract!Inc"));
             subscriber.setUsername("Admin");
             persistenceService.save(subscriber);

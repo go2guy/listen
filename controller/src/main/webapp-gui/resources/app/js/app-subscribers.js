@@ -17,10 +17,18 @@ $(document).ready(function() {
                             this.highlight(usernameCell);
                         }
 
-                        var numberCell = row.find('.subscriber-cell-number');
-                        if(numberCell.text() != data.number) {
-                            numberCell.text(data.number);
-                            this.highlight(numberCell);
+                        var numbers = '';
+                        for(var i = 0; i < data.accessNumbers.length; i++) {
+                            numbers += data.accessNumbers[i];
+                            if(i < data.accessNumbers.length - 1) {
+                                numbers += ',';
+                            }
+                        }
+
+                        var accessNumbersCell = row.find('.subscriber-cell-accessNumbers');
+                        if(accessNumbersCell.text() != numbers) {
+                            accessNumbersCell.text(numbers);
+                            this.highlight(accessNumbersCell);
                         }
 
                         var lastLoginCell = row.find('.subscriber-cell-lastLogin');
@@ -75,7 +83,6 @@ $(document).ready(function() {
                     success: function(data, textStatus, xhr) {
                         $('#subscriber-form-id').val(data.id);
                         $('#subscriber-form-username').val(data.username);
-                        $('#subscriber-form-number').val(data.number);
 
                         $('#subscriber-form-add-button').hide();
                         $('#subscriber-form-edit-button').show();
@@ -105,8 +112,7 @@ $(document).ready(function() {
                     properties: {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
-                        confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        number: $('#subscriber-form-number').val()
+                        confirmPassword: $('#subscriber-form-confirmPassword').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();
@@ -128,8 +134,7 @@ $(document).ready(function() {
                         id: $('#subscriber-form-id').val(),
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
-                        confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        number: $('#subscriber-form-number').val()
+                        confirmPassword: $('#subscriber-form-confirmPassword').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();

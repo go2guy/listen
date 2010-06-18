@@ -95,7 +95,8 @@ public class OutdialServlet extends HttpServlet
             SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
             try
             {
-                spotSystem.outdial(number, adminSessionId, conference.getId(), conference.getSubscriber().getNumber());
+                String requestingNumber = ListenSpotSubscriber.getFirstPhoneNumber(session);
+                spotSystem.outdial(number, adminSessionId, conference.getId(), requestingNumber);
             }
             catch(SpotCommunicationException e)
             {

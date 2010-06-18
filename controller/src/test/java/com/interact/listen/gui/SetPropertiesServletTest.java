@@ -96,7 +96,6 @@ public class SetPropertiesServletTest
     private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
         subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();

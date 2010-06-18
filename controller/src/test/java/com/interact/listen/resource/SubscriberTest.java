@@ -22,15 +22,6 @@ public class SubscriberTest
     }
 
     @Test
-    public void test_setNumber_withValidNumber_setsNumber()
-    {
-        final String number = String.valueOf(System.currentTimeMillis());
-        subscriber.setNumber(number);
-
-        assertEquals(number, subscriber.getNumber());
-    }
-
-    @Test
     public void test_setVoicemailPin_withValidVoicemailPin_setsVoicemailPin()
     {
         final String pin = String.valueOf(System.currentTimeMillis());
@@ -67,42 +58,13 @@ public class SubscriberTest
     }
 
     @Test
-    public void test_validate_nullNumber_returnsHasErrors()
-    {
-        subscriber = getPopulatedSubscriber();
-        subscriber.setNumber(null);
-
-        assertFalse(subscriber.validate());
-        assertTrue(subscriber.hasErrors());
-    }
-
-    @Test
-    public void test_validate_blankNumber_returnsHasErrors()
-    {
-        subscriber = getPopulatedSubscriber();
-        subscriber.setNumber("");
-
-        assertFalse(subscriber.validate());
-        assertTrue(subscriber.hasErrors());
-    }
-
-    @Test
-    public void test_validate_whitespaceNumber_returnsHasErrors()
-    {
-        subscriber = getPopulatedSubscriber();
-        subscriber.setNumber(" ");
-
-        assertFalse(subscriber.validate());
-        assertTrue(subscriber.hasErrors());
-    }
-
-    @Test
     public void test_copy_withoutIdAndVersion_createsShallowCopyWithoutIdAndVersion()
     {
         Subscriber original = getPopulatedSubscriber();
         Subscriber copy = original.copy(false);
 
-        assertEquals(original.getNumber(), copy.getNumber());
+        assertEquals(original.getUsername(), copy.getUsername());
+        assertEquals(original.getPassword(), copy.getPassword());
         assertEquals(original.getVoicemailPin(), copy.getVoicemailPin());
         assertTrue(original.getVoicemails() == copy.getVoicemails()); // same reference
 
@@ -152,12 +114,12 @@ public class SubscriberTest
     @Test
     public void test_equals_allPropertiesEqual_returnsTrue()
     {
-        String number = String.valueOf(System.currentTimeMillis());
+        String username = String.valueOf(System.currentTimeMillis());
 
-        subscriber.setNumber(number);
+        subscriber.setUsername(username);
 
         Subscriber that = new Subscriber();
-        that.setNumber(number);
+        that.setUsername(username);
 
         assertTrue(subscriber.equals(that));
     }
@@ -180,7 +142,6 @@ public class SubscriberTest
     {
         Subscriber s = new Subscriber();
         s.setId(System.currentTimeMillis());
-        s.setNumber(String.valueOf(System.currentTimeMillis()));
         s.setPassword(String.valueOf(System.currentTimeMillis()));
         s.setUsername(String.valueOf(System.currentTimeMillis()));
         s.setVersion(1);

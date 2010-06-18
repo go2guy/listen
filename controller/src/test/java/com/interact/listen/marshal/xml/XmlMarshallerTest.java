@@ -30,7 +30,6 @@ public class XmlMarshallerTest
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
-        subscriber.setNumber("foo" + System.currentTimeMillis());
 
         Voicemail voicemail = new Voicemail();
         voicemail.setDescription(String.valueOf(System.currentTimeMillis()));
@@ -93,14 +92,14 @@ public class XmlMarshallerTest
     }
     
     @Test
-    public void test_marshal_withSubscriberListSpecifyingNumberField_returnsListWithNumberAttribute()
+    public void test_marshal_withSubscriberListSpecifyingUsernameField_returnsListWithUsernameAttribute()
     {
         Subscriber s0 = new Subscriber();
         s0.setId(System.currentTimeMillis());
-        s0.setNumber("foo" + System.currentTimeMillis());
+        s0.setUsername("foo" + System.currentTimeMillis());
         Subscriber s1 = new Subscriber();
         s1.setId(System.currentTimeMillis());
-        s1.setNumber("foo" + System.currentTimeMillis());
+        s1.setUsername("foo" + System.currentTimeMillis());
         List<Resource> list = new ArrayList<Resource>(3);
         list.add(s0);
         list.add(s1);
@@ -112,13 +111,13 @@ public class XmlMarshallerTest
         resourceList.setTotal(Long.valueOf(2));
         
         Set<String> fields = new HashSet<String>(1);
-        fields.add("number");
+        fields.add("username");
         resourceList.setFields(fields);
 
         StringBuilder expected = new StringBuilder();
-        expected.append("<subscribers href=\"/subscribers?_first=0&amp;_max=10&amp;_fields=number\" count=\"2\" total=\"2\">");
-        expected.append("<subscriber href=\"/subscribers/").append(s0.getId()).append("\" number=\"").append(s0.getNumber()).append("\"/>");
-        expected.append("<subscriber href=\"/subscribers/").append(s1.getId()).append("\" number=\"").append(s1.getNumber()).append("\"/>");
+        expected.append("<subscribers href=\"/subscribers?_first=0&amp;_max=10&amp;_fields=username\" count=\"2\" total=\"2\">");
+        expected.append("<subscriber href=\"/subscribers/").append(s0.getId()).append("\" username=\"").append(s0.getUsername()).append("\"/>");
+        expected.append("<subscriber href=\"/subscribers/").append(s1.getId()).append("\" username=\"").append(s1.getUsername()).append("\"/>");
         expected.append("</subscribers>");
 
         assertEquals(expected.toString(), marshaller.marshal(resourceList, Subscriber.class));
@@ -173,7 +172,7 @@ public class XmlMarshallerTest
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
-        subscriber.setNumber("foo" + System.currentTimeMillis());
+        subscriber.setUsername("foo" + System.currentTimeMillis());
 
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
@@ -181,7 +180,7 @@ public class XmlMarshallerTest
         Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, new Subscriber(), false);
 
         assertNull(unmarshalledSubscriber.getId());
-        assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
+        assertEquals(subscriber.getUsername(), unmarshalledSubscriber.getUsername());
     }
 
     @Test
@@ -189,7 +188,7 @@ public class XmlMarshallerTest
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
-        subscriber.setNumber("foo" + System.currentTimeMillis());
+        subscriber.setUsername("foo" + System.currentTimeMillis());
 
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
@@ -197,7 +196,7 @@ public class XmlMarshallerTest
         Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, new Subscriber(), true);
 
         assertEquals(subscriber.getId(), unmarshalledSubscriber.getId());
-        assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
+        assertEquals(subscriber.getUsername(), unmarshalledSubscriber.getUsername());
     }
 
     @Test

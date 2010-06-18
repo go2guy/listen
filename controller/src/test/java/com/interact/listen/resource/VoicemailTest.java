@@ -214,7 +214,6 @@ public class VoicemailTest
         Subscriber s = new Subscriber();
         s.setId(System.currentTimeMillis());
         s.setVersion(1);
-        s.setNumber(String.valueOf(System.currentTimeMillis()));
 
         Voicemail v = new Voicemail();
         v.setDateCreated(new Date());

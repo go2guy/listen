@@ -84,7 +84,7 @@ public class GetCallHistoryListServlet extends HttpServlet
         String date = marshaller.convertAndEscape(Date.class, record.getDateStarted());
         json.append("\"date\":\"").append(date).append("\",");
 
-        String subscriber = marshaller.convertAndEscape(String.class, record.getSubscriber().getNumber());
+        String subscriber = marshaller.convertAndEscape(String.class, record.getSubscriber().getUsername());
         json.append("\"subscriber\":\"").append(subscriber).append("\",");
 
         String service = marshaller.convertAndEscape(String.class, record.getService());

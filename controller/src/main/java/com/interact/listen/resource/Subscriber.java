@@ -22,9 +22,6 @@ public class Subscriber extends Resource implements Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(name = "NUMBER", unique = true, nullable = false)
-    private String number;
-
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<AccessNumber> accessNumbers = new HashSet<AccessNumber>();
 
@@ -48,16 +45,6 @@ public class Subscriber extends Resource implements Serializable
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
-
-    public String getNumber()
-    {
-        return number;
-    }
-
-    public void setNumber(String number)
-    {
-        this.number = number;
-    }
 
     public Set<AccessNumber> getAccessNumbers()
     {
@@ -215,11 +202,6 @@ public class Subscriber extends Resource implements Serializable
             addToErrors("isAdministrator cannot be null");
         }
 
-        if(number == null || number.trim().equals(""))
-        {
-            addToErrors("Subscriber must have a number");
-        }
-
         if(password == null)
         {
             addToErrors("password cannot be null");
@@ -245,7 +227,6 @@ public class Subscriber extends Resource implements Serializable
 
         copy.setIsAdministrator(isAdministrator);
         copy.setLastLogin(lastLogin);
-        copy.setNumber(number);
         for(AccessNumber accessNumber : accessNumbers)
         {
             copy.addToAccessNumbers(accessNumber.copy(false));

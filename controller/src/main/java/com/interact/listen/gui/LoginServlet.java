@@ -101,6 +101,8 @@ public class LoginServlet extends HttpServlet
 
     private Subscriber findSubscriberByUsername(String username, Session session)
     {
+        // FIXME this query is not eagerly fetching associations, (e.g. the accessNumbers collection)
+        // need to figure out why
         Criteria criteria = session.createCriteria(Subscriber.class);
         criteria.add(Restrictions.eq("username", username));
         criteria.setMaxResults(1);

@@ -49,7 +49,6 @@ public class LoginServletTest
         final String password = "bar";
         
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(subscriberId));
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
 
@@ -71,12 +70,10 @@ public class LoginServletTest
     public void test_doPost_validSubscriberButWrongPassword_populatesSessionErrorMapAndRedirectsToGet() throws IOException,
         ServletException
     {
-        final Long subscriberId = System.currentTimeMillis();
         final String username = String.valueOf(System.currentTimeMillis());
         final String password = String.valueOf(System.currentTimeMillis());
         
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(subscriberId));
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
 

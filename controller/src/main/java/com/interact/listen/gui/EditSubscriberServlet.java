@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Restrictions;
@@ -27,9 +26,6 @@ import org.hibernate.criterion.Restrictions;
 public class EditSubscriberServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
-
-    /** Class logger */
-    private static final Logger LOG = Logger.getLogger(EditSubscriberServlet.class);
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
@@ -64,15 +60,6 @@ public class EditSubscriberServlet extends HttpServlet
         if(!currentSubscriber.getIsAdministrator() && !currentSubscriber.getId().equals(subscriberToEdit.getId()))
         {
             throw new UnauthorizedServletException();
-        }
-
-        // require number if they're not an admin
-        String number = request.getParameter("number");
-        if(!subscriberToEdit.getIsAdministrator()) {
-            if(number == null || number.trim().equals(""))
-            {
-                throw new BadRequestServletException("Please provide a Number");
-            }
         }
 
         String username = request.getParameter("username");
@@ -112,7 +99,6 @@ public class EditSubscriberServlet extends HttpServlet
             updateSubscriberAccessNumbers(subscriberToEdit, accessNumbers, session, persistenceService);
         }
 
-        subscriberToEdit.setNumber(number);
         subscriberToEdit.setUsername(username);
 
         ArrayList<Conference> conferenceList = new ArrayList<Conference>(subscriberToEdit.getConferences());
@@ -123,7 +109,7 @@ public class EditSubscriberServlet extends HttpServlet
             Conference conferenceToEdit = conferenceList.get(0);
             Conference originalConference = conferenceToEdit.copy(true);
 
-            conferenceToEdit.setDescription(subscriberToEdit.getNumber());
+            conferenceToEdit.setDescription(subscriberToEdit.getUsername() + "'s Conference");
             persistenceService.update(conferenceToEdit, originalConference);
         }
         

@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 /**
@@ -52,9 +51,6 @@ public class GetSubscriberServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         Subscriber s = (Subscriber)session.get(Subscriber.class, Long.parseLong(request.getParameter("id")));
 
         if(!(subscriber.getIsAdministrator() || s.equals(subscriber)))
@@ -84,12 +80,7 @@ public class GetSubscriberServlet extends HttpServlet
         String lastLogin = marshaller.convertAndEscape(Date.class, subscriber.getLastLogin());
         json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
 
-        json.append(",");
-        String number = marshaller.convertAndEscape(String.class, subscriber.getNumber());
-        json.append("\"number\":\"").append(number).append("\"");
-
-        json.append(",");
-        json.append("\"accessNumbers\":[");
+        json.append(",\"accessNumbers\":[");
         for(AccessNumber accessNumber : subscriber.getAccessNumbers())
         {
             json.append("\"").append(accessNumber.getNumber()).append("\",");

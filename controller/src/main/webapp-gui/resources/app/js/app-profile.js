@@ -24,7 +24,6 @@ $(document).ready(function() {
                     success: function(data, textStatus, xhr) {
                         $('#subscriber-form-id').val(data.id);
                         $('#subscriber-form-username').val(data.username);
-                        $('#subscriber-form-number').val(data.number);
                         var numbers = '';
                         for(var i = 0; i < data.accessNumbers.length; i++) {
                             numbers += data.accessNumbers[i];
@@ -61,7 +60,6 @@ $(document).ready(function() {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        number: $('#subscriber-form-number').val(),
                         accessNumbers: $('#subscriber-form-accessNumbers').val()
                     },
                     successCallback: function() {
@@ -85,7 +83,6 @@ $(document).ready(function() {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        number: $('#subscriber-form-number').val(),
                         accessNumbers: $('#subscriber-form-accessNumbers').val()
                     },
                     successCallback: function() {

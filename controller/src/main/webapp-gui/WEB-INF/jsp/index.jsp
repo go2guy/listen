@@ -235,7 +235,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                   <thead>
                     <tr>
                       <th>Username</th>
-                      <th>Number</th>
+                      <th>Access Numbers</th>
                       <th>Last Login</th>
                       <th></th>
                     </tr>
@@ -259,7 +259,6 @@ if(subscriber != null) { %>
                         <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
                         <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
                         <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
-                        <tr><td><label for="subscriber-form-number">Number</label></td><td><input type="text" id="subscriber-form-number" name="subscriber-form-number"/></td></tr>
                         <tr>
                           <td><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
                           <td><%
@@ -382,7 +381,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
 
         <tr id="subscriber-row-template">
           <td class="subscriber-cell-username"></td>
-          <td class="subscriber-cell-number"></td>
+          <td class="subscriber-cell-accessNumbers"></td>
           <td class="subscriber-cell-lastLogin"></td>
           <td class="subscriber-cell-editButton"></td>
         </tr>

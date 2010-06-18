@@ -127,7 +127,26 @@ public class ListenSpotSubscriber extends Resource
     public static List<ListenSpotSubscriber> list(Session session)
     {
         Criteria criteria = session.createCriteria(ListenSpotSubscriber.class);
-        return criteria.list();
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return (List<ListenSpotSubscriber>)criteria.list();
+    }
+
+    public static String getFirstPhoneNumber(Session session)
+    {
+        for(ListenSpotSubscriber lss : list(session))
+        {
+            return lss.getPhoneNumber();
+        }
+        return "";
+    }
+
+    public static String getFirstProtocol(Session session)
+    {
+        for(ListenSpotSubscriber lss : list(session))
+        {
+            return lss.getPhoneNumberProtocol().toString();
+        }
+        return "";
     }
 
     @Override

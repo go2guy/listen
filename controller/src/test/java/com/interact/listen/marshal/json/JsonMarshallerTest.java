@@ -31,7 +31,6 @@ public class JsonMarshallerTest
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
-        subscriber.setNumber("foo" + System.currentTimeMillis());
 
         Voicemail voicemail = new Voicemail();
         voicemail.setDescription(String.valueOf(System.currentTimeMillis()));
@@ -100,14 +99,14 @@ public class JsonMarshallerTest
     }
 
     @Test
-    public void test_marshal_withSubscriberListSpecifyingNumberField_returnsCorrectJsonWithNumber()
+    public void test_marshal_withSubscriberListSpecifyingUsernameField_returnsCorrectJsonWithUsername()
     {
         Subscriber s0 = new Subscriber();
         s0.setId(System.currentTimeMillis());
-        s0.setNumber("foo" + System.currentTimeMillis());
+        s0.setUsername("foo" + System.currentTimeMillis());
         Subscriber s1 = new Subscriber();
         s1.setId(System.currentTimeMillis());
-        s1.setNumber("foo" + System.currentTimeMillis());
+        s1.setUsername("foo" + System.currentTimeMillis());
         List<Resource> list = new ArrayList<Resource>(3);
         list.add(s0);
         list.add(s1);
@@ -119,17 +118,17 @@ public class JsonMarshallerTest
         resourceList.setTotal(Long.valueOf(2));
 
         Set<String> fields = new HashSet<String>(1);
-        fields.add("number");
+        fields.add("username");
         resourceList.setFields(fields);
 
         StringBuilder expected = new StringBuilder();
         expected.append("{");
-        expected.append("\"href\":\"/subscribers?_first=0&_max=10&_fields=number\",");
+        expected.append("\"href\":\"/subscribers?_first=0&_max=10&_fields=username\",");
         expected.append("\"count\":2,");
         expected.append("\"total\":2,");
         expected.append("\"results\":[");
-        expected.append("{\"href\":\"/subscribers/" + s0.getId() + "\",\"number\":\"" + s0.getNumber() + "\"},");
-        expected.append("{\"href\":\"/subscribers/" + s1.getId() + "\",\"number\":\"" + s1.getNumber() + "\"}");
+        expected.append("{\"href\":\"/subscribers/" + s0.getId() + "\",\"username\":\"" + s0.getUsername() + "\"},");
+        expected.append("{\"href\":\"/subscribers/" + s1.getId() + "\",\"username\":\"" + s1.getUsername() + "\"}");
         expected.append("]");
         expected.append("}");
 
@@ -191,7 +190,7 @@ public class JsonMarshallerTest
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
-        subscriber.setNumber("foo" + System.currentTimeMillis());
+        subscriber.setUsername("foo" + System.currentTimeMillis());
         subscriber.setLastLogin(new Date());
 
         String json = marshaller.marshal(subscriber);
@@ -200,7 +199,7 @@ public class JsonMarshallerTest
         Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, new Subscriber(), false);
 
         assertNull(unmarshalledSubscriber.getId());
-        assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
+        assertEquals(subscriber.getUsername(), unmarshalledSubscriber.getUsername());
     }
 
     @Test
@@ -208,7 +207,7 @@ public class JsonMarshallerTest
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
-        subscriber.setNumber("foo" + System.currentTimeMillis());
+        subscriber.setUsername("foo" + System.currentTimeMillis());
         subscriber.setLastLogin(new Date());
 
         String json = marshaller.marshal(subscriber);
@@ -217,7 +216,7 @@ public class JsonMarshallerTest
         Subscriber unmarshalledSubscriber = (Subscriber)marshaller.unmarshal(stream, new Subscriber(), true);
 
         assertEquals(subscriber.getId(), unmarshalledSubscriber.getId());
-        assertEquals(subscriber.getNumber(), unmarshalledSubscriber.getNumber());
+        assertEquals(subscriber.getUsername(), unmarshalledSubscriber.getUsername());
     }
 
     @Test

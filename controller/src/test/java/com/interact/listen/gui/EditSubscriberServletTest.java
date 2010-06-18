@@ -53,14 +53,12 @@ public class EditSubscriberServletTest
         session.save(subscriber);
 
         final String id = String.valueOf(subscriber.getId());
-        final String number = randomString();
         final String username = randomString();
         final String password = randomString();
         final String confirm = password;
 
         request.setMethod("POST");
         request.setParameter("id", id);
-        request.setParameter("number", number);
         request.setParameter("username", username);
         request.setParameter("password", password);
         request.setParameter("confirmPassword", confirm);
@@ -68,7 +66,7 @@ public class EditSubscriberServletTest
         servlet.service(request, response);
 
         Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("number", number));
+        criteria.add(Restrictions.eq("username", username));
         Subscriber subscriber = (Subscriber)criteria.uniqueResult();
         assertNotNull(subscriber);
         assertEquals(username, subscriber.getUsername());
@@ -92,14 +90,12 @@ public class EditSubscriberServletTest
         httpSession.setAttribute("subscriber", subscriber);
 
         final String id = String.valueOf(subscriber.getId());
-        final String number = randomString();
         final String username = randomString();
         final String password = randomString();
         final String confirm = password;
 
         request.setMethod("POST");
         request.setParameter("id", id);
-        request.setParameter("number", number);
         request.setParameter("username", username);
         request.setParameter("password", password);
         request.setParameter("confirmPassword", confirm);
@@ -136,14 +132,12 @@ public class EditSubscriberServletTest
         httpSession.setAttribute("subscriber", subscriber2);
 
         final String id = String.valueOf(subscriber.getId());
-        final String number = randomString();
         final String username = randomString();
         final String password = randomString();
         final String confirm = password;
 
         request.setMethod("POST");
         request.setParameter("id", id);
-        request.setParameter("number", number);
         request.setParameter("username", username);
         request.setParameter("password", password);
         request.setParameter("confirmPassword", confirm);
@@ -173,7 +167,6 @@ public class EditSubscriberServletTest
         assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
-        request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
@@ -199,86 +192,6 @@ public class EditSubscriberServletTest
     }
 
     @Test
-    public void test_doPost_withNullNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
-        IOException
-    {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-        
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
-
-        request.setMethod("POST");
-        request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", (String)null);
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", request.getParameter("password"));
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Number", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-
-        }
-        finally
-        {
-            session.delete(subscriber);
-            tx.commit();
-        }
-    }
-
-    @Test
-    public void test_doPost_withBlankNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
-        IOException
-    {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-        
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
-
-        request.setMethod("POST");
-        request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", " ");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", request.getParameter("password"));
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Number", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-
-        }
-        finally
-        {
-            session.delete(subscriber);
-            tx.commit();
-        }
-    }
-
-    @Test
     public void test_doPost_withNullUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
@@ -294,7 +207,6 @@ public class EditSubscriberServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", randomString());
         request.setParameter("username", (String)null);
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
@@ -334,7 +246,6 @@ public class EditSubscriberServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", randomString());
         request.setParameter("username", " ");
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
@@ -374,7 +285,6 @@ public class EditSubscriberServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", (String)null);
         request.setParameter("confirmPassword", "password");
@@ -414,7 +324,6 @@ public class EditSubscriberServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", " ");
         request.setParameter("confirmPassword", "password");
@@ -454,7 +363,6 @@ public class EditSubscriberServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", (String)null);
@@ -494,7 +402,6 @@ public class EditSubscriberServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", " ");
@@ -534,7 +441,6 @@ public class EditSubscriberServletTest
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("number", randomString());
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password") + "foo");
@@ -561,7 +467,6 @@ public class EditSubscriberServletTest
     {
         Subscriber s = new Subscriber();
         s.setId(System.currentTimeMillis());
-        s.setNumber(String.valueOf(System.currentTimeMillis()));
         s.setPassword("password");
         s.setUsername("username");
         s.setVersion(1);
@@ -572,7 +477,6 @@ public class EditSubscriberServletTest
     private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(String.valueOf(System.currentTimeMillis()));
         subscriber.setIsAdministrator(isAdministrator);
 
         HttpSession session = request.getSession();

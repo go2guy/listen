@@ -43,12 +43,6 @@ public class AddSubscriberServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
-        String number = request.getParameter("number");
-        if(number == null || number.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a Number");
-        }
-
         String username = request.getParameter("username");
         if(username == null || username.trim().equals(""))
         {
@@ -76,7 +70,6 @@ public class AddSubscriberServlet extends HttpServlet
         PersistenceService persistenceService = new PersistenceService(session);
 
         Subscriber subscriber = new Subscriber();
-        subscriber.setNumber(number);
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
         persistenceService.save(subscriber);

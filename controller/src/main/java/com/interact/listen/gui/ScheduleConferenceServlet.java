@@ -9,7 +9,9 @@ import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.ListenSpotSubscriber;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -18,14 +20,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 public class ScheduleConferenceServlet extends HttpServlet
@@ -127,9 +127,8 @@ public class ScheduleConferenceServlet extends HttpServlet
         ArrayList<String> serviceActiveAddresses = new ArrayList<String>();
         ArrayList<String> servicePassiveAddresses = new ArrayList<String>();
 
-        List<Resource> listenSpotSubscribers = queryListenSpotSubscribers(session);
-        String phoneNumber = getConferencePhoneNumber(listenSpotSubscribers);
-        String protocol = getConferenceProtocol(listenSpotSubscribers);
+        String phoneNumber = ListenSpotSubscriber.getFirstPhoneNumber(session);
+        String protocol = ListenSpotSubscriber.getFirstProtocol(session);
 
         if(phoneNumber.equals(""))
         {
@@ -193,41 +192,5 @@ public class ScheduleConferenceServlet extends HttpServlet
             throw new ListenServletException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                              "An error occurred sending the conference schedule e-mail", "text/plain");
         }
-    }
-
-    private List<Resource> queryListenSpotSubscribers(Session session)
-    {
-        List<Resource> listenSpotSubscribers;
-
-        Criteria criteria = session.createCriteria(ListenSpotSubscriber.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        listenSpotSubscribers = (List<Resource>)criteria.list();
-
-        return listenSpotSubscribers;
-    }
-
-    private String getConferencePhoneNumber(List<Resource> listenSpotSubscribers)
-    {
-        String phoneNumber = "";
-
-        if(listenSpotSubscribers.size() > 0)
-        {
-            phoneNumber = ((ListenSpotSubscriber)listenSpotSubscribers.get(0)).getPhoneNumber();
-        }
-
-        return phoneNumber;
-    }
-
-    private String getConferenceProtocol(List<Resource> listenSpotSubscribers)
-    {
-        String protocol = "";
-
-        if(listenSpotSubscribers.size() > 0)
-        {
-            // get the enum value as a string
-            protocol = ((ListenSpotSubscriber)listenSpotSubscribers.get(0)).getPhoneNumberProtocol().toString();
-        }
-
-        return protocol;
     }
 }
