@@ -2,7 +2,6 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
-import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
@@ -20,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 /**
@@ -27,6 +27,8 @@ import org.hibernate.Session;
  */
 public class GetSubscriberServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(GetSubscriberServlet.class);
+    
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -44,14 +46,22 @@ public class GetSubscriberServlet extends HttpServlet
             statSender = new InsaStatSender();
         }
         statSender.send(Stat.GUI_GET_SUBSCRIBER);
-
-        if(request.getParameter("id") == null || request.getParameter("id").trim().equals(""))
+        
+        String id = request.getParameter("id");
+        
+        if(id == null || id.trim().equals(""))
         {
-            throw new BadRequestServletException("Please provide an id");
+            LOG.debug("No id provided.  Returning information for subscriber in session.");
+            id = String.valueOf(subscriber.getId());
+        }
+        
+        if(!subscriber.getIsAdministrator() && !String.valueOf(subscriber.getId()).equals(id))
+        {
+            throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Subscriber s = (Subscriber)session.get(Subscriber.class, Long.parseLong(request.getParameter("id")));
+        Subscriber s = (Subscriber)session.get(Subscriber.class, Long.parseLong(id));
 
         if(!(subscriber.getIsAdministrator() || s.equals(subscriber)))
         {

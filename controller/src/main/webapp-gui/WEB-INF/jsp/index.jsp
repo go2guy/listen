@@ -41,7 +41,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
   <body>
     <div id="header">
       <div class="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
-      <div class="info"><b><%= subscriber.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="#" id="profileButton" name="profileButton" title="Settings" onclick="LISTEN.PROFILE.loadSubscriber(<%= subscriber.getId() %>);return false;">Settings</a>&nbsp;<a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
+      <div class="info"><b><%= subscriber.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="#" id="profile-button" name="profile-button" title="Settings">Settings</a>&nbsp;<a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
     </div>
     <div class="column-mask">
       <div class="two-column">
@@ -230,57 +230,58 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
             <div id="subscribers-application" class="application">
               <div class="application-header"><div class="title">Subscribers</div></div>
               <div class="application-content">
-                <div class="title">Subscriber List</div>
-                <table id="subscribers-table" class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Username</th>
-                      <th>Access Numbers</th>
-                      <th>Last Login</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div><%
-}
-if(subscriber != null) { %>
-            <div id="profile-application" class="application">
-              <div class="application-header"><div class="title">Profile Info</div></div>
-              <div class="application-content">
-                <form id="profile-form" onsubmit="return false;">
-                  <div class="form-error-message"></div>
-                  <div class="form-success-message"></div>
-                  <fieldset>
-                    <input type="hidden" id="subscriber-form-id" name="subscriber-form-id"/>
-                    <table>
-                      <tbody>
-                        <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
-                        <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
-                        <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
-                        <tr>
-                          <td><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
-                          <td><%
+                <div class="left">
+                  <div class="panel-header"><div class="title">Subscriber List</div></div>
+                  <table id="subscribers-table" class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Username</th>
+                        <th>Access Numbers</th>
+                        <th>Last Login</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+                <div class="right">
+                  <div class="panel">
+                    <div class="panel-header"><div class="title">Subscriber Info</div></div>
+                    <form id="subscriber-form" onsubmit="return false;">
+                      <div class="form-error-message"></div>
+                      <div class="form-success-message"></div>
+                      <fieldset>
+                        <input type="hidden" id="subscriber-form-id" name="subscriber-form-id"/>
+                        <table>
+                          <tbody>
+                            <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
+                            <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
+                            <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
+                            <tr>
+                              <td><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
+                              <td><%
 if(subscriber.getIsAdministrator()) { %>
-                            <textarea rows="4" cols="50" id="subscriber-form-accessNumbers" name="subscriber-form-accessNumbers"></textarea><%
+                                <textarea rows="4" cols="50" id="subscriber-form-accessNumbers" name="subscriber-form-accessNumbers"></textarea><%
 } else { %>
-                            <%= subscriber.accessNumberString() %><%
+                                <%= subscriber.accessNumberString() %><%
 } %>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td></td>
-                          <td class="buttons">
-                            <button class="save-button" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.PROFILE.addSubscriber();return false;">Add</button>
-                            <button class="edit-button" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
-                            <button class="cancel-button" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.PROFILE.resetForm();return false;">Cancel Edit</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </fieldset>
-                </form>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td></td>
+                              <td class="buttons">
+                                <button class="save-button" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.SUBSCRIBERS.addSubscriber();return false;">Add</button>
+                                <button class="edit-button" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.SUBSCRIBERS.editSubscriber();return false;">Edit</button>
+                                <button class="cancel-button" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.SUBSCRIBERS.resetForm();return false;">Cancel Edit</button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
+                  </div>
+                </div>
+                <div class="cleaner">&nbsp;</div>
               </div>
             </div>
             
@@ -331,6 +332,35 @@ if(subscriber.getIsAdministrator()) { %>
               </div>
               <div class="cleaner">&nbsp;</div>
             </div><%
+} 
+
+if(subscriber != null) { %>
+            <div id="profile-application" class="application">
+              <div class="application-header"><div class="title">Profile Info</div></div>
+              <div class="application-content">
+                <form id="profile-form" onsubmit="return false;">
+                  <div class="form-error-message"></div>
+                  <div class="form-success-message"></div>
+                  <fieldset>
+                    <input type="hidden" id="profile-form-id" name="profile-form-id"/>
+                    <table>
+                      <tbody>
+                        <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username"/></td></tr>
+                        <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
+                        <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
+                        <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr>
+                        <tr>
+                          <td></td>
+                          <td class="buttons">
+                            <button class="edit-button" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </fieldset>
+                </form>
+              </div>
+            </div> <%
 } %>
           </div>
         </div>

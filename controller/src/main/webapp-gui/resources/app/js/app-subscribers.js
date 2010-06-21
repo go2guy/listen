@@ -38,7 +38,7 @@ $(document).ready(function() {
                         }
 
                         var editButtonCell = row.find('.subscriber-cell-editButton');
-                        var editButtonHtml = '<button class="edit-button" title="Edit subscriber" onclick="LISTEN.PROFILE.loadSubscriber(' + data.id + ');return false;">Edit</button>';
+                        var editButtonHtml = '<button class="edit-button" title="Edit subscriber" onclick="LISTEN.SUBSCRIBERS.loadSubscriber(' + data.id + ');return false;">Edit</button>';
                         if(editButtonCell.html() != editButtonHtml) {
                             editButtonCell.html(editButtonHtml);
                         }
@@ -83,13 +83,20 @@ $(document).ready(function() {
                     success: function(data, textStatus, xhr) {
                         $('#subscriber-form-id').val(data.id);
                         $('#subscriber-form-username').val(data.username);
+                        
+                        var numbers = '';
+                        for(var i = 0; i < data.accessNumbers.length; i++) {
+                            numbers += data.accessNumbers[i];
+                            if(i < data.accessNumbers.length - 1) {
+                                numbers += ',';
+                            }
+                        }
+                        
+                        $('#subscriber-form-accessNumbers').val(numbers);
 
                         $('#subscriber-form-add-button').hide();
                         $('#subscriber-form-edit-button').show();
                         $('#subscriber-form-cancel-button').show();
-                        
-                        var profile = new LISTEN.PROFILE.ProfileApplication(id);
-                        LISTEN.switchApp('profile', profile);
                     }
                 });
                 
@@ -98,7 +105,7 @@ $(document).ready(function() {
             resetForm: function() {
                 LISTEN.trace('LISTEN.SUBSCRIBERS.resetForm');
                 LISTEN.SUBSCRIBERS.clearError();
-                $('#profile-form')[0].reset();
+                $('#subscriber-form')[0].reset();
                 $('#subscriber-form-cancel-button').hide();
                 $('#subscriber-form-edit-button').hide();
                 $('#subscriber-form-add-button').show();
@@ -127,14 +134,15 @@ $(document).ready(function() {
 
             editSubscriber: function() {
                 LISTEN.trace('LISTEN.SUBSCRIBERS.editSubscriber');
-                LISTEN.SUBSCRIBER.disableButtons();
+                LISTEN.SUBSCRIBERS.disableButtons();
                 SERVER.post({
                     url: '/ajax/editSubscriber',
                     properties: {
                         id: $('#subscriber-form-id').val(),
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
-                        confirmPassword: $('#subscriber-form-confirmPassword').val()
+                        confirmPassword: $('#subscriber-form-confirmPassword').val(),
+                        accessNumbers: $('#subscriber-form-accessNumbers').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();

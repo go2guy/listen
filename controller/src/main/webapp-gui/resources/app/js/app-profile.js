@@ -3,9 +3,28 @@ $(document).ready(function() {
         return {
             ProfileApplication: function() {
                 LISTEN.trace('LISTEN.PROFILE.ProfileApplication [construct]');                
+                
                 this.load = function() {
                     LISTEN.log('Loading profile');
-                    // no-op
+                    $.ajax({
+                        url: '/ajax/getSubscriber',
+                        dataType: 'json',
+                        cache: 'false',
+                        success: function(data, textStatus, xhr) {
+                            $('#profile-form-id').val(data.id);
+                            $('#profile-form-username').val(data.username);
+                            var numbers = '';
+                            for(var i = 0; i < data.accessNumbers.length; i++) {
+                                numbers += data.accessNumbers[i];
+                                if(i < data.accessNumbers.length - 1) {
+                                    numbers += ',';
+                                }
+                            }
+                            $('#profile-form-accessNumbers').text(numbers);
+    
+                            $('#profile-form-edit-button').show();
+                        }
+                    });
                 };
                 
                 this.unload = function() {
@@ -13,81 +32,20 @@ $(document).ready(function() {
                     // no-op
                 };
             },
-
-            loadSubscriber: function(id) {
-                LISTEN.trace('LISTEN.PROFILE.loadSubscriber ' + id);
-                LISTEN.PROFILE.resetForm();
-                $.ajax({
-                    url: '/ajax/getSubscriber?id=' + id,
-                    dataType: 'json',
-                    cache: 'false',
-                    success: function(data, textStatus, xhr) {
-                        $('#subscriber-form-id').val(data.id);
-                        $('#subscriber-form-username').val(data.username);
-                        var numbers = '';
-                        for(var i = 0; i < data.accessNumbers.length; i++) {
-                            numbers += data.accessNumbers[i];
-                            if(i < data.accessNumbers.length - 1) {
-                                numbers += ',';
-                            }
-                        }
-                        $('#subscriber-form-accessNumbers').val(numbers);
-
-                        $('#subscriber-form-add-button').hide();
-                        $('#subscriber-form-edit-button').show();
-                        $('#subscriber-form-cancel-button').show();
-                        
-                        LISTEN.switchApp('profile');
-                    }
-                });
-            },
-
-            resetForm: function() {
-                LISTEN.trace('LISTEN.PROFILE.resetForm');
-                LISTEN.PROFILE.clearError();
-                $('#profile-form')[0].reset();
-                $('#subscriber-form-cancel-button').hide();
-                $('#subscriber-form-edit-button').hide();
-                $('#subscriber-form-add-button').show();
-            },
-
-            addSubscriber: function() {
-                LISTEN.trace('LISTEN.PROFILE.addSubscriber');
-                LISTEN.PROFILE.disableButtons();
-                SERVER.post({
-                    url: '/ajax/addSubscriber',
-                    properties: {
-                        username: $('#subscriber-form-username').val(),
-                        password: $('#subscriber-form-password').val(),
-                        confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        accessNumbers: $('#subscriber-form-accessNumbers').val()
-                    },
-                    successCallback: function() {
-                        LISTEN.PROFILE.resetForm();
-                        LISTEN.PROFILE.showSuccess('Subscriber added');
-                        LISTEN.PROFILE.enableButtons();
-                    },
-                    errorCallback: function(message) {
-                        LISTEN.PROFILE.showError(message);
-                    }
-                });
-            },
-
+            
             editSubscriber: function() {
                 LISTEN.trace('LISTEN.PROFILE.editSubscriber');
                 LISTEN.PROFILE.disableButtons();
                 SERVER.post({
                     url: '/ajax/editSubscriber',
                     properties: {
-                        id: $('#subscriber-form-id').val(),
-                        username: $('#subscriber-form-username').val(),
-                        password: $('#subscriber-form-password').val(),
-                        confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        accessNumbers: $('#subscriber-form-accessNumbers').val()
+                        id: $('#profile-form-id').val(),
+                        username: $('#profile-form-username').val(),
+                        password: $('#profile-form-password').val(),
+                        confirmPassword: $('#profile-form-confirmPassword').val()
                     },
                     successCallback: function() {
-                        //LISTEN.PROFILE.resetForm();
-                        LISTEN.PROFILE.showSuccess('Subscriber updated');
+                        LISTEN.PROFILE.showSuccess('Profile updated');
                         LISTEN.PROFILE.enableButtons();
                     },
                     errorCallback: function(message) {
@@ -117,16 +75,16 @@ $(document).ready(function() {
 
             disableButtons: function() {
                 LISTEN.trace('LISTEN.PROFILE.disableButtons');
-                $('#subscriber-form button').attr('readonly', 'readonly');
+                $('#profile-form button').attr('readonly', 'readonly');
             },
 
             enableButtons: function() {
                 LISTEN.trace('LISTEN.PROFILE.enableButtons');
-                $('#subscriber-form button').removeAttr('readonly');
+                $('#profile-form button').removeAttr('readonly');
             }
         }
     }();
 
     var app = new LISTEN.PROFILE.ProfileApplication();
-    LISTEN.registerApp(new LISTEN.Application('profile', 'profile-application', 'profileButton', app));
+    LISTEN.registerApp(new LISTEN.Application('profile', 'profile-application', 'profile-button', app));
 });

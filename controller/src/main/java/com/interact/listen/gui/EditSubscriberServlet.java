@@ -133,19 +133,20 @@ public class EditSubscriberServlet extends HttpServlet
         String[] split = accessNumberString.split(",");
         for(String an : split)
         {
+            String accessNumber = an.trim();
             Criteria criteria = session.createCriteria(AccessNumber.class);
-            criteria.add(Restrictions.eq("number", an));
+            criteria.add(Restrictions.eq("number", accessNumber));
             criteria.setMaxResults(1);
             AccessNumber result = (AccessNumber)criteria.uniqueResult();
 
             if(result != null && !result.getSubscriber().equals(subscriber))
             {
-                throw new BadRequestServletException("Access number [" + an + "] is already in use by another account");
+                throw new BadRequestServletException("Access number [" + accessNumber + "] is already in use by another account");
             }
             else if(result == null)
             {
                 AccessNumber newNumber = new AccessNumber();
-                newNumber.setNumber(an);
+                newNumber.setNumber(accessNumber);
                 newNumber.setSubscriber(subscriber);
 
                 persistenceService.save(newNumber);
