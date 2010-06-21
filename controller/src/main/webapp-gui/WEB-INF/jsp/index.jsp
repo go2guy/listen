@@ -285,24 +285,51 @@ if(subscriber.getIsAdministrator()) { %>
             </div>
             
             <div id="callhistory-application" class="application">
-              <div class="application-header"><div class="title">Call History</div></div>
+              <div class="application-header"><div class="title">History</div></div>
               <div class="application-content">
-                <table id="callhistory-table" class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Subscriber</th>
-                      <th>Service</th>
-                      <th>Duration</th>
-                      <th>ANI</th>
-                      <th>DNIS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="placeholder"><td colspan="6">No history</td></tr>
-                  </tbody>
-                </table>
+                <div class="panel">
+                  <div class="panel-header"><div class="panel-title">Call History</div></div>
+                  <div class="panel-content">
+                    <table id="callhistory-table" class="data-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Subscriber</th>
+                          <th>Service</th>
+                          <th>Duration</th>
+                          <th>ANI</th>
+                          <th>DNIS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="placeholder"><td colspan="6">No history</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-header"><div class="panel-content">Subscriber History</div></div>
+                  <div class="panel-content">
+                    <table id="subscriberhistory-table" class="data-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Performed By</th>
+                          <th>Action</th>
+                          <th>Description</th>
+                          <th>On Subscriber</th>
+                          <th>Channel</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="placeholder"><td colspan="6">No history</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
+              <div class="cleaner">&nbsp;</div>
             </div><%
 } %>
           </div>
@@ -335,7 +362,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
               <li id="menu-conference-list">Conferences</li><%
     } %>
               <li id="menu-subscribers">Subscribers</li>
-              <li id="menu-callhistory">Call History</li>
+              <li id="menu-callhistory">History</li>
             </ul>
           </div><%
 } %>
@@ -420,6 +447,15 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <td class="callhistory-cell-duration"></td>
           <td class="callhistory-cell-ani"></td>
           <td class="callhistory-cell-dnis"></td>
+        </tr>
+
+        <tr id="subscriberhistory-row-template">
+          <td class="subscriberhistory-cell-date"></td>
+          <td class="subscriberhistory-cell-subscriber"></td>
+          <td class="subscriberhistory-cell-action"></td>
+          <td class="subscriberhistory-cell-description"></td>
+          <td class="subscriberhistory-cell-onSubscriber"></td>
+          <td class="subscriberhistory-cell-channel"></td>
         </tr>
       </tbody></table>
     </div>

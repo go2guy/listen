@@ -1,5 +1,6 @@
 package com.interact.listen.marshal;
 
+import com.interact.listen.history.Channel;
 import com.interact.listen.marshal.converter.*;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.marshal.xml.XmlMarshaller;
@@ -43,6 +44,7 @@ public abstract class Marshaller
         DEFAULT_CONVERTERS.put(String.class, StringConverter.class);
         DEFAULT_CONVERTERS.put(ListenSpotSubscriber.PhoneNumberProtocolType.class,
                                PhoneNumberProtocolTypeConverter.class);
+        DEFAULT_CONVERTERS.put(Channel.class, HistoryChannelConverter.class);
     }
 
     /**

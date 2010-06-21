@@ -3,8 +3,8 @@ $(document).ready(function() {
         return {
             CallHistoryApplication: function() {
                 LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication [construct]');
-                var interval;
-                var dynamicTable = new LISTEN.DynamicTable({
+                var cdrInterval, historyInterval;
+                var callHistoryTable = new LISTEN.DynamicTable({
                     tableId: 'callhistory-table',
                     templateId: 'callhistory-row-template',
                     retrieveList: function(data) {
@@ -44,30 +44,90 @@ $(document).ready(function() {
                     }
                 });
 
-                var pollAndSet = function() {
-                    LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.pollAndSet');
+                var subscriberHistoryTable = new LISTEN.DynamicTable({
+                    tableId: 'subscriberhistory-table',
+                    templateId: 'subscriberhistory-row-template',
+                    retrieveList: function(data) {
+                        return data;
+                    },
+                    reverse: true,
+                    updateRowCallback: function(row, data) {
+                        var dateCell = row.find('.subscriberhistory-cell-date');
+                        if(dateCell.text() != data.date) {
+                            dateCell.text(data.date);
+                        }
+
+                        var subscriberCell = row.find('.subscriberhistory-cell-subscriber');
+                        if(subscriberCell.text() != data.subscriber) {
+                            subscriberCell.text(data.subscriber);
+                        }
+
+                        var actionCell = row.find('.subscriberhistory-cell-action');
+                        if(actionCell.text() != data.action) {
+                            actionCell.text(data.action);
+                        }
+
+                        var descriptionCell = row.find('.subscriberhistory-cell-description');
+                        if(descriptionCell.text() != data.description) {
+                            descriptionCell.text(data.description);
+                        }
+
+                        var onSubscriberCell = row.find('.subscriberhistory-cell-onSubscriber');
+                        if(onSubscriberCell.text() != data.onSubscriber) {
+                            onSubscriberCell.text(data.onSubscriber);
+                        }
+
+                        var channelCell = row.find('.subscriberhistory-cell-channel');
+                        if(channelCell.text() != data.channel) {
+                            channelCell.text(data.channel);
+                        }
+                    }
+                });
+
+                var pollAndSetCdrs = function() {
+                    LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.pollAndSetCdrs');
                     $.ajax({
                         url: '/ajax/getCallHistoryList',
                         dataType: 'json',
                         cache: 'false',
                         success: function(data, textStatus, xhr) {
-                            dynamicTable.update(data);
+                            callHistoryTable.update(data);
+                        }
+                    });
+                };
+
+                var pollAndSetSubscriberHistory = function() {
+                    LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.pollAndSetSubscriberHistory');
+                    $.ajax({
+                        url: '/ajax/getSubscriberHistoryList',
+                        dataType: 'json',
+                        cache: 'false',
+                        success: function(data, textStatus, xhr) {
+                            subscriberHistoryTable.update(data);
                         }
                     });
                 };
 
                 this.load = function() {
                     LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.load');
-                    pollAndSet();
-                    interval = setInterval(function() {
-                        pollAndSet();
+                    pollAndSetCdrs();
+                    cdrInterval = setInterval(function() {
+                        pollAndSetCdrs();
+                    }, 1000);
+
+                    pollAndSetSubscriberHistory();
+                    subscriberHistoryInterval = setInterval(function() {
+                        pollAndSetSubscriberHistory();
                     }, 1000);
                 };
 
                 this.unload = function() {
                     LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.unload');
-                    if(interval) {
-                        clearInterval(interval);
+                    if(cdrInterval) {
+                        clearInterval(cdrInterval);
+                    }
+                    if(subscriberHistoryInterval) {
+                        clearInterval(subscriberHistoryInterval)
                     }
                 };
             }
