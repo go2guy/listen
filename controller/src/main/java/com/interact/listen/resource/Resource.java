@@ -1,9 +1,10 @@
 package com.interact.listen.resource;
 
-import java.util.ArrayList;
-import javax.persistence.*;
+import com.interact.listen.PersistenceService;
 
-import org.hibernate.Session;
+import java.util.ArrayList;
+
+import javax.persistence.Transient;
 
 public abstract class Resource
 {
@@ -43,9 +44,9 @@ public abstract class Resource
     /**
      * Callback to be executed before this {@code Resource} is saved.
      * 
-     * @param session Hibernate session
+     * @param persistenceService PersistenceService triggering callback
      */
-    public void beforeSave(Session session)
+    public void beforeSave(PersistenceService persistenceService)
     {
         // default implementation is no-op
     }
@@ -53,10 +54,10 @@ public abstract class Resource
     /**
      * Callback to be executed before this {@code Resource} is updated.
      * 
-     * @param session Hibernate session
+     * @param persistenceService PersistenceService triggering callback
      * @param original {@code Resource} before properties were updated
      */
-    public void beforeUpdate(Session session, Resource original)
+    public void beforeUpdate(PersistenceService persistenceService, Resource original)
     {
         // default implementation is no-op
     }
@@ -64,9 +65,9 @@ public abstract class Resource
     /**
      * Callback to be executed before this {@code Resource} is deleted.
      * 
-     * @param session Hibernate session
+     * @param persistenceService PersistenceService triggering callback
      */
-    public void beforeDelete(Session session)
+    public void beforeDelete(PersistenceService persistenceService)
     {
         // default implementation is no-op
     }
@@ -74,9 +75,9 @@ public abstract class Resource
     /**
      * Callback to be executed after this {@code Resource} is saved.
      * 
-     * @param session Hibernate session
+     * @param persistenceService PersistenceService triggering callback
      */
-    public void afterSave(Session session)
+    public void afterSave(PersistenceService persistenceService)
     {
         // default implementation is no-op
     }
@@ -84,10 +85,10 @@ public abstract class Resource
     /**
      * Callback to be executed after this {@code Resource} is updated.
      * 
-     * @param session Hibernate session
+     * @param persistenceService PersistenceService triggering callback
      * @param original {@code Resource} before properties were updated
      */
-    public void afterUpdate(Session session, Resource original)
+    public void afterUpdate(PersistenceService persistenceService, Resource original)
     {
         // default implementation is no-op
     }
@@ -95,9 +96,9 @@ public abstract class Resource
     /**
      * Callback to be executed after this {@code Resource} is deleted.
      * 
-     * @param session Hibernate session
+     * @param persistenceService PersistenceService triggering callback
      */
-    public void afterDelete(Session session)
+    public void afterDelete(PersistenceService persistenceService)
     {
         // default implementation is no-op
     }

@@ -5,6 +5,7 @@ import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.exception.CriteriaCreationException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -52,8 +53,9 @@ public class GetConferenceInfoServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
+        Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
 
         String id = request.getParameter("id");
 

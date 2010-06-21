@@ -1,11 +1,10 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.EmailerService;
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.PersistenceService;
+import com.interact.listen.*;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -48,7 +47,7 @@ public class ScheduleConferenceServlet extends HttpServlet
 
         statSender.send(Stat.GUI_SCHEDULE_CONFERENCE);
 
-        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
             throw new UnauthorizedServletException();
@@ -111,7 +110,7 @@ public class ScheduleConferenceServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
         EmailerService emailService = new EmailerService();
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
 
         // I would think I could just get the pins directly from the first conference in the ArrayList, but that is
         // only providing one pin, for some reason. By querying explicitly, I get access to all the pins.

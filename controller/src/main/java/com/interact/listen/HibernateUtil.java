@@ -1,6 +1,7 @@
 package com.interact.listen;
 
 import com.interact.listen.config.Property;
+import com.interact.listen.history.Channel;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
@@ -55,6 +56,7 @@ public final class HibernateUtil
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(ConferenceHistory.class);
             config.addAnnotatedClass(ConferenceRecording.class);
+            config.addAnnotatedClass(History.class);
             config.addAnnotatedClass(ListenSpotSubscriber.class);
             config.addAnnotatedClass(Participant.class);
             config.addAnnotatedClass(Pin.class);
@@ -67,7 +69,7 @@ public final class HibernateUtil
             Session session = getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
 
-            PersistenceService persistenceService = new PersistenceService(session);
+            PersistenceService persistenceService = new PersistenceService(session, null, Channel.GUI);
 
             createAdminSubscriberIfNotPresent(session, persistenceService);
 

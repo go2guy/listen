@@ -3,6 +3,7 @@ package com.interact.listen.api;
 import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.exception.*;
+import com.interact.listen.history.Channel;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.MarshallerNotFoundException;
@@ -44,7 +45,7 @@ public class ApiServlet extends HttpServlet
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, null, Channel.TUI); // FIXME probably not TUI
 
         UriResourceAttributes attributes = getResourceAttributes(request);
         if(attributes.getResourceClass() == null)
@@ -139,7 +140,7 @@ public class ApiServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, null, Channel.TUI); // FIXME probably not TUI
 
         Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
         try
@@ -201,7 +202,7 @@ public class ApiServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, null, Channel.TUI); // FIXME probably not TUI
 
         Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
         if(!isValidResourceId(attributes.getId()))
@@ -276,7 +277,7 @@ public class ApiServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, null, Channel.TUI); // FIXME probably not TUI
 
         if(!isValidResourceId(attributes.getId()))
         {

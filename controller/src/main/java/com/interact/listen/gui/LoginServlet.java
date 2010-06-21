@@ -3,6 +3,7 @@ package com.interact.listen.gui;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
+import com.interact.listen.history.Channel;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
@@ -79,7 +80,7 @@ public class LoginServlet extends HttpServlet
             if(subscriber != null)
             {
                 Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-                PersistenceService persistenceService = new PersistenceService(session);
+                PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
                 Subscriber original = subscriber.copy(true);
                 subscriber.setLastLogin(new Date());
                 persistenceService.update(subscriber, original);

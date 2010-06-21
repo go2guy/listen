@@ -29,7 +29,7 @@ public class ConferenceHistory extends Resource implements Serializable
     @ManyToOne
     private Conference conference;
 
-    @Column(name = "SUBSCRIBER", nullable = false)
+    @Column(name = "SUBSCRIBER", nullable = true)
     private String subscriber;
 
     @Column(name = "DESCRIPTION", nullable = false)

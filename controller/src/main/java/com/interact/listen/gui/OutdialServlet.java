@@ -2,9 +2,11 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
@@ -48,7 +50,7 @@ public class OutdialServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_OUTDIAL);
 
-        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
             throw new UnauthorizedServletException();
@@ -72,7 +74,7 @@ public class OutdialServlet extends HttpServlet
         LOG.debug("Outdialing to [" + number + "] for conference id [" + conferenceId + "]");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
 
         Conference conference = (Conference)session.get(Conference.class, Long.valueOf(conferenceId));
 

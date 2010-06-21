@@ -1,6 +1,7 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.history.HistoryService;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 import com.interact.listen.stats.StatSenderFactory;
@@ -266,15 +267,19 @@ public class Conference extends Resource implements Serializable
     }
 
     @Override
-    public void afterSave(Session session)
+    public void afterSave(PersistenceService persistenceService)
     {
         StatSender statSender = StatSenderFactory.getStatSender();
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(this);
-        history.setSubscriber("Current Subscriber"); // FIXME
+        if(persistenceService.getCurrentSubscriber() != null)
+        {
+            if(persistenceService.getCurrentSubscriber() != null)
+            {
+                history.setSubscriber(persistenceService.getCurrentSubscriber().getUsername());
+            }
+        }
         history.setDescription("Conference created");
-
-        PersistenceService persistenceService = new PersistenceService(session);
         persistenceService.save(history);
         
         if(isStarted.booleanValue())
@@ -287,31 +292,44 @@ public class Conference extends Resource implements Serializable
         {
             history = new ConferenceHistory();
             history.setConference(this);
-            history.setSubscriber("Current Subscriber"); // FIXME
+            if(persistenceService.getCurrentSubscriber() != null)
+            {
+                history.setSubscriber(persistenceService.getCurrentSubscriber().getUsername());
+            }
             history.setDescription("Conference recording started");
 
-            persistenceService = new PersistenceService(session);
             persistenceService.save(history);
-            
             statSender.send(Stat.CONFERENCE_RECORDING_START);
         }
     }
 
     @Override
-    public void afterUpdate(Session session, Resource original)
+    public void afterUpdate(PersistenceService persistenceService, Resource original)
     {
+        HistoryService historyService = new HistoryService(persistenceService);
+
         StatSender statSender = StatSenderFactory.getStatSender();
         Conference originalConference = (Conference)original;
         if(isStarted.booleanValue() != originalConference.getIsStarted().booleanValue())
         {
             ConferenceHistory history = new ConferenceHistory();
             history.setConference(this);
-            history.setSubscriber("Current Subscriber"); // FIXME
+            if(persistenceService.getCurrentSubscriber() != null)
+            {
+                history.setSubscriber(persistenceService.getCurrentSubscriber().getUsername());
+            }
             history.setDescription("Conference " + (isStarted ? "started" : "ended"));
-
-            PersistenceService persistenceService = new PersistenceService(session);
             persistenceService.save(history);
             
+            if(isStarted)
+            {
+                historyService.writeStartedConference(getDescription());
+            }
+            else
+            {
+                historyService.writeStoppedConference(getDescription());
+            }
+
             if(isStarted.booleanValue())
             {
                 //Conference moved to 'started'
@@ -335,18 +353,21 @@ public class Conference extends Resource implements Serializable
         {
             ConferenceHistory history = new ConferenceHistory();
             history.setConference(this);
-            history.setSubscriber("Current Subscriber"); // FIXME
+            if(persistenceService.getCurrentSubscriber() != null)
+            {
+                history.setSubscriber(persistenceService.getCurrentSubscriber().getUsername());
+            }
             history.setDescription("Conference recording " + (isRecording ? "started" : "ended"));
-
-            PersistenceService persistenceService = new PersistenceService(session);
             persistenceService.save(history);
-            
+
             if(isRecording.booleanValue())
             {
+                historyService.writeStartedRecordingConference(getDescription());
                 statSender.send(Stat.CONFERENCE_RECORDING_START);
             }
             else
             {
+                historyService.writeStoppedRecordingConference(getDescription());
                 statSender.send(Stat.CONFERENCE_RECORDING_STOP);
             }
         }

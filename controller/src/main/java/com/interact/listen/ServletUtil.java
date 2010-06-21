@@ -1,5 +1,7 @@
 package com.interact.listen;
 
+import com.interact.listen.resource.Subscriber;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -20,6 +22,11 @@ public final class ServletUtil
     private ServletUtil()
     {
         throw new AssertionError("Cannot instantiate utility class ServletUtil");
+    }
+
+    public static Subscriber currentSubscriber(HttpServletRequest request)
+    {
+        return (Subscriber)request.getSession().getAttribute("subscriber");
     }
 
     public static Map<String, String> getQueryParameters(HttpServletRequest request)

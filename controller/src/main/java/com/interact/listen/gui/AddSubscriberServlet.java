@@ -2,10 +2,14 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
-import com.interact.listen.resource.*;
+import com.interact.listen.history.Channel;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Pin;
 import com.interact.listen.resource.Pin.PinType;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -32,7 +36,7 @@ public class AddSubscriberServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_ADD_SUBSCRIBER);
 
-        Subscriber currentSubscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         if(currentSubscriber == null)
         {
             throw new UnauthorizedServletException();
@@ -67,7 +71,7 @@ public class AddSubscriberServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
 
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));

@@ -1,6 +1,7 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.history.HistoryService;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 import com.interact.listen.stats.StatSenderFactory;
@@ -9,8 +10,6 @@ import com.interact.listen.util.ComparisonUtil;
 import java.io.Serializable;
 
 import javax.persistence.*;
-
-import org.hibernate.Session;
 
 @Entity
 @Table(name = "PARTICIPANT")
@@ -228,15 +227,16 @@ public class Participant extends Resource implements Serializable
     }
 
     @Override
-    public void afterSave(Session session)
+    public void afterSave(PersistenceService persistenceService)
     {
         StatSender statSender = StatSenderFactory.getStatSender();
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(conference);
-        history.setSubscriber("Current Subscriber"); // FIXME
+        if(persistenceService.getCurrentSubscriber() != null)
+        {
+            history.setSubscriber(persistenceService.getCurrentSubscriber().getUsername());
+        }
         history.setDescription(number + " joined");
-
-        PersistenceService persistenceService = new PersistenceService(session);
         persistenceService.save(history);
         
         if(isAdmin)
@@ -254,7 +254,7 @@ public class Participant extends Resource implements Serializable
     }
 
     @Override
-    public void afterUpdate(Session session, Resource original)
+    public void afterUpdate(PersistenceService persistenceService, Resource original)
     {
         Participant originalParticipant = (Participant)original;
 
@@ -262,7 +262,10 @@ public class Participant extends Resource implements Serializable
         {
             ConferenceHistory history = new ConferenceHistory();
             history.setConference(conference);
-            history.setSubscriber("Current Subscriber"); // FIXME
+            if(persistenceService.getCurrentSubscriber() != null)
+            {
+                history.setSubscriber(persistenceService.getCurrentSubscriber().getUsername());
+            }
 
             if(isAdminMuted)
             {
@@ -272,22 +275,34 @@ public class Participant extends Resource implements Serializable
             {
                 history.setDescription(number + " was placed in active mode");
             }
-
-            PersistenceService persistenceService = new PersistenceService(session);
             persistenceService.save(history);
+
+            HistoryService historyService = new HistoryService(persistenceService);
+            if(isAdminMuted)
+            {
+                historyService.writeMutedConferenceCaller(getNumber(), getConference().getDescription());
+            }
+            else
+            {
+                historyService.writeUnmutedConferenceCaller(getNumber(), getConference().getDescription());
+            }
         }
     }
 
     @Override
-    public void afterDelete(Session session)
+    public void afterDelete(PersistenceService persistenceService)
     {
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(conference);
-        history.setSubscriber("Current Subscriber"); // FIXME
+        if(persistenceService.getCurrentSubscriber() != null)
+        {
+            history.setSubscriber(persistenceService.getCurrentSubscriber().getUsername());
+        }
         history.setDescription(number + " was dropped");
-
-        PersistenceService persistenceService = new PersistenceService(session);
         persistenceService.save(history);
+
+        HistoryService historyService = new HistoryService(persistenceService);
+        historyService.writeDroppedConferenceCaller(getNumber(), getConference().getDescription());
     }
 
     @Override

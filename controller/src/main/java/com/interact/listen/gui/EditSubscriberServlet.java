@@ -2,8 +2,10 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.history.Channel;
 import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
@@ -37,7 +39,7 @@ public class EditSubscriberServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_EDIT_SUBSCRIBER);
 
-        Subscriber currentSubscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         if(currentSubscriber == null)
         {
             throw new UnauthorizedServletException();
@@ -91,7 +93,7 @@ public class EditSubscriberServlet extends HttpServlet
             subscriberToEdit.setPassword(SecurityUtil.hashPassword(password));
         }
 
-        PersistenceService persistenceService = new PersistenceService(session);
+        PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
 
         String accessNumbers = request.getParameter("accessNumbers");
         if(currentSubscriber.getIsAdministrator() && accessNumbers != null && accessNumbers.trim().length() > 0)

@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.PersistenceService;
+import com.interact.listen.history.HistoryService;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
@@ -274,4 +276,15 @@ public class Subscriber extends Resource implements Serializable
         hash *= prime + (getUsername() == null ? 0 : getUsername().hashCode());
         return hash;
     }
+
+    @Override
+    public void afterUpdate(PersistenceService persistenceService, Resource original)
+    {
+        Subscriber subscriber = (Subscriber)original;
+        if(!ComparisonUtil.isEqual(subscriber.getVoicemailPin(), getVoicemailPin()))
+        {
+            HistoryService historyService = new HistoryService(persistenceService);
+            historyService.writeChangedVoicemailPin(this, subscriber.getVoicemailPin(), getVoicemailPin());
+        }
+   }
 }

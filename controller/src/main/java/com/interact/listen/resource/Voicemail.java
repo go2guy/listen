@@ -1,5 +1,8 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.PersistenceService;
+import com.interact.listen.history.HistoryService;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -88,5 +91,12 @@ public class Voicemail extends Audio implements Serializable
         copy.setSubscriber(subscriber);
         copy.setUri(getUri());
         return copy;
+    }
+    
+    @Override
+    public void afterDelete(PersistenceService persistenceService)
+    {
+        HistoryService historyService = new HistoryService(persistenceService);
+        historyService.writeDeletedVoicemail(getSubscriber(), getLeftBy(), getDateCreated());
     }
 }
