@@ -16,8 +16,8 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'1'+',103-43|=,'+'3'+',103-48|=,'+'7'+',102-5|else,103-27'"/>	<!-- List of expression to be evaluated -->
-    <var name="II_SB_operand1" expr="menuOption"/>   			<!-- User defined value to be used as an operand in the expression -->
+    <var name="II_SB_expList" expr="'=,'+''+',140-21|else,140-7'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_operand1" expr="pinFirst"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
     <var name="II_SB_index" expr="0"/>							<!-- Index used to loop through expression list -->
@@ -27,8 +27,8 @@
 
 	<form id="beginDocument">
 		<block>
-    	    <log target="status">User Menu</log>
-			<log>INFO: Entered decision.vxml [103-10]</log>
+    	    
+			<log>INFO: Entered decision.vxml [140-5]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>
 		</block>

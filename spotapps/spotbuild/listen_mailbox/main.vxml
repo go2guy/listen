@@ -56,6 +56,10 @@
 	<var name="SB_UV_vmDateCreated"/>
 	<var name="SB_UV_date"/>
 	<var name="SB_UV_time"/>
+	<var name="SB_UV_pinFirst"/>
+	<var name="SB_UV_pinSecond"/>
+	<var name="SB_UV_errLoop"/>
+	<var name="SB_UV_subscriberInfo"/>
 
     
     <form id="beginDocument">
@@ -179,6 +183,18 @@
 			</if>
 			<if cond="SB_UV_time != undefined">
 				<assign name="time" expr="SB_UV_time" />
+			</if>
+			<if cond="SB_UV_pinFirst != undefined">
+				<assign name="pinFirst" expr="SB_UV_pinFirst" />
+			</if>
+			<if cond="SB_UV_pinSecond != undefined">
+				<assign name="pinSecond" expr="SB_UV_pinSecond" />
+			</if>
+			<if cond="SB_UV_errLoop != undefined">
+				<assign name="errLoop" expr="SB_UV_errLoop" />
+			</if>
+			<if cond="SB_UV_subscriberInfo != undefined">
+				<assign name="subscriberInfo" expr="SB_UV_subscriberInfo" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

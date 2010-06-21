@@ -66,6 +66,10 @@
 	<var name="vmDateCreated" expr="''" />
 	<var name="date" expr="''" />
 	<var name="time" expr="''" />
+	<var name="pinFirst" expr="''" />
+	<var name="pinSecond" expr="''" />
+	<var name="errLoop" expr="''" />
+	<var name="subscriberInfo" expr="''" />
 
 
     <!-- Conference Variables -->
