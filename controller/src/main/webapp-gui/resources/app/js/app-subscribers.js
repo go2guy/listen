@@ -119,7 +119,8 @@ $(document).ready(function() {
                     properties: {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
-                        confirmPassword: $('#subscriber-form-confirmPassword').val()
+                        confirmPassword: $('#subscriber-form-confirmPassword').val(),
+                        accessNumbers: $('#subscriber-form-accessNumbers').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();
