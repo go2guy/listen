@@ -48,11 +48,13 @@ public class AddSubscriberServletTest
         final String username = randomString();
         final String password = randomString();
         final String confirm = password;
+        final String voicemailPin = randomString();
 
         request.setMethod("POST");
         request.setParameter("username", username);
         request.setParameter("password", password);
         request.setParameter("confirmPassword", confirm);
+        request.setParameter("voicemailPin", voicemailPin);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -107,6 +109,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -138,6 +141,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -169,6 +173,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", (String)null);
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -201,6 +206,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", " ");
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -233,6 +239,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", (String)null);
         request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -265,6 +272,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", " ");
         request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -297,6 +305,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", (String)null);
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -329,6 +338,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", " ");
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -361,6 +371,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password") + "foo");
+        request.setParameter("voicemailPin", randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -374,6 +385,102 @@ public class AddSubscriberServletTest
         {
             assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
             assertEquals("Password and Confirm Password do not match", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+        finally
+        {
+            tx.commit();
+        }
+    }
+    
+    @Test
+    public void test_doPost_withNullVoicemailPin_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
+    {
+        setSessionSubscriber(request, true);
+
+        request.setMethod("POST");
+        request.setParameter("username", randomString());
+        request.setParameter("password", randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", (String)null);
+        
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Voicemail Pin Number", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+        finally
+        {
+            tx.commit();
+        }
+    }
+    
+    @Test
+    public void test_doPost_withBlankVoicemailPin_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
+    {
+        setSessionSubscriber(request, true);
+        
+        request.setMethod("POST");
+        request.setParameter("username", randomString());
+        request.setParameter("password", randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", "");
+        
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide a Voicemail Pin Number", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+        finally
+        {
+            tx.commit();
+        }
+    }
+    
+    @Test
+    public void test_doPost_withNonNumericVoicemailPin_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
+    {
+        setSessionSubscriber(request, true);
+        
+        request.setMethod("POST");
+        request.setParameter("username", randomString());
+        request.setParameter("password", randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", "ABC");
+        
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Voicemail Pin Number can only be digits 0-9", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
         finally
