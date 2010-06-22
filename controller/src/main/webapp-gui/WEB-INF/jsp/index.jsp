@@ -267,6 +267,7 @@ if(subscriber.getIsAdministrator()) { %>
 } %>
                               </td>
                             </tr>
+                            <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin"/></td></tr>
                             <tr>
                               <td></td>
                               <td class="buttons">
@@ -349,6 +350,7 @@ if(subscriber != null) { %>
                         <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
                         <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
                         <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr>
+                        <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin"/></td></tr>
                         <tr>
                           <td></td>
                           <td class="buttons">

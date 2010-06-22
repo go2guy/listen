@@ -93,6 +93,7 @@ $(document).ready(function() {
                         }
                         
                         $('#subscriber-form-accessNumbers').val(numbers);
+                        $('#subscriber-form-voicemailPin').val(data.voicemailPin);
 
                         $('#subscriber-form-add-button').hide();
                         $('#subscriber-form-edit-button').show();
@@ -120,7 +121,8 @@ $(document).ready(function() {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        accessNumbers: $('#subscriber-form-accessNumbers').val()
+                        accessNumbers: $('#subscriber-form-accessNumbers').val(),
+                        voicemailPin: $('#subscriber-form-voicemailPin').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();
@@ -143,7 +145,8 @@ $(document).ready(function() {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
-                        accessNumbers: $('#subscriber-form-accessNumbers').val()
+                        accessNumbers: $('#subscriber-form-accessNumbers').val(),
+                        voicemailPin: $('#subscriber-form-voicemailPin').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();

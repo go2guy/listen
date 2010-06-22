@@ -191,6 +191,7 @@ public class JsonMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setUsername("foo" + System.currentTimeMillis());
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         subscriber.setLastLogin(new Date());
 
         String json = marshaller.marshal(subscriber);
@@ -208,6 +209,7 @@ public class JsonMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setUsername("foo" + System.currentTimeMillis());
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         subscriber.setLastLogin(new Date());
 
         String json = marshaller.marshal(subscriber);

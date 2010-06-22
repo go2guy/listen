@@ -349,6 +349,10 @@ td.voicemail-cell-readStatus {
     border-width: 0;
 }
 
+#subscribers-application .panel {
+    margin-top: 0px;
+}
+
 #subscriber-form-edit-button, #subscriber-form-cancel-button {
     display: none;
 }

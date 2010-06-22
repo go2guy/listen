@@ -173,6 +173,7 @@ public class XmlMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setUsername("foo" + System.currentTimeMillis());
+        subscriber.setVoicemailPin(System.currentTimeMillis());
 
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
@@ -189,6 +190,7 @@ public class XmlMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setUsername("foo" + System.currentTimeMillis());
+        subscriber.setVoicemailPin(System.currentTimeMillis());
 
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());

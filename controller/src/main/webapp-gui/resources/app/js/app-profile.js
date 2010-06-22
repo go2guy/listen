@@ -21,6 +21,7 @@ $(document).ready(function() {
                                 }
                             }
                             $('#profile-form-accessNumbers').text(numbers);
+                            $('#profile-form-voicemailPin').val(data.voicemailPin);
     
                             $('#profile-form-edit-button').show();
                         }
@@ -29,7 +30,7 @@ $(document).ready(function() {
                 
                 this.unload = function() {
                     LISTEN.log('Unloading profile');
-                    // no-op
+                    LISTEN.PROFILE.clearError();
                 };
             },
             
@@ -42,7 +43,8 @@ $(document).ready(function() {
                         id: $('#profile-form-id').val(),
                         username: $('#profile-form-username').val(),
                         password: $('#profile-form-password').val(),
-                        confirmPassword: $('#profile-form-confirmPassword').val()
+                        confirmPassword: $('#profile-form-confirmPassword').val(),
+                        voicemailPin: $('#profile-form-voicemailPin').val()
                     },
                     successCallback: function() {
                         LISTEN.PROFILE.showSuccess('Profile updated');
