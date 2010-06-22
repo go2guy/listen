@@ -114,6 +114,7 @@ public class UnmuteParticipantServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         session.save(subscriber);
 
         request.getSession().setAttribute("subscriber", subscriber);
@@ -222,6 +223,7 @@ public class UnmuteParticipantServletTest
         subscriber.setIsAdministrator(false);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         session.save(subscriber);
 
         request.getSession().setAttribute("subscriber", subscriber);
@@ -274,6 +276,7 @@ public class UnmuteParticipantServletTest
         subscriber.setIsAdministrator(true);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         session.save(subscriber);
 
         request.getSession().setAttribute("subscriber", subscriber);

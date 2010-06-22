@@ -167,7 +167,7 @@ public final class HibernateUtil
             Subscriber subscriber = new Subscriber();
             subscriber.setPassword(SecurityUtil.hashPassword("super"));
             subscriber.setUsername(extension);
-            subscriber.setVoicemailPin(extension);
+            subscriber.setVoicemailPin(Long.valueOf(extension));
             persistenceService.save(subscriber);
 
             AccessNumber accessNumber = new AccessNumber();
@@ -239,6 +239,7 @@ public final class HibernateUtil
             subscriber.setIsAdministrator(Boolean.TRUE);
             subscriber.setPassword(SecurityUtil.hashPassword("Int3ract!Inc"));
             subscriber.setUsername("Admin");
+            subscriber.setVoicemailPin(123L);
             persistenceService.save(subscriber);
         }
     }

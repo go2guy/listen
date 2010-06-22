@@ -100,7 +100,25 @@ public class EditSubscriberServlet extends HttpServlet
         {
             updateSubscriberAccessNumbers(subscriberToEdit, accessNumbers, session, persistenceService);
         }
+        
+        String voicemailPinString = request.getParameter("voicemailPin");
+        if(voicemailPinString == null || voicemailPinString.trim().equals(""))
+        {
+            throw new BadRequestServletException("Please provide a Voicemail Pin Number");
+        }
+        
+        Long voicemailPin = null;
+        
+        try
+        {
+            voicemailPin = Long.valueOf(voicemailPinString);
+        }
+        catch(NumberFormatException e)
+        {
+            throw new BadRequestServletException("Voicemail Pin Number can only be digits 0-9");
+        }
 
+        subscriberToEdit.setVoicemailPin(voicemailPin);
         subscriberToEdit.setUsername(username);
 
         ArrayList<Conference> conferenceList = new ArrayList<Conference>(subscriberToEdit.getConferences());

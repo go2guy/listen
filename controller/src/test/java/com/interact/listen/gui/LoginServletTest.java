@@ -51,6 +51,7 @@ public class LoginServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
+        subscriber.setVoicemailPin(System.currentTimeMillis());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -76,6 +77,7 @@ public class LoginServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
+        subscriber.setVoicemailPin(System.currentTimeMillis());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();

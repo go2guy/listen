@@ -153,6 +153,7 @@ public class StopRecordingServletTest
         subscriber.setIsAdministrator(false);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         session.save(subscriber);
 
         request.getSession().setAttribute("subscriber", subscriber);
@@ -203,6 +204,7 @@ public class StopRecordingServletTest
         subscriber.setIsAdministrator(false);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         session.save(subscriber);
 
         request.getSession().setAttribute("subscriber", subscriber);
@@ -243,6 +245,7 @@ public class StopRecordingServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         subscriber.setIsAdministrator(true);
         session.save(subscriber);
 

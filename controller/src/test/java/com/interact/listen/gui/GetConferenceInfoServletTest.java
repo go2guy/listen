@@ -100,8 +100,10 @@ public class GetConferenceInfoServletTest
         session.save(conference);
 
         Subscriber subscriber = new Subscriber();
+        subscriber.setId(id);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         subscriber.addToConferences(conference);
         session.save(subscriber);
 

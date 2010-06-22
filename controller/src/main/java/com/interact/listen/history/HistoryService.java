@@ -22,7 +22,7 @@ public class HistoryService
         persistenceService.save(history);
     }
 
-    public void writeChangedVoicemailPin(Subscriber onSubscriber, String oldPin, String newPin)
+    public void writeChangedVoicemailPin(Subscriber onSubscriber, Long oldPin, Long newPin)
     {
         History history = new History();
         history.setAction("Changed voicemail PIN");

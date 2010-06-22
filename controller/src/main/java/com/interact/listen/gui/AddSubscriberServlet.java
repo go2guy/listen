@@ -69,6 +69,23 @@ public class AddSubscriberServlet extends HttpServlet
         {
             throw new BadRequestServletException("Password and Confirm Password do not match");
         }
+        
+        String voicemailPinString = request.getParameter("voicemailPin");
+        if(voicemailPinString == null || voicemailPinString.trim().equals(""))
+        {
+            throw new BadRequestServletException("Please provide a Voicemail Pin Number");
+        }
+        
+        Long voicemailPin = null;
+        
+        try
+        {
+            voicemailPin = Long.valueOf(voicemailPinString);
+        }
+        catch(NumberFormatException e)
+        {
+            throw new BadRequestServletException("Voicemail Pin Number can only be digits 0-9");
+        }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
@@ -76,6 +93,7 @@ public class AddSubscriberServlet extends HttpServlet
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
+        subscriber.setVoicemailPin(voicemailPin);
         persistenceService.save(subscriber);
 
         String accessNumbers = request.getParameter("accessNumbers");

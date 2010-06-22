@@ -99,7 +99,9 @@ public class GetSubscriberServlet extends HttpServlet
         {
             json.deleteCharAt(json.length() - 1); // last comma
         }
-        json.append("]");
+        json.append("]").append(",");
+        
+        json.append("\"voicemailPin\":").append(subscriber.getVoicemailPin());
         json.append("}");
         return json.toString();
     }

@@ -28,7 +28,7 @@ public class Subscriber extends Resource implements Serializable
     private Set<AccessNumber> accessNumbers = new HashSet<AccessNumber>();
 
     @Column(name = "VOICEMAIL_PIN")
-    private String voicemailPin;
+    private Long voicemailPin;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
@@ -110,12 +110,12 @@ public class Subscriber extends Resource implements Serializable
         this.version = version;
     }
 
-    public String getVoicemailPin()
+    public Long getVoicemailPin()
     {
         return voicemailPin;
     }
 
-    public void setVoicemailPin(String voicemailPin)
+    public void setVoicemailPin(Long voicemailPin)
     {
         this.voicemailPin = voicemailPin;
     }
@@ -212,6 +212,11 @@ public class Subscriber extends Resource implements Serializable
         if(username == null)
         {
             addToErrors("username cannot be null");
+        }
+        
+        if(voicemailPin ==  null)
+        {
+            addToErrors("voicemail pin cannot be null");
         }
 
         return !hasErrors();
