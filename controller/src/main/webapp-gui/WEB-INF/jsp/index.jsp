@@ -414,9 +414,9 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
           <td class="caller-cell-dropIcon"></td>
         </tr>
 
-        <tr id="history-row-template">
-          <td class="history-cell-date"></td>
-          <td class="history-cell-description"></td>
+        <tr id="conferencehistory-row-template">
+          <td class="conferencehistory-cell-date"></td>
+          <td class="conferencehistory-cell-description"></td>
         </tr>
 
         <tr id="pin-row-template">

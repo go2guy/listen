@@ -133,19 +133,19 @@ function Conference(id) {
 
     var historyTable = new LISTEN.DynamicTable({
         tableId: 'conference-history-table',
-        templateId: 'history-row-template',
+        templateId: 'conferencehistory-row-template',
         retrieveList: function(data) {
             return data;
         },
         alternateRowColors: true,
         reverse: true,
         updateRowCallback: function(row, data) {
-            var dateCell = row.find('.history-cell-date');
+            var dateCell = row.find('.conferencehistory-cell-date');
             if(dateCell.text() != data.dateCreated) {
                 dateCell.text(data.dateCreated);
             }
     
-            var descriptionCell = row.find('.history-cell-description');
+            var descriptionCell = row.find('.conferencehistory-cell-description');
             if(descriptionCell.text() != data.description) {
                 descriptionCell.text(data.description);
             }
