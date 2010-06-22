@@ -13,11 +13,6 @@ public class CallDetailRecord extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    public static enum CallDirection
-    {
-        INBOUND, OUTBOUND;
-    }
-
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
