@@ -40,15 +40,16 @@
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'stat'" />
 	<var name="request" expr="'get'" />
-	<var name="resource" expr="'subscribers'" />
+	<var name="resource" expr="'accessNumbers'" />
 	<var name="params" expr="''" />
 	<var name="cntrlURL" expr="''" />
 	<var name="audioURL" expr="''" />
 	<var name="index" expr="'0'" />
 	<var name="hostName" expr="''" />
+	<var name="fileSize" expr="''" />
 	<var name="passValues" expr="'importedValue'" />
 	<var name="duration" expr="''" />
-	<var name="fileSize" expr="''" />
+	<var name="accessNum" expr="''" />
 
 
     <!-- Conference Variables -->

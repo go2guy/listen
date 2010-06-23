@@ -36,9 +36,10 @@
 	<var name="SB_UV_audioURL"/>
 	<var name="SB_UV_index"/>
 	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_fileSize"/>
 	<var name="SB_UV_passValues"/>
 	<var name="SB_UV_duration"/>
-	<var name="SB_UV_fileSize"/>
+	<var name="SB_UV_accessNum"/>
 
     
     <form id="beginDocument">
@@ -104,14 +105,17 @@
 			<if cond="SB_UV_hostName != undefined">
 				<assign name="hostName" expr="SB_UV_hostName" />
 			</if>
+			<if cond="SB_UV_fileSize != undefined">
+				<assign name="fileSize" expr="SB_UV_fileSize" />
+			</if>
 			<if cond="SB_UV_passValues != undefined">
 				<assign name="passValues" expr="SB_UV_passValues" />
 			</if>
 			<if cond="SB_UV_duration != undefined">
 				<assign name="duration" expr="SB_UV_duration" />
 			</if>
-			<if cond="SB_UV_fileSize != undefined">
-				<assign name="fileSize" expr="SB_UV_fileSize" />
+			<if cond="SB_UV_accessNum != undefined">
+				<assign name="accessNum" expr="SB_UV_accessNum" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

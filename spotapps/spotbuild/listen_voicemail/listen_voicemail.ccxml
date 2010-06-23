@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
 
-    <!-- Last Modified 06/14/2010
+    <!-- Last Modified 06/15/2010
        *   @Name   SPOTbuild.ccxml
        *   @desc   Default entry point for all SPOTbuild projects -->
 
@@ -38,7 +38,7 @@
 
         <!-- Received ccxml.loaded -->
         <transition state="idle" event="ccxml.loaded" name="loadEV">
-            <log>INFO: Entered listen_voicemail.ccxml [53-2]</log>
+            <log>INFO: Entered listen_voicemail.ccxml [142-2]</log>
             <log>INFO: transition event [<value expr="loadEV.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
         </transition>
@@ -114,8 +114,8 @@
             <exit/>
         </transition>
 
-	    <transition event="conection.disconnected" name="evt">
-            <log>INFO: transition event [conection.disconnected] state [<value expr="II_SB_state"/>]</log>
+	    <transition event="connection.disconnected" name="evt">
+            <log>INFO: transition event [connection.disconnected] state [<value expr="II_SB_state"/>]</log>
 			<assign name="II_SB_disconnect.id" expr="evt.connectionid"/>
 			<assign name="II_SB_disconnect.reason" expr="evt.reason"/>
 			<assign name="II_SB_disconnect.originator" expr="evt.connection.originator"/>
