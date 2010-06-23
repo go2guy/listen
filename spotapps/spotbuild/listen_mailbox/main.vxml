@@ -60,6 +60,7 @@
 	<var name="SB_UV_pinSecond"/>
 	<var name="SB_UV_errLoop"/>
 	<var name="SB_UV_subscriberInfo"/>
+	<var name="SB_UV_subscriber"/>
 
     
     <form id="beginDocument">
@@ -195,6 +196,9 @@
 			</if>
 			<if cond="SB_UV_subscriberInfo != undefined">
 				<assign name="subscriberInfo" expr="SB_UV_subscriberInfo" />
+			</if>
+			<if cond="SB_UV_subscriber != undefined">
+				<assign name="subscriber" expr="SB_UV_subscriber" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

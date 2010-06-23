@@ -41,7 +41,7 @@
 	<var name="ANI" expr="'remote'" />
 	<var name="userInput" expr="''" />
 	<var name="request" expr="'get'" />
-	<var name="resource" expr="'subscribers'" />
+	<var name="resource" expr="'accessNumbers'" />
 	<var name="params" expr="''" />
 	<var name="cntrlURL" expr="''" />
 	<var name="id" expr="''" />
@@ -70,6 +70,7 @@
 	<var name="pinSecond" expr="''" />
 	<var name="errLoop" expr="''" />
 	<var name="subscriberInfo" expr="''" />
+	<var name="subscriber" expr="''" />
 
 
     <!-- Conference Variables -->
