@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
-public class GetCallHistoryListServlet extends HttpServlet
+public class GetHistoryListServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
@@ -73,7 +73,7 @@ public class GetCallHistoryListServlet extends HttpServlet
             {
                 Date dateA = getDate(a);
                 Date dateB = getDate(b);
-                return dateA.compareTo(dateB);
+                return dateA.compareTo(dateB) * -1;
             }
 
             private final Date getDate(Resource resource)

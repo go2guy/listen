@@ -34,7 +34,7 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
 if(subscriber != null && subscriber.getIsAdministrator()) { %>
     <script type="text/javascript" src="./resources/app/js/app-system-configuration-min.js"></script>
     <script type="text/javascript" src="./resources/app/js/app-subscribers-min.js"></script>
-    <script type="text/javascript" src="./resources/app/js/app-callhistory-min.js"></script><%
+    <script type="text/javascript" src="./resources/app/js/app-history-min.js"></script><%
 } %>
     <script type="text/javascript" src="./resources/app/js/app-profile-min.js"></script>
   </head>

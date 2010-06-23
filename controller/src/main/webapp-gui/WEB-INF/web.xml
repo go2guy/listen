@@ -92,8 +92,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>GetCallHistoryListServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetCallHistoryListServlet</servlet-class>
+        <servlet-name>GetHistoryListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetHistoryListServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -249,7 +249,7 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>GetCallHistoryListServlet</servlet-name>
+        <servlet-name>GetHistoryListServlet</servlet-name>
         <url-pattern>/ajax/getHistoryList</url-pattern>
     </servlet-mapping>
 
