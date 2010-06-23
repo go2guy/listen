@@ -41,6 +41,15 @@ public class CallDetailRecord extends Resource implements Serializable
     @Column(name = "DNIS")
     private String dnis;
 
+    @Column(name = "DIRECTION", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CallDirection direction = CallDirection.INBOUND;
+
+    public static enum CallDirection
+    {
+        INBOUND, OUTBOUND;
+    }
+
     public Long getId()
     {
         return id;
@@ -119,6 +128,16 @@ public class CallDetailRecord extends Resource implements Serializable
     public void setDnis(String dnis)
     {
         this.dnis = dnis;
+    }
+
+    public CallDirection getDirection()
+    {
+        return direction;
+    }
+
+    public void setDirection(CallDirection direction)
+    {
+        this.direction = direction;
     }
 
     @Override

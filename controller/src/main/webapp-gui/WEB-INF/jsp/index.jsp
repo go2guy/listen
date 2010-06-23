@@ -285,51 +285,11 @@ if(subscriber.getIsAdministrator()) { %>
                 <div class="cleaner">&nbsp;</div>
               </div>
             </div>
-            
-            <div id="callhistory-application" class="application">
+
+            <div id="history-application" class="application">
               <div class="application-header"><div class="title">History</div></div>
               <div class="application-content">
-                <div class="panel">
-                  <div class="panel-header"><div class="panel-title">Call History</div></div>
-                  <div class="panel-content">
-                    <table id="callhistory-table" class="data-table">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Subscriber</th>
-                          <th>Service</th>
-                          <th>Duration</th>
-                          <th>ANI</th>
-                          <th>DNIS</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr class="placeholder"><td colspan="6">No history</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div class="panel">
-                  <div class="panel-header"><div class="panel-content">Subscriber History</div></div>
-                  <div class="panel-content">
-                    <table id="subscriberhistory-table" class="data-table">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Performed By</th>
-                          <th>Action</th>
-                          <th>Description</th>
-                          <th>On Subscriber</th>
-                          <th>Channel</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr class="placeholder"><td colspan="6">No history</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                <ul id="history-list"></ul>
               </div>
               <div class="cleaner">&nbsp;</div>
             </div><%
@@ -394,7 +354,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
               <li id="menu-conference-list">Conferences</li><%
     } %>
               <li id="menu-subscribers">Subscribers</li>
-              <li id="menu-callhistory">History</li>
+              <li id="menu-history">History</li>
             </ul>
           </div><%
 } %>
@@ -471,25 +431,29 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <td><input type="text" value="" class="dnis-mapping-custom-destination"/></td>
           <td><button class="delete-button" title="Remove this DNIS mapping"></button></td>
         </tr>
-
-        <tr id="callhistory-row-template">
-          <td class="callhistory-cell-date"></td>
-          <td class="callhistory-cell-subscriber"></td>
-          <td class="callhistory-cell-service"></td>
-          <td class="callhistory-cell-duration"></td>
-          <td class="callhistory-cell-ani"></td>
-          <td class="callhistory-cell-dnis"></td>
-        </tr>
-
-        <tr id="subscriberhistory-row-template">
-          <td class="subscriberhistory-cell-date"></td>
-          <td class="subscriberhistory-cell-subscriber"></td>
-          <td class="subscriberhistory-cell-action"></td>
-          <td class="subscriberhistory-cell-description"></td>
-          <td class="subscriberhistory-cell-onSubscriber"></td>
-          <td class="subscriberhistory-cell-channel"></td>
-        </tr>
       </tbody></table>
+
+      <ul>
+        <li id="history-call-template" class="history-call">
+          <div class="history-call-date"></div>
+          <div class="history-call-type">Call</div>
+          <div class="history-call-subscriber"></div>
+          <div class="history-call-ani"></div>
+          <div class="history-call-direction"></div>
+          <div class="history-call-dnis"></div>
+          <div class="history-call-service"></div>
+          <div class="history-call-duration"></div>
+        </li>
+        <li id="history-action-template" class="history-action">
+          <div class="history-action-date"></div>
+          <div class="history-action-type">Action</div>
+          <div class="history-action-subscriber"></div>
+          <div class="history-action-action"></div>
+          <div class="history-action-description"></div>
+          <div class="history-action-onSubscriber"></div>
+          <div class="history-action-channel"></div>
+        </li>
+      </ul>
     </div>
 
     <div id="scheduleConferenceDialog" class="inline-dialog">

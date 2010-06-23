@@ -25,27 +25,10 @@ function Voicemail() {
                 row.addClass('voicemail-read');
             }
 
-            var readStatusCell = row.find('.voicemail-cell-readStatus');
-            var buttonHtml = '<button class="' + (data.isNew ? 'mark-read-button' : 'mark-unread-button') + '" onclick="' + (data.isNew ? 'SERVER.markVoicemailReadStatus(' + data.id + ', true);' : 'SERVER.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as read' : 'Mark as unread') + '"></button>';
-            if(readStatusCell.html() != buttonHtml) {
-                readStatusCell.html(buttonHtml);
-            }
-
-            var fromColumn = row.find('.voicemail-cell-from');
-            if(fromColumn.text() != data.leftBy) {
-                fromColumn.text(data.leftBy);
-            }
-
-            var dateColumn = row.find('.voicemail-cell-received');
-            if(dateColumn.text() != data.dateCreated) {
-                dateColumn.text(data.dateCreated);
-            }
-
-            var downloadColumn = row.find('.voicemail-cell-download');
-            var downloadHtml = '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>';
-            if(downloadColumn.html() != downloadHtml) {
-                downloadColumn.html(downloadHtml);
-            }
+            LISTEN.setFieldContent(row.find('.voicemail-cell-readStatus'), '<button class="' + (data.isNew ? 'mark-read-button' : 'mark-unread-button') + '" onclick="' + (data.isNew ? 'SERVER.markVoicemailReadStatus(' + data.id + ', true);' : 'SERVER.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as read' : 'Mark as unread') + '"></button>', false, true);
+            LISTEN.setFieldContent(row.find('.voicemail-cell-from'), data.leftBy);
+            LISTEN.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated);
+            LISTEN.setFieldContent(row.find('.voicemail-cell-download'), '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>', false, true);
         }
     });
 

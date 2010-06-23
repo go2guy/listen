@@ -6,14 +6,12 @@ import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
-import com.interact.listen.resource.CallDetailRecord;
-import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.*;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +33,7 @@ public class GetCallHistoryListServlet extends HttpServlet
         {
             statSender = new InsaStatSender();
         }
-        statSender.send(Stat.GUI_GET_CALLDETAILRECORD_LIST);
+        statSender.send(Stat.GUI_GET_HISTORY_LIST);
 
         Subscriber subscriber = (Subscriber)request.getSession().getAttribute("subscriber");
         if(subscriber == null)
@@ -50,25 +48,76 @@ public class GetCallHistoryListServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        Criteria criteria = session.createCriteria(CallDetailRecord.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        List<CallDetailRecord> records = (List<CallDetailRecord>)criteria.list();
+        int max = 50;
+        int first = 0;
+
+        Criteria cdrCriteria = session.createCriteria(CallDetailRecord.class);
+        cdrCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        cdrCriteria.setFirstResult(first);
+        cdrCriteria.setMaxResults(max);
+        List<CallDetailRecord> cdrs = (List<CallDetailRecord>)cdrCriteria.list();
+
+        Criteria actionCriteria = session.createCriteria(History.class);
+        actionCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        actionCriteria.setFirstResult(first);
+        actionCriteria.setMaxResults(max);
+        List<History> actions = (List<History>)actionCriteria.list();
+
+        List<Resource> combined = new ArrayList<Resource>();
+        combined.addAll(cdrs);
+        combined.addAll(actions);
+
+        Collections.sort(combined, new Comparator<Resource>()
+        {
+            public final int compare(Resource a, Resource b)
+            {
+                Date dateA = getDate(a);
+                Date dateB = getDate(b);
+                return dateA.compareTo(dateB);
+            }
+
+            private final Date getDate(Resource resource)
+            {
+                if(resource instanceof CallDetailRecord)
+                {
+                    return ((CallDetailRecord)resource).getDateStarted();
+                }
+                else if(resource instanceof History)
+                {
+                    return ((History)resource).getDateCreated();
+                }
+                throw new AssertionError("Collection contained an unexpected Resource type");
+            }
+        });
+        combined = combined.subList(0, Math.min(combined.size(), max));
 
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 
         StringBuilder json = new StringBuilder();
-        json.append("[");
-        for(CallDetailRecord record : records)
+        json.append("{");
+        json.append("\"max\":").append(max).append(",");
+        json.append("\"first\":").append(first).append(",");
+        json.append("\"count\":").append(combined.size()).append(",");
+        json.append("\"results\":[");
+
+        for(Resource resource : combined)
         {
-            json.append(marshalCallDetailRecord(record, marshaller));
+            if(resource instanceof CallDetailRecord)
+            {
+                json.append(marshalCallDetailRecord((CallDetailRecord)resource, marshaller));
+            }
+            else if(resource instanceof History)
+            {
+                json.append(marshalHistory((History)resource, marshaller));
+            }
             json.append(",");
         }
-        if(records.size() > 0)
+        if(combined.size() > 0)
         {
             json.deleteCharAt(json.length() - 1); // last comma
         }
-        json.append("]");
+        json.append("]}");
 
         response.setStatus(HttpServletResponse.SC_OK);
         OutputBufferFilter.append(request, json.toString(), marshaller.getContentType());
@@ -79,7 +128,9 @@ public class GetCallHistoryListServlet extends HttpServlet
         StringBuilder json = new StringBuilder();
 
         json.append("{");
-        json.append("\"id\":").append(record.getId()).append(",");
+        json.append("\"type\":\"Call\",");
+
+        json.append("\"id\":\"call").append(record.getId()).append("\",");
 
         String date = marshaller.convertAndEscape(Date.class, record.getDateStarted());
         json.append("\"date\":\"").append(date).append("\",");
@@ -97,7 +148,43 @@ public class GetCallHistoryListServlet extends HttpServlet
         json.append("\"ani\":\"").append(ani).append("\",");
 
         String dnis = marshaller.convertAndEscape(String.class, record.getDnis());
-        json.append("\"dnis\":\"").append(dnis).append("\"");
+        json.append("\"dnis\":\"").append(dnis).append("\",");
+
+        String direction = marshaller.convertAndEscape(CallDetailRecord.CallDirection.class, record.getDirection());
+        json.append("\"direction\":\"").append(direction).append("\"");
+
+        json.append("}");
+        return json.toString();
+    }
+
+    private String marshalHistory(History history, Marshaller marshaller)
+    {
+        StringBuilder json = new StringBuilder();
+
+        json.append("{");
+        json.append("\"type\":\"Action\",");
+
+        json.append("\"id\":\"action").append(history.getId()).append("\",");
+
+        String date = marshaller.convertAndEscape(Date.class, history.getDateCreated());
+        json.append("\"date\":\"").append(date).append("\",");
+
+        String subscriber = marshaller.convertAndEscape(String.class,
+                                                        history.getPerformedBySubscriber() == null ? "" : history.getPerformedBySubscriber().getUsername());
+        json.append("\"subscriber\":\"").append(subscriber).append("\",");
+
+        String action = marshaller.convertAndEscape(String.class, history.getAction());
+        json.append("\"action\":\"").append(action).append("\",");
+
+        String description = marshaller.convertAndEscape(Long.class, history.getDescription());
+        json.append("\"description\":\"").append(description).append("\",");
+
+        String onSubscriber = marshaller.convertAndEscape(String.class,
+                                                          history.getOnSubscriber() == null ? "" : history.getOnSubscriber().getUsername());
+        json.append("\"onSubscriber\":\"").append(onSubscriber).append("\",");
+
+        String channel = marshaller.convertAndEscape(String.class, history.getChannel().toString());
+        json.append("\"channel\":\"").append(channel).append("\"");
 
         json.append("}");
         return json.toString();

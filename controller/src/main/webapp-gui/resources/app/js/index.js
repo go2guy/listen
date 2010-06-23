@@ -90,14 +90,20 @@ $(document).ready(function() {
              *             (optional, default = false)
              *  - updateRowCallback(row, data, setId): function callback that updates a specific row
              *  - retrieveList(data): function callback that returns the actual list of data from the provided data
-             *  - templateId: id of row node containing template for a data row in this table
+             *  - templateId: id of row node containing template for a data row in this table, or function to call
+             *                that retrieves the template id based on the data row
              */
             DynamicTable: function(args) {
                 var interval;
                 var args = args;
 
                 this.update = function(data, withAnimation) {
-                    var tableRows = $('#' + args.tableId + ' tbody').find('tr:not(.placeholder)');
+                    var tableRows = [];
+                    if(args.isList === true) {
+                        tableRows = $('#' + args.tableId).find('li:not(.placeholder)');
+                    } else {
+                        tableRows = $('#' + args.tableId + ' tbody').find('tr:not(.placeholder)');
+                    }
                     var serverList = args.retrieveList.call(this, data);
                     var ids = [];
 
@@ -122,7 +128,12 @@ $(document).ready(function() {
                         }
 
                         if(!found) {
-                            var clone = $('#' + args.templateId).clone();
+                            var templateId = args.templateId;
+                            if(typeof templateId === 'function') {
+                                templateId = templateId.call(this, serverItem);
+                            }
+
+                            var clone = $('#' + templateId).clone();
                             clone.attr('id', args.tableId + '-row-' + serverItem.id);
                             args.updateRowCallback.call(this, clone, serverItem, true);
                             clone.css('opacity', 0);
@@ -133,10 +144,11 @@ $(document).ready(function() {
 //                                    clone.addClass(i % 2 == 0 ? 'odd' : 'even');
 //                                }
 //                            }
+                            var appendTo = (args.isList === true ? $('#' + args.tableId) : $('#' + args.tableId + ' tbody'));
                             if(args.reverse) {
-                                $('#' + args.tableId + ' tbody').prepend(clone);
+                                appendTo.prepend(clone);
                             } else {
-                                $('#' + args.tableId + ' tbody').append(clone);
+                                appendTo.append(clone);
                             }
                             clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
                         }
@@ -168,15 +180,30 @@ $(document).ready(function() {
                         $('#' + args.tableId).find('.placeholder').hide();
                     }
                 };
+            },
 
-                this.highlight = function(elem) {
-                    elem.css('background-color', '#FFFFBB');
-                    elem.animate({
-                        backgroundColor: '#FFFFFF'
-                    }, 2000, 'linear', function() {
-                        elem.css('background-color', 'inherit');
-                    });
-                };
+            highlight: function(elem) {
+                elem.css('background-color', '#FFFFBB');
+                elem.animate({
+                    backgroundColor: '#FFFFFF'
+                }, 2000, 'linear', function() {
+                    elem.css('background-color', 'inherit');
+                });
+            },
+
+            setFieldContent: function(field, content, animate, asHtml) {
+                if(asHtml === true) {
+                    if(field.html() != content) {
+                        field.html(content);
+                    }
+                } else {
+                    if(field.text() != content) {
+                        field.text(content);
+                    }
+                }
+                if(animate === true) {
+                    LISTEN.highlight(field);
+                }
             },
 
             getCurrentApplication: function() {

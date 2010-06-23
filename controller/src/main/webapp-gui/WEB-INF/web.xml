@@ -122,12 +122,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>GetSubscriberHistoryListServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetSubscriberHistoryListServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
         <servlet-name>GetPropertiesServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetPropertiesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -256,7 +250,7 @@
 
     <servlet-mapping>
         <servlet-name>GetCallHistoryListServlet</servlet-name>
-        <url-pattern>/ajax/getCallHistoryList</url-pattern>
+        <url-pattern>/ajax/getHistoryList</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -272,11 +266,6 @@
     <servlet-mapping>
         <servlet-name>GetConferenceRecordingServlet</servlet-name>
         <url-pattern>/ajax/getConferenceRecording</url-pattern>    
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>GetSubscriberHistoryListServlet</servlet-name>
-        <url-pattern>/ajax/getSubscriberHistoryList</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

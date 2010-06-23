@@ -1,139 +1,78 @@
 $(document).ready(function() {
-    LISTEN.CALLHISTORY = function() {
+    LISTEN.HISTORY = function() {
         return {
-            CallHistoryApplication: function() {
-                LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication [construct]');
-                var cdrInterval, historyInterval;
-                var callHistoryTable = new LISTEN.DynamicTable({
-                    tableId: 'callhistory-table',
-                    templateId: 'callhistory-row-template',
+            HistoryApplication: function() {
+                LISTEN.trace('LISTEN.HISTORY.HistoryApplication [construct]');
+                var interval;
+                var historyList = new LISTEN.DynamicTable({
+                    tableId: 'history-list',
+                    isList: true,
+                    templateId: function(dataRow) {
+                        if(dataRow.type == 'Action') {
+                            return 'history-action-template';
+                        } else if(dataRow.type == 'Call') {
+                            return 'history-call-template';
+                        } else {
+                            LISTEN.log('No template found for [' + dataRow.type + ']');
+                            return false;
+                        }
+                    },
                     retrieveList: function(data) {
-                        return data;
+                        return data.results;
                     },
                     reverse: true,
                     updateRowCallback: function(row, data) {
-                        var dateCell = row.find('.callhistory-cell-date');
-                        if(dateCell.text() != data.date) {
-                            dateCell.text(data.date);
-                        }
-
-                        var subscriberCell = row.find('.callhistory-cell-subscriber');
-                        if(subscriberCell.text() != data.subscriber) {
-                            subscriberCell.text(data.subscriber);
-                        }
-
-                        var serviceCell = row.find('.callhistory-cell-service');
-                        if(serviceCell.text() != data.service) {
-                            serviceCell.text(data.service);
-                        }
-
-                        var durationCell = row.find('.callhistory-cell-duration');
-                        if(durationCell.text() != data.duration) {
-                            durationCell.text(data.duration);
-                        }
-
-                        var aniCell = row.find('.callhistory-cell-ani');
-                        if(aniCell.text() != data.ani) {
-                            aniCell.text(data.ani);
-                        }
-
-                        var dnisCell = row.find('.callhistory-cell-dnis');
-                        if(dnisCell.text() != data.dnis) {
-                            dnisCell.text(data.dnis);
+                        if(data.type == 'Action') {
+                            LISTEN.setFieldContent(row.find('.history-action-date'), data.date);
+                            LISTEN.setFieldContent(row.find('.history-action-type'), 'Action');
+                            LISTEN.setFieldContent(row.find('.history-action-subscriber'), data.subscriber);
+                            LISTEN.setFieldContent(row.find('.history-action-action'), data.action);
+                            LISTEN.setFieldContent(row.find('.history-action-description'), data.description);
+                            LISTEN.setFieldContent(row.find('.history-action-onSubscriber'), data.onSubscriber);
+                            LISTEN.setFieldContent(row.find('.history-action-channel'), data.channel);
+                        } else if(data.type == 'Call') {
+                            LISTEN.setFieldContent(row.find('.history-call-date'), data.date);
+                            LISTEN.setFieldContent(row.find('.history-call-type'), 'Call');
+                            LISTEN.setFieldContent(row.find('.history-call-subscriber'), data.subscriber);
+                            LISTEN.setFieldContent(row.find('.history-call-ani'), data.ani);
+                            LISTEN.setFieldContent(row.find('.history-call-direction'), data.direction == 'INBOUND' ? '&laquo;' : '&raquo;', false, true);
+                            LISTEN.setFieldContent(row.find('.history-call-dnis'), data.dnis);
+                            LISTEN.setFieldContent(row.find('.history-call-service'), data.service);
+                            LISTEN.setFieldContent(row.find('.history-call-duration'), data.duration + ' seconds');
                         }
                     }
                 });
 
-                var subscriberHistoryTable = new LISTEN.DynamicTable({
-                    tableId: 'subscriberhistory-table',
-                    templateId: 'subscriberhistory-row-template',
-                    retrieveList: function(data) {
-                        return data;
-                    },
-                    reverse: true,
-                    updateRowCallback: function(row, data) {
-                        var dateCell = row.find('.subscriberhistory-cell-date');
-                        if(dateCell.text() != data.date) {
-                            dateCell.text(data.date);
-                        }
-
-                        var subscriberCell = row.find('.subscriberhistory-cell-subscriber');
-                        if(subscriberCell.text() != data.subscriber) {
-                            subscriberCell.text(data.subscriber);
-                        }
-
-                        var actionCell = row.find('.subscriberhistory-cell-action');
-                        if(actionCell.text() != data.action) {
-                            actionCell.text(data.action);
-                        }
-
-                        var descriptionCell = row.find('.subscriberhistory-cell-description');
-                        if(descriptionCell.text() != data.description) {
-                            descriptionCell.text(data.description);
-                        }
-
-                        var onSubscriberCell = row.find('.subscriberhistory-cell-onSubscriber');
-                        if(onSubscriberCell.text() != data.onSubscriber) {
-                            onSubscriberCell.text(data.onSubscriber);
-                        }
-
-                        var channelCell = row.find('.subscriberhistory-cell-channel');
-                        if(channelCell.text() != data.channel) {
-                            channelCell.text(data.channel);
-                        }
-                    }
-                });
-
-                var pollAndSetCdrs = function() {
-                    LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.pollAndSetCdrs');
+                var pollAndSet = function() {
+                    LISTEN.trace('LISTEN.HISTORY.HistoryApplication.pollAndSet');
                     $.ajax({
-                        url: '/ajax/getCallHistoryList',
+                        url: '/ajax/getHistoryList',
                         dataType: 'json',
                         cache: 'false',
                         success: function(data, textStatus, xhr) {
-                            callHistoryTable.update(data);
-                        }
-                    });
-                };
-
-                var pollAndSetSubscriberHistory = function() {
-                    LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.pollAndSetSubscriberHistory');
-                    $.ajax({
-                        url: '/ajax/getSubscriberHistoryList',
-                        dataType: 'json',
-                        cache: 'false',
-                        success: function(data, textStatus, xhr) {
-                            subscriberHistoryTable.update(data);
+                            historyList.update(data);
                         }
                     });
                 };
 
                 this.load = function() {
-                    LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.load');
-                    pollAndSetCdrs();
-                    cdrInterval = setInterval(function() {
-                        pollAndSetCdrs();
-                    }, 1000);
-
-                    pollAndSetSubscriberHistory();
-                    subscriberHistoryInterval = setInterval(function() {
-                        pollAndSetSubscriberHistory();
+                    LISTEN.trace('LISTEN.HISTORY.HistoryApplication.load');
+                    pollAndSet();
+                    interval = setInterval(function() {
+                        pollAndSet();
                     }, 1000);
                 };
 
                 this.unload = function() {
-                    LISTEN.trace('LISTEN.CALLHISTORY.CallHistoryApplication.unload');
-                    if(cdrInterval) {
-                        clearInterval(cdrInterval);
-                    }
-                    if(subscriberHistoryInterval) {
-                        clearInterval(subscriberHistoryInterval)
+                    LISTEN.trace('LISTEN.HISTORY.HistoryApplication.unload');
+                    if(interval) {
+                        clearInterval(interval);
                     }
                 };
             }
         }
     }();
 
-    var app = new LISTEN.CALLHISTORY.CallHistoryApplication();
-    LISTEN.registerApp(new LISTEN.Application('callhistory', 'callhistory-application', 'menu-callhistory', app));
+    var app = new LISTEN.HISTORY.HistoryApplication();
+    LISTEN.registerApp(new LISTEN.Application('history', 'history-application', 'menu-history', app));
 });

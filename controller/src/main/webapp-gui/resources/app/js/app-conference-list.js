@@ -12,24 +12,9 @@ function ConferenceList() {
             return data.results;
         },
         updateRowCallback: function(row, data) {
-            var descriptionCell = row.find('.conference-cell-description');
-            if(descriptionCell.text() != data.description) {
-                descriptionCell.text(data.description);
-                this.highlight(descriptionCell);
-            }
-
-            var statusCell = row.find('.conference-cell-status');
-            var statusText = (data.isStarted ? 'Started' : 'Not Started');
-            if(statusCell.text() != statusText) {
-                statusCell.text(statusText);
-                this.highlight(statusCell);
-            }
-
-            var viewHtml = '<button class="view-button" onclick="viewConference(' + data.id + ');">View</button>';
-            var viewCell = row.find('.conference-cell-view');
-            if(viewCell.html() != viewHtml) {
-                viewCell.html(viewHtml);
-            }
+            LISTEN.setFieldContent(row.find('.conference-cell-description'), data.description, true);
+            LISTEN.setFieldContent(row.find('.conference-cell-status'), data.isStarted ? 'Started' : 'Not Started', true);
+            LISTEN.setFieldContent(row.find('.conference-cell-view'), '<button class="view-button" onclick="viewConference(' + data.id + ');">View</button>', false, true);
         }
     });
 

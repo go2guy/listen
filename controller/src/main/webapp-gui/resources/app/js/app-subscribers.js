@@ -11,11 +11,7 @@ $(document).ready(function() {
                         return data;
                     },
                     updateRowCallback: function(row, data) {
-                        var usernameCell = row.find('.subscriber-cell-username');
-                        if(usernameCell.text() != data.username) {
-                            usernameCell.text(data.username);
-                            this.highlight(usernameCell);
-                        }
+                        LISTEN.setFieldContent(row.find('.subscriber-cell-username'), data.username, true);
 
                         var numbers = '';
                         for(var i = 0; i < data.accessNumbers.length; i++) {
@@ -25,23 +21,9 @@ $(document).ready(function() {
                             }
                         }
 
-                        var accessNumbersCell = row.find('.subscriber-cell-accessNumbers');
-                        if(accessNumbersCell.text() != numbers) {
-                            accessNumbersCell.text(numbers);
-                            this.highlight(accessNumbersCell);
-                        }
-
-                        var lastLoginCell = row.find('.subscriber-cell-lastLogin');
-                        if(lastLoginCell.text() != data.lastLogin) {
-                            lastLoginCell.text(data.lastLogin);
-                            this.highlight(lastLoginCell);
-                        }
-
-                        var editButtonCell = row.find('.subscriber-cell-editButton');
-                        var editButtonHtml = '<button class="edit-button" title="Edit subscriber" onclick="LISTEN.SUBSCRIBERS.loadSubscriber(' + data.id + ');return false;">Edit</button>';
-                        if(editButtonCell.html() != editButtonHtml) {
-                            editButtonCell.html(editButtonHtml);
-                        }
+                        LISTEN.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, true);
+                        LISTEN.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, true);
+                        LISTEN.setFieldContent(row.find('.subscriber-cell-editButton'), '<button class="edit-button" title="Edit subscriber" onclick="LISTEN.SUBSCRIBERS.loadSubscriber(' + data.id + ');return false;">Edit</button>', false, true);
                     }
                 });
 

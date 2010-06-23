@@ -101,32 +101,14 @@ function Conference(id) {
                 row.removeClass('caller-row-passive');
             }
 
-            var numberCell = row.find('.caller-cell-number');
-            if(numberCell.text() != data.number) {
-                numberCell.text(data.number);
-            }
+            LISTEN.setFieldContent(row.find('.caller-cell-number'), data.number);
 
             if(data.isAdmin) {
-                var muteIconCell = row.find('.caller-cell-muteIcon');
-                if(muteIconCell.text() != '') {
-                    muteIconCell.text('');
-                }
-                var dropIconCell = row.find('.caller-cell-dropIcon');
-                if(dropIconCell.text() != '') {
-                    dropIconCell.text('');
-                }
+                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '');
+                LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '');
             } else {
-                var muteHtml = '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + (data.isPassive ? 'Cannot unmute ' + data.number + ' (passive caller)' : ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number)) + '"></button>';
-                var muteIconCell = row.find('.caller-cell-muteIcon');
-                if(muteIconCell.html() != muteHtml) {
-                    muteIconCell.html(muteHtml);
-                }
-    
-                var dropHtml = '<button class="delete-button" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>';
-                var dropIconCell = row.find('.caller-cell-dropIcon');
-                if(dropIconCell.html() != dropHtml) {
-                    dropIconCell.html(dropHtml);
-                }
+                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + (data.isPassive ? 'Cannot unmute ' + data.number + ' (passive caller)' : ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number)) + '"></button>', false, true);
+                LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="delete-button" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
             }
         }
     });
@@ -140,15 +122,8 @@ function Conference(id) {
         alternateRowColors: true,
         reverse: true,
         updateRowCallback: function(row, data) {
-            var dateCell = row.find('.conferencehistory-cell-date');
-            if(dateCell.text() != data.dateCreated) {
-                dateCell.text(data.dateCreated);
-            }
-    
-            var descriptionCell = row.find('.conferencehistory-cell-description');
-            if(descriptionCell.text() != data.description) {
-                descriptionCell.text(data.description);
-            }
+            LISTEN.setFieldContent(row.find('.conferencehistory-cell-date'), data.dateCreated);
+            LISTEN.setFieldContent(row.find('.conferencehistory-cell-description'), data.description);
         }
     });
 
@@ -175,11 +150,9 @@ function Conference(id) {
                 row.removeClass('pin-row-passive');
             }
 
-            row.find('.pin-cell-number').html(data.number);
-            row.find('.pin-cell-type').html(data.type);
-
-            var removeHtml = '<button class="delete-button" readonly="readonly" disabled="disabled"></button>';
-            row.find('.pin-cell-removeIcon').html(removeHtml);
+            LISTEN.setFieldContent(row.find('.pin-cell-number'), data.number);
+            LISTEN.setFieldContent(row.find('.pin-cell-type'), data.type);
+            LISTEN.setFieldContent(row.find('.pin-cell-removeIcon'), '<button class="delete-button" readonly="readonly" disabled="disabled"></button>', false, true);
         }
     });
 
@@ -191,34 +164,16 @@ function Conference(id) {
         },
         alternateRowColors: true,
         updateRowCallback: function(row, data) {
-            var dateCreatedCell = row.find('.recording-cell-dateCreated');
-            if(dateCreatedCell.text() != data.dateCreated) {
-                dateCreatedCell.text(data.dateCreated);
-                this.highlight(dateCreatedCell);
-            }
+            LISTEN.setFieldContent(row.find('.recording-cell-dateCreated'), data.dateCreated, true);
 
             if(data.duration && data.duration != '') {
-                var durationCell = row.find('.recording-cell-duration');
                 var d = Math.floor(parseInt(data.duration) / 1000);
                 var durationText = (d < 60 ? '0' : (Math.floor(d / 60))) + ":" + (d % 60 < 10 ? '0' : '') + (d % 60);
-                if(durationCell.text() != durationText) {
-                    durationCell.text(durationText);
-                    this.highlight(durationCell);
-                }
+                LISTEN.setFieldContent(row.find('.recording-cell-duration'), durationText, true);
             }
 
-            var fileSizeCell = row.find('.recording-cell-fileSize');
-            var fileSizeText = (Math.floor((parseInt(data.fileSize) / 1024) * 100) / 100) + "KB";
-            if(fileSizeCell.text() != fileSizeText) {
-                fileSizeCell.text(fileSizeText);
-                this.highlight(fileSizeCell);
-            }
-
-            var downloadCell = row.find('.recording-cell-download');
-            var downloadHtml = '<a href="/ajax/getConferenceRecording?id=' + data.id + '">Download</a>';
-            if(downloadCell.html() != downloadHtml) {
-                downloadCell.html(downloadHtml);
-            }
+            LISTEN.setFieldContent(row.find('.recording-cell-fileSize'), (Math.floor((parseInt(data.fileSize) / 1024) * 100) / 100) + "KB", true);
+            LISTEN.setFieldContent(row.find('.recording-cell-download'), '<a href="/ajax/getConferenceRecording?id=' + data.id + '">Download</a>', false, true);
         }
     });
 

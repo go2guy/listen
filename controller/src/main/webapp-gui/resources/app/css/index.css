@@ -365,8 +365,75 @@ td.voicemail-cell-readStatus {
 
 /* application - history */
 
-#callhistory-application .panel {
-    margin-left: 4px;
+#history-list li {
+    height: 1.5em;
+    margin-bottom: 1px;
+}
+
+#history-list li div {
+    float: left;
+    height: 100%;
+    margin-left: 2px;
+    overflow: hidden;
+}
+
+.history-call {
+    background-color: #CEF6F5;
+}
+
+.history-action {
+    background-color: #CEF6CE;
+}
+
+.history-call-date, .history-action-date {
+    width: 15%;
+}
+
+.history-call-type, .history-action-type {
+    width: 6%;
+}
+
+.history-call-subscriber, .history-action-subscriber {
+    width: 12%;
+}
+
+.history-call-ani {
+    text-align: right;
+    width: 17%
+}
+
+.history-call-direction {
+    text-align: center;
+    width: 5%;
+}
+
+.history-call-dnis {
+    text-align: left;
+    width: 17%;
+}
+
+.history-call-service {
+    width: 16%;
+}
+
+.history-call-duration {
+    width: 10%;
+}
+
+.history-action-action {
+    width: 15%;
+}
+
+.history-action-description {
+    width: 32%;
+}
+
+.history-action-onSubscriber {
+    width: 13%
+}
+
+.history-action-channel {
+    width: 5%;
 }
 
 /* buttons */
