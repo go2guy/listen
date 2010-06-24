@@ -10,7 +10,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "HISTORY")
-public class History extends Resource implements Serializable
+public class ActionHistory extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
@@ -146,9 +146,9 @@ public class History extends Resource implements Serializable
     }
 
     @Override
-    public History copy(boolean withIdAndVersion)
+    public ActionHistory copy(boolean withIdAndVersion)
     {
-        History copy = new History();
+        ActionHistory copy = new ActionHistory();
         if(withIdAndVersion)
         {
             copy.setId(id);
@@ -177,12 +177,12 @@ public class History extends Resource implements Serializable
             return false;
         }
 
-        if(!(that instanceof History))
+        if(!(that instanceof ActionHistory))
         {
             return false;
         }
 
-        History history = (History)that;
+        ActionHistory history = (ActionHistory)that;
 
         if(!ComparisonUtil.isEqual(history.getAction(), getAction()))
         {

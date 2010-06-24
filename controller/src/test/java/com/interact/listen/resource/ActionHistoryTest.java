@@ -9,14 +9,14 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 
-public class HistoryTest
+public class ActionHistoryTest
 {
-    private History history;
+    private ActionHistory history;
 
     @Before
     public void setUp()
     {
-        history = new History();
+        history = new ActionHistory();
     }
 
     @Test
@@ -148,7 +148,7 @@ public class HistoryTest
     public void test_copy_withoutIdAndVersion_createsCopyWithoutIdAndVersion()
     {
         history = getPopulatedHistory();
-        History copy = history.copy(false);
+        ActionHistory copy = history.copy(false);
 
         assertNull(copy.getId());
         assertEquals((Integer)0, copy.getVersion());
@@ -164,7 +164,7 @@ public class HistoryTest
     public void test_copy_withIdAndVersion_createsCopyWithoutIdAndVersion()
     {
         history = getPopulatedHistory();
-        History copy = history.copy(true);
+        ActionHistory copy = history.copy(true);
 
         assertEquals(history.getId(), copy.getId());
         assertEquals(history.getVersion(), copy.getVersion());
@@ -184,7 +184,7 @@ public class HistoryTest
         history.setDescription(String.valueOf(System.currentTimeMillis()));
 
         // set relevant properties equal
-        History that = new History();
+        ActionHistory that = new ActionHistory();
         that.setAction(history.getAction());
         that.setDateCreated(history.getDateCreated());
         that.setDescription(history.getDescription());
@@ -204,7 +204,7 @@ public class HistoryTest
         history.setDescription(String.valueOf(System.currentTimeMillis()));
 
         // set relevant properties equal
-        History that = new History();
+        ActionHistory that = new ActionHistory();
         that.setAction("");
         that.setDateCreated(history.getDateCreated());
         that.setDescription(history.getDescription());
@@ -224,7 +224,7 @@ public class HistoryTest
         history.setDescription(String.valueOf(System.currentTimeMillis()));
 
         // set relevant properties equal
-        History that = new History();
+        ActionHistory that = new ActionHistory();
         that.setAction(history.getAction());
         that.setDateCreated(null);
         that.setDescription(history.getDescription());
@@ -244,7 +244,7 @@ public class HistoryTest
         history.setDescription(String.valueOf(System.currentTimeMillis()));
 
         // set relevant properties equal
-        History that = new History();
+        ActionHistory that = new ActionHistory();
         that.setAction(history.getAction());
         that.setDateCreated(history.getDateCreated());
         that.setDescription("");
@@ -259,16 +259,16 @@ public class HistoryTest
     @Test
     public void test_hashCode()
     {
-        history = new History();
+        history = new ActionHistory();
         history.setAction("1234");
         history.setDateCreated(new Date(12341234));
         history.setDescription("4321");
         assertEquals(1491766221, history.hashCode());
     }
     
-    private History getPopulatedHistory()
+    private ActionHistory getPopulatedHistory()
     {
-        History h = new History();
+        ActionHistory h = new ActionHistory();
         h.setAction(String.valueOf(System.currentTimeMillis()));
         h.setChannel(Channel.GUI);
         h.setDescription(String.valueOf(System.currentTimeMillis()));

@@ -51,12 +51,12 @@ public final class HibernateUtil
 
             // application classes
             config.addAnnotatedClass(AccessNumber.class);
+            config.addAnnotatedClass(ActionHistory.class);
             config.addAnnotatedClass(Audio.class);
             config.addAnnotatedClass(CallDetailRecord.class);
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(ConferenceHistory.class);
             config.addAnnotatedClass(ConferenceRecording.class);
-            config.addAnnotatedClass(History.class);
             config.addAnnotatedClass(ListenSpotSubscriber.class);
             config.addAnnotatedClass(Participant.class);
             config.addAnnotatedClass(Pin.class);

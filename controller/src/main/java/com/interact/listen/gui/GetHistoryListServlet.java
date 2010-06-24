@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 
 public class GetHistoryListServlet extends HttpServlet
 {
@@ -51,17 +52,48 @@ public class GetHistoryListServlet extends HttpServlet
         int max = 50;
         int first = 0;
 
+        if(request.getParameter("first") != null)
+        {
+            first = Integer.parseInt(request.getParameter("first"));
+        }
+
+        if(request.getParameter("max") != null)
+        {
+            max = Integer.parseInt(request.getParameter("max"));
+        }
+
         Criteria cdrCriteria = session.createCriteria(CallDetailRecord.class);
         cdrCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         cdrCriteria.setFirstResult(first);
         cdrCriteria.setMaxResults(max);
         List<CallDetailRecord> cdrs = (List<CallDetailRecord>)cdrCriteria.list();
 
-        Criteria actionCriteria = session.createCriteria(History.class);
+        Criteria actionCriteria = session.createCriteria(ActionHistory.class);
         actionCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         actionCriteria.setFirstResult(first);
         actionCriteria.setMaxResults(max);
-        List<History> actions = (List<History>)actionCriteria.list();
+        List<ActionHistory> actions = (List<ActionHistory>)actionCriteria.list();
+
+        long cdrTotal = 0;
+        long actionTotal = 0;
+
+        if(cdrs.size() > 0)
+        {
+            Criteria cdrCountCriteria = session.createCriteria(CallDetailRecord.class);
+            cdrCountCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+            cdrCountCriteria.setFirstResult(0);
+            cdrCountCriteria.setProjection(Projections.rowCount());
+            cdrTotal = (Long)cdrCountCriteria.list().get(0);
+        }
+
+        if(actions.size() > 0)
+        {
+            Criteria actionCountCriteria = session.createCriteria(ActionHistory.class);
+            actionCountCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+            actionCountCriteria.setFirstResult(0);
+            actionCountCriteria.setProjection(Projections.rowCount());
+            actionTotal = (Long)actionCountCriteria.list().get(0);
+        }
 
         List<Resource> combined = new ArrayList<Resource>();
         combined.addAll(cdrs);
@@ -82,9 +114,9 @@ public class GetHistoryListServlet extends HttpServlet
                 {
                     return ((CallDetailRecord)resource).getDateStarted();
                 }
-                else if(resource instanceof History)
+                else if(resource instanceof ActionHistory)
                 {
-                    return ((History)resource).getDateCreated();
+                    return ((ActionHistory)resource).getDateCreated();
                 }
                 throw new AssertionError("Collection contained an unexpected Resource type");
             }
@@ -99,6 +131,7 @@ public class GetHistoryListServlet extends HttpServlet
         json.append("\"max\":").append(max).append(",");
         json.append("\"first\":").append(first).append(",");
         json.append("\"count\":").append(combined.size()).append(",");
+        json.append("\"total\":").append(cdrTotal + actionTotal).append(",");
         json.append("\"results\":[");
 
         for(Resource resource : combined)
@@ -107,9 +140,9 @@ public class GetHistoryListServlet extends HttpServlet
             {
                 json.append(marshalCallDetailRecord((CallDetailRecord)resource, marshaller));
             }
-            else if(resource instanceof History)
+            else if(resource instanceof ActionHistory)
             {
-                json.append(marshalHistory((History)resource, marshaller));
+                json.append(marshalActionHistory((ActionHistory)resource, marshaller));
             }
             json.append(",");
         }
@@ -157,7 +190,7 @@ public class GetHistoryListServlet extends HttpServlet
         return json.toString();
     }
 
-    private String marshalHistory(History history, Marshaller marshaller)
+    private String marshalActionHistory(ActionHistory history, Marshaller marshaller)
     {
         StringBuilder json = new StringBuilder();
 
