@@ -210,6 +210,12 @@
         <servlet-class>com.interact.listen.gui.StopRecordingServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>TestNotificationSettingsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.TestNotificationSettingsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>UnmuteParticipantServlet</servlet-name>
@@ -326,6 +332,11 @@
     <servlet-mapping>
         <servlet-name>StopRecordingServlet</servlet-name>
         <url-pattern>/ajax/stopRecording</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>TestNotificationSettingsServlet</servlet-name>
+        <url-pattern>/ajax/testNotificationSettings</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

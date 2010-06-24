@@ -82,6 +82,7 @@ $(document).ready(function() {
 
             showSuccess: function(message) {
                 LISTEN.trace('LISTEN.PROFILE.showSuccess');
+                LISTEN.PROFILE.clearError();
                 var elem = $('#profile-form .form-success-message');
                 elem.text(message).slideDown(100);
                 setTimeout(function() {
@@ -101,12 +102,28 @@ $(document).ready(function() {
             
             testEmailAddress: function() {
                 LISTEN.trace('LISTEN.PROFILE.testEmailAddress');
-                alert("you entered " + $('#profile-form-emailAddress').val()); 
+                LISTEN.PROFILE.testAddress('email', $('#profile-form-emailAddress').val());
             },
             
             testSmsAddress: function() {
                 LISTEN.trace('LISTEN.PROFILE.testSmsAddress');
-                alert("you entered " + $('#profile-form-smsAddress').val()); 
+                LISTEN.PROFILE.testAddress('sms', $('#profile-form-smsAddress').val());
+            },
+            
+            testAddress: function(type, address) {
+                SERVER.post({
+                    url: '/ajax/testNotificationSettings',
+                    properties: {
+                        messageType: type,
+                        address: address
+                    },
+                    successCallback: function() {
+                        LISTEN.PROFILE.showSuccess("Test notification sent to " + address);
+                    },
+                    errorCallback: function(message) {
+                        LISTEN.PROFILE.showError(message);
+                    }
+                });
             }
         }
     }();

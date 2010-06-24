@@ -32,10 +32,15 @@ public class EmailerService
                                      + "%s: %s<br/>" //this will be phone number or ip based on protocol
                                      + "Pin: %s<br/>"
                                      + "</body></html>";
+    
+    private static final String TEST_EMAIL_NOTIFICATION_BODY = "<html><body>Hello,<br/><br/>You have correctly configured your profile to " 
+                                                       + "receive Listen E-mail notifications at this address.<br/></body></html>";
+    
+    private static final String TEST_SMS_NOTIFICATION_BODY = "You have correctly configured your profile to receive SMS notifications at this address";
 
     private final SimpleDateFormat sdf = new SimpleDateFormat(FriendlyIso8601DateConverter.ISO8601_FORMAT);
 
-    private boolean sendEmail(InternetAddress[] toAddresses, String body, String subjectPrepend, Date dateTime)
+    private boolean sendEmail(InternetAddress[] toAddresses, String body, String subjectPrepend, String subject)
     {
         Properties props = new Properties();
         props.setProperty("mail.transport.protocol", "smtp");
@@ -52,7 +57,7 @@ public class EmailerService
 
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(fromAddress);
-            message.setSubject(subjectPrepend + EMAIL_SUBJECT);
+            message.setSubject(subjectPrepend + subject);
             message.setContent(body, "text/html; charset=UTF-8");
             message.addRecipients(MimeMessage.RecipientType.TO, toAddresses);
             
@@ -95,9 +100,26 @@ public class EmailerService
         
         if(toAddresses.length > 0)
         {
-            result = sendEmail(toAddresses, body, subjectPrepend, dateTime);
+            result = sendEmail(toAddresses, body, subjectPrepend, EMAIL_SUBJECT);
         }
 
+        return result;
+    }
+    
+    public boolean sendTestNotificationSettingsMessage(String type, String toAddress)
+    {
+        boolean result = true;
+        
+        ArrayList<String> mailAddresses = new ArrayList<String>();
+        mailAddresses.add(toAddress);
+        InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
+        
+        if(toAddresses.length > 0)
+        {
+            result = sendEmail(toAddresses, (type.equals("email") ? TEST_EMAIL_NOTIFICATION_BODY : TEST_SMS_NOTIFICATION_BODY), "",
+                               "Listen Notification Test Message");
+        }
+        
         return result;
     }
 

@@ -49,12 +49,20 @@ public class AddSubscriberServletTest
         final String password = randomString();
         final String confirm = password;
         final String voicemailPin = randomString();
+        final String enableEmail = "true";
+        final String enableSms = "true";
+        final String emailAddress = randomString();
+        final String smsAddress = randomString();
 
         request.setMethod("POST");
         request.setParameter("username", username);
         request.setParameter("password", password);
         request.setParameter("confirmPassword", confirm);
         request.setParameter("voicemailPin", voicemailPin);
+        request.setParameter("enableEmail", enableEmail);
+        request.setParameter("enableSms", enableSms);
+        request.setParameter("emailAddress", emailAddress);
+        request.setParameter("smsAddress", smsAddress);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -66,6 +74,10 @@ public class AddSubscriberServletTest
         Subscriber subscriber = (Subscriber)criteria.uniqueResult();
         assertNotNull(subscriber);
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
+        assertEquals(true, subscriber.getIsEmailNotificationEnabled());
+        assertEquals(true, subscriber.getIsSmsNotificationEnabled());
+        assertEquals(emailAddress, subscriber.getEmailAddress());
+        assertEquals(smsAddress, subscriber.getSmsAddress());
 
         // verify that a conference was created
         Conference conference = new ArrayList<Conference>(subscriber.getConferences()).get(0);
@@ -487,6 +499,144 @@ public class AddSubscriberServletTest
         {
             tx.commit();
         }
+    }
+    
+    @Test
+    public void test_doPost_withEnableEmailCheckedAndNoEmailAddress_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
+    {
+        setSessionSubscriber(request, true);
+        
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        request.setMethod("POST");
+        request.setParameter("username", randomString());
+        request.setParameter("password", randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", randomString());
+        request.setParameter("enableEmail", "true");
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide an E-mail address", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+        finally
+        {
+            tx.commit();
+        }
+    }
+    
+    @Test
+    public void test_doPost_withEnableSmsCheckedAndNoSmsAddress_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
+    {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        setSessionSubscriber(request, true);
+
+        request.setMethod("POST");
+        request.setParameter("username", randomString());
+        request.setParameter("password", randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", randomString());
+        request.setParameter("enableSms", "true");
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide an SMS address", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+        finally
+        {
+            tx.commit();
+        }
+    }
+    
+    @Test
+    public void test_doPost_adminSubscriberWithEmailAddresNoEnableEmail_editsAccount() throws ServletException, IOException
+    {
+        setSessionSubscriber(request, true); // admin subscriber
+        
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        final String username = randomString();
+        final String password = randomString();
+        final String confirm = password;
+        final String voicemailPin = randomString();
+        final String enableEmail = "false";
+        final String emailAddress = randomString();
+
+        request.setMethod("POST");
+        request.setParameter("username", username);
+        request.setParameter("password", password);
+        request.setParameter("confirmPassword", confirm);
+        request.setParameter("voicemailPin", voicemailPin);
+        request.setParameter("enableEmail", enableEmail);
+        request.setParameter("emailAddress", emailAddress);
+
+        servlet.service(request, response);
+
+        Criteria criteria = session.createCriteria(Subscriber.class);
+        criteria.add(Restrictions.eq("username", username));
+        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        assertNotNull(subscriber);
+        assertEquals(username, subscriber.getUsername());
+        assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
+        assertEquals(emailAddress, subscriber.getEmailAddress());
+
+        tx.commit();
+    }
+    
+    @Test
+    public void test_doPost_adminSubscriberWithSmsAddresNoEnableSms_editsAccount() throws ServletException, IOException
+    {
+        setSessionSubscriber(request, true); // admin subscriber
+        
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        
+        final String username = randomString();
+        final String password = randomString();
+        final String confirm = password;
+        final String voicemailPin = randomString();
+        final String enableSms = "false";
+        final String smsAddress = randomString();
+
+        request.setMethod("POST");
+        request.setParameter("username", username);
+        request.setParameter("password", password);
+        request.setParameter("confirmPassword", confirm);
+        request.setParameter("voicemailPin", voicemailPin);
+        request.setParameter("enableSms", enableSms);
+        request.setParameter("smsAddress", smsAddress);
+
+        servlet.service(request, response);
+
+        Criteria criteria = session.createCriteria(Subscriber.class);
+        criteria.add(Restrictions.eq("username", username));
+        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        assertNotNull(subscriber);
+        assertEquals(username, subscriber.getUsername());
+        assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
+        assertEquals(smsAddress, subscriber.getSmsAddress());
+
+        tx.commit();
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class

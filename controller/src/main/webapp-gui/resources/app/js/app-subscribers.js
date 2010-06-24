@@ -171,6 +171,7 @@ $(document).ready(function() {
 
             showSuccess: function(message) {
                 LISTEN.trace('LISTEN.SUBSCRIBERS.showSuccess');
+                LISTEN.SUBSCRIBERS.clearError();
                 var elem = $('#subscriber-form .form-success-message');
                 elem.text(message).slideDown(100);
                 setTimeout(function() {
@@ -190,12 +191,28 @@ $(document).ready(function() {
             
             testEmailAddress: function() {
                 LISTEN.trace('LISTEN.SUBSCRIBERS.testEmailAddress');
-                alert("you entered " + $('#subscriber-form-emailAddress').val()); 
+                LISTEN.SUBSCRIBERS.testAddress('email', $('#subscriber-form-emailAddress').val());
             },
             
             testSmsAddress: function() {
                 LISTEN.trace('LISTEN.SUBSCRIBERS.testSmsAddress');
-                alert("you entered " + $('#subscriber-form-smsAddress').val()); 
+                LISTEN.SUBSCRIBERS.testAddress('sms', $('#subscriber-form-smsAddress').val());
+            },
+            
+            testAddress: function(type, address) {
+                SERVER.post({
+                    url: '/ajax/testNotificationSettings',
+                    properties: {
+                        messageType: type,
+                        address: address
+                    },
+                    successCallback: function() {
+                        LISTEN.SUBSCRIBERS.showSuccess("Test notification sent to " + address);
+                    },
+                    errorCallback: function(message) {
+                        LISTEN.SUBSCRIBERS.showError(message);
+                    }
+                });
             }
         }
     }();
