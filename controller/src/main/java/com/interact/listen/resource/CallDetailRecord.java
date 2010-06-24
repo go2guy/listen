@@ -3,81 +3,34 @@ package com.interact.listen.resource;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "CALL_DETAIL_RECORD")
-public class CallDetailRecord extends Resource implements Serializable
+public class CallDetailRecord extends History implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Id
-    private Long id;
-
-    @Column(name = "VERSION")
-    @Version
-    private Integer version = Integer.valueOf(0);
-
-    @Column(name = "DATE_STARTED")
-    private Date dateStarted = new Date();
-
-    @Column(name = "DURATION")
+    @Column(name = "DURATION", nullable = true)
     private Long duration;
 
-    @Column(name = "SERVICE")
+    @Column(name = "SERVICE", nullable = true)
     private String service;
 
-    @JoinColumn(name = "SUBSCRIBER_ID")
-    @OneToOne
-    private Subscriber subscriber;
-
-    @Column(name = "ANI")
+    @Column(name = "ANI", nullable = true)
     private String ani;
 
-    @Column(name = "DNIS")
+    @Column(name = "DNIS", nullable = true)
     private String dnis;
 
-    @Column(name = "DIRECTION", nullable = false)
+    @Column(name = "DIRECTION", nullable = true)
     @Enumerated(EnumType.STRING)
     private CallDirection direction = CallDirection.INBOUND;
 
     public static enum CallDirection
     {
         INBOUND, OUTBOUND;
-    }
-
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setId(Long id)
-    {
-        this.id = id;
-    }
-
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion(Integer version)
-    {
-        this.version = version;
-    }
-
-    public Date getDateStarted()
-    {
-        return dateStarted == null ? dateStarted : new Date(dateStarted.getTime());
-    }
-
-    public void setDateStarted(Date dateStarted)
-    {
-        this.dateStarted = dateStarted == null ? null : new Date(dateStarted.getTime());
     }
 
     public Long getDuration()
@@ -98,16 +51,6 @@ public class CallDetailRecord extends Resource implements Serializable
     public void setService(String service)
     {
         this.service = service;
-    }
-
-    public Subscriber getSubscriber()
-    {
-        return subscriber;
-    }
-
-    public void setSubscriber(Subscriber subscriber)
-    {
-        this.subscriber = subscriber;
     }
 
     public String getAni()
@@ -152,15 +95,15 @@ public class CallDetailRecord extends Resource implements Serializable
         CallDetailRecord copy = new CallDetailRecord();
         if(withIdAndVersion)
         {
-            copy.setId(id);
-            copy.setVersion(version);
+            copy.setId(getId());
+            copy.setVersion(getVersion());
         }
         copy.setAni(ani);
-        copy.setDateStarted(dateStarted == null ? null : new Date(dateStarted.getTime()));
+        copy.setDate(getDate());
         copy.setDnis(dnis);
         copy.setDuration(duration);
         copy.setService(service);
-        copy.setSubscriber(subscriber);
+        copy.setSubscriber(getSubscriber());
         return copy;
     }
 
@@ -194,7 +137,7 @@ public class CallDetailRecord extends Resource implements Serializable
             return false;
         }
 
-        if(!ComparisonUtil.isEqual(callDetailRecord.getDateStarted(), getDateStarted()))
+        if(!ComparisonUtil.isEqual(callDetailRecord.getDate(), getDate()))
         {
             return false;
         }
@@ -209,7 +152,7 @@ public class CallDetailRecord extends Resource implements Serializable
         int hash = 1;
         hash *= prime + (getAni() == null ? 0 : getAni().hashCode());
         hash *= prime + (getDnis() == null ? 0 : getDnis().hashCode());
-        hash *= prime + (getDateStarted() == null ? 0 : getDateStarted().hashCode());
+        hash *= prime + (getDate() == null ? 0 : getDate().hashCode());
         return hash;
     }
 }

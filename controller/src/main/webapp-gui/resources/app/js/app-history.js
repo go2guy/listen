@@ -4,6 +4,9 @@ $(document).ready(function() {
             HistoryApplication: function() {
                 LISTEN.trace('LISTEN.HISTORY.HistoryApplication [construct]');
                 var interval;
+                var first = 0;
+                var max = 50;
+
                 var historyList = new LISTEN.DynamicTable({
                     tableId: 'history-list',
                     isList: true,
@@ -45,12 +48,43 @@ $(document).ready(function() {
 
                 var pollAndSet = function() {
                     LISTEN.trace('LISTEN.HISTORY.HistoryApplication.pollAndSet');
+                    LISTEN.log('History pagination, first = [' + first + '], max = [' + max + ']');
                     $.ajax({
-                        url: '/ajax/getHistoryList',
+                        url: '/ajax/getHistoryList?first=' + first + '&max=' + max,
                         dataType: 'json',
                         cache: 'false',
                         success: function(data, textStatus, xhr) {
-                            historyList.update(data);
+                            historyList.update(data, false);
+
+                            var pagination = $('#history-pagination');
+                            $('.pagination-current', pagination).text((data.coun > 0 ? data.first + 1 : '0') + '-' + (data.first + data.count));
+                            $('.pagination-total', pagination).text(data.total);
+
+                            var left = $('.pagination-left', pagination);
+                            var right = $('.pagination-right', pagination);
+
+                            left.unbind('click');
+                            right.unbind('click');
+                            if(data.first > 0) {
+                                left.click(function() {
+                                    first = Math.max(data.first - data.max, 0);
+                                    max = data.max;
+                                    pollAndSet();
+                                });
+                                left.show();
+                            } else {
+                                left.hide();
+                            }
+                            if((data.first + data.count + 1) <= data.total) {
+                                right.click(function() {
+                                    first = data.first + data.count;
+                                    max = data.max;
+                                    pollAndSet();
+                                });
+                                right.show();
+                            } else {
+                                right.hide();
+                            }
                         }
                     });
                 };
@@ -58,16 +92,10 @@ $(document).ready(function() {
                 this.load = function() {
                     LISTEN.trace('LISTEN.HISTORY.HistoryApplication.load');
                     pollAndSet();
-                    interval = setInterval(function() {
-                        pollAndSet();
-                    }, 1000);
                 };
 
                 this.unload = function() {
-                    LISTEN.trace('LISTEN.HISTORY.HistoryApplication.unload');
-                    if(interval) {
-                        clearInterval(interval);
-                    }
+                    // no-op
                 };
             }
         }

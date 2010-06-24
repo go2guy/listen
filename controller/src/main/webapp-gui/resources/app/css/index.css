@@ -690,6 +690,28 @@ table.data-table tr.odd {
     background-color: #EEEEEE;
 }
 
+.pagination {
+    color: #666666;
+    float: right;
+    margin: 4px;
+}
+
+.pagination span {
+    font-weight: bold;
+    padding: 2px 4px;
+}
+
+.pagination-left, .pagination-right {
+    border: 1px solid #999999;
+    cursor: pointer;
+    text-align: center;
+}
+
+.pagination-left:hover, .pagination-right:hover {
+    background-color: #666666;
+    color: #FFFFFF;
+}
+
 /* other */
 
 #templates {

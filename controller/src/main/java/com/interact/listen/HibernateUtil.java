@@ -57,6 +57,7 @@ public final class HibernateUtil
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(ConferenceHistory.class);
             config.addAnnotatedClass(ConferenceRecording.class);
+            config.addAnnotatedClass(History.class);
             config.addAnnotatedClass(ListenSpotSubscriber.class);
             config.addAnnotatedClass(Participant.class);
             config.addAnnotatedClass(Pin.class);

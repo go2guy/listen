@@ -1,8 +1,6 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
@@ -20,9 +18,9 @@ public class CallDetailRecordTest
     }
 
     @Test
-    public void test_dateStarted_defaultsToNewDate()
+    public void test_date_defaultsToNewDate()
     {
-        assertNotNull(cdr.getDateStarted());
+        assertNotNull(cdr.getDate());
     }
 
     @Test
@@ -107,7 +105,7 @@ public class CallDetailRecordTest
         assertNull(copy.getId());
         assertEquals((Integer)0, copy.getVersion());
         assertEquals(cdr.getAni(), copy.getAni());
-        assertEquals(cdr.getDateStarted(), copy.getDateStarted());
+        assertEquals(cdr.getDate(), copy.getDate());
         assertEquals(cdr.getDnis(), copy.getDnis());
         assertEquals(cdr.getService(), copy.getService());
         assertEquals(cdr.getSubscriber(), copy.getSubscriber());
@@ -122,7 +120,7 @@ public class CallDetailRecordTest
         assertEquals(cdr.getId(), copy.getId());
         assertEquals(cdr.getVersion(), copy.getVersion());
         assertEquals(cdr.getAni(), copy.getAni());
-        assertEquals(cdr.getDateStarted(), copy.getDateStarted());
+        assertEquals(cdr.getDate(), copy.getDate());
         assertEquals(cdr.getDnis(), copy.getDnis());
         assertEquals(cdr.getService(), copy.getService());
         assertEquals(cdr.getSubscriber(), copy.getSubscriber());
@@ -133,13 +131,13 @@ public class CallDetailRecordTest
     {
         cdr.setAni(String.valueOf(System.currentTimeMillis()));
         cdr.setDnis(String.valueOf(System.currentTimeMillis()));
-        cdr.setDateStarted(new Date());
+        cdr.setDate(new Date());
 
         // set relevant properties equal
         CallDetailRecord that = new CallDetailRecord();
         that.setAni(cdr.getAni());
         that.setDnis(cdr.getDnis());
-        that.setDateStarted(cdr.getDateStarted());
+        that.setDate(cdr.getDate());
 
         // set irrelevant property to something different
         cdr.setDuration(System.currentTimeMillis() - 1000);
@@ -153,13 +151,13 @@ public class CallDetailRecordTest
     {
         cdr.setAni(String.valueOf(System.currentTimeMillis()));
         cdr.setDnis(String.valueOf(System.currentTimeMillis()));
-        cdr.setDateStarted(new Date());
+        cdr.setDate(new Date());
 
         // set relevant properties equal
         CallDetailRecord that = new CallDetailRecord();
         that.setAni("");
         that.setDnis(cdr.getDnis());
-        that.setDateStarted(cdr.getDateStarted());
+        that.setDate(cdr.getDate());
 
         // set irrelevant property to something different
         cdr.setDuration(System.currentTimeMillis() - 1000);
@@ -173,13 +171,13 @@ public class CallDetailRecordTest
     {
         cdr.setAni(String.valueOf(System.currentTimeMillis()));
         cdr.setDnis(String.valueOf(System.currentTimeMillis()));
-        cdr.setDateStarted(new Date());
+        cdr.setDate(new Date());
 
         // set relevant properties equal
         CallDetailRecord that = new CallDetailRecord();
         that.setAni(cdr.getAni());
         that.setDnis("");
-        that.setDateStarted(cdr.getDateStarted());
+        that.setDate(cdr.getDate());
 
         // set irrelevant property to something different
         cdr.setDuration(System.currentTimeMillis() - 1000);
@@ -189,17 +187,17 @@ public class CallDetailRecordTest
     }
 
     @Test
-    public void test_equals_differentDateStarted_returnsFalse()
+    public void test_equals_differentDate_returnsFalse()
     {
         cdr.setAni(String.valueOf(System.currentTimeMillis()));
         cdr.setDnis(String.valueOf(System.currentTimeMillis()));
-        cdr.setDateStarted(new Date());
+        cdr.setDate(new Date());
 
         // set relevant properties equal
         CallDetailRecord that = new CallDetailRecord();
         that.setAni(cdr.getAni());
         that.setDnis(cdr.getDnis());
-        that.setDateStarted(null);
+        that.setDate(null);
 
         // set irrelevant property to something different
         cdr.setDuration(System.currentTimeMillis() - 1000);
@@ -213,7 +211,7 @@ public class CallDetailRecordTest
     {
         cdr.setAni("4321");
         cdr.setDnis("1234");
-        cdr.setDateStarted(new Date(12341234));
+        cdr.setDate(new Date(12341234));
         assertEquals(1491766221, cdr.hashCode());
     }
 
@@ -221,7 +219,7 @@ public class CallDetailRecordTest
     {
         CallDetailRecord c = new CallDetailRecord();
         c.setAni(String.valueOf(System.currentTimeMillis()));
-        c.setDateStarted(new Date());
+        c.setDate(new Date());
         c.setDnis(String.valueOf(System.currentTimeMillis()));
         c.setDuration(System.currentTimeMillis());
         c.setId(System.currentTimeMillis());

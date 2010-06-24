@@ -4,65 +4,28 @@ import com.interact.listen.history.Channel;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "HISTORY")
-public class ActionHistory extends Resource implements Serializable
+@Table(name = "ACTION_HISTORY")
+public class ActionHistory extends History implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Id
-    private Long id;
-
-    @Column(name = "VERSION")
-    @Version
-    private Integer version = Integer.valueOf(0);
-
-    @Column(name = "ACTION", nullable = false)
+    @Column(name = "ACTION", nullable = true)
     private String action;
-
-    @JoinColumn(name = "PERFORMED_BY_SUBSCRIBER_ID", nullable = true)
-    @OneToOne
-    private Subscriber performedBySubscriber;
 
     @JoinColumn(name = "ON_SUBSCRIBER_ID", nullable = true)
     @OneToOne
     private Subscriber onSubscriber;
 
-    @Column(name = "CHANNEL", nullable = false)
+    @Column(name = "CHANNEL", nullable = true)
     @Enumerated(EnumType.STRING)
     private Channel channel;
 
-    @Column(name = "DESCRIPTION", nullable = false)
+    @Column(name = "DESCRIPTION", nullable = true)
     private String description;
-
-    @Column(name = "DATE_CREATED", nullable = false)
-    private Date dateCreated = new Date();
-
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setId(Long id)
-    {
-        this.id = id;
-    }
-
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion(Integer version)
-    {
-        this.version = version;
-    }
 
     public void setAction(String action)
     {
@@ -72,16 +35,6 @@ public class ActionHistory extends Resource implements Serializable
     public String getAction()
     {
         return action;
-    }
-
-    public Subscriber getPerformedBySubscriber()
-    {
-        return performedBySubscriber;
-    }
-
-    public void setPerformedBySubscriber(Subscriber performedBySubscriber)
-    {
-        this.performedBySubscriber = performedBySubscriber;
     }
 
     public Subscriber getOnSubscriber()
@@ -114,16 +67,6 @@ public class ActionHistory extends Resource implements Serializable
         this.description = description;
     }
 
-    public Date getDateCreated()
-    {
-        return dateCreated == null ? null : new Date(dateCreated.getTime());
-    }
-
-    public void setDateCreated(Date dateCreated)
-    {
-        this.dateCreated = dateCreated == null ? null : new Date(dateCreated.getTime());
-    }
-
     @Override
     public boolean validate()
     {
@@ -137,7 +80,7 @@ public class ActionHistory extends Resource implements Serializable
             addToErrors("description cannot be null or blank");
         }
 
-        if(dateCreated == null)
+        if(getDate() == null)
         {
             addToErrors("dateCreated cannot be null");
         }
@@ -151,16 +94,16 @@ public class ActionHistory extends Resource implements Serializable
         ActionHistory copy = new ActionHistory();
         if(withIdAndVersion)
         {
-            copy.setId(id);
-            copy.setVersion(version);
+            copy.setId(getId());
+            copy.setVersion(getVersion());
         }
 
         copy.setAction(getAction());
         copy.setChannel(getChannel());
-        copy.setDateCreated(getDateCreated());
+        copy.setDate(getDate());
         copy.setDescription(getDescription());
         copy.setOnSubscriber(getOnSubscriber());
-        copy.setPerformedBySubscriber(getPerformedBySubscriber());
+        copy.setSubscriber(getSubscriber());
         return copy;
     }
 
@@ -189,7 +132,7 @@ public class ActionHistory extends Resource implements Serializable
             return false;
         }
 
-        if(!ComparisonUtil.isEqual(history.getDateCreated(), getDateCreated()))
+        if(!ComparisonUtil.isEqual(history.getDate(), getDate()))
         {
             return false;
         }
@@ -208,7 +151,7 @@ public class ActionHistory extends Resource implements Serializable
         final int prime = 31;
         int hash = 1;
         hash *= prime + (getAction() == null ? 0 : getAction().hashCode());
-        hash *= prime + (getDateCreated() == null ? 0 : getDateCreated().hashCode());
+        hash *= prime + (getDate() == null ? 0 : getDate().hashCode());
         hash *= prime + (getDescription() == null ? 0 : getDescription().hashCode());
         return hash;
     }

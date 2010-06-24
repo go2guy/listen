@@ -18,7 +18,7 @@ public class HistoryService
     private void write(ActionHistory history)
     {
         history.setChannel(persistenceService.getChannel());
-        history.setPerformedBySubscriber(persistenceService.getCurrentSubscriber());
+        history.setSubscriber(persistenceService.getCurrentSubscriber());
         persistenceService.save(history);
     }
 

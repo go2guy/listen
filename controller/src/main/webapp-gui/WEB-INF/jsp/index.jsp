@@ -311,11 +311,16 @@ if(subscriber.getIsAdministrator()) { %>
             <div id="history-application" class="application">
               <div class="application-header"><div class="title">History</div></div>
               <div class="application-content">
-                <ul id="history-list"></ul>
+                <ul id="history-list">
+                  <li class="placeholder">No history records</li>
+                </ul>
+                <div class="pagination" id="history-pagination">
+                  <span class="pagination-left">&lt;</span><span class="pagination-current">1-100</span>of<span class="pagination-total">552</span><span class="pagination-right">&gt;</span>
+                </div>
+                <div class="cleaner">&nbsp;</div>
               </div>
-              <div class="cleaner">&nbsp;</div>
             </div><%
-} 
+}
 
 if(subscriber != null) { %>
             <div id="profile-application" class="application">

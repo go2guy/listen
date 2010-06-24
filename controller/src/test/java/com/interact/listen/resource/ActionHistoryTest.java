@@ -22,7 +22,7 @@ public class ActionHistoryTest
     @Test
     public void test_dateCreated_defaultsToNewDate()
     {
-        assertNotNull(history.getDateCreated());
+        assertNotNull(history.getDate());
     }
 
     @Test
@@ -46,8 +46,8 @@ public class ActionHistoryTest
     {
         final Subscriber subscriber = new Subscriber();
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
-        history.setPerformedBySubscriber(subscriber);
-        assertEquals(subscriber, history.getPerformedBySubscriber());
+        history.setSubscriber(subscriber);
+        assertEquals(subscriber, history.getSubscriber());
     }
 
     @Test
@@ -87,8 +87,8 @@ public class ActionHistoryTest
     public void test_setDateCreated_withValidDateCreated_setsDateCreated()
     {
         final Date dateCreated = new Date();
-        history.setDateCreated(dateCreated);
-        assertEquals(dateCreated, history.getDateCreated());
+        history.setDate(dateCreated);
+        assertEquals(dateCreated, history.getDate());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class ActionHistoryTest
     public void test_validate_nullDateCreated_returnsFalseWithErrors()
     {
         history = getPopulatedHistory();
-        history.setDateCreated(null);
+        history.setDate(null);
         assertFalse(history.validate());
         assertTrue(history.hasErrors());
     }
@@ -154,10 +154,10 @@ public class ActionHistoryTest
         assertEquals((Integer)0, copy.getVersion());
         assertEquals(history.getAction(), copy.getAction());
         assertEquals(history.getChannel(), copy.getChannel());
-        assertEquals(history.getDateCreated(), copy.getDateCreated());
+        assertEquals(history.getDate(), copy.getDate());
         assertEquals(history.getDescription(), copy.getDescription());
         assertEquals(history.getOnSubscriber(), copy.getOnSubscriber());
-        assertEquals(history.getPerformedBySubscriber(), copy.getPerformedBySubscriber());
+        assertEquals(history.getSubscriber(), copy.getSubscriber());
     }
 
     @Test
@@ -170,23 +170,23 @@ public class ActionHistoryTest
         assertEquals(history.getVersion(), copy.getVersion());
         assertEquals(history.getAction(), copy.getAction());
         assertEquals(history.getChannel(), copy.getChannel());
-        assertEquals(history.getDateCreated(), copy.getDateCreated());
+        assertEquals(history.getDate(), copy.getDate());
         assertEquals(history.getDescription(), copy.getDescription());
         assertEquals(history.getOnSubscriber(), copy.getOnSubscriber());
-        assertEquals(history.getPerformedBySubscriber(), copy.getPerformedBySubscriber());
+        assertEquals(history.getSubscriber(), copy.getSubscriber());
     }
 
     @Test
     public void test_equals_withRelevantPropertiesEqual_returnsTrue()
     {
         history.setAction(String.valueOf(System.currentTimeMillis()));
-        history.setDateCreated(new Date());
+        history.setDate(new Date());
         history.setDescription(String.valueOf(System.currentTimeMillis()));
 
         // set relevant properties equal
         ActionHistory that = new ActionHistory();
         that.setAction(history.getAction());
-        that.setDateCreated(history.getDateCreated());
+        that.setDate(history.getDate());
         that.setDescription(history.getDescription());
 
         // set an irrelevant property to something different
@@ -200,13 +200,13 @@ public class ActionHistoryTest
     public void test_equals_differentAction_returnsFalse()
     {
         history.setAction(String.valueOf(System.currentTimeMillis()));
-        history.setDateCreated(new Date());
+        history.setDate(new Date());
         history.setDescription(String.valueOf(System.currentTimeMillis()));
 
         // set relevant properties equal
         ActionHistory that = new ActionHistory();
         that.setAction("");
-        that.setDateCreated(history.getDateCreated());
+        that.setDate(history.getDate());
         that.setDescription(history.getDescription());
 
         // set an irrelevant property to something different
@@ -220,13 +220,13 @@ public class ActionHistoryTest
     public void test_equals_differentDateCreated_returnsFalse()
     {
         history.setAction(String.valueOf(System.currentTimeMillis()));
-        history.setDateCreated(new Date());
+        history.setDate(new Date());
         history.setDescription(String.valueOf(System.currentTimeMillis()));
 
         // set relevant properties equal
         ActionHistory that = new ActionHistory();
         that.setAction(history.getAction());
-        that.setDateCreated(null);
+        that.setDate(null);
         that.setDescription(history.getDescription());
 
         // set an irrelevant property to something different
@@ -240,13 +240,13 @@ public class ActionHistoryTest
     public void test_equals_differentDescription_returnsFalse()
     {
         history.setAction(String.valueOf(System.currentTimeMillis()));
-        history.setDateCreated(new Date());
+        history.setDate(new Date());
         history.setDescription(String.valueOf(System.currentTimeMillis()));
 
         // set relevant properties equal
         ActionHistory that = new ActionHistory();
         that.setAction(history.getAction());
-        that.setDateCreated(history.getDateCreated());
+        that.setDate(history.getDate());
         that.setDescription("");
 
         // set an irrelevant property to something different
@@ -261,11 +261,11 @@ public class ActionHistoryTest
     {
         history = new ActionHistory();
         history.setAction("1234");
-        history.setDateCreated(new Date(12341234));
+        history.setDate(new Date(12341234));
         history.setDescription("4321");
         assertEquals(1491766221, history.hashCode());
     }
-    
+
     private ActionHistory getPopulatedHistory()
     {
         ActionHistory h = new ActionHistory();
@@ -273,7 +273,7 @@ public class ActionHistoryTest
         h.setChannel(Channel.GUI);
         h.setDescription(String.valueOf(System.currentTimeMillis()));
         h.setOnSubscriber(new Subscriber());
-        h.setPerformedBySubscriber(new Subscriber());
+        h.setSubscriber(new Subscriber());
         h.setVersion(10);
         h.setId(System.currentTimeMillis());
         return h;

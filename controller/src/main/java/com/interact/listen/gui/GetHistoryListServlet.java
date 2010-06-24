@@ -11,7 +11,8 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 
 public class GetHistoryListServlet extends HttpServlet
@@ -62,66 +64,22 @@ public class GetHistoryListServlet extends HttpServlet
             max = Integer.parseInt(request.getParameter("max"));
         }
 
-        Criteria cdrCriteria = session.createCriteria(CallDetailRecord.class);
-        cdrCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        cdrCriteria.setFirstResult(first);
-        cdrCriteria.setMaxResults(max);
-        List<CallDetailRecord> cdrs = (List<CallDetailRecord>)cdrCriteria.list();
+        Criteria criteria = session.createCriteria(History.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(max);
+        criteria.addOrder(Order.desc("date"));
+        List<History> results = (List<History>)criteria.list();
 
-        Criteria actionCriteria = session.createCriteria(ActionHistory.class);
-        actionCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        actionCriteria.setFirstResult(first);
-        actionCriteria.setMaxResults(max);
-        List<ActionHistory> actions = (List<ActionHistory>)actionCriteria.list();
-
-        long cdrTotal = 0;
-        long actionTotal = 0;
-
-        if(cdrs.size() > 0)
+        long total = 0;
+        if(results.size() > 0)
         {
-            Criteria cdrCountCriteria = session.createCriteria(CallDetailRecord.class);
-            cdrCountCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-            cdrCountCriteria.setFirstResult(0);
-            cdrCountCriteria.setProjection(Projections.rowCount());
-            cdrTotal = (Long)cdrCountCriteria.list().get(0);
+            Criteria countCriteria = session.createCriteria(History.class);
+            countCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+            countCriteria.setFirstResult(0);
+            countCriteria.setProjection(Projections.rowCount());
+            total = (Long)countCriteria.list().get(0);
         }
-
-        if(actions.size() > 0)
-        {
-            Criteria actionCountCriteria = session.createCriteria(ActionHistory.class);
-            actionCountCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-            actionCountCriteria.setFirstResult(0);
-            actionCountCriteria.setProjection(Projections.rowCount());
-            actionTotal = (Long)actionCountCriteria.list().get(0);
-        }
-
-        List<Resource> combined = new ArrayList<Resource>();
-        combined.addAll(cdrs);
-        combined.addAll(actions);
-
-        Collections.sort(combined, new Comparator<Resource>()
-        {
-            public final int compare(Resource a, Resource b)
-            {
-                Date dateA = getDate(a);
-                Date dateB = getDate(b);
-                return dateA.compareTo(dateB) * -1;
-            }
-
-            private final Date getDate(Resource resource)
-            {
-                if(resource instanceof CallDetailRecord)
-                {
-                    return ((CallDetailRecord)resource).getDateStarted();
-                }
-                else if(resource instanceof ActionHistory)
-                {
-                    return ((ActionHistory)resource).getDateCreated();
-                }
-                throw new AssertionError("Collection contained an unexpected Resource type");
-            }
-        });
-        combined = combined.subList(0, Math.min(combined.size(), max));
 
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
@@ -130,11 +88,11 @@ public class GetHistoryListServlet extends HttpServlet
         json.append("{");
         json.append("\"max\":").append(max).append(",");
         json.append("\"first\":").append(first).append(",");
-        json.append("\"count\":").append(combined.size()).append(",");
-        json.append("\"total\":").append(cdrTotal + actionTotal).append(",");
+        json.append("\"count\":").append(results.size()).append(",");
+        json.append("\"total\":").append(total).append(",");
         json.append("\"results\":[");
 
-        for(Resource resource : combined)
+        for(History resource : results)
         {
             if(resource instanceof CallDetailRecord)
             {
@@ -146,7 +104,7 @@ public class GetHistoryListServlet extends HttpServlet
             }
             json.append(",");
         }
-        if(combined.size() > 0)
+        if(results.size() > 0)
         {
             json.deleteCharAt(json.length() - 1); // last comma
         }
@@ -165,7 +123,7 @@ public class GetHistoryListServlet extends HttpServlet
 
         json.append("\"id\":\"call").append(record.getId()).append("\",");
 
-        String date = marshaller.convertAndEscape(Date.class, record.getDateStarted());
+        String date = marshaller.convertAndEscape(Date.class, record.getDate());
         json.append("\"date\":\"").append(date).append("\",");
 
         String subscriber = marshaller.convertAndEscape(String.class, record.getSubscriber().getUsername());
@@ -199,11 +157,11 @@ public class GetHistoryListServlet extends HttpServlet
 
         json.append("\"id\":\"action").append(history.getId()).append("\",");
 
-        String date = marshaller.convertAndEscape(Date.class, history.getDateCreated());
+        String date = marshaller.convertAndEscape(Date.class, history.getDate());
         json.append("\"date\":\"").append(date).append("\",");
 
         String subscriber = marshaller.convertAndEscape(String.class,
-                                                        history.getPerformedBySubscriber() == null ? "" : history.getPerformedBySubscriber().getUsername());
+                                                        history.getSubscriber() == null ? "" : history.getSubscriber().getUsername());
         json.append("\"subscriber\":\"").append(subscriber).append("\",");
 
         String action = marshaller.convertAndEscape(String.class, history.getAction());
