@@ -37,7 +37,7 @@ $(document).ready(function() {
                             LISTEN.setFieldContent(row.find('.history-call-type'), 'Call');
                             LISTEN.setFieldContent(row.find('.history-call-subscriber'), data.subscriber);
                             LISTEN.setFieldContent(row.find('.history-call-ani'), data.ani);
-                            LISTEN.setFieldContent(row.find('.history-call-direction'), data.direction == 'INBOUND' ? '&laquo;' : '&raquo;', false, true);
+                            LISTEN.setFieldContent(row.find('.history-call-direction'), '&raquo;');
                             LISTEN.setFieldContent(row.find('.history-call-dnis'), data.dnis);
                             LISTEN.setFieldContent(row.find('.history-call-service'), data.service);
                             LISTEN.setFieldContent(row.find('.history-call-duration'), data.duration + ' seconds');
