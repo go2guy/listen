@@ -47,12 +47,12 @@ $(document).ready(function() {
 
                 var pollAndSet = function() {
                     LISTEN.trace('LISTEN.HISTORY.HistoryApplication.pollAndSet');
-                    LISTEN.log('History pagination, first = [' + first + '], max = [' + max + ']');
                     $.ajax({
                         url: '/ajax/getHistoryList?first=' + first + '&max=' + max,
                         dataType: 'json',
                         cache: 'false',
                         success: function(data, textStatus, xhr) {
+                            $('#history-list').find('li').remove();
                             historyList.update(data, false);
 
                             var pagination = $('#history-pagination');
