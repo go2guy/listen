@@ -17,7 +17,7 @@ $(document).ready(function() {
             cache: 'false',
             success: function(data, textStatus, xhr) {
                 if(!data || data != 'pong') {
-                    if(failedTries++ == 2) {
+                    if(failedTries++ > 2) {
                         $.modal($('#communication-error'), {
                             overlayCss: {
                                 'background-color': '#CCCCCC',
@@ -35,7 +35,7 @@ $(document).ready(function() {
                     window.location = '/logout';
                     return;
                 }
-                if(failedTries++ == 2) {
+                if(failedTries++ > 2) {
                     $.modal($('#communication-error'), {
                         overlayCss: {
                             'background-color': '#CCCCCC',
