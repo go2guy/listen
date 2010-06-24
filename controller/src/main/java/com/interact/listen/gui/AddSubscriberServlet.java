@@ -86,6 +86,21 @@ public class AddSubscriberServlet extends HttpServlet
         {
             throw new BadRequestServletException("Voicemail Pin Number can only be digits 0-9");
         }
+        
+        Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
+        Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
+        String emailAddress = request.getParameter("emailAddress");
+        String smsAddress = request.getParameter("smsAddress");
+        
+        if(enableEmail && (emailAddress == null || emailAddress.equals("")))
+        {
+            throw new BadRequestServletException("Please provide an E-mail address");
+        }
+        
+        if(enableSms && (smsAddress == null || smsAddress.equals("")))
+        {
+            throw new BadRequestServletException("Please provide an SMS address");
+        }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
@@ -94,6 +109,10 @@ public class AddSubscriberServlet extends HttpServlet
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
         subscriber.setVoicemailPin(voicemailPin);
+        subscriber.setIsEmailNotificationEnabled(enableEmail);
+        subscriber.setIsSmsNotificationEnabled(enableSms);
+        subscriber.setEmailAddress(emailAddress);
+        subscriber.setSmsAddress(smsAddress);
         persistenceService.save(subscriber);
 
         String accessNumbers = request.getParameter("accessNumbers");

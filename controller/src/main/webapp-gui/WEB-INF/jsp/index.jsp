@@ -231,55 +231,77 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
               <div class="application-header"><div class="title">Subscribers</div></div>
               <div class="application-content">
                 <div class="left">
-                  <div class="panel-header"><div class="title">Subscriber List</div></div>
-                  <table id="subscribers-table" class="data-table">
-                    <thead>
-                      <tr>
-                        <th>Username</th>
-                        <th>Access Numbers</th>
-                        <th>Last Login</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
+                  <div class="panel">
+                    <div class="panel-header"><div class="title">Subscriber List</div></div>
+                    <div class="panel-content">
+                      <table id="subscribers-table" class="data-table">
+                        <thead>
+                          <tr>
+                            <th>Username</th>
+                            <th>Access Numbers</th>
+                            <th>Last Login</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
                 <div class="right">
                   <div class="panel">
                     <div class="panel-header"><div class="title">Subscriber Info</div></div>
-                    <form id="subscriber-form" onsubmit="return false;">
-                      <div class="form-error-message"></div>
-                      <div class="form-success-message"></div>
-                      <fieldset>
-                        <input type="hidden" id="subscriber-form-id" name="subscriber-form-id"/>
-                        <table>
-                          <tbody>
-                            <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
-                            <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
-                            <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
-                            <tr>
-                              <td><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
-                              <td><%
+                    <div class="panel-content">
+                      <form id="subscriber-form" onsubmit="return false;">
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <fieldset>
+                          <input type="hidden" id="subscriber-form-id" name="subscriber-form-id"/>
+                          <table>
+                            <tbody>
+                              <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
+                              <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
+                              <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
+                              <tr>
+                                <td><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
+                                <td><%
 if(subscriber.getIsAdministrator()) { %>
-                                <textarea rows="4" cols="50" id="subscriber-form-accessNumbers" name="subscriber-form-accessNumbers"></textarea><%
+                                  <textarea rows="4" cols="25" id="subscriber-form-accessNumbers" name="subscriber-form-accessNumbers"></textarea><%
 } else { %>
-                                <%= subscriber.accessNumberString() %><%
+                                  <%= subscriber.accessNumberString() %><%
 } %>
-                              </td>
-                            </tr>
-                            <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin"/></td></tr>
-                            <tr>
-                              <td></td>
-                              <td class="buttons">
-                                <button class="save-button" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.SUBSCRIBERS.addSubscriber();return false;">Add</button>
-                                <button class="edit-button" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.SUBSCRIBERS.editSubscriber();return false;">Edit</button>
-                                <button class="cancel-button" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.SUBSCRIBERS.resetForm();return false;">Cancel Edit</button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </fieldset>
-                    </form>
+                                </td>
+                              </tr>
+                              <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin"/></td></tr>
+                              <tr>
+                                <td><label for="subscriber-form-enableEmailNotification">Enable E-mail Notification</label></td>
+                                <td>
+                                  <input type="checkbox" id="subscriber-form-enableEmailNotification" name="subscriber-form-enableEmailNotification" value="enableEmail"/>
+                                  <input type="text" id="subscriber-form-emailAddress" name="subscriber-form-emailAddress"/>
+                                  <button class="save-button" id="subscriber-form-testEmail-button" name="subscriber-form-testEmail-button" title="Test Email Address" onclick="LISTEN.SUBSCRIBERS.testEmailAddress();return false;">Verify</button>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td><label for="subscriber-form-enableSmsNotification">Enable SMS Notification</label></td>
+                                <td>
+                                  <input type="checkbox" id="subscriber-form-enableSmsNotification" name="subscriber-form-enableSmsNotification" value="enableSms"/>
+                                  <input type="text" id="subscriber-form-smsAddress" name="subscriber-form-smsAddress"/>
+                                  <button class="save-button" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address" onclick="LISTEN.SUBSCRIBERS.testSmsAddress();return false;">Verify</button>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td></td>
+                                <td class="buttons">
+                                  <button class="save-button" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.SUBSCRIBERS.addSubscriber();return false;">Add</button>
+                                  <button class="edit-button" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.SUBSCRIBERS.editSubscriber();return false;">Edit</button>
+                                  <button class="cancel-button" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.SUBSCRIBERS.resetForm();return false;">Cancel Edit</button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </fieldset>
+                      </form>
+                    </div>
                   </div>
                 </div>
                 <div class="cleaner">&nbsp;</div>
@@ -311,6 +333,22 @@ if(subscriber != null) { %>
                         <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
                         <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr>
                         <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin"/></td></tr>
+                        <tr>
+                          <td><label for="profile-form-enableEmailNotification">Enable E-mail Notification</label></td>
+                          <td>
+                            <input type="checkbox" id="profile-form-enableEmailNotification" name="profile-form-enableEmailNotification" value="enableEmail"/>
+                            <input type="text" id="profile-form-emailAddress" name="profile-form-emailAddress"/>
+                            <button class="save-button" id="profile-form-testEmail-button" name="profile-form-testEmail-button" title="Test Email Address" onclick="LISTEN.PROFILE.testEmailAddress();return false;">Verify</button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="profile-form-enableSmsNotification">Enable SMS Notification</label></td>
+                          <td>
+                            <input type="checkbox" id="profile-form-enableSmsNotification" name="profile-form-enableSmsNotification" value="enableSms"/>
+                            <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
+                            <button class="save-button" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address" onclick="LISTEN.PROFILE.testSmsAddress();return false;">Verify</button>
+                          </td>
+                        </tr>
                         <tr>
                           <td></td>
                           <td class="buttons">

@@ -76,6 +76,16 @@ $(document).ready(function() {
                         
                         $('#subscriber-form-accessNumbers').val(numbers);
                         $('#subscriber-form-voicemailPin').val(data.voicemailPin);
+                        $('#subscriber-form-emailAddress').val(data.emailAddress);
+                        $('#subscriber-form-smsAddress').val(data.smsAddress);
+                        
+                        if(data.enableEmail) {                        
+                            $('#subscriber-form-enableEmailNotification').attr('checked', true);
+                        }
+                        
+                        if(data.enableSms) {                        
+                            $('#subscriber-form-enableSmsNotification').attr('checked', true);
+                        }
 
                         $('#subscriber-form-add-button').hide();
                         $('#subscriber-form-edit-button').show();
@@ -104,7 +114,11 @@ $(document).ready(function() {
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
                         accessNumbers: $('#subscriber-form-accessNumbers').val(),
-                        voicemailPin: $('#subscriber-form-voicemailPin').val()
+                        voicemailPin: $('#subscriber-form-voicemailPin').val(),
+                        enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
+                        enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
+                        emailAddress: $('#subscriber-form-emailAddress').val(),
+                        smsAddress: $('#subscriber-form-smsAddress').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();
@@ -128,7 +142,11 @@ $(document).ready(function() {
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
                         accessNumbers: $('#subscriber-form-accessNumbers').val(),
-                        voicemailPin: $('#subscriber-form-voicemailPin').val()
+                        voicemailPin: $('#subscriber-form-voicemailPin').val(),
+                        enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
+                        enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
+                        emailAddress: $('#subscriber-form-emailAddress').val(),
+                        smsAddress: $('#subscriber-form-smsAddress').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();
@@ -168,6 +186,16 @@ $(document).ready(function() {
             enableButtons: function() {
                 LISTEN.trace('LISTEN.SUBSCRIBERS.enableButtons');
                 $('#subscriber-form button').removeAttr('readonly');
+            },
+            
+            testEmailAddress: function() {
+                LISTEN.trace('LISTEN.SUBSCRIBERS.testEmailAddress');
+                alert("you entered " + $('#subscriber-form-emailAddress').val()); 
+            },
+            
+            testSmsAddress: function() {
+                LISTEN.trace('LISTEN.SUBSCRIBERS.testSmsAddress');
+                alert("you entered " + $('#subscriber-form-smsAddress').val()); 
             }
         }
     }();

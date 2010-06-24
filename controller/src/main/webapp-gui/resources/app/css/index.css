@@ -349,11 +349,7 @@ td.voicemail-cell-readStatus {
     border-width: 0;
 }
 
-#subscribers-application .panel {
-    margin-top: 0px;
-}
-
-#subscriber-form-edit-button, #subscriber-form-cancel-button {
+#subscriber-form-edit-button, #subscriber-form-cancel-button, #subscriber-form-emailInputRow, #subscriber-form-smsInputRow, #profile-form-emailInputRow, #profile-form-smsInputRow {
     display: none;
 }
 
@@ -434,6 +430,12 @@ td.voicemail-cell-readStatus {
 
 .history-action-channel {
     width: 5%;
+}
+
+/* application - profile */
+
+#profile-application fieldset {
+    border-width: 0;
 }
 
 /* buttons */
@@ -652,7 +654,6 @@ fieldset {
     display: inline-block;
     padding: 6px;
     margin: 3px;
-    width: 75%;
 }
 
 fieldset legend {

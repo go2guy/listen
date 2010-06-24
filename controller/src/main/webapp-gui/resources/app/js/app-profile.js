@@ -22,6 +22,16 @@ $(document).ready(function() {
                             }
                             $('#profile-form-accessNumbers').text(numbers);
                             $('#profile-form-voicemailPin').val(data.voicemailPin);
+                            $('#profile-form-emailAddress').val(data.emailAddress);
+                            $('#profile-form-smsAddress').val(data.smsAddress);
+                            
+                            if(data.enableEmail) {                        
+                                $('#profile-form-enableEmailNotification').attr('checked', true);
+                            }
+                            
+                            if(data.enableSms) {                        
+                                $('#profile-form-enableSmsNotification').attr('checked', true);
+                            }
     
                             $('#profile-form-edit-button').show();
                         }
@@ -44,7 +54,11 @@ $(document).ready(function() {
                         username: $('#profile-form-username').val(),
                         password: $('#profile-form-password').val(),
                         confirmPassword: $('#profile-form-confirmPassword').val(),
-                        voicemailPin: $('#profile-form-voicemailPin').val()
+                        voicemailPin: $('#profile-form-voicemailPin').val(),
+                        enableEmail: $('#profile-form-enableEmailNotification').is(":checked"),
+                        enableSms: $('#profile-form-enableSmsNotification').is(":checked"),
+                        emailAddress: $('#profile-form-emailAddress').val(),
+                        smsAddress: $('#profile-form-smsAddress').val()
                     },
                     successCallback: function() {
                         LISTEN.PROFILE.showSuccess('Profile updated');
@@ -83,6 +97,16 @@ $(document).ready(function() {
             enableButtons: function() {
                 LISTEN.trace('LISTEN.PROFILE.enableButtons');
                 $('#profile-form button').removeAttr('readonly');
+            },
+            
+            testEmailAddress: function() {
+                LISTEN.trace('LISTEN.PROFILE.testEmailAddress');
+                alert("you entered " + $('#profile-form-emailAddress').val()); 
+            },
+            
+            testSmsAddress: function() {
+                LISTEN.trace('LISTEN.PROFILE.testSmsAddress');
+                alert("you entered " + $('#profile-form-smsAddress').val()); 
             }
         }
     }();

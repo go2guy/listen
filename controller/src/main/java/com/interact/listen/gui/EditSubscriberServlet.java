@@ -117,9 +117,28 @@ public class EditSubscriberServlet extends HttpServlet
         {
             throw new BadRequestServletException("Voicemail Pin Number can only be digits 0-9");
         }
+        
+        Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
+        Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
+        String emailAddress = request.getParameter("emailAddress");
+        String smsAddress = request.getParameter("smsAddress");
+        
+        if(enableEmail && (emailAddress == null || emailAddress.equals("")))
+        {
+            throw new BadRequestServletException("Please provide an E-mail address");
+        }
+        
+        if(enableSms && (smsAddress == null || smsAddress.equals("")))
+        {
+            throw new BadRequestServletException("Please provide an SMS address");
+        }
 
         subscriberToEdit.setVoicemailPin(voicemailPin);
         subscriberToEdit.setUsername(username);
+        subscriberToEdit.setIsEmailNotificationEnabled(enableEmail);
+        subscriberToEdit.setIsSmsNotificationEnabled(enableSms);
+        subscriberToEdit.setEmailAddress(emailAddress);
+        subscriberToEdit.setSmsAddress(smsAddress);
 
         ArrayList<Conference> conferenceList = new ArrayList<Conference>(subscriberToEdit.getConferences());
 

@@ -101,7 +101,12 @@ public class GetSubscriberServlet extends HttpServlet
         }
         json.append("]").append(",");
         
-        json.append("\"voicemailPin\":").append(subscriber.getVoicemailPin());
+        json.append("\"voicemailPin\":").append(subscriber.getVoicemailPin()).append(",");
+        
+        json.append("\"enableEmail\":").append(subscriber.getIsEmailNotificationEnabled()).append(",");
+        json.append("\"enableSms\":").append(subscriber.getIsSmsNotificationEnabled()).append(",");
+        json.append("\"emailAddress\":\"").append(subscriber.getEmailAddress()).append("\",");
+        json.append("\"smsAddress\":\"").append(subscriber.getSmsAddress()).append("\"");
         json.append("}");
         return json.toString();
     }

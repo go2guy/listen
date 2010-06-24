@@ -47,6 +47,18 @@ public class Subscriber extends Resource implements Serializable
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
+    
+    @Column(name = "EMAIL_NOTIFICATION_ENABLED")
+    private boolean isEmailNotificationEnabled = Boolean.FALSE;
+    
+    @Column(name = "SMS_NOTIFICATION_ENABLED")
+    private boolean isSmsNotificationEnabled = Boolean.FALSE;
+    
+    @Column(name = "EMAIL_ADDRESS")
+    private String emailAddress = "";
+    
+    @Column(name = "SMS_ADDRESS")
+    private String smsAddress = "";
 
     public Set<AccessNumber> getAccessNumbers()
     {
@@ -195,6 +207,46 @@ public class Subscriber extends Resource implements Serializable
         conference.setSubscriber(null);
         this.conferences.remove(conference);
     }
+    
+    public Boolean getIsEmailNotificationEnabled()
+    {
+        return isEmailNotificationEnabled;
+    }
+
+    public void setIsEmailNotificationEnabled(Boolean isEmailNotificationEnabled)
+    {
+        this.isEmailNotificationEnabled = isEmailNotificationEnabled;
+    }
+    
+    public Boolean getIsSmsNotificationEnabled()
+    {
+        return isSmsNotificationEnabled;
+    }
+
+    public void setIsSmsNotificationEnabled(Boolean isSmsNotificationEnabled)
+    {
+        this.isSmsNotificationEnabled = isSmsNotificationEnabled;
+    }
+    
+    public String getEmailAddress()
+    {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress)
+    {
+        this.emailAddress = emailAddress;
+    }
+    
+    public String getSmsAddress()
+    {
+        return smsAddress;
+    }
+
+    public void setSmsAddress(String smsAddress)
+    {
+        this.smsAddress = smsAddress;
+    }
 
     @Override
     public boolean validate()
@@ -217,6 +269,16 @@ public class Subscriber extends Resource implements Serializable
         if(voicemailPin ==  null)
         {
             addToErrors("voicemail pin cannot be null");
+        }
+        
+        if(isEmailNotificationEnabled && (emailAddress == null || emailAddress.equals("")))
+        {
+            addToErrors("must provide an E-mail address when E-mail notifications are enabled");
+        }
+        
+        if(isSmsNotificationEnabled && (smsAddress == null || smsAddress.equals("")))
+        {
+            addToErrors("must provide an SMS address when SMS notifications are enabled");
         }
 
         return !hasErrors();
