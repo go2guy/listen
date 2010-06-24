@@ -116,7 +116,7 @@ public class EmailerService
         
         if(toAddresses.length > 0)
         {
-            result = sendEmail(toAddresses, (type.equals("email") ? TEST_EMAIL_NOTIFICATION_BODY : TEST_SMS_NOTIFICATION_BODY), "",
+            result = sendEmail(toAddresses, type.equals("email") ? TEST_EMAIL_NOTIFICATION_BODY : TEST_SMS_NOTIFICATION_BODY, "",
                                "Listen Notification Test Message");
         }
         
