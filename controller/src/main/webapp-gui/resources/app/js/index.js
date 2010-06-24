@@ -10,6 +10,43 @@ $(document).ready(function() {
         }
     });
 
+    var failedTries = 0;
+    setInterval(function() {
+        $.ajax({
+            url: '/meta/ping',
+            cache: 'false',
+            success: function(data, textStatus, xhr) {
+                if(!data || data != 'pong') {
+                    if(failedTries++ == 2) {
+                        $.modal($('#communication-error'), {
+                            overlayCss: {
+                                'background-color': '#CCCCCC',
+                                'opacity': .5
+                            }
+                        });
+                    }
+                } else if(data == 'pong') {
+                    failedTries = 0;
+                    $.modal.close();
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                if(xhr && xhr.status == 401) {
+                    window.location = '/logout';
+                    return;
+                }
+                if(failedTries++ == 2) {
+                    $.modal($('#communication-error'), {
+                        overlayCss: {
+                            'background-color': '#CCCCCC',
+                            'opacity': .5
+                        }
+                    });
+                }
+            }
+        });
+    }, 2000);
+
     LISTEN = function() {
 
         var applications = [];

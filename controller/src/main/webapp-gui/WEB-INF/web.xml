@@ -182,6 +182,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>PingServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.PingServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>AddSubscriberServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.AddSubscriberServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -235,6 +241,11 @@
     <servlet-mapping>
         <servlet-name>GetDnisServlet</servlet-name>
         <url-pattern>/meta/getDnis</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>PingServlet</servlet-name>
+        <url-pattern>/meta/ping</url-pattern>
     </servlet-mapping>
 
     <!-- ajax -->

@@ -555,5 +555,6 @@ for(int i = 1; i <= 12; i++) { %>
         </table>
       </form>
     </div><!-- schedule conference dialog -->
+    <div id="communication-error">Server is unavailable, please wait...</div>
   </body>
 </html>

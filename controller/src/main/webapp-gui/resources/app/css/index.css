@@ -730,3 +730,11 @@ table.data-table tr.odd {
     text-align: center;
     width: 99%;
 }
+
+#communication-error {
+    background-color: #FFFFFF;
+    border: 2px solid #CC0000;
+    color: #CC0000;
+    display: none;
+    padding: 10px;
+}
