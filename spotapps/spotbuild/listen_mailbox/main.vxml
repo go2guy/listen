@@ -61,6 +61,8 @@
 	<var name="SB_UV_errLoop"/>
 	<var name="SB_UV_subscriberInfo"/>
 	<var name="SB_UV_subscriber"/>
+	<var name="SB_UV_grtngList"/>
+	<var name="SB_UV_grtngSelect"/>
 
     
     <form id="beginDocument">
@@ -199,6 +201,12 @@
 			</if>
 			<if cond="SB_UV_subscriber != undefined">
 				<assign name="subscriber" expr="SB_UV_subscriber" />
+			</if>
+			<if cond="SB_UV_grtngList != undefined">
+				<assign name="grtngList" expr="SB_UV_grtngList" />
+			</if>
+			<if cond="SB_UV_grtngSelect != undefined">
+				<assign name="grtngSelect" expr="SB_UV_grtngSelect" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

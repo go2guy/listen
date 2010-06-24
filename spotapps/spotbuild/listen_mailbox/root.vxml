@@ -71,6 +71,8 @@
 	<var name="errLoop" expr="''" />
 	<var name="subscriberInfo" expr="''" />
 	<var name="subscriber" expr="''" />
+	<var name="grtngList" expr="''" />
+	<var name="grtngSelect" expr="''" />
 
 
     <!-- Conference Variables -->
