@@ -24,6 +24,7 @@ $(document).ready(function() {
 
     $('#scheduleConferenceDialog .schedule-button').click(function(event) {
         scheduleConference(event);
+        $.modal.close();
         return false;
     });
 
