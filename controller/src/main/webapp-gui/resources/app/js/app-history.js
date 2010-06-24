@@ -3,7 +3,6 @@ $(document).ready(function() {
         return {
             HistoryApplication: function() {
                 LISTEN.trace('LISTEN.HISTORY.HistoryApplication [construct]');
-                var interval;
                 var first = 0;
                 var max = 50;
 
