@@ -315,7 +315,7 @@ if(subscriber.getIsAdministrator()) { %>
                   <li class="placeholder">No history records</li>
                 </ul>
                 <div class="pagination" id="history-pagination">
-                  <span class="pagination-left">&lt;</span><span class="pagination-current">1-100</span>of<span class="pagination-total">552</span><span class="pagination-right">&gt;</span>
+                  <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
                 </div>
                 <div class="cleaner">&nbsp;</div>
               </div>

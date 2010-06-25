@@ -126,8 +126,15 @@ public class GetHistoryListServlet extends HttpServlet
         String date = marshaller.convertAndEscape(Date.class, record.getDate());
         json.append("\"date\":\"").append(date).append("\",");
 
-        String subscriber = marshaller.convertAndEscape(String.class, record.getSubscriber().getUsername());
-        json.append("\"subscriber\":\"").append(subscriber).append("\",");
+        if(record.getSubscriber() == null || record.getSubscriber().getUsername() == null)
+        {
+            json.append("\"subscriber\":\"\",");
+        }
+        else
+        {
+            String subscriber = marshaller.convertAndEscape(String.class, record.getSubscriber().getUsername());
+            json.append("\"subscriber\":\"").append(subscriber).append("\",");
+        }
 
         String service = marshaller.convertAndEscape(String.class, record.getService());
         json.append("\"service\":\"").append(service).append("\",");
@@ -160,9 +167,15 @@ public class GetHistoryListServlet extends HttpServlet
         String date = marshaller.convertAndEscape(Date.class, history.getDate());
         json.append("\"date\":\"").append(date).append("\",");
 
-        String subscriber = marshaller.convertAndEscape(String.class,
-                                                        history.getSubscriber() == null ? "" : history.getSubscriber().getUsername());
-        json.append("\"subscriber\":\"").append(subscriber).append("\",");
+        if(history.getSubscriber() == null || history.getSubscriber().getUsername() == null)
+        {
+            json.append("\"subscriber\":\"\",");
+        }
+        else
+        {
+            String subscriber = marshaller.convertAndEscape(String.class, history.getSubscriber().getUsername());
+            json.append("\"subscriber\":\"").append(subscriber).append("\",");
+        }
 
         String action = marshaller.convertAndEscape(String.class, history.getAction());
         json.append("\"action\":\"").append(action).append("\",");
