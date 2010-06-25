@@ -227,7 +227,7 @@ public class JsonMarshaller extends Marshaller
                     JSONObject value = (JSONObject)json.get(key);
 
                     Resource associatedResource = (Resource)parameterType.newInstance();
-                    if(value.get("href") == null)
+                    if(value == null || value.get("href") == null)
                     {
                         associatedResource = null;
                     }
