@@ -9,9 +9,14 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(passValues,cntrlURL,hostName,sipURL)
+            function II_SB_JS_function(passValues,cntrlURL,hostName,sipURL,sysAccessTime)
             {
-	            var result = eval("("+passValues+")");result.cntrlURL = cntrlURL + "/api";result.hostName = hostName;result.sipURL = sipURL;return iiStringify(result);
+	            var result = eval("("+passValues+")");
+result.cntrlURL = cntrlURL + "/api";
+result.hostName = hostName;
+result.sipURL = sipURL;
+result.sysAccessTime = sysAccessTime;
+return iiStringify(result);
             }
         ]]>
     </script>
@@ -20,7 +25,7 @@
         <block>
             <log target="status">Set Var</log>
             <log>INFO: Entered run-javascript.vxml [51-77]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues,cntrlURL,hostName,sipURL)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues,cntrlURL,hostName,sipURL,sysAccessTime)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

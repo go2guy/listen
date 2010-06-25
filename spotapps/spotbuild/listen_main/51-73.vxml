@@ -11,7 +11,11 @@
         <![CDATA[
             function II_SB_JS_function(passValues,cntrlURL,hostName)
             {
-	            var result = eval("("+passValues+")");result.cntrlURL= cntrlURL + "/api";result.hostName = hostName;return iiStringify(result);
+	            var result = eval("("+passValues+")");
+result.cntrlURL= cntrlURL + "/api";
+result.hostName = hostName;
+result.sysAccessTime = sysAccessTime;
+return iiStringify(result);
             }
         ]]>
     </script>

@@ -40,6 +40,8 @@
 	<var name="request" expr="'GET'" />
 	<var name="status" expr="''" />
 	<var name="sipURL" expr="'null'" /> <!-- Config SIP Server Name -->
+	<var name="sysAccessTime" expr="''" />
+	<var name="ANI" expr="'remote'" />
 
 
     <!-- Conference Variables -->
