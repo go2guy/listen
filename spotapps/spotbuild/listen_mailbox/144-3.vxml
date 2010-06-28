@@ -26,9 +26,9 @@
 	<property name="incompletetimeout" value="0s"/>     <!--  incompletetimeout. This is the length of silence after an incompletely recognized speech -->
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
-    <var name="II_SB_promptList" expr="'P'+'getMbx'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'67-105'"/>  <!--  PlayAudio Next Option. Name of next file -->
-	<var name="II_SB_fldLength" expr="10"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
+    <var name="II_SB_promptList" expr="'P'+'enterMailbox'+'|'"/>  <!--  List of audio files / speech to play -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'144-7'"/>  <!--  PlayAudio Next Option. Name of next file -->
+	<var name="II_SB_fldLength" expr="20"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	
 	<!-- Voice properties -->
 	<var name="II_SB_maxSpch" expr="'0s'"/>       <!--  maxspeechtimeout. This is the maximum time allowed for a speech -->
@@ -38,7 +38,7 @@
 
 	<!-- DTMF properties -->
 	<var name="II_SB_fldTimeout" expr="'4s'"/>         <!--  Timeout. Controls how long to wait before throwing a noinput event -->
-	<var name="II_SB_dgtTimeOut" expr="'3s'"/>    <!--  DTMF Interdigit time out. Controls number of seconds between key presses at an input field -->
+	<var name="II_SB_dgtTimeOut" expr="'4s'"/>    <!--  DTMF Interdigit time out. Controls number of seconds between key presses at an input field -->
 	<var name="II_SB_fldTermChar" expr="'#'"/>    <!--  DTMF Terminating Character. Identifies the terminating character of a DTMF input -->
 
     <!-- Prompt properties -->
@@ -67,8 +67,8 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    <log target="status">Get Mbx Number</log>
-            <log>INFO: Entered audio-input.vxml [67-8]</log>
+    	    <log target="status">Enter Mailbox</log>
+            <log>INFO: Entered audio-input.vxml [144-3]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
             <if cond="II_SB_cutIn == 'true'">
                 <goto next="#chkMode"/>
@@ -459,7 +459,7 @@
             <else/>
         		<log>INFO: Did not receive any input from user</log>
             </if>
-			<assign name="subID" expr="II_SB_userEntry" />
+			<assign name="userInput" expr="II_SB_userEntry" />
 			<if cond="II_SB_PlyAudio_nextOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_PlyAudio_nextOpt"/>.vxml]</log>
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_PlyAudio_nextOpt + '.vxml'"/>

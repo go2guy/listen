@@ -5,7 +5,7 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'67-83'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'144-25'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
@@ -19,7 +19,7 @@
     <form id="beginDocument">
         <block>
             <log target="status">Get Count</log>
-            <log>INFO: Entered run-javascript.vxml [67-82]</log>
+            <log>INFO: Entered run-javascript.vxml [144-23]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>

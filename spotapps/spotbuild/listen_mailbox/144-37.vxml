@@ -5,23 +5,25 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'60-53'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'144-35'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(subID,recDIR)
+            function II_SB_JS_function(FILE1,subscriber,subFwd)
             {
-	            return recDIR+subID+"-tmp.wav";
+	            var fileName = FILE1.split(subscriber+'.wav');
+
+return fileName[0] + subFwd + '.wav';
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Rec File</log>
-            <log>INFO: Entered run-javascript.vxml [60-34]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(subID,recDIR)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="FILE1" expr="II_SB_userJava" />   
+            
+            <log>INFO: Entered run-javascript.vxml [144-37]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(FILE1,subscriber,subFwd)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="FILE2" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

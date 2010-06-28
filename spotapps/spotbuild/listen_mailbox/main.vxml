@@ -63,6 +63,7 @@
 	<var name="SB_UV_subscriber"/>
 	<var name="SB_UV_grtngList"/>
 	<var name="SB_UV_grtngSelect"/>
+	<var name="SB_UV_subFwd"/>
 
     
     <form id="beginDocument">
@@ -207,6 +208,9 @@
 			</if>
 			<if cond="SB_UV_grtngSelect != undefined">
 				<assign name="grtngSelect" expr="SB_UV_grtngSelect" />
+			</if>
+			<if cond="SB_UV_subFwd != undefined">
+				<assign name="subFwd" expr="SB_UV_subFwd" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

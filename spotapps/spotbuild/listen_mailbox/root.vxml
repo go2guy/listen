@@ -73,6 +73,7 @@
 	<var name="subscriber" expr="''" />
 	<var name="grtngList" expr="''" />
 	<var name="grtngSelect" expr="''" />
+	<var name="subFwd" expr="''" />
 
 
     <!-- Conference Variables -->
