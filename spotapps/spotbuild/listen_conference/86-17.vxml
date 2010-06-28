@@ -11,17 +11,11 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = "Failure";
-var tmpVal = eval("("+returnVal+")");
-if (tmpVal.count == 1) 
-{
-result = tmpVal.results[0].isStarted;
-if (result == true)
-result = "true";
-if (result == false)
-result = "false";
-}
-return result;
+	            var result = eval("("+returnVal+")");
+if (result.isStarted) 
+return "true";
+else
+return "false";
             }
         ]]>
     </script>

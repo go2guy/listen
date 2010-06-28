@@ -11,16 +11,7 @@
         <block>
 	    <log target="status">Set Variables</log>
             <log>INFO: Entered assign-variable.vxml [115-70]</log>
-            <log>INFO: Current value [<value expr="memberCnt"/>]</log>
-<assign name="memberCnt" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="memberCnt"/>]</log>
-<log>INFO: Current value [<value expr="helpCnt"/>]</log>
-<assign name="helpCnt" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="helpCnt"/>]</log>
-<log>INFO: Current value [<value expr="errCnt"/>]</log>
-<assign name="errCnt" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="errCnt"/>]</log>
-<log>INFO: Current value [<value expr="resource"/>]</log>
+            <log>INFO: Current value [<value expr="resource"/>]</log>
 <assign name="resource" expr="'participants'+''" />
 <log>INFO: Updated value [<value expr="resource"/>]</log>
 <log>INFO: Current value [<value expr="request"/>]</log>

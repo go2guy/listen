@@ -33,7 +33,6 @@
 	<var name="userID" expr="'line'" />
 	<var name="callType" expr="'type'" />
 	<var name="SID" expr="'sessionID'" />
-	<var name="startTime" expr="''" />
 	<var name="tempSID" expr="''" />
 	<var name="fileName" expr="''" />
 	<var name="getInput" expr="''" />
@@ -91,6 +90,11 @@
 	<var name="timeStamp" expr="''" />
 	<var name="rollcallPath" expr="'/var/www/html/listen/artifacts/conference/rollcall/'" />
 	<var name="isStarted" expr="'false'" />
+	<var name="subID" expr="'null'" />
+	<var name="confStartTime" expr="''" />
+	<var name="tmpVal" expr="''" />
+	<var name="sysAccessTime" expr="''" />
+	<var name="outDialStart" expr="''" />
 
 
     <!-- Conference Variables -->

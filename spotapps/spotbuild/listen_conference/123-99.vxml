@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_conference/root.vxml"> <!--  Set location of root document -->
-    <!-- Last Modified 05/17/2010
+    <!-- Last Modified 06/21/2010
        *   @Name   switch-app.vxml
        *   @Desc   Transfers application control to a new program -->
 
-    <var name="II_SB_nextOpt" expr="'listen_record'"/>  <!-- Name of next project -->
+    <var name="II_SB_nextOpt" expr="listen_record"/>  <!-- Name of next project -->
     <var name="II_SB_valueToPass" expr="passValues"/> <!-- Value to pass -->
     
     <form id="beginDocument">

@@ -14,6 +14,9 @@
             <log>INFO: Current value [<value expr="isActive"/>]</log>
 <assign name="isActive" expr="'true'+''" />
 <log>INFO: Updated value [<value expr="isActive"/>]</log>
+<log>INFO: Current value [<value expr="DNIS"/>]</log>
+<assign name="DNIS" expr="''+''" />
+<log>INFO: Updated value [<value expr="DNIS"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

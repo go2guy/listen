@@ -23,7 +23,6 @@
 	<var name="SB_UV_userID"/>
 	<var name="SB_UV_callType"/>
 	<var name="SB_UV_SID"/>
-	<var name="SB_UV_startTime"/>
 	<var name="SB_UV_tempSID"/>
 	<var name="SB_UV_fileName"/>
 	<var name="SB_UV_getInput"/>
@@ -81,6 +80,11 @@
 	<var name="SB_UV_timeStamp"/>
 	<var name="SB_UV_rollcallPath"/>
 	<var name="SB_UV_isStarted"/>
+	<var name="SB_UV_subID"/>
+	<var name="SB_UV_confStartTime"/>
+	<var name="SB_UV_tmpVal"/>
+	<var name="SB_UV_sysAccessTime"/>
+	<var name="SB_UV_outDialStart"/>
 
     
     <form id="beginDocument">
@@ -109,9 +113,6 @@
 			</if>
 			<if cond="SB_UV_SID != undefined">
 				<assign name="SID" expr="SB_UV_SID" />
-			</if>
-			<if cond="SB_UV_startTime != undefined">
-				<assign name="startTime" expr="SB_UV_startTime" />
 			</if>
 			<if cond="SB_UV_tempSID != undefined">
 				<assign name="tempSID" expr="SB_UV_tempSID" />
@@ -283,6 +284,21 @@
 			</if>
 			<if cond="SB_UV_isStarted != undefined">
 				<assign name="isStarted" expr="SB_UV_isStarted" />
+			</if>
+			<if cond="SB_UV_subID != undefined">
+				<assign name="subID" expr="SB_UV_subID" />
+			</if>
+			<if cond="SB_UV_confStartTime != undefined">
+				<assign name="confStartTime" expr="SB_UV_confStartTime" />
+			</if>
+			<if cond="SB_UV_tmpVal != undefined">
+				<assign name="tmpVal" expr="SB_UV_tmpVal" />
+			</if>
+			<if cond="SB_UV_sysAccessTime != undefined">
+				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
+			</if>
+			<if cond="SB_UV_outDialStart != undefined">
+				<assign name="outDialStart" expr="SB_UV_outDialStart" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
