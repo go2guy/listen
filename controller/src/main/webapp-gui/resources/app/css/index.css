@@ -526,10 +526,10 @@ td.voicemail-cell-readStatus {
 .icon-delete           { background-position: 0   -950px; }
 .icon-delete:hover     { background-position: 0   -1000px; }
 
-.button-edit           { background-position: 2px -148px; }
-.button-edit:hover     { background-position: 2px -198px; }
-.icon-edit             { background-position: 0   -150px; }
-.icon-edit:hover       { background-position: 0   -200px; }
+.button-edit           { background-position: 2px -1448px; }
+.button-edit:hover     { background-position: 2px -1498px; }
+.icon-edit             { background-position: 0   -1450px; }
+.icon-edit:hover       { background-position: 0   -1500px; }
 
 .button-mute           { background-position: 2px -748px; }
 .button-mute:hover     { background-position: 2px -798px; }
