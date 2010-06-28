@@ -10,9 +10,7 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -67,6 +65,17 @@ public class SetPropertiesServlet extends HttpServlet
                         throw new BadRequestServletException("Wildcard (*) may only be at the end of mapping " +
                                                              entry.getKey());
                     }
+                }
+
+                List<String> mappingKeys = GetDnisServlet.dnisConfigurationKeys(value);
+                Set<String> verify = new HashSet<String>(mappingKeys.size());
+                for(String mappingKey : mappingKeys)
+                {
+                    if(verify.contains(mappingKey))
+                    {
+                        throw new BadRequestServletException("Mapping [" + mappingKey + "] cannot be defined twice");
+                    }
+                    verify.add(mappingKey);
                 }
             }
 

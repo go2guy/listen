@@ -114,4 +114,22 @@ public class GetDnisServlet extends HttpServlet
         }
         return map;
     }
+
+    public static List<String> dnisConfigurationKeys(String configurationValue)
+    {
+        List<String> list = new ArrayList<String>();
+        if(configurationValue == null || configurationValue.trim().equals(""))
+        {
+            return list;
+        }
+        for(String mapping : configurationValue.split(";"))
+        {
+            if(mapping.length() > 0)
+            {
+                String[] pair = mapping.split(":");
+                list.add(pair[0]);
+            }
+        }
+        return list;
+    }
 }

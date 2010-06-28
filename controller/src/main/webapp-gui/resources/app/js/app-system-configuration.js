@@ -98,18 +98,24 @@ $(document).ready(function() {
         var rows = $('#dnis-mapping-form tr');
         var num = 0;
         for(var i = 0; i < rows.length - 1; i++) {
+            var entry = '';
             var number = $('.dnis-mapping-number', rows[i]).val();
             if(number.length == 0) {
                 continue;
             }
             var destination = $('select', rows[i]).val();
-            value += number + ':';
+            entry += number + ':';
             if(destination != 'voicemail' && destination != 'mailbox' && destination != 'conferencing') {
-                value += $('.dnis-mapping-custom-destination', rows[i]).val();
+                var customVal = $('.dnis-mapping-custom-destination', rows[i]).val();
+                if(customVal == '') {
+                    continue;
+                }
+                entry += customVal;
             } else {
-                value += destination;
+                entry += destination;
             }
-            value += ';';
+            entry += ';';
+            value += entry;
             num++;
         }
         if(num > 0 && value.length > 0) {
