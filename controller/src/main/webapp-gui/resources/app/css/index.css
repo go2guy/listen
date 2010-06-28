@@ -494,6 +494,23 @@ td.voicemail-cell-readStatus {
     width: 18px;
 }
 
+.button-add:hover,
+.button-cancel:hover,
+.button-delete:hover,
+.button-edit:hover,
+.button-mute:hover,
+.button-outdial:hover,
+.button-read:hover,
+.button-record:hover,
+.button-save:hover,
+.button-schedule:hover,
+.button-stop:hover,
+.button-unmute:hover,
+.button-unread:hover,
+.button-view:hover {
+    background-color: #DDDDDD;
+}
+
 .button-add            { background-position: 2px -148px; }
 .button-add:hover      { background-position: 2px -198px; }
 .icon-add              { background-position: 0   -150px; }
