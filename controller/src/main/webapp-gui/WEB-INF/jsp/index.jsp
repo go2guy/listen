@@ -351,13 +351,13 @@ if(subscriber != null) { %>
                           <td>
                             <input type="checkbox" id="profile-form-enableSmsNotification" name="profile-form-enableSmsNotification" value="enableSms"/>
                             <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
-                            <button class="button-edit" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address" onclick="LISTEN.PROFILE.testSmsAddress();return false;">Verify</button>
+                            <button class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address" onclick="LISTEN.PROFILE.testSmsAddress();return false;">Verify</button>
                           </td>
                         </tr>
                         <tr>
                           <td></td>
                           <td class="buttons">
-                            <button class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
+                            <button class="button-save" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
                           </td>
                         </tr>
                       </tbody>
