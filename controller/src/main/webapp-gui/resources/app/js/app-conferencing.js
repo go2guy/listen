@@ -108,8 +108,8 @@ function Conference(id) {
                 LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '');
                 LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '');
             } else {
-                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute-button' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + (data.isPassive ? 'Cannot unmute ' + data.number + ' (passive caller)' : ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number)) + '"></button>', false, true);
-                LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="delete-button" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
+                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="icon-' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + (data.isPassive ? 'Cannot unmute ' + data.number + ' (passive caller)' : ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number)) + '"></button>', false, true);
+                LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
             }
         }
     });
@@ -153,7 +153,7 @@ function Conference(id) {
 
             LISTEN.setFieldContent(row.find('.pin-cell-number'), data.number);
             LISTEN.setFieldContent(row.find('.pin-cell-type'), data.type);
-            LISTEN.setFieldContent(row.find('.pin-cell-removeIcon'), '<button class="delete-button" readonly="readonly" disabled="disabled"></button>', false, true);
+            LISTEN.setFieldContent(row.find('.pin-cell-removeIcon'), '<button class="button-delete" readonly="readonly" disabled="disabled"></button>', false, true);
         }
     });
 
@@ -213,7 +213,7 @@ function Conference(id) {
                     $('#outdial-show').hide();
                 }
 
-                var recordHtml = '<button class="' + (data.info.isRecording ? 'stop' : 'record') + '-button"' + 'onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');return false;' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';                        
+                var recordHtml = '<button class="button-' + (data.info.isRecording ? 'stop' : 'record') + '"' + 'onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');return false;' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';                        
                 if(recordButton.html() != recordHtml) {
                     recordButton.html(recordHtml);
                 }

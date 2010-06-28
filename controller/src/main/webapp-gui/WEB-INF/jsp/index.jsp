@@ -81,7 +81,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                     <div class="panel-content">
                       <!-- outdial -->
                       <div class="control-panel-button">
-                        <button id="outdial-show" name="outdial-show" class="outdial-button">OnDemand</button>
+                        <button id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
                       </div>
                       <div id="outdial-dialog" class="inline-dialog">
                         <form name="outdial-form" id="outdial-form">
@@ -90,16 +90,16 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                             <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
                           </div>
                           <div>
-                            <button class="cancel-button" name="outdial-cancel" id="outdial-cancel">Cancel</button>
-                            <button class="outdial-button" name="outdial-submit" id="outdial-submit">Make Call</button>
+                            <button class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
+                            <button class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
                           </div>
                         </form>
                       </div>
                       <div id="record-button-div" class="control-panel-button">
-                        <button id="record-button" class="record-button">Record</button>
+                        <button id="record-button" class="button-record">Record</button>
                       </div>
                       <div class="control-panel-button">
-                        <button id="schedule-show" class="schedule-button">Schedule</button>
+                        <button id="schedule-show" class="button-schedule">Schedule</button>
                       </div>
                     </div>
                   </div>
@@ -181,7 +181,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                     <div class="form-success-message"></div>
                     <table>
                       <tbody>
-                        <tr><td></td><td colspan="3" class="buttons"><button class="add-button" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="save-button" title="Save DNIS mappings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
+                        <tr><td></td><td colspan="3" class="buttons"><button class="button-add" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="button-save" title="Save DNIS mappings">Save</button><!--<button class="button-cancel">Reset</button>--></td></tr>
                       </tbody>
                     </table>
                   </fieldset>
@@ -198,7 +198,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                         <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
                         <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
                         <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
-                        <tr><td></td><td class="buttons"><button type="submit" class="save-button" title="Save mail settings">Save</button><!--<button class="cancel-button">Reset</button>--></td></tr>
+                        <tr><td></td><td class="buttons"><button type="submit" class="button-save" title="Save mail settings">Save</button><!--<button class="button-cancel">Reset</button>--></td></tr>
                       </tbody>
                     </table>
                   </fieldset>
@@ -278,7 +278,7 @@ if(subscriber.getIsAdministrator()) { %>
                                 <td>
                                   <input type="checkbox" id="subscriber-form-enableEmailNotification" name="subscriber-form-enableEmailNotification" value="enableEmail"/>
                                   <input type="text" id="subscriber-form-emailAddress" name="subscriber-form-emailAddress"/>
-                                  <button class="save-button" id="subscriber-form-testEmail-button" name="subscriber-form-testEmail-button" title="Test Email Address" onclick="LISTEN.SUBSCRIBERS.testEmailAddress();return false;">Verify</button>
+                                  <button class="button-save" id="subscriber-form-testEmail-button" name="subscriber-form-testEmail-button" title="Test Email Address" onclick="LISTEN.SUBSCRIBERS.testEmailAddress();return false;">Verify</button>
                                 </td>
                               </tr>
                               <tr>
@@ -286,15 +286,15 @@ if(subscriber.getIsAdministrator()) { %>
                                 <td>
                                   <input type="checkbox" id="subscriber-form-enableSmsNotification" name="subscriber-form-enableSmsNotification" value="enableSms"/>
                                   <input type="text" id="subscriber-form-smsAddress" name="subscriber-form-smsAddress"/>
-                                  <button class="save-button" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address" onclick="LISTEN.SUBSCRIBERS.testSmsAddress();return false;">Verify</button>
+                                  <button class="button-save" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address" onclick="LISTEN.SUBSCRIBERS.testSmsAddress();return false;">Verify</button>
                                 </td>
                               </tr>
                               <tr>
                                 <td></td>
                                 <td class="buttons">
-                                  <button class="save-button" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.SUBSCRIBERS.addSubscriber();return false;">Add</button>
-                                  <button class="edit-button" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.SUBSCRIBERS.editSubscriber();return false;">Edit</button>
-                                  <button class="cancel-button" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.SUBSCRIBERS.resetForm();return false;">Cancel Edit</button>
+                                  <button class="button-add" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.SUBSCRIBERS.addSubscriber();return false;">Add</button>
+                                  <button class="button-edit" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.SUBSCRIBERS.editSubscriber();return false;">Edit</button>
+                                  <button class="button-cancel" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.SUBSCRIBERS.resetForm();return false;">Cancel Edit</button>
                                 </td>
                               </tr>
                             </tbody>
@@ -343,7 +343,7 @@ if(subscriber != null) { %>
                           <td>
                             <input type="checkbox" id="profile-form-enableEmailNotification" name="profile-form-enableEmailNotification" value="enableEmail"/>
                             <input type="text" id="profile-form-emailAddress" name="profile-form-emailAddress"/>
-                            <button class="save-button" id="profile-form-testEmail-button" name="profile-form-testEmail-button" title="Test Email Address" onclick="LISTEN.PROFILE.testEmailAddress();return false;">Verify</button>
+                            <button class="button-save" id="profile-form-testEmail-button" name="profile-form-testEmail-button" title="Test Email Address" onclick="LISTEN.PROFILE.testEmailAddress();return false;">Verify</button>
                           </td>
                         </tr>
                         <tr>
@@ -351,13 +351,13 @@ if(subscriber != null) { %>
                           <td>
                             <input type="checkbox" id="profile-form-enableSmsNotification" name="profile-form-enableSmsNotification" value="enableSms"/>
                             <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
-                            <button class="save-button" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address" onclick="LISTEN.PROFILE.testSmsAddress();return false;">Verify</button>
+                            <button class="button-edit" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address" onclick="LISTEN.PROFILE.testSmsAddress();return false;">Verify</button>
                           </td>
                         </tr>
                         <tr>
                           <td></td>
                           <td class="buttons">
-                            <button class="edit-button" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
+                            <button class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
                           </td>
                         </tr>
                       </tbody>
@@ -472,7 +472,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
             </select>
           </td>
           <td><input type="text" value="" class="dnis-mapping-custom-destination"/></td>
-          <td><button class="delete-button" title="Remove this DNIS mapping"></button></td>
+          <td><button class="icon-delete" title="Remove this DNIS mapping"></button></td>
         </tr>
       </tbody></table>
 
@@ -547,8 +547,8 @@ for(int i = 1; i <= 12; i++) { %>
             </tr>
             <tr>
               <td colspan="2" class="buttons">
-                <button class="cancel-button">Cancel</button>
-                <button class="schedule-button">Send Emails</button>
+                <button class="button-cancel">Cancel</button>
+                <button class="button-schedule">Send Emails</button>
               </td>
             </tr>
           </tbody>

@@ -440,146 +440,129 @@ td.voicemail-cell-readStatus {
 
 /* buttons */
 
-.add-button, .cancel-button, .delete-button, .edit-button, .mark-read-button, .mark-unread-button, .mute-button, .outdial-button, .record-button, .save-button, .schedule-button, .stop-button, .unmute-button, .unmute-button-disabled, .view-button {
-    background-color: #EEEEEE;
-    background-position: 2px 2px;
-    background-repeat: no-repeat;
-    border: 1px solid #1C55A7;
+.button-add,
+.button-cancel,
+.button-delete,
+.button-edit,
+.button-mute,
+.button-outdial,
+.button-read,
+.button-record,
+.button-save,
+.button-schedule,
+.button-stop,
+.button-unmute,
+.button-unread,
+.button-view {
+    border: 1px solid #CCCCCC;
     border-radius: 4px;
-    color: #1C55A7;
+    background-color: #FEFEFE;
+    background-image: url('../images/sprite.png');
+    background-repeat: no-repeat;
+    color: #333333;
     cursor: pointer;
-    height: 22px;
-    font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
-    font-size: 13px;
-    /*font-weight: bold;*/
+    font-weight: bold;
+    height: 24px;
+    margin: 0;
     -moz-border-radius: 4px;
-    padding: 1px 1px 1px 21px;
+    padding-left: 24px;
+    padding-right: 2px;
     -webkit-border-radius: 4px;
 }
 
-.delete-button, .mark-read-button, .mark-unread-button, .mute-button, .unmute-button, .unmute-button-disabled { /* hack for IE to render buttons without text correctly */
-    width: 24px;
+.icon-add,
+.icon-cancel,
+.icon-delete,
+.icon-edit,
+.icon-mute,
+.icon-outdial,
+.icon-read,
+.icon-record,
+.icon-save,
+.icon-schedule,
+.icon-stop,
+.icon-unmute,
+.icon-unmute-disabled,
+.icon-unread,
+.icon-view {
+    background-image: url('../images/sprite.png');
+    border-width: 0;
+    cursor: pointer;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    width: 18px;
 }
 
-.add-button:hover, .cancel-button:hover, .delete-button:hover, .edit-button:hover, .mark-read-button:hover, .mark-unread-button:hover, .mute-button:hover, .outdial-button:hover, .record-button:hover, .save-button:hover, .schedule-button:hover, .stop-button:hover, .unmute-button:hover, .view-button:hover {
-    background-color: #FFFFFF;
-}
+.button-add            { background-position: 2px -148px; }
+.button-add:hover      { background-position: 2px -198px; }
+.icon-add              { background-position: 0   -150px; }
+.icon-add:hover        { background-position: 0   -200px; }
 
-.add-button {
-    background-image: url('../images/new/icon_add_16x16.png');
-}
+.button-cancel         { background-position: 2px -548px; }
+.button-cancel:hover   { background-position: 2px -598px; }
+.icon-cancel           { background-position: 0   -550px; }
+.icon-cancel:hover     { background-position: 0   -600px; }
 
-.add-button:hover {
-    background-image: url('../images/new/icon_add_hover_16x16.png');
-}
+.button-delete         { background-position: 2px -948px; }
+.button-delete:hover   { background-position: 2px -998px; }
+.icon-delete           { background-position: 0   -950px; }
+.icon-delete:hover     { background-position: 0   -1000px; }
 
-.cancel-button {
-    background-image: url('../images/new/icon_cancel_16x16.png');
-}
+.button-edit           { background-position: 2px -148px; }
+.button-edit:hover     { background-position: 2px -198px; }
+.icon-edit             { background-position: 0   -150px; }
+.icon-edit:hover       { background-position: 0   -200px; }
 
-.cancel-button:hover {
-    background-image: url('../images/new/icon_cancel_hover_16x16.png');
-}
+.button-mute           { background-position: 2px -748px; }
+.button-mute:hover     { background-position: 2px -798px; }
+.icon-mute             { background-position: 0   -750px; }
+.icon-mute:hover       { background-position: 0   -800px; }
 
-.delete-button {
-    background-image: url('../images/new/icon_delete_16x16.png');
-}
+.button-outdial        { background-position: 2px -1048px; }
+.button-outdial:hover  { background-position: 2px -1098px; }
+.icon-outdial          { background-position: 0   -1050px; }
+.icon-outdial:hover    { background-position: 0   -1100px; }
 
-.delete-button:hover {
-    background-image: url('../images/new/icon_delete_hover_16x16.png');
-}
+.button-read         { background-position: 2px -1348px; }
+.button-read:hover   { background-position: 2px -1398px; }
+.icon-read           { background-position: 0   -1350px; }
+.icon-read:hover     { background-position: 0   -1400px; }
 
-.edit-button {
-    background-image: url('../images/new/icon_add_16x16.png');
-}
+.button-record         { background-position: 2px -248px; }
+.button-record:hover   { background-position: 2px -298px; }
+.icon-record           { background-position: 0   -250px; }
+.icon-record:hover     { background-position: 0   -300px; }
 
-.edit-button:hover {
-    background-image: url('../images/new/icon_add_hover_16x16.png');
-}
+.button-save           { background-position: 2px -48px; }
+.button-save:hover     { background-position: 2px -98px; }
+.icon-save             { background-position: 0   -50px; }
+.icon-save:hover       { background-position: 0   -100px; }
 
-.mark-read-button {
-    background-image: url('../images/new/icon_message_unread_16x16.png');
-}
+.button-schedule       { background-position: 2px -848px; }
+.button-schedule:hover { background-position: 2px -898px; }
+.icon-schedule         { background-position: 0   -850px; }
+.icon-schedule:hover   { background-position: 0   -900px; }
 
-.mark-read-button:hover {
-    background-image: url('../images/new/icon_message_unread_hover_16x16.png');
-}
+.button-stop           { background-position: 2px -348px; }
+.button-stop:hover     { background-position: 2px -398px; }
+.icon-stop             { background-position: 0   -350px; }
+.icon-stop:hover       { background-position: 0   -400px; }
 
-.mark-unread-button {
-    background-image: url('../images/new/icon_message_read_16x16.png');
-}
+.button-unmute         { background-position: 2px -648px; }
+.button-unmute:hover   { background-position: 2px -698px; }
+.icon-unmute, .icon-unmute-disabled { background-position: 0 -650px; }
+.icon-unmute:hover     { background-position: 0   -700px; }
 
-.mark-unread-button:hover {
-    background-image: url('../images/new/icon_message_read_hover_16x16.png');
-}
+.button-unread         { background-position: 2px -1248px; }
+.button-unread:hover   { background-position: 2px -1298px; }
+.icon-unread           { background-position: 0   -1250px; }
+.icon-unread:hover     { background-position: 0   -1300px; }
 
-.mute-button {
-    background-image: url('../images/new/icon_speaker_unmuted_16x16.png');
-}
-
-.mute-button:hover {
-    background-image: url('../images/new/icon_speaker_unmuted_hover_16x16.png');
-}
-
-.outdial-button {
-    background-image: url('../images/new/icon_outdial_16x16.png');
-}
-
-.outdial-button:hover {
-    background-image: url('../images/new/icon_outdial_hover_16x16.png');
-}
-
-.record-button {
-    background-image: url('../images/new/icon_record_16x16.png');
-}
-
-.record-button:hover {
-    background-image: url('../images/new/icon_record_hover_16x16.png');
-}
-
-.save-button {
-    background-image: url('../images/new/icon_save_16x16.png');
-}
-
-.save-button:hover {
-    background-image: url('../images/new/icon_save_hover_16x16.png');
-}
-
-.schedule-button {
-    background-image: url('../images/new/icon_schedule_16x16.png');
-}
-
-.schedule-button:hover {
-    background-image: url('../images/new/icon_schedule_hover_16x16.png');
-}
-
-.stop-button {
-    background-image: url('../images/new/icon_stop_16x16.png');
-}
-
-.stop-button:hover {
-    background-image: url('../images/new/icon_stop_hover_16x16.png');
-}
-
-.unmute-button {
-    background-image: url('../images/new/icon_speaker_muted_16x16.png');
-}
-
-.unmute-button:hover {
-    background-image: url('../images/new/icon_speaker_muted_hover_16x16.png');
-}
-
-.unmute-button-disabled {
-    background-image: url('../images/new/icon_speaker_muted_disabled_16x16.png');
-}
-
-.view-button {
-    background-image: url('../images/new/icon_view_16x16.png');
-}
-
-.view-button:hover {
-    background-image: url('../images/new/icon_view_hover_16x16.png');
-}
+.button-view           { background-position: 2px -1148px; }
+.button-view:hover     { background-position: 2px -1198px; }
+.icon-view             { background-position: 0   -1150px; }
+.icon-view:hover       { background-position: 0   -1200px; }
 
 /* dialogs, forms, tables */
 

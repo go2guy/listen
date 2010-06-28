@@ -14,7 +14,7 @@ function ConferenceList() {
         updateRowCallback: function(row, data) {
             LISTEN.setFieldContent(row.find('.conference-cell-description'), data.description, true);
             LISTEN.setFieldContent(row.find('.conference-cell-status'), data.isStarted ? 'Started' : 'Not Started', true);
-            LISTEN.setFieldContent(row.find('.conference-cell-view'), '<button class="view-button" onclick="viewConference(' + data.id + ');">View</button>', false, true);
+            LISTEN.setFieldContent(row.find('.conference-cell-view'), '<button class="button-view" onclick="viewConference(' + data.id + ');">View</button>', false, true);
         }
     });
 

@@ -23,7 +23,7 @@ $(document).ready(function() {
 
                         LISTEN.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, true);
                         LISTEN.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, true);
-                        LISTEN.setFieldContent(row.find('.subscriber-cell-editButton'), '<button class="edit-button" title="Edit subscriber" onclick="LISTEN.SUBSCRIBERS.loadSubscriber(' + data.id + ');return false;">Edit</button>', false, true);
+                        LISTEN.setFieldContent(row.find('.subscriber-cell-editButton'), '<button class="button-edit" title="Edit subscriber" onclick="LISTEN.SUBSCRIBERS.loadSubscriber(' + data.id + ');return false;">Edit</button>', false, true);
                     }
                 });
 
