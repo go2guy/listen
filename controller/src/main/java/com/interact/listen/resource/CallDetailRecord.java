@@ -6,6 +6,9 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.Duration;
+
 @Entity
 @Table(name = "CALL_DETAIL_RECORD")
 public class CallDetailRecord extends History implements Serializable
@@ -13,7 +16,8 @@ public class CallDetailRecord extends History implements Serializable
     private static final long serialVersionUID = 1L;
 
     @Column(name = "DURATION", nullable = true)
-    private Long duration;
+    @Type(type = "org.joda.time.contrib.hibernate.PersistentDuration")
+    private Duration duration;
 
     @Column(name = "SERVICE", nullable = true)
     private String service;
@@ -33,12 +37,12 @@ public class CallDetailRecord extends History implements Serializable
         INBOUND, OUTBOUND;
     }
 
-    public Long getDuration()
+    public Duration getDuration()
     {
         return duration;
     }
 
-    public void setDuration(Long duration)
+    public void setDuration(Duration duration)
     {
         this.duration = duration;
     }

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Date;
 
+import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public class CallDetailRecordTest
     @Test
     public void test_setDuration_withValidDuration_setsDuration()
     {
-        final Long duration = System.currentTimeMillis();
+        final Duration duration = new Duration(System.currentTimeMillis());
         cdr.setDuration(duration);
         assertEquals(duration, cdr.getDuration());
     }
@@ -140,8 +141,8 @@ public class CallDetailRecordTest
         that.setDate(cdr.getDate());
 
         // set irrelevant property to something different
-        cdr.setDuration(System.currentTimeMillis() - 1000);
-        that.setDuration(System.currentTimeMillis());
+        cdr.setDuration(new Duration(System.currentTimeMillis() - 1000));
+        that.setDuration(new Duration(System.currentTimeMillis()));
 
         assertTrue(cdr.equals(that));
     }
@@ -160,8 +161,8 @@ public class CallDetailRecordTest
         that.setDate(cdr.getDate());
 
         // set irrelevant property to something different
-        cdr.setDuration(System.currentTimeMillis() - 1000);
-        that.setDuration(System.currentTimeMillis());
+        cdr.setDuration(new Duration(System.currentTimeMillis() - 1000));
+        that.setDuration(new Duration(System.currentTimeMillis()));
 
         assertFalse(cdr.equals(that));
     }
@@ -180,8 +181,8 @@ public class CallDetailRecordTest
         that.setDate(cdr.getDate());
 
         // set irrelevant property to something different
-        cdr.setDuration(System.currentTimeMillis() - 1000);
-        that.setDuration(System.currentTimeMillis());
+        cdr.setDuration(new Duration(System.currentTimeMillis() - 1000));
+        that.setDuration(new Duration(System.currentTimeMillis()));
 
         assertFalse(cdr.equals(that));
     }
@@ -200,8 +201,8 @@ public class CallDetailRecordTest
         that.setDate(null);
 
         // set irrelevant property to something different
-        cdr.setDuration(System.currentTimeMillis() - 1000);
-        that.setDuration(System.currentTimeMillis());
+        cdr.setDuration(new Duration(System.currentTimeMillis() - 1000));
+        that.setDuration(new Duration(System.currentTimeMillis()));
 
         assertFalse(cdr.equals(that));
     }
@@ -221,7 +222,7 @@ public class CallDetailRecordTest
         c.setAni(String.valueOf(System.currentTimeMillis()));
         c.setDate(new Date());
         c.setDnis(String.valueOf(System.currentTimeMillis()));
-        c.setDuration(System.currentTimeMillis());
+        c.setDuration(new Duration(System.currentTimeMillis()));
         c.setId(System.currentTimeMillis());
         c.setService(String.valueOf(System.currentTimeMillis()));
         c.setSubscriber(new Subscriber());

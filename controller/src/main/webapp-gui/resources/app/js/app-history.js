@@ -40,7 +40,7 @@ $(document).ready(function() {
                             LISTEN.setFieldContent(row.find('.history-call-direction'), '&raquo;', false, true);
                             LISTEN.setFieldContent(row.find('.history-call-dnis'), data.dnis);
                             LISTEN.setFieldContent(row.find('.history-call-service'), data.service);
-                            LISTEN.setFieldContent(row.find('.history-call-duration'), data.duration + ' seconds');
+                            LISTEN.setFieldContent(row.find('.history-call-duration'), data.duration);
                         }
                     }
                 });

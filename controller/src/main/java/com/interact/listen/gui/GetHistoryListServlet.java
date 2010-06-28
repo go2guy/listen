@@ -23,6 +23,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.joda.time.Duration;
 
 public class GetHistoryListServlet extends HttpServlet
 {
@@ -139,8 +140,14 @@ public class GetHistoryListServlet extends HttpServlet
         String service = marshaller.convertAndEscape(String.class, record.getService());
         json.append("\"service\":\"").append(service).append("\",");
 
-        String duration = marshaller.convertAndEscape(Long.class, record.getDuration());
-        json.append("\"duration\":\"").append(duration).append("\",");
+        String durationString = "";
+        if(record.getDuration() != null)
+        {
+            Duration duration = roundUpToNearestSecond(record.getDuration());
+            double s = Math.floor(duration.getMillis() / 1000.0);
+            durationString = String.format("%01f:%02f", s < 60 ? 0 : s / 60, s % 60);
+        }
+        json.append("\"duration\":\"").append(durationString).append("\",");
 
         String ani = marshaller.convertAndEscape(String.class, record.getAni());
         json.append("\"ani\":\"").append(ani).append("\",");
@@ -192,5 +199,10 @@ public class GetHistoryListServlet extends HttpServlet
 
         json.append("}");
         return json.toString();
+    }
+
+    private static Duration roundUpToNearestSecond(Duration duration)
+    {
+        return new Duration(((duration.getMillis() + 500) / 1000) * 1000);
     }
 }

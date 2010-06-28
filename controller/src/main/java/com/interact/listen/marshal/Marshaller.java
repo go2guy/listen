@@ -15,6 +15,7 @@ import java.net.URLEncoder;
 import java.util.*;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 
 /**
  * Marshals {@code Resource}s into various content types and unmarshals {@code String}s back into {@code Resource}s.
@@ -46,6 +47,7 @@ public abstract class Marshaller
                                PhoneNumberProtocolTypeConverter.class);
         DEFAULT_CONVERTERS.put(Channel.class, HistoryChannelConverter.class);
         DEFAULT_CONVERTERS.put(CallDetailRecord.CallDirection.class, CallDirectionConverter.class);
+        DEFAULT_CONVERTERS.put(Duration.class, JodaDurationConverter.class);
     }
 
     /**
