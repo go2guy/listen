@@ -11,20 +11,20 @@ function ConferenceList() {
         retrieveList: function(data) {
             return data.results;
         },
-        updateRowCallback: function(row, data) {
-            LISTEN.setFieldContent(row.find('.conference-cell-description'), data.description, true);
-            LISTEN.setFieldContent(row.find('.conference-cell-status'), data.isStarted ? 'Started' : 'Not Started', true);
+        updateRowCallback: function(row, data, animate) {
+            LISTEN.setFieldContent(row.find('.conference-cell-description'), data.description, animate);
+            LISTEN.setFieldContent(row.find('.conference-cell-status'), data.isStarted ? 'Started' : 'Not Started', animate);
             LISTEN.setFieldContent(row.find('.conference-cell-view'), '<button class="button-view" onclick="viewConference(' + data.id + ');">View</button>', false, true);
         }
     });
 
-    var pollAndSet = function(withAnimation) {
+    var pollAndSet = function(animate) {
         $.ajax({
             url: '/ajax/getConferenceList',
             dataType: 'json',
             cache: false,
             success: function(data, textStatus, xhr) {
-                dynamicTable.update(data);
+                dynamicTable.update(data, animate);
             }
         });
     };

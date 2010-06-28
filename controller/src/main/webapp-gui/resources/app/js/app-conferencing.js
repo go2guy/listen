@@ -89,7 +89,7 @@ function Conference(id) {
         retrieveCount: function(data) {
             return data.length;
         },
-        updateRowCallback: function(row, data) {
+        updateRowCallback: function(row, data, animate) {
             if(data.isAdmin && !row.hasClass('caller-row-admin')) {
                 row.addClass('caller-row-admin');
             } else if(!data.isAdmin && row.hasClass('caller-row-admin')) {
@@ -102,11 +102,11 @@ function Conference(id) {
                 row.removeClass('caller-row-passive');
             }
 
-            LISTEN.setFieldContent(row.find('.caller-cell-number'), data.number);
+            LISTEN.setFieldContent(row.find('.caller-cell-number'), data.number, animate);
 
             if(data.isAdmin) {
-                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '');
-                LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '');
+                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '', false);
+                LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '', false);
             } else {
                 LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="icon-' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + (data.isPassive ? 'Cannot unmute ' + data.number + ' (passive caller)' : ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number)) + '"></button>', false, true);
                 LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
@@ -122,9 +122,9 @@ function Conference(id) {
         },
         alternateRowColors: true,
         reverse: true,
-        updateRowCallback: function(row, data) {
-            LISTEN.setFieldContent(row.find('.conferencehistory-cell-date'), data.dateCreated);
-            LISTEN.setFieldContent(row.find('.conferencehistory-cell-description'), data.description);
+        updateRowCallback: function(row, data, animate) {
+            LISTEN.setFieldContent(row.find('.conferencehistory-cell-date'), data.dateCreated, animate);
+            LISTEN.setFieldContent(row.find('.conferencehistory-cell-description'), data.description, animate);
         }
     });
 
@@ -138,7 +138,7 @@ function Conference(id) {
         retrieveCount: function(data) {
             return data.length;
         },
-        updateRowCallback: function(row, data) {
+        updateRowCallback: function(row, data, animate) {
             if(data.type == 'ADMIN') {
                 row.addClass('pin-row-admin');
             } else {
@@ -151,8 +151,8 @@ function Conference(id) {
                 row.removeClass('pin-row-passive');
             }
 
-            LISTEN.setFieldContent(row.find('.pin-cell-number'), data.number);
-            LISTEN.setFieldContent(row.find('.pin-cell-type'), data.type);
+            LISTEN.setFieldContent(row.find('.pin-cell-number'), data.number, animate);
+            LISTEN.setFieldContent(row.find('.pin-cell-type'), data.type, animate);
             LISTEN.setFieldContent(row.find('.pin-cell-removeIcon'), '<button class="button-delete" readonly="readonly" disabled="disabled"></button>', false, true);
         }
     });
@@ -164,30 +164,30 @@ function Conference(id) {
             return data;
         },
         alternateRowColors: true,
-        updateRowCallback: function(row, data) {
-            LISTEN.setFieldContent(row.find('.recording-cell-dateCreated'), data.dateCreated, true);
+        updateRowCallback: function(row, data, animate) {
+            LISTEN.setFieldContent(row.find('.recording-cell-dateCreated'), data.dateCreated, animate);
 
             if(data.duration && data.duration != '') {
                 var d = Math.floor(parseInt(data.duration) / 1000);
                 var durationText = (d < 60 ? '0' : (Math.floor(d / 60))) + ":" + (d % 60 < 10 ? '0' : '') + (d % 60);
-                LISTEN.setFieldContent(row.find('.recording-cell-duration'), durationText, true);
+                LISTEN.setFieldContent(row.find('.recording-cell-duration'), durationText, animate);
             }
 
-            LISTEN.setFieldContent(row.find('.recording-cell-fileSize'), (Math.floor((parseInt(data.fileSize) / 1024) * 100) / 100) + "KB", true);
+            LISTEN.setFieldContent(row.find('.recording-cell-fileSize'), (Math.floor((parseInt(data.fileSize) / 1024) * 100) / 100) + "KB", animate);
             LISTEN.setFieldContent(row.find('.recording-cell-download'), '<a href="/ajax/getConferenceRecording?id=' + data.id + '">Download</a>', false, true);
         }
     });
 
-    var pollAndSet = function(withAnimation) {
+    var pollAndSet = function(animate) {
         $.ajax({
             url: '/ajax/getConferenceInfo?id=' + conferenceId,
             dataType: 'json',
             cache: false,
             success: function(data, textStatus, xhr) {
-                callerTable.update(data.participants.results, withAnimation);
-                historyTable.update(data.history.results, withAnimation);
-                pinTable.update(data.pins.results, withAnimation);
-                recordingTable.update(data.recordings.results, withAnimation);
+                callerTable.update(data.participants.results, animate);
+                historyTable.update(data.history.results, animate);
+                pinTable.update(data.pins.results, animate);
+                recordingTable.update(data.recordings.results, animate);
 
                 var infoDescription = $('#conference-info-description');
                 if(infoDescription.text() != data.info.description) {

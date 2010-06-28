@@ -125,7 +125,7 @@ $(document).ready(function() {
              *  - retrieveCount(data): function callback that returns the row count from the data (optional)
              *  - reverse: whether or not to reverse the table order, putting the last rows in the data first
              *             (optional, default = false)
-             *  - updateRowCallback(row, data, setId): function callback that updates a specific row
+             *  - updateRowCallback(row, data, animate): function callback that updates a specific row
              *  - retrieveList(data): function callback that returns the actual list of data from the provided data
              *  - templateId: id of row node containing template for a data row in this table, or function to call
              *                that retrieves the template id based on the data row
@@ -134,7 +134,7 @@ $(document).ready(function() {
                 var interval;
                 var args = args;
 
-                this.update = function(data, withAnimation) {
+                this.update = function(data, animate) {
                     var tableRows = [];
                     if(args.isList === true) {
                         tableRows = $('#' + args.tableId).find('li:not(.placeholder)');
@@ -146,7 +146,7 @@ $(document).ready(function() {
 
                     if(args.countContainer && args.retrieveCount) {
                         var container = $('#' + args.countContainer);
-                        var count = args.retrieveCount.call(this, data);
+                        var count = args.retrieveCount.call(this, data, animate);
                         if(container.text() != count) {
                             container.text(count);
                         }
@@ -158,7 +158,7 @@ $(document).ready(function() {
                         for(var j = 0; j < tableRows.length; j++) {
                             var tableRow = $(tableRows[j]);
                             if(tableRow.attr('id') == args.tableId + '-row-' + serverItem.id) {
-                                args.updateRowCallback.call(this, tableRow, serverItem, false);
+                                args.updateRowCallback.call(this, tableRow, serverItem, animate);
                                 found = true;
                                 break;
                             }
@@ -172,7 +172,7 @@ $(document).ready(function() {
 
                             var clone = $('#' + templateId).clone();
                             clone.attr('id', args.tableId + '-row-' + serverItem.id);
-                            args.updateRowCallback.call(this, clone, serverItem, true);
+                            args.updateRowCallback.call(this, clone, serverItem, animate);
                             clone.css('opacity', 0);
 //                            if(args.alternateRowColors) {
 //                                if(args.reverse) {
@@ -187,7 +187,7 @@ $(document).ready(function() {
                             } else {
                                 appendTo.append(clone);
                             }
-                            clone.animate({ opacity: 1 }, (withAnimation === true ? 1000 : 0));
+                            clone.animate({ opacity: 1 }, (animate === true ? 1000 : 0));
                         }
 
                         ids.push(args.tableId + '-row-' + serverItem.id);
@@ -205,7 +205,7 @@ $(document).ready(function() {
                         }
 
                         if(!found) {
-                            row.animate({ opacity: 0 }, (withAnimation ? 1000 : 0), function() {
+                            row.animate({ opacity: 0 }, (animate === true ? 1000 : 0), function() {
                                 $(this).remove();
                             });
                         }
@@ -229,16 +229,19 @@ $(document).ready(function() {
             },
 
             setFieldContent: function(field, content, animate, asHtml) {
+                var changed = false;
                 if(asHtml === true) {
                     if(field.html() != content) {
                         field.html(content);
+                        changed = true;
                     }
                 } else {
                     if(field.text() != content) {
                         field.text(content);
+                        changed = true;
                     }
                 }
-                if(animate === true) {
+                if(changed && animate === true) {
                     LISTEN.highlight(field);
                 }
             },

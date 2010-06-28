@@ -10,8 +10,8 @@ $(document).ready(function() {
                     retrieveList: function(data) {
                         return data;
                     },
-                    updateRowCallback: function(row, data) {
-                        LISTEN.setFieldContent(row.find('.subscriber-cell-username'), data.username, true);
+                    updateRowCallback: function(row, data, animate) {
+                        LISTEN.setFieldContent(row.find('.subscriber-cell-username'), data.username, animate);
 
                         var numbers = '';
                         for(var i = 0; i < data.accessNumbers.length; i++) {
@@ -21,29 +21,29 @@ $(document).ready(function() {
                             }
                         }
 
-                        LISTEN.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, true);
-                        LISTEN.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, true);
+                        LISTEN.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, animate);
+                        LISTEN.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, animate);
                         LISTEN.setFieldContent(row.find('.subscriber-cell-editButton'), '<button class="button-edit" title="Edit subscriber" onclick="LISTEN.SUBSCRIBERS.loadSubscriber(' + data.id + ');return false;">Edit</button>', false, true);
                     }
                 });
 
-                var pollAndSet = function() {
+                var pollAndSet = function(animate) {
                     LISTEN.trace('LISTEN.SUBSCRIBERS.SubscribersApplication.pollAndSet');
                     $.ajax({
                         url: '/ajax/getSubscriberList',
                         dataType: 'json',
                         cache: 'false',
                         success: function(data, textStatus, xhr) {
-                            dynamicTable.update(data);
+                            dynamicTable.update(data, animate);
                         }
                     });
                 };
 
                 this.load = function() {
                     LISTEN.trace('LISTEN.SUBSCRIBERS.SubscribersApplication.load');
-                    pollAndSet();
+                    pollAndSet(false);
                     interval = setInterval(function() {
-                        pollAndSet();
+                        pollAndSet(true);
                     }, 1000);
                 };
 

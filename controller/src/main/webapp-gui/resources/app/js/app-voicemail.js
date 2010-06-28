@@ -16,7 +16,7 @@ function Voicemail() {
             return data.newCount;
         },
         reverse: true,
-        updateRowCallback: function(row, data) {
+        updateRowCallback: function(row, data, animate) {
             if(data.isNew) {
                 row.removeClass('voicemail-read');
                 row.addClass('voicemail-unread');
@@ -26,19 +26,19 @@ function Voicemail() {
             }
 
             LISTEN.setFieldContent(row.find('.voicemail-cell-readStatus'), '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'SERVER.markVoicemailReadStatus(' + data.id + ', true);' : 'SERVER.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as read' : 'Mark as unread') + '"></button>', false, true);
-            LISTEN.setFieldContent(row.find('.voicemail-cell-from'), data.leftBy);
-            LISTEN.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated);
+            LISTEN.setFieldContent(row.find('.voicemail-cell-from'), data.leftBy, animate);
+            LISTEN.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
             LISTEN.setFieldContent(row.find('.voicemail-cell-download'), '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>', false, true);
         }
     });
 
-    var pollAndSet = function(withAnimation) {
+    var pollAndSet = function(animate) {
         $.ajax({
             url: '/ajax/getVoicemailList',
             dataType: 'json',
             cache: false,
             success: function(data, textStatus, xhr) {
-                dynamicTable.update(data, withAnimation)
+                dynamicTable.update(data, animate)
             }
         });
     };

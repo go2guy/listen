@@ -23,24 +23,24 @@ $(document).ready(function() {
                         return data.results;
                     },
                     reverse: true,
-                    updateRowCallback: function(row, data) {
+                    updateRowCallback: function(row, data, animate) {
                         if(data.type == 'Action') {
-                            LISTEN.setFieldContent(row.find('.history-action-date'), data.date);
-                            LISTEN.setFieldContent(row.find('.history-action-type'), 'Action');
-                            LISTEN.setFieldContent(row.find('.history-action-subscriber'), data.subscriber);
-                            LISTEN.setFieldContent(row.find('.history-action-action'), data.action);
-                            LISTEN.setFieldContent(row.find('.history-action-description'), data.description);
-                            LISTEN.setFieldContent(row.find('.history-action-onSubscriber'), data.onSubscriber);
-                            LISTEN.setFieldContent(row.find('.history-action-channel'), data.channel);
+                            LISTEN.setFieldContent(row.find('.history-action-date'), data.date, animate);
+                            LISTEN.setFieldContent(row.find('.history-action-type'), 'Action', animate);
+                            LISTEN.setFieldContent(row.find('.history-action-subscriber'), data.subscriber, animate);
+                            LISTEN.setFieldContent(row.find('.history-action-action'), data.action, animate);
+                            LISTEN.setFieldContent(row.find('.history-action-description'), data.description, animate);
+                            LISTEN.setFieldContent(row.find('.history-action-onSubscriber'), data.onSubscriber, animate);
+                            LISTEN.setFieldContent(row.find('.history-action-channel'), data.channel, animate);
                         } else if(data.type == 'Call') {
-                            LISTEN.setFieldContent(row.find('.history-call-date'), data.date);
-                            LISTEN.setFieldContent(row.find('.history-call-type'), 'Call');
-                            LISTEN.setFieldContent(row.find('.history-call-subscriber'), data.subscriber);
-                            LISTEN.setFieldContent(row.find('.history-call-ani'), data.ani);
-                            LISTEN.setFieldContent(row.find('.history-call-direction'), '&raquo;', false, true);
-                            LISTEN.setFieldContent(row.find('.history-call-dnis'), data.dnis);
-                            LISTEN.setFieldContent(row.find('.history-call-service'), data.service);
-                            LISTEN.setFieldContent(row.find('.history-call-duration'), data.duration);
+                            LISTEN.setFieldContent(row.find('.history-call-date'), data.date, animate);
+                            LISTEN.setFieldContent(row.find('.history-call-type'), 'Call', animate);
+                            LISTEN.setFieldContent(row.find('.history-call-subscriber'), data.subscriber, animate);
+                            LISTEN.setFieldContent(row.find('.history-call-ani'), data.ani, animate);
+                            LISTEN.setFieldContent(row.find('.history-call-direction'), '&raquo;', animate, true);
+                            LISTEN.setFieldContent(row.find('.history-call-dnis'), data.dnis, animate);
+                            LISTEN.setFieldContent(row.find('.history-call-service'), data.service, animate);
+                            LISTEN.setFieldContent(row.find('.history-call-duration'), data.duration, animate);
                         }
                     }
                 });
