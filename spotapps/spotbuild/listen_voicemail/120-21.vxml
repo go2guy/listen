@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(DNIS,fileLocation,subID,duration,fileSize,ANI,hostName)
             {
-	                            return "{\"uri\": \"http://"+hostName+fileLocation+"\",\"duration\":\""+duration+"\",\"fileSize\":\""+fileSize+"\",\"leftBy\":\""+ANI+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
+	            return "{\"uri\": \"http://"+hostName+fileLocation+"\",\"duration\":\""+duration+"\",\"fileSize\":\""+fileSize+"\",\"leftBy\":\""+ANI+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
             }
         ]]>
     </script>

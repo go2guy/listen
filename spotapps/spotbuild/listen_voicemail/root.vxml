@@ -34,7 +34,7 @@
 	<var name="status" expr="''" />
 	<var name="fileLocation" expr="'/var/www/html/listen/artifacts/voicemail/message/'" />
 	<var name="isNew" expr="'true'" />
-	<var name="subID" expr="''" />
+	<var name="subID" expr="'null'" />
 	<var name="returnVal" expr="''" />
 	<var name="returnStr" expr="''" />
 	<var name="FILE1" expr="''" />
@@ -50,6 +50,8 @@
 	<var name="passValues" expr="'importedValue'" />
 	<var name="duration" expr="''" />
 	<var name="accessNum" expr="''" />
+	<var name="sysAccessTime" expr="''" />
+	<var name="service" expr="''" />
 
 
     <!-- Conference Variables -->
