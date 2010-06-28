@@ -56,7 +56,7 @@ $(document).ready(function() {
                             historyList.update(data, false);
 
                             var pagination = $('#history-pagination');
-                            $('.pagination-current', pagination).text((data.coun > 0 ? data.first + 1 : '0') + '-' + (data.first + data.count));
+                            $('.pagination-current', pagination).text((data.count > 0 ? data.first + 1 : '0') + '-' + (data.first + data.count));
                             $('.pagination-total', pagination).text(data.total);
 
                             var left = $('.pagination-left', pagination);
