@@ -5,25 +5,25 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'135-26'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'137-9'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(argList,audioURL)
+            function II_SB_JS_function(argList,sysAccessTime,service)
             {
 	            var result = eval("("+argList+")");
-var sid = result.sessionid;
-return audioURL + getNextElement(0,sid,'.') + ".wav";
+var duration = new Date().getTime() - sysAccessTime;
+return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"subscriber\": null, \"service\": \""+service+"\", \"duration\":"+duration+", \"ani\":\"SYSTEM\", \"dnis\":\""+result.destination+"\", \"direction\":\"OUTBOUND\"}";
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set audioURL</log>
-            <log>INFO: Entered run-javascript.vxml [135-3]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList,audioURL)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="audioURL" expr="II_SB_userJava" />   
+            <log target="status">Set Params</log>
+            <log>INFO: Entered run-javascript.vxml [137-8]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList,sysAccessTime,service)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

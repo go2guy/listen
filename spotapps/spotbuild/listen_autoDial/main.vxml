@@ -31,6 +31,12 @@
 	<var name="SB_UV_errCnt"/>
 	<var name="SB_UV_getInput"/>
 	<var name="SB_UV_index"/>
+	<var name="SB_UV_request"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_params"/>
+	<var name="SB_UV_sysAccessTime"/>
+	<var name="SB_UV_service"/>
 
     
     <form id="beginDocument">
@@ -78,6 +84,24 @@
 			</if>
 			<if cond="SB_UV_index != undefined">
 				<assign name="index" expr="SB_UV_index" />
+			</if>
+			<if cond="SB_UV_request != undefined">
+				<assign name="request" expr="SB_UV_request" />
+			</if>
+			<if cond="SB_UV_resource != undefined">
+				<assign name="resource" expr="SB_UV_resource" />
+			</if>
+			<if cond="SB_UV_status != undefined">
+				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_params != undefined">
+				<assign name="params" expr="SB_UV_params" />
+			</if>
+			<if cond="SB_UV_sysAccessTime != undefined">
+				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
+			</if>
+			<if cond="SB_UV_service != undefined">
+				<assign name="service" expr="SB_UV_service" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

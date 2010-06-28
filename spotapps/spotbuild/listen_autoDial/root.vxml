@@ -41,6 +41,12 @@
 	<var name="errCnt" expr="'0'" />
 	<var name="getInput" expr="''" />
 	<var name="index" expr="'0'" />
+	<var name="request" expr="''" />
+	<var name="resource" expr="''" />
+	<var name="status" expr="''" />
+	<var name="params" expr="''" />
+	<var name="sysAccessTime" expr="''" />
+	<var name="service" expr="''" />
 
 
     <!-- Conference Variables -->
