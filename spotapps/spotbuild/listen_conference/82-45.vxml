@@ -11,7 +11,6 @@
         <![CDATA[
             function II_SB_JS_function(ANI,DNIS,subID,sysAccessTime)
             {
-	            var result;
 var duration = new Date().getTime() - sysAccessTime;
 return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"subscriber\": "+subID+", \"service\": \"System Access\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\"INBOUND\"}";
             }
