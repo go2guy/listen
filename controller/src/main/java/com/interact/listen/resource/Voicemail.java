@@ -1,7 +1,11 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.EmailerService;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.history.HistoryService;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
+import com.interact.listen.stats.StatSenderFactory;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -93,6 +97,26 @@ public class Voicemail extends Audio implements Serializable
         return copy;
     }
     
+    @Override
+    public void afterSave(PersistenceService persistenceService)
+    {
+        EmailerService emailService = new EmailerService();
+        StatSender statSender = StatSenderFactory.getStatSender();
+        Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
+        
+        if(voicemailSubscriber.getIsEmailNotificationEnabled().booleanValue())
+        {
+            statSender.send(Stat.VOICEMAIL_EMAIL_NOTIFICATION);
+            emailService.sendEmailVoicmailNotification(this, voicemailSubscriber);
+        }
+        
+        if(voicemailSubscriber.getIsSmsNotificationEnabled().booleanValue())
+        {
+            statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
+            emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
+        }
+    }
+
     @Override
     public void afterDelete(PersistenceService persistenceService)
     {
