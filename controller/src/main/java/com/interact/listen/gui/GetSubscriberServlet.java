@@ -13,6 +13,7 @@ import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 /**
  * Provides a GET implementation that retrieves a list of {@link Subscribers}.
@@ -71,13 +74,13 @@ public class GetSubscriberServlet extends HttpServlet
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 
-        String content = marshalSubscriberToJson(s, marshaller);
+        String content = marshalSubscriberToJson(s, marshaller, session);
 
         response.setStatus(HttpServletResponse.SC_OK);
         OutputBufferFilter.append(request, content, marshaller.getContentType());
     }
 
-    public static String marshalSubscriberToJson(Subscriber subscriber, Marshaller marshaller)
+    public static String marshalSubscriberToJson(Subscriber subscriber, Marshaller marshaller, Session session)
     {
         StringBuilder json = new StringBuilder();
 
@@ -91,7 +94,7 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
 
         json.append(",\"accessNumbers\":[");
-        for(AccessNumber accessNumber : subscriber.getAccessNumbers())
+        for(AccessNumber accessNumber : getAccessNumbers(subscriber, session))
         {
             json.append("\"").append(accessNumber.getNumber()).append("\",");
         }
@@ -109,5 +112,16 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"smsAddress\":\"").append(subscriber.getSmsAddress()).append("\"");
         json.append("}");
         return json.toString();
+    }
+
+    // retrieving the AccessNumbers from the Subscriber collection doesn't seem to work right
+    // when numbers are added via the API - this is a quick fix for that (query them manually)
+    private static List<AccessNumber> getAccessNumbers(Subscriber subscriber, Session session)
+    {
+        Criteria criteria = session.createCriteria(AccessNumber.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        return (List<AccessNumber>)criteria.list();
     }
 }
