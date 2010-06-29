@@ -39,9 +39,10 @@
 	<var name="SB_UV_fileSize"/>
 	<var name="SB_UV_passValues"/>
 	<var name="SB_UV_duration"/>
-	<var name="SB_UV_accessNum"/>
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_service"/>
+	<var name="SB_UV_toggleLight"/>
+	<var name="SB_UV_accessNum"/>
 
     
     <form id="beginDocument">
@@ -116,14 +117,17 @@
 			<if cond="SB_UV_duration != undefined">
 				<assign name="duration" expr="SB_UV_duration" />
 			</if>
-			<if cond="SB_UV_accessNum != undefined">
-				<assign name="accessNum" expr="SB_UV_accessNum" />
-			</if>
 			<if cond="SB_UV_sysAccessTime != undefined">
 				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
 			</if>
 			<if cond="SB_UV_service != undefined">
 				<assign name="service" expr="SB_UV_service" />
+			</if>
+			<if cond="SB_UV_toggleLight != undefined">
+				<assign name="toggleLight" expr="SB_UV_toggleLight" />
+			</if>
+			<if cond="SB_UV_accessNum != undefined">
+				<assign name="accessNum" expr="SB_UV_accessNum" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
