@@ -51,7 +51,7 @@ $(document).ready(function() {
         } else {
             $('select option[value=\'' + d + '\']', clone).attr('selected', 'selected');
         }
-        $('.delete-button', clone).click(function() {
+        $('.icon-delete', clone).click(function() {
             $(this).parent().parent().remove();
         });
         $('select', clone).change(function() {
