@@ -64,6 +64,8 @@
 	<var name="SB_UV_grtngList"/>
 	<var name="SB_UV_grtngSelect"/>
 	<var name="SB_UV_subFwd"/>
+	<var name="SB_UV_DNIS"/>
+	<var name="SB_UV_sysAccessTime"/>
 
     
     <form id="beginDocument">
@@ -211,6 +213,12 @@
 			</if>
 			<if cond="SB_UV_subFwd != undefined">
 				<assign name="subFwd" expr="SB_UV_subFwd" />
+			</if>
+			<if cond="SB_UV_DNIS != undefined">
+				<assign name="DNIS" expr="SB_UV_DNIS" />
+			</if>
+			<if cond="SB_UV_sysAccessTime != undefined">
+				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

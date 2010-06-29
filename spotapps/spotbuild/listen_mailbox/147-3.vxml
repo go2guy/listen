@@ -5,24 +5,22 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'101-30'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'147-5'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(subscriber)
+            function II_SB_JS_function(subFwd)
             {
-	            var result;
-result = "?subscriber=/subscriber/"+subscriber+"&isNew=true";
-return result;
+	            return "?_fields=subscriber&number=" + subFwd;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Parameter New</log>
-            <log>INFO: Entered run-javascript.vxml [101-3]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(subscriber)"/>   <!-- Call Javascript funtion and store result -->
+            <log target="status">Set Params</log>
+            <log>INFO: Entered run-javascript.vxml [147-3]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(subFwd)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

@@ -1,3 +1,4 @@
+144-71 - run-javascript
 102-13 - data-query
 65-2 - end
 102-15 - audio-input
@@ -8,7 +9,9 @@ hang-up - hang-up
 67-74 - audio-input
 65-9 - math
 103-19 - data-query
+144-62 - decision
 61-3 - audio-input
+144-60 - data-query
 103-23 - data-query
 103-27 - math
 103-25 - audio-input
@@ -70,6 +73,9 @@ hang-up - hang-up
 begin - begin
 141-10 - decision
 143-53 - run-javascript
+144-57 - assign-variable
+144-58 - run-javascript
+144-52 - audio-input
 143-55 - decision
 143-49 - math
 101-35 - decision
@@ -102,6 +108,7 @@ begin - begin
 141-38 - run-javascript
 140-41 - assign-variable
 143-29 - assign-variable
+147-36 - run-javascript
 143-33 - decision
 143-31 - data-query
 141-40 - assign-variable
@@ -124,6 +131,7 @@ begin - begin
 140-21 - math
 141-7 - data-query
 101-20 - audio-input
+147-13 - run-javascript
 144-14 - data-query
 144-12 - assign-variable
 66-15 - audio-input
@@ -144,7 +152,10 @@ begin - begin
 65-17 - audio-input
 143-16 - assign-variable
 143-14 - data-query
+147-28 - switch-application
 143-19 - run-javascript
+147-27 - run-javascript
+147-18 - decision
 143-23 - decision
 140-27 - data-query
 140-29 - decision
@@ -154,6 +165,10 @@ begin - begin
 56-49 - run-javascript
 103-59 - data-query
 103-51 - assign-variable
+147-6 - data-query
+147-5 - assign-variable
+147-8 - decision
+147-3 - run-javascript
 67-23 - audio-input
 103-65 - assign-variable
 67-25 - decision
