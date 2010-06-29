@@ -145,7 +145,7 @@ public class GetHistoryListServlet extends HttpServlet
         {
             Duration duration = roundUpToNearestSecond(record.getDuration());
             double s = Math.floor(duration.getMillis() / 1000.0);
-            durationString = String.format("%01f:%02f", s < 60 ? 0 : s / 60, s % 60);
+            durationString = String.format("%01.0f:%02.0f", s < 60 ? 0 : s / 60, s % 60);
         }
         json.append("\"duration\":\"").append(durationString).append("\",");
 
