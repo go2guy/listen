@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 01/26/2010
+       *   @Name	dbCall.vxml
+       *   @Desc	This script performs two functions. It is used to toggle the status of a specified
+                    extension in the database. It is also used to get a list of active extensions from the
+                    database -->
+
+    <!-- Passed in from ccxml -->
+    <var name="ext"/>   <!-- Extension. Extension whose status will be toggled. Could be a pipe ('|') delimited list -->
+    <var name="flag"/>  <!-- Flag. Controls which php script will be called -->
+    <var name="activeClient"/>  <!-- Active Client. Identifies active or inactive status -->
+
+    <!-- Global Variables -->
+    <var name="result" expr="''"/>
+    <var name="extension" expr="''"/>
+    <var name="index" expr="0"/>
+    <var name="cnt" expr="0"/>
+    <var name="gotoForm" expr="''"/>
+
+    <form id="beginDocument">
+        <!-- Here we figure out what php script to call. If our flag is set to toggle, we need
+        to check our ext variable to figure out how many extensions to toggle.-->
+        <block>
+            <log>INFO: Enter beginDocument</log>
+            <if cond="flag == 'toggle'">
+                <log>INFO: Attempting to toggle status of EXT [<value expr="ext"/>] to [<value expr="activeClient"/>]</log>
+                <if cond="inString('|',ext,'')">
+                    <goto next="#getExt"/>
+                <else/>
+                    <assign name="extension" expr="ext"/>
+                    <assign name="gotoForm" expr="'#exit'"/>
+                    <goto next="#toggleStatus"/>
+                </if>
+            <elseif cond="flag == 'getList'"/>
+                <log>INFO: Attempting to get list of extensions currently in use</log>
+                <goto next="#getClientList"/>
+            <else/>
+                <goto next="#exit"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="getExt">
+        <!-- Loop through ext variable and toggle them all -->
+        <block>
+            <log>INFO: Entered getExt</log>
+            <assign name="extension" expr="getNextElement(index,ext,'|')"/>
+            <if cond="extension != '-1'">
+                <assign name="index" expr="index + 1"/>
+                <assign name="gotoForm" expr="'#getExt'"/>
+                <goto next="#toggleStatus"/>
+            <else/>
+                <goto next="#exit"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="toggleStatus">
+        <!-- We toggle the status of the specified extension on the db -->
+        <block>
+            <log>INFO: Entered toggleStatus</log>
+            <if cond="extension.length &lt; EXT_LENGTH">
+                <var name="status" expr="activeClient"/>
+                <assign name="result" expr="'Failure'"/>
+                <data name="clientToggle" srcexpr="DB_PATH+'user/toggleStatus.php'" namelist="extension status" method="post"/>
+                <assign name="result" expr="clientToggle.result"/>
+                <log>INFO: Result [<value expr="result"/>]</log>
+            <else/>
+                <log>ERROR: Invalid extension [<value expr="extension"/>]</log>
+            </if>
+            <goto expr="gotoForm"/>
+        </block>
+    </form>
+
+    <form id="getClientList">
+        <!-- We retrieve the list of active extensions from the db -->
+        <block>
+            <log>INFO: Entered getClientList</log>
+            <var name="status" expr="activeClient"/>
+            <assign name="result" expr="0"/>
+            <data name="activeList" srcexpr="DB_PATH+'user/getActive.php'" namelist="status" method="post"/>
+            <log>INFO: Found [<value expr="activeList.result"/>] active clients</log>
+            <if cond="activeList.result != 0">
+                <assign name="result" expr="activeList.clients"/>
+            <else/>
+                <assign name="result" expr="activeList.result"/>                
+            </if>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <exit namelist="result"/>
+        </block>
+    </form>
+
+    <!-- Catch bad fetch event -->
+    <catch event="error.badfetch">
+        <assign name="status" expr="'badfetch'"/>
+        <log>ERROR: Status [<value expr="status"/>]</log>
+        <goto next="#exit"/>
+    </catch>
+</vxml>
