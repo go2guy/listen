@@ -94,11 +94,12 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
 
         json.append(",\"accessNumbers\":[");
-        for(AccessNumber accessNumber : getAccessNumbers(subscriber, session))
+        List<AccessNumber> accessNumbers = getAccessNumbers(subscriber, session);
+        for(AccessNumber accessNumber : accessNumbers)
         {
             json.append("\"").append(accessNumber.getNumber()).append("\",");
         }
-        if(subscriber.getAccessNumbers().size() > 0)
+        if(accessNumbers.size() > 0)
         {
             json.deleteCharAt(json.length() - 1); // last comma
         }
@@ -116,7 +117,7 @@ public class GetSubscriberServlet extends HttpServlet
 
     // retrieving the AccessNumbers from the Subscriber collection doesn't seem to work right
     // when numbers are added via the API - this is a quick fix for that (query them manually)
-    private static List<AccessNumber> getAccessNumbers(Subscriber subscriber, Session session)
+    public static List<AccessNumber> getAccessNumbers(Subscriber subscriber, Session session)
     {
         Criteria criteria = session.createCriteria(AccessNumber.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
