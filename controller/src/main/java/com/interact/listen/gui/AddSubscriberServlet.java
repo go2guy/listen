@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.classic.Session;
+import org.hibernate.exception.ConstraintViolationException;
 
 public class AddSubscriberServlet extends HttpServlet
 {
@@ -123,9 +124,9 @@ public class AddSubscriberServlet extends HttpServlet
         {
             persistenceService.save(subscriber);
         }
-        catch(Exception e)
+        catch(ConstraintViolationException e)
         {
-            throw new BadRequestServletException("how dare you try to do this shit?");
+            throw new BadRequestServletException("A subscriber with that username already exists");
         }
 
         String accessNumbers = request.getParameter("accessNumbers");
