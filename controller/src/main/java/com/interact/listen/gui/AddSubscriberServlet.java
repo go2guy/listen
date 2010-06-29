@@ -78,7 +78,7 @@ public class AddSubscriberServlet extends HttpServlet
         
         if(voicemailPinString.length() > 10)
         {
-            throw new BadRequestServletException("Please provide a Voicemail Pin Number with ten digits or less");
+            throw new BadRequestServletException("Please provide a Voicemail Pin number with ten digits or less");
         }
         
         Long voicemailPin = null;
@@ -118,7 +118,15 @@ public class AddSubscriberServlet extends HttpServlet
         subscriber.setIsSmsNotificationEnabled(enableSms);
         subscriber.setEmailAddress(emailAddress);
         subscriber.setSmsAddress(smsAddress);
-        persistenceService.save(subscriber);
+        
+        try
+        {
+            persistenceService.save(subscriber);
+        }
+        catch(Exception e)
+        {
+            throw new BadRequestServletException("how dare you try to do this shit?");
+        }
 
         String accessNumbers = request.getParameter("accessNumbers");
         if(accessNumbers != null && accessNumbers.length() > 0)
