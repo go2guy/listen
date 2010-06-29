@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+<!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
+<ccxml version="1.0">
+    <!-- Last Modified 06/21/2010
+       *   @Name	ippbx_main.ccxml
+       *   @Desc	Starting point of the PBX application. This script primarily
+                    handles routing an incoming call based on the dialed number -->
+
+    <!-- Global Vars -->
+    <var name="state" expr="'idle'"/>   <!-- State. Stores the current state of the ccxml session -->
+    <var name="ibconnid"/>              <!-- Inbound Connection ID. Contains the connection ID for the inbound caller -->
+    <var name="obconnid"/>              <!-- Outbound Connection ID. Contains the connection ID for an outbound call -->
+    <var name="ANI" expr="''"/>         <!-- ANI. Origination of inbound call -->
+    <var name="DNIS" expr="''"/>        <!-- DNIS. Destination dialed -->
+    <var name="route" expr="''"/>       <!-- Route. Used to route an incoming call to a particular event -->
+    <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
+    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
+    <var name="callType" expr="''"/>    <!-- Call Type. Identifies a call as: service, extension, or external -->
+    <var name="iiLincoln" expr="'14028029608,14028029609'"/>  <!-- SIP Trunk access for Lincon Office -->
+    <var name="iiAustin" expr="'15122999104,15123801239,44,206.81.53.128'"/>   <!-- Access for Austin Office -->
+    <var name="activeClient" expr="'n'"/>   <!-- Active Client. Identifies when an extension is being used -->
+    <var name="importedValue"/>
+    <var name="remote"/>
+    <var name="local"/>
+    <!-- End global vars -->
+
+    <!-- Constants -->
+    <var name="PAGE" expr="'799'"/>     <!-- Number dialed to access group page -->
+    <var name="EXT_LENGTH" expr="7"/>   <!-- Extensions are less than seven digit numbers -->
+    <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>    <!-- Base directory for Spotbuild -->
+    <var name="APP_PATH" expr="SB_PATH+'ippbx/'"/>              <!-- Base directory for PBX application -->
+    <var name="LIB_PATH" expr="SB_PATH+'lib/'"/>                <!-- Directory for lib files -->
+    <var name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>    <!-- Direcotry for transaction files -->
+
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>
+
+    <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
+        <transition state="idle" event="ccxml.loaded" name="evt">
+            <!-- Loaded new ccxml session. Check source (where call originated from) -->
+            <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
+            <log>INFO: Event Source [<value expr="evt.eventsource"/>]</log>
+            <if cond="projectSource == 'LISTEN'">
+                <assign name="ibconnid" expr="connectionid"/>   <!-- Get connection id for incoming call -->
+	    	    <assign name="ANI" expr="getnum(remote)"/>      <!-- Get origin of incoming call -->
+	    	    <assign name="DNIS" expr="getnum(local)"/>      <!-- Get destination of incoming call -->
+                <send data="'dialog.user.chk_ANI'" target="session.id"/>
+            <else/>
+                <!-- Nothing else here -->
+            </if>
+        </transition>
+
+    	<transition state="idle" event="VRU_AUTO*" name="evt">
+	    	<log>INFO: Entered [VRU_AUTO] with state [<value expr="state"/>]</log>
+    		<assign name="state" expr="'autoStart'"/>
+		    <log>INFO: Mail Box [<value expr="evt.mBox"/>]</log>
+            <log>INFO: Message ID [<value expr="evt.msgID"/>]</log>
+            <log>INFO: Destination [<value expr="evt.des"/>]</log>
+            <var name="mBox" expr="evt.mBox"/>
+            <var name="msgID" expr="evt.msgID"/>
+            <var name="DNIS" expr="evt.des"/>
+            <var name="ANI" expr="evt.from"/>
+            <assign name="callType" expr="'notify'"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid DNIS ANI callType msgID mBox"/>
+    	</transition>
+
+        <transition state="idle" event="connection.alerting" name="evt">
+            <!-- Set up global variables from incomming call. Answer inbound call -->
+            <log>INFO: Entered [connection.ALERTING] with state [<value expr="state"/>]</log>
+            <log target="status">In coming call</log>
+            <assign name="state" expr="'alerting'"/>
+            <assign name="ibconnid" expr="evt.connectionid"/>   <!-- Get connection id for incoming call -->
+	    	<assign name="ANI" expr="getnum(evt.connection.remote)"/>   <!-- Get origin of incoming call -->
+	    	<assign name="DNIS" expr="getnum(evt.connection.local)"/>   <!-- Get destination of incoming call -->
+            <accept/>   <!-- Accept should trigger a connection.connected if successful. An error may trigger connection.failed -->
+        </transition>
+
+        <transition state="alerting" event="connection.connected" name="evt">
+            <!-- This event is triggered once the call gets accepted. One unique thing we do
+            in this transition is to check if the caller is internal to the pbx system. If so,
+            we'll send a database transaction (later) to toggle their status to active -->
+            <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
+            <log target="status">Call accepted</log>
+            <log>INFO: ANI [<value expr="ANI"/>]</log>
+            <log>INFO: DNIS [<value expr="DNIS"/>]</log>
+            <log>INFO: connectionid [<value expr="ibconnid"/>]</log>
+            <assign name="state" expr="'callAccepted'"/>
+            <send data="'dialog.user.chk_ANI'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.chk_ANI" name="evt">
+            <!-- Here, we determine if this call originated internally or externally. -->
+            <log>INFO: Entered [dialog.user.toggleClientStatus] with state [<value expr="state"/>]</log>
+            <if cond="ANI.length &lt; EXT_LENGTH">  <!-- If this is true, we can assume caller is internal to the pbx. -->
+                <assign name="activeClient" expr="'y'"/>
+                <assign name="state" expr="'active'"/>
+                <send data="'dialog.user.toggleClientStatus'" target="session.id"/> <!-- We need to set their status in the db as actvie -->
+            <else/> <!-- Caller is probably not internal to pbx. So, we'll just route the call -->
+                <send data="'dialog.user.routeCall'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.toggleClientStatus" name="evt">
+            <!-- If we are in this transition, we can assume this particular call originated from an internal
+            extention. We want to toggle the status of this extension as either "active" or "inactive". This is
+            done for group paging purposes. "Active" extensions are not paged, "inactive" ones are paged. -->
+            <log>INFO: Entered [dialog.user.toggleClientStatus] with state [<value expr="state"/>]</log>
+            <var name="flag" expr="'toggle'"/>
+            <var name="ext" expr="ANI"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="ext activeClient flag EXT_LENGTH"/>
+        </transition>
+
+        <transition state="active" event="dialog.exit" name="evt">
+            <!-- This transition handles the return after setting an extension as active -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.routeCall'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.started" name="evt">
+            <!-- Here we save off the ID of the VXML dialog we just started -->
+            <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'y'"/>
+            <assign name="dialogID" expr="evt.dialogid"/>
+        </transition>
+
+		<transition event="dialog.user.routeCall" name="evt">
+            <!-- We need to figure out how to route this call based on what caller dialed -->
+            <log>INFO: Entered [dialog.user.routeCall] with state [<value expr="state"/>]</log>
+            <log target="status">Routing call...</log>
+            <if cond="inString(DNIS,iiLincoln,',') || inString(DNIS,iiAustin,',')"> <!-- If caller is trying to reach lincoln or austin office -->
+                <assign name="route" expr="'dialog.user.autoAttendant'"/>   <!-- Set route to auto attendant -->
+                <send data="'dialog.user.pbx'" target="session.id"/>
+            <elseif cond="DNIS == PAGE"/> <!-- If caller is trying to use page service -->
+                <send data="'dialog.user.page'" target="session.id"/>
+            <elseif cond="DNIS.length &lt; EXT_LENGTH"/>    <!-- Assume this is an internal call between extensions -->
+                <assign name="callType" expr="'extension'"/>
+                <send data="'dialog.user.dial'" target="session.id"/>
+            <elseif cond="ANI.length &lt; EXT_LENGTH"/> <!-- Assume this is an external call from an extension -->
+                <assign name="callType" expr="'external'"/>
+                <send data="'dialog.user.dial'" target="session.id"/>
+            <else/> <!-- We've encountered an unusual error, since we couldn't match any known case. End the call -->
+                <!-- TODO: Write an error log file and notify someone? -->
+                <send data="'dialog.user.endCall'" target="session.id"/>
+            </if>
+		</transition>
+
+        <transition event="dialog.user.pbx" name="evt">
+            <!-- Here we'll pass control to the pbx ccxml script. This script uses the route variable
+            to determine what transition to run. -->
+            <log>INFO: Entered [dialog.user.pbx] with state [<value expr="state"/>]</log>
+            <fetch next="'file:'+APP_PATH+'pbx.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid DNIS ANI callType route"/>
+        </transition>
+
+        <transition event="dialog.user.dial" name="evt">
+            <!-- Transfer control to dial script -->
+            <log>INFO: Entered [dialog.user.dial] with state [<value expr="state"/>]</log>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid DNIS ANI callType importedValue"/>
+        </transition>
+
+        <transition event="dialog.user.page" name="evt">
+            <!-- Here we'll pass control to the page ccxml script -->
+            <log>INFO: Entered [dialog.user.page] with state [<value expr="state"/>]</log>
+            <fetch next="'file:'+APP_PATH+'page.ccxml'" namelist="SB_PATH APP_PATH ibconnid DNIS ANI"/>
+        </transition>
+
+        <transition event="connection.disconnected" name="evt">
+            <!-- Caller has hung up. If caller is internal to pbx, we need to toggle their status to inactive -->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <log>INFO: Detected hangup</log>
+            <if cond="inVXML == 'y'">   <!-- If this is true, we need to terminate the current VXML before doing anything else -->
+                <assign name="state" expr="'hangUp'"/>
+                <dialogterminate dialogid="dialogID" immediate="true"/>
+            <else/>
+                <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition state="hangUp" event="dialog.exit" name="evt">
+            <!-- This transition handles the return from terminating the VXML session after receiving a hangup -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <assign name="state" expr="'endCall'"/>
+            <assign name="activeClient" expr="'n'"/>
+            <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.toggleThenEnd" name="evt">
+            <!-- This transition handles the return from terminating the VXML session after receiving a hangup -->
+            <log>INFO: Entered [dialog.user.toggleThenEnd] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'endCall'"/>
+            <if cond="ANI.length &lt; EXT_LENGTH">
+                <assign name="activeClient" expr="'n'"/>
+                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.endCall'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="fetch.done" name="evt">
+            <log>INFO: Fetched document [<value expr="evt.uri"/>]</log>
+            <goto fetchid="evt.fetchid" />
+        </transition>
+
+        <transition event="error.dialog.notstarted" name="evt">
+            <!-- Catch dialog not started error -->
+            <log>ERROR: Entered [error.dialog.notstarted] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- TODO: Write an error log file and notify someone? -->
+            <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="error.*" name="evt">
+            <!-- Use catch all error for now -->
+            <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- TODO: Write an error log file and notify someone? -->
+            <assign name="activeClient" expr="'n'"/>
+            <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
+        </transition>
+
+        <transition event="connection.failed" name="evt">
+            <!-- This event may be triggered if the <accept/> encounters an error -->
+            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
+            <log target="status">Accepted Error</log>
+            <!-- TODO: Write an error log file and notify someone? -->
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <!-- End call -->
+        <transition event="dialog.user.endCall" name="evt">
+            <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
+            <exit/>
+        </transition>
+	</eventprocessor>
+
+</ccxml>

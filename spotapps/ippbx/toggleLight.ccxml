@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
+<ccxml version="1.0">
+    <!-- Last Modified 06/29/2010
+       *   @Name	toggleLight.ccxml
+       *   @Desc	This script handles toggling the message notification
+                    light on the IP phones -->
+
+    <!-- Global Vars -->
+    <var name="dest" expr="''"/>
+    <var name="messages" expr="''"/>
+    <var name="state" expr="'idle'"/>       <!-- State. Used to track which state a transition is in -->
+
+    <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
+
+        <transition state="idle" event="ccxml.loaded" name="evt">
+            <!-- Loaded new ccxml script -->
+            <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
+        </transition>
+
+        <transition event="CCXML_CREATEHTTP_MSG" name="httpEv">
+            <!-- Received CCXML_CREATEHTTP_MSG -->
+            <log>INFO: transition event [CCXML_CREATEHTTP_MSG] state [<value expr="state"/>]</log>
+            <accept/>
+            <assign name="state" expr="'ccxmlCreated'"/>
+            <assign name="dest" expr="'sip:ext' + httpEv.dest + '@iipbx'"/> <!-- Identify which phone's light to turn on -->
+            <if cond="httpEv.phoneLight == 'ON'">
+                <assign name="messages" expr="1"/>
+	            <log>INFO: Attempting to turn message light on for extension [<value expr="dest"/>]</log>
+            <else/>
+                <assign name="messages" expr="0"/>
+	            <log>INFO: Attempting to turn message light off for extension [<value expr="dest"/>]</log>
+            </if>
+            <send data="'messagelightcontrol'" target="'iisip'" targettype="'x-iievent'" namelist="dest messages"/>
+        </transition>
+
+		<transition event="connection.connected">
+			<log>INFO: transition event [connection.connected] state [<value expr="state"/>]</log>
+            <!-- No action here -->
+        </transition>
+
+        <transition event="dialog.user.messagelight.worked" name="evt">
+            <log>INFO: Entered [dialog.user.messagelight.worked] with state [<value expr="state"/>]</log>
+            <log>INFO: Attempt succeeded</log>
+            <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.messagelight.failed" name="evt">
+            <log>INFO: Entered [dialog.user.messagelight.failed] with state [<value expr="state"/>]</log>
+            <log>INFO: Attempt failed</log>
+            <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="error.*" name="evt">
+            <!-- Use catch all error for now -->
+            <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- TODO: Write an error log file and notify someone? -->
+            <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.endCall" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
+            <exit/>
+        </transition>
+
+    </eventprocessor>
+</ccxml>
