@@ -42,7 +42,7 @@ public class EmailerService
     
     private static final String TEST_SMS_NOTIFICATION_BODY = "You have correctly configured your profile to receive SMS notifications at this address";
     
-    private static final String EMAIL_NOTIFICATION_SUBJECT = "New voicmeail from %s";
+    private static final String EMAIL_NOTIFICATION_SUBJECT = "New voicemail from %s";
     private static final String EMAIL_NOTIFICATION_BODY = "<html><body>You have recieved a new voicemail from %s at %s.<br/><br/>"
                                                   + "Total new messages: %s<br/><br/>"
                                                   + "The voicemail is attached"
