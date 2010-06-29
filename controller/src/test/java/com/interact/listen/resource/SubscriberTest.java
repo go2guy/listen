@@ -144,7 +144,7 @@ public class SubscriberTest
         s.setId(System.currentTimeMillis());
         s.setPassword(String.valueOf(System.currentTimeMillis()));
         s.setUsername(String.valueOf(System.currentTimeMillis()));
-        s.setVoicemailPin(System.currentTimeMillis());
+        s.setVoicemailPin(12345L);
         s.setVersion(1);
         return s;
     }

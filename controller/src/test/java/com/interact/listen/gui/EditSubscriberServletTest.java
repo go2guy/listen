@@ -637,7 +637,7 @@ public class EditSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", randomString().substring(0,10));
         request.setParameter("enableEmail", "true");
 
         try
@@ -677,7 +677,7 @@ public class EditSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", randomString().substring(0,10));
         request.setParameter("enableSms", "true");
 
         try

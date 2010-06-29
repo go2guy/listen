@@ -48,7 +48,7 @@ public class AddSubscriberServletTest
         final String username = randomString();
         final String password = randomString();
         final String confirm = password;
-        final String voicemailPin = randomString();
+        final String voicemailPin = randomString().substring(0,10);
         final String enableEmail = "true";
         final String enableSms = "true";
         final String emailAddress = randomString();
@@ -514,7 +514,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", randomString().substring(0,10));
         request.setParameter("enableEmail", "true");
 
         try
@@ -547,7 +547,7 @@ public class AddSubscriberServletTest
         request.setParameter("username", randomString());
         request.setParameter("password", randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", randomString().substring(0,10));
         request.setParameter("enableSms", "true");
 
         try
@@ -578,7 +578,7 @@ public class AddSubscriberServletTest
         final String username = randomString();
         final String password = randomString();
         final String confirm = password;
-        final String voicemailPin = randomString();
+        final String voicemailPin = randomString().substring(0,10);
         final String enableEmail = "false";
         final String emailAddress = randomString();
 
@@ -614,7 +614,7 @@ public class AddSubscriberServletTest
         final String username = randomString();
         final String password = randomString();
         final String confirm = password;
-        final String voicemailPin = randomString();
+        final String voicemailPin = randomString().substring(0,10);
         final String enableSms = "false";
         final String smsAddress = randomString();
 
