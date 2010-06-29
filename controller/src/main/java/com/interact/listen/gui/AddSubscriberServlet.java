@@ -76,6 +76,11 @@ public class AddSubscriberServlet extends HttpServlet
             throw new BadRequestServletException("Please provide a Voicemail Pin Number");
         }
         
+        if(voicemailPinString.length() > 10)
+        {
+            throw new BadRequestServletException("Please provide a Voicemail Pin Number with ten digits or less");
+        }
+        
         Long voicemailPin = null;
         
         try

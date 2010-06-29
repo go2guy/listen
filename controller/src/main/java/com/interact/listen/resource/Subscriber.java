@@ -271,6 +271,11 @@ public class Subscriber extends Resource implements Serializable
             addToErrors("voicemail pin cannot be null");
         }
         
+        if(voicemailPin != null && String.valueOf(voicemailPin).length() > 10)
+        {
+            addToErrors("voicemailPin cannot be more than ten digits");
+        }
+        
         if(isEmailNotificationEnabled && (emailAddress == null || emailAddress.equals("")))
         {
             addToErrors("must provide an E-mail address when E-mail notifications are enabled");
