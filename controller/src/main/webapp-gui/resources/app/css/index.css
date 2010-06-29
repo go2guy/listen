@@ -362,8 +362,11 @@ td.voicemail-cell-readStatus {
 /* application - history */
 
 #history-list li {
-    height: 1.5em;
-    margin-bottom: 1px;
+    border-color: #CCCCCC;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    height: 3em;
+    margin-top: 1px;
 }
 
 #history-list li div {
@@ -371,22 +374,27 @@ td.voicemail-cell-readStatus {
     height: 100%;
     margin-left: 2px;
     overflow: hidden;
+    padding-top: 2px;
 }
 
-.history-row-conferencing {
+#history-list li.history-row-conferencing {
     background-color: #E7F0FF;
+    border-color: #84B4E2;
 }
 
-.history-row-findme {
+#history-list li.history-row-findme {
     background-color: #FFEBEB;
+    border-color: #DD0000;
 }
 
-.history-row-unknown {
+#history-list li.history-row-unknown {
     background-color: #EEEEEE;
+    border-color: #CCCCCC;
 }
 
-.history-row-voicemail {
+#history-list li.history-row-voicemail {
     background-color: #FCF8D2;
+    border-color: #FFE472;
 }
 
 .history-call-date, .history-action-date {
@@ -402,15 +410,7 @@ td.voicemail-cell-readStatus {
 }
 
 .history-call-description, .history-action-description {
-    width: 54%;
-}
-
-.history-call-duration {
-    width: 13%;
-}
-
-.history-action-onSubscriber {
-    width: 13%;
+    width: 67%;
 }
 
 /* application - profile */
@@ -466,7 +466,9 @@ td.voicemail-cell-readStatus {
 .icon-unmute-disabled,
 .icon-unread,
 .icon-view {
+    background-color: #FEFEFE;
     background-image: url('../images/sprite.png');
+    background-repeat: no-repeat;
     border-width: 0;
     cursor: pointer;
     height: 18px;
@@ -478,6 +480,7 @@ td.voicemail-cell-readStatus {
 .image-edit,
 .image-outdial {
     background-image: url('../images/sprite.png');
+    background-repeat: no-repeat;
     border-width: 0;
     height: 18px;
     margin: 0;

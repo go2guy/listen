@@ -4,6 +4,7 @@ import com.interact.listen.PersistenceService;
 import com.interact.listen.resource.ActionHistory;
 import com.interact.listen.resource.Subscriber;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class HistoryService
@@ -48,7 +49,7 @@ public class HistoryService
         ActionHistory history = new ActionHistory();
         history.setAction("Deleted voicemail");
         history.setDescription("Deleted voicemail received by [" + voicemailReceivedBy + "] on [" +
-                               voicemailReceivedDate + "]");
+                               getFormattedDate(voicemailReceivedDate) + "]");
         history.setOnSubscriber(onSubscriber);
         history.setService(Service.VOICEMAIL.toString());
         write(history);
@@ -59,7 +60,7 @@ public class HistoryService
         ActionHistory history = new ActionHistory();
         history.setAction("Downloaded voicemail");
         history.setDescription("Downloaded voicemail received by [" + voicemailReceivedBy + "] on [" +
-                               voicemailReceivedDate + "]");
+                               getFormattedDate(voicemailReceivedDate) + "]");
         history.setOnSubscriber(onSubscriber);
         history.setService(Service.VOICEMAIL.toString());
         write(history);
@@ -80,7 +81,7 @@ public class HistoryService
         ActionHistory history = new ActionHistory();
         history.setAction("Listened to voicemail");
         history.setDescription("Listened to voicemail received by [" + voicemailReceivedBy + "] on [" +
-                               voicemailReceivedDate + "]");
+                               getFormattedDate(voicemailReceivedDate) + "]");
         history.setOnSubscriber(onSubscriber);
         history.setService(Service.VOICEMAIL.toString());
         write(history);
@@ -138,5 +139,11 @@ public class HistoryService
         history.setDescription("Unmuted caller [" + unmutedCaller + "] in conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
         write(history);
+    }
+
+    private static String getFormattedDate(Date date)
+    {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return format.format(date);
     }
 }

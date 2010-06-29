@@ -4,7 +4,7 @@ $(document).ready(function() {
             HistoryApplication: function() {
                 LISTEN.trace('LISTEN.HISTORY.HistoryApplication [construct]');
                 var first = 0;
-                var max = 50;
+                var max = 25;
 
                 var historyList = new LISTEN.DynamicTable({
                     tableId: 'history-list',
@@ -33,14 +33,19 @@ $(document).ready(function() {
                             LISTEN.setFieldContent(row.find('.history-action-date'), data.date, animate);
                             LISTEN.setFieldContent(row.find('.history-action-type'), '<div class="image-edit"></div>', animate, true);
                             LISTEN.setFieldContent(row.find('.history-action-subscriber'), data.subscriber, animate);
-                            LISTEN.setFieldContent(row.find('.history-action-description'), '<b>' + data.action + '</b> (' + data.channel + '): ' + data.description, animate, true);
-                            LISTEN.setFieldContent(row.find('.history-action-onSubscriber'), 'for ' + data.onSubscriber, animate);
+
+                            var description = '<b>' + data.action + '</b> [' + data.channel + '] - ' + data.description;
+                            if(data.onSubscriber && data.onSubscriber.length > 0 && data.onSubscriber != data.subscriber) {
+                                description += '<i>for ' + data.onSubscriber + '</i>';
+                            }
+                            LISTEN.setFieldContent(row.find('.history-action-description'), description, animate, true);
                         } else if(data.type == 'Call') {
                             LISTEN.setFieldContent(row.find('.history-call-date'), data.date, animate);
                             LISTEN.setFieldContent(row.find('.history-call-type'), '<div class="image-outdial"></div>', animate, true);
                             LISTEN.setFieldContent(row.find('.history-call-subscriber'), data.subscriber, animate);
-                            LISTEN.setFieldContent(row.find('.history-call-description'), '<b>' + data.ani + '</b> dialed <b>' + data.dnis + '</b>', animate, true);
-                            LISTEN.setFieldContent(row.find('.history-call-duration'), data.duration, animate);
+
+                            var description = '<b>' + data.ani + '</b> dialed <b>' + data.dnis + '</b> <i>(' + data.duration + ')</i>';
+                            LISTEN.setFieldContent(row.find('.history-call-description'), description, animate, true);
                         }
                     }
                 });
