@@ -373,12 +373,20 @@ td.voicemail-cell-readStatus {
     overflow: hidden;
 }
 
-.history-call {
-    background-color: #CEF6F5;
+.history-row-conferencing {
+    background-color: #EBF3FF;
 }
 
-.history-action {
-    background-color: #CEF6CE;
+.history-row-findme {
+    background-color: #FFEBEB;
+}
+
+.history-row-unknown {
+    background-color: #EEEEEE;
+}
+
+.history-row-voicemail {
+    background-color: #FCF8D2;
 }
 
 .history-call-date, .history-action-date {
@@ -386,50 +394,23 @@ td.voicemail-cell-readStatus {
 }
 
 .history-call-type, .history-action-type {
-    width: 6%;
+    width: 3%;
 }
 
 .history-call-subscriber, .history-action-subscriber {
-    width: 12%;
+    width: 13%;
 }
 
-.history-call-ani {
-    text-align: right;
-    width: 17%
-}
-
-.history-call-direction {
-    text-align: center;
-    width: 5%;
-}
-
-.history-call-dnis {
-    text-align: left;
-    width: 17%;
-}
-
-.history-call-service {
-    width: 16%;
+.history-call-description, .history-action-description {
+    width: 54%;
 }
 
 .history-call-duration {
-    width: 10%;
-}
-
-.history-action-action {
-    width: 15%;
-}
-
-.history-action-description {
-    width: 32%;
+    width: 13%;
 }
 
 .history-action-onSubscriber {
-    width: 13%
-}
-
-.history-action-channel {
-    width: 5%;
+    width: 13%;
 }
 
 /* application - profile */
@@ -494,6 +475,16 @@ td.voicemail-cell-readStatus {
     width: 18px;
 }
 
+.image-edit,
+.image-outdial {
+    background-image: url('../images/sprite.png');
+    border-width: 0;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    width: 18px;
+}
+
 .button-add:hover,
 .button-cancel:hover,
 .button-delete:hover,
@@ -511,75 +502,75 @@ td.voicemail-cell-readStatus {
     background-color: #DDDDDD;
 }
 
-.button-add            { background-position: 2px -148px; }
-.button-add:hover      { background-position: 2px -198px; }
-.icon-add              { background-position: 0   -150px; }
-.icon-add:hover        { background-position: 0   -200px; }
+.button-add                   { background-position: 2px -148px; }
+.button-add:hover             { background-position: 2px -198px; }
+.icon-add                     { background-position: 0   -150px; }
+.icon-add:hover               { background-position: 0   -200px; }
 
-.button-cancel         { background-position: 2px -548px; }
-.button-cancel:hover   { background-position: 2px -598px; }
-.icon-cancel           { background-position: 0   -550px; }
-.icon-cancel:hover     { background-position: 0   -600px; }
+.button-cancel                { background-position: 2px -548px; }
+.button-cancel:hover          { background-position: 2px -598px; }
+.icon-cancel                  { background-position: 0   -550px; }
+.icon-cancel:hover            { background-position: 0   -600px; }
 
-.button-delete         { background-position: 2px -948px; }
-.button-delete:hover   { background-position: 2px -998px; }
-.icon-delete           { background-position: 0   -950px; }
-.icon-delete:hover     { background-position: 0   -1000px; }
+.button-delete                { background-position: 2px -948px; }
+.button-delete:hover          { background-position: 2px -998px; }
+.icon-delete                  { background-position: 0   -950px; }
+.icon-delete:hover            { background-position: 0   -1000px; }
 
-.button-edit           { background-position: 2px -1448px; }
-.button-edit:hover     { background-position: 2px -1498px; }
-.icon-edit             { background-position: 0   -1450px; }
-.icon-edit:hover       { background-position: 0   -1500px; }
+.button-edit                  { background-position: 2px -1448px; }
+.button-edit:hover            { background-position: 2px -1498px; }
+.icon-edit, .image-edit       { background-position: 0   -1450px; }
+.icon-edit:hover              { background-position: 0   -1500px; }
 
-.button-mute           { background-position: 2px -748px; }
-.button-mute:hover     { background-position: 2px -798px; }
-.icon-mute             { background-position: 0   -750px; }
-.icon-mute:hover       { background-position: 0   -800px; }
+.button-mute                  { background-position: 2px -748px; }
+.button-mute:hover            { background-position: 2px -798px; }
+.icon-mute                    { background-position: 0   -750px; }
+.icon-mute:hover              { background-position: 0   -800px; }
 
-.button-outdial        { background-position: 2px -1048px; }
-.button-outdial:hover  { background-position: 2px -1098px; }
-.icon-outdial          { background-position: 0   -1050px; }
-.icon-outdial:hover    { background-position: 0   -1100px; }
+.button-outdial               { background-position: 2px -1048px; }
+.button-outdial:hover         { background-position: 2px -1098px; }
+.icon-outdial, .image-outdial { background-position: 0   -1050px; }
+.icon-outdial:hover           { background-position: 0   -1100px; }
 
-.button-read         { background-position: 2px -1348px; }
-.button-read:hover   { background-position: 2px -1398px; }
-.icon-read           { background-position: 0   -1350px; }
-.icon-read:hover     { background-position: 0   -1400px; }
+.button-read                  { background-position: 2px -1348px; }
+.button-read:hover            { background-position: 2px -1398px; }
+.icon-read                    { background-position: 0   -1350px; }
+.icon-read:hover              { background-position: 0   -1400px; }
 
-.button-record         { background-position: 2px -248px; }
-.button-record:hover   { background-position: 2px -298px; }
-.icon-record           { background-position: 0   -250px; }
-.icon-record:hover     { background-position: 0   -300px; }
+.button-record                { background-position: 2px -248px; }
+.button-record:hover          { background-position: 2px -298px; }
+.icon-record                  { background-position: 0   -250px; }
+.icon-record:hover            { background-position: 0   -300px; }
 
-.button-save           { background-position: 2px -48px; }
-.button-save:hover     { background-position: 2px -98px; }
-.icon-save             { background-position: 0   -50px; }
-.icon-save:hover       { background-position: 0   -100px; }
+.button-save                  { background-position: 2px -48px; }
+.button-save:hover            { background-position: 2px -98px; }
+.icon-save                    { background-position: 0   -50px; }
+.icon-save:hover              { background-position: 0   -100px; }
 
-.button-schedule       { background-position: 2px -848px; }
-.button-schedule:hover { background-position: 2px -898px; }
-.icon-schedule         { background-position: 0   -850px; }
-.icon-schedule:hover   { background-position: 0   -900px; }
+.button-schedule              { background-position: 2px -848px; }
+.button-schedule:hover        { background-position: 2px -898px; }
+.icon-schedule                { background-position: 0   -850px; }
+.icon-schedule:hover          { background-position: 0   -900px; }
 
-.button-stop           { background-position: 2px -348px; }
-.button-stop:hover     { background-position: 2px -398px; }
-.icon-stop             { background-position: 0   -350px; }
-.icon-stop:hover       { background-position: 0   -400px; }
+.button-stop                  { background-position: 2px -348px; }
+.button-stop:hover            { background-position: 2px -398px; }
+.icon-stop                    { background-position: 0   -350px; }
+.icon-stop:hover              { background-position: 0   -400px; }
 
-.button-unmute         { background-position: 2px -648px; }
-.button-unmute:hover   { background-position: 2px -698px; }
+.button-unmute                { background-position: 2px -648px; }
+.button-unmute:hover          { background-position: 2px -698px; }
 .icon-unmute, .icon-unmute-disabled { background-position: 0 -650px; }
-.icon-unmute:hover     { background-position: 0   -700px; }
+.icon-unmute:hover            { background-position: 0   -700px; }
 
-.button-unread         { background-position: 2px -1248px; }
-.button-unread:hover   { background-position: 2px -1298px; }
-.icon-unread           { background-position: 0   -1250px; }
-.icon-unread:hover     { background-position: 0   -1300px; }
+.button-unread                { background-position: 2px -1248px; }
+.button-unread:hover          { background-position: 2px -1298px; }
+.icon-unread                  { background-position: 0   -1250px; }
+.icon-unread:hover            { background-position: 0   -1300px; }
 
-.button-view           { background-position: 2px -1148px; }
-.button-view:hover     { background-position: 2px -1198px; }
-.icon-view             { background-position: 0   -1150px; }
-.icon-view:hover       { background-position: 0   -1200px; }
+.button-view                  { background-position: 2px -1148px; }
+.button-view:hover            { background-position: 2px -1198px; }
+.icon-view                    { background-position: 0   -1150px; }
+.icon-view:hover              { background-position: 0   -1200px; }
 
 /* dialogs, forms, tables */
 

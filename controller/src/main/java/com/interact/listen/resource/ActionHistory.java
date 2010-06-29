@@ -103,6 +103,7 @@ public class ActionHistory extends History implements Serializable
         copy.setDate(getDate());
         copy.setDescription(getDescription());
         copy.setOnSubscriber(getOnSubscriber());
+        copy.setService(getService());
         copy.setSubscriber(getSubscriber());
         return copy;
     }

@@ -19,9 +19,6 @@ public class CallDetailRecord extends History implements Serializable
     @Type(type = "org.joda.time.contrib.hibernate.PersistentDuration")
     private Duration duration;
 
-    @Column(name = "SERVICE", nullable = true)
-    private String service;
-
     @Column(name = "ANI", nullable = true)
     private String ani;
 
@@ -45,16 +42,6 @@ public class CallDetailRecord extends History implements Serializable
     public void setDuration(Duration duration)
     {
         this.duration = duration;
-    }
-
-    public String getService()
-    {
-        return service;
-    }
-
-    public void setService(String service)
-    {
-        this.service = service;
     }
 
     public String getAni()
@@ -106,7 +93,7 @@ public class CallDetailRecord extends History implements Serializable
         copy.setDate(getDate());
         copy.setDnis(dnis);
         copy.setDuration(duration);
-        copy.setService(service);
+        copy.setService(getService());
         copy.setSubscriber(getSubscriber());
         return copy;
     }

@@ -24,22 +24,22 @@ $(document).ready(function() {
                     },
                     reverse: true,
                     updateRowCallback: function(row, data, animate) {
+                        var c = 'history-row-' + data.service;
+                        if(!row.hasClass(c)) {
+                            row.removeClass();
+                            row.addClass(c);
+                        }
                         if(data.type == 'Action') {
                             LISTEN.setFieldContent(row.find('.history-action-date'), data.date, animate);
-                            LISTEN.setFieldContent(row.find('.history-action-type'), 'Action', animate);
+                            LISTEN.setFieldContent(row.find('.history-action-type'), '<div class="image-edit"></div>', animate, true);
                             LISTEN.setFieldContent(row.find('.history-action-subscriber'), data.subscriber, animate);
-                            LISTEN.setFieldContent(row.find('.history-action-action'), data.action, animate);
-                            LISTEN.setFieldContent(row.find('.history-action-description'), data.description, animate);
-                            LISTEN.setFieldContent(row.find('.history-action-onSubscriber'), data.onSubscriber, animate);
-                            LISTEN.setFieldContent(row.find('.history-action-channel'), data.channel, animate);
+                            LISTEN.setFieldContent(row.find('.history-action-description'), '<b>' + data.action + '</b> (' + data.channel + '): ' + data.description, animate, true);
+                            LISTEN.setFieldContent(row.find('.history-action-onSubscriber'), 'for ' + data.onSubscriber, animate);
                         } else if(data.type == 'Call') {
                             LISTEN.setFieldContent(row.find('.history-call-date'), data.date, animate);
-                            LISTEN.setFieldContent(row.find('.history-call-type'), 'Call', animate);
+                            LISTEN.setFieldContent(row.find('.history-call-type'), '<div class="image-outdial"></div>', animate, true);
                             LISTEN.setFieldContent(row.find('.history-call-subscriber'), data.subscriber, animate);
-                            LISTEN.setFieldContent(row.find('.history-call-ani'), data.ani, animate);
-                            LISTEN.setFieldContent(row.find('.history-call-direction'), '&raquo;', animate, true);
-                            LISTEN.setFieldContent(row.find('.history-call-dnis'), data.dnis, animate);
-                            LISTEN.setFieldContent(row.find('.history-call-service'), data.service, animate);
+                            LISTEN.setFieldContent(row.find('.history-call-description'), '<b>' + data.ani + '</b> dialed <b>' + data.dnis + '</b>', animate, true);
                             LISTEN.setFieldContent(row.find('.history-call-duration'), data.duration, animate);
                         }
                     }

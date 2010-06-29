@@ -138,7 +138,7 @@ public class GetHistoryListServlet extends HttpServlet
         }
 
         String service = marshaller.convertAndEscape(String.class, record.getService());
-        json.append("\"service\":\"").append(service).append("\",");
+        json.append("\"service\":\"").append(service == null ? "unknown" : service.toLowerCase()).append("\",");
 
         String durationString = "";
         if(record.getDuration() != null)
@@ -183,6 +183,9 @@ public class GetHistoryListServlet extends HttpServlet
             String subscriber = marshaller.convertAndEscape(String.class, history.getSubscriber().getUsername());
             json.append("\"subscriber\":\"").append(subscriber).append("\",");
         }
+
+        String service = marshaller.convertAndEscape(String.class, history.getService());
+        json.append("\"service\":\"").append(service == null ? "unknown" : service.toLowerCase()).append("\",");
 
         String action = marshaller.convertAndEscape(String.class, history.getAction());
         json.append("\"action\":\"").append(action).append("\",");

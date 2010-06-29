@@ -28,6 +28,9 @@ public abstract class History extends Resource implements Serializable
     @OneToOne
     private Subscriber subscriber;
 
+    @Column(name = "SERVICE", nullable = true)
+    private String service;
+
     public Long getId()
     {
         return id;
@@ -66,5 +69,15 @@ public abstract class History extends Resource implements Serializable
     public void setSubscriber(Subscriber subscriber)
     {
         this.subscriber = subscriber;
+    }
+
+    public String getService()
+    {
+        return service;
+    }
+
+    public void setService(String service)
+    {
+        this.service = service;
     }
 }

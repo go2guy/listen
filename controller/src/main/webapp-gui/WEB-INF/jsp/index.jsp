@@ -477,24 +477,19 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
       </tbody></table>
 
       <ul>
-        <li id="history-call-template" class="history-call">
-          <div class="history-call-date"></div>
-          <div class="history-call-type">Call</div>
+        <li id="history-call-template" class="history-row-unknown">
+          <div class="history-call-date" title="Call start date"></div>
+          <div class="history-call-type" title="Call history">Call</div>
           <div class="history-call-subscriber"></div>
-          <div class="history-call-ani"></div>
-          <div class="history-call-direction"></div>
-          <div class="history-call-dnis"></div>
-          <div class="history-call-service"></div>
-          <div class="history-call-duration"></div>
+          <div class="history-call-description"></div>
+          <div class="history-call-duration" title="Duration"></div>
         </li>
-        <li id="history-action-template" class="history-action">
-          <div class="history-action-date"></div>
-          <div class="history-action-type">Action</div>
+        <li id="history-action-template" class="history-row-unknown">
+          <div class="history-action-date" title="Date"></div>
+          <div class="history-action-type" title="Action history">Action</div>
           <div class="history-action-subscriber"></div>
-          <div class="history-action-action"></div>
           <div class="history-action-description"></div>
           <div class="history-action-onSubscriber"></div>
-          <div class="history-action-channel"></div>
         </li>
       </ul>
     </div>
