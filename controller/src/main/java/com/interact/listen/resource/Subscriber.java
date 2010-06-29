@@ -24,13 +24,13 @@ public class Subscriber extends Resource implements Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<AccessNumber> accessNumbers = new HashSet<AccessNumber>();
 
     @Column(name = "VOICEMAIL_PIN")
     private Long voicemailPin;
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
 
     @Column(name = "USERNAME", nullable = false, unique = true)

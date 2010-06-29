@@ -14,7 +14,7 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -167,27 +167,49 @@ public class EditSubscriberServlet extends HttpServlet
                                                      PersistenceService persistenceService)
         throws BadRequestServletException
     {
+        Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();
+        for(AccessNumber accessNumber : GetSubscriberServlet.getAccessNumbers(subscriber, session))
+        {
+            existingNumbers.put(accessNumber.getNumber(), accessNumber);
+        }
+
+        List<String> newNumbers = new ArrayList<String>();
+
         String[] split = accessNumberString.split(",");
         for(String an : split)
         {
-            String accessNumber = an.trim();
+            newNumbers.add(an.trim());
+        }
+
+        for(Map.Entry<String, AccessNumber> entry : existingNumbers.entrySet())
+        {
+            if(!newNumbers.contains(entry.getKey()))
+            {
+                session.delete(entry.getValue());
+            }
+        }
+
+        for(String number : newNumbers)
+        {
             Criteria criteria = session.createCriteria(AccessNumber.class);
-            criteria.add(Restrictions.eq("number", accessNumber));
+            criteria.add(Restrictions.eq("number", number));
             criteria.setMaxResults(1);
             AccessNumber result = (AccessNumber)criteria.uniqueResult();
 
             if(result != null && !result.getSubscriber().equals(subscriber))
             {
-                throw new BadRequestServletException("Access number [" + accessNumber + "] is already in use by another account");
+                throw new BadRequestServletException("Access number [" + number +
+                                                     "] is already in use by another account");
             }
             else if(result == null)
             {
                 AccessNumber newNumber = new AccessNumber();
-                newNumber.setNumber(accessNumber);
+                newNumber.setNumber(number);
                 newNumber.setSubscriber(subscriber);
 
-                persistenceService.save(newNumber);
                 subscriber.addToAccessNumbers(newNumber);
+                persistenceService.save(subscriber);
+                persistenceService.save(newNumber);
             }
         }
     }
