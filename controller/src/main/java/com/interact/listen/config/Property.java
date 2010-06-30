@@ -1,10 +1,9 @@
 package com.interact.listen.config;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "PROPERTY")
 public class Property
 {
     public static enum Key {
@@ -47,11 +46,11 @@ public class Property
         }
     }
     
-    @Column(nullable = false, unique = true)
+    @Column(name = "PROPERTY_KEY", nullable = false, unique = true)
     @Id
     private String key;
 
-    @Column
+    @Column(name = "PROPERTY_VALUE")
     private String value;
 
     public static Property newInstance(String key, String value)

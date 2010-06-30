@@ -30,20 +30,30 @@ public final class HibernateUtil
     {
         try
         {
+            final String dbUrl = System.getProperty("com.interact.listen.db.url", getHsqldbUrl());
+            final String dbUsername = System.getProperty("com.interact.listen.db.username", "sa");
+            final String dbPassword = System.getProperty("com.interact.listen.db.password", "");
+            final String dbDialect = System.getProperty("com.interact.listen.db.dialect", "org.hibernate.dialect.HSQLDialect");
+            final String dbDriver = System.getProperty("com.interact.listen.db.driver", "org.hsqldb.jdbcDriver");
+            final String dbAutoddl = System.getProperty("com.interact.listen.db.autoddl", "create-drop");
+
+            LOG.debug("DB connection string = [" + dbUrl + "]");
+            LOG.debug("DB username =          [" + dbUsername + "]");
+            LOG.debug("DB password =          [*]");
+            LOG.debug("DB dialect =           [" + dbDialect + "]");
+            LOG.debug("DB driver =            [" + dbDriver + "]");
+            LOG.debug("DB hbm2ddl.auto =      [" + dbAutoddl + "]");
+
             AnnotationConfiguration config = new AnnotationConfiguration();
-            config.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-            config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
-
-            String dburl = getDbConnectionString();
-            LOG.debug("DB connection string is [" + dburl + "]");
-
-            config.setProperty("hibernate.connection.url", dburl);
-            config.setProperty("hibernate.connection.username", "sa");
-            config.setProperty("hibernate.connection.password", "");
+            config.setProperty("hibernate.dialect", dbDialect);
+            config.setProperty("hibernate.connection.driver_class", dbDriver);
+            config.setProperty("hibernate.connection.url", dbUrl);
+            config.setProperty("hibernate.connection.username", dbUsername);
+            config.setProperty("hibernate.connection.password", dbPassword);
             config.setProperty("hibernate.connection.pool_size", "1");
             config.setProperty("hibernate.connection.autocommit", "false");
             config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
-            config.setProperty("hibernate.hbm2ddl.auto", "update");
+            config.setProperty("hibernate.hbm2ddl.auto", dbAutoddl);
             config.setProperty("hibernate.show_sql", "false");
             config.setProperty("hibernate.transaction.factory_class",
                                "org.hibernate.transaction.JDBCTransactionFactory");
@@ -93,14 +103,8 @@ public final class HibernateUtil
         return SESSION_FACTORY;
     }
 
-    private static String getDbConnectionString()
+    private static String getDataDir()
     {
-        String configured = System.getProperty("com.interact.listen.dburl");
-        if(configured != null)
-        {
-            return configured;
-        }
-
         try
         {
             String dirPath = System.getProperty("data.dir", "/var/lib/com.interact.listen");
@@ -135,14 +139,26 @@ public final class HibernateUtil
                 }
             }
 
-            return "jdbc:hsqldb:file:" + dir.getAbsolutePath() + "/database/listendb";
+            return dir.getAbsolutePath();
         }
         catch(Exception e)
         {
-            LOG.error("Error initializing data directory, using current working directory", e);
+            throw new ExceptionInInitializerError(e);
         }
+    }
 
-        return "jdbc:hsqldb:file:listendb";
+    private static String getHsqldbUrl()
+    {
+        try
+        {
+            String dataDir = getDataDir();
+            return "jdbc:hsqldb:file:" + dataDir + "/database/listendb";
+        }
+        catch(ExceptionInInitializerError e)
+        {
+            LOG.error("Error getting data directory", e);
+            return "jdbc:hsqldb:file:listendb";
+        }
     }
 
     private static void bootstrap(PersistenceService persistenceService)
