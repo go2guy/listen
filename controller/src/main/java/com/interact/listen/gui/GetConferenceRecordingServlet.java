@@ -17,9 +17,7 @@ import com.interact.listen.stats.StatSender;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -76,7 +74,7 @@ public class GetConferenceRecordingServlet extends HttpServlet
         try
         {
             // input
-            URL url = new URL(recording.getUri());
+            URL url = new URL(URLEncoder.encode(recording.getUri(), "UTF-8"));
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
