@@ -28,6 +28,10 @@ public class Iso8601DateConverter implements Converter
     @Override
     public Object unmarshal(String value) throws ConversionException
     {
+        if(value == null)
+        {
+            return null;
+        }
         SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_FORMAT);
         try
         {
