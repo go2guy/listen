@@ -36,7 +36,7 @@ $(document).ready(function() {
 
                             var description = '<b>' + data.action + '</b> [' + data.channel + '] - ' + data.description;
                             if(data.onSubscriber && data.onSubscriber.length > 0 && data.onSubscriber != data.subscriber) {
-                                description += '<i>for ' + data.onSubscriber + '</i>';
+                                description += ' <i>for ' + data.onSubscriber + '</i>';
                             }
                             LISTEN.setFieldContent(row.find('.history-action-description'), description, animate, true);
                         } else if(data.type == 'Call') {
