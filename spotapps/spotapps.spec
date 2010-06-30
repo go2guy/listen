@@ -59,24 +59,29 @@ Requires: spotbuild-vip
 
     # Install vxml & ccxml scripts
     mkdir -p %{buildroot}/interact/apps/
+    mkdir -p %{buildroot}/var/www/html/pbx/
     mkdir -p %{buildroot}/var/www/html/listen/artifacts/conference/record/
     mkdir -p %{buildroot}/var/www/html/listen/artifacts/conference/rollcall/
     mkdir -p %{buildroot}/var/www/html/listen/artifacts/voicemail/greeting/
     mkdir -p %{buildroot}/var/www/html/listen/artifacts/voicemail/message/
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
+    cp -r %{STARTDIR}/ippbx %{buildroot}/interact/apps/spotbuild
+    cp -r %{STARTDIR}/ippbx/php/*.php %{buildroot}/var/www/html/pbx/
 
     # Remove extras
     rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
+    rm -rf %{buildroot}/interact/apps/spotbuild/ippbx/php
 
     # Run Encryption
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/
     /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/ %{buildroot}/interact/apps/spotbuild/listen_autoDial/
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/
     /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
+    /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/
 
     # Add root.vxml
-    for rootfile in `find %{STARTDIR}/spotbuild/listen* -name root.vxml`
+    for rootfile in `find %{STARTDIR}/spotbuild/listen* %{STARTDIR}/spotbuild/ippbx -name root.vxml`
     do
         listendir=`dirname ${rootfile}`
         listendir=`basename ${listendir}`
@@ -97,8 +102,10 @@ Requires: spotbuild-vip
     # This is to keep the package from colliding with the directories which are also delivered by spobtuild-vip
     %defattr(777,interact,operator)
     /interact/apps/spotbuild/listen*
+    /interact/apps/spotbuild/ippbx*
     /interact/apps/spotbuild/lib/cgi-bin/listen
     /var/www/html/listen/artifacts/*
+    /var/www/html/ippbx/*
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
@@ -169,6 +176,11 @@ Requires: spotbuild-vip
     echo "iistart link currently points to [ `readlink /interact/apps/iistart.ccxml` ]. It will be wiped out and re-linked to [ /interact/apps/spotbuild/listen_main/listen_main.ccxml ]." >> ${debug}
     rm -f /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
     ln -s /interact/apps/spotbuild/listen_main/listen_main.ccxml /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
+
+    if [ ! -e /var/lib/mysql/ip_pbx ]
+    then
+        mysql -u root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql
+    fi
 
 #######################################################################
 # The preun section lists actions to be performed before
