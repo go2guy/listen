@@ -146,12 +146,14 @@ def all():
 def prep():
     print("Preparing for deployment")
     stopcmds = ["service listen-controller stop",
-                "service collector stop"]
+                "service collector stop",
+                "service mysqld stop"]
 
     killprocs = ["/interact/.*/iiMoap",
                  "/interact/.*/iiSysSrvr",
                  "/interact/.*/collector",
-                 "/interact/.*/listen-controller"]
+                 "/interact/.*/listen-controller",
+                 "mysqld"]
 
     deploy.stop(stopcmds, killprocs)
 
@@ -165,11 +167,15 @@ def prep():
 
     deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
     deploy.removeFiles("/var/lib/com.interact.listen/")
+    deploy.removeFiles("/var/lib/mysql/")
 
 
 def install():
     # install uia packages
     deploy.run(["rpm", "-Uvh", uiapkg])
+
+    # Make sure mysqld is running
+    deploy.run(["service", "mysqld", "start"], failonerror=False)
 
     # define an empty list for startup commands
     startlist = {}
