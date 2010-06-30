@@ -25,7 +25,7 @@ $(document).ready(function() {
                             }
                         });
                     }
-                } else if(data == 'pong') {
+                } else if(data == 'pong' && failedTries > 2) {
                     failedTries = 0;
                     $.modal.close();
                 }
