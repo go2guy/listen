@@ -672,6 +672,11 @@ fieldset table td {
     text-align: left;
 }
 
+fieldset table td.buttons {
+    background-color: #EEEEEE;
+    text-align: center;
+}
+
 fieldset table .buttons button {
     margin-right: 6px;
 }

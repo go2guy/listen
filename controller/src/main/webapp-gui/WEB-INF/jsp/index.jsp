@@ -181,7 +181,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                     <div class="form-success-message"></div>
                     <table>
                       <tbody>
-                        <tr><td></td><td colspan="3" class="buttons"><button class="button-add" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="button-save" title="Save DNIS mappings">Save</button><!--<button class="button-cancel">Reset</button>--></td></tr>
+                        <tr><td colspan="6" class="buttons"><button class="button-add" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="button-save" title="Save DNIS mappings">Save</button></td></tr>
                       </tbody>
                     </table>
                   </fieldset>
@@ -198,7 +198,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                         <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
                         <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
                         <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
-                        <tr><td></td><td class="buttons"><button type="submit" class="button-save" title="Save mail settings">Save</button><!--<button class="button-cancel">Reset</button>--></td></tr>
+                        <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save mail settings">Save</button><!--<button class="button-cancel">Reset</button>--></td></tr>
                       </tbody>
                     </table>
                   </fieldset>
@@ -291,8 +291,7 @@ if(subscriber.getIsAdministrator()) { %>
                                 </td>
                               </tr>
                               <tr>
-                                <td></td>
-                                <td class="buttons">
+                                <td colspan="2" class="buttons">
                                   <button class="button-add" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.SUBSCRIBERS.addSubscriber();return false;">Add</button>
                                   <button class="button-edit" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.SUBSCRIBERS.editSubscriber();return false;">Edit</button>
                                   <button class="button-cancel" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.SUBSCRIBERS.resetForm();return false;">Cancel Edit</button>
@@ -356,8 +355,7 @@ if(subscriber != null) { %>
                           </td>
                         </tr>
                         <tr>
-                          <td></td>
-                          <td class="buttons">
+                          <td colspan="2" class="buttons">
                             <button class="button-save" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
                           </td>
                         </tr>
