@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/26/2010
+    <!-- Last Modified 06/30/2010
        *   @Name	dbCall.vxml
        *   @Desc	This script performs two functions. It is used to toggle the status of a specified
                     extension in the database. It is also used to get a list of active extensions from the
@@ -64,7 +64,7 @@
             <if cond="extension.length &lt; EXT_LENGTH">
                 <var name="status" expr="activeClient"/>
                 <assign name="result" expr="'Failure'"/>
-                <data name="clientToggle" srcexpr="DB_PATH+'user/toggleStatus.php'" namelist="extension status" method="post"/>
+                <data name="clientToggle" srcexpr="DB_PATH+'toggleStatus.php'" namelist="extension status" method="post"/>
                 <assign name="result" expr="clientToggle.result"/>
                 <log>INFO: Result [<value expr="result"/>]</log>
             <else/>
@@ -80,7 +80,7 @@
             <log>INFO: Entered getClientList</log>
             <var name="status" expr="activeClient"/>
             <assign name="result" expr="0"/>
-            <data name="activeList" srcexpr="DB_PATH+'user/getActive.php'" namelist="status" method="post"/>
+            <data name="activeList" srcexpr="DB_PATH+'getActive.php'" namelist="status" method="post"/>
             <log>INFO: Found [<value expr="activeList.result"/>] active clients</log>
             <if cond="activeList.result != 0">
                 <assign name="result" expr="activeList.clients"/>

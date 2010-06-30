@@ -59,7 +59,7 @@ Requires: spotbuild-vip
 
     # Install vxml & ccxml scripts
     mkdir -p %{buildroot}/interact/apps/
-    mkdir -p %{buildroot}/var/www/html/pbx/
+    mkdir -p %{buildroot}/var/www/html/ippbx/
     mkdir -p %{buildroot}/var/www/html/listen/artifacts/conference/record/
     mkdir -p %{buildroot}/var/www/html/listen/artifacts/conference/rollcall/
     mkdir -p %{buildroot}/var/www/html/listen/artifacts/voicemail/greeting/
@@ -67,7 +67,7 @@ Requires: spotbuild-vip
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
     cp -r %{STARTDIR}/ippbx %{buildroot}/interact/apps/spotbuild
-    cp -r %{STARTDIR}/ippbx/php/*.php %{buildroot}/var/www/html/pbx/
+    cp -r %{STARTDIR}/ippbx/php/*.php %{buildroot}/var/www/html/ippbx/
 
     # Remove extras
     rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
