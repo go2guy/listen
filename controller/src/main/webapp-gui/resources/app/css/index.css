@@ -353,6 +353,10 @@ td.voicemail-cell-readStatus {
     display: none;
 }
 
+#subscriber-form textarea {
+    width: 100%;
+}
+
 /* application - system configuration */
 
 .dnis-mapping-custom-destination {

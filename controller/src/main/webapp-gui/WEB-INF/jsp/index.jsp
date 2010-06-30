@@ -262,9 +262,11 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                               <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
                               <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
                               <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
+                              <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr>
+                              <tr><td colspan="2"><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
+                              </tr>
                               <tr>
-                                <td><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
-                                <td><%
+                                <td colspan="2"><%
 if(subscriber.getIsAdministrator()) { %>
                                   <textarea rows="4" cols="25" id="subscriber-form-accessNumbers" name="subscriber-form-accessNumbers"></textarea><%
 } else { %>
@@ -272,18 +274,17 @@ if(subscriber.getIsAdministrator()) { %>
 } %>
                                 </td>
                               </tr>
-                              <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr>
+                              <tr><td colspan="2"><label for="subscriber-form-enableEmailNotification">Send e-mail when voicemail received</label></td></tr>
                               <tr>
-                                <td><label for="subscriber-form-enableEmailNotification">Enable E-mail Notification</label></td>
-                                <td>
+                                <td colspan="2">
                                   <input type="checkbox" id="subscriber-form-enableEmailNotification" name="subscriber-form-enableEmailNotification" value="enableEmail"/>
                                   <input type="text" id="subscriber-form-emailAddress" name="subscriber-form-emailAddress"/>
                                   <button class="button-save" id="subscriber-form-testEmail-button" name="subscriber-form-testEmail-button" title="Test Email Address" onclick="LISTEN.SUBSCRIBERS.testEmailAddress();return false;">Verify</button>
                                 </td>
                               </tr>
+                              <tr><td colspan="2"><label for="subscriber-form-enableSmsNotification">Send SMS when voicemail received</label></td></tr>
                               <tr>
-                                <td><label for="subscriber-form-enableSmsNotification">Enable SMS Notification</label></td>
-                                <td>
+                                <td colspan="2">
                                   <input type="checkbox" id="subscriber-form-enableSmsNotification" name="subscriber-form-enableSmsNotification" value="enableSms"/>
                                   <input type="text" id="subscriber-form-smsAddress" name="subscriber-form-smsAddress"/>
                                   <button class="button-save" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address" onclick="LISTEN.SUBSCRIBERS.testSmsAddress();return false;">Verify</button>
@@ -339,7 +340,7 @@ if(subscriber != null) { %>
                         <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr>
                         <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
                         <tr>
-                          <td><label for="profile-form-enableEmailNotification">Enable E-mail Notification</label></td>
+                          <td><label for="profile-form-enableEmailNotification">Send e-mail when voicemail received</label></td>
                           <td>
                             <input type="checkbox" id="profile-form-enableEmailNotification" name="profile-form-enableEmailNotification" value="enableEmail"/>
                             <input type="text" id="profile-form-emailAddress" name="profile-form-emailAddress"/>
@@ -347,7 +348,7 @@ if(subscriber != null) { %>
                           </td>
                         </tr>
                         <tr>
-                          <td><label for="profile-form-enableSmsNotification">Enable SMS Notification</label></td>
+                          <td><label for="profile-form-enableSmsNotification">Send SMS when voicemail received</label></td>
                           <td>
                             <input type="checkbox" id="profile-form-enableSmsNotification" name="profile-form-enableSmsNotification" value="enableSms"/>
                             <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
