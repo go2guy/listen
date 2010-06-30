@@ -5,24 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'53-68'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'53-5'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(returnVal)
+            function II_SB_JS_function(ANI)
             {
-	            var result = eval("("+returnVal+")");
-return result.count;
+	            return unescape(ANI);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Count</log>
-            <log>INFO: Entered run-javascript.vxml [53-67]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="status" expr="II_SB_userJava" />   
+            <log target="status">Unescape ANI</log>
+            <log>INFO: Entered run-javascript.vxml [142-15]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(ANI)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="ANI" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
