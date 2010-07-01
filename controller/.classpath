@@ -40,5 +40,6 @@
 	<classpathentry kind="lib" path="lib/runtime/license-client-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/joda-time-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/realize-client-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/liquibase-1.9.5.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>

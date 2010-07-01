@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <changeSet author="root (generated)" id="1278000597225-1">
+        <createTable tableName="ACCESS_NUMBER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="GREETING_LOCATION" type="VARCHAR(255)"/>
+            <column name="NUMBER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+            <column name="SUBSCRIBER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-2">
+        <createTable tableName="AUDIO">
+            <column name="DTYPE" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DATE_CREATED" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(255)"/>
+            <column name="DURATION" type="VARCHAR(255)"/>
+            <column name="FILE_SIZE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="URI" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+            <column name="IS_NEW" type="BIT"/>
+            <column name="LEFT_BY" type="VARCHAR(255)"/>
+            <column name="CONFERENCE_ID" type="BIGINT"/>
+            <column name="SUBSCRIBER_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-3">
+        <createTable tableName="CONFERENCE">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ARCADE_ID" type="VARCHAR(255)"/>
+            <column name="DESCRIPTION" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_RECORDING" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_STARTED" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RECORDING_SESSION_ID" type="VARCHAR(255)"/>
+            <column name="START_TIME" type="DATETIME"/>
+            <column name="VERSION" type="INT"/>
+            <column name="SUBSCRIBER_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-4">
+        <createTable tableName="CONFERENCE_HISTORY">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DATE_CREATED" type="DATETIME"/>
+            <column name="DESCRIPTION" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBSCRIBER" type="VARCHAR(255)"/>
+            <column name="VERSION" type="INT"/>
+            <column name="CONFERENCE_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-5">
+        <createTable tableName="HISTORY">
+            <column name="DTYPE" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DATE" type="DATETIME"/>
+            <column name="SERVICE" type="VARCHAR(255)"/>
+            <column name="VERSION" type="INT"/>
+            <column name="ACTION" type="VARCHAR(255)"/>
+            <column name="CHANNEL" type="VARCHAR(255)"/>
+            <column name="DESCRIPTION" type="VARCHAR(255)"/>
+            <column name="ANI" type="VARCHAR(255)"/>
+            <column name="DIRECTION" type="VARCHAR(255)"/>
+            <column name="DNIS" type="VARCHAR(255)"/>
+            <column name="DURATION" type="VARCHAR(255)"/>
+            <column name="SUBSCRIBER_ID" type="BIGINT"/>
+            <column name="ON_SUBSCRIBER_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-6">
+        <createTable tableName="LISTEN_SPOT_SUBSCRIBER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="HTTP_API" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PHONE_NUMBER" type="VARCHAR(255)"/>
+            <column name="PHONE_NUMBER_PROTOCOL" type="VARCHAR(255)"/>
+            <column name="VERSION" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-7">
+        <createTable tableName="PARTICIPANT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="AUDIO_RESOURCE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_ADMIN" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_ADMIN_MUTED" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_MUTED" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_PASSIVE" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SESSION_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+            <column name="CONFERENCE_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-8">
+        <createTable tableName="PIN">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NUMBER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+            <column name="CONFERENCE_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-9">
+        <createTable tableName="PROPERTY">
+            <column name="PROPERTY_KEY" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROPERTY_VALUE" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-10">
+        <createTable tableName="SUBSCRIBER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="EMAIL_ADDRESS" type="VARCHAR(255)"/>
+            <column name="IS_ADMINISTRATOR" type="BIT"/>
+            <column name="EMAIL_NOTIFICATION_ENABLED" type="BIT"/>
+            <column name="SMS_NOTIFICATION_ENABLED" type="BIT"/>
+            <column name="LAST_LOGIN" type="DATETIME"/>
+            <column name="PASSWORD" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SMS_ADDRESS" type="VARCHAR(255)"/>
+            <column name="USERNAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+            <column name="VOICEMAIL_PIN" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-11">
+        <createIndex indexName="FK4DF68A84AE99D4DE" tableName="ACCESS_NUMBER" unique="false">
+            <column name="SUBSCRIBER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-12">
+        <createIndex indexName="NUMBER" tableName="ACCESS_NUMBER" unique="true">
+            <column name="NUMBER"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-13">
+        <createIndex indexName="FK3BBA3B6898A85E" tableName="AUDIO" unique="false">
+            <column name="CONFERENCE_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-14">
+        <createIndex indexName="FK3BBA3B6AE99D4DE" tableName="AUDIO" unique="false">
+            <column name="SUBSCRIBER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-15">
+        <createIndex indexName="FK4849311CAE99D4DE" tableName="CONFERENCE" unique="false">
+            <column name="SUBSCRIBER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-16">
+        <createIndex indexName="FK2E9F6C51898A85E" tableName="CONFERENCE_HISTORY" unique="false">
+            <column name="CONFERENCE_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-17">
+        <createIndex indexName="FK620B7074AE99D4DE" tableName="HISTORY" unique="false">
+            <column name="SUBSCRIBER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-18">
+        <createIndex indexName="FK620B7074EA6E827E" tableName="HISTORY" unique="false">
+            <column name="ON_SUBSCRIBER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-19">
+        <createIndex indexName="HTTP_API" tableName="LISTEN_SPOT_SUBSCRIBER" unique="true">
+            <column name="HTTP_API"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-20">
+        <createIndex indexName="FKAE118313898A85E" tableName="PARTICIPANT" unique="false">
+            <column name="CONFERENCE_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-21">
+        <createIndex indexName="NUMBER" tableName="PARTICIPANT" unique="true">
+            <column name="NUMBER"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-22">
+        <createIndex indexName="FK13575898A85E" tableName="PIN" unique="false">
+            <column name="CONFERENCE_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-23">
+        <createIndex indexName="NUMBER" tableName="PIN" unique="true">
+            <column name="NUMBER"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-24">
+        <createIndex indexName="USERNAME" tableName="SUBSCRIBER" unique="true">
+            <column name="USERNAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-25">
+        <addForeignKeyConstraint baseColumnNames="SUBSCRIBER_ID" baseTableName="HISTORY" constraintName="FK_HISTORY_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-26">
+        <addForeignKeyConstraint baseColumnNames="ON_SUBSCRIBER_ID" baseTableName="HISTORY" constraintName="FK_HISTORY_SUBSCRIBER_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
+    </changeSet>
+    <changeSet author="root (generated)" id="1278000597225-27">
+        <addForeignKeyConstraint baseColumnNames="CONFERENCE_ID" baseTableName="PIN" constraintName="FK13575898A85E" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="CONFERENCE"/>
+    </changeSet>
+</databaseChangeLog>

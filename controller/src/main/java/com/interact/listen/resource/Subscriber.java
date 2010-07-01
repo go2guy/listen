@@ -30,7 +30,7 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "VOICEMAIL_PIN")
     private Long voicemailPin;
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
 
     @Column(name = "USERNAME", nullable = false, unique = true)
@@ -45,7 +45,7 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "IS_ADMINISTRATOR")
     private Boolean isAdministrator = Boolean.FALSE;
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
     
     @Column(name = "EMAIL_NOTIFICATION_ENABLED")

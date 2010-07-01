@@ -48,16 +48,16 @@ public class Conference extends Resource implements Serializable
     @Column(name = "RECORDING_SESSION_ID")
     private String recordingSessionId;
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "conference", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private Set<Pin> pins = new HashSet<Pin>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "conference", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     private List<Participant> participants = new ArrayList<Participant>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(mappedBy = "conference", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<ConferenceHistory> conferenceHistorys = new HashSet<ConferenceHistory>();
     
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(mappedBy = "conference", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<ConferenceRecording> conferenceRecordings = new HashSet<ConferenceRecording>();
 
     @JoinColumn(name = "SUBSCRIBER_ID")

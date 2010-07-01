@@ -6,14 +6,23 @@ import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
 
-import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
+
+import liquibase.ClassLoaderFileOpener;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.exception.JDBCException;
+import liquibase.exception.LiquibaseException;
 
 import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.SessionFactoryImplementor;
 
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "REC_CATCH_EXCEPTION", justification = "For any Throwable we need to rethrow it as an ExceptionInInitializerError")
 public final class HibernateUtil
@@ -21,6 +30,52 @@ public final class HibernateUtil
     private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
     private static final SessionFactory SESSION_FACTORY;
 
+    /**
+     * Provides default configuration values for various environments.
+     */
+    private static enum Environment
+    {
+        DEV  ("jdbc:hsqldb:mem:listendb",           "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver"),
+        TEST ("jdbc:mysql://localhost/listen_test", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver"),
+        PROD ("jdbc:mysql://localhost/listen",      "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver");
+
+        private final String dbUrl, dbUsername, dbPassword, dbDialect, dbDriver;
+
+        private Environment(String dbUrl, String dbUsername, String dbPassword, String dbDialect, String dbDriver)
+        {
+            this.dbUrl = dbUrl;
+            this.dbUsername = dbUsername;
+            this.dbPassword = dbPassword;
+            this.dbDialect = dbDialect;
+            this.dbDriver = dbDriver;
+        }
+
+        public String getDbUrl()
+        {
+            return dbUrl;
+        }
+
+        public String getDbUsername()
+        {
+            return dbUsername;
+        }
+
+        public String getDbPassword()
+        {
+            return dbPassword;
+        }
+
+        public String getDbDialect()
+        {
+            return dbDialect;
+        }
+
+        public String getDbDriver()
+        {
+            return dbDriver;
+        }
+    }
+    
     private HibernateUtil()
     {
         throw new AssertionError("Cannot instantiate utility class HibernateUtil");
@@ -30,19 +85,19 @@ public final class HibernateUtil
     {
         try
         {
-            final String dbUrl = System.getProperty("com.interact.listen.db.url", getHsqldbUrl());
-            final String dbUsername = System.getProperty("com.interact.listen.db.username", "sa");
-            final String dbPassword = System.getProperty("com.interact.listen.db.password", "");
-            final String dbDialect = System.getProperty("com.interact.listen.db.dialect", "org.hibernate.dialect.HSQLDialect");
-            final String dbDriver = System.getProperty("com.interact.listen.db.driver", "org.hsqldb.jdbcDriver");
-            final String dbAutoddl = System.getProperty("com.interact.listen.db.autoddl", "create-drop");
+            Environment environment = Environment.valueOf(System.getProperty("com.interact.listen.env", "PROD"));
+
+            final String dbUrl = System.getProperty("com.interact.listen.db.url", environment.getDbUrl());
+            final String dbUsername = System.getProperty("com.interact.listen.db.username", environment.getDbUsername());
+            final String dbPassword = System.getProperty("com.interact.listen.db.password", environment.getDbPassword());
+            final String dbDialect = System.getProperty("com.interact.listen.db.dialect", environment.getDbDialect());
+            final String dbDriver = System.getProperty("com.interact.listen.db.driver", environment.getDbDriver());
 
             LOG.debug("DB connection string = [" + dbUrl + "]");
             LOG.debug("DB username =          [" + dbUsername + "]");
             LOG.debug("DB password =          [*]");
             LOG.debug("DB dialect =           [" + dbDialect + "]");
             LOG.debug("DB driver =            [" + dbDriver + "]");
-            LOG.debug("DB hbm2ddl.auto =      [" + dbAutoddl + "]");
 
             AnnotationConfiguration config = new AnnotationConfiguration();
             config.setProperty("hibernate.dialect", dbDialect);
@@ -53,7 +108,6 @@ public final class HibernateUtil
             config.setProperty("hibernate.connection.pool_size", "1");
             config.setProperty("hibernate.connection.autocommit", "false");
             config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
-            config.setProperty("hibernate.hbm2ddl.auto", dbAutoddl);
             config.setProperty("hibernate.show_sql", "false");
             config.setProperty("hibernate.transaction.factory_class",
                                "org.hibernate.transaction.JDBCTransactionFactory");
@@ -76,6 +130,8 @@ public final class HibernateUtil
             config.addAnnotatedClass(Voicemail.class);
 
             SESSION_FACTORY = config.buildSessionFactory();
+
+            doLiquibaseUpgrades();
 
             Session session = getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
@@ -103,64 +159,7 @@ public final class HibernateUtil
         return SESSION_FACTORY;
     }
 
-    private static String getDataDir()
-    {
-        try
-        {
-            String dirPath = System.getProperty("data.dir", "/var/lib/com.interact.listen");
-            File dir = new File(dirPath);
-            if(!dir.exists())
-            {
-                LOG.debug("Creating data directory at [" + dir + "]");
-                if(!dir.mkdirs())
-                {
-                    LOG.error("Cannot create directory [" + dir + "]"); 
-                }
-            }
-            else if(dir.exists() && !dir.isDirectory())
-            {
-                // first try user home
-                File homeDir = new File(System.getProperty("user.home"));
-                if(homeDir.exists() && homeDir.canWrite())
-                {
-                    dir = new File(homeDir, ".com.interact.listen");
-                    if(!dir.mkdirs())
-                    {
-                        LOG.error("Cannot create directory [" + dir + "]");
-                    }
-                }
-                else
-                {
-                    // then try temp directory
-                    File temp = File.createTempFile("temp", "temp");
-                    File tempDir = new File(temp.getParent(), "com.interact.listen");
-                    LOG.debug("Cannot use [" + dir + "] for data directory, using [" + tempDir + "]");
-                    dir = tempDir;
-                }
-            }
-
-            return dir.getAbsolutePath();
-        }
-        catch(Exception e)
-        {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    private static String getHsqldbUrl()
-    {
-        try
-        {
-            String dataDir = getDataDir();
-            return "jdbc:hsqldb:file:" + dataDir + "/database/listendb";
-        }
-        catch(ExceptionInInitializerError e)
-        {
-            LOG.error("Error getting data directory", e);
-            return "jdbc:hsqldb:file:listendb";
-        }
-    }
-
+    // TODO get rid of this eventually (replace with some sort of SQL script, maybe? or don't even need it?)
     private static void bootstrap(PersistenceService persistenceService)
     {
         // provisions subscribers/users/conferences/participants
@@ -258,6 +257,35 @@ public final class HibernateUtil
             subscriber.setUsername("Admin");
             subscriber.setVoicemailPin(123L);
             persistenceService.save(subscriber);
+        }
+    }
+
+    private static void doLiquibaseUpgrades() throws SQLException, JDBCException, LiquibaseException
+    {
+        Liquibase liquibase = null;
+        try
+        {
+            LOG.debug("Executing Liquibase updates");
+
+            // Connection connection = config.buildSettings().getConnectionProvider().getConnection();
+            Connection connection = ((SessionFactoryImplementor)SESSION_FACTORY).getConnectionProvider().getConnection();
+            if(connection == null)
+            {
+                throw new RuntimeException("Could not get connection to perform Liquibase updates");
+            }
+
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+            database.setDefaultSchemaName(connection.getCatalog());
+
+            liquibase = new Liquibase("changelog.xml", new ClassLoaderFileOpener(), connection);
+            liquibase.update(null);
+        }
+        finally
+        {
+            if(liquibase != null && liquibase.getDatabase() != null)
+            {
+                liquibase.getDatabase().close();
+            }
         }
     }
 }
