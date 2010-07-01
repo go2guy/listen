@@ -14,7 +14,6 @@ import liquibase.ClassLoaderFileOpener;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
-import liquibase.exception.JDBCException;
 import liquibase.exception.LiquibaseException;
 
 import org.apache.log4j.Logger;
@@ -260,7 +259,7 @@ public final class HibernateUtil
         }
     }
 
-    private static void doLiquibaseUpgrades() throws SQLException, JDBCException, LiquibaseException
+    private static void doLiquibaseUpgrades() throws SQLException, LiquibaseException
     {
         Liquibase liquibase = null;
         try
