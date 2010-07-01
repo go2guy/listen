@@ -248,12 +248,13 @@ hang-up - hang-up
 110-31 - decision
 86-30 - decision
 111-49 - audio-input
-123-99 - switch-application
 111-48 - audio-input
 123-97 - create-session
 110-33 - audio-input
+121-80 - switch-application
 112-35 - decision
 123-90 - decision
+123-134 - switch-application
 123-131 - assign-variable
 86-46 - run-javascript
 114-5 - run-javascript
@@ -275,7 +276,6 @@ hang-up - hang-up
 123-76 - assign-variable
 123-74 - run-javascript
 110-98 - audio-input
-121-66 - switch-application
 104-11 - decision
 121-68 - audio-input
 110-95 - math
