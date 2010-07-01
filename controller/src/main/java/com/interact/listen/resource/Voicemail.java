@@ -13,7 +13,6 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "VOICEMAIL")
 public class Voicemail extends Audio implements Serializable
 {
     private static final long serialVersionUID = 1L;

@@ -35,9 +35,9 @@ public final class HibernateUtil
      */
     private static enum Environment
     {
-        DEV  ("jdbc:hsqldb:mem:listendb",           "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver"),
-        TEST ("jdbc:mysql://localhost/listen_test", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver"),
-        PROD ("jdbc:mysql://localhost/listen",      "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver");
+        DEV  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver"),
+        TEST ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver"),
+        PROD ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver");
 
         private final String dbUrl, dbUsername, dbPassword, dbDialect, dbDriver;
 

@@ -10,7 +10,6 @@ import org.hibernate.annotations.Type;
 import org.joda.time.Duration;
 
 @Entity
-@Table(name = "CALL_DETAIL_RECORD")
 public class CallDetailRecord extends History implements Serializable
 {
     private static final long serialVersionUID = 1L;

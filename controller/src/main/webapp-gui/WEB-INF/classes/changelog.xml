@@ -186,72 +186,72 @@
         </createTable>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-11">
-        <createIndex indexName="FK4DF68A84AE99D4DE" tableName="ACCESS_NUMBER" unique="false">
+        <createIndex indexName="IDX_SUBSCRIBER_ID" tableName="ACCESS_NUMBER" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-12">
-        <createIndex indexName="NUMBER" tableName="ACCESS_NUMBER" unique="true">
+        <createIndex indexName="IDX_ACCESS_NUMBER_NUMBER" tableName="ACCESS_NUMBER" unique="true">
             <column name="NUMBER"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-13">
-        <createIndex indexName="FK3BBA3B6898A85E" tableName="AUDIO" unique="false">
+        <createIndex indexName="IDX_AUDIO_CONFERENCE_ID" tableName="AUDIO" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-14">
-        <createIndex indexName="FK3BBA3B6AE99D4DE" tableName="AUDIO" unique="false">
+        <createIndex indexName="IDX_AUDIO_SUBSCRIBER_ID" tableName="AUDIO" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-15">
-        <createIndex indexName="FK4849311CAE99D4DE" tableName="CONFERENCE" unique="false">
+        <createIndex indexName="IDX_CONFERENCE_SUBSCRIBER_ID" tableName="CONFERENCE" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-16">
-        <createIndex indexName="FK2E9F6C51898A85E" tableName="CONFERENCE_HISTORY" unique="false">
+        <createIndex indexName="IDX_CONFERENCE_HISTORY_CONFERENCE_ID" tableName="CONFERENCE_HISTORY" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-17">
-        <createIndex indexName="FK620B7074AE99D4DE" tableName="HISTORY" unique="false">
+        <createIndex indexName="IDX_HISTORY_SUBSCRIBER_ID" tableName="HISTORY" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-18">
-        <createIndex indexName="FK620B7074EA6E827E" tableName="HISTORY" unique="false">
+        <createIndex indexName="IDX_HISTORY_ON_SUBSCRIBER_ID" tableName="HISTORY" unique="false">
             <column name="ON_SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-19">
-        <createIndex indexName="HTTP_API" tableName="LISTEN_SPOT_SUBSCRIBER" unique="true">
+        <createIndex indexName="IDX_LISTEN_SPOT_SUBSCRIBER_HTTP_API" tableName="LISTEN_SPOT_SUBSCRIBER" unique="true">
             <column name="HTTP_API"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-20">
-        <createIndex indexName="FKAE118313898A85E" tableName="PARTICIPANT" unique="false">
+        <createIndex indexName="IDX_PARTICIPANT_CONFERENCE_ID" tableName="PARTICIPANT" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-21">
-        <createIndex indexName="NUMBER" tableName="PARTICIPANT" unique="true">
+        <createIndex indexName="IDX_PARTICIPANT_NUMBER" tableName="PARTICIPANT" unique="true">
             <column name="NUMBER"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-22">
-        <createIndex indexName="FK13575898A85E" tableName="PIN" unique="false">
+        <createIndex indexName="IDX_PIN_CONFERENCE_ID" tableName="PIN" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-23">
-        <createIndex indexName="NUMBER" tableName="PIN" unique="true">
+        <createIndex indexName="IDX_PIN_NUMBER" tableName="PIN" unique="true">
             <column name="NUMBER"/>
         </createIndex>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-24">
-        <createIndex indexName="USERNAME" tableName="SUBSCRIBER" unique="true">
+        <createIndex indexName="IDX_SUBSCRIBER_USERNAME" tableName="SUBSCRIBER" unique="true">
             <column name="USERNAME"/>
         </createIndex>
     </changeSet>
@@ -262,6 +262,6 @@
         <addForeignKeyConstraint baseColumnNames="ON_SUBSCRIBER_ID" baseTableName="HISTORY" constraintName="FK_HISTORY_SUBSCRIBER_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-27">
-        <addForeignKeyConstraint baseColumnNames="CONFERENCE_ID" baseTableName="PIN" constraintName="FK13575898A85E" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="CONFERENCE"/>
+        <addForeignKeyConstraint baseColumnNames="CONFERENCE_ID" baseTableName="PIN" constraintName="FK_PIN_CONFERENCE_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="CONFERENCE"/>
     </changeSet>
 </databaseChangeLog>
