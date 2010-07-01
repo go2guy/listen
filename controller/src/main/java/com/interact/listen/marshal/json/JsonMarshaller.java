@@ -250,7 +250,8 @@ public class JsonMarshaller extends Marshaller
                                                  "], you should probably write one");
                     }
                     Converter converter = converterClass.newInstance();
-                    Object convertedValue = converter.unmarshal(String.valueOf(json.get(key)));
+                    Object value = json.get(key);
+                    Object convertedValue = converter.unmarshal(value == null ? null : String.valueOf(value));
                     method.invoke(resource, convertedValue);
                 }
             }
