@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-    <changeSet author="root (generated)" id="1278000597225-1">
+    <changeSet author="development" id="1">
         <createTable tableName="ACCESS_NUMBER">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -18,7 +18,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-2">
+    <changeSet author="development" id="2">
         <createTable tableName="AUDIO">
             <column name="DTYPE" type="VARCHAR(31)">
                 <constraints nullable="false"/>
@@ -47,7 +47,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-3">
+    <changeSet author="development" id="3">
         <createTable tableName="CONFERENCE">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -71,7 +71,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-4">
+    <changeSet author="development" id="4">
         <createTable tableName="CONFERENCE_HISTORY">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -88,7 +88,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-5">
+    <changeSet author="development" id="5">
         <createTable tableName="HISTORY">
             <column name="DTYPE" type="VARCHAR(31)">
                 <constraints nullable="false"/>
@@ -113,7 +113,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-6">
+    <changeSet author="development" id="6">
         <createTable tableName="LISTEN_SPOT_SUBSCRIBER">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -129,7 +129,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-7">
+    <changeSet author="development" id="7">
         <createTable tableName="PARTICIPANT">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -162,7 +162,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-8">
+    <changeSet author="development" id="8">
         <createTable tableName="PIN">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -180,7 +180,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-9">
+    <changeSet author="development" id="9">
         <createTable tableName="PROPERTY">
             <column name="PROPERTY_KEY" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -191,7 +191,7 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-10">
+    <changeSet author="development" id="10">
         <createTable tableName="SUBSCRIBER">
             <column autoIncrement="true" name="ID" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -215,83 +215,83 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-11">
+    <changeSet author="development" id="11">
         <createIndex indexName="IDX_SUBSCRIBER_ID" tableName="ACCESS_NUMBER" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-12">
+    <changeSet author="development" id="12">
         <createIndex indexName="IDX_ACCESS_NUMBER_NUMBER" tableName="ACCESS_NUMBER" unique="true">
             <column name="NUMBER"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-13">
+    <changeSet author="development" id="13">
         <createIndex indexName="IDX_AUDIO_CONFERENCE_ID" tableName="AUDIO" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-14">
+    <changeSet author="development" id="14">
         <createIndex indexName="IDX_AUDIO_SUBSCRIBER_ID" tableName="AUDIO" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-15">
+    <changeSet author="development" id="15">
         <createIndex indexName="IDX_CONFERENCE_SUBSCRIBER_ID" tableName="CONFERENCE" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-16">
+    <changeSet author="development" id="16">
         <createIndex indexName="IDX_CONFERENCE_HISTORY_CONFERENCE_ID" tableName="CONFERENCE_HISTORY" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-17">
+    <changeSet author="development" id="17">
         <createIndex indexName="IDX_HISTORY_SUBSCRIBER_ID" tableName="HISTORY" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-18">
+    <changeSet author="development" id="18">
         <createIndex indexName="IDX_HISTORY_ON_SUBSCRIBER_ID" tableName="HISTORY" unique="false">
             <column name="ON_SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-19">
+    <changeSet author="development" id="19">
         <createIndex indexName="IDX_LISTEN_SPOT_SUBSCRIBER_HTTP_API" tableName="LISTEN_SPOT_SUBSCRIBER" unique="true">
             <column name="HTTP_API"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-20">
+    <changeSet author="development" id="20">
         <createIndex indexName="IDX_PARTICIPANT_CONFERENCE_ID" tableName="PARTICIPANT" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-21">
+    <changeSet author="development" id="21">
         <createIndex indexName="IDX_PARTICIPANT_NUMBER" tableName="PARTICIPANT" unique="true">
             <column name="NUMBER"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-22">
+    <changeSet author="development" id="22">
         <createIndex indexName="IDX_PIN_CONFERENCE_ID" tableName="PIN" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-23">
+    <changeSet author="development" id="23">
         <createIndex indexName="IDX_PIN_NUMBER" tableName="PIN" unique="true">
             <column name="NUMBER"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-24">
+    <changeSet author="development" id="24">
         <createIndex indexName="IDX_SUBSCRIBER_USERNAME" tableName="SUBSCRIBER" unique="true">
             <column name="USERNAME"/>
         </createIndex>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-25">
+    <changeSet author="development" id="25">
         <addForeignKeyConstraint baseColumnNames="SUBSCRIBER_ID" baseTableName="HISTORY" constraintName="FK_HISTORY_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-26">
+    <changeSet author="development" id="26">
         <addForeignKeyConstraint baseColumnNames="ON_SUBSCRIBER_ID" baseTableName="HISTORY" constraintName="FK_HISTORY_SUBSCRIBER_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
     </changeSet>
-    <changeSet author="root (generated)" id="1278000597225-27">
+    <changeSet author="development" id="27">
         <addForeignKeyConstraint baseColumnNames="CONFERENCE_ID" baseTableName="PIN" constraintName="FK_PIN_CONFERENCE_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="CONFERENCE"/>
     </changeSet>
 </databaseChangeLog>
