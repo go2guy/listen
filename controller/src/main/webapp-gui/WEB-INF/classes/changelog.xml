@@ -14,6 +14,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-2">
         <createTable tableName="AUDIO">
@@ -40,6 +43,9 @@
             <column name="CONFERENCE_ID" type="BIGINT"/>
             <column name="SUBSCRIBER_ID" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-3">
         <createTable tableName="CONFERENCE">
@@ -61,6 +67,9 @@
             <column name="VERSION" type="INT"/>
             <column name="SUBSCRIBER_ID" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-4">
         <createTable tableName="CONFERENCE_HISTORY">
@@ -75,6 +84,9 @@
             <column name="VERSION" type="INT"/>
             <column name="CONFERENCE_ID" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-5">
         <createTable tableName="HISTORY">
@@ -97,6 +109,9 @@
             <column name="SUBSCRIBER_ID" type="BIGINT"/>
             <column name="ON_SUBSCRIBER_ID" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-6">
         <createTable tableName="LISTEN_SPOT_SUBSCRIBER">
@@ -110,6 +125,9 @@
             <column name="PHONE_NUMBER_PROTOCOL" type="VARCHAR(255)"/>
             <column name="VERSION" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-7">
         <createTable tableName="PARTICIPANT">
@@ -140,6 +158,9 @@
             <column name="VERSION" type="INT"/>
             <column name="CONFERENCE_ID" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-8">
         <createTable tableName="PIN">
@@ -155,6 +176,9 @@
             <column name="VERSION" type="INT"/>
             <column name="CONFERENCE_ID" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-9">
         <createTable tableName="PROPERTY">
@@ -163,6 +187,9 @@
             </column>
             <column name="PROPERTY_VALUE" type="VARCHAR(255)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-10">
         <createTable tableName="SUBSCRIBER">
@@ -184,6 +211,9 @@
             <column name="VERSION" type="INT"/>
             <column name="VOICEMAIL_PIN" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="root (generated)" id="1278000597225-11">
         <createIndex indexName="IDX_SUBSCRIBER_ID" tableName="ACCESS_NUMBER" unique="false">
