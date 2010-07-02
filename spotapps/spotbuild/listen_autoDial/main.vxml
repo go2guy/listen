@@ -36,7 +36,6 @@
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_params"/>
 	<var name="SB_UV_sysAccessTime"/>
-	<var name="SB_UV_service"/>
 
     
     <form id="beginDocument">
@@ -99,9 +98,6 @@
 			</if>
 			<if cond="SB_UV_sysAccessTime != undefined">
 				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
-			</if>
-			<if cond="SB_UV_service != undefined">
-				<assign name="service" expr="SB_UV_service" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

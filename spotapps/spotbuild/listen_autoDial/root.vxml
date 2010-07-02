@@ -46,7 +46,6 @@
 	<var name="status" expr="''" />
 	<var name="params" expr="''" />
 	<var name="sysAccessTime" expr="''" />
-	<var name="service" expr="''" />
 
 
     <!-- Conference Variables -->
