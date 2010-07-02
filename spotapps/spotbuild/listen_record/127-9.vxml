@@ -13,9 +13,9 @@
     <!-- Edge Variables -->
     <var name="II_SB_errorNxtOpt" expr="'127-34'"/>       <!-- Next option when record is terminated by an error -->
     <var name="II_SB_dtmfNxtOpt" expr="''"/>      <!-- Next option when record is terminated by dtmf -->
-    <var name="II_SB_hangUpNxtOpt" expr="'128-7'"/>     <!-- Next option when record is terminated by hang up -->
-    <var name="II_SB_maxTimeNxtOpt" expr="'128-7'"/>    <!-- Next option when record is terminated by max time -->
-    <var name="II_SB_silenceNxtOpt" expr="'128-7'"/>   <!-- Next option when record is terminated by silence -->
+    <var name="II_SB_hangUpNxtOpt" expr="'133-3'"/>     <!-- Next option when record is terminated by hang up -->
+    <var name="II_SB_maxTimeNxtOpt" expr="'133-3'"/>    <!-- Next option when record is terminated by max time -->
+    <var name="II_SB_silenceNxtOpt" expr="'133-3'"/>   <!-- Next option when record is terminated by silence -->
 
     <var name="II_SB_SYS_PATH" expr="'/interact/apps/spotbuild/audio/system/'"/>    <!-- Audio system directory path -->
     <var name="II_SB_AUDIO_EXT" expr="'.'+II_SB_PROMPT_GRP+'.'+II_SB_PRMT_CODE"/>   <!-- Audio file extension -->

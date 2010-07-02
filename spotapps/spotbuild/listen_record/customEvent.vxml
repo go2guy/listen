@@ -23,9 +23,6 @@
             <assign name="II_SB_valueReceived" expr="getNextElement(1,II_SB_passValues,'|')"/>
             <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
 
-			<if cond="II_SB_eventReceived == 'STOP_RECORDING'">
-				<assign name="II_SB_assign_NxtOpt" expr="'133-3'"/>
-			</if>
 
             <if cond="II_SB_assign_NxtOpt != ''">
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_assign_NxtOpt + '.vxml'"/>

@@ -27,7 +27,7 @@
             <log>INFO: Entered create-session.vxml [127-3]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>
-                <exit namelist="argList cntrlURL hostName id"/>
+                <exit namelist="argList cntrlURL hostName id sysAccessTime"/>
             <elseif cond="II_SB_action == 'nextOpt'"/>
     	    <assign name="recSID" expr="II_SB_newSID" />
 

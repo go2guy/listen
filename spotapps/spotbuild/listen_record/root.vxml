@@ -52,6 +52,7 @@
 	<var name="hostName" expr="''" />
 	<var name="confID" expr="''" />
 	<var name="recInfo" expr="'Conference Audio'" />
+	<var name="sysAccessTime" expr="''" />
 
 
     <!-- Conference Variables -->

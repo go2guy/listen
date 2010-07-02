@@ -42,6 +42,7 @@
 	<var name="SB_UV_hostName"/>
 	<var name="SB_UV_confID"/>
 	<var name="SB_UV_recInfo"/>
+	<var name="SB_UV_sysAccessTime"/>
 
     
     <form id="beginDocument">
@@ -122,6 +123,9 @@
 			</if>
 			<if cond="SB_UV_recInfo != undefined">
 				<assign name="recInfo" expr="SB_UV_recInfo" />
+			</if>
+			<if cond="SB_UV_sysAccessTime != undefined">
+				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
