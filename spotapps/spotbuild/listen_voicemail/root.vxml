@@ -50,7 +50,6 @@
 	<var name="passValues" expr="'importedValue'" />
 	<var name="duration" expr="''" />
 	<var name="sysAccessTime" expr="''" />
-	<var name="service" expr="''" />
 	<var name="toggleLight" expr="'ON'" />
 	<var name="accessNum" expr="''" />
 

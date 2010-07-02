@@ -40,7 +40,6 @@
 	<var name="SB_UV_passValues"/>
 	<var name="SB_UV_duration"/>
 	<var name="SB_UV_sysAccessTime"/>
-	<var name="SB_UV_service"/>
 	<var name="SB_UV_toggleLight"/>
 	<var name="SB_UV_accessNum"/>
 
@@ -119,9 +118,6 @@
 			</if>
 			<if cond="SB_UV_sysAccessTime != undefined">
 				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
-			</if>
-			<if cond="SB_UV_service != undefined">
-				<assign name="service" expr="SB_UV_service" />
 			</if>
 			<if cond="SB_UV_toggleLight != undefined">
 				<assign name="toggleLight" expr="SB_UV_toggleLight" />
