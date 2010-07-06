@@ -13,7 +13,7 @@ $(document).ready(function() {
     var failedTries = 0;
     setInterval(function() {
         $.ajax({
-            url: '/meta/ping',
+            url: '/meta/ping?auth=true',
             cache: 'false',
             success: function(data, textStatus, xhr) {
                 if(!data || data != 'pong') {

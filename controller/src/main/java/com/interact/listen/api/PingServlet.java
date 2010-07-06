@@ -16,9 +16,12 @@ public class PingServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        if(ServletUtil.currentSubscriber(request) == null)
+        if(request.getParameter("auth") != null && request.getParameter("auth").equalsIgnoreCase("true"))
         {
-            throw new UnauthorizedServletException("Not logged in");
+            if(ServletUtil.currentSubscriber(request) == null)
+            {
+                throw new UnauthorizedServletException("Not logged in");
+            }
         }
         OutputBufferFilter.append(request, "pong", "text/plain");
     }
