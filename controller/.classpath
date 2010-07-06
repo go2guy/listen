@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="db"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="src/main/webapp-gui/WEB-INF/classes"/>
 	<classpathentry kind="lib" path="lib/build/junit-4.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/sqlitejdbc-v056.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.15.jar"/>
@@ -41,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/runtime/joda-time-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/realize-client-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/liquibase-1.9.5.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/joda-time-hibernate-1.2.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>
