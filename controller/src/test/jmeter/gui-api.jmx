@@ -13,76 +13,76 @@
     <hashTree>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="username" elementType="Argument">
-            <stringProp name="Argument.name">username</stringProp>
-            <stringProp name="Argument.value">100</stringProp>
+          <elementProp name="gui.username" elementType="Argument">
+            <stringProp name="Argument.name">gui.username</stringProp>
+            <stringProp name="Argument.value">${__P(gui.username, 100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="password" elementType="Argument">
-            <stringProp name="Argument.name">password</stringProp>
-            <stringProp name="Argument.value">super</stringProp>
+          <elementProp name="gui.password" elementType="Argument">
+            <stringProp name="Argument.name">gui.password</stringProp>
+            <stringProp name="Argument.value">${__P(gui.password, super)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="voicemailScreenUsers" elementType="Argument">
-            <stringProp name="Argument.name">voicemailScreenUsers</stringProp>
-            <stringProp name="Argument.value">50</stringProp>
+          <elementProp name="gui.voicemailUsers" elementType="Argument">
+            <stringProp name="Argument.name">gui.voicemailUsers</stringProp>
+            <stringProp name="Argument.value">${__P(gui.voicemailUsers, 50)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="conferenceScreenUsers" elementType="Argument">
-            <stringProp name="Argument.name">conferenceScreenUsers</stringProp>
-            <stringProp name="Argument.value">5</stringProp>
+          <elementProp name="gui.conferenceUsers" elementType="Argument">
+            <stringProp name="Argument.name">gui.conferenceUsers</stringProp>
+            <stringProp name="Argument.value">${__P(gui.conferenceUsers, 5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="controllerHost" elementType="Argument">
-            <stringProp name="Argument.name">controllerHost</stringProp>
-            <stringProp name="Argument.value">khaaannnn</stringProp>
+          <elementProp name="controller.host" elementType="Argument">
+            <stringProp name="Argument.name">controller.host</stringProp>
+            <stringProp name="Argument.value">${__P(controller.host, khaaannnn)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="controllerPort" elementType="Argument">
-            <stringProp name="Argument.name">controllerPort</stringProp>
-            <stringProp name="Argument.value">4242</stringProp>
+          <elementProp name="controller.port" elementType="Argument">
+            <stringProp name="Argument.name">controller.port</stringProp>
+            <stringProp name="Argument.value">${__P(controller.port, 4242)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="apiAcceptHeader" elementType="Argument">
-            <stringProp name="Argument.name">apiAcceptHeader</stringProp>
-            <stringProp name="Argument.value">application/json</stringProp>
+          <elementProp name="api.acceptHeader" elementType="Argument">
+            <stringProp name="Argument.name">api.acceptHeader</stringProp>
+            <stringProp name="Argument.value">${__P(api.acceptHeader, application/json)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="apiVoicemailListenerUsers" elementType="Argument">
-            <stringProp name="Argument.name">apiVoicemailListenerUsers</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
+          <elementProp name="api.voicemailUsers" elementType="Argument">
+            <stringProp name="Argument.name">api.voicemailUsers</stringProp>
+            <stringProp name="Argument.value">${__P(api.voicemailUsers, 10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="uniformRandomTimer" elementType="Argument">
-            <stringProp name="Argument.name">uniformRandomTimer</stringProp>
-            <stringProp name="Argument.value">250</stringProp>
+          <elementProp name="test.uniformRandomTimer" elementType="Argument">
+            <stringProp name="Argument.name">test.uniformRandomTimer</stringProp>
+            <stringProp name="Argument.value">${__P(test.uniformRandomTimer, 50)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="apiVoicemailListensPerMinute" elementType="Argument">
-            <stringProp name="Argument.name">apiVoicemailListensPerMinute</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+          <elementProp name="api.voicemailListenRate" elementType="Argument">
+            <stringProp name="Argument.name">api.voicemailListenRate</stringProp>
+            <stringProp name="Argument.value">${__P(api.voicemailListenRate, 1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="screenPollingRatePerMinute" elementType="Argument">
-            <stringProp name="Argument.name">screenPollingRatePerMinute</stringProp>
-            <stringProp name="Argument.value">60</stringProp>
+          <elementProp name="gui.pollingRate" elementType="Argument">
+            <stringProp name="Argument.name">gui.pollingRate</stringProp>
+            <stringProp name="Argument.value">${__P(gui.pollingRate, 60)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="pingPollingRatePerMinute" elementType="Argument">
-            <stringProp name="Argument.name">pingPollingRatePerMinute</stringProp>
-            <stringProp name="Argument.value">30</stringProp>
+          <elementProp name="gui.pingPollingRate" elementType="Argument">
+            <stringProp name="Argument.name">gui.pingPollingRate</stringProp>
+            <stringProp name="Argument.value">${__P(gui.pingPollingRate, 30)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">TODO - remove this and add the variables to the Test Plan</stringProp>
+        <stringProp name="TestPlan.comments">All of these properties can be overridden from the command-line with -J; all &apos;rate&apos; properties are in transactions/minute</stringProp>
       </Arguments>
       <hashTree/>
       <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
         <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
           <collectionProp name="Arguments.arguments"/>
         </elementProp>
-        <stringProp name="HTTPSampler.domain">${controllerHost}</stringProp>
-        <stringProp name="HTTPSampler.port">${controllerPort}</stringProp>
+        <stringProp name="HTTPSampler.domain">${controller.host}</stringProp>
+        <stringProp name="HTTPSampler.port">${controller.port}</stringProp>
         <stringProp name="HTTPSampler.connect_timeout"></stringProp>
         <stringProp name="HTTPSampler.response_timeout"></stringProp>
         <stringProp name="HTTPSampler.protocol"></stringProp>
@@ -164,8 +164,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${voicemailScreenUsers}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${voicemailScreenUsers}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${gui.voicemailUsers}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${gui.voicemailUsers}</stringProp>
         <longProp name="ThreadGroup.start_time">1278021778000</longProp>
         <longProp name="ThreadGroup.end_time">1278021778000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -176,7 +176,7 @@
       <hashTree>
         <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="true">
           <stringProp name="ConstantTimer.delay">0</stringProp>
-          <stringProp name="RandomTimer.range">${uniformRandomTimer}</stringProp>
+          <stringProp name="RandomTimer.range">${test.uniformRandomTimer}</stringProp>
         </UniformRandomTimer>
         <hashTree/>
         <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
@@ -186,14 +186,14 @@
               <collectionProp name="Arguments.arguments">
                 <elementProp name="username" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">${username}</stringProp>
+                  <stringProp name="Argument.value">${gui.username}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">username</stringProp>
                 </elementProp>
                 <elementProp name="password" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">${password}</stringProp>
+                  <stringProp name="Argument.value">${gui.password}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">password</stringProp>
@@ -244,7 +244,7 @@
         </HTTPSampler>
         <hashTree>
           <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-            <stringProp name="throughput">${screenPollingRatePerMinute}</stringProp>
+            <stringProp name="throughput">${gui.pollingRate}</stringProp>
             <stringProp name="calcMode">this thread only</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
@@ -273,7 +273,7 @@
         </HTTPSampler>
         <hashTree>
           <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-            <stringProp name="throughput">${pingPollingRatePerMinute}</stringProp>
+            <stringProp name="throughput">${gui.pingPollingRate}</stringProp>
             <stringProp name="calcMode">this thread only</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
@@ -284,8 +284,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${conferenceScreenUsers}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${conferenceScreenUsers}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${gui.conferenceUsers}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${gui.conferenceUsers}</stringProp>
         <longProp name="ThreadGroup.start_time">1278077504000</longProp>
         <longProp name="ThreadGroup.end_time">1278077504000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -296,7 +296,7 @@
       <hashTree>
         <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="true">
           <stringProp name="ConstantTimer.delay">0</stringProp>
-          <stringProp name="RandomTimer.range">${uniformRandomTimer}</stringProp>
+          <stringProp name="RandomTimer.range">${test.uniformRandomTimer}</stringProp>
         </UniformRandomTimer>
         <hashTree/>
         <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
@@ -306,14 +306,14 @@
               <collectionProp name="Arguments.arguments">
                 <elementProp name="username" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">${username}</stringProp>
+                  <stringProp name="Argument.value">${gui.username}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">username</stringProp>
                 </elementProp>
                 <elementProp name="password" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">${password}</stringProp>
+                  <stringProp name="Argument.value">${gui.password}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">password</stringProp>
@@ -364,7 +364,7 @@
         </HTTPSampler>
         <hashTree>
           <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-            <stringProp name="throughput">${screenPollingRatePerMinute}</stringProp>
+            <stringProp name="throughput">${gui.pollingRate}</stringProp>
             <stringProp name="calcMode">this thread only</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
@@ -393,7 +393,7 @@
         </HTTPSampler>
         <hashTree>
           <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-            <stringProp name="throughput">${pingPollingRatePerMinute}</stringProp>
+            <stringProp name="throughput">${gui.pingPollingRate}</stringProp>
             <stringProp name="calcMode">this thread only</stringProp>
           </ConstantThroughputTimer>
           <hashTree/>
@@ -404,8 +404,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${apiVoicemailListenerUsers}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${apiVoicemailListenerUsers}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${api.voicemailUsers}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${api.voicemailUsers}</stringProp>
         <longProp name="ThreadGroup.start_time">1278088021000</longProp>
         <longProp name="ThreadGroup.end_time">1278088021000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -416,11 +416,11 @@
       <hashTree>
         <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="true">
           <stringProp name="ConstantTimer.delay">0</stringProp>
-          <stringProp name="RandomTimer.range">${uniformRandomTimer}</stringProp>
+          <stringProp name="RandomTimer.range">${test.uniformRandomTimer}</stringProp>
         </UniformRandomTimer>
         <hashTree/>
         <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-          <stringProp name="throughput">${apiVoicemailListensPerMinute}</stringProp>
+          <stringProp name="throughput">${api.voicemailListenRate}</stringProp>
           <stringProp name="calcMode">this thread only</stringProp>
         </ConstantThroughputTimer>
         <hashTree/>
@@ -428,7 +428,7 @@
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Accept</stringProp>
-              <stringProp name="Header.value">${apiAcceptHeader}</stringProp>
+              <stringProp name="Header.value">${api.acceptHeader}</stringProp>
             </elementProp>
           </collectionProp>
         </HeaderManager>
