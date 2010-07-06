@@ -140,6 +140,35 @@
   </target>
 
 
+  <target name="-verify-integration-environment">
+    <condition property="integration.environment.okay">
+      <and>
+        <isset property="integration.host"/>
+        <isset property="integration.port"/>
+        <http url="http://${integration.host}:${integration.port}/meta/ping?auth=false"/>
+      </and>
+    </condition>
+  </target>
+
+
+  <target name="-jmeter-fail" depends="-verify-integration-environment" unless="integration.environment.okay">
+    <fail message="Please set the [integration.host] and [integration.port] properties to run jmeter tests"/>
+  </target>
+
+
+  <target name="jmeter" depends="-verify-integration-environment, -jmeter-fail" if="integration.environment.okay">
+    <echo message="integration.host: ${integration.host}"/>
+    <echo message="integration.port: ${integration.port}"/>
+    <mkdir dir="${target.dir}/jmeter"/>
+    <exec executable="tools/jakarta-jmeter-2.3.4/bin/jmeter">
+      <arg line="-n -t ${src.dir}/test/jmeter/api-provisionaccounts.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jmeter-provision.jtl"/>
+    </exec>
+    <exec executable="tools/jakarta-jmeter-2.3.4/bin/jmeter">
+      <arg line="-n -t ${src.dir}/test/jmeter/gui-api-combined.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jmeter-combined.jtl"/>
+    </exec>
+  </target>
+
+
   <target name="war" depends="compile" description="--> Packages distributable war file">
     <mkdir dir="${target.dir}"/>
 
