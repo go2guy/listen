@@ -59,8 +59,6 @@ public class EditSubscriberServlet extends HttpServlet
             throw new BadRequestServletException("Subscriber not found");
         }
 
-        Subscriber original = subscriberToEdit.copy(true);
-
         if(!currentSubscriber.getIsAdministrator() && !currentSubscriber.getId().equals(subscriberToEdit.getId()))
         {
             throw new UnauthorizedServletException();
@@ -159,7 +157,7 @@ public class EditSubscriberServlet extends HttpServlet
             persistenceService.update(conferenceToEdit, originalConference);
         }
 
-        persistenceService.update(subscriberToEdit, original);
+        persistenceService.save(subscriberToEdit);
     }
     
     private Subscriber findSubscriberById(String id, Session session)
