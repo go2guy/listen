@@ -160,12 +160,18 @@
     <echo message="integration.host: ${integration.host}"/>
     <echo message="integration.port: ${integration.port}"/>
     <mkdir dir="${target.dir}/jmeter"/>
-    <exec executable="tools/jakarta-jmeter-2.3.4/bin/jmeter">
-      <arg line="-n -t ${src.dir}/test/jmeter/api-provisionaccounts.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jmeter-provision.jtl"/>
+    <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
+      <arg line="-n -t ${src.dir}/test/jmeter/api-provisionaccounts.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-provision.jtl"/>
     </exec>
-    <exec executable="tools/jakarta-jmeter-2.3.4/bin/jmeter">
-      <arg line="-n -t ${src.dir}/test/jmeter/gui-api-combined.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jmeter-combined.jtl"/>
+    <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
+      <arg line="-n -t ${src.dir}/test/jmeter/gui-api-combined.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-combined.jtl"/>
     </exec>
+
+    <mkdir dir="${target.dir}/jmeter/html"/>
+    <xslt basedir="${target.dir}/jmeter/jtl"
+          destdir="${target.dir}/jmeter/html"
+          includes="*.jtl"
+          style="${basedir}/tools/jakarta-jmeter-2.3.4/extras/jmeter-results-detail-report_21.xsl"/>
   </target>
 
 
