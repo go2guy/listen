@@ -19,22 +19,22 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
     <script type="text/javascript" src="./resources/jquery/plugins/jquery.simplemodal-1.3.5.min.js"></script>
     <script type="text/javascript" src="./resources/app/js/index-min.js"></script>
     <script type="text/javascript" src="./resources/app/js/server-min.js"></script><%
+if(subscriber != null && subscriber.getIsAdministrator()) { %>
+    <script type="text/javascript" src="./resources/app/js/app-system-configuration-min.js"></script>
+    <script type="text/javascript" src="./resources/app/js/app-subscribers-min.js"></script>
+    <script type="text/javascript" src="./resources/app/js/app-history-min.js"></script><%
+}
+if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
+    <script type="text/javascript" src="./resources/app/js/app-voicemail-min.js"></script><%
+}
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
     <script type="text/javascript" src="./resources/app/js/app-conferencing-min.js"></script><%
     if(subscriber != null && subscriber.getIsAdministrator()) { %>
     <script type="text/javascript" src="./resources/app/js/app-conference-list-min.js"></script><%
     }
 }
-if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-    <script type="text/javascript" src="./resources/app/js/app-voicemail-min.js"></script><%
-}
 if(License.isLicensed(ListenFeature.FINDME)) { %>
     <script type="text/javascript" src="./resources/app/js/app-findme-min.js"></script><%
-}
-if(subscriber != null && subscriber.getIsAdministrator()) { %>
-    <script type="text/javascript" src="./resources/app/js/app-system-configuration-min.js"></script>
-    <script type="text/javascript" src="./resources/app/js/app-subscribers-min.js"></script>
-    <script type="text/javascript" src="./resources/app/js/app-history-min.js"></script><%
 } %>
     <script type="text/javascript" src="./resources/app/js/app-profile-min.js"></script>
   </head>
