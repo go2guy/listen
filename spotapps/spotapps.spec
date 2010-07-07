@@ -81,12 +81,14 @@ Requires: spotbuild-vip
     /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/
 
     # Add root.vxml
-    for rootfile in `find %{STARTDIR}/spotbuild/listen* %{STARTDIR}/spotbuild/ippbx -name root.vxml`
+    for rootfile in `find %{STARTDIR}/spotbuild/listen* -name root.vxml`
     do
         listendir=`dirname ${rootfile}`
         listendir=`basename ${listendir}`
         /bin/cp ${rootfile} %{buildroot}/interact/apps/spotbuild/${listendir}/
     done
+
+    /bin/cp %{STARTDIR}/spotbuild/ippbx/root.vxml %{buildroot}/interact/apps/spotbuild/ippbx/
 
     # Install php scripts
     mkdir -p %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen
