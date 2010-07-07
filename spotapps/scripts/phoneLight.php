@@ -15,6 +15,8 @@
 
     // Execute http request
     $result = exec($httpRequest);
+    if ($result == "")
+        $result = "Success";
     exitresult ($objName, $result, "");
     
     #Exit php
