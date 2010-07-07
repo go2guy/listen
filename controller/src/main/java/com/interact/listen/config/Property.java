@@ -12,7 +12,9 @@ public class Property
         MAIL_SMTPUSERNAME ("com.interact.listen.mail.smtpUsername", ""),
         MAIL_SMTPPASSWORD ("com.interact.listen.mail.smtpPassword", ""),
         MAIL_FROMADDRESS  ("com.interact.listen.mail.fromAddress", "noreply@localhost"),
-        PINLENGTH         ("com.interact.listen.pinLength", "10");
+        PINLENGTH         ("com.interact.listen.pinLength", "10"),
+        PAGER_NUMBER      ("com.interact.listen.pagerNumber", "4024292889"),
+        ALTERNATE_NUMBER  ("com.interact.listen.alternateNumber", "");
 
         private final String key;
         private final String defaultValue;

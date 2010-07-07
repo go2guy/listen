@@ -2,6 +2,8 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
@@ -110,7 +112,11 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"enableEmail\":").append(subscriber.getIsEmailNotificationEnabled()).append(",");
         json.append("\"enableSms\":").append(subscriber.getIsSmsNotificationEnabled()).append(",");
         json.append("\"emailAddress\":\"").append(subscriber.getEmailAddress()).append("\",");
-        json.append("\"smsAddress\":\"").append(subscriber.getSmsAddress()).append("\"");
+        json.append("\"smsAddress\":\"").append(subscriber.getSmsAddress()).append("\",");
+        
+        //temporary until after-hours pager is moved to it's final location
+        json.append("\"pagerNumber\":\"").append(Configuration.get(Property.Key.PAGER_NUMBER)).append("\",");
+        json.append("\"pagerAlternateNumber\":\"").append(Configuration.get(Property.Key.ALTERNATE_NUMBER)).append("\"");
         json.append("}");
         return json.toString();
     }

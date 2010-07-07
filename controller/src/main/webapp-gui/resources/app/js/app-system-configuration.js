@@ -45,7 +45,7 @@ $(document).ready(function() {
         $('.dnis-mapping-number', clone).val(n);
 
         $('#dnis-mapping-form tbody tr:last').before(clone);
-        if(d != 'voicemail' && d != 'mailbox' && d != 'conferencing') { // assume custom
+        if(d != 'voicemail' && d != 'mailbox' && d != 'conferencing' && d != 'directVoicemail') { // assume custom
             $('select option[value=\'custom\']', clone).attr('selected', 'selected');
             $('.dnis-mapping-custom-destination', clone).val(d).show();
         } else {
@@ -105,7 +105,7 @@ $(document).ready(function() {
             }
             var destination = $('select', rows[i]).val();
             entry += number + ':';
-            if(destination != 'voicemail' && destination != 'mailbox' && destination != 'conferencing') {
+            if(destination != 'voicemail' && destination != 'mailbox' && destination != 'conferencing' && destination != 'directVoicemail') {
                 var customVal = $('.dnis-mapping-custom-destination', rows[i]).val();
                 if(customVal == '') {
                     continue;

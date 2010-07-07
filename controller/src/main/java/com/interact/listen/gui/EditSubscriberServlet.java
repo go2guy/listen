@@ -58,6 +58,8 @@ public class EditSubscriberServlet extends HttpServlet
         {
             throw new BadRequestServletException("Subscriber not found");
         }
+        
+        Subscriber originalSubscriber = subscriberToEdit.copy(true);
 
         if(!currentSubscriber.getIsAdministrator() && !currentSubscriber.getId().equals(subscriberToEdit.getId()))
         {
@@ -96,7 +98,7 @@ public class EditSubscriberServlet extends HttpServlet
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
 
         String accessNumbers = request.getParameter("accessNumbers");
-        if(currentSubscriber.getIsAdministrator() && accessNumbers != null && accessNumbers.trim().length() > 0)
+        if(currentSubscriber.getIsAdministrator() && accessNumbers != null)
         {
             updateSubscriberAccessNumbers(subscriberToEdit, accessNumbers, session, persistenceService);
         }
@@ -157,7 +159,7 @@ public class EditSubscriberServlet extends HttpServlet
             persistenceService.update(conferenceToEdit, originalConference);
         }
 
-        persistenceService.save(subscriberToEdit);
+        persistenceService.update(subscriberToEdit, originalSubscriber);
     }
     
     private Subscriber findSubscriberById(String id, Session session)

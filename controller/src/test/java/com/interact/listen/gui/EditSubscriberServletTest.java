@@ -44,13 +44,10 @@ public class EditSubscriberServletTest
     @Test
     public void test_doPost_adminSubscriberWithValidParameters_editsAccount() throws ServletException, IOException
     {
-        setSessionSubscriber(request, true); // admin subscriber
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        session.save(subscriber);
+        subscriber = setSessionSubscriber(request, true); // admin subscriber
 
         final String id = String.valueOf(subscriber.getId());
         final String username = randomString();
@@ -76,13 +73,12 @@ public class EditSubscriberServletTest
         servlet.service(request, response);
 
         Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("username", username));
+        criteria.add(Restrictions.eq("id", Long.valueOf(id)));
         Subscriber subscriber = (Subscriber)criteria.uniqueResult();
         assertNotNull(subscriber);
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
 
-        session.delete(subscriber);
         tx.commit();
     }
     
@@ -92,13 +88,8 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
-
+        subscriber = setSessionSubscriber(request, false);
+        
         final String id = String.valueOf(subscriber.getId());
         final String username = randomString();
         final String password = randomString();
@@ -130,7 +121,6 @@ public class EditSubscriberServletTest
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
 
-        session.delete(subscriber);
         tx.commit();
     }
     
@@ -141,21 +131,17 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
+        subscriber = setSessionSubscriber(request, false);
         
         Subscriber subscriber2 = getPopulatedSubscriber();
+        session.save(subscriber2);
 
-        HttpSession httpSession = request.getSession();
-        // Put a different subscriber as the person trying to edit subscriber
-        httpSession.setAttribute("subscriber", subscriber2);
-
-        final String id = String.valueOf(subscriber.getId());
+        // We want the subscriber being edited to be subscriber 2 being edited by subscriber 1 who is not an admin
+        final String id = String.valueOf(subscriber2.getId());
         final String username = randomString();
         final String password = randomString();
         final String confirm = password;
-        final String voicemailPin = String.valueOf(subscriber.getId());
+        final String voicemailPin = String.valueOf(subscriber2.getId());
         final String enableEmail = "true";
         final String enableSms = "true";
         final String emailAddress = randomString();
@@ -185,7 +171,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -229,12 +214,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -257,7 +237,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -269,12 +248,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -297,7 +271,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -309,12 +282,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -337,7 +305,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -349,12 +316,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -377,7 +339,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -389,12 +350,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -417,7 +373,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -429,12 +384,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -457,7 +407,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -469,12 +418,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -496,7 +440,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -508,12 +451,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -535,7 +473,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -547,12 +484,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -574,7 +506,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -586,12 +517,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -613,7 +539,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -625,12 +550,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -653,7 +573,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -665,12 +584,7 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        subscriber.setIsAdministrator(Boolean.FALSE);
-        session.save(subscriber);
-        
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        subscriber = setSessionSubscriber(request, false);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -693,7 +607,6 @@ public class EditSubscriberServletTest
         }
         finally
         {
-            session.delete(subscriber);
             tx.commit();
         }
     }
@@ -701,14 +614,11 @@ public class EditSubscriberServletTest
     @Test
     public void test_doPost_adminSubscriberWithEmailAddresNoEnableEmail_editsAccount() throws ServletException, IOException
     {
-        setSessionSubscriber(request, true); // admin subscriber
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        session.save(subscriber);
-
+        subscriber = setSessionSubscriber(request, true);
+        
         final String id = String.valueOf(subscriber.getId());
         final String username = randomString();
         final String password = randomString();
@@ -736,21 +646,17 @@ public class EditSubscriberServletTest
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(emailAddress, subscriber.getEmailAddress());
 
-        session.delete(subscriber);
         tx.commit();
     }
     
     @Test
     public void test_doPost_adminSubscriberWithSmsAddresNoEnableSms_editsAccount() throws ServletException, IOException
     {
-        setSessionSubscriber(request, true); // admin subscriber
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = getPopulatedSubscriber();
-        session.save(subscriber);
-
+        subscriber = setSessionSubscriber(request, true);
+        
         final String id = String.valueOf(subscriber.getId());
         final String username = randomString();
         final String password = randomString();
@@ -778,7 +684,6 @@ public class EditSubscriberServletTest
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(smsAddress, subscriber.getSmsAddress());
 
-        session.delete(subscriber);
         tx.commit();
     }
 
@@ -794,13 +699,21 @@ public class EditSubscriberServletTest
     }
 
     // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
+    private Subscriber setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
     {
+        Session hibernateSession = HibernateUtil.getSessionFactory().getCurrentSession();
         Subscriber subscriber = new Subscriber();
+        subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
+        subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setVoicemailPin(System.currentTimeMillis());
         subscriber.setIsAdministrator(isAdministrator);
+        
+        hibernateSession.save(subscriber);
 
         HttpSession session = request.getSession();
         session.setAttribute("subscriber", subscriber);
+        
+        return subscriber;
     }
 
     // TODO refactor this out into test utils

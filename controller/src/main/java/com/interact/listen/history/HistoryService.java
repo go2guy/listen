@@ -13,7 +13,7 @@ public class HistoryService
 
     private enum Service
     {
-        VOICEMAIL, CONFERENCING;
+        VOICEMAIL, CONFERENCING, CONFIGURATION;
 
         @Override
         public String toString()
@@ -138,6 +138,15 @@ public class HistoryService
         history.setAction("Unmuted conference caller");
         history.setDescription("Unmuted caller [" + unmutedCaller + "] in conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
+        write(history);
+    }
+    
+    public void writeChangedAlternatePagerNumber(String alternateNumber)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Changed pager alternate number");
+        history.setDescription("Changed pager alternate number to [" + alternateNumber + "]");
+        history.setService(Service.CONFIGURATION.toString());
         write(history);
     }
 

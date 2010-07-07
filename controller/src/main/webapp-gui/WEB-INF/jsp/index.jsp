@@ -356,13 +356,33 @@ if(subscriber != null) { %>
                         </tr>
                         <tr>
                           <td colspan="2" class="buttons">
-                            <button class="button-save" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Edit</button>
+                            <button class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Save</button>
                           </td>
                         </tr>
                       </tbody>
                     </table>
                   </fieldset>
                 </form>
+                <div class="application-header"><div class="title">Pager Info</div></div>
+                <div class="application-content">
+                  <form id="pager-form" onsubmit="return false;">
+                    <div class="form-error-message"></div>
+                    <div class="form-success-message"></div>
+                    <fieldset>
+                      <table>
+                        <tbody>
+                          <tr><td><label for="pager-form-number">Pager Number</label></td><td id="pager-form-number" name="pager-form-number"></td></tr>
+                          <tr><td><label for="pager-form-alternate-number">Alternate Number</label></td><td><input type="text" id="pager-form-alternate-number" name="pager-form-alternate-number" maxlength="14"/></td></tr>
+                          <tr>
+                             <td colspan="2" class="buttons">
+                             <button class="button-edit" id="pager-form-edit-button" name="pager-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editPagerInfo();return false;">Save</button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </fieldset>
+                  </form>
+                </div>
               </div>
             </div> <%
 } %>
@@ -465,7 +485,8 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
 }
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
               <option value="mailbox">Mailbox</option>
-              <option value="voicemail">Voicemail</option><%
+              <option value="voicemail">Voicemail</option>
+              <option value="directVoicemail">Direct Voicemail</option><%
 } %>
               <option value="custom">Custom</option>
             </select>

@@ -34,6 +34,9 @@ $(document).ready(function() {
                             }
     
                             $('#profile-form-edit-button').show();
+                            
+                            $('#pager-form-number').text(data.pagerNumber);
+                            $('#pager-form-alternate-number').val(data.pagerAlternateNumber);
                         }
                     });
                 };
@@ -41,6 +44,7 @@ $(document).ready(function() {
                 this.unload = function() {
                     LISTEN.log('Unloading profile');
                     LISTEN.PROFILE.clearError();
+                    $('#pager-form .form-error-message').text('').hide();
                 };
             },
             
@@ -66,6 +70,34 @@ $(document).ready(function() {
                     },
                     errorCallback: function(message) {
                         LISTEN.PROFILE.showError(message);
+                    }
+                });
+            },
+            
+            editPagerInfo: function() {
+                LISTEN.trace('LISTEN.PROFILE.editPagerInfo');
+                $('#pager-form .form-error-message').text('').hide();
+                var alternateNumber = $('#pager-form-alternate-number').val()
+                
+                $('#pager-form-alternate-number').val(alternateNumber.replace(/[-\.]/g, ""));
+                
+                $('#pager-form button').attr('readonly', 'readonly');
+                SERVER.post({
+                    url: '/ajax/editPager',
+                    properties: {
+                        alternateNumber: $('#pager-form-alternate-number').val()
+                    },
+                    successCallback: function() {
+                        var elem = $('#pager-form .form-success-message');
+                        elem.text('Alternate number updated').slideDown(100);
+                        setTimeout(function() {
+                            elem.slideUp(100);
+                        }, 2000);
+                        
+                        $('#pager-form button').removeAttr('readonly');
+                    },
+                    errorCallback: function(message) {
+                        $('#pager-form .form-error-message').text(message).slideDown(100);
                     }
                 });
             },
