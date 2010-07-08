@@ -9,8 +9,14 @@ import com.interact.listen.stats.StatSenderFactory;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
+
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
 
 @Entity
 public class Voicemail extends Audio implements Serializable
@@ -121,5 +127,44 @@ public class Voicemail extends Audio implements Serializable
     {
         HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeDeletedVoicemail(getSubscriber(), getLeftBy(), getDateCreated());
+    }
+
+    public static List<Voicemail> queryBySubscriberPaged(Session session, Subscriber subscriber, int first, int max)
+    {
+        DetachedCriteria subquery = DetachedCriteria.forClass(Voicemail.class);
+        subquery.createAlias("subscriber", "subscriber_alias");
+        subquery.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        subquery.setProjection(Projections.id());
+
+        Criteria criteria = session.createCriteria(Voicemail.class);
+        criteria.add(Subqueries.propertyIn("id", subquery));
+
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(max);
+        criteria.addOrder(Order.desc("dateCreated"));
+
+        criteria.setFetchMode("subscriber", FetchMode.SELECT);
+
+        return (List<Voicemail>)criteria.list();
+    }
+
+    public static Long countBySubscriber(Session session, Subscriber subscriber)
+    {
+        Criteria criteria = session.createCriteria(Voicemail.class);
+        criteria.setProjection(Projections.rowCount());
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        return (Long)criteria.list().get(0);
+    }
+
+    public static Long countNewBySubscriber(Session session, Subscriber subscriber)
+    {
+        Criteria criteria = session.createCriteria(Voicemail.class);
+        criteria.add(Restrictions.eq("isNew", true));
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        criteria.setProjection(Projections.rowCount());
+        return (Long)criteria.list().get(0);
     }
 }

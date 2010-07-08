@@ -8,8 +8,14 @@ import com.interact.listen.stats.StatSenderFactory;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
+
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
 
 @Entity
 @Table(name = "PARTICIPANT")
@@ -340,5 +346,34 @@ public class Participant extends Resource implements Serializable
         int hash = 1;
         hash *= prime + (getSessionID() == null ? 0 : getSessionID().hashCode());
         return hash;
+    }
+    
+    public static List<Participant> queryByConferencePaged(Session session, Conference conference, int first, int max)
+    {
+        DetachedCriteria subquery = DetachedCriteria.forClass(Participant.class);
+        subquery.createAlias("conference", "conference_alias");
+        subquery.add(Restrictions.eq("conference_alias.id", conference.getId()));
+        subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        subquery.setProjection(Projections.id());
+
+        Criteria criteria = session.createCriteria(Participant.class);
+        criteria.add(Subqueries.propertyIn("id", subquery));
+
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(max);
+        // TODO it might be nice to order by join date, but that's not a field (yet?)
+        criteria.addOrder(Order.asc("id"));
+
+        criteria.setFetchMode("conference", FetchMode.SELECT);
+        return (List<Participant>)criteria.list();
+    }
+
+    public static Long countByConference(Session session, Conference conference)
+    {
+        Criteria criteria = session.createCriteria(Participant.class);
+        criteria.setProjection(Projections.rowCount());
+        criteria.createAlias("conference", "conference_alias");
+        criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
+        return (Long)criteria.list().get(0);
     }
 }

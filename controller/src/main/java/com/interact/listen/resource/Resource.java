@@ -8,6 +8,8 @@ import javax.persistence.Transient;
 
 public abstract class Resource
 {
+    public static final int DEFAULT_PAGE_SIZE = 15;
+
     @Transient
     private ArrayList<String> errors = new ArrayList<String>();
 

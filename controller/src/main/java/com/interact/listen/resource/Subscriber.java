@@ -9,6 +9,11 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
+
 @Entity
 @Table(name = "SUBSCRIBER")
 public class Subscriber extends Resource implements Serializable
@@ -358,5 +363,33 @@ public class Subscriber extends Resource implements Serializable
             HistoryService historyService = new HistoryService(persistenceService);
             historyService.writeChangedVoicemailPin(this, subscriber.getVoicemailPin(), getVoicemailPin());
         }
-   }
+    }
+
+    public static Long count(Session session)
+    {
+        Criteria criteria = session.createCriteria(Subscriber.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setProjection(Projections.rowCount());
+        return (Long)criteria.list().get(0);
+    }
+
+    public static List<Subscriber> queryAllPaged(Session session, int first, int max)
+    {
+        DetachedCriteria subquery = DetachedCriteria.forClass(Subscriber.class);
+        subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        subquery.setProjection(Projections.id());
+
+        Criteria criteria = session.createCriteria(Subscriber.class);
+        criteria.add(Subqueries.propertyIn("id", subquery));
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(max);
+        criteria.addOrder(Order.asc("id"));
+
+        criteria.setFetchMode("accessNumbers", FetchMode.SELECT);
+        criteria.setFetchMode("conferences", FetchMode.SELECT);
+
+        return (List<Subscriber>)criteria.list();
+    }
 }

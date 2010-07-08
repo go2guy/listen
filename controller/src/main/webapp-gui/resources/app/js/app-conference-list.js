@@ -6,11 +6,13 @@ function ConferenceList() {
     var interval;
 
     var dynamicTable = new LISTEN.DynamicTable({
+        url: '/ajax/getConferenceList',
         tableId: 'conference-list-table',
         templateId: 'conference-row-template',
         retrieveList: function(data) {
             return data.results;
         },
+        paginationId: 'conference-list-pagination',
         updateRowCallback: function(row, data, animate) {
             LISTEN.setFieldContent(row.find('.conference-cell-description'), data.description, animate);
             LISTEN.setFieldContent(row.find('.conference-cell-status'), data.isStarted ? 'Started' : 'Not Started', animate);
@@ -18,22 +20,11 @@ function ConferenceList() {
         }
     });
 
-    var pollAndSet = function(animate) {
-        $.ajax({
-            url: '/ajax/getConferenceList',
-            dataType: 'json',
-            cache: false,
-            success: function(data, textStatus, xhr) {
-                dynamicTable.update(data, animate);
-            }
-        });
-    };
-
     this.load = function() {
         LISTEN.log('Loading conference list');
-        pollAndSet(false);
+        dynamicTable.pollAndSet(false);
         interval = setInterval(function() {
-            pollAndSet(true);
+            dynamicTable.pollAndSet(true);
         }, 1000);
     };
 

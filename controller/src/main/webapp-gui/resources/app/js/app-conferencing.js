@@ -55,7 +55,7 @@ $(document).ready(function() {
 function Conference(id) {
     var conferenceId;
 
-    if(id) {
+    if(LISTEN.isDefined(id)) {
         LISTEN.log('Constructing conference, id provided [' + id + ']')
         conferenceId = id;
     } else {
@@ -80,11 +80,13 @@ function Conference(id) {
     var interval;
 
     var callerTable = new LISTEN.DynamicTable({
+        url: '/ajax/getConferenceParticipants?id=' + conferenceId,
         tableId: 'conference-caller-table',
         templateId: 'caller-row-template',
         retrieveList: function(data) {
-            return data;
+            return data.results;
         },
+        paginationId: 'conference-caller-pagination',
         countContainer: 'conference-caller-count',
         retrieveCount: function(data) {
             return data.length;
@@ -179,12 +181,12 @@ function Conference(id) {
     });
 
     var pollAndSet = function(animate) {
+        callerTable.pollAndSet(animate);
         $.ajax({
             url: '/ajax/getConferenceInfo?id=' + conferenceId,
             dataType: 'json',
             cache: false,
             success: function(data, textStatus, xhr) {
-                callerTable.update(data.participants.results, animate);
                 historyTable.update(data.history.results, animate);
                 pinTable.update(data.pins.results, animate);
                 recordingTable.update(data.recordings.results, animate);
@@ -226,8 +228,8 @@ function Conference(id) {
     }
 
     this.load = function() {
-        LISTEN.log('Loading conferencing');
-        if(conferenceId) {
+        LISTEN.log('Loading conferencing, conference id = [' + conferenceId + ']');
+        if(LISTEN.isDefined(conferenceId)) {
             pollAndSet(false);
             interval = setInterval(function() {
                 pollAndSet(true);
@@ -240,11 +242,6 @@ function Conference(id) {
         if(interval) {
             clearInterval(interval);
         }
-//        $('#conference-window').hide();
-//        $('#conference-caller-table tbody').find('tr').remove();
-//        $('#conference-pin-table tbody').find('tr').remove();
-//        $('#conference-history-table tbody').find('tr').remove();
-//        $('#conference-recording-table tbody').find('tr').remove();
     };
 }
 

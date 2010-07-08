@@ -6,16 +6,18 @@ function Voicemail() {
     var interval;
 
     var dynamicTable = new LISTEN.DynamicTable({
+        url: '/ajax/getVoicemailList',
         tableId: 'voicemail-table',
         templateId: 'voicemail-row-template',
         retrieveList: function(data) {
-            return data.list.results;
+            return data.results;
         },
         countContainer: 'voicemail-new-count',
         retrieveCount: function(data) {
             return data.newCount;
         },
         reverse: true,
+        paginationId: 'voicemail-pagination',
         updateRowCallback: function(row, data, animate) {
             if(data.isNew) {
                 row.removeClass('voicemail-read');
@@ -32,22 +34,11 @@ function Voicemail() {
         }
     });
 
-    var pollAndSet = function(animate) {
-        $.ajax({
-            url: '/ajax/getVoicemailList',
-            dataType: 'json',
-            cache: false,
-            success: function(data, textStatus, xhr) {
-                dynamicTable.update(data, animate)
-            }
-        });
-    };
-
     this.load = function() {
         LISTEN.log('Loading voicemail');
-        pollAndSet(false);
+        dynamicTable.pollAndSet(false);
         interval = setInterval(function() {
-            pollAndSet(true);
+            dynamicTable.pollAndSet(true);
         }, 1000);
     };
 

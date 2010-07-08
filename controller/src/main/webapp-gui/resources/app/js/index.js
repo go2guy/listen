@@ -131,8 +131,9 @@ $(document).ready(function() {
              *                that retrieves the template id based on the data row
              */
             DynamicTable: function(args) {
-                var interval;
                 var args = args;
+                var currentFirst = 0;
+                var currentMax = 15;
 
                 this.update = function(data, animate) {
                     var tableRows = [];
@@ -149,6 +150,43 @@ $(document).ready(function() {
                         var count = args.retrieveCount.call(this, data, animate);
                         if(container.text() != count) {
                             container.text(count);
+                        }
+                    }
+
+                    if(args.paginationId) {
+                        var count = data.count;
+                        var first = data.first;
+                        var total = data.total;
+                        var max = data.max;
+
+                        var pagination = $('#' + args.paginationId);
+                        $('.pagination-current', pagination).text((count > 0 ? first + 1 : '0') + '-' + (first + count));
+                        $('.pagination-total', pagination).text(total);
+
+                        var left = $('.pagination-left', pagination);
+                        var right = $('.pagination-right', pagination);
+
+                        left.unbind('click');
+                        right.unbind('click');
+                        if(first > 0) {
+                            left.click(LISTEN.bind(this, function() {
+                                currentFirst = Math.max(first - max, 0);
+                                currentMax = max;
+                                this.pollAndSet(false);
+                            }));
+                            left.show();
+                        } else {
+                            left.hide();
+                        }
+                        if(first + count + 1 <= total) {
+                            right.click(LISTEN.bind(this, function() {
+                                currentFirst = first + count;
+                                currentMax = max;
+                                this.pollAndSet(false);
+                            }));
+                            right.show();
+                        } else {
+                            right.hide();
                         }
                     }
 
@@ -215,6 +253,28 @@ $(document).ready(function() {
                         $('#' + args.tableId).find('.placeholder').show();
                     } else {
                         $('#' + args.tableId).find('.placeholder').hide();
+                    }
+                };
+
+                this.pollAndSet = function(animate) {
+                    if(args.url) {
+                        var url = args.url;
+                        if(url.indexOf('?') < 0) {
+                            url += '?';
+                        } else {
+                            url += '&';
+                        }
+                        url += 'first=' + currentFirst + '&max=' + currentMax;
+                        $.ajax({
+                            url: url,
+                            dataType: 'json',
+                            cache: false,
+                            success: LISTEN.bind(this, function(data, textStatus, xhr) {
+                                this.update(data, animate);
+                            })
+                        });
+                    } else {
+                        LISTEN.log('Warning - DynamicTable.pollAndSet() invoked without args.url');
                     }
                 };
             },
@@ -320,6 +380,10 @@ $(document).ready(function() {
                         } catch(e2) { }
                     }
                 }
+            },
+
+            isDefined: function(variable) {
+                return typeof variable != 'undefined'; 
             }
         };
 

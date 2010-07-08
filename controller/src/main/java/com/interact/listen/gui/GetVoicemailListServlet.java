@@ -2,9 +2,6 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
-import com.interact.listen.ResourceListService;
-import com.interact.listen.ResourceListService.Builder;
-import com.interact.listen.exception.CriteriaCreationException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
@@ -12,6 +9,7 @@ import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
+import com.interact.listen.resource.Resource;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
 import com.interact.listen.stats.InsaStatSender;
@@ -19,16 +17,14 @@ import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 
 public class GetVoicemailListServlet extends HttpServlet
 {
@@ -55,50 +51,59 @@ public class GetVoicemailListServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
+        int first = 0;
+        int max = Resource.DEFAULT_PAGE_SIZE;
+        if(request.getParameter("first") != null)
+        {
+            first = Integer.parseInt(request.getParameter("first"));
+        }
+        if(request.getParameter("max") != null)
+        {
+            max = Integer.parseInt(request.getParameter("max"));
+        }
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        List<Voicemail> results = Voicemail.queryBySubscriberPaged(session, subscriber, first, max);
+        long total = results.size() > 0 ? Voicemail.countBySubscriber(session, subscriber) : 0;
+
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 
-        Builder builder = new ResourceListService.Builder(Voicemail.class, session, marshaller)
-            .addSearchProperty("subscriber", "/subscribers/" + subscriber.getId())
-            .addReturnField("dateCreated")
-            .addReturnField("id")
-            .addReturnField("isNew")
-            .addReturnField("leftBy")
-            .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING)
-            .withMax(100);
-        ResourceListService service = builder.build();
-
-        try
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"newCount\":").append(Voicemail.countNewBySubscriber(session, subscriber)).append(",");
+        json.append("\"first\":").append(first).append(",");
+        json.append("\"max\":").append(max).append(",");
+        json.append("\"count\":").append(results.size()).append(",");
+        json.append("\"total\":").append(total).append(",");
+        json.append("\"results\":[");
+        for(Voicemail result : results)
         {
-            StringBuilder content = new StringBuilder();
-            content.append("{");
-            content.append("\"newCount\":").append(getNewCount(session, subscriber)).append(",");
-            content.append("\"list\":").append(service.list());
-            content.append("}");
-            OutputBufferFilter.append(request, content.toString(), marshaller.getContentType());
+            json.append(marshalVoicemail(result, marshaller));
+            json.append(",");
         }
-        catch(CriteriaCreationException e)
+        if(results.size() > 0)
         {
-            throw new ServletException(e);
+            json.deleteCharAt(json.length() - 1);
         }
+        json.append("]}");
+        OutputBufferFilter.append(request, json.toString(), marshaller.getContentType());
     }
-    
-    private Long getNewCount(Session session, Subscriber subscriber)
+
+    private String marshalVoicemail(Voicemail voicemail, Marshaller marshaller)
     {
-        Criteria criteria = session.createCriteria(Voicemail.class);
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"id\":").append(voicemail.getId()).append(",");
+        json.append("\"isNew\":").append(voicemail.getIsNew()).append(",");
 
-        // only new records
-        criteria.add(Restrictions.eq("isNew", true));
+        String date = marshaller.convertAndEscape(Date.class, voicemail.getDateCreated());
+        json.append("\"dateCreated\":\"").append(date).append("\",");
 
-        // belonging to this subscriber
-        criteria.createAlias("subscriber", "subscriber_alias");
-        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        String leftBy = marshaller.convertAndEscape(String.class, voicemail.getLeftBy());
+        json.append("\"leftBy\":\"").append(leftBy).append("\"");
 
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.setFirstResult(0);
-        criteria.setProjection(Projections.rowCount());
-
-        return (Long)criteria.list().get(0);
+        json.append("}");
+        return json.toString();
     }
 }

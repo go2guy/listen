@@ -8,19 +8,20 @@ import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.json.JsonMarshaller;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Resource;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.*;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 /**
@@ -53,37 +54,52 @@ public class GetConferenceListServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
+        int first = 0;
+        int max = Resource.DEFAULT_PAGE_SIZE;
+        if(request.getParameter("first") != null)
+        {
+            first = Integer.parseInt(request.getParameter("first"));
+        }
+        if(request.getParameter("max") != null)
+        {
+            max = Integer.parseInt(request.getParameter("max"));
+        }
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-
-        List<Resource> conferences;
-
-        if(subscriber.getIsAdministrator())
-        {
-            Criteria criteria = session.createCriteria(Conference.class);
-            criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-            conferences = (List<Resource>)criteria.list();
-        }
-        else
-        {
-            conferences = new ArrayList<Resource>(subscriber.getConferences());
-        }
-
-        Set<String> fields = new HashSet<String>();
-        fields.add("description");
-        fields.add("id");
-        fields.add("isStarted");
-
-        ResourceList list = new ResourceList();
-        list.setFields(fields);
-        list.setFirst(0);
-        list.setList(conferences);
-        list.setMax(conferences.size());
-        list.setTotal(Long.valueOf(conferences.size()));
+        List<Conference> results = Conference.queryAllPaged(session, first, max);
+        long total = results.size() > 0 ? Conference.count(session) : 0;
 
         Marshaller marshaller = new JsonMarshaller();
-        String content = marshaller.marshal(list, Conference.class);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        OutputBufferFilter.append(request, content, marshaller.getContentType());
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"first\":").append(first).append(",");
+        json.append("\"max\":").append(max).append(",");
+        json.append("\"count\":").append(results.size()).append(",");
+        json.append("\"total\":").append(total).append(",");
+        json.append("\"results\":[");
+        for(Conference result : results)
+        {
+            json.append(marshalConference(result, marshaller));
+            json.append(",");
+        }
+        if(results.size() > 0)
+        {
+            json.deleteCharAt(json.length() - 1);
+        }
+        json.append("]}");
+        OutputBufferFilter.append(request, json.toString(), marshaller.getContentType());
+    }
+    
+    private String marshalConference(Conference conference, Marshaller marshaller)
+    {
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"id\":").append(conference.getId()).append(",");
+        json.append("\"isStarted\":").append(conference.getIsStarted()).append(",");
+        
+        String description = marshaller.convertAndEscape(String.class, conference.getDescription());
+        json.append("\"description\":\"").append(description).append("\"");
+        json.append("}");
+        return json.toString();
     }
 }

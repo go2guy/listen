@@ -52,14 +52,13 @@ public class GetHistoryListServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        int max = 25;
+        
         int first = 0;
-
+        int max = Resource.DEFAULT_PAGE_SIZE;
         if(request.getParameter("first") != null)
         {
             first = Integer.parseInt(request.getParameter("first"));
         }
-
         if(request.getParameter("max") != null)
         {
             max = Integer.parseInt(request.getParameter("max"));

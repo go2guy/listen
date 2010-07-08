@@ -12,7 +12,10 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
+import org.hibernate.criterion.*;
 
 @Entity
 @Table(name = "CONFERENCE")
@@ -373,18 +376,6 @@ public class Conference extends Resource implements Serializable
         }
     }
 
-    // TODO is this used anywhere anymore?
-    public static Conference findByPinNumber(String pinNumber, Session session)
-    {
-        final String hql = "select c from Conference c join c.pins as p where p.number = ?";
-
-        org.hibernate.Query query = session.createQuery(hql);
-        query.setMaxResults(1);
-        query.setString(0, pinNumber);
-
-        return (Conference)query.uniqueResult();
-    }
-
     @Override
     public boolean equals(Object that)
     {
@@ -421,5 +412,48 @@ public class Conference extends Resource implements Serializable
         hash *= prime + (getDescription() == null ? 0 : getDescription().hashCode());
         hash *= prime + (getSubscriber() == null ? 0 : getSubscriber().hashCode());
         return hash;
+    }
+
+    // TODO is this used anywhere anymore?
+    public static Conference findByPinNumber(String pinNumber, Session session)
+    {
+        final String hql = "select c from Conference c join c.pins as p where p.number = ?";
+
+        org.hibernate.Query query = session.createQuery(hql);
+        query.setMaxResults(1);
+        query.setString(0, pinNumber);
+
+        return (Conference)query.uniqueResult();
+    }
+
+    public static List<Conference> queryAllPaged(Session session, int first, int max)
+    {
+        DetachedCriteria subquery = DetachedCriteria.forClass(Conference.class);
+        subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        subquery.setProjection(Projections.id());
+
+        Criteria criteria = session.createCriteria(Conference.class);
+        criteria.add(Subqueries.propertyIn("id", subquery));
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(max);
+        criteria.addOrder(Order.asc("description"));
+
+        criteria.setFetchMode("subscriber", FetchMode.SELECT);
+        criteria.setFetchMode("pins", FetchMode.SELECT);
+        criteria.setFetchMode("participants", FetchMode.SELECT);
+        criteria.setFetchMode("conferenceHistorys", FetchMode.SELECT);
+        criteria.setFetchMode("conferenceRecordings", FetchMode.SELECT);
+
+        return (List<Conference>)criteria.list();
+    }
+
+    public static Long count(Session session)
+    {
+        Criteria criteria = session.createCriteria(Conference.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setProjection(Projections.rowCount());
+        return (Long)criteria.list().get(0);
     }
 }

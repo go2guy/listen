@@ -28,25 +28,28 @@ public final class HibernateUtil
 {
     private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
     private static final SessionFactory SESSION_FACTORY;
+    private static final Environment ENVIRONMENT = Environment.valueOf(System.getProperty("com.interact.listen.env", "PROD"));
 
     /**
      * Provides default configuration values for various environments.
      */
     private static enum Environment
     {
-        DEV  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver"),
-        TEST ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver"),
-        PROD ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver");
+        DEV  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super"),
+        TEST ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super"),
+        PROD ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc");
 
         private final String dbUrl, dbUsername, dbPassword, dbDialect, dbDriver;
+        private final String guiPassword;
 
-        private Environment(String dbUrl, String dbUsername, String dbPassword, String dbDialect, String dbDriver)
+        private Environment(String dbUrl, String dbUsername, String dbPassword, String dbDialect, String dbDriver, String guiPassword)
         {
             this.dbUrl = dbUrl;
             this.dbUsername = dbUsername;
             this.dbPassword = dbPassword;
             this.dbDialect = dbDialect;
             this.dbDriver = dbDriver;
+            this.guiPassword = guiPassword;
         }
 
         public String getDbUrl()
@@ -73,6 +76,11 @@ public final class HibernateUtil
         {
             return dbDriver;
         }
+
+        public String getGuiPassword()
+        {
+            return guiPassword;
+        }
     }
     
     private HibernateUtil()
@@ -84,13 +92,11 @@ public final class HibernateUtil
     {
         try
         {
-            Environment environment = Environment.valueOf(System.getProperty("com.interact.listen.env", "PROD"));
-
-            final String dbUrl = System.getProperty("com.interact.listen.db.url", environment.getDbUrl());
-            final String dbUsername = System.getProperty("com.interact.listen.db.username", environment.getDbUsername());
-            final String dbPassword = System.getProperty("com.interact.listen.db.password", environment.getDbPassword());
-            final String dbDialect = System.getProperty("com.interact.listen.db.dialect", environment.getDbDialect());
-            final String dbDriver = System.getProperty("com.interact.listen.db.driver", environment.getDbDriver());
+            final String dbUrl = System.getProperty("com.interact.listen.db.url", ENVIRONMENT.getDbUrl());
+            final String dbUsername = System.getProperty("com.interact.listen.db.username", ENVIRONMENT.getDbUsername());
+            final String dbPassword = System.getProperty("com.interact.listen.db.password", ENVIRONMENT.getDbPassword());
+            final String dbDialect = System.getProperty("com.interact.listen.db.dialect", ENVIRONMENT.getDbDialect());
+            final String dbDriver = System.getProperty("com.interact.listen.db.driver", ENVIRONMENT.getDbDriver());
 
             LOG.debug("DB connection string = [" + dbUrl + "]");
             LOG.debug("DB username =          [" + dbUsername + "]");
@@ -180,7 +186,7 @@ public final class HibernateUtil
             String extension = new DecimalFormat("000").format(100 + i);
 
             Subscriber subscriber = new Subscriber();
-            subscriber.setPassword(SecurityUtil.hashPassword("super"));
+            subscriber.setPassword(SecurityUtil.hashPassword(ENVIRONMENT.getGuiPassword()));
             subscriber.setUsername(extension);
             subscriber.setVoicemailPin(Long.valueOf(extension));
             persistenceService.save(subscriber);
@@ -252,7 +258,7 @@ public final class HibernateUtil
             LOG.debug("Created admin Subscriber");
             Subscriber subscriber = new Subscriber();
             subscriber.setIsAdministrator(Boolean.TRUE);
-            subscriber.setPassword(SecurityUtil.hashPassword("Int3ract!Inc"));
+            subscriber.setPassword(SecurityUtil.hashPassword(ENVIRONMENT.getGuiPassword()));
             subscriber.setUsername("Admin");
             subscriber.setVoicemailPin(123L);
             persistenceService.save(subscriber);

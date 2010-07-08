@@ -72,6 +72,10 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                           <tr class="placeholder"><td colspan="3">Nobody</td></tr>
                         </tbody>
                       </table>
+                      <div class="pagination" id="conference-caller-pagination">
+                        <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                      </div>
+                      <div class="cleaner">&nbsp;</div>
                     </div>
                   </div>
                 </div>
@@ -156,6 +160,10 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                     <tr class="placeholder"><td colspan="3">No voicemail</td></tr>
                   </tbody>
                 </table>
+                <div class="pagination" id="voicemail-pagination">
+                  <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                </div>
+                <div class="cleaner">&nbsp;</div>
               </div>
             </div><%
 } 
@@ -224,6 +232,10 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                     <tr class="placeholder"><td colspan="2">No conferences</td></tr>
                   </tbody>
                 </table>
+                <div class="pagination" id="conference-list-pagination">
+                  <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                </div>
+                <div class="cleaner">&nbsp;</div>
               </div>
             </div>
 
@@ -245,6 +257,10 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                         </thead>
                         <tbody></tbody>
                       </table>
+                      <div class="pagination" id="subscribers-pagination">
+                        <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                      </div>
+                      <div class="cleaner">&nbsp;</div>
                     </div>
                   </div>
                 </div>

@@ -5,11 +5,13 @@ $(document).ready(function() {
                 LISTEN.trace('LISTEN.SUBSCRIBERS.SubscribersApplication [construct]');
                 var interval;
                 var dynamicTable = new LISTEN.DynamicTable({
+                    url: '/ajax/getSubscriberList',
                     tableId: 'subscribers-table',
                     templateId: 'subscriber-row-template',
                     retrieveList: function(data) {
-                        return data;
+                        return data.results;
                     },
+                    paginationId: 'subscribers-pagination',
                     updateRowCallback: function(row, data, animate) {
                         LISTEN.setFieldContent(row.find('.subscriber-cell-username'), data.username, animate);
 
@@ -17,7 +19,7 @@ $(document).ready(function() {
                         for(var i = 0; i < data.accessNumbers.length; i++) {
                             numbers += data.accessNumbers[i];
                             if(i < data.accessNumbers.length - 1) {
-                                numbers += ',';
+                                numbers += ', ';
                             }
                         }
 
@@ -27,23 +29,11 @@ $(document).ready(function() {
                     }
                 });
 
-                var pollAndSet = function(animate) {
-                    LISTEN.trace('LISTEN.SUBSCRIBERS.SubscribersApplication.pollAndSet');
-                    $.ajax({
-                        url: '/ajax/getSubscriberList',
-                        dataType: 'json',
-                        cache: 'false',
-                        success: function(data, textStatus, xhr) {
-                            dynamicTable.update(data, animate);
-                        }
-                    });
-                };
-
                 this.load = function() {
                     LISTEN.trace('LISTEN.SUBSCRIBERS.SubscribersApplication.load');
-                    pollAndSet(false);
+                    dynamicTable.pollAndSet(false);
                     interval = setInterval(function() {
-                        pollAndSet(true);
+                        dynamicTable.pollAndSet(true);
                     }, 1000);
                 };
 

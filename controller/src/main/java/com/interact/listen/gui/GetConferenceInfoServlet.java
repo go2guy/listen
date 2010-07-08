@@ -81,7 +81,6 @@ public class GetConferenceInfoServlet extends HttpServlet
         {
             content.append("{");
             content.append("\"info\":").append(getInfo(conference, marshaller)).append(",");
-            content.append("\"participants\":").append(getParticipants(conference, marshaller, session)).append(",");
             content.append("\"pins\":").append(getPins(conference, marshaller, session)).append(",");
             content.append("\"history\":").append(getHistory(conference, marshaller, session)).append(",");
             content.append("\"recordings\":").append(getRecordings(conference, marshaller, session));
@@ -99,20 +98,6 @@ public class GetConferenceInfoServlet extends HttpServlet
     private String getInfo(Conference conference, Marshaller marshaller)
     {
         return marshaller.marshal(conference);
-    }
-
-    private String getParticipants(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
-    {
-        Builder builder = new ResourceListService.Builder(Participant.class, session, marshaller)
-            .addSearchProperty("conference", "/conferences/" + conference.getId())
-            .addReturnField("id")
-            .addReturnField("isAdmin")
-            .addReturnField("isAdminMuted")
-            .addReturnField("isMuted")
-            .addReturnField("isPassive")
-            .addReturnField("number");
-        ResourceListService service = builder.build();
-        return service.list();
     }
 
     private String getPins(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
