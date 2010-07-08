@@ -88,7 +88,7 @@ Requires: spotbuild-vip
         /bin/cp ${rootfile} %{buildroot}/interact/apps/spotbuild/${listendir}/
     done
 
-    /bin/cp %{STARTDIR}/spotbuild/ippbx/root.vxml %{buildroot}/interact/apps/spotbuild/ippbx/
+    /bin/cp %{STARTDIR}/ippbx/root.vxml %{buildroot}/interact/apps/spotbuild/ippbx/
 
     # Install php scripts
     mkdir -p %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen
