@@ -16,13 +16,13 @@ $(document).ready(function() {
 
     $('#scheduleConferenceForm').submit(function(event) { return false; });
 
-    $('#scheduleConferenceDialog .cancel-button').click(function(event) {
+    $('#scheduleConferenceDialog .button-cancel').click(function(event) {
         $.modal.close();
         $('#scheduleConferenceDialog .form-error-message').hide().text('');
         return false;
     });
 
-    $('#scheduleConferenceDialog .schedule-button').click(function(event) {
+    $('#scheduleConferenceDialog .button-schedule').click(function(event) {
         scheduleConference(event);
         $.modal.close();
         return false;
