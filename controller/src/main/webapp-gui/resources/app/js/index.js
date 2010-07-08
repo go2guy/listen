@@ -312,8 +312,8 @@ $(document).ready(function() {
 
             registerApp: function(app) {
                 applications.push(app);
-                // if this is the first app registered, go ahead and load it
                 if(!currentApplication) {
+                    LISTEN.trace('[' + app.name + '] is the first registered application - loading it for display');
                     this.switchApp(app);
                 }
             },
@@ -333,6 +333,12 @@ $(document).ready(function() {
                     toApp.menuOn();
                     currentApplication.swapWith(toApp, withContent);
                 } else {
+                    if(withContent) {
+                        toApp.content = withContent;
+                    }
+                    if(toApp.content) {
+                        toApp.content.load();
+                    }
                     toApp.menuOn();
                     toApp.show();
                 }
