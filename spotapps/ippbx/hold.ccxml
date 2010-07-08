@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
+<ccxml version="1.0">
+    <!-- Last Modified 07/08/2010
+       *   @Name	hold.ccxml
+       *   @Desc	This script handles the logic for placing a call on hold -->
+
+    <!-- Values passed in from other ccxml -->
+    <var name="ANI"/>           <!-- ANI. Origination ID of current call -->
+    <var name="DNIS"/>          <!-- DNIS. Destination ID -->
+    <var name="ibconnid"/>      <!-- Inbound connection ID -->
+    <var name="obconnid"/>      <!-- Outbound connection ID -->
+    <var name="requestID"/>     <!-- Connection ID of the party requesting the hold -->
+    <var name="APP_PATH"/>      <!-- App Path. Base application directory -->
+    <var name="EXT_LENGTH"/>    <!-- Extensions are less than seven digit numbers -->
+    <var name="SB_PATH"/>       <!-- Spotbuild Path. Base directory for spotbuild -->
+    <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
+
+    <!-- Global Vars -->
+    <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
+    <var name="ext" expr="''"/>         <!-- ext. Stores extension whose status will be toggled -->
+    <var name="holdID" expr="''"/>      <!-- hold ID. Stores connection id that will listen to music while on hold -->
+    <var name="activeID" expr="''"/>    <!-- active ID. Stores connection id of the party NOT on hold -->
+    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
+    <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
+    <var name="LIB_PATH" expr="''"/>    <!-- Audio Path. Directory for audio files -->
+    <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
+    <var name="disconnectid" expr="''"/>    <!-- ID of party who disconnects the call -->
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+
+    <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
+
+        <transition state="idle" event="ccxml.loaded" name="evt">
+            <!-- Load ccxml document. Set variables -->
+            <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
+            <assign name="LIB_PATH" expr="SB_PATH+'lib/vxml/'"/>
+            <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
+            <assign name="state" expr="'loaded'"/>
+            <log>INFO: Caller connection ID [<value expr="ibconnid"/>]</log>
+            <log>INFO: Callee connection ID [<value expr="obconnid"/>]</log>
+            <log>INFO: Hold originator ID [<value expr="requestID"/>]</log>
+            <send data="'dialog.user.setHoldID'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.setHoldID" name="evt">
+            <!-- Need to figure out who initiated the transfer request. We'll put the other
+            party on hold (with music) -->
+            <log>INFO: Entered [dialog.user.setHoldID] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'setID'"/>
+            <if cond="ibconnid == requestID">  <!-- Means inbound caller is attempting to transfer the call. -->
+                <assign name="holdID" expr="obconnid"/> <!-- We'll be putting the called party on hold -->
+                <assign name="activeID" expr="ibconnid"/>
+            <else/> <!-- Called party wishes to transfer the call -->
+                <assign name="holdID" expr="ibconnid"/> <!-- Put the caller on hold -->
+                <assign name="activeID" expr="obconnid"/>
+            </if>
+            <unjoin id1="ibconnid" id2="obconnid"/> <!-- Unjoin caller and callee -->
+        </transition>
+
+		<transition state="setID" event="conference.unjoined" name="evt">
+            <!-- We've unjoined caller from callee. Next, we need to put the appropriate party on hold.
+            Let's get them a voice channel so that we can play them music while they are on hold. -->
+            <log>INFO: Entered [conference.unjoined] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'hold'"/>
+            <join id1="holdID" id2="'VXML_CHANNEL'"/>
+		</transition>
+
+		<transition state="hold" event="conference.joined" name="evt">
+            <!-- Got the voice channel. Play steaming music to on hold party -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+            <log target="status">Call On Hold</log>
+            <var name="II_SB_promptID" expr="'rtsp://live.cumulusstreaming.com/KDEZ-FM?com.iivip.volume=-3'"/>
+            <var name="II_SB_repeat" expr="'n'"/>
+            <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
+            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+		</transition>
+
+		<transition state="hold" event="connection.signal" name="evt">
+    		<!-- Got a hold request. For now, we'll assume the active caller is attempting to pick up the line on hold -->
+            <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
+            <var name="direction" expr="evt.info.voip.direction"/>
+            <var name="requestID" expr="evt.connectionid"/>
+            <if cond="inVXML == 'y'">   <!-- Let's terminate the on hold music -->
+                <assign name="state" expr="'pickUp'"/>
+                <send data="'dialog.user.terminate'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.pickUp'" target="session.id"/>
+            </if>            
+		</transition>
+
+        <transition state="pickUp" event="dialog.exit" name="evt">
+            <!-- We're back from terminating the on hold music. Call the transition that rejoins the callers -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.pickUp'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.pickUp" name="evt">
+            <!-- Here, we rejoin the callers, making sure that join id 1 belongs to the inbound caller -->
+            <log>INFO: Entered [dialog.user.pickUp] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'rejoin'"/>
+            <if cond="holdID == ibconnid">
+                <join id1="holdID" id2="activeID"/>
+            <else/>
+                <join id1="activeID" id2="holdID"/>
+            </if>
+        </transition>
+
+		<transition state="rejoin" event="conference.joined" name="evt">
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+            <var name="callType" expr="'fromHold'"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid obconnid DNIS ANI callType"/>
+		</transition>
+
+        <transition event="connection.disconnected" name="evt">
+            <!-- We've detected a hang up while on hold -->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <log>INFO: Detected hangup</log>
+            <assign name="disconnectid" expr="evt.connectionid"/>
+            <if cond="inVXML == 'y'">
+                <assign name="state" expr="'toggleStatus'"/>
+                <send data="'dialog.user.terminate'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition state="toggleStatus" event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.toggleClientStatus" name="evt">
+            <!-- This logic handles toggling a user's status in the db -->
+            <log>INFO: Entered [dialog.user.toggleClientStatus] with state [<value expr="state"/>]</log>
+            <var name="ext" expr="''"/>
+            <var name="flag" expr="'toggle'"/>
+            <assign name="state" expr="'endCall'"/>
+            <!-- Here, we check if the call was disconnected by the caller or callee and update the
+            appropriate db status. If the call wasn't disconnected, it is likely that we've experienced
+            an error. In this case, we only update the status of the ANI -->
+            <if cond="((disconnectid == ibconnid) &amp;&amp; (ANI.length &lt; EXT_LENGTH))">
+                <assign name="ext" expr="ANI"/>
+            <elseif cond="((disconnectid == obconnid) &amp;&amp; (DNIS.length &lt; EXT_LENGTH))"/>
+                <assign name="ext" expr="DNIS"/>
+            <else/>
+                <assign name="ext" expr="ANI"/>
+            </if>
+            <assign name="activeClient" expr="'n'"/>
+            <var name="flag" expr="'toggle'"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="ext activeClient flag"/>
+        </transition>
+
+        <transition event="dialog.started" name="evt">
+            <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
+            <assign name="dialogID" expr="evt.dialogid"/>
+            <assign name="inVXML" expr="'y'"/>
+        </transition>
+
+        <transition state="endCall" event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.terminate" name="evt">
+            <log>INFO: Entered [dialog.user.terminate] with state [<value expr="state"/>]</log>
+   	    	<dialogterminate dialogid="dialogID" immediate="true"/>
+        </transition>
+
+        <transition event="fetch.done" name="evt">
+            <log>INFO: Fetched document [<value expr="evt.uri"/>]</log>
+            <goto fetchid="evt.fetchid" />
+        </transition>
+
+        <transition event="error.*" name="evt">
+            <!-- Use catch all error for now -->
+            <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- Reset user's status in db b/4 exiting -->
+            <!-- TODO: Write an error log file and notify someone? -->
+            <!-- Reset user's status in db prior to exiting -->
+            <if cond="inVXML == 'y'">
+                <assign name="state" expr="'toggleStatus'"/>
+                <send data="'dialog.user.terminate'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.endCall" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
+            <exit/>
+        </transition>
+
+	</eventprocessor>
+</ccxml>

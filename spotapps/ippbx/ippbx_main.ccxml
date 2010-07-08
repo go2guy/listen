@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 06/21/2010
+    <!-- Last Modified 07/08/2010
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -19,7 +19,7 @@
     <var name="iiLincoln" expr="'14028029608,14028029609'"/>  <!-- SIP Trunk access for Lincon Office -->
     <var name="iiAustin" expr="'15122999104,15123801239,44,206.81.53.128'"/>   <!-- Access for Austin Office -->
     <var name="activeClient" expr="'n'"/>   <!-- Active Client. Identifies when an extension is being used -->
-    <var name="importedValue"/>
+    <var name="importedValue"/>         <!-- Imported Value. Values passed in from Listen application -->
     <var name="remote"/>
     <var name="local"/>
     <!-- End global vars -->

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 02/05/2010
+    <!-- Last Modified 07/08/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -14,7 +14,7 @@
     <var name="ibconnid"/>  <!-- Inbound connection ID -->
     <var name="EXT_LENGTH"/>    <!-- Extension length -->
     <var name="blindXferID"/>   <!-- Blind Tranfer ID. ID of party involved in a blind transfer -->
-    <var name="importedValue"/>
+    <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
 
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>       <!-- State. Used to track which state a transition is in -->
@@ -65,12 +65,25 @@
             <log>INFO: Origination [<value expr="ANI"/>]</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
             <log>INFO: Inbound connection ID [<value expr="ibconnid"/>]</log>
-            <if cond="callType == 'notify'">
-                <assign name="whichID" expr="msgID"/>
-                <assign name="whichMBox" expr="mBox"/>
-                <assign name="NOTIFY_PATH" expr="APP_PATH+'notification/'"/>
+            <send data="'dialog.user.chkCallType'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.chkCallType" name="evt">
+            <!-- Here, we check the value of our callType variable. If it indicates that this script
+            was called from hold.ccxml, then we'll sit in this transition until the next event comes in.
+            Otherwise, we'll attempt to create a call to the destination value we have --> 
+            <log>INFO: Entered [dialog.user.chkCallType] with state [<value expr="state"/>]</log>
+            <if cond="callType == 'fromHold'">
+                <log>INFO: Call in progress...</log>
+                <!-- Nothing to do here. Call should be connected. Wait for next event -->
+            <else/>
+                <if cond="callType == 'notify'">
+                    <assign name="whichID" expr="msgID"/>
+                    <assign name="whichMBox" expr="mBox"/>
+                    <assign name="NOTIFY_PATH" expr="APP_PATH+'notification/'"/>
+                </if>
+                <send data="'dialog.user.call'" target="session.id"/>
             </if>
-            <send data="'dialog.user.call'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.call" name="evt">
@@ -198,15 +211,25 @@
             <var name="xferType" expr="'blindXfer'"/>
             <var name="xferConnID" expr="evt.connectionid"/>
             <var name="URI" expr="getnum(evt.uri)"/>
-            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH EXT_LENGTH DNIS ANI ibconnid obconnid URI xferConnID xferType"/>
+            <var name="direction" expr="''"/>
+            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid direction URI xferConnID xferType"/>
 		</transition>
 
 		<transition event="connection.signal" state="callConnected" name="evt">
-    		<!-- Got a Transfer request. Call the transfer script -->
+    		<!-- Got a hold request. Call the hold script -->
+            <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
+            <var name="requestID" expr="evt.connectionid"/>
+            <fetch next="'file:'+APP_PATH+'hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid requestID importedValue"/>
+		</transition>
+
+		<transition event="connection.signal" state="callConnected" name="evt">
+    		<!-- Got a Transfer or hold request. Call the transfer script -->
             <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
             <var name="direction" expr="evt.info.voip.direction"/>
             <var name="xferConnID" expr="evt.connectionid"/>
-            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH EXT_LENGTH DNIS ANI ibconnid obconnid direction xferConnID"/>
+            <var name="xferType" expr="''"/>
+            <var name="URI" expr="''"/>
+            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid URI direction xferConnID xferType"/>
 		</transition>
 
 		<transition state="callConnected" event="error.conference.join" name="evt">

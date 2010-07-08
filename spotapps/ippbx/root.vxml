@@ -22,7 +22,7 @@
     <var name="SUP_PATH" expr="APP_PATH+'support/'"/>
     <var name="NOTIFY_PATH" expr="APP_PATH+'notification/'"/>
     <var name="ERR_LOG" expr="'/interact/logs/error.log'"/>
-    <var name="DB_PATH" expr="'http://localhost/var/www/html/ippbx/'"/>
+    <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
     <var name="LANGUAGE_ID" expr="'00'"/>
     <var name="LANGUAGE_CODE" expr="'wav'"/>
     <var name="LOCATION" expr="'lincoln'"/>
