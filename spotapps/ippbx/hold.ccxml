@@ -25,7 +25,6 @@
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="LIB_PATH" expr="''"/>    <!-- Audio Path. Directory for audio files -->
     <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
-    <var name="disconnectid" expr="''"/>    <!-- ID of party who disconnects the call -->
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
 
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
@@ -113,43 +112,19 @@
 		</transition>
 
         <transition event="connection.disconnected" name="evt">
-            <!-- We've detected a hang up while on hold -->
+            <!-- We've detected a hang up while on hold. Here, we will not bother with updating the 
+            state of either caller or callee in the db. We'll just end the call. The main reason we're
+            doing this is because the callers may actually still be active on some other line and we don't
+            want to risk having them be part of the paging service (if we update their status to inactive
+            on the db, their phone will automatically pick up a page) -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
-            <assign name="disconnectid" expr="evt.connectionid"/>
+            <assign name="state" expr="'endCall'"/>
             <if cond="inVXML == 'y'">
-                <assign name="state" expr="'toggleStatus'"/>
                 <send data="'dialog.user.terminate'" target="session.id"/>
             <else/>
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+                <send data="'dialog.user.endCall'" target="session.id"/>
             </if>
-        </transition>
-
-        <transition state="toggleStatus" event="dialog.exit" name="evt">
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
-        </transition>
-
-        <transition event="dialog.user.toggleClientStatus" name="evt">
-            <!-- This logic handles toggling a user's status in the db -->
-            <log>INFO: Entered [dialog.user.toggleClientStatus] with state [<value expr="state"/>]</log>
-            <var name="ext" expr="''"/>
-            <var name="flag" expr="'toggle'"/>
-            <assign name="state" expr="'endCall'"/>
-            <!-- Here, we check if the call was disconnected by the caller or callee and update the
-            appropriate db status. If the call wasn't disconnected, it is likely that we've experienced
-            an error. In this case, we only update the status of the ANI -->
-            <if cond="((disconnectid == ibconnid) &amp;&amp; (ANI.length &lt; EXT_LENGTH))">
-                <assign name="ext" expr="ANI"/>
-            <elseif cond="((disconnectid == obconnid) &amp;&amp; (DNIS.length &lt; EXT_LENGTH))"/>
-                <assign name="ext" expr="DNIS"/>
-            <else/>
-                <assign name="ext" expr="ANI"/>
-            </if>
-            <assign name="activeClient" expr="'n'"/>
-            <var name="flag" expr="'toggle'"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="ext activeClient flag"/>
         </transition>
 
         <transition event="dialog.started" name="evt">
@@ -181,11 +156,11 @@
             <!-- Reset user's status in db b/4 exiting -->
             <!-- TODO: Write an error log file and notify someone? -->
             <!-- Reset user's status in db prior to exiting -->
+            <assign name="state" expr="'endCall'"/>
             <if cond="inVXML == 'y'">
-                <assign name="state" expr="'toggleStatus'"/>
                 <send data="'dialog.user.terminate'" target="session.id"/>
             <else/>
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+                <send data="'dialog.user.endCall'" target="session.id"/>
             </if>
         </transition>
 
