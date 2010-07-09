@@ -15,7 +15,6 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
     <link rel="stylesheet" type="text/css" href="./resources/app/css/index-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
-    <script type="text/javascript" src="./resources/jquery/plugins/jquery-color/jquery.color.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/plugins/jquery.simplemodal-1.3.5.min.js"></script>
     <script type="text/javascript" src="./resources/app/js/index-min.js"></script>
     <script type="text/javascript" src="./resources/app/js/server-min.js"></script><%

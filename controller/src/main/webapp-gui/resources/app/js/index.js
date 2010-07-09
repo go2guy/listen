@@ -283,15 +283,16 @@ $(document).ready(function() {
                 };
             },
 
-            highlight: function(elem) {/*
-                var orig = elem.css('background-color');
-                elem.css('background-color', '#FFFFBB');
-                elem.animate({
-                    backgroundColor: '#FFFFFF'
-                }, 2000, 'linear', function() {
-                    elem.css('background-color', orig);
-                });
-            */},
+            highlight: function(elem) {
+                var orig = elem.css('font-weight');
+                if(orig == 'bold') {
+                    return;
+                }
+                elem.css('font-weight', 'bold');
+                setTimeout(function() {
+                    elem.css('font-weight', orig);
+                }, 1500);
+            },
 
             setFieldContent: function(field, content, animate, asHtml) {
                 var changed = false;
