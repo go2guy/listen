@@ -2,6 +2,7 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
@@ -74,7 +75,7 @@ public class GetConferenceRecordingServlet extends HttpServlet
         try
         {
             // input
-            URL url = new URL(URLEncoder.encode(recording.getUri(), "UTF-8"));
+            URL url = new URL(ServletUtil.encodeUri(recording.getUri()));
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();

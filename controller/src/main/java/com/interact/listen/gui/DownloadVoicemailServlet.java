@@ -16,9 +16,7 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.*;
 
 import javax.servlet.ServletException;
@@ -77,7 +75,7 @@ public class DownloadVoicemailServlet extends HttpServlet
         try
         {
             // input
-            URL url = new URL(URLEncoder.encode(voicemail.getUri(), "UTF-8"));
+            URL url = new URL(ServletUtil.encodeUri(voicemail.getUri()));
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();

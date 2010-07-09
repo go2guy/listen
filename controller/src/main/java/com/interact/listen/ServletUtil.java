@@ -5,6 +5,7 @@ import com.interact.listen.resource.Subscriber;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,5 +81,25 @@ public final class ServletUtil
     {
         LOG.debug("Redirecting to [" + to + "]");
         response.sendRedirect(to);
+    }
+    
+    // This method will URL encode the filename, but not the path to it.  Needed so that the slashes in the url are not encoded
+    public static String encodeUri(String uri)
+    {
+        StringBuilder returnString = new StringBuilder(uri.substring(0, uri.lastIndexOf("/") + 1));
+        String resourceName = "";
+        
+        try
+        {
+            resourceName = URLEncoder.encode(uri.substring(uri.lastIndexOf("/") + 1), "UTF-8");
+        }
+        catch(UnsupportedEncodingException e)
+        {
+            LOG.error("Error URL encoding audio resource location.", e);
+        }
+        
+        returnString.append(resourceName);
+        
+        return returnString.toString();
     }
 }
