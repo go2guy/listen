@@ -43,7 +43,7 @@
             break;
         case 'PUT':
         case 'DELETE':
-            $destURL .= "/".$rsrc."/".$ID;
+            $destURL .= "/".$rsrc."/".(int)$ID;
             $header = array("Content-Type: application/json", "Content-Length: ". strlen($data));
             $options = array(CURLOPT_URL => $destURL,
                             CURLOPT_RETURNTRANSFER => true,
