@@ -302,8 +302,9 @@ $(document).ready(function() {
                         changed = true;
                     }
                 } else {
-                    if(field.text() != content) {
-                        field.text(content);
+                    var c = String(content);
+                    if(field.text() != c) {
+                        field.text(c);
                         changed = true;
                     }
                 }

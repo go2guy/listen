@@ -232,14 +232,21 @@ function Conference(id) {
         LISTEN.log('Loading conferencing, conference id = [' + conferenceId + ']');
         if(LISTEN.isDefined(conferenceId)) {
             pollAndSet(false);
+            $('#conferencing-application .conference-notloaded').hide();
+            $('#conferencing-application .conference-content').show();
             interval = setInterval(function() {
                 pollAndSet(true);
             }, 1000);
+        } else {
+            $('#conferencing-application .conference-content').hide();
+            $('#conferencing-application .conference-notloaded').show();
         }
     };
 
     this.unload = function() {
         LISTEN.log('Unloading conferencing');
+        $('#conferencing-application .conference-content').hide();
+        $('#conferencing-application .conference-notloaded').show();
         if(interval) {
             clearInterval(interval);
         }

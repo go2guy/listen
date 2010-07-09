@@ -7,14 +7,14 @@ import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.Marshaller;
+import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
-import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.Resource;
-import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.*;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -70,6 +70,7 @@ public class GetConferenceListServlet extends HttpServlet
         long total = results.size() > 0 ? Conference.count(session) : 0;
 
         Marshaller marshaller = new JsonMarshaller();
+        marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
         StringBuilder json = new StringBuilder();
         json.append("{");
         json.append("\"first\":").append(first).append(",");
@@ -79,7 +80,7 @@ public class GetConferenceListServlet extends HttpServlet
         json.append("\"results\":[");
         for(Conference result : results)
         {
-            json.append(marshalConference(result, marshaller));
+            json.append(marshalConference(session, result, marshaller));
             json.append(",");
         }
         if(results.size() > 0)
@@ -89,17 +90,28 @@ public class GetConferenceListServlet extends HttpServlet
         json.append("]}");
         OutputBufferFilter.append(request, json.toString(), marshaller.getContentType());
     }
-    
-    private String marshalConference(Conference conference, Marshaller marshaller)
+
+    private String marshalConference(Session session, Conference conference, Marshaller marshaller)
     {
         StringBuilder json = new StringBuilder();
         json.append("{");
         json.append("\"id\":").append(conference.getId()).append(",");
         json.append("\"isStarted\":").append(conference.getIsStarted()).append(",");
-        
+
         String description = marshaller.convertAndEscape(String.class, conference.getDescription());
-        json.append("\"description\":\"").append(description).append("\"");
+        json.append("\"description\":\"").append(description).append("\",");
+
+        Long callerCount = Participant.countByConference(session, conference);
+        json.append("\"callerCount\":").append(callerCount).append(",");
+
+        String startDate = "";
+        if(conference.getStartTime() != null)
+        {
+            startDate = marshaller.convertAndEscape(Date.class, conference.getStartTime());
+        }
+        json.append("\"startDate\":\"").append(startDate).append("\"");
         json.append("}");
+
         return json.toString();
     }
 }

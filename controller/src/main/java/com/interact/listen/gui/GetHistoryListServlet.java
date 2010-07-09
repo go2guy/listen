@@ -10,6 +10,7 @@ import com.interact.listen.resource.*;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
+import com.interact.listen.util.DateUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
-import org.joda.time.Duration;
 
 public class GetHistoryListServlet extends HttpServlet
 {
@@ -142,9 +142,7 @@ public class GetHistoryListServlet extends HttpServlet
         String durationString = "";
         if(record.getDuration() != null)
         {
-            Duration duration = roundUpToNearestSecond(record.getDuration());
-            double s = Math.floor(duration.getMillis() / 1000.0);
-            durationString = String.format("%01.0f:%02.0f", s < 60 ? 0 : s / 60, s % 60);
+            durationString = DateUtil.printDuration(record.getDuration());
         }
         json.append("\"duration\":\"").append(durationString).append("\",");
 
@@ -201,10 +199,5 @@ public class GetHistoryListServlet extends HttpServlet
 
         json.append("}");
         return json.toString();
-    }
-
-    private static Duration roundUpToNearestSecond(Duration duration)
-    {
-        return new Duration(((duration.getMillis() + 500) / 1000) * 1000);
     }
 }

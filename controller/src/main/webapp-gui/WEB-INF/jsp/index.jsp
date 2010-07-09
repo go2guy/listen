@@ -52,100 +52,105 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
             <div id="conferencing-application" class="application">
               <div class="application-header"><div class="title">Conferencing</div></div>
               <div class="application-content">
-                <div class="left">
-                  <div class="panel">
-                    <div class="panel-content">
-                      <table>
-                        <tbody>
-                          <tr><td>Conference Description</td><td id="conference-info-description" class="conference-info-value"></td></tr>
-                          <tr><td>Conference Status</td><td id="conference-info-status" class="conference-info-value"></td></tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <div class="panel">
-                    <div class="panel-header"><div class="title">On The Call (<span id="conference-caller-count">0</span>)</div></div>
-                    <div class="panel-content">
-                      <table id="conference-caller-table">
-                        <tbody>
-                          <tr class="placeholder"><td colspan="3">Nobody</td></tr>
-                        </tbody>
-                      </table>
-                      <div class="pagination" id="conference-caller-pagination">
-                        <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                <div class="conference-content">
+                  <div class="left">
+                    <div class="panel">
+                      <div class="panel-content">
+                        <table>
+                          <tbody>
+                            <tr><td>Conference Description</td><td id="conference-info-description" class="conference-info-value"></td></tr>
+                            <tr><td>Conference Status</td><td id="conference-info-status" class="conference-info-value"></td></tr>
+                          </tbody>
+                        </table>
                       </div>
-                      <div class="cleaner">&nbsp;</div>
+                    </div>
+                    <div class="panel">
+                      <div class="panel-header"><div class="title">On The Call (<span id="conference-caller-count">0</span>)</div></div>
+                      <div class="panel-content">
+                        <table id="conference-caller-table">
+                          <tbody>
+                            <tr class="placeholder"><td colspan="3">Nobody</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="pagination" id="conference-caller-pagination">
+                          <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                        </div>
+                        <div class="cleaner">&nbsp;</div>
+                      </div>
                     </div>
                   </div>
+                  <div class="right">
+                    <div class="panel">
+                      <div class="panel-header"><div class="title">Control Panel</div></div>
+                      <div class="panel-content">
+                        <!-- outdial -->
+                        <div class="control-panel-button">
+                          <button id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
+                        </div>
+                        <div id="outdial-dialog" class="inline-dialog">
+                          <form name="outdial-form" id="outdial-form">
+                            <div class="form-error-message"></div>
+                            <div>
+                              <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
+                            </div>
+                            <div>
+                              <button class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
+                              <button class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
+                            </div>
+                          </form>
+                        </div>
+                        <div id="record-button-div" class="control-panel-button">
+                          <button id="record-button" class="button-record">Record</button>
+                        </div>
+                        <div class="control-panel-button">
+                          <button id="schedule-show" class="button-schedule">Schedule</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="panel">
+                      <div class="panel-header"><div class="title">Available PINs (<span id="conference-pin-count">0</span>)</div></div>
+                      <div class="panel-content">
+                        <table id="conference-pin-table">
+                          <tbody>
+                            <tr class="placeholder"><td colspan="3">No PINs available</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="panel">
+                      <div class="panel-header"><div class="title">Recent History</div></div>
+                      <div class="panel-content">
+                        <table id="conference-history-table">
+                          <tbody>
+                            <tr class="placeholder"><td colspan="2">No history records</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="panel">
+                      <div class="panel-header"><div class="title">Recent Recordings</div></div>
+                      <div class="panel-content">
+                        <table id="conference-recording-table" class="data-table">
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Duration</th>
+                              <th>Size</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr class="placeholder"><td colspan="4">No recordings</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="cleaner">&nbsp;</div>
+                </div><!-- conference-content -->
+                <div class="conference-notloaded">
+                  Conference not found.
                 </div>
-                <div class="right">
-                  <div class="panel">
-                    <div class="panel-header"><div class="title">Control Panel</div></div>
-                    <div class="panel-content">
-                      <!-- outdial -->
-                      <div class="control-panel-button">
-                        <button id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
-                      </div>
-                      <div id="outdial-dialog" class="inline-dialog">
-                        <form name="outdial-form" id="outdial-form">
-                          <div class="form-error-message"></div>
-                          <div>
-                            <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
-                          </div>
-                          <div>
-                            <button class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
-                            <button class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
-                          </div>
-                        </form>
-                      </div>
-                      <div id="record-button-div" class="control-panel-button">
-                        <button id="record-button" class="button-record">Record</button>
-                      </div>
-                      <div class="control-panel-button">
-                        <button id="schedule-show" class="button-schedule">Schedule</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="panel">
-                    <div class="panel-header"><div class="title">Available PINs (<span id="conference-pin-count">0</span>)</div></div>
-                    <div class="panel-content">
-                      <table id="conference-pin-table">
-                        <tbody>
-                          <tr class="placeholder"><td colspan="3">No PINs available</td></tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <div class="panel">
-                    <div class="panel-header"><div class="title">Recent History</div></div>
-                    <div class="panel-content">
-                      <table id="conference-history-table">
-                        <tbody>
-                          <tr class="placeholder"><td colspan="2">No history records</td></tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <div class="panel">
-                    <div class="panel-header"><div class="title">Recent Recordings</div></div>
-                    <div class="panel-content">
-                      <table id="conference-recording-table" class="data-table">
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Duration</th>
-                            <th>Size</th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="placeholder"><td colspan="4">No recordings</td></tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-                <div class="cleaner">&nbsp;</div>
               </div>
             </div><%
 }
@@ -156,7 +161,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
               <div class="application-content">
                 <table id="voicemail-table">
                   <tbody>
-                    <tr class="placeholder"><td colspan="3">No voicemail</td></tr>
+                    <tr class="placeholder"><td colspan="4">No voicemail</td></tr>
                   </tbody>
                 </table>
                 <div class="pagination" id="voicemail-pagination">
@@ -221,14 +226,13 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                   <thead>
                     <tr>
                       <th>Description</th>
-                      <th>Status</th><!--
+                      <th>Status</th>
                       <th>Callers</th>
-                      <th>Duration</th>-->
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="placeholder"><td colspan="2">No conferences</td></tr>
+                    <tr class="placeholder"><td colspan="4">No conferences</td></tr>
                   </tbody>
                 </table>
                 <div class="pagination" id="conference-list-pagination">
@@ -472,6 +476,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
         <tr id="conference-row-template">
           <td class="conference-cell-description"></td>
           <td class="conference-cell-status"></td>
+          <td class="conference-cell-callerCount"></td>
           <td class="conference-cell-view"></td>
         </tr>
 
@@ -486,6 +491,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
           <td class="voicemail-cell-readStatus"></td>
           <td class="voicemail-cell-from"></td>
           <td class="voicemail-cell-received"></td>
+          <td class="voicemail-cell-duration"></td>
           <td class="voicemail-cell-download"></td>
         </tr>
 

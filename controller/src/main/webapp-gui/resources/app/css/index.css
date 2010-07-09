@@ -227,6 +227,15 @@ table td, table th {
     background: #379EDC url('../images/new/header_gradient_lightblue_30x10.png') repeat-x bottom left;
 }
 
+#conferencing-application .conference-content {
+    display: none;
+}
+
+#conferencing-application .conference-notloaded {
+    display: block;
+    margin: 1em;
+}
+
 #menu-conferencing {
     border-color: #379EDC;
     color: #666666;

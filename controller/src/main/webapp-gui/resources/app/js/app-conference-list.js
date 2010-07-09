@@ -15,7 +15,12 @@ function ConferenceList() {
         paginationId: 'conference-list-pagination',
         updateRowCallback: function(row, data, animate) {
             LISTEN.setFieldContent(row.find('.conference-cell-description'), data.description, animate);
-            LISTEN.setFieldContent(row.find('.conference-cell-status'), data.isStarted ? 'Started' : 'Not Started', animate);
+            var status = data.isStarted ? 'Started' : 'Not Started';
+            if(data.isStarted) {
+                status += ' ' + data.startDate;
+            }
+            LISTEN.setFieldContent(row.find('.conference-cell-status'), status, animate);
+            LISTEN.setFieldContent(row.find('.conference-cell-callerCount'), data.callerCount, animate);
             LISTEN.setFieldContent(row.find('.conference-cell-view'), '<button class="button-view" onclick="viewConference(' + data.id + ');">View</button>', false, true);
         }
     });

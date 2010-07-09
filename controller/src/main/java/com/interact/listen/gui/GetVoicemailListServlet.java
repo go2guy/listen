@@ -15,6 +15,7 @@ import com.interact.listen.resource.Voicemail;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
+import com.interact.listen.util.DateUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
+import org.joda.time.Duration;
 
 public class GetVoicemailListServlet extends HttpServlet
 {
@@ -101,7 +103,10 @@ public class GetVoicemailListServlet extends HttpServlet
         json.append("\"dateCreated\":\"").append(date).append("\",");
 
         String leftBy = marshaller.convertAndEscape(String.class, voicemail.getLeftBy());
-        json.append("\"leftBy\":\"").append(leftBy).append("\"");
+        json.append("\"leftBy\":\"").append(leftBy).append("\",");
+
+        Duration duration = new Duration(Long.parseLong(voicemail.getDuration()));
+        json.append("\"duration\":\"").append(DateUtil.printDuration(duration)).append("\"");
 
         json.append("}");
         return json.toString();
