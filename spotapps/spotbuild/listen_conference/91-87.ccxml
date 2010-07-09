@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 06/24/2010
+    <!-- Last Modified 07/09/2010
        *   @Name   out-dial.ccxml
        *   @Desc   Creates an out dial -->
 
@@ -136,7 +136,7 @@
                         <assign name="OBCALL.noproxy" expr="'false'"/>
                     </if>
                     <assign name="II_SB_startTime" expr="getTimeStamp(2)"/>
-					<createcall dest="'sip:'+II_SB_destination" connectionid="II_SB_obcallid" callerid="II_SB_callerID" hints="OBCALL" timeout="II_SB_ringTime"/>
+					<createcall dest="'sip:'+II_SB_destination" connectionid="II_SB_obcallid" callerid="'sip:'+II_SB_callerID" hints="OBCALL" timeout="II_SB_ringTime"/>
                     <var name="II_SB_promptID" expr="II_SB_BASE_DIR+'audio/system/ringing.00.wav'"/>
                     <var name="II_SB_repeat" expr="'y'"/>
                     <var name="II_SB_interval" expr="'2000'"/> <!-- Number of milliseconds repeat -->

@@ -12,7 +12,7 @@
             function II_SB_JS_function(returnVal,ANI,DNIS,subID,timeStamp)
             {
 	            var duration = new Date().getTime() - timeStamp;
-return "{\"date\": \""+iiDateToISO(timeStamp)+"\", \"subscriber\": "+subID+", \"service\": \"Conference\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\"INBOUND\"}";
+return "{\"date\": \""+iiDateToISO(timeStamp)+"\", \"subscriber\": "+subID+", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\"INBOUND\"}";
             }
         ]]>
     </script>

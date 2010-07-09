@@ -12,6 +12,9 @@
             function II_SB_JS_function(returnVal)
             {
 	            var result = eval("("+returnVal+")");
+if ((result.count == 1) && (result.total == 1))
+return 0;
+else
 return result.count;
             }
         ]]>

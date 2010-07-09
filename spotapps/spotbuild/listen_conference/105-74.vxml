@@ -12,7 +12,7 @@
             function II_SB_JS_function(outDialStart,ANI,phoneNumber,subID)
             {
 	            var duration = new Date().getTime() - iiStrToDate(outDialStart);
-return "{\"date\": \""+outDialStart+"\", \"subscriber\": "+subID+", \"service\": \"Interactive OnDemand\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+phoneNumber+"\", \"direction\":\"OUTBOUND\"}";
+return "{\"date\": \""+outDialStart+"\", \"subscriber\": "+subID+", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+phoneNumber+"\", \"direction\":\"OUTBOUND\"}";
             }
         ]]>
     </script>
