@@ -6,8 +6,8 @@
 115-70 - assign-variable
 90-5 - decision
 117-50 - audio-input
-117-109 - decision
 117-54 - conference-user-status
+117-109 - decision
 117-53 - conference-user-status
 117-104 - decision
 123-112 - assign-variable
@@ -98,8 +98,8 @@
 115-29 - decision
 113-38 - decision
 79-30 - assign-variable
-90-68 - assign-variable
 79-28 - math
+90-68 - assign-variable
 90-69 - assign-variable
 90-64 - assign-variable
 121-7 - run-javascript
@@ -115,7 +115,9 @@
 82-23 - end
 82-25 - assign-variable
 82-21 - end
+80-30 - run-javascript
 94-63 - math
+80-32 - assign-variable
 94-66 - run-javascript
 80-3 - math
 113-53 - send-custom-event
