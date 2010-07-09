@@ -181,6 +181,7 @@ function Conference(id) {
     });
 
     var pollAndSet = function(animate) {
+        callerTable.setUrl('/ajax/getConferenceParticipants?id=' + conferenceId);
         callerTable.pollAndSet(animate);
         $.ajax({
             url: '/ajax/getConferenceInfo?id=' + conferenceId,

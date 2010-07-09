@@ -135,6 +135,10 @@ $(document).ready(function() {
                 var currentFirst = 0;
                 var currentMax = 15;
 
+                this.setUrl = function(url) {
+                    args.url = url;
+                };
+
                 this.update = function(data, animate) {
                     var tableRows = [];
                     if(args.isList === true) {
@@ -279,14 +283,15 @@ $(document).ready(function() {
                 };
             },
 
-            highlight: function(elem) {
+            highlight: function(elem) {/*
+                var orig = elem.css('background-color');
                 elem.css('background-color', '#FFFFBB');
                 elem.animate({
                     backgroundColor: '#FFFFFF'
                 }, 2000, 'linear', function() {
-                    elem.css('background-color', 'inherit');
+                    elem.css('background-color', orig);
                 });
-            },
+            */},
 
             setFieldContent: function(field, content, animate, asHtml) {
                 var changed = false;
