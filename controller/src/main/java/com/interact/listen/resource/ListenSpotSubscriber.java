@@ -131,7 +131,7 @@ public class ListenSpotSubscriber extends Resource
         return (List<ListenSpotSubscriber>)criteria.list();
     }
 
-    public static String getFirstPhoneNumber(Session session)
+    public static String firstPhoneNumber(Session session)
     {
         for(ListenSpotSubscriber lss : list(session))
         {
@@ -140,7 +140,7 @@ public class ListenSpotSubscriber extends Resource
         return "";
     }
 
-    public static String getFirstProtocol(Session session)
+    public static String firstProtocol(Session session)
     {
         for(ListenSpotSubscriber lss : list(session))
         {

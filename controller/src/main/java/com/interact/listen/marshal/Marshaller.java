@@ -143,7 +143,7 @@ public abstract class Marshaller
      * @param className class name
      * @return tag representing the class
      */
-    protected final String getTagForClass(String className)
+    public static final String getTagForClass(String className)
     {
         return className.substring(0, 1).toLowerCase() + className.substring(1);
     }

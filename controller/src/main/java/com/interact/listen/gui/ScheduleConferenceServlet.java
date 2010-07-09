@@ -126,8 +126,8 @@ public class ScheduleConferenceServlet extends HttpServlet
         ArrayList<String> serviceActiveAddresses = new ArrayList<String>();
         ArrayList<String> servicePassiveAddresses = new ArrayList<String>();
 
-        String phoneNumber = ListenSpotSubscriber.getFirstPhoneNumber(session);
-        String protocol = ListenSpotSubscriber.getFirstProtocol(session);
+        String phoneNumber = ListenSpotSubscriber.firstPhoneNumber(session);
+        String protocol = ListenSpotSubscriber.firstProtocol(session);
 
         if(phoneNumber.equals(""))
         {

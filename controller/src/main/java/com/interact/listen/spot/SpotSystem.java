@@ -2,6 +2,7 @@ package com.interact.listen.spot;
 
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.httpclient.HttpClientImpl;
+import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.stats.InsaStatSender;
@@ -124,18 +125,13 @@ public class SpotSystem
         params.put("sessionid", adminSessionId);
         params.put("name", "dialog.user.basichttp");
         params.put("II_SB_basichttpEvent", "CREATESESSION");
-        params.put("II_SB_argument", "{\"application\":\"RECORD\",\"action\":\"" +
-                                     SpotRequestEvent.START_RECORDING.eventName + "\",\"conferenceId\":\"" +
-                                     String.valueOf(conference.getId()) + "\",\"startTime\":\"" +
-                                     sdf.format(conference.getStartTime()) +
-                                     "\",\"interface\":\"GUI\",\"recordingSessionId\":\"" +
-                                     conference.getRecordingSessionId() + "\",\"arcadeId\":\"" +
-                                     conference.getArcadeId() + "\",\"adminSID\":\"" + adminSessionId + "\"}");
+        String argument = createRecordingArgument(SpotRequestEvent.START_RECORDING, conference, adminSessionId);
+        params.put("II_SB_argument", argument);
         params.put("II_SB_URI", "listen_main/listen_main.ccxml");
         
         sendBasicHttpRequest(params, "basichttp");
     }
-    
+
     /**
      * Stops recording the provided {@code Conference}.
      * 
@@ -150,13 +146,8 @@ public class SpotSystem
         params.put("sessionid", adminSessionId);
         params.put("name", "dialog.user.basichttp");
         params.put("II_SB_basichttpEvent", "CREATESESSION");
-        params.put("II_SB_argument", "{\"application\":\"RECORD\",\"action\":\"" +
-                   SpotRequestEvent.STOP_RECORDING.eventName + "\",\"conferenceId\":\"" +
-                   String.valueOf(conference.getId()) + "\",\"startTime\":\"" +
-                   sdf.format(conference.getStartTime()) +
-                   "\",\"interface\":\"GUI\",\"recordingSessionId\":\"" +
-                   conference.getRecordingSessionId() + "\",\"arcadeId\":\"" +
-                   conference.getArcadeId() + "\",\"adminSID\":\"" + adminSessionId + "\"}");
+        String argument = createRecordingArgument(SpotRequestEvent.STOP_RECORDING, conference, adminSessionId);
+        params.put("II_SB_argument", argument);
         params.put("II_SB_URI", "listen_main/listen_main.ccxml");
         
         sendBasicHttpRequest(params, "basichttp");
@@ -197,5 +188,24 @@ public class SpotSystem
     private boolean isSuccessStatus(int status)
     {
         return status >= 200 && status <= 299;
+    }
+
+    private String createRecordingArgument(SpotRequestEvent event, Conference conference, String adminSessionId)
+    {
+        StringBuilder argument = new StringBuilder();
+        JsonMarshaller marshaller = new JsonMarshaller();
+        argument.append("{");
+        argument.append("\"application\":\"RECORD\",");
+        argument.append("\"action\":\"").append(event.eventName).append("\",");
+        argument.append("\"conferenceId\":\"").append(String.valueOf(conference.getId())).append("\",");
+        argument.append("\"startTime\":\"").append(sdf.format(conference.getStartTime())).append("\",");
+        argument.append("\"interface\":\"GUI\",");
+        argument.append("\"recordingSessionId\":\"").append(conference.getRecordingSessionId()).append("\",");
+        argument.append("\"arcadeId\":\"").append(conference.getArcadeId()).append("\",");
+        argument.append("\"adminSID\":\"").append(adminSessionId).append("\",");
+        String description = marshaller.convertAndEscape(String.class, conference.getDescription());
+        argument.append("\"description\":\"").append(description).append("\"");
+        argument.append("}");
+        return argument.toString();
     }
 }

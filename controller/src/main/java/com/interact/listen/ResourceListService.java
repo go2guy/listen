@@ -15,6 +15,7 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 
@@ -181,13 +182,12 @@ public final class ResourceListService
     private Criteria createCriteria(boolean forCount) throws CriteriaCreationException
     {
         Criteria criteria = session.createCriteria(resourceClass);
-
-        criteria.setMaxResults(max);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         if(!forCount)
         {
             criteria.setFirstResult(first);
+            criteria.setMaxResults(max);
             criteria.addOrder(sortOrder == SortOrder.ASCENDING ? Order.asc(sortColumn) : Order.desc(sortColumn));
         }
         else
@@ -216,8 +216,14 @@ public final class ResourceListService
                 if(Resource.class.isAssignableFrom(method.getReturnType()))
                 {
                     Long id = Marshaller.getIdFromHref(value);
-                    criteria.createAlias(key, key + "_alias");
-                    junction.add(Restrictions.eq(key + "_alias.id", id));
+                    DetachedCriteria idsubquery = DetachedCriteria.forClass(resourceClass);
+                    idsubquery.createAlias(key, key + "_alias");
+                    idsubquery.add(Restrictions.eq(key + "_alias.id", id));
+                    idsubquery.setProjection(Projections.id());
+                    idsubquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+                    junction.add(Subqueries.propertyIn("id", idsubquery));
+
+                    LOG.debug("Criteria: Added ID subquery for [" + key + "_alias.id] = [" + id + "]");
                 }
                 else
                 {
@@ -225,6 +231,8 @@ public final class ResourceListService
                     Converter converter = converterClass.newInstance();
                     Object convertedValue = converter.unmarshal(value);
                     junction.add(Restrictions.eq(key, convertedValue));
+
+                    LOG.debug("Criteria: Added Restrictions.eq for [" + key + "] = [" + convertedValue + "]");
                 }
             }
             catch(IllegalAccessException e)
@@ -239,6 +247,24 @@ public final class ResourceListService
             {
                 throw new CriteriaCreationException("Could not convert value [" + value + "] to type [" +
                                                     method.getReturnType() + "] for finding by [" + key + "]");
+            }
+        }
+
+        Method[] methods = resourceClass.getMethods();
+        for(Method method : methods)
+        {
+            if(!method.getName().startsWith("set"))
+            {
+                Class<?> returnType = method.getReturnType();
+                if(Resource.class.isAssignableFrom(returnType))
+                {
+                    String tag = Marshaller.getTagForClass(returnType.getSimpleName());
+                    if(!searchProperties.containsKey(tag))
+                    {
+                        LOG.debug("Criteria: Set FetchMode.SELECT for field [" + tag + "]");
+                        criteria.setFetchMode(tag, FetchMode.SELECT);
+                    }
+                }
             }
         }
 

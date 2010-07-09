@@ -116,9 +116,6 @@ public class SaxContentHandler extends DefaultHandler
                         throw new AssertionError("No Converter configured for [" + parameterType +
                                                  "], you should probably write one");
                     }
-
-                    LOG.debug("ROB: value in SAXContentHandler is [" + value + "]");
-                    
                     Converter converter = converterClass.newInstance();
                     Object convertedValue = converter.unmarshal(value.toString());
                     method.invoke(resource, convertedValue);
