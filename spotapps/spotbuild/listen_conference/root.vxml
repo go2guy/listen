@@ -95,6 +95,7 @@
 	<var name="tmpVal" expr="''" />
 	<var name="sysAccessTime" expr="''" />
 	<var name="outDialStart" expr="''" />
+	<var name="confDescription" expr="''" />
 
 
     <!-- Conference Variables -->
