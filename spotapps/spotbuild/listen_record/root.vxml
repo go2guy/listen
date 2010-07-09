@@ -53,6 +53,7 @@
 	<var name="confID" expr="''" />
 	<var name="recInfo" expr="'Conference Audio'" />
 	<var name="sysAccessTime" expr="''" />
+	<var name="confDescription" expr="''" />
 
 
     <!-- Conference Variables -->

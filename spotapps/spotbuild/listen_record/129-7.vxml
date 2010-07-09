@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(id,isRecording,isStarted,recSID,arcadeID)
+            function II_SB_JS_function(id,isRecording,isStarted,recSID,arcadeID,confDescription)
             {
-	            return "{\"href\": \"/conferences/"+id+"\", \"id\":"+id+", \"arcadeId\":\""+arcadeID+"\",\"recordingSessionId\":\""+recSID+"\", \"isRecording\":"+isRecording+", \"isStarted\": "+isStarted+"}";
+	            return "{\"href\": \"/conferences/"+id+"\", \"id\":"+id+", \"description\":\""+confDescription+"\", \"arcadeId\":\""+arcadeID+"\",\"recordingSessionId\":\""+recSID+"\", \"isRecording\":"+isRecording+", \"isStarted\": "+isStarted+"}";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Params</log>
             <log>INFO: Entered run-javascript.vxml [129-7]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(id,isRecording,isStarted,recSID,arcadeID)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(id,isRecording,isStarted,recSID,arcadeID,confDescription)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
