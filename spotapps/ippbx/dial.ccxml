@@ -12,6 +12,7 @@
     <var name="SB_PATH"/>   <!-- Spotbuild Path. Base directory for spotbuild -->
     <var name="callType"/>  <!-- Call type. Identifies a call as: service, extension or external. Service calls will be allowed to reoriginate -->
     <var name="ibconnid"/>  <!-- Inbound connection ID -->
+    <var name="obconnid"/>  <!-- Outbound connection ID -->
     <var name="EXT_LENGTH"/>    <!-- Extension length -->
     <var name="blindXferID"/>   <!-- Blind Tranfer ID. ID of party involved in a blind transfer -->
     <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
@@ -21,13 +22,13 @@
     <var name="dialogID" expr="''"/>        <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="status" expr="''"/>          <!-- Status. Stores application status -->
     <var name="inVXML" expr="'n'"/>         <!-- In VXML. Determines if this session is currently running a vxml dialog -->
-    <var name="activeClient" expr="'n'"/>   <!-- Active Client. Identifies an extension as active -->
     <var name="whichMBox" expr="''"/>
     <var name="whichID" expr="''"/>
     <var name="II_SB_promptID" expr="''"/>
+    <var name="clientFlag" expr="''"/>
+    <var name="record" expr="''"/>
 
     <!-- Out dial vars -->
-    <var name="obconnid" expr="''"/>    <!-- Out Bound Connection ID. Stores system assigned connection id generated for the outbound call -->
     <var name="AREA_CODE" expr="'402'"/>
 
     <!-- Dial Errors -->
@@ -185,21 +186,22 @@
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <log>INFO: Call in progress...</log>
             <log target="status">Call in progress</log>
-            <if cond="DNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to toggle their status to active -->
-                <assign name="state" expr="'toggleCallee'"/>
-                <assign name="activeClient" expr="'y'"/>
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+            <if cond="DNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to insert a record into the db -->
+    		    <assign name="state" expr="'insertClient'"/>
+                <assign name="clientFlag" expr="'insert'"/>
+                <assign name="record" expr="obconnid + '|' + DNIS"/>
+                <send data="'dialog.user.updateClientRecord'" target="session.id"/>
             <else/>
                 <!-- Nothing more to do at this point. Wait here for the next event -->
             </if>
 		</transition>
 
-        <transition state="toggleCallee" event="dialog.exit" name="evt">
+        <transition state="insertClient" event="dialog.exit" name="evt">
+            <!-- We're back from inserting the callee's record into the db -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <!-- We're back from toggling the callee's status. Nothing more to do here. Wait for next event -->
-            <assign name="state" expr="'callConnected'"/>
-            <assign name="activeClient" expr="'n'"/>    <!-- Reset variable for future use -->
+		    <assign name="state" expr="'callConnected'"/>
             <assign name="inVXML" expr="'n'"/>
+            <!-- Nothing more to do at this point. Wait here for the next event -->
         </transition>
 
 		<transition event="blindtransferrequest" name="evt">
@@ -215,7 +217,7 @@
             <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid direction URI xferConnID xferType"/>
 		</transition>
 
-		<transition event="connection.signal" state="callConnected" name="evt">
+		<transition state="callConnected" event="connection.signal" name="evt">
     		<!-- Got a hold request. Call the hold script -->
             <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
             <var name="requestID" expr="evt.connectionid"/>
@@ -280,15 +282,9 @@
             <assign name="inVXML" expr="'n'"/>
             <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
                 <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
-            <elseif cond="callType == 'service'"/> <!-- Caller tried to make service call. Allow a reorigination attempt -->
-                <assign name="state" expr="'reorig'"/>
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'2206'+'.00'+'.wav'"/>
-                <var name="II_SB_repeat" expr="'n'"/>
-                <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
-                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
             <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
-                <!-- Reset user's status in db prior to exiting -->
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+                <!-- Remove the caller's record in the db prior to exiting -->
+                <send data="'dialog.user.deleteRecord'" target="session.id"/>
             </if>
         </transition>
 
@@ -320,23 +316,18 @@
             <assign name="inVXML" expr="'n'"/>
             <if cond="callType == 'external'">  <!-- Caller tried to reach an invalid external (outside IP PBX) destination -->
                 <!-- Nothing to do here. Just end the call -->
-                <!-- Reset user's status in db prior to exiting -->
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+                <!-- Remove the caller's record in the db prior to exiting -->
+                <send data="'dialog.user.deleteRecord'" target="session.id"/>
             <else/>
-                <if cond="callType == 'extension'"> <!-- Caller tried to reach an IP PBX extension that doesn't exist -->
-                    <log target="status">Unknown EXT [<value expr="DNIS"/>]</log>
-                    <if cond="ANI.length &lt; EXT_LENGTH">
-                        <!-- Assume this is from inside IP PBX. Notify caller that extension doesn't exist -->
-                        <assign name="state" expr="'toggle'"/>
-                        <assign name="II_SB_promptID" expr="AUDIO_PATH+'1851'+'.00'+'.wav'"/>
-                    <else/>
-                        <!-- Assume this is from outside PBX. Ask caller to hold for operator -->
-                        <assign name="state" expr="'operator'"/>
-                        <assign name="II_SB_promptID" expr="AUDIO_PATH+'1850'+'.00'+'.wav'"/>
-                    </if>
-                <else/> <!-- Caller tried to make service call. Allow a reorigination attempt -->
-                    <assign name="state" expr="'reorig'"/>
-                    <assign name="II_SB_promptID" expr="AUDIO_PATH+'2206'+'.00'+'.wav'"/>
+                <log target="status">Unknown EXT [<value expr="DNIS"/>]</log>
+                <if cond="ANI.length &lt; EXT_LENGTH">
+                    <!-- Assume this is from inside IP PBX. Notify caller that extension doesn't exist -->
+                    <assign name="state" expr="'invalidExt'"/>
+                    <assign name="II_SB_promptID" expr="AUDIO_PATH+'1851'+'.00'+'.wav'"/>
+                <else/>
+                    <!-- Assume this is from outside PBX. Ask caller to hold for operator -->
+                    <assign name="state" expr="'operator'"/>
+                    <assign name="II_SB_promptID" expr="AUDIO_PATH+'1850'+'.00'+'.wav'"/>
                 </if>
                 <var name="II_SB_repeat" expr="'n'"/>
                 <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
@@ -344,19 +335,12 @@
             </if>
         </transition>
 
-        <transition state="toggle" event="dialog.exit" name="evt">
-            <!-- We're back from informing caller that extension does not exist. -->
+        <transition state="invalidExt" event="dialog.exit" name="evt">
+            <!-- In here, we've just returned from informing the caller that extension they tried to reach does not exist -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <!-- Reset user's status in db prior to exiting -->
+            <!-- Remove the caller's record in the db prior to exiting -->
             <assign name="inVXML" expr="'n'"/>
-            <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
-        </transition>
-
-        <transition state="reorig" event="dialog.exit" name="evt">
-            <!-- Caller has been informed of failure. Allow another attempt -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <send data="'dialog.user.reorig'" target="session.id"/>
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
         </transition>
 
         <transition state="operator" event="dialog.exit" name="evt">
@@ -381,12 +365,11 @@
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
             <if cond="inVXML == 'y'">   <!-- This should be true -->
-                <assign name="state" expr="'toggle'"/>
+                <assign name="state" expr="'hangUp'"/>
       	    	<dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone on caller side -->
             <else/>
-                <!-- Reset user's status in db prior to exiting -->
-                <assign name="state" expr="'hangUp'"/>
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>                
+                <!-- Remove the caller's record in the db prior to exiting -->
+                <send data="'dialog.user.deleteRecord'" target="session.id"/>
             </if>
         </transition>
 
@@ -407,75 +390,41 @@
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
-            <if cond="((evt.connectionid == ibconnid) || (callType != 'service'))"> <!-- Caller hung up or is not allowed to reoriginate. Let's end app -->
-                <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
-                    <assign name="state" expr="'toggle'"/>
-          	    	<dialogterminate dialogid="dialogID" immediate="true"/>
-                <else/>
-                    <!-- Reset user's status in db prior to exiting -->
-                    <assign name="state" expr="'hangUp'"/>
-                    <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
-                </if>
+            <assign name="state" expr="'hangUp'"/>
+            <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
+          	    <dialogterminate dialogid="dialogID" immediate="true"/>
             <else/>
-                <assign name="state" expr="'reorig'"/>  <!-- Callee hung up. We need to join caller back to vxml channel for voice -->
-                <send data="'dialog.user.voiceChannel'" target="session.id"/>
+                <!-- Remove the records associated with this call in the db prior to exiting -->
+                <send data="'dialog.user.deleteRecord'" target="session.id"/>
             </if>
         </transition>
 
-		<transition event="dialog.user.voiceChannel" name="evt">
-            <!-- Attempting to join the caller back to the vxml voice channel -->
-            <log>INFO: Entered [dialog.user.voiceChannel] with state [<value expr="state"/>]</log>
-            <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
-		</transition>
-
-        <transition event="dialog.user.toggleClientStatus" name="evt">
-            <!-- This logic handles toggling a user's status in the db -->
-            <log>INFO: Entered [dialog.user.toggleClientStatus] with state [<value expr="state"/>]</log>
-            <var name="ext" expr="''"/>
-            <if cond="state == 'toggleCallee'">     <!-- update an internal callee to active -->
-                <assign name="ext" expr="DNIS"/>
-            <else/>
-                <if cond="ANI.length &lt; EXT_LENGTH">  <!-- Update internal caller to inactive -->
-                    <assign name="ext" expr="ANI"/>
-                </if>
-                <if cond="DNIS.length &lt; EXT_LENGTH"> <!-- Update internal callee to inactive -->
-                    <assign name="ext" expr="ext + '|' + DNIS"/>
-                </if>
-                <if cond="((blindXferID != undefined) &amp;&amp; (blindXferID.length &lt; EXT_LENGTH))"> <!-- Update internal tranfer ID to inactive -->
-                    <assign name="ext" expr="ext + '|' + blindXferID"/>
-                </if>
-                <assign name="state" expr="'endCall'"/>
-            </if>
-            <var name="flag" expr="'toggle'"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="ext activeClient flag"/>
-        </transition>
-
-		<transition state="reorig" event="conference.joined" name="evt">
-            <!-- Our join attempt was successful. We'll give caller opportunity for a new call -->
-            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
-            <log>INFO: Get Dest</log>
-            <send data="'dialog.user.reorig'" target="session.id"/>
-		</transition>
-
-		<transition event="dialog.user.reorig" name="evt">
-            <!-- Let's get a new destination to call -->
-            <log>INFO: Entered [dialog.user.reorig] with state [<value expr="state"/>]</log>
-            <var name="reorig" expr="'y'"/>
-            <assign name="state" expr="'getDest'"/>
-       	    <dialogstart src="'file:'+SUP_PATH+'getDestination.vxml'" namelist="reorig"/>
-		</transition>
-
-        <transition state="getDest" event="dialog.exit" name="evt">
-            <!-- We should have our destination, let's attempt the call -->
+        <transition state="hangUp" event="dialog.exit" name="evt">
+            <!-- We're back from terminating the vxml after receiving a hang up -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <if cond="evt.values.status == 'outDial'">
-                <assign name="DNIS" expr="evt.values.userEntry"/>
-                <send data="'dialog.user.call'" target="session.id"/>
-            <else/> <!-- This shouldn't happen. If it does, just exit -->
-                <!-- Reset user's status in db prior to exiting -->
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+            <!-- Remove the records associated with this call in the db prior to exiting -->
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.deleteRecord" name="evt">
+            <!-- Here, we start the vxml dialog to update the database -->
+            <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
+            <if cond="state == 'hangUp'">
+                <assign name="record" expr="ibconnid + '|' + ANI + ',' + obconnid + '|' + DNIS"/>
+            <else/>
+                <assign name="record" expr="ibconnid + '|' + ANI"/>
             </if>
+            <assign name="clientFlag" expr="'delete'"/>
+  		    <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.updateClientRecord" name="evt">
+            <!-- Here, we start the vxml dialog to update the database -->
+            <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
+            <var name="flag" expr="clientFlag"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
         </transition>
 
         <transition event="dialog.exit" name="evt">
@@ -494,8 +443,11 @@
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
-            <!-- Reset user's status in db prior to exiting -->
-            <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+            <!-- Remove the caller's record in the db prior to exiting -->
+            <assign name="state" expr="'endCall'"/>
+            <assign name="clientFlag" expr="'delete'"/>
+            <assign name="record" expr="ibconnid + '|' + ANI"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">

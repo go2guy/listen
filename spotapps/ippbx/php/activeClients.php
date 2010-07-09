@@ -1,12 +1,13 @@
 <?php
 # Set Global Variables
-$objName = "clientToggle";
+$objName = "update";
 $result  = "Failure";
 $reason  = "";
 
 # Grab inputs
+$t_flag     = @$_REQUEST['flag'];
 $t_ext      = @$_REQUEST['extension'];
-$t_status   = @$_REQUEST['status'];
+$t_id       = @$_REQUEST['id'];
 
 # Connect to mysql
 $t_connect = mysql_connect("localhost","root");
@@ -17,9 +18,16 @@ if (!$t_connect)
 if(!(mysql_select_db("ip_pbx", $t_connect)))
     exitresult($objName, $result);
 
-# Run query
-$t_query = "UPDATE extension_map SET in_use=\"$t_status\" WHERE ext=\"$t_ext\"";
-mysql_query($t_query);
+# Set sql statement
+if ($t_flag == 'insert')
+    $t_update = "INSERT INTO active_clients (connection_id, client) VALUES (\"$t_id\", \"$t_ext\")";
+else if ($t_flag == 'delete')
+    $t_update = "DELETE FROM active_clients WHERE connection_id=\"$t_id\" AND client=\"$t_ext\" LIMIT 1";
+else
+    exitresult($objName, $result);
+
+# Run insert/delete
+mysql_query($t_update);
 
 # Check result
 if ((mysql_affected_rows($t_connect)) != 1)

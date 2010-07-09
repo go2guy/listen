@@ -42,14 +42,14 @@
         </transition>
 
         <transition event="dialog.user.setHoldID" name="evt">
-            <!-- Need to figure out who initiated the transfer request. We'll put the other
+            <!-- Need to figure out who initiated the request. We'll put the other
             party on hold (with music) -->
             <log>INFO: Entered [dialog.user.setHoldID] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'setID'"/>
-            <if cond="ibconnid == requestID">  <!-- Means inbound caller is attempting to transfer the call. -->
+            <if cond="ibconnid == requestID">  <!-- Means inbound caller initiated request -->
                 <assign name="holdID" expr="obconnid"/> <!-- We'll be putting the called party on hold -->
                 <assign name="activeID" expr="ibconnid"/>
-            <else/> <!-- Called party wishes to transfer the call -->
+            <else/> <!-- Called party initiated request -->
                 <assign name="holdID" expr="ibconnid"/> <!-- Put the caller on hold -->
                 <assign name="activeID" expr="obconnid"/>
             </if>
@@ -64,7 +64,7 @@
             <join id1="holdID" id2="'VXML_CHANNEL'"/>
 		</transition>
 
-		<transition state="hold" event="conference.joined" name="evt">
+		<transition state="hold reverseHold" event="conference.joined" name="evt">
             <!-- Got the voice channel. Play steaming music to on hold party -->
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <log target="status">Call On Hold</log>
@@ -75,16 +75,49 @@
 		</transition>
 
 		<transition state="hold" event="connection.signal" name="evt">
-    		<!-- Got a hold request. For now, we'll assume the active caller is attempting to pick up the line on hold -->
+    		<!-- Got a new hold request -->
             <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
-            <var name="direction" expr="evt.info.voip.direction"/>
-            <var name="requestID" expr="evt.connectionid"/>
-            <if cond="inVXML == 'y'">   <!-- Let's terminate the on hold music -->
-                <assign name="state" expr="'pickUp'"/>
-                <send data="'dialog.user.terminate'" target="session.id"/>
+            <if cond="evt.connectionid == activeID"> <!-- We can assume caller is trying to re-activate line -->
+                <if cond="inVXML == 'y'">   <!-- Let's terminate the on hold music -->
+                    <assign name="state" expr="'pickUp'"/>
+                    <send data="'dialog.user.terminate'" target="session.id"/>
+                <else/>
+                    <send data="'dialog.user.pickUp'" target="session.id"/>
+                </if>
             <else/>
-                <send data="'dialog.user.pickUp'" target="session.id"/>
-            </if>            
+                <!-- This implies that the party on-hold is attempting to place the active caller on-hold. This is
+                kind of messy. We first need to terminate the current on hold music -->
+                <assign name="state" expr="'reverseHold'"/>
+                <send data="'dialog.user.terminate'" target="session.id"/>
+            </if>
+		</transition>
+
+		<transition state="reverseHold" event="connection.signal" name="evt">
+    		<!-- Got a new hold request -->
+            <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
+            <if cond="evt.connectionid == activeID"> <!-- We can assume caller is trying to re-activate line -->
+                <if cond="inVXML == 'y'">   <!-- Let's terminate the on hold music -->
+                    <assign name="state" expr="'pickUp'"/>
+                    <send data="'dialog.user.terminate'" target="session.id"/>
+                <else/>
+                    <send data="'dialog.user.pickUp'" target="session.id"/>
+                </if>
+            <else/>
+                <!-- No more twisting. Just sit here and wait for active caller -->
+            </if>
+		</transition>
+
+        <transition state="reverseHold" event="dialog.exit" name="evt">
+            <!-- We're back from terminating the music. Next we need to swap connectionIDs -->
+            <assign name="holdID" expr="activeID"/> <!-- We'll be putting the current active party on hold -->
+            <if cond="activeID == ibconnid"> <!-- And making the current hold party active -->
+                <assign name="activeID" expr="obconnid"/>
+            <else/>
+                <assign name="activeID" expr="ibconnid"/>
+            </if>
+            <!-- Now that we've determined the appropriate caller to put on-hold, let's join them to a voice channel and 
+            play music -->
+            <join id1="holdID" id2="'VXML_CHANNEL'"/>
 		</transition>
 
         <transition state="pickUp" event="dialog.exit" name="evt">
@@ -112,19 +145,33 @@
 		</transition>
 
         <transition event="connection.disconnected" name="evt">
-            <!-- We've detected a hang up while on hold. Here, we will not bother with updating the 
-            state of either caller or callee in the db. We'll just end the call. The main reason we're
-            doing this is because the callers may actually still be active on some other line and we don't
-            want to risk having them be part of the paging service (if we update their status to inactive
-            on the db, their phone will automatically pick up a page) -->
+            <!-- We've detected a hang up while on hold. We need to remove any records associated
+            with this call from the db -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
-            <assign name="state" expr="'endCall'"/>
-            <if cond="inVXML == 'y'">
+            <assign name="state" expr="'hangUp'"/>
+            <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
                 <send data="'dialog.user.terminate'" target="session.id"/>
             <else/>
-                <send data="'dialog.user.endCall'" target="session.id"/>
+                <send data="'dialog.user.deleteRecord'" target="session.id"/>
             </if>
+        </transition>
+
+        <transition state="hangUp" event="dialog.exit" name="evt">
+            <!-- We're back from terminating the vxml dialog.  -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
+        </transition>
+
+        <transition state="hangUp" event="dialog.user.deleteRecord" name="evt">
+            <!-- Here, we start the vxml dialog to update the database -->
+            <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
+            <assign name="clientFlag" expr="'delete'"/>
+  		    <assign name="state" expr="'endCall'"/>
+            <assign name="record" expr="ibconnid + '|' + ANI + ',' + obconnid + '|' + DNIS"/>
+            <var name="flag" expr="clientFlag"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
         </transition>
 
         <transition event="dialog.started" name="evt">

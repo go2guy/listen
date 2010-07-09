@@ -1,16 +1,19 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 06/30/2010
+    <!-- Last Modified 07/08/2010
        *   @Name	dbCall.vxml
-       *   @Desc	This script performs two functions. It is used to toggle the status of a specified
-                    extension in the database. It is also used to get a list of active extensions from the
-                    database -->
+       *   @Desc	This script performs two functions. It is used to insert/delete an
+                    active client into/from the database. It also retreives the list of
+                    active clients from the database -->
 
     <!-- Passed in from ccxml -->
-    <var name="ext"/>   <!-- Extension. Extension whose status will be toggled. Could be a pipe ('|') delimited list -->
-    <var name="flag"/>  <!-- Flag. Controls which php script will be called -->
+    <var name="ext"/>           <!-- Extension. Extension whose status will be toggled. Could be a pipe ('|') delimited list -->
+    <var name="flag"/>          <!-- Flag. Controls which php script will be called -->
     <var name="activeClient"/>  <!-- Active Client. Identifies active or inactive status -->
+    <var name="connectionID"/>  <!-- Client's Connection ID -->
+    <var name="record"/>        <!-- Record to be inserted into db table. Format is 'connectionID|client,connectionID|client' -->
+    <var name="EXT_LENGTH"/>
 
     <!-- Global Variables -->
     <var name="result" expr="''"/>
@@ -18,20 +21,22 @@
     <var name="index" expr="0"/>
     <var name="cnt" expr="0"/>
     <var name="gotoForm" expr="''"/>
+    <var name="id" expr="''"/>
 
     <form id="beginDocument">
-        <!-- Here we figure out what php script to call. If our flag is set to toggle, we need
-        to check our ext variable to figure out how many extensions to toggle.-->
+        <!-- Here we figure out what php script to call. If our flag is set to insert/delete, we need
+        to check our record variable to figure out how many values we have.-->
         <block>
             <log>INFO: Enter beginDocument</log>
-            <if cond="flag == 'toggle'">
-                <log>INFO: Attempting to toggle status of EXT [<value expr="ext"/>] to [<value expr="activeClient"/>]</log>
-                <if cond="inString('|',ext,'')">
-                    <goto next="#getExt"/>
+            <if cond="((flag == 'insert') || (flag == 'delete'))">
+                <log>INFO: Attempting [<value expr="flag"/>] of record [<value expr="record"/>]</log>
+                <if cond="inString(',',record,'')">
+                    <goto next="#parseRecord"/>
                 <else/>
-                    <assign name="extension" expr="ext"/>
+                    <assign name="id" expr="getNextElement(0,record,'|')"/>
+                    <assign name="extension" expr="getNextElement(1,record,'|')"/>
                     <assign name="gotoForm" expr="'#exit'"/>
-                    <goto next="#toggleStatus"/>
+                    <goto next="#updateTable"/>
                 </if>
             <elseif cond="flag == 'getList'"/>
                 <log>INFO: Attempting to get list of extensions currently in use</log>
@@ -42,30 +47,30 @@
         </block>
     </form>
 
-    <form id="getExt">
-        <!-- Loop through ext variable and toggle them all -->
+    <form id="parseRecord">
+        <!-- Loop through record variable and update db with each value -->
         <block>
-            <log>INFO: Entered getExt</log>
-            <assign name="extension" expr="getNextElement(index,ext,'|')"/>
+            <log>INFO: Entered parseRecord</log>
+            <var name="tmpVal" expr="getNextElement(index,record,',')"/>
             <if cond="extension != '-1'">
+                <assign name="id" expr="getNextElement(0,tmpVal,'|')"/>
+                <assign name="extension" expr="getNextElement(1,tmpVal,'|')"/>
                 <assign name="index" expr="index + 1"/>
-                <assign name="gotoForm" expr="'#getExt'"/>
-                <goto next="#toggleStatus"/>
+                <assign name="gotoForm" expr="'#parseRecord'"/>
+                <goto next="#updateTable"/>
             <else/>
                 <goto next="#exit"/>
             </if>
         </block>
     </form>
 
-    <form id="toggleStatus">
-        <!-- We toggle the status of the specified extension on the db -->
+    <form id="updateTable">
+        <!-- Here, we insert/delete a record in the db table -->
         <block>
-            <log>INFO: Entered toggleStatus</log>
+            <log>INFO: Entered updateTable</log>
             <if cond="extension.length &lt; EXT_LENGTH">
-                <var name="status" expr="activeClient"/>
-                <assign name="result" expr="'Failure'"/>
-                <data name="clientToggle" srcexpr="DB_PATH+'toggleStatus.php'" namelist="extension status" method="post"/>
-                <assign name="result" expr="clientToggle.result"/>
+                <data name="update" srcexpr="DB_PATH+'activeClients.php'" namelist="extension id flag" method="post"/>
+                <assign name="result" expr="update.result"/>
                 <log>INFO: Result [<value expr="result"/>]</log>
             <else/>
                 <log>ERROR: Invalid extension [<value expr="extension"/>]</log>
@@ -100,6 +105,7 @@
     <!-- Catch bad fetch event -->
     <catch event="error.badfetch">
         <assign name="status" expr="'badfetch'"/>
+        <assign name="result" expr="'Failure'"/>
         <log>ERROR: Status [<value expr="status"/>]</log>
         <goto next="#exit"/>
     </catch>

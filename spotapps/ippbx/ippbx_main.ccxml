@@ -18,10 +18,10 @@
     <var name="callType" expr="''"/>    <!-- Call Type. Identifies a call as: service, extension, or external -->
     <var name="iiLincoln" expr="'14028029608,14028029609'"/>  <!-- SIP Trunk access for Lincon Office -->
     <var name="iiAustin" expr="'15122999104,15123801239,44,206.81.53.128'"/>   <!-- Access for Austin Office -->
-    <var name="activeClient" expr="'n'"/>   <!-- Active Client. Identifies when an extension is being used -->
     <var name="importedValue"/>         <!-- Imported Value. Values passed in from Listen application -->
     <var name="remote"/>
     <var name="local"/>
+    <var name="clientFlag" expr="''"/>
     <!-- End global vars -->
 
     <!-- Constants -->
@@ -89,24 +89,24 @@
 
         <transition event="dialog.user.chk_ANI" name="evt">
             <!-- Here, we determine if this call originated internally or externally. -->
-            <log>INFO: Entered [dialog.user.toggleClientStatus] with state [<value expr="state"/>]</log>
+            <log>INFO: Entered [dialog.user.chk_ANI] with state [<value expr="state"/>]</log>
             <if cond="ANI.length &lt; EXT_LENGTH">  <!-- If this is true, we can assume caller is internal to the pbx. -->
-                <assign name="activeClient" expr="'y'"/>
                 <assign name="state" expr="'active'"/>
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/> <!-- We need to set their status in the db as actvie -->
+                <assign name="clientFlag" expr="'insert'"/>
+                <send data="'dialog.user.updateClientRecord'" target="session.id"/> <!-- We need to set their status in the db as actvie -->
             <else/> <!-- Caller is probably not internal to pbx. So, we'll just route the call -->
                 <send data="'dialog.user.routeCall'" target="session.id"/>
             </if>
         </transition>
 
-        <transition event="dialog.user.toggleClientStatus" name="evt">
-            <!-- If we are in this transition, we can assume this particular call originated from an internal
-            extention. We want to toggle the status of this extension as either "active" or "inactive". This is
-            done for group paging purposes. "Active" extensions are not paged, "inactive" ones are paged. -->
-            <log>INFO: Entered [dialog.user.toggleClientStatus] with state [<value expr="state"/>]</log>
-            <var name="flag" expr="'toggle'"/>
-            <var name="ext" expr="ANI"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="ext activeClient flag EXT_LENGTH"/>
+        <transition event="dialog.user.updateClientRecord" name="evt">
+            <!-- If we are in this transition, we can assume this call originated from an internal extention.
+            We need to insert a record into the active clients table. This is done for group paging purposes.
+            Any clients existing in this table will not be paged. -->
+            <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
+            <var name="flag" expr="clientFlag"/>
+            <var name="record" expr="ibconnid + '|' + ANI"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
         </transition>
 
         <transition state="active" event="dialog.exit" name="evt">
@@ -180,7 +180,6 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <assign name="state" expr="'endCall'"/>
-            <assign name="activeClient" expr="'n'"/>
             <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
         </transition>
 
@@ -189,8 +188,8 @@
             <log>INFO: Entered [dialog.user.toggleThenEnd] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'endCall'"/>
             <if cond="ANI.length &lt; EXT_LENGTH">
-                <assign name="activeClient" expr="'n'"/>
-                <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+                <assign name="clientFlag" expr="'delete'"/>
+                <send data="'dialog.user.updateClientRecord'" target="session.id"/>
             <else/>
                 <send data="'dialog.user.endCall'" target="session.id"/>
             </if>
@@ -221,7 +220,6 @@
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
-            <assign name="activeClient" expr="'n'"/>
             <assign name="state" expr="'endCall'"/>
             <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
         </transition>

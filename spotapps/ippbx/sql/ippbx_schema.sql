@@ -6,12 +6,15 @@ use ip_pbx;
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 30, 2010 at 07:39 AM
+-- Generation Time: Jul 08, 2010 at 10:40 AM
 -- Server version: 5.0.22
 -- PHP Version: 5.1.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
+--
+-- Database: `ip_pbx`
+--
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -19,7 +22,16 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `ip_pbx`
+-- Table structure for table `active_clients`
+--
+
+CREATE TABLE IF NOT EXISTS `active_clients` (
+  `connection_id` varchar(255) NOT NULL,
+  `client` varchar(50) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `active_clients`
 --
 
 -- --------------------------------------------------------
