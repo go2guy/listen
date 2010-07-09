@@ -19,6 +19,7 @@ public final class EmbeddedJettyServer
     public static void main(String[] args) throws Exception
     {
         int port = Integer.parseInt(System.getProperty("port", "8080"));
+        String ext = System.getProperty("ext", "");
         Server server = new Server(port);
 
         ProtectionDomain domain = EmbeddedJettyServer.class.getProtectionDomain();
@@ -27,6 +28,12 @@ public final class EmbeddedJettyServer
         WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/");
         webapp.setDescriptor(location.toExternalForm() + "/WEB-INF/web.xml");
+        if(!ext.trim().equals(""))
+        {
+            String replaced = ext.replaceAll(":", ","); // setExtraClasspath requires comma or semicolon delimiters
+            System.out.println("Using ext classpath [" + replaced + "]");
+            webapp.setExtraClasspath(replaced);
+        }
         webapp.setServer(server);
         webapp.setWar(location.toExternalForm());
 

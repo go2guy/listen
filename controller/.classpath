@@ -43,5 +43,6 @@
 	<classpathentry kind="lib" path="lib/runtime/realize-client-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/liquibase-1.9.5.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/joda-time-hibernate-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/nodist/mysql-connector-java-5.1.13-bin.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>
