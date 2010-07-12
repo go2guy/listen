@@ -44,6 +44,7 @@
     </sequential>
   </macrodef>
 
+
   <target name="clean" description="--> Removes build artifacts created by this script">
     <delete dir="${build.dir}" failonerror="false"/>
     <delete dir="${target.dir}" failonerror="false"/>
@@ -64,6 +65,7 @@
            source="6"
            target="6">
        <src path="${src.dir}/main/java"/>
+       <src path="${src.dir}/test/jmeter"/>
        <classpath refid="javac.classpath"/>
     </javac>
   </target>
@@ -151,22 +153,72 @@
   </target>
 
 
+  <target name="-jmeter-init">
+    <mkdir dir="${build.dir}/main"/>
+    <javac destdir="${build.dir}/main"
+           failonerror="true"
+           includeAntRuntime="false"
+           debug="true"
+           source="6"
+           target="6">
+       <src path="${src.dir}/test/jmeter"/>
+       <classpath refid="javac.classpath"/>
+    </javac>
+  </target>
+
+
   <target name="-jmeter-fail" depends="-verify-integration-environment" unless="integration.environment.okay">
     <fail message="Please set the [integration.host] and [integration.port] properties to run jmeter tests"/>
   </target>
 
 
-  <target name="jmeter" depends="-verify-integration-environment, -jmeter-fail" if="integration.environment.okay">
+  <target name="jmeter" depends="-jmeter-init, -verify-integration-environment, -jmeter-fail" if="integration.environment.okay">
     <echo message="integration.host: ${integration.host}"/>
     <echo message="integration.port: ${integration.port}"/>
-    <mkdir dir="${target.dir}/jmeter"/>
+
+    <property name="jmeter.target.dir" value="${target.dir}/jmeter"/>
+    <property name="jmeter.work.dir" value="${jmeter.target.dir}/work"/>
+
+    <property name="jmeter.provision.numberOfSubscribers" value="1000"/>
+    <property name="jmeter.provision.voicemailsPerSubscriber" value="50"/>
+    <property name="jmeter.provision.accessNumbersPerSubscriber" value="2"/>
+    <property name="jmeter.combined.guiVoicemailUsers" value="200"/>
+    <property name="jmeter.combined.guiConferenceUsers" value="10"/>
+    <property name="jmeter.combined.apiVoicemailUsers" value="50"/>
+    <property name="jmeter.combined.duration" value="600"/><!-- in seconds -->
+
+    <delete dir="${jmeter.target.dir}"/>
+    <mkdir dir="${jmeter.target.dir}"/>
+
+    <!-- run provisioning test -->
     <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
-      <arg line="-n -t ${src.dir}/test/jmeter/api-provisionaccounts.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-provision.jtl"/>
-    </exec>
-    <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
-      <arg line="-n -t ${src.dir}/test/jmeter/gui-api-combined.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-combined.jtl"/>
+      <arg line="-n -t ${src.dir}/test/jmeter/api-provisionaccounts.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-provision.jtl -Jtest.numberOfSubscribers=${jmeter.provision.numberOfSubscribers} -Jtest.voicemailsPerSubscriber=${jmeter.provision.voicemailsPerSubscriber} -JaccessNumbersPerSubscriber=${jmeter.provision.accessNumbersPerSubscriber}"/>
     </exec>
 
+    <!-- retrieve provisioned data -->
+    <delete dir="${jmeter.work.dir}"/>
+    <mkdir dir="${jmeter.work.dir}"/>
+    <java classpathref="javac.classpath"
+          classname="com.interact.listen.jmeter.GetApiList"
+          fork="true"
+          failonerror="true"
+          output="${jmeter.work.dir}/subscribers.csv">
+      <arg line="http://${integration.host}:${integration.port}/api /subscribers?_fields=username&amp;_first=0&amp;_max=25 username"/>
+    </java>
+    <java classpathref="javac.classpath"
+          classname="com.interact.listen.jmeter.GetApiList"
+          fork="true"
+          failonerror="true"
+          output="${jmeter.work.dir}/accessNumbers.csv">
+      <arg line="http://${integration.host}:${integration.port}/api /accessNumbers?_fields=number&amp;_first=0&amp;_max=25 number"/>
+    </java>
+
+    <!-- run combined test -->
+    <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
+      <arg line="-n -t ${src.dir}/test/jmeter/gui-api-combined.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-combined.jtl -Jgui.voicemailUsers=${jmeter.combined.guiVoicemailUsers} -Jgui.conferenceUsers=${jmeter.combined.guiConferenceUsers} -Japi.voicemailUsers=${jmeter.combined.apiVoicemailUsers} -Jtest.duration=${jmeter.combined.duration} -Jtest.subscribersCsv=${jmeter.work.dir}/subscribers.csv -Jtest.accessNumbersCsv=${jmeter.work.dir}/accessNumbers.csv"/>
+    </exec>
+
+    <!-- report -->
     <mkdir dir="${target.dir}/jmeter/html"/>
     <xslt basedir="${target.dir}/jmeter/jtl"
           destdir="${target.dir}/jmeter/html"
@@ -212,7 +264,7 @@
     </copy>
     <war destfile="${target.dir}/listen-controller.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
       <fileset dir="${war.staging.dir}" includes="**/*"/>
-      <classes dir="${build.dir}/main" excludes="**/*Test.class"/>
+      <classes dir="${build.dir}/main" excludes="**/*Test.class,**/jmeter/**/*"/>
       <lib dir="${lib.dir}/runtime"/>
 
       <manifest>
