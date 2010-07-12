@@ -12,11 +12,8 @@
 	    <log target="status">Set Variable</log>
             <log>INFO: Entered assign-variable.vxml [53-84]</log>
             <log>INFO: Current value [<value expr="params"/>]</log>
-<assign name="params" expr="'/'+subID" />
+<assign name="params" expr="'/'+accessID" />
 <log>INFO: Updated value [<value expr="params"/>]</log>
-<log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'subscribers'+''" />
-<log>INFO: Updated value [<value expr="resource"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

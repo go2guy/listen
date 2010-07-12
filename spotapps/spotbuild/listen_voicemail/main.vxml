@@ -42,6 +42,7 @@
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_toggleLight"/>
 	<var name="SB_UV_accessNum"/>
+	<var name="SB_UV_accessID"/>
 
     
     <form id="beginDocument">
@@ -124,6 +125,9 @@
 			</if>
 			<if cond="SB_UV_accessNum != undefined">
 				<assign name="accessNum" expr="SB_UV_accessNum" />
+			</if>
+			<if cond="SB_UV_accessID != undefined">
+				<assign name="accessID" expr="SB_UV_accessID" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
