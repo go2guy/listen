@@ -192,7 +192,7 @@
 
     <!-- run provisioning test -->
     <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
-      <arg line="-n -t ${src.dir}/test/jmeter/api-provisionaccounts.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-provision.jtl -Jtest.numberOfSubscribers=${jmeter.provision.numberOfSubscribers} -Jtest.voicemailsPerSubscriber=${jmeter.provision.voicemailsPerSubscriber} -JaccessNumbersPerSubscriber=${jmeter.provision.accessNumbersPerSubscriber}"/>
+      <arg line="-n -t ${src.dir}/test/jmeter/api-provisionaccounts.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-provision.jtl -Jtest.numberOfSubscribers=${jmeter.provision.numberOfSubscribers} -Jtest.voicemailsPerSubscriber=${jmeter.provision.voicemailsPerSubscriber} -Jtest.accessNumbersPerSubscriber=${jmeter.provision.accessNumbersPerSubscriber}"/>
     </exec>
 
     <!-- retrieve provisioned data -->
