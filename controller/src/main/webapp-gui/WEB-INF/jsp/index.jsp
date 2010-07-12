@@ -73,7 +73,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                           </tbody>
                         </table>
                         <div class="pagination" id="conference-caller-pagination">
-                          <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                          <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
                         </div>
                         <div class="cleaner">&nbsp;</div>
                       </div>
@@ -165,7 +165,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                   </tbody>
                 </table>
                 <div class="pagination" id="voicemail-pagination">
-                  <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                  <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
                 </div>
                 <div class="cleaner">&nbsp;</div>
               </div>
@@ -236,7 +236,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                   </tbody>
                 </table>
                 <div class="pagination" id="conference-list-pagination">
-                  <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                  <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
                 </div>
                 <div class="cleaner">&nbsp;</div>
               </div>
@@ -261,7 +261,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                         <tbody></tbody>
                       </table>
                       <div class="pagination" id="subscribers-pagination">
-                        <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                        <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
                       </div>
                       <div class="cleaner">&nbsp;</div>
                     </div>
@@ -334,7 +334,7 @@ if(subscriber.getIsAdministrator()) { %>
                   <li class="placeholder">No history records</li>
                 </ul>
                 <div class="pagination" id="history-pagination">
-                  <span class="pagination-left">&lt;</span><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><span class="pagination-right">&gt;</span>
+                  <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
                 </div>
                 <div class="cleaner">&nbsp;</div>
               </div>

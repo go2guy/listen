@@ -167,8 +167,8 @@ $(document).ready(function() {
                         $('.pagination-current', pagination).text((count > 0 ? first + 1 : '0') + '-' + (first + count));
                         $('.pagination-total', pagination).text(total);
 
-                        var left = $('.pagination-left', pagination);
-                        var right = $('.pagination-right', pagination);
+                        var left = $('.icon-pageleft', pagination);
+                        var right = $('.icon-pageright', pagination);
 
                         left.unbind('click');
                         right.unbind('click');

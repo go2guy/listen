@@ -440,6 +440,8 @@ td.voicemail-cell-readStatus {
 .button-edit,
 .button-mute,
 .button-outdial,
+.button-pageleft,
+.button-pageright,
 .button-read,
 .button-record,
 .button-save,
@@ -470,6 +472,8 @@ td.voicemail-cell-readStatus {
 .icon-edit,
 .icon-mute,
 .icon-outdial,
+.icon-pageleft,
+.icon-pageright,
 .icon-read,
 .icon-record,
 .icon-save,
@@ -507,6 +511,8 @@ td.voicemail-cell-readStatus {
 .button-edit:hover,
 .button-mute:hover,
 .button-outdial:hover,
+.button-pageleft:hover,
+.button-pageright:hover,
 .button-read:hover,
 .button-record:hover,
 .button-save:hover,
@@ -547,6 +553,16 @@ td.voicemail-cell-readStatus {
 .button-outdial:hover         { background-position: 2px -1098px; }
 .icon-outdial, .image-outdial { background-position: 0   -1050px; }
 .icon-outdial:hover           { background-position: 0   -1100px; }
+
+.button-pageleft              { background-position: 2px -1648px; }
+.button-pageleft:hover        { background-position: 2px -1698px; }
+.icon-pageleft                { background-position: 0   -1650px; }
+.icon-pageleft:hover          { background-position: 0   -1700px; }
+
+.button-pageright             { background-position: 2px -1548px; }
+.button-pageright:hover       { background-position: 2px -1598px; }
+.icon-pageright               { background-position: 0   -1550px; }
+.icon-pageright:hover         { background-position: 0   -1600px; }
 
 .button-read                  { background-position: 2px -1348px; }
 .button-read:hover            { background-position: 2px -1398px; }
@@ -711,17 +727,6 @@ table.data-table tr.odd {
 .pagination span {
     font-weight: bold;
     padding: 2px 4px;
-}
-
-.pagination-left, .pagination-right {
-    border: 1px solid #999999;
-    cursor: pointer;
-    text-align: center;
-}
-
-.pagination-left:hover, .pagination-right:hover {
-    background-color: #666666;
-    color: #FFFFFF;
 }
 
 /* other */
