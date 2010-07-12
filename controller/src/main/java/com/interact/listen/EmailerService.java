@@ -1,5 +1,6 @@
 package com.interact.listen;
 
+import com.interact.listen.api.GetDnisServlet;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
@@ -201,8 +202,8 @@ public class EmailerService
         
         if(toAddresses.length > 0)
         {
-            // hard-coded access number for now
-            String body = String.format(SMS_NOTIFICATION_BODY, voicemail.getLeftBy(), "402-476-8786");
+            String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
+            String body = String.format(SMS_NOTIFICATION_BODY, voicemail.getLeftBy(), directVoicemailAccessNumber);
         
             sendEmail(toAddresses, body, "", "");
         }
@@ -353,5 +354,13 @@ public class EmailerService
         }
         
         return uri;
+    }
+    
+    private String getDirectVoicemailAccessNumber()
+    {
+        List<String> directVoicemailAccessNumbers = GetDnisServlet.getMappingByType("directVoicemail");
+        
+        //Even if multiple ones are configured, all should be valid and we can just return the first one
+        return directVoicemailAccessNumbers.size() > 0 ? directVoicemailAccessNumbers.get(0) : "N/A";
     }
 }

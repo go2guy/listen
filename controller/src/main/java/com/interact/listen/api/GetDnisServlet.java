@@ -132,4 +132,29 @@ public class GetDnisServlet extends HttpServlet
         }
         return list;
     }
+    
+    public static List<String> getMappingByType(String typeOfDnis)
+    {
+        List<String> list = new ArrayList<String>();
+        String dnisMappings = Configuration.get(Property.Key.DNIS_MAPPING);
+        
+        if(dnisMappings == null || dnisMappings.trim().equals(""))
+        {
+            return list;
+        }
+        
+        for(String mapping : dnisMappings.split(";"))
+        {
+            if(mapping.length() > 0)
+            {
+                String[] pair = mapping.split(":");
+                if(pair[1].equals(typeOfDnis))
+                {
+                    list.add(pair[0]);
+                }
+            }
+        }
+        
+        return list;
+    }
 }
