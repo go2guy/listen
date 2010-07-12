@@ -38,13 +38,13 @@ public class GetApiList
                 {
                     continue;
                 }
-                String output = "";
+                StringBuilder output = new StringBuilder();
                 for(String field : fields)
                 {
-                    output += result.get(field) + ",";
+                    output.append(result.get(field)).append(",");
                 }
-                output = output.substring(0, output.length() - 1);
-                System.out.println(output);
+                output.deleteCharAt(output.length() - 1);
+                System.out.println(output.toString());
             }
         }
         while(part != null);
