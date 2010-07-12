@@ -179,12 +179,13 @@
     <property name="jmeter.target.dir" value="${target.dir}/jmeter"/>
     <property name="jmeter.work.dir" value="${jmeter.target.dir}/work"/>
 
-    <property name="jmeter.provision.numberOfSubscribers" value="1000"/>
+    <!-- test input parameters -->
+    <property name="jmeter.provision.numberOfSubscribers" value="50"/>
     <property name="jmeter.provision.voicemailsPerSubscriber" value="50"/>
     <property name="jmeter.provision.accessNumbersPerSubscriber" value="2"/>
-    <property name="jmeter.combined.guiVoicemailUsers" value="200"/>
-    <property name="jmeter.combined.guiConferenceUsers" value="10"/>
-    <property name="jmeter.combined.apiVoicemailUsers" value="50"/>
+    <property name="jmeter.combined.guiVoicemailUsers" value="25"/>
+    <property name="jmeter.combined.guiConferenceUsers" value="2"/>
+    <property name="jmeter.combined.ivrVoicemailUsers" value="5"/>
     <property name="jmeter.combined.duration" value="600"/><!-- in seconds -->
 
     <delete dir="${jmeter.target.dir}"/>
@@ -215,7 +216,7 @@
 
     <!-- run combined test -->
     <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
-      <arg line="-n -t ${src.dir}/test/jmeter/gui-api-combined.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-combined.jtl -Jgui.voicemailUsers=${jmeter.combined.guiVoicemailUsers} -Jgui.conferenceUsers=${jmeter.combined.guiConferenceUsers} -Japi.voicemailUsers=${jmeter.combined.apiVoicemailUsers} -Jtest.duration=${jmeter.combined.duration} -Jtest.subscribersCsv=${jmeter.work.dir}/subscribers.csv -Jtest.accessNumbersCsv=${jmeter.work.dir}/accessNumbers.csv"/>
+      <arg line="-n -t ${src.dir}/test/jmeter/gui-api-combined.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-combined.jtl -Jgui.voicemailUsers=${jmeter.combined.guiVoicemailUsers} -Jgui.conferenceUsers=${jmeter.combined.guiConferenceUsers} -Japi.voicemailUsers=${jmeter.combined.ivrVoicemailUsers} -Jtest.duration=${jmeter.combined.duration} -Jtest.subscribersCsv=${jmeter.work.dir}/subscribers.csv -Jtest.accessNumbersCsv=${jmeter.work.dir}/accessNumbers.csv"/>
     </exec>
 
     <!-- report -->
