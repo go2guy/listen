@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/08/2010
+    <!-- Last Modified 07/12/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
     <!-- Values passed in from other ccxml -->
     <var name="ANI"/>       <!-- ANI. Origination ID of current call -->
     <var name="DNIS"/>      <!-- DNIS. Destination ID -->
+    <var name="tmpANI"/>    <!-- ANI. -->
+    <var name="tmpDNIS"/>   <!-- DNIS. -->
     <var name="APP_PATH"/>  <!-- App Path. Base application directory -->
     <var name="SB_PATH"/>   <!-- Spotbuild Path. Base directory for spotbuild -->
     <var name="callType"/>  <!-- Call type. Identifies a call as: service, extension or external. Service calls will be allowed to reoriginate -->
@@ -91,30 +93,26 @@
             <!-- Attempt dial to destination number. Since this is voip, we'll generate
             ring tone to the caller. Once call gets picked up, we'll end it (the ring tone). -->
             <log>INFO: Entered [dialog.user.call] with state [<value expr="state"/>]</log>
-            <log target="status">Dialing [<value expr="DNIS"/>]</log>
+            <log target="status">Dialing [<value expr="tmpDNIS"/>]</log>
             <var name="TIME_OUT" expr="'25s'"/>
             <var name="CALL_DNIS" expr="''"/>
             <var name="CALL_ANI" expr="''"/>
             <var name="OBCALL.noproxy" expr="'false'"/>
-            <if cond="DNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
-                <assign name="CALL_DNIS" expr="'sip:ext' + DNIS + '@iipbx'"/>
-                <if cond="ANI.length &lt; EXT_LENGTH">  <!-- Assume call originated from another PBX extension -->
-                    <assign name="CALL_ANI" expr="'sip:ext' + ANI +  '@SPOT'"/>
-                <else/>
-                    <assign name="CALL_ANI" expr="'sip:' + ANI +  '@' + SIP_SERVER"/>    <!-- Assume call originated from outside PBX -->
-                </if>
+            <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
+                <assign name="CALL_DNIS" expr="'sip:ext' + tmpDNIS + '@iipbx'"/>
+                <assign name="CALL_ANI" expr="ANI"/>
             <else/> <!-- Call to an external number (outside PBX) -->
                 <assign name="TIME_OUT" expr="'60s'"/>
                 <if cond="iiNumber(DNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
                     <assign name="CALL_ANI" expr="'sip:' + OUT_BOUND_ID + '@' + SIP_SERVER"/>  <!-- Make caller ID office number -->
                     <if cond="DNIS.length == LOCAL_CALL">
-                        <assign name="CALL_DNIS" expr="'sip:' + AREA_CODE + DNIS + '@' + SIP_SERVER"/>  <!-- Need to prefix dest with area code -->
+                        <assign name="CALL_DNIS" expr="'sip:' + AREA_CODE + tmpDNIS + '@' + SIP_SERVER"/>  <!-- Need to prefix dest with area code -->
                     <else/>
-                        <assign name="CALL_DNIS" expr="'sip:' + DNIS + '@' + SIP_SERVER"/>
+                        <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS + '@' + SIP_SERVER"/>
                     </if>
                 <else/>
                     <assign name="OBCALL.noproxy" expr="'true'"/>
-                    <assign name="CALL_ANI" expr="'sip:ext' + ANI +  '@SPOT'"/>
+                    <assign name="CALL_ANI" expr="ANI"/>
                     <if cond="inString('*',DNIS,'')">  <!-- Check if destination is an IP address -->
                         <assign name="DNIS" expr="iiReplace(DNIS,'*','.')"/>    <!-- Replace '*' with '.' -->
                     </if>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/08/2010
+    <!-- Last Modified 07/12/2010
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -12,6 +12,8 @@
     <var name="obconnid"/>              <!-- Outbound Connection ID. Contains the connection ID for an outbound call -->
     <var name="ANI" expr="''"/>         <!-- ANI. Origination of inbound call -->
     <var name="DNIS" expr="''"/>        <!-- DNIS. Destination dialed -->
+    <var name="tmpANI" expr="''"/>      <!-- ANI -->
+    <var name="tmpDNIS" expr="''"/>     <!-- DNIS -->
     <var name="route" expr="''"/>       <!-- Route. Used to route an incoming call to a particular event -->
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
@@ -41,8 +43,10 @@
             <log>INFO: Event Source [<value expr="evt.eventsource"/>]</log>
             <if cond="projectSource == 'LISTEN'">
                 <assign name="ibconnid" expr="connectionid"/>   <!-- Get connection id for incoming call -->
-	    	    <assign name="ANI" expr="getnum(remote)"/>      <!-- Get origin of incoming call -->
-	    	    <assign name="DNIS" expr="getnum(local)"/>      <!-- Get destination of incoming call -->
+	    	    <assign name="ANI" expr="iiUnescape(remote)"/>  <!-- Get origin of incoming call -->
+	    	    <assign name="DNIS" expr="local"/>              <!-- Get destination of incoming call -->
+	    	    <assign name="tmpDNIS" expr="getnum(DNIS)"/>
+                <assign name="tmpANI" expr="getnum(ANI)"/>
                 <send data="'dialog.user.chk_ANI'" target="session.id"/>
             <else/>
                 <!-- Nothing else here -->
@@ -60,7 +64,7 @@
             <var name="DNIS" expr="evt.des"/>
             <var name="ANI" expr="evt.from"/>
             <assign name="callType" expr="'notify'"/>
-            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid DNIS ANI callType msgID mBox"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid tmpDNIS tmpANI DNIS ANI callType msgID mBox"/>
     	</transition>
 
         <transition state="idle" event="connection.alerting" name="evt">
@@ -69,8 +73,10 @@
             <log target="status">In coming call</log>
             <assign name="state" expr="'alerting'"/>
             <assign name="ibconnid" expr="evt.connectionid"/>   <!-- Get connection id for incoming call -->
-	    	<assign name="ANI" expr="getnum(evt.connection.remote)"/>   <!-- Get origin of incoming call -->
-	    	<assign name="DNIS" expr="getnum(evt.connection.local)"/>   <!-- Get destination of incoming call -->
+	    	<assign name="ANI" expr="iiUnescape(evt.connection.remote)"/>   <!-- Get origin of incoming call -->
+	    	<assign name="DNIS" expr="evt.connection.local"/>               <!-- Get destination of incoming call -->
+	    	<assign name="tmpANI" expr="getnum(ANI)"/>
+	    	<assign name="tmpDNIS" expr="getnum(DNIS)"/>
             <accept/>   <!-- Accept should trigger a connection.connected if successful. An error may trigger connection.failed -->
         </transition>
 
@@ -80,8 +86,8 @@
             we'll send a database transaction (later) to toggle their status to active -->
             <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
             <log target="status">Call accepted</log>
-            <log>INFO: ANI [<value expr="ANI"/>]</log>
-            <log>INFO: DNIS [<value expr="DNIS"/>]</log>
+            <log>INFO: ANI [<value expr="tmpANI"/>]</log>
+            <log>INFO: DNIS [<value expr="tmpDNIS"/>]</log>
             <log>INFO: connectionid [<value expr="ibconnid"/>]</log>
             <assign name="state" expr="'callAccepted'"/>
             <send data="'dialog.user.chk_ANI'" target="session.id"/>
@@ -90,7 +96,7 @@
         <transition event="dialog.user.chk_ANI" name="evt">
             <!-- Here, we determine if this call originated internally or externally. -->
             <log>INFO: Entered [dialog.user.chk_ANI] with state [<value expr="state"/>]</log>
-            <if cond="ANI.length &lt; EXT_LENGTH">  <!-- If this is true, we can assume caller is internal to the pbx. -->
+            <if cond="tmpANI.length &lt; EXT_LENGTH">  <!-- If this is true, we can assume caller is internal to the pbx. -->
                 <assign name="state" expr="'active'"/>
                 <assign name="clientFlag" expr="'insert'"/>
                 <send data="'dialog.user.updateClientRecord'" target="session.id"/> <!-- We need to set their status in the db as actvie -->
@@ -105,7 +111,7 @@
             Any clients existing in this table will not be paged. -->
             <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
             <var name="flag" expr="clientFlag"/>
-            <var name="record" expr="ibconnid + '|' + ANI"/>
+            <var name="record" expr="ibconnid + '|' + tmpANI"/>
    	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
         </transition>
 
@@ -127,15 +133,15 @@
             <!-- We need to figure out how to route this call based on what caller dialed -->
             <log>INFO: Entered [dialog.user.routeCall] with state [<value expr="state"/>]</log>
             <log target="status">Routing call...</log>
-            <if cond="inString(DNIS,iiLincoln,',') || inString(DNIS,iiAustin,',')"> <!-- If caller is trying to reach lincoln or austin office -->
+            <if cond="inString(tmpDNIS,iiLincoln,',') || inString(tmpDNIS,iiAustin,',')"> <!-- If caller is trying to reach lincoln or austin office -->
                 <assign name="route" expr="'dialog.user.autoAttendant'"/>   <!-- Set route to auto attendant -->
                 <send data="'dialog.user.pbx'" target="session.id"/>
-            <elseif cond="DNIS == PAGE"/> <!-- If caller is trying to use page service -->
+            <elseif cond="tmpDNIS == PAGE"/> <!-- If caller is trying to use page service -->
                 <send data="'dialog.user.page'" target="session.id"/>
-            <elseif cond="DNIS.length &lt; EXT_LENGTH"/>    <!-- Assume this is an internal call between extensions -->
+            <elseif cond="tmpDNIS.length &lt; EXT_LENGTH"/>    <!-- Assume this is an internal call between extensions -->
                 <assign name="callType" expr="'extension'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
-            <elseif cond="ANI.length &lt; EXT_LENGTH"/> <!-- Assume this is an external call from an extension -->
+            <elseif cond="tmpANI.length &lt; EXT_LENGTH"/> <!-- Assume this is an external call from an extension -->
                 <assign name="callType" expr="'external'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
             <else/> <!-- We've encountered an unusual error, since we couldn't match any known case. End the call -->
@@ -148,19 +154,19 @@
             <!-- Here we'll pass control to the pbx ccxml script. This script uses the route variable
             to determine what transition to run. -->
             <log>INFO: Entered [dialog.user.pbx] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'pbx.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid DNIS ANI callType route"/>
+            <fetch next="'file:'+APP_PATH+'pbx.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI callType route"/>
         </transition>
 
         <transition event="dialog.user.dial" name="evt">
             <!-- Transfer control to dial script -->
             <log>INFO: Entered [dialog.user.dial] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid DNIS ANI callType importedValue"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI callType importedValue"/>
         </transition>
 
         <transition event="dialog.user.page" name="evt">
             <!-- Here we'll pass control to the page ccxml script -->
             <log>INFO: Entered [dialog.user.page] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'page.ccxml'" namelist="SB_PATH APP_PATH ibconnid DNIS ANI"/>
+            <fetch next="'file:'+APP_PATH+'page.ccxml'" namelist="SB_PATH APP_PATH ibconnid tmpANI tmpDNIS DNIS ANI"/>
         </transition>
 
         <transition event="connection.disconnected" name="evt">
@@ -187,7 +193,7 @@
             <!-- This transition handles the return from terminating the VXML session after receiving a hangup -->
             <log>INFO: Entered [dialog.user.toggleThenEnd] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'endCall'"/>
-            <if cond="ANI.length &lt; EXT_LENGTH">
+            <if cond="tmpANI.length &lt; EXT_LENGTH">
                 <assign name="clientFlag" expr="'delete'"/>
                 <send data="'dialog.user.updateClientRecord'" target="session.id"/>
             <else/>
