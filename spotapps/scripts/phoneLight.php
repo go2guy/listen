@@ -8,7 +8,7 @@
 
     #Grab inputs
     $phoneLight = @$_REQUEST['toggleLight'] or exitresult ($objName,$result,"'toggleLight' argument missing from request");
-    $dest       = @$_REQUEST['accessNum']       or exitresult ($objName,$result,"'subID' argument missing from request");
+    $dest       = @$_REQUEST['accessNum']       or exitresult ($objName,$result,"'accessNum' argument missing from request");
 
 
     $httpRequest  = "curl http://localhost/spot/ccxml/createsession -d uri=$fileURL -d phoneLight=$phoneLight -d dest=$dest";

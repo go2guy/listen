@@ -74,8 +74,10 @@
 	<var name="grtngList" expr="''" />
 	<var name="grtngSelect" expr="''" />
 	<var name="subFwd" expr="''" />
-	<var name="DNIS" expr="''" />
+	<var name="DNIS" expr="'local'" />
 	<var name="sysAccessTime" expr="''" />
+	<var name="toggleLight" expr="'OFF'" />
+	<var name="accessNum" expr="''" />
 
 
     <!-- Conference Variables -->
