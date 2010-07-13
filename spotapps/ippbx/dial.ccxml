@@ -15,6 +15,7 @@
     <var name="callType"/>  <!-- Call type. Identifies a call as: service, extension or external. Service calls will be allowed to reoriginate -->
     <var name="ibconnid"/>  <!-- Inbound connection ID -->
     <var name="obconnid"/>  <!-- Outbound connection ID -->
+    <var name="isClosed"/>  <!-- Flag to determine if the office is closed -->
     <var name="EXT_LENGTH"/>    <!-- Extension length -->
     <var name="blindXferID"/>   <!-- Blind Tranfer ID. ID of party involved in a blind transfer -->
     <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
@@ -29,6 +30,7 @@
     <var name="II_SB_promptID" expr="''"/>
     <var name="clientFlag" expr="''"/>
     <var name="record" expr="''"/>
+    <var name="officeOptr" expr="'101'"/>   <!-- Operator's extension -->
 
     <!-- Out dial vars -->
     <var name="AREA_CODE" expr="'402'"/>
@@ -297,7 +299,7 @@
                 <var name="II_SB_protocol" expr="'VOIP'"/>
                 <var name="II_SB_connectionID" expr="ibconnid"/>
                 <var name="II_SB_type" expr="''"/>
-                <var name="II_SB_ibcallid" expr="ibconnid"/>
+                <var name="II_SB_ibcallid" expr="ibconn id"/>
                 <var name="II_SB_transfer" expr="'yes'"/>
                 <var name="II_SB_projectSource" expr="'ippbx'"/>
                 <var name="II_SB_obcallid" expr="''"/>
@@ -318,14 +320,20 @@
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
             <else/>
                 <log target="status">Unknown EXT [<value expr="DNIS"/>]</log>
-                <if cond="ANI.length &lt; EXT_LENGTH">
+                <if cond="tmpANI.length &lt; EXT_LENGTH">
                     <!-- Assume this is from inside IP PBX. Notify caller that extension doesn't exist -->
                     <assign name="state" expr="'invalidExt'"/>
                     <assign name="II_SB_promptID" expr="AUDIO_PATH+'1851'+'.00'+'.wav'"/>
                 <else/>
-                    <!-- Assume this is from outside PBX. Ask caller to hold for operator -->
-                    <assign name="state" expr="'operator'"/>
-                    <assign name="II_SB_promptID" expr="AUDIO_PATH+'1850'+'.00'+'.wav'"/>
+                    <!-- Assume this is from outside PBX. If office is closed, send caller to after hrs.
+                    Else, ask caller to hold for operator -->
+                    <if cond="isClosed == 'y'">
+                        <assign name="state" expr="'afterHrs'"/>
+                        <assign name="II_SB_promptID" expr="AUDIO_PATH+'1851'+'.00'+'.wav'"/>
+                    <else/>
+                        <assign name="state" expr="'operator'"/>
+                        <assign name="II_SB_promptID" expr="AUDIO_PATH+'1850'+'.00'+'.wav'"/>
+                    </if>
                 </if>
                 <var name="II_SB_repeat" expr="'n'"/>
                 <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
@@ -342,20 +350,18 @@
         </transition>
 
         <transition state="operator" event="dialog.exit" name="evt">
-            <!-- Caller is holding for operator, get operator's extension -->
+            <!-- Caller is holding for operator, Set variables and attempt to call operator's extension -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <var name="setForm" expr="'#getOptr'"/>
-            <assign name="state" expr="'getOptrExtn'"/>
-            <dialogstart src="'file:'+APP_PATH+'office.vxml'" namelist="setForm"/>
+            <assign name="DNIS" expr="officeOptr"/>
+            <send data="'dialog.user.call'" target="session.id"/>
         </transition>
 
-        <transition state="getOptrExtn" event="dialog.exit" name="evt">
-            <!-- Set variables and attempt to call operator's extension -->
+        <transition state="afterHrs" event="dialog.exit" name="evt">
+            <!-- Go to after hrs -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <assign name="DNIS" expr="evt.values.extension"/>
-            <send data="'dialog.user.call'" target="session.id"/>
+            <dialogstart src="'file:'+SUP_PATH+'afterHrsMain.vxml'" namelist="setForm"/>
         </transition>
 
         <transition state="dialing" event="connection.disconnected" name="evt">

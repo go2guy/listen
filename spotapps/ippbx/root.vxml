@@ -2,23 +2,18 @@
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0">
 
-    <!-- These are passed in from main.ccxml -->
+    <!-- These are passed in from ippbx_main.ccxml -->
     <var name="EXT_LENGTH"/>
     <var name="ANI"/>
 
-    <!-- Special Extensions -->
-    <var name="officeOptr" expr="'101'"/>
-    <var name="customerService" expr="'181'"/>
-    <var name="afterHoursSupport" expr="'300'"/>
-
     <!-- Application constants -->
     <var name="LINE_NUMBER" expr="session.channelnum"/>
-    <var name="APP_PATH" expr="'/interact/apps/ippbx/'"/>
-    <var name="AUDIO_PATH" expr="APP_PATH+'audio/'"/>
     <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>
+    <var name="APP_PATH" expr="SB_PATH+'ippbx/'"/>
+    <var name="AUDIO_PATH" expr="APP_PATH+'audio/'"/>
     <var name="SYSTEM_PATH" expr="SB_PATH+'audio/system/'"/>
     <var name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
-    <var name="LIB_PATH" expr="APP_PATH+'lib/'"/>
+    <var name="LIB_PATH" expr="SB_PATH+'lib/'"/>
     <var name="SUP_PATH" expr="APP_PATH+'support/'"/>
     <var name="NOTIFY_PATH" expr="APP_PATH+'notification/'"/>
     <var name="ERR_LOG" expr="'/interact/logs/error.log'"/>

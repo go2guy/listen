@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 07/13/2010
+       *   @Name	autoAttendantPrompt.vxml
+       *   @Desc	Retrieves auto attendant prompt list from database -->
+
+    <!-- Global Variables -->
+    <var name="prompt"/>                <!-- Stores prompt list -->
+    <var name="isClosed" expr="'n'"/>   <!-- Flag to determine if the office is closed -->
+
+    <form id="beginDocument">
+        <!-- In this form, we call a php script. This script checks the db for any special
+        prompts that are set up for the current date/time stamp -->
+        <block>
+            <log>INFO: Entered beginDocument</log>
+            <data name="chkPrompt" srcexpr="DB_PATH+'chkPrompt.php'"/>
+            <assign name="prompt" expr="chkPrompt.result"/> <!-- Save db response -->
+            <log>INFO: prompt [<value expr="prompt"/>]</log>
+            <goto next="#verify"/>
+        </block>
+    </form>
+
+    <form id="verify">
+        <!-- Here, we check the return from the db. If no prompts were found, then we need
+        to decide what prompt the auto attendant should play based on the regular office hours -->
+        <block>
+            <log>INFO: Entered Verify</log>
+            <if cond="prompt == '0'">   <!-- No prompts found for current time in db -->
+                <var name="AM_OPEN" expr="800"/> <!-- Office start time -->
+                <var name="PM_CLOSE" expr="1700"/> <!-- Office close time -->
+                <var name="currTime" expr="getTimeStamp(1)"/>  <!-- Format is yyyymmddhhMMss -->
+                <assign name="currTime" expr="iiSubstr(currTime, 8, 12)"/>
+                <if cond="((parseFloat(currTime) &gt; PM_CLOSE) || (parseFloat(currTime) &lt; AM_OPEN))">  <!-- Check if office is closed -->
+                    <assign name="isClosed" expr="'y'"/>
+                    <assign name="prompt" expr="'AP1700|AP1650'"/>   <!-- Return office closed prompt -->
+                <else/>
+                    <assign name="prompt" expr="'AP1600'"/> <!-- Return regular auto attendant prompt -->
+                </if>
+            </if>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <log>INFO: Entered exit</log>
+            <return namelist="prompt isClosed"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the db -->
+        <log>ERROR: Unable to get prompt from db</log>
+        <assign name="prompt" expr="'0'"/>
+        <goto next="#verify"/>
+    </catch>
+
+</vxml>

@@ -18,17 +18,18 @@
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
     <var name="callType" expr="''"/>    <!-- Call Type. Identifies a call as: service, extension, or external -->
-    <var name="iiLincoln" expr="'14028029608,14028029609'"/>  <!-- SIP Trunk access for Lincon Office -->
+    <var name="iiLincoln" expr="'14024768786,14028029608,14028029609'"/>  <!-- SIP Trunk access for Lincon Office -->
     <var name="iiAustin" expr="'15122999104,15123801239,44,206.81.53.128'"/>   <!-- Access for Austin Office -->
     <var name="importedValue"/>         <!-- Imported Value. Values passed in from Listen application -->
     <var name="remote"/>
     <var name="local"/>
     <var name="clientFlag" expr="''"/>
+    <var name="isClosed" expr="'n'"/>   <!-- Flag to determine if the office is closed -->
     <!-- End global vars -->
 
     <!-- Constants -->
     <var name="PAGE" expr="'799'"/>     <!-- Number dialed to access group page -->
-    <var name="EXT_LENGTH" expr="7"/>   <!-- Extensions are less than seven digit numbers -->
+    <var name="EXT_LENGTH" expr="4"/>   <!-- Extensions are less than four digit numbers -->
     <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>    <!-- Base directory for Spotbuild -->
     <var name="APP_PATH" expr="SB_PATH+'ippbx/'"/>              <!-- Base directory for PBX application -->
     <var name="LIB_PATH" expr="SB_PATH+'lib/'"/>                <!-- Directory for lib files -->
@@ -154,13 +155,13 @@
             <!-- Here we'll pass control to the pbx ccxml script. This script uses the route variable
             to determine what transition to run. -->
             <log>INFO: Entered [dialog.user.pbx] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'pbx.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI callType route"/>
+            <fetch next="'file:'+APP_PATH+'pbx.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH isClosed ibconnid tmpANI tmpDNIS DNIS ANI callType route importedValue"/>
         </transition>
 
         <transition event="dialog.user.dial" name="evt">
             <!-- Transfer control to dial script -->
             <log>INFO: Entered [dialog.user.dial] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI callType importedValue"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH isClosed ibconnid tmpANI tmpDNIS DNIS ANI callType importedValue"/>
         </transition>
 
         <transition event="dialog.user.page" name="evt">

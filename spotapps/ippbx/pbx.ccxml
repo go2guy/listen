@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
+<ccxml version="1.0">
+    <!-- Last Modified 07/13/2010
+       *   @Name	pbx.ccxml
+       *   @Desc	This script handles all the control logic for the PBX application -->
+
+    <!-- Values passed in from other ccxml -->
+    <var name="ANI"/>           <!-- ANI. Origination ID of current call -->
+    <var name="DNIS"/>          <!-- DNIS. Destination ID -->
+    <var name="tmpANI"/>        <!-- ANI. -->
+    <var name="tmpDNIS"/>       <!-- DNIS. -->
+    <var name="APP_PATH"/>      <!-- App Path. Base application directory -->
+    <var name="SB_PATH"/>       <!-- Spotbuild Path. Base directory for spotbuild -->
+    <var name="callType"/>      <!-- Call type. Identifies a call as: extension or external. -->
+    <var name="ibconnid"/>      <!-- Inbound connection ID -->
+    <var name="obconnid"/>      <!-- Outbound connection ID -->
+    <var name="EXT_LENGTH"/>    <!-- Extension length -->
+    <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
+    <var name="isClosed"/>      <!-- Flag to determine if the office is closed -->
+
+    <!-- Global Vars -->
+    <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
+    <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
+    <var name="extension" expr="''"/>   <!-- Extension. Stores value of PBX extension -->
+    <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
+    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
+
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+
+    <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
+        <transition state="idle" event="ccxml.loaded" name="evt">
+            <!-- Load ccxml document. Set variables -->
+            <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
+            <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
+            <assign name="extension" expr="DNIS"/>
+            <assign name="state" expr="'loaded'"/>
+            <log>INFO: APP Path [<value expr="APP_PATH"/>]</log>
+            <log>INFO: Origination [<value expr="ANI"/>]</log>
+            <log>INFO: Route [<value expr="route"/>]</log>
+            <send data="route" target="session.id"/>    <!-- The "route" variable is set in the ippbx_main.ccxml script -->
+        </transition>
+
+        <transition event="dialog.started" name="evt">
+            <!-- Here we save off the ID of the last VXML dialog started -->
+            <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'y'"/>
+            <assign name="dialogID" expr="evt.dialogid"/>
+        </transition>
+
+        <transition event="dialog.user.autoAttendant" name="evt">
+            <log>INFO: Entered [dialog.user.autoAttendant] with state [<value expr="state"/>]</log>
+            <log>INFO: Go to office menu</log>
+            <log target="status">Auto Attendant</log>
+            <assign name="state" expr="'officeMenu'"/>
+   	    	<dialogstart src="'file:'+APP_PATH+'office.vxml'" namelist="EXT_LENGTH ANI extension"/>
+        </transition>
+
+        <transition event="dialog.user.dial" name="evt">
+            <!-- Transfer control to dial script -->
+            <log>INFO: Entered [dialog.user.dial] with state [<value expr="state"/>]</log>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI callType importedValue isClosed"/>
+        </transition>
+
+        <transition event="connection.disconnected" name="evt">
+            <!-- Got a disconnect event. If we're in a VXML dialog, we need to end it before doing anything else.
+            Otherwise, we'll just reset the status of the caller to inactive -->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <log>INFO: Detected hangup</log>
+            <if cond="inVXML == 'y'">
+                <assign name="state" expr="'hangUp'"/>
+                <dialogterminate dialogid="dialogID"/>
+            <else/>
+                <!-- Reset user's status in db prior to exiting -->
+                <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.updateClientRecord" name="evt">
+            <!-- Here we check to see if we need to update the active clients table -->
+            <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'endCall'"/>
+            <if cond="tmpANI &lt; EXT_LENGTH">
+                <var name="flag" expr="'delete'"/>
+                <var name="record" expr="ibconnid + '|' + ANI"/>
+   	   		    <dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+            <else/>
+                <send data="'dialog.user.endCall'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.listenMailBox" name="evt">
+            <!-- Here we'll pass control to the begin ccxml script which calls the Listen Mail Box project -->
+            <log>INFO: Entered [dialog.user.listenMailBox] with state [<value expr="state"/>]</log>
+                <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
+                <var name="II_SB_status" expr="''"/>
+                <var name="II_SB_local" expr="DNIS"/>
+                <var name="II_SB_remote" expr="ANI"/>
+                <var name="II_SB_originator" expr="''"/>
+                <var name="II_SB_protocol" expr="'VOIP'"/>
+                <var name="II_SB_connectionID" expr="ibconnid"/>
+                <var name="II_SB_type" expr="''"/>
+                <var name="II_SB_ibcallid" expr="ibconnid"/>
+                <var name="II_SB_transfer" expr="'yes'"/>
+                <var name="II_SB_projectSource" expr="'ippbx'"/>
+                <var name="II_SB_obcallid" expr="''"/>
+                <var name="II_SB_CODE_DIR" expr="''"/>
+                <var name="II_SB_line" expr="''"/>
+                <var name="II_SB_importedValue" expr="importedValue"/>
+                <fetch next="'file:'+SB_PATH+'listen_mailbox/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+        </transition>
+
+        <transition event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <var name="status" expr="evt.values.status"/>
+            <if cond="state == 'hangUp'">
+                <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            <elseif cond="status == 'mailBox'"/>
+                <send data="'dialog.user.listenMailBox'" target="session.id"/>
+            <elseif cond="status == 'callExt'"/>
+                <assign name="callType" expr="'extension'"/>
+                <assign name="DNIS" expr="evt.values.extension"/>
+                <assign name="tmpDNIS" expr="evt.values.extension"/>
+                <assign name="isClosed" expr="evt.values.isClosed"/>
+                <send data="'dialog.user.dial'" target="session.id"/>
+            <else/>
+                <assign name="state" expr="'endCall'"/>
+                <send data="'dialog.user.endCall'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition event="fetch.done" name="evt">
+            <log>INFO: Fetched document [<value expr="evt.uri"/>]</log>
+            <goto fetchid="evt.fetchid" />
+        </transition>
+
+        <transition event="error.*" name="evt">
+            <!-- Use catch all error for now -->
+            <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- TODO: Write an error log file and notify someone? -->
+            <!-- Reset user's status in db b/4 exiting -->
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.endCall" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
+            <exit/>
+        </transition>
+
+	</eventprocessor>
+</ccxml>
