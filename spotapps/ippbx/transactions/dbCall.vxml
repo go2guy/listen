@@ -69,7 +69,7 @@
         <block>
             <log>INFO: Entered updateTable</log>
             <if cond="extension.length &lt; EXT_LENGTH">
-                <data name="update" srcexpr="DB_PATH+'activeClients.php'" namelist="extension id flag" method="post"/>
+                <data name="update" srcexpr="DB_PATH+'activeClients.php'" namelist="extension id flag" fetchtimeout="1s" method="post"/>
                 <assign name="result" expr="update.result"/>
                 <log>INFO: Result [<value expr="result"/>]</log>
             <else/>

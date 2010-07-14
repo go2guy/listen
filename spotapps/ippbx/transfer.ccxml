@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/07/2010
+    <!-- Last Modified 07/14/2010
        *   @Name	transfer.ccxml
        *   @Desc	This script handles the logic for transferring a call -->
 
     <!-- Values passed in from other ccxml -->
     <var name="ANI"/>           <!-- ANI. Origination ID of current call -->
     <var name="DNIS"/>          <!-- DNIS. Destination ID -->
+    <var name="tmpANI"/>        <!-- ANI.-->
+    <var name="tmpDNIS"/>       <!-- DNIS.-->
     <var name="ibconnid"/>      <!-- Inbound connection ID -->
     <var name="obconnid"/>      <!-- Outbound connection ID -->
     <var name="URI"/>           <!-- URI. Destination of blind transfer -->
@@ -16,123 +18,106 @@
     <var name="xferConnID"/>
     <var name="EXT_LENGTH"/>    <!-- Extensions are less than seven digit numbers -->
     <var name="SB_PATH"/>       <!-- Spotbuild Path. Base directory for spotbuild -->
+    <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
 
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
-    <var name="ext" expr="''"/>         <!-- ext. Stores extension whose status will be toggled -->
-    <var name="holdID" expr="''"/>
+    <var name="record" expr="''"/>
     <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
-    <var name="LIB_PATH" expr="''"/>    <!-- Audio Path. Directory for audio files -->
     <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
-    <var name="blindXferID" expr="''"/> <!-- Blind Tranfer ID. ID of party involved in a blind transfer -->
+    <var name="blindXferID" expr="''"/> <!-- Blind Tranfer ID. ID involved in a blind transfer -->
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
 
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
         <transition state="idle" event="ccxml.loaded" name="evt">
             <!-- Load ccxml document. Set variables -->
             <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
-            <assign name="LIB_PATH" expr="SB_PATH+'lib/vxml/'"/>
-            <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <assign name="state" expr="'loaded'"/>
+            <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <if cond="xferType == 'blindXfer'">
                 <log target="status">Transfer signal</log>
                 <send data="'dialog.user.blindTransfer'" target="session.id"/>
             <else/>
-                <log target="status">Call On Hold</log>
-                <log>INFO: Caller connection ID [<value expr="ibconnid"/>]</log>
-                <log>INFO: Callee connection ID [<value expr="obconnid"/>]</log>
-                <log>INFO: Transfer originator ID [<value expr="xferConnID"/>]</log>
-                <send data="'dialog.user.setHoldID'" target="session.id"/>
+                <!-- Future use -->
             </if>
         </transition>
-
-        <transition event="dialog.user.setHoldID" name="evt">
-            <!-- Need to figure out who initiated the transfer request. We'll put the other
-            party on hold (with music) -->
-            <log>INFO: Entered [dialog.user.setHoldID] with state [<value expr="state"/>]</log>
-            <assign name="state" expr="'setID'"/>
-            <if cond="ibconnid == xferConnID">  <!-- Means inbound caller is attempting to transfer the call. -->
-                <assign name="holdID" expr="obconnid"/> <!-- We'll be putting the called party on hold -->
-            <else/> <!-- Called party wishes to transfer the call -->
-                <assign name="holdID" expr="ibconnid"/> <!-- Put the caller on hold -->
-            </if>
-            <unjoin id1="ibconnid" id2="obconnid"/> <!-- Unjoin caller and callee -->
-        </transition>
-
-		<transition state="setID" event="conference.unjoined" name="evt">
-            <!-- We've unjoined caller from callee. Next, we need to put the appropriate party on hold.
-            Let's get them a voice channel so that we can play them music while they are on hold. -->
-            <log>INFO: Entered [conference.unjoined] with state [<value expr="state"/>]</log>
-            <assign name="state" expr="'hold'"/>
-            <join id1="holdID" id2="'VXML_CHANNEL'"/>
-		</transition>
-
-		<transition state="hold" event="conference.joined" name="evt">
-            <!-- Got the voice channel. Play steaming music to on hold party -->
-            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
-            <var name="II_SB_promptID" expr="'rtsp://live.cumulusstreaming.com/KDEZ-FM?com.iivip.volume=-3'"/>
-            <var name="II_SB_repeat" expr="'n'"/>
-            <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
-            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
-		</transition>
 
 		<transition event="dialog.user.blindTransfer" name="evt">
-            <!-- -->
+            <!-- In here, we figure out which caller initiated the blind transfer. This caller will be disconnected. -->
             <log>INFO: Entered [dialog.user.blindTransfer] with state [<value expr="state"/>]</log>
             <var name="whichID" expr="''"/>
-            <if cond="ibconnid == xferConnID">  <!-- Inbound caller initiated blind transfer -->
+            <if cond="ibconnid == xferConnID">  <!-- Inbound (caller) initiated blind transfer -->
+                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
                 <assign name="whichID" expr="ibconnid"/>    <!-- Save inbound connection ID, we'll end this connection -->
                 <assign name="ibconnid" expr="obconnid"/>   <!-- Make outbound connection ID the new inbound connection ID -->
-                <assign name="ext" expr="ANI"/>             <!-- Set the status of caller in the database to inactive -->
+                <assign name="blindXferID" expr="ANI"/>     <!-- Save off current origination number for future use -->
+            <else/> <!-- Outbound (callee) initiated blind transfer -->
+                <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
+                <assign name="whichID" expr="obconnid"/>    <!-- Save onbound connection ID, we'll end this connection -->
                 <assign name="blindXferID" expr="DNIS"/>    <!-- Save off current destination number for future use -->
-            <else/> <!-- Outbound callee initiated blind transfer -->
-                <assign name="whichID" expr="obconnid"/>
-                <assign name="ext" expr="DNIS"/>
-                <assign name="blindXferID" expr="ANI"/>
             </if>
     	    <assign name="state" expr="'blindtransfer'"/>
-			<disconnect connectionid="whichID"/>
+			<disconnect connectionid="whichID"/>            <!-- Disconnect caller -->
 		</transition>
 
         <transition state="blindtransfer" event="connection.disconnected" name="evt">
-            <!-- -->
+            <!-- We've received the disconnect event -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
-            <!-- Reset user's status in db -->
-            <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+            <!-- Let's remove the disconnected caller's info from the active clients table -->
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.updateClientRecord" name="evt">
+            <!-- Here, we start the vxml dialog to update the database -->
+            <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
+            <var name="flag" expr="'delete'"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
         </transition>
 
         <transition event="connection.disconnected" name="evt">
+            <!-- Got a hang up. Let's remove any records associated with this call in the db -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
-            <!-- Reset user's status in db b/4 exiting -->
-            <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
-        </transition>
-
-        <transition event="dialog.user.toggleClientStatus" name="evt">
-            <!-- -->
-            <log>INFO: Entered [dialog.user.toggleClientStatus] with state [<value expr="state"/>]</log>
-            <var name="activeClient" expr="'n'"/>
-            <var name="flag" expr="'toggle'"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="ext activeClient flag"/>
+    	    <assign name="state" expr="'endCall'"/>
+            <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
         </transition>
 
         <transition state="blindtransfer" event="dialog.exit" name="evt">
+            <!-- Back from removing disconnected caller's info. Let's join the remaining caller to
+            a voice channel --> 
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
+        </transition>
+
+        <transition state="blindtransfer" event="conference.joined">
+            <!-- Our join attempt was successful. Next, we'll call the transfer transition -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <send data="'dialog.user.transfer'" target="session.id"/>
         </transition>
 
+        <transition event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.endCall'" target="session.id" />
+        </transition>
+
         <transition event="dialog.user.transfer" name="evt">
-            <!-- -->
+            <!-- Here is where we perform the actuall transfer. -->
             <log>INFO: Entered [dialog.user.transfer] with state [<value expr="state"/>]</log>
             <var name="callType" expr="''"/>
-            <assign name="DNIS" expr="URI"/>    <!-- Set new destination number -->
-            <if cond="DNIS.length &lt; EXT_LENGTH">
+            <if cond="blindXferID == ANI">          <!-- If the original caller initiated the transfer -->
+                <assign name="ANI" expr="DNIS"/>    <!-- Make the called party the new originator -->
+                <assign name="tmpANI" expr="getnum(ANI)"/>
+            </if>
+            <assign name="DNIS" expr="URI"/>        <!-- Set new destination number -->
+            <assign name="tmpDNIS" expr="getnum(URI)"/>
+            <if cond="tmpDNIS.length &lt; EXT_LENGTH">
                 <assign name="callType" expr="'extension'"/>
             <else/>
                 <assign name="callType" expr="'external'"/>
             </if>
-            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="APP_PATH EXT_LENGTH ibconnid DNIS ANI callType blindXferID"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpDNIS DNIS tmpANI ANI callType importedValue"/>
         </transition>
 
         <transition event="dialog.started" name="evt">
@@ -146,20 +131,15 @@
             <goto fetchid="evt.fetchid" />
         </transition>
 
-        <transition state="'fetching'" event="error.fetch" name="evt">
-            <log expr="'INFO: *** FETCH ERROR [' + evt.error + '] ***'"/>
-            <send data="'dialog.user.endCall'" target="session.id" />
-        </transition>
-
         <transition event="error.*" name="evt">
             <!-- Use catch all error for now -->
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
-            <!-- Reset user's status in db b/4 exiting -->
+            <!-- Remove user's info from db b/4 exiting -->
             <!-- TODO: Write an error log file and notify someone? -->
-            <!-- Reset user's status in db prior to exiting -->
-            <assign name="ext" expr="ANI"/>
-            <send data="'dialog.user.toggleClientStatus'" target="session.id"/>
+    	    <assign name="state" expr="'endCall'"/>
+            <assign name="record" expr="ibconnid + '|' + tmpANI"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">

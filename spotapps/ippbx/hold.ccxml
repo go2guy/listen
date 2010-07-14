@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/08/2010
+    <!-- Last Modified 07/14/2010
        *   @Name	hold.ccxml
        *   @Desc	This script handles the logic for placing a call on hold -->
 
     <!-- Values passed in from other ccxml -->
     <var name="ANI"/>           <!-- ANI. Origination ID of current call -->
     <var name="DNIS"/>          <!-- DNIS. Destination ID -->
+    <var name="tmpANI"/>           <!-- ANI. -->
+    <var name="tmpDNIS"/>          <!-- DNIS.-->
     <var name="ibconnid"/>      <!-- Inbound connection ID -->
     <var name="obconnid"/>      <!-- Outbound connection ID -->
     <var name="requestID"/>     <!-- Connection ID of the party requesting the hold -->
@@ -32,7 +34,7 @@
         <transition state="idle" event="ccxml.loaded" name="evt">
             <!-- Load ccxml document. Set variables -->
             <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
-            <assign name="LIB_PATH" expr="SB_PATH+'lib/vxml/'"/>
+            <assign name="LIB_PATH" expr="SB_PATH+'lib/'"/>
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <assign name="state" expr="'loaded'"/>
             <log>INFO: Caller connection ID [<value expr="ibconnid"/>]</log>
@@ -71,7 +73,7 @@
             <var name="II_SB_promptID" expr="'rtsp://live.cumulusstreaming.com/KDEZ-FM?com.iivip.volume=-3'"/>
             <var name="II_SB_repeat" expr="'n'"/>
             <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
-            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+            <dialogstart src="'file:'+LIB_PATH+'vxml/audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
 		</transition>
 
 		<transition state="hold" event="connection.signal" name="evt">
@@ -141,7 +143,23 @@
 		<transition state="rejoin" event="conference.joined" name="evt">
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <var name="callType" expr="'fromHold'"/>
-            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid obconnid DNIS ANI callType"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid obconnid tmpDNIS DNIS tmpANI ANI callType"/>
+		</transition>
+
+		<transition event="blindtransferrequest" name="evt" cond="evt.connectionid == holdID">
+            <!-- Blind Transfer request. It appears the party on hold is attempting to blind transfer this call.
+            No good reason to allow this to happen; so we'll just end the call -->
+            <log>INFO: Entered [blindtransferrequest] with state [<value expr="state"/>]</log>
+            <disconnect connectionid="holdID"/>
+		</transition>
+
+		<transition event="attendedtransferrequest" name="evt">
+            <!-- Attended Transfer request. Need to figure out who's making the request -->
+            <log>INFO: Entered [attendedtransferrequest] with state [<value expr="state"/>]</log>
+            <log target="status">Attended Transfer Request</log>
+            <var name="xferConnID" expr="evt.connectionid"/>
+            <var name="URI" expr="getnum(evt.uri)"/>
+<!--            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid URI xferConnID"/> -->
 		</transition>
 
         <transition event="connection.disconnected" name="evt">
@@ -169,7 +187,7 @@
             <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
             <assign name="clientFlag" expr="'delete'"/>
   		    <assign name="state" expr="'endCall'"/>
-            <assign name="record" expr="ibconnid + '|' + ANI + ',' + obconnid + '|' + DNIS"/>
+            <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
             <var name="flag" expr="clientFlag"/>
    	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
         </transition>

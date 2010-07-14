@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/12/2010
+    <!-- Last Modified 07/14/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -17,7 +17,6 @@
     <var name="obconnid"/>  <!-- Outbound connection ID -->
     <var name="isClosed"/>  <!-- Flag to determine if the office is closed -->
     <var name="EXT_LENGTH"/>    <!-- Extension length -->
-    <var name="blindXferID"/>   <!-- Blind Tranfer ID. ID of party involved in a blind transfer -->
     <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
 
     <!-- Global Vars -->
@@ -105,9 +104,9 @@
                 <assign name="CALL_ANI" expr="ANI"/>
             <else/> <!-- Call to an external number (outside PBX) -->
                 <assign name="TIME_OUT" expr="'60s'"/>
-                <if cond="iiNumber(DNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
+                <if cond="iiNumber(tmpDNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
                     <assign name="CALL_ANI" expr="'sip:' + OUT_BOUND_ID + '@' + SIP_SERVER"/>  <!-- Make caller ID office number -->
-                    <if cond="DNIS.length == LOCAL_CALL">
+                    <if cond="tmpDNIS.length == LOCAL_CALL">
                         <assign name="CALL_DNIS" expr="'sip:' + AREA_CODE + tmpDNIS + '@' + SIP_SERVER"/>  <!-- Need to prefix dest with area code -->
                     <else/>
                         <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS + '@' + SIP_SERVER"/>
@@ -115,10 +114,10 @@
                 <else/>
                     <assign name="OBCALL.noproxy" expr="'true'"/>
                     <assign name="CALL_ANI" expr="ANI"/>
-                    <if cond="inString('*',DNIS,'')">  <!-- Check if destination is an IP address -->
-                        <assign name="DNIS" expr="iiReplace(DNIS,'*','.')"/>    <!-- Replace '*' with '.' -->
+                    <if cond="inString('*',tmpDNIS,'')">  <!-- Check if destination is an IP address -->
+                        <assign name="tmpDNIS" expr="iiReplace(tmpDNIS,'*','.')"/>    <!-- Replace '*' with '.' -->
                     </if>
-                    <assign name="CALL_DNIS" expr="'sip:' + DNIS"/>
+                    <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS"/>
                 </if>
             </if>
             <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
@@ -186,10 +185,10 @@
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <log>INFO: Call in progress...</log>
             <log target="status">Call in progress</log>
-            <if cond="DNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to insert a record into the db -->
+            <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to insert a record into the db -->
     		    <assign name="state" expr="'insertClient'"/>
                 <assign name="clientFlag" expr="'insert'"/>
-                <assign name="record" expr="obconnid + '|' + DNIS"/>
+                <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
                 <send data="'dialog.user.updateClientRecord'" target="session.id"/>
             <else/>
                 <!-- Nothing more to do at this point. Wait here for the next event -->
@@ -205,33 +204,20 @@
         </transition>
 
 		<transition event="blindtransferrequest" name="evt">
-            <!-- Blind Transfer request. Need to figure out who's making the request -->
-            <!-- TODO: How do we handle transfer requests from a sip caller outside the pbx/ii network?
-            Not sure if this is even possible. Will need to test it -->
+            <!-- Blind Transfer request. Call the transfer script -->
             <log>INFO: Entered [blindtransferrequest] with state [<value expr="state"/>]</log>
             <log target="status">Blind transfer request</log>
             <var name="xferType" expr="'blindXfer'"/>
             <var name="xferConnID" expr="evt.connectionid"/>
-            <var name="URI" expr="getnum(evt.uri)"/>
-            <var name="direction" expr="''"/>
-            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid direction URI xferConnID xferType"/>
+            <var name="URI" expr="evt.uri"/>
+            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferType"/>
 		</transition>
 
 		<transition state="callConnected" event="connection.signal" name="evt">
     		<!-- Got a hold request. Call the hold script -->
             <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
             <var name="requestID" expr="evt.connectionid"/>
-            <fetch next="'file:'+APP_PATH+'hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid requestID importedValue"/>
-		</transition>
-
-		<transition event="connection.signal" state="callConnected" name="evt">
-    		<!-- Got a Transfer or hold request. Call the transfer script -->
-            <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
-            <var name="direction" expr="evt.info.voip.direction"/>
-            <var name="xferConnID" expr="evt.connectionid"/>
-            <var name="xferType" expr="''"/>
-            <var name="URI" expr="''"/>
-            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid URI direction xferConnID xferType"/>
+            <fetch next="'file:'+APP_PATH+'hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
 		</transition>
 
 		<transition state="callConnected" event="error.conference.join" name="evt">
@@ -319,7 +305,7 @@
                 <!-- Remove the caller's record in the db prior to exiting -->
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
             <else/>
-                <log target="status">Unknown EXT [<value expr="DNIS"/>]</log>
+                <log target="status">Unknown EXT [<value expr="tmpDNIS"/>]</log>
                 <if cond="tmpANI.length &lt; EXT_LENGTH">
                     <!-- Assume this is from inside IP PBX. Notify caller that extension doesn't exist -->
                     <assign name="state" expr="'invalidExt'"/>
@@ -415,9 +401,9 @@
             <!-- Here, we start the vxml dialog to update the database -->
             <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
             <if cond="state == 'hangUp'">
-                <assign name="record" expr="ibconnid + '|' + ANI + ',' + obconnid + '|' + DNIS"/>
+                <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
             <else/>
-                <assign name="record" expr="ibconnid + '|' + ANI"/>
+                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
             </if>
             <assign name="clientFlag" expr="'delete'"/>
   		    <assign name="state" expr="'endCall'"/>
@@ -450,7 +436,7 @@
             <!-- Remove the caller's record in the db prior to exiting -->
             <assign name="state" expr="'endCall'"/>
             <assign name="clientFlag" expr="'delete'"/>
-            <assign name="record" expr="ibconnid + '|' + ANI"/>
+            <assign name="record" expr="ibconnid + '|' + tmpANI"/>
             <send data="'dialog.user.updateClientRecord'" target="session.id"/>
         </transition>
 
