@@ -92,8 +92,7 @@ public class DownloadVoicemailServlet extends HttpServlet
             persistenceService.update(voicemail, original);
 
             HistoryService historyService = new HistoryService(persistenceService);
-            historyService.writeDownloadedVoicemail(voicemail.getSubscriber(), voicemail.getLeftBy(),
-                                                    voicemail.getDateCreated());
+            historyService.writeDownloadedVoicemail(voicemail);
 
             request.setAttribute(OutputBufferFilter.OUTPUT_SUPPRESS_KEY, Boolean.TRUE);
             IOUtils.copy(input, output);

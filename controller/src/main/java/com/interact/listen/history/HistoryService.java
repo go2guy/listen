@@ -3,6 +3,7 @@ package com.interact.listen.history;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.resource.ActionHistory;
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.Voicemail;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +35,15 @@ public class HistoryService
         persistenceService.save(history);
     }
 
+    public void writeChangedAlternatePagerNumber(String alternateNumber)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Changed pager alternate number");
+        history.setDescription("Changed pager alternate number to [" + alternateNumber + "]");
+        history.setService(Service.CONFIGURATION.toString());
+        write(history);
+    }
+
     public void writeChangedVoicemailPin(Subscriber onSubscriber, Long oldPin, Long newPin)
     {
         ActionHistory history = new ActionHistory();
@@ -44,24 +54,22 @@ public class HistoryService
         write(history);
     }
 
-    public void writeDeletedVoicemail(Subscriber onSubscriber, String voicemailReceivedBy, Date voicemailReceivedDate)
+    public void writeDeletedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Deleted voicemail");
-        history.setDescription("Deleted voicemail received by [" + voicemailReceivedBy + "] on [" +
-                               getFormattedDate(voicemailReceivedDate) + "]");
-        history.setOnSubscriber(onSubscriber);
+        history.setDescription("Deleted " + getFriendlyVoicemailIdentifier(voicemail));
+        history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
     }
 
-    public void writeDownloadedVoicemail(Subscriber onSubscriber, String voicemailReceivedBy, Date voicemailReceivedDate)
+    public void writeDownloadedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Downloaded voicemail");
-        history.setDescription("Downloaded voicemail received by [" + voicemailReceivedBy + "] on [" +
-                               getFormattedDate(voicemailReceivedDate) + "]");
-        history.setOnSubscriber(onSubscriber);
+        history.setDescription("Downloaded " + getFriendlyVoicemailIdentifier(voicemail));
+        history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
     }
@@ -75,14 +83,32 @@ public class HistoryService
         write(history);
     }
 
+    public void writeForwardedVoicemail(Voicemail voicemail)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Forwarded voicemail");
+        history.setDescription("Forwarded " + getFriendlyVoicemailIdentifier(voicemail));
+        history.setService(Service.VOICEMAIL.toString());
+        write(history);
+    }
+
+    public void writeLeftVoicemail(Voicemail voicemail)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Left voicemail");
+        history.setDescription(voicemail.getLeftBy() + " left voicemail");
+        history.setOnSubscriber(voicemail.getSubscriber());
+        history.setService(Service.VOICEMAIL.toString());
+        write(history);
+    }
+
     // TODO not yet written anywhere
-    public void writeListenedToVoicemail(Subscriber onSubscriber, String voicemailReceivedBy, Date voicemailReceivedDate)
+    public void writeListenedToVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Listened to voicemail");
-        history.setDescription("Listened to voicemail received by [" + voicemailReceivedBy + "] on [" +
-                               getFormattedDate(voicemailReceivedDate) + "]");
-        history.setOnSubscriber(onSubscriber);
+        history.setDescription("Listened to " + getFriendlyVoicemailIdentifier(voicemail));
+        history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
     }
@@ -140,19 +166,16 @@ public class HistoryService
         history.setService(Service.CONFERENCING.toString());
         write(history);
     }
-    
-    public void writeChangedAlternatePagerNumber(String alternateNumber)
-    {
-        ActionHistory history = new ActionHistory();
-        history.setAction("Changed pager alternate number");
-        history.setDescription("Changed pager alternate number to [" + alternateNumber + "]");
-        history.setService(Service.CONFIGURATION.toString());
-        write(history);
-    }
 
     private static String getFormattedDate(Date date)
     {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         return format.format(date);
+    }
+
+    private static String getFriendlyVoicemailIdentifier(Voicemail voicemail)
+    {
+        return "voicemail from [" + voicemail.getLeftBy() + "] left on [" +
+               getFormattedDate(voicemail.getDateCreated()) + "]";
     }
 }

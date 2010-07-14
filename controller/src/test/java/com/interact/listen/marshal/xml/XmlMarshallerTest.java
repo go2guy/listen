@@ -35,6 +35,7 @@ public class XmlMarshallerTest
         voicemail.setDescription(String.valueOf(System.currentTimeMillis()));
         voicemail.setDuration("15:55");
         voicemail.setFileSize("1024");
+        voicemail.setForwardedBy(subscriber);
         voicemail.setId(System.currentTimeMillis());
         voicemail.setLeftBy(String.valueOf(System.currentTimeMillis()));
         voicemail.setSubscriber(subscriber);
@@ -50,6 +51,7 @@ public class XmlMarshallerTest
         expected.append("<description>").append(voicemail.getDescription()).append("</description>");
         expected.append("<duration>").append(voicemail.getDuration()).append("</duration>");
         expected.append("<fileSize>").append(voicemail.getFileSize()).append("</fileSize>");
+        expected.append("<forwardedBy href=\"/subscribers/").append(subscriber.getId()).append("\"/>");
         expected.append("<id>").append(voicemail.getId()).append("</id>");
         expected.append("<isNew>").append(voicemail.getIsNew()).append("</isNew>");
         expected.append("<leftBy>").append(voicemail.getLeftBy()).append("</leftBy>");

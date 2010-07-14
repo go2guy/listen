@@ -219,6 +219,7 @@ public class VoicemailTest
         v.setDateCreated(new Date());
         v.setDescription(String.valueOf(System.currentTimeMillis()));
         v.setFileSize("1024");
+        v.setForwardedBy(s);
         v.setUri("/foo/bar/baz");
         v.setId(System.currentTimeMillis());
         v.setIsNew(Boolean.TRUE);

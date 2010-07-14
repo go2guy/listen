@@ -23,9 +23,9 @@ public class Voicemail extends Audio implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    @JoinColumn(name = "SUBSCRIBER_ID")
+    @JoinColumn(name = "FORWARDED_BY_SUBSCRIBER_ID", nullable = true)
     @ManyToOne
-    private Subscriber subscriber;
+    private Subscriber forwardedBy;
 
     @Column(name = "IS_NEW", nullable = true)
     private Boolean isNew = Boolean.TRUE;
@@ -33,14 +33,18 @@ public class Voicemail extends Audio implements Serializable
     @Column(name = "LEFT_BY", nullable = true)
     private String leftBy;
 
-    public Subscriber getSubscriber()
+    @JoinColumn(name = "SUBSCRIBER_ID")
+    @ManyToOne
+    private Subscriber subscriber;
+
+    public Subscriber getForwardedBy()
     {
-        return subscriber;
+        return forwardedBy;
     }
 
-    public void setSubscriber(Subscriber subscriber)
+    public void setForwardedBy(Subscriber forwardedBy)
     {
-        this.subscriber = subscriber;
+        this.forwardedBy = forwardedBy;
     }
 
     public Boolean getIsNew()
@@ -61,6 +65,16 @@ public class Voicemail extends Audio implements Serializable
     public void setLeftBy(String leftBy)
     {
         this.leftBy = leftBy;
+    }
+
+    public Subscriber getSubscriber()
+    {
+        return subscriber;
+    }
+
+    public void setSubscriber(Subscriber subscriber)
+    {
+        this.subscriber = subscriber;
     }
 
     @Override
@@ -95,6 +109,7 @@ public class Voicemail extends Audio implements Serializable
         copy.setDescription(getDescription());
         copy.setDuration(getDuration());
         copy.setFileSize(getFileSize());
+        copy.setForwardedBy(getForwardedBy());
         copy.setIsNew(isNew);
         copy.setLeftBy(leftBy);
         copy.setSubscriber(subscriber);
@@ -105,10 +120,20 @@ public class Voicemail extends Audio implements Serializable
     @Override
     public void afterSave(PersistenceService persistenceService)
     {
+        HistoryService historyService = new HistoryService(persistenceService);
+        if(getForwardedBy() == null)
+        {
+            historyService.writeLeftVoicemail(this);
+        }
+        else
+        {
+            historyService.writeForwardedVoicemail(this);
+        }
+
         EmailerService emailService = new EmailerService();
         StatSender statSender = StatSenderFactory.getStatSender();
         Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
-        
+
         if(voicemailSubscriber.getIsEmailNotificationEnabled().booleanValue())
         {
             statSender.send(Stat.VOICEMAIL_EMAIL_NOTIFICATION);
@@ -126,7 +151,7 @@ public class Voicemail extends Audio implements Serializable
     public void afterDelete(PersistenceService persistenceService)
     {
         HistoryService historyService = new HistoryService(persistenceService);
-        historyService.writeDeletedVoicemail(getSubscriber(), getLeftBy(), getDateCreated());
+        historyService.writeDeletedVoicemail(this);
     }
 
     public static List<Voicemail> queryBySubscriberPaged(Session session, Subscriber subscriber, int first, int max)
@@ -145,6 +170,7 @@ public class Voicemail extends Audio implements Serializable
         criteria.addOrder(Order.desc("dateCreated"));
 
         criteria.setFetchMode("subscriber", FetchMode.SELECT);
+        criteria.setFetchMode("forwardedBy", FetchMode.SELECT);
 
         return (List<Voicemail>)criteria.list();
     }

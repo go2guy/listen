@@ -42,6 +42,7 @@
             <column name="LEFT_BY" type="VARCHAR(255)"/>
             <column name="CONFERENCE_ID" type="BIGINT"/>
             <column name="SUBSCRIBER_ID" type="BIGINT"/>
+            <column name="FORWARDED_BY_SUBSCRIBER_ID" type="BIGINT"/>
         </createTable>
         <modifySql dbms="mysql">
             <append value=" engine innodb"/>
@@ -236,62 +237,73 @@
         </createIndex>
     </changeSet>
     <changeSet author="development" id="15">
+        <createIndex indexName="IDX_AUDIO_FORWARDED_BY_SUBSCRIBER_ID" tableName="AUDIO" unique="false">
+            <column name="FORWARDED_BY_SUBSCRIBER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="development" id="16">
         <createIndex indexName="IDX_CONFERENCE_SUBSCRIBER_ID" tableName="CONFERENCE" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="16">
+    <changeSet author="development" id="17">
         <createIndex indexName="IDX_CONFERENCE_HISTORY_CONFERENCE_ID" tableName="CONFERENCE_HISTORY" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="17">
+    <changeSet author="development" id="18">
         <createIndex indexName="IDX_HISTORY_SUBSCRIBER_ID" tableName="HISTORY" unique="false">
             <column name="SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="18">
+    <changeSet author="development" id="19">
         <createIndex indexName="IDX_HISTORY_ON_SUBSCRIBER_ID" tableName="HISTORY" unique="false">
             <column name="ON_SUBSCRIBER_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="19">
+    <changeSet author="development" id="20">
         <createIndex indexName="IDX_LISTEN_SPOT_SUBSCRIBER_HTTP_API" tableName="LISTEN_SPOT_SUBSCRIBER" unique="true">
             <column name="HTTP_API"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="20">
+    <changeSet author="development" id="21">
         <createIndex indexName="IDX_PARTICIPANT_CONFERENCE_ID" tableName="PARTICIPANT" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="21">
+    <changeSet author="development" id="22">
         <createIndex indexName="IDX_PARTICIPANT_NUMBER" tableName="PARTICIPANT" unique="true">
             <column name="NUMBER"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="22">
+    <changeSet author="development" id="23">
         <createIndex indexName="IDX_PIN_CONFERENCE_ID" tableName="PIN" unique="false">
             <column name="CONFERENCE_ID"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="23">
+    <changeSet author="development" id="24">
         <createIndex indexName="IDX_PIN_NUMBER" tableName="PIN" unique="true">
             <column name="NUMBER"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="24">
+    <changeSet author="development" id="25">
         <createIndex indexName="IDX_SUBSCRIBER_USERNAME" tableName="SUBSCRIBER" unique="true">
             <column name="USERNAME"/>
         </createIndex>
     </changeSet>
-    <changeSet author="development" id="25">
+    <changeSet author="development" id="26">
         <addForeignKeyConstraint baseColumnNames="SUBSCRIBER_ID" baseTableName="HISTORY" constraintName="FK_HISTORY_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
     </changeSet>
-    <changeSet author="development" id="26">
+    <changeSet author="development" id="27">
         <addForeignKeyConstraint baseColumnNames="ON_SUBSCRIBER_ID" baseTableName="HISTORY" constraintName="FK_HISTORY_SUBSCRIBER_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
     </changeSet>
-    <changeSet author="development" id="27">
+    <changeSet author="development" id="28">
         <addForeignKeyConstraint baseColumnNames="CONFERENCE_ID" baseTableName="PIN" constraintName="FK_PIN_CONFERENCE_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="CONFERENCE"/>
+    </changeSet>
+    <changeSet author="development" id="29">
+        <addForeignKeyConstraint baseColumnNames="SUBSCRIBER_ID" baseTableName="AUDIO" constraintName="FK_AUDIO_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
+    </changeSet>
+    <changeSet author="development" id="30">
+        <addForeignKeyConstraint baseColumnNames="FORWARDED_BY_SUBSCRIBER_ID" baseTableName="AUDIO" constraintName="FK_AUDIO_SUBSCRIBER_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
     </changeSet>
 </databaseChangeLog>

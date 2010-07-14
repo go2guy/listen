@@ -36,6 +36,7 @@ public class JsonMarshallerTest
         voicemail.setDescription(String.valueOf(System.currentTimeMillis()));
         voicemail.setDuration("15:55");
         voicemail.setFileSize("1024");
+        voicemail.setForwardedBy(subscriber);
         voicemail.setId(System.currentTimeMillis());
         voicemail.setLeftBy(String.valueOf(System.currentTimeMillis()));
         voicemail.setSubscriber(subscriber);
@@ -52,6 +53,7 @@ public class JsonMarshallerTest
         expected.append("\"description\":\"").append(voicemail.getDescription()).append("\",");
         expected.append("\"duration\":\"").append(voicemail.getDuration()).append("\",");
         expected.append("\"fileSize\":\"").append(voicemail.getFileSize()).append("\",");
+        expected.append("\"forwardedBy\":{\"href\":\"/subscribers/").append(subscriber.getId()).append("\"},");
         expected.append("\"id\":").append(voicemail.getId()).append(",");
         expected.append("\"isNew\":").append(voicemail.getIsNew()).append(",");
         expected.append("\"leftBy\":\"").append(voicemail.getLeftBy()).append("\",");
