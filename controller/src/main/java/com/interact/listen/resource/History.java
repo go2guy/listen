@@ -2,8 +2,14 @@ package com.interact.listen.resource;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
+
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -79,5 +85,33 @@ public abstract class History extends Resource implements Serializable
     public void setService(String service)
     {
         this.service = service;
+    }
+
+    public static Long count(Session session)
+    {
+        Criteria criteria = session.createCriteria(History.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setProjection(Projections.rowCount());
+        return (Long)criteria.list().get(0);
+    }
+
+    public static final List<History> queryAllPaged(Session session, int first, int max)
+    {
+        DetachedCriteria subquery = DetachedCriteria.forClass(History.class);
+        subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        subquery.setProjection(Projections.id());
+
+        Criteria criteria = session.createCriteria(History.class);
+        criteria.add(Subqueries.propertyIn("id", subquery));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(max);
+        criteria.addOrder(Order.desc("date"));
+
+        criteria.setFetchMode("subscriber", FetchMode.SELECT);
+        criteria.setFetchMode("onSubscriber", FetchMode.SELECT);
+
+        return (List<History>)criteria.list();
     }
 }

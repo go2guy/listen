@@ -7,6 +7,7 @@ $(document).ready(function() {
                 var max = 25;
 
                 var historyList = new LISTEN.DynamicTable({
+                    url: '/ajax/getHistoryList',
                     tableId: 'history-list',
                     isList: true,
                     templateId: function(dataRow) {
@@ -23,6 +24,7 @@ $(document).ready(function() {
                         return data.results;
                     },
                     reverse: true,
+                    paginationId: 'history-pagination',
                     updateRowCallback: function(row, data, animate) {
                         var c = 'history-row-' + data.service;
                         if(!row.hasClass(c)) {
@@ -50,52 +52,9 @@ $(document).ready(function() {
                     }
                 });
 
-                var pollAndSet = function() {
-                    LISTEN.trace('LISTEN.HISTORY.HistoryApplication.pollAndSet');
-                    $.ajax({
-                        url: '/ajax/getHistoryList?first=' + first + '&max=' + max,
-                        dataType: 'json',
-                        cache: 'false',
-                        success: function(data, textStatus, xhr) {
-                            $('#history-list').find('li').remove();
-                            historyList.update(data, false);
-
-                            var pagination = $('#history-pagination');
-                            $('.pagination-current', pagination).text((data.count > 0 ? data.first + 1 : '0') + '-' + (data.first + data.count));
-                            $('.pagination-total', pagination).text(data.total);
-
-                            var left = $('.pagination-left', pagination);
-                            var right = $('.pagination-right', pagination);
-
-                            left.unbind('click');
-                            right.unbind('click');
-                            if(data.first > 0) {
-                                left.click(function() {
-                                    first = Math.max(data.first - data.max, 0);
-                                    max = data.max;
-                                    pollAndSet();
-                                });
-                                left.show();
-                            } else {
-                                left.hide();
-                            }
-                            if((data.first + data.count + 1) <= data.total) {
-                                right.click(function() {
-                                    first = data.first + data.count;
-                                    max = data.max;
-                                    pollAndSet();
-                                });
-                                right.show();
-                            } else {
-                                right.hide();
-                            }
-                        }
-                    });
-                };
-
                 this.load = function() {
                     LISTEN.trace('LISTEN.HISTORY.HistoryApplication.load');
-                    pollAndSet();
+                    historyList.pollAndSet();
                 };
 
                 this.unload = function() {

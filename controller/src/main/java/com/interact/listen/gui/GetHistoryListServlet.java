@@ -20,10 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 
 public class GetHistoryListServlet extends HttpServlet
 {
@@ -50,9 +47,6 @@ public class GetHistoryListServlet extends HttpServlet
             throw new UnauthorizedServletException("Insufficient privileges");
         }
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-
-        
         int first = 0;
         int max = Resource.DEFAULT_PAGE_SIZE;
         if(request.getParameter("first") != null)
@@ -64,21 +58,13 @@ public class GetHistoryListServlet extends HttpServlet
             max = Integer.parseInt(request.getParameter("max"));
         }
 
-        Criteria criteria = session.createCriteria(History.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.setFirstResult(first);
-        criteria.setMaxResults(max);
-        criteria.addOrder(Order.desc("date"));
-        List<History> results = (List<History>)criteria.list();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        List<History> results = History.queryAllPaged(session, first, max);
 
         long total = 0;
         if(results.size() > 0)
         {
-            Criteria countCriteria = session.createCriteria(History.class);
-            countCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-            countCriteria.setFirstResult(0);
-            countCriteria.setProjection(Projections.rowCount());
-            total = (Long)countCriteria.list().get(0);
+            total = History.count(session);
         }
 
         Marshaller marshaller = new JsonMarshaller();
