@@ -10,7 +10,7 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
     <title>Listen</title>
     <link rel="SHORTCUT ICON" href="./resources/app/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="./resources/yui-2.8.0r4/reset-fonts/reset-fonts.css">
-    <link rel="stylesheet" type="text/css" href="./resources/jquery/css/excite-bike/jquery-ui-1.8rc3.custom.css">
+    <link rel="stylesheet" type="text/css" href="./resources/jquery/skin/css/custom-theme/jquery-ui-1.8.2.custom.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/css/all-min.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/css/index-min.css">
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
