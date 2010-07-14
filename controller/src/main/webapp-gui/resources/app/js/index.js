@@ -12,6 +12,7 @@ $(document).ready(function() {
 
     var failedTries = 0;
     setInterval(function() {
+        var start = LISTEN.timestamp();
         $.ajax({
             url: '/meta/ping?auth=true',
             cache: 'false',
@@ -43,12 +44,15 @@ $(document).ready(function() {
                         }
                     });
                 }
+            },
+            complete: function(xhr, textStatus) {
+                var elapsed = LISTEN.timestamp() - start;
+                $('#pinglatency').text(elapsed);
             }
         });
     }, 2000);
 
     LISTEN = function() {
-
         var applications = [];
         var currentApplication;
 
@@ -269,13 +273,18 @@ $(document).ready(function() {
                             url += '&';
                         }
                         url += 'first=' + currentFirst + '&max=' + currentMax;
+                        var start = LISTEN.timestamp();
                         $.ajax({
                             url: url,
                             dataType: 'json',
                             cache: false,
                             success: LISTEN.bind(this, function(data, textStatus, xhr) {
                                 this.update(data, animate);
-                            })
+                            }),
+                            complete: function(xhr, textStatus) {
+                                var elapsed = LISTEN.timestamp() - start;
+                                $('#latency').text(elapsed);
+                            }
                         });
                     } else {
                         LISTEN.log('Warning - DynamicTable.pollAndSet() invoked without args.url');
@@ -397,6 +406,10 @@ $(document).ready(function() {
 
             isDefined: function(variable) {
                 return typeof variable != 'undefined'; 
+            },
+
+            timestamp: function() {
+                return (new Date()).getTime();
             }
         };
 

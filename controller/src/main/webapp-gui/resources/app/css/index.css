@@ -755,3 +755,21 @@ table.data-table tr.odd {
     display: none;
     padding: 10px;
 }
+
+div#pinglatency, div#latency {
+    bottom: 2px;
+    color: #CCCCCC;
+    display: block;
+    font-size: 10px;
+    height: 12px;
+    position: absolute;
+    width: 32px;
+}
+
+div#pinglatency {
+    right: 34px;
+}
+
+div#latency {
+    right: 2px;
+}

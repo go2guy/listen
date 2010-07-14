@@ -183,6 +183,7 @@ function Conference(id) {
     var pollAndSet = function(animate) {
         callerTable.setUrl('/ajax/getConferenceParticipants?id=' + conferenceId);
         callerTable.pollAndSet(animate);
+        var start = LISTEN.timestamp();
         $.ajax({
             url: '/ajax/getConferenceInfo?id=' + conferenceId,
             dataType: 'json',
@@ -220,6 +221,10 @@ function Conference(id) {
                 if(recordButton.html() != recordHtml) {
                     recordButton.html(recordHtml);
                 }
+            },
+            complete: function(xhr, textStatus) {
+                var elapsed = LISTEN.timestamp() - start;
+                $('#latency').text(elapsed);
             }
         });
     };
@@ -267,6 +272,7 @@ function scheduleConference(event) {
     var scheduleConferenceActiveParticipants = $('#scheduleConferenceActiveParticipants');
     var scheduleConferencePassiveParticipants = $('#scheduleConferencePassiveParticipants'); 
 
+    var start = LISTEN.timestamp();
     $.ajax({
         type: 'POST',
         url: '/ajax/scheduleConference',
@@ -294,6 +300,10 @@ function scheduleConference(event) {
             var div = $('#scheduleConferenceDialog .form-error-message');
             div.text(data.responseText);
             div.slideDown(200);
+        },
+        complete: function(xhr, textStatus) {
+            var elapsed = LISTEN.timestamp() - start;
+            $('#latency').text(elapsed);
         }
     });
 }

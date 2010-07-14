@@ -6,6 +6,7 @@ $(document).ready(function() {
     function SystemConfigurationApplication() {
         this.load = function() {
             LISTEN.log('Loading system configuration');
+            var start = LISTEN.timestamp();
             $.ajax({
                 url: '/ajax/getProperties',
                 dataType: 'json',
@@ -23,6 +24,10 @@ $(document).ready(function() {
                         var mapping = mappings[i].split(':');
                         addDnisRow(mapping[0], mapping[1]);
                     }
+                },
+                complete: function(xhr, textStatus) {
+                    var elapsed = LISTEN.timestamp() - start;
+                    $('#latency').text(elapsed);
                 }
             });
         };
@@ -70,6 +75,7 @@ $(document).ready(function() {
     });
 
     $('#mail-form').submit(function() {
+        var start = LISTEN.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/setProperties',
@@ -87,6 +93,10 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 $('#mail-form .form-error-message').text(xhr.responseText).slideDown(100);
+            },
+            complete: function(xhr, textStatus) {
+                var elapsed = LISTEN.timestamp() - start;
+                $('#latency').text(elapsed);
             }
         });
         return false;
@@ -122,6 +132,7 @@ $(document).ready(function() {
             value = value.substring(0, value.length - 1); // remove last semicolon
         }
 
+        var start = LISTEN.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/setProperties',
@@ -136,6 +147,10 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 $('#dnis-mapping-form .form-error-message').text(xhr.responseText).slideDown(100);
+            },
+            complete: function(xhr, textStatus) {
+                var elapsed = LISTEN.timestamp() - start;
+                $('#latency').text(elapsed);
             }
         });
 

@@ -48,6 +48,7 @@ $(document).ready(function() {
             loadSubscriber: function(id) {
                 LISTEN.trace('LISTEN.SUBSCRIBERS.loadSubscriber ' + id);
                 LISTEN.SUBSCRIBERS.resetForm();
+                var start = LISTEN.timestamp();
                 $.ajax({
                     url: '/ajax/getSubscriber?id=' + id,
                     dataType: 'json',
@@ -80,6 +81,10 @@ $(document).ready(function() {
                         $('#subscriber-form-add-button').hide();
                         $('#subscriber-form-edit-button').show();
                         $('#subscriber-form-cancel-button').show();
+                    },
+                    complete: function(xhr, textStatus) {
+                        var elapsed = LISTEN.timestamp() - start;
+                        $('#latency').text(elapsed);
                     }
                 });
                 
