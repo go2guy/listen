@@ -1,25 +1,19 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
-<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_mailbox/root.vxml"> <!--  Set location of root document -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml"> <!--  Set location of root document -->
     <!-- Last Modified 05/17/2010
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'147-6'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'142-4'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    
-            <log>INFO: Entered assign-variable.vxml [147-5]</log>
-            <log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'accessNumbers'+''" />
-<log>INFO: Updated value [<value expr="resource"/>]</log>
-<log>INFO: Current value [<value expr="request"/>]</log>
-<assign name="request" expr="'get'+''" />
-<log>INFO: Updated value [<value expr="request"/>]</log>
-<log>INFO: Current value [<value expr="nxtPath"/>]</log>
-<assign name="nxtPath" expr="'ReplyMsg'+''" />
-<log>INFO: Updated value [<value expr="nxtPath"/>]</log>
+	    <log target="status">Access Number</log>
+            <log>INFO: Entered assign-variable.vxml [142-21]</log>
+            <log>INFO: Current value [<value expr="accessNum"/>]</log>
+<assign name="accessNum" expr="toExt+''" />
+<log>INFO: Updated value [<value expr="accessNum"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

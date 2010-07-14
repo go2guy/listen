@@ -1,27 +1,29 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
-<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_mailbox/root.vxml"> <!-- Set location of root document -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml"> <!-- Set location of root document -->
     <!-- Last Modified 11/02/2009
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'147-28'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'142-19'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(cntrlURL,hostName,sysAccessTime,subFwd)
+            function II_SB_JS_function(passValues)
             {
-	            return "{\"sysAccessTime\": \""+ sysAccessTime+"\", \"cntrlURL\":\""+cntrlURL+"\", \"hostName\":\""+hostName+"\", \"toExt\": \"" + subFwd + "\"}";
+	            var result = eval("("+passValues+")");
+result = result.toExt;
+if (result == null) {  result = "";}return result;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set passValues</log>
-            <log>INFO: Entered run-javascript.vxml [147-27]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(cntrlURL,hostName,sysAccessTime,subFwd)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="passValues" expr="II_SB_userJava" />   
+            <log target="status">Get toExt</log>
+            <log>INFO: Entered run-javascript.vxml [142-17]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="toExt" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
