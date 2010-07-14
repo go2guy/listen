@@ -2,7 +2,7 @@
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
     <!-- Last Modified 07/14/2010
-       *   @Name	transfer.ccxml
+       *   @Name	blindTransfer.ccxml
        *   @Desc	This script handles the logic for transferring a call -->
 
     <!-- Values passed in from other ccxml -->
@@ -13,7 +13,6 @@
     <var name="ibconnid"/>      <!-- Inbound connection ID -->
     <var name="obconnid"/>      <!-- Outbound connection ID -->
     <var name="URI"/>           <!-- URI. Destination of blind transfer -->
-    <var name="xferType"/>
     <var name="APP_PATH"/>      <!-- App Path. Base application directory -->
     <var name="xferConnID"/>
     <var name="EXT_LENGTH"/>    <!-- Extensions are less than seven digit numbers -->
@@ -35,12 +34,8 @@
             <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'loaded'"/>
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
-            <if cond="xferType == 'blindXfer'">
-                <log target="status">Transfer signal</log>
-                <send data="'dialog.user.blindTransfer'" target="session.id"/>
-            <else/>
-                <!-- Future use -->
-            </if>
+            <log target="status">Bling transfer signal</log>
+            <send data="'dialog.user.blindTransfer'" target="session.id"/>
         </transition>
 
 		<transition event="dialog.user.blindTransfer" name="evt">

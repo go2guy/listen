@@ -207,10 +207,9 @@
             <!-- Blind Transfer request. Call the transfer script -->
             <log>INFO: Entered [blindtransferrequest] with state [<value expr="state"/>]</log>
             <log target="status">Blind transfer request</log>
-            <var name="xferType" expr="'blindXfer'"/>
             <var name="xferConnID" expr="evt.connectionid"/>
             <var name="URI" expr="evt.uri"/>
-            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferType"/>
+            <fetch next="'file:'+APP_PATH+'blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID"/>
 		</transition>
 
 		<transition state="callConnected" event="connection.signal" name="evt">
