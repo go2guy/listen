@@ -14,7 +14,7 @@
         prompts that are set up for the current date/time stamp -->
         <block>
             <log>INFO: Entered beginDocument</log>
-            <data name="chkPrompt" srcexpr="DB_PATH+'chkPrompt.php'"/>
+            <data name="chkPrompt" srcexpr="DB_PATH+'autoAttendant/getActive.php'"/>
             <assign name="prompt" expr="chkPrompt.result"/> <!-- Save db response -->
             <log>INFO: prompt [<value expr="prompt"/>]</log>
             <goto next="#verify"/>
@@ -37,6 +37,8 @@
                 <else/>
                     <assign name="prompt" expr="'AP1600'"/> <!-- Return regular auto attendant prompt -->
                 </if>
+            <else/>
+                <assign name="prompt" expr="'AP'+prompt+'|AP1650'"/>
             </if>
             <goto next="#exit"/>
         </block>

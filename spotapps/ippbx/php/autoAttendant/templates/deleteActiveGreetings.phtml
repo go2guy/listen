@@ -1,0 +1,22 @@
+<div id="activeGreetingsList">
+	<h3>Active Greetings</h3><?php
+	if( $t_active_count > 0 ) { ?>
+	<form method="post" action="deleteActive.php">
+		<table width="100%" border="1" cellspacing="1" cellpadding="2">
+	<?php
+			foreach( $t_active_greetings AS $t_id=>$t_active ) { ?>
+			<tr>
+				<td width="15px"><input type="checkbox" name="active[]" value="<?= $t_id; ?>" /></td>
+				<td width="200px"><?= date( 'm-d-Y H:i:s', $t_active['start'] ); ?></td>
+				<td width="200px"><?= date( 'm-d-Y H:i:s', $t_active['end'] ); ?></td>
+				<td><?= $t_active['description']; ?></td>
+			</tr><?php 
+			} ?>
+		</table>
+		<br />
+		<input type="submit" value="Delete Active Greetings" />
+	</form><?php
+	} else { ?>
+		<span class="message">No active greetings found</span><?php	
+	} ?>
+</div>

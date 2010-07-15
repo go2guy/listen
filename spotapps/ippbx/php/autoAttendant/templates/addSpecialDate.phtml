@@ -1,0 +1,17 @@
+<div id="addSpecialDateForm">
+	<h3>Enter A New Date Here</h3>
+	<form method="post" name="add" action="addActive.php">
+		<label for="start">Start Date:</label><input id="start" type="text" name="start" class="datepicker" value="" /><br />
+		<label for="end">End Date:</label><input id="end" type="text" name="end" class="datepicker" value="" />
+		<br />
+		<label>Available Prompts</label><br />
+		<select name="available_prompt_id">
+			<option value=""></option><?php
+			foreach( $t_available AS $t_key=>$t_description ) { ?>	
+			<option value="<?php echo $t_key; ?>"><?php echo $t_description; ?></option><?php 
+			} ?>
+		</select>
+		<br />
+		<input type="submit" value="Add a Special Date" />
+	</form>
+</div>

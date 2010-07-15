@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-Language" content="en" />
+		<meta name="GENERATOR" content="PHPEclipse 1.0" />
+	    <title>Interact - Auto Attendant Setup</title>
+		<script type="text/javascript" src="./js/jquery.js"></script>
+		<script type="text/javascript" src="./js/common.js"></script>
+		<script type="text/javascript" src="./js/anytime.js"></script>
+		<link type="text/css" rel="stylesheet" media="screen" href="./css/global.css" />
+		<link type="text/css" rel="stylesheet" media="screen" href="./css/anytime.css" />
+	</head>
+	<body>
+		<div id="headingContainer" class="thinBluBrdr">
+			<span id="logo"><img src="./images/iilogo.jpg" width="190" height="66" /></span>
+			<h1>Special Dates and Greetings</h1>
+		</div>
+		<div id="header" style="background-color: #EEEEEE; height: 30px;">
+    		<div id="header-logo" style="float: left"></div>
+    		<div id="header-navigation"></div>
+		</div>
+		<div id="content"><?php 
+			include_once( "templates/addSpecialDate.phtml" );	
+			include_once( "templates/deleteActiveGreetings.phtml" );	?>
+		</div>
+	</body>
+</html>
