@@ -152,7 +152,7 @@ public class JsonMarshaller extends Marshaller
                     }
                     else
                     {
-                        String resourceHref = buildHref(((Resource)result));
+                        String resourceHref = buildHref((Resource)result);
                         json.append("{\"href\":\"").append(resourceHref).append("\"}");
                     }
                 }
