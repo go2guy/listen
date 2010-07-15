@@ -5,7 +5,7 @@
        *   @Name   out-dial-end.vxml
        *   @Desc   Ends the out-dial -->
 
-    <var name="II_SB_nextOpt_End" expr="'105-59'"/>       <!-- Next vxml template -->
+    <var name="II_SB_nextOpt_End" expr="'105-114'"/>       <!-- Next vxml template -->
     <var name="II_SB_nextOpt" expr="'105-37'"/>             <!-- Next ccxml template -->
     <var name="II_SB_returnValues" expr="''"/>              <!-- Values to return to ccxml -->
     

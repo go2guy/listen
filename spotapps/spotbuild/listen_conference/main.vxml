@@ -86,6 +86,7 @@
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_outDialStart"/>
 	<var name="SB_UV_confDescription"/>
+	<var name="SB_UV_outDialStop"/>
 
     
     <form id="beginDocument">
@@ -303,6 +304,9 @@
 			</if>
 			<if cond="SB_UV_confDescription != undefined">
 				<assign name="confDescription" expr="SB_UV_confDescription" />
+			</if>
+			<if cond="SB_UV_outDialStop != undefined">
+				<assign name="outDialStop" expr="SB_UV_outDialStop" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

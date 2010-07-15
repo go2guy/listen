@@ -5,15 +5,15 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'105-116'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'105-87'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Status</log>
-            <log>INFO: Entered assign-variable.vxml [105-84]</log>
-            <log>INFO: Current value [<value expr="tmpVal"/>]</log>
-<assign name="tmpVal" expr="'confCheck'+''" />
-<log>INFO: Updated value [<value expr="tmpVal"/>]</log>
+	    <log target="status">Reset Path</log>
+            <log>INFO: Entered assign-variable.vxml [105-107]</log>
+            <log>INFO: Current value [<value expr="whichPath"/>]</log>
+<assign name="whichPath" expr="prevPath+''" />
+<log>INFO: Updated value [<value expr="whichPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

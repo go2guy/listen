@@ -96,6 +96,7 @@
 	<var name="sysAccessTime" expr="''" />
 	<var name="outDialStart" expr="''" />
 	<var name="confDescription" expr="''" />
+	<var name="outDialStop" expr="''" />
 
 
     <!-- Conference Variables -->
