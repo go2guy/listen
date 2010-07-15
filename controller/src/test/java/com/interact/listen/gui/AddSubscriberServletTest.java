@@ -2,8 +2,8 @@ package com.interact.listen.gui;
 
 import static org.junit.Assert.*;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.resource.Conference;
@@ -19,15 +19,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class AddSubscriberServletTest
+public class AddSubscriberServletTest extends ListenTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -44,9 +42,6 @@ public class AddSubscriberServletTest
     @Test
     public void test_doPost_withValidParameters_provisionsNewAccount() throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
 
         final String username = TestUtil.randomString();
@@ -109,8 +104,6 @@ public class AddSubscriberServletTest
         assertTrue(active);
         assertTrue(admin);
         assertTrue(passive);
-
-        tx.rollback();
     }
 
     @Test
@@ -125,9 +118,6 @@ public class AddSubscriberServletTest
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", TestUtil.randomString());
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         try
         {
             servlet.service(request, response);
@@ -139,19 +129,12 @@ public class AddSubscriberServletTest
             assertEquals("Unauthorized", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
-        finally
-        {
-            tx.commit();
-        }
     }
 
     @Test
     public void test_doPost_withoutAdministratorSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
@@ -171,19 +154,12 @@ public class AddSubscriberServletTest
             assertEquals("Unauthorized", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
-        finally
-        {
-            tx.commit();
-        }
     }
 
     @Test
     public void test_doPost_withNullUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -204,19 +180,12 @@ public class AddSubscriberServletTest
             assertEquals("text/plain", e.getContentType());
 
         }
-        finally
-        {
-            tx.commit();
-        }
     }
 
     @Test
     public void test_doPost_withBlankUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -237,19 +206,12 @@ public class AddSubscriberServletTest
             assertEquals("text/plain", e.getContentType());
 
         }
-        finally
-        {
-            tx.commit();
-        }
     }
 
     @Test
     public void test_doPost_withNullPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -270,19 +232,12 @@ public class AddSubscriberServletTest
             assertEquals("text/plain", e.getContentType());
 
         }
-        finally
-        {
-            tx.commit();
-        }
     }
 
     @Test
     public void test_doPost_withBlankPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -303,19 +258,12 @@ public class AddSubscriberServletTest
             assertEquals("text/plain", e.getContentType());
 
         }
-        finally
-        {
-            tx.commit();
-        }
     }
 
     @Test
     public void test_doPost_withNullConfirmPassword_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -336,19 +284,12 @@ public class AddSubscriberServletTest
             assertEquals("text/plain", e.getContentType());
 
         }
-        finally
-        {
-            tx.commit();
-        }
     }
 
     @Test
     public void test_doPost_withBlankConfirmPassword_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -369,19 +310,12 @@ public class AddSubscriberServletTest
             assertEquals("text/plain", e.getContentType());
 
         }
-        finally
-        {
-            tx.commit();
-        }
     }
 
     @Test
     public void test_doPost_whenPasswordAndConfirmPasswordDontMatch_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -401,19 +335,12 @@ public class AddSubscriberServletTest
             assertEquals("Password and Confirm Password do not match", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
-        finally
-        {
-            tx.commit();
-        }
     }
     
     @Test
     public void test_doPost_withNullVoicemailPin_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -433,19 +360,12 @@ public class AddSubscriberServletTest
             assertEquals("Please provide a Voicemail Pin Number", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
-        finally
-        {
-            tx.commit();
-        }
     }
     
     @Test
     public void test_doPost_withBlankVoicemailPin_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -465,19 +385,12 @@ public class AddSubscriberServletTest
             assertEquals("Please provide a Voicemail Pin Number", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
-        finally
-        {
-            tx.commit();
-        }
     }
     
     @Test
     public void test_doPost_withNonNumericVoicemailPin_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -497,19 +410,12 @@ public class AddSubscriberServletTest
             assertEquals("Voicemail Pin Number can only be digits 0-9", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
-        finally
-        {
-            tx.commit();
-        }
     }
     
     @Test
     public void test_doPost_withEnableEmailCheckedAndNoEmailAddress_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -530,19 +436,12 @@ public class AddSubscriberServletTest
             assertEquals("Please provide an E-mail address", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
-        finally
-        {
-            tx.commit();
-        }
     }
     
     @Test
     public void test_doPost_withEnableSmsCheckedAndNoSmsAddress_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-        
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
@@ -563,18 +462,11 @@ public class AddSubscriberServletTest
             assertEquals("Please provide an SMS address", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
-        finally
-        {
-            tx.commit();
-        }
     }
     
     @Test
     public void test_doPost_adminSubscriberWithEmailAddressNoEnableEmail_editsAccount() throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
 
         final String username = TestUtil.randomString();
@@ -601,18 +493,13 @@ public class AddSubscriberServletTest
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(emailAddress, subscriber.getEmailAddress());
-
-        tx.commit();
     }
-    
+
     @Test
     public void test_doPost_adminSubscriberWithSmsAddresNoEnableSms_editsAccount() throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
-        
+
         final String username = TestUtil.randomString();
         final String password = TestUtil.randomString();
         final String confirm = password;
@@ -637,7 +524,5 @@ public class AddSubscriberServletTest
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(smsAddress, subscriber.getSmsAddress());
-
-        tx.commit();
     }
 }

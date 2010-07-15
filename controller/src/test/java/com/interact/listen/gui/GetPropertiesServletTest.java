@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 
@@ -14,12 +14,11 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.classic.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class GetPropertiesServletTest
+public class GetPropertiesServletTest extends ListenTest
 {
     private InputStreamMockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -57,9 +56,6 @@ public class GetPropertiesServletTest
     public void test_doGet_withNonAdministratorSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("GET");
 
@@ -80,9 +76,6 @@ public class GetPropertiesServletTest
     public void test_doGet_withValidPermissions_returnsJsonObjectWithCorrectContentType() throws ServletException,
         IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("GET");

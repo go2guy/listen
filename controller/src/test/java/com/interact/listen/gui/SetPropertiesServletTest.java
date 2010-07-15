@@ -3,8 +3,8 @@ package com.interact.listen.gui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
@@ -15,13 +15,12 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.classic.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class SetPropertiesServletTest
+public class SetPropertiesServletTest extends ListenTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -36,8 +35,8 @@ public class SetPropertiesServletTest
     }
 
     @Test
-    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws ServletException,
-        IOException
+    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
+        throws ServletException, IOException
     {
         assert request.getSession().getAttribute("subscriber") == null;
 
@@ -50,7 +49,6 @@ public class SetPropertiesServletTest
         }
         catch(ListenServletException e)
         {
-
             assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
             assertEquals("Unauthorized", e.getContent());
             assertEquals("text/plain", e.getContentType());
@@ -61,9 +59,6 @@ public class SetPropertiesServletTest
     public void test_doPost_withNonAdministratorSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
@@ -84,9 +79,6 @@ public class SetPropertiesServletTest
     @Test
     public void test_doPost_withProperty_setsProperty() throws ServletException, IOException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session);
 
         final String value = String.valueOf(System.currentTimeMillis());

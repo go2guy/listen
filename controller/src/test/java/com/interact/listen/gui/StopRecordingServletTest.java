@@ -5,8 +5,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
@@ -23,14 +23,12 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class StopRecordingServletTest
+public class StopRecordingServletTest extends ListenTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -67,9 +65,6 @@ public class StopRecordingServletTest
     public void test_doPost_withNullId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
         throws IOException, ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", (String)null);
@@ -91,9 +86,6 @@ public class StopRecordingServletTest
     public void test_doPost_withBlankId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
         throws IOException, ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", " ");
@@ -115,9 +107,6 @@ public class StopRecordingServletTest
     public void test_doPost_subscriberDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized() throws IOException,
         ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, false, session);
 
         Conference conference = new Conference();
@@ -141,19 +130,12 @@ public class StopRecordingServletTest
             assertEquals("text/plain", e.getContentType());
             assertEquals("Unauthorized - Not allowed to stop recording", e.getContent());
         }
-        finally
-        {
-            tx.rollback();
-        }
     }
     
     @Test
     public void test_doPost_conferenceNotStarted_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent() throws IOException,
         ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         Subscriber subscriber = new Subscriber();
         subscriber.setIsAdministrator(false);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
@@ -192,19 +174,12 @@ public class StopRecordingServletTest
             assertEquals("text/plain", e.getContentType());
             assertEquals("Conference must be started for recording", e.getContent());
         }
-        finally
-        {
-            tx.rollback();
-        }
     }
 
     //@Test
     public void test_doPost_subscriberOwnsConferenceAndRequestValid_sendsSpotRequestAndReturns200() throws IOException,
         ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         Subscriber subscriber = new Subscriber();
         subscriber.setIsAdministrator(false);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
@@ -233,8 +208,6 @@ public class StopRecordingServletTest
         request.setParameter("id", String.valueOf(conference.getId()));
         servlet.service(request, response);
 
-        tx.rollback();
-
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         // TODO assert that the spot system was called
@@ -244,9 +217,6 @@ public class StopRecordingServletTest
     public void test_doPost_subscriberIsAdministratorButDoesNotOwnConferenceAndRequestValid_sendsSpotRequestAndReturns200()
         throws IOException, ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         Subscriber subscriber = new Subscriber();
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
@@ -271,8 +241,6 @@ public class StopRecordingServletTest
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(conference.getId()));
         servlet.service(request, response);
-
-        tx.rollback();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 

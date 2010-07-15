@@ -2,8 +2,8 @@ package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
@@ -12,14 +12,12 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class EditPagerServletTest
+public class EditPagerServletTest extends ListenTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -38,9 +36,6 @@ public class EditPagerServletTest
     {
         final String alternatePagerNumber = Configuration.get(Property.Key.ALTERNATE_NUMBER);
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, false, session);
 
         try
@@ -49,13 +44,11 @@ public class EditPagerServletTest
             request.setParameter("alternateNumber", "123456789");
 
             servlet.service(request, response);
-
             assertEquals(Configuration.get(Property.Key.ALTERNATE_NUMBER), "123456789");
         }
         finally
         {
             Configuration.set(Property.Key.ALTERNATE_NUMBER, alternatePagerNumber);
-            tx.commit();
         }
     }
 
@@ -63,9 +56,6 @@ public class EditPagerServletTest
     public void test_doPost_blankAlternateNumber_updatesAlternateNumber() throws ServletException, IOException
     {
         final String alternatePagerNumber = Configuration.get(Property.Key.ALTERNATE_NUMBER);
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
 
         TestUtil.setSessionSubscriber(request, false, session);
 
@@ -75,13 +65,11 @@ public class EditPagerServletTest
             request.setParameter("alternateNumber", "");
 
             servlet.service(request, response);
-
             assertEquals(Configuration.get(Property.Key.ALTERNATE_NUMBER), "");
         }
         finally
         {
             Configuration.set(Property.Key.ALTERNATE_NUMBER, alternatePagerNumber);
-            tx.commit();
         }
     }
 }

@@ -3,6 +3,7 @@ package com.interact.listen.gui;
 import static org.junit.Assert.assertEquals;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class IndexServletTest
+public class IndexServletTest extends ListenTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;

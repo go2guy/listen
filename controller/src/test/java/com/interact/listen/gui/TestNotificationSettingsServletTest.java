@@ -3,8 +3,8 @@ package com.interact.listen.gui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
@@ -15,13 +15,12 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class TestNotificationSettingsServletTest
+public class TestNotificationSettingsServletTest extends ListenTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -40,9 +39,6 @@ public class TestNotificationSettingsServletTest
     public void test_doPost_blankMessageType_returnsError()
         throws IOException, ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
         
         request.setMethod("POST");
@@ -66,9 +62,6 @@ public class TestNotificationSettingsServletTest
     public void test_doPost_nullMessageType_returnsError()
         throws IOException, ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
         
         request.setMethod("POST");
@@ -92,9 +85,6 @@ public class TestNotificationSettingsServletTest
     public void test_doPost_blankAddress_returnsError()
         throws IOException, ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
 
         request.setMethod("POST");
@@ -118,9 +108,6 @@ public class TestNotificationSettingsServletTest
     public void test_doPost_nullAddress_returnsError()
         throws IOException, ServletException
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
         TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
         
         request.setMethod("POST");

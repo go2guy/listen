@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.Stat;
@@ -21,14 +21,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class LoginServletTest
+public class LoginServletTest extends ListenTest
 {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -52,16 +50,12 @@ public class LoginServletTest
         subscriber.setUsername(username);
         subscriber.setVoicemailPin(System.currentTimeMillis());
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
         session.save(subscriber);
 
         request.setMethod("POST");
         request.setParameter("username", username);
         request.setParameter("password", password);
         servlet.service(request, response);
-
-        tx.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
@@ -78,16 +72,12 @@ public class LoginServletTest
         subscriber.setUsername(username);
         subscriber.setVoicemailPin(System.currentTimeMillis());
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
         session.save(subscriber);
 
         request.setMethod("POST");
         request.setParameter("username", username);
         request.setParameter("password", "ninja");
         servlet.service(request, response);
-
-        tx.commit();
 
         HttpSession httpSession = request.getSession();
         Map<String, String> errors = (Map<String, String>)httpSession.getAttribute("errors");
@@ -105,13 +95,10 @@ public class LoginServletTest
         request.setParameter("username", String.valueOf(System.currentTimeMillis()));
         request.setParameter("password", String.valueOf(System.currentTimeMillis()));
 
-        Session hibernateSession = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = hibernateSession.beginTransaction();
         servlet.service(request, response);
-        tx.commit();
 
-        HttpSession session = request.getSession();
-        Map<String, String> errors = (Map<String, String>)session.getAttribute("errors");
+        HttpSession httpSession = request.getSession();
+        Map<String, String> errors = (Map<String, String>)httpSession.getAttribute("errors");
 
         assertTrue(errors.containsKey("username"));
         assertEquals("Sorry, those aren't valid credentials", errors.get("username"));
@@ -128,8 +115,8 @@ public class LoginServletTest
         request.setMethod("POST");
         servlet.service(request, response);
 
-        HttpSession session = request.getSession();
-        Map<String, String> errors = (Map<String, String>)session.getAttribute("errors");
+        HttpSession httpSession = request.getSession();
+        Map<String, String> errors = (Map<String, String>)httpSession.getAttribute("errors");
 
         assertTrue(errors.containsKey("username"));
         assertEquals("Please provide a username", errors.get("username"));
@@ -146,8 +133,8 @@ public class LoginServletTest
         request.setMethod("POST");
         servlet.service(request, response);
 
-        HttpSession session = request.getSession();
-        Map<String, String> errors = (Map<String, String>)session.getAttribute("errors");
+        HttpSession httpSession = request.getSession();
+        Map<String, String> errors = (Map<String, String>)httpSession.getAttribute("errors");
 
         assertTrue(errors.containsKey("username"));
         assertEquals("Please provide a username", errors.get("username"));
@@ -164,8 +151,8 @@ public class LoginServletTest
         request.setMethod("POST");
         servlet.service(request, response);
 
-        HttpSession session = request.getSession();
-        Map<String, String> errors = (Map<String, String>)session.getAttribute("errors");
+        HttpSession httpSession = request.getSession();
+        Map<String, String> errors = (Map<String, String>)httpSession.getAttribute("errors");
 
         assertTrue(errors.containsKey("password"));
         assertEquals("Please provide a password", errors.get("password"));
@@ -182,8 +169,8 @@ public class LoginServletTest
         request.setMethod("POST");
         servlet.service(request, response);
 
-        HttpSession session = request.getSession();
-        Map<String, String> errors = (Map<String, String>)session.getAttribute("errors");
+        HttpSession httpSession = request.getSession();
+        Map<String, String> errors = (Map<String, String>)httpSession.getAttribute("errors");
 
         assertTrue(errors.containsKey("password"));
         assertEquals("Please provide a password", errors.get("password"));
@@ -208,13 +195,13 @@ public class LoginServletTest
     {
         final Map<String, String> errors = new HashMap<String, String>();
 
-        HttpSession session = request.getSession();
-        session.setAttribute("errors", errors);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("errors", errors);
 
         request.setMethod("GET");
         servlet.service(request, response);
 
-        assertNull(session.getAttribute("errors"));
+        assertNull(httpSession.getAttribute("errors"));
         assertEquals(errors, request.getAttribute("errors"));
     }
 
@@ -222,13 +209,13 @@ public class LoginServletTest
     public void test_doGet_withNoSessionErrors_doesntThrowExceptionWhenTryingToTransferErrors()
         throws ServletException, IOException
     {
-        HttpSession session = request.getSession();
-        session.setAttribute("errors", null);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("errors", null);
 
         request.setMethod("GET");
         servlet.service(request, response);
 
-        assertNull(session.getAttribute("errors"));
+        assertNull(httpSession.getAttribute("errors"));
         assertNull(request.getAttribute("errors"));
     }
 

@@ -4,12 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.interact.listen.ListenTest;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.junit.Test;
 
-public class GuiServletUtilTest
+public class GuiServletUtilTest extends ListenTest
 {
     @Test
     public void test_constructor_throwsAssertionErrorWithMessage() throws IllegalAccessException,

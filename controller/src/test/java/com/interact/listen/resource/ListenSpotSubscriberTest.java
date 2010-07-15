@@ -2,17 +2,15 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
-import com.interact.listen.HibernateUtil;
+import com.interact.listen.ListenTest;
 import com.interact.listen.resource.ListenSpotSubscriber.PhoneNumberProtocolType;
 
 import java.util.List;
 
-import org.hibernate.Transaction;
-import org.hibernate.classic.Session;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ListenSpotSubscriberTest
+public class ListenSpotSubscriberTest extends ListenTest
 {
     private ListenSpotSubscriber listenSpotSubscriber;
 
@@ -119,11 +117,7 @@ public class ListenSpotSubscriberTest
     @Test
     public void test_list_withNoListenSpotSubscribers_returnsEmptyList()
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         List<ListenSpotSubscriber> list = ListenSpotSubscriber.list(session);
-        transaction.commit();
-
         assertEquals(0, list.size());
     }
 

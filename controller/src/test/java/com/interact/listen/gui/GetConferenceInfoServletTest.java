@@ -6,8 +6,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
@@ -22,13 +22,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class GetConferenceInfoServletTest
+public class GetConferenceInfoServletTest extends ListenTest
 {
     private InputStreamMockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -65,8 +63,8 @@ public class GetConferenceInfoServletTest
     {
         Subscriber subscriber = new Subscriber();
 
-        HttpSession session = request.getSession();
-        session.setAttribute("subscriber", subscriber);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("subscriber", subscriber);
 
         request.setMethod("GET");
 
@@ -86,9 +84,6 @@ public class GetConferenceInfoServletTest
     public void test_doGet_withExistingConference_returns200AndConferenceJSON() throws IOException, ServletException
     {
         final Long id = System.currentTimeMillis();
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
@@ -110,8 +105,6 @@ public class GetConferenceInfoServletTest
 
         request.setMethod("GET");
         servlet.service(request, response);
-
-        tx.commit();
 
         String hrefString = "\"href\":\"/conferences/" + conference.getId() + "\"";
         assertTrue(request.getOutputBufferString().contains(hrefString));

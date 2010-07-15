@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -21,7 +22,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class LogoutServletTest
+public class LogoutServletTest extends ListenTest
 {
     private static final String SESSION_SUBSCRIBER_KEY = "subscriber";
 
@@ -40,13 +41,13 @@ public class LogoutServletTest
     public void test_doGet_removesSubscriberFromSessionAndReturns200() throws IOException, ServletException
     {
         Subscriber subscriber = new Subscriber();
-        HttpSession session = request.getSession();
-        session.setAttribute(SESSION_SUBSCRIBER_KEY, subscriber);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute(SESSION_SUBSCRIBER_KEY, subscriber);
 
         request.setMethod("GET");
         servlet.service(request, response);
 
-        assertNull(session.getAttribute(SESSION_SUBSCRIBER_KEY));
+        assertNull(httpSession.getAttribute(SESSION_SUBSCRIBER_KEY));
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 
@@ -55,13 +56,13 @@ public class LogoutServletTest
     {
         // put a subscriber in the session first
         Subscriber subscriber = new Subscriber();
-        HttpSession session = request.getSession();
-        session.setAttribute(SESSION_SUBSCRIBER_KEY, subscriber);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute(SESSION_SUBSCRIBER_KEY, subscriber);
 
         request.setMethod("POST");
         servlet.service(request, response);
 
-        assertNull(session.getAttribute(SESSION_SUBSCRIBER_KEY));
+        assertNull(httpSession.getAttribute(SESSION_SUBSCRIBER_KEY));
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 

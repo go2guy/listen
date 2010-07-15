@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenTest;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
@@ -20,14 +20,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class ApiServletTest
+public class ApiServletTest extends ListenTest
 {
     private InputStreamMockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -218,9 +216,6 @@ public class ApiServletTest
         request.setMethod("GET");
         request.setQueryString("");
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-
         try
         {
             servlet.service(request, response);
@@ -230,10 +225,6 @@ public class ApiServletTest
         {
             assertEquals(HttpServletResponse.SC_NOT_FOUND, e.getStatus());
             assertEquals("", e.getContent());
-        }
-        finally
-        {
-            transaction.commit();
         }
     }
 
@@ -247,12 +238,7 @@ public class ApiServletTest
 //        request.setMethod("GET");
 //        request.setQueryString("");
 //
-//        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-//        Transaction transaction = session.beginTransaction();
-//
 //        servlet.service(request, response);
-//
-//        transaction.commit();
 //
 //        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 //        expectedXml += "<subscribers href=\"/subscribers?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
@@ -282,12 +268,7 @@ public class ApiServletTest
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-
         servlet.service(request, response);
-
-        transaction.commit();
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());
@@ -317,9 +298,6 @@ public class ApiServletTest
         InputStream stream = new ByteArrayInputStream(content.toString().getBytes());
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
 
         servlet.service(request, response);
 
@@ -360,9 +338,6 @@ public class ApiServletTest
         request.setMethod("GET");
         request.setQueryString("");
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-
         try
         {
             servlet.service(request, response);
@@ -384,9 +359,6 @@ public class ApiServletTest
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, null);
         request.setMethod("GET");
         request.setQueryString("");
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
 
         servlet.service(request, response);
 
@@ -419,9 +391,6 @@ public class ApiServletTest
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-
         servlet.service(request, response);
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
@@ -451,9 +420,6 @@ public class ApiServletTest
         InputStream stream = new ByteArrayInputStream(content.toString().getBytes());
         DelegatingServletInputStream sstream = new DelegatingServletInputStream(stream);
         request.setInputStream(sstream);
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
 
         servlet.service(request, response);
 
