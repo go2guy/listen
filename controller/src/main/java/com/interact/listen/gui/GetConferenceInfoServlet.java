@@ -134,7 +134,7 @@ public class GetConferenceInfoServlet extends HttpServlet
             .addReturnField("duration")
             .addReturnField("fileSize")
             .addReturnField("id")
-            .sortBy("dateCreated", ResourceListService.SortOrder.ASCENDING)
+            .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING)
             .withMax(15);
         ResourceListService service = builder.build();
         return service.list();
