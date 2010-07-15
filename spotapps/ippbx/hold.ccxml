@@ -8,8 +8,8 @@
     <!-- Values passed in from other ccxml -->
     <var name="ANI"/>           <!-- ANI. Origination ID of current call -->
     <var name="DNIS"/>          <!-- DNIS. Destination ID -->
-    <var name="tmpANI"/>           <!-- ANI. -->
-    <var name="tmpDNIS"/>          <!-- DNIS.-->
+    <var name="tmpANI"/>        <!-- ANI. -->
+    <var name="tmpDNIS"/>       <!-- DNIS.-->
     <var name="ibconnid"/>      <!-- Inbound connection ID -->
     <var name="obconnid"/>      <!-- Outbound connection ID -->
     <var name="requestID"/>     <!-- Connection ID of the party requesting the hold -->
@@ -27,6 +27,9 @@
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="LIB_PATH" expr="''"/>    <!-- Audio Path. Directory for audio files -->
     <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
+    <var name="xferConnID" expr="''"/>
+    <var name="xferSID" expr="''"/>
+    <var name="URI" expr="''"/>
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
 
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
@@ -154,13 +157,32 @@
 		</transition>
 
 		<transition event="attendedtransferrequest" name="evt">
-            <!-- Attended Transfer request. Need to figure out who's making the request -->
+            <!-- Attended Transfer request -->
             <log>INFO: Entered [attendedtransferrequest] with state [<value expr="state"/>]</log>
             <log target="status">Attended Transfer Request</log>
-            <var name="xferConnID" expr="evt.connectionid"/>
-            <var name="URI" expr="getnum(evt.uri)"/>
-<!--            <fetch next="'file:'+APP_PATH+'transfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH DNIS ANI ibconnid obconnid URI xferConnID"/> -->
+            <assign name="state" expr="'gotXferReq'"/>
+            <assign name="xferConnID" expr="evt.connectionid"/>
+            <assign name="xferSID" expr="evt.newsessionid"/>
+            <assign name="URI" expr="evt.uri"/>
+            <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
+                <send data="'dialog.user.terminate'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.transfer'" target="session.id"/>
+            </if>
 		</transition>
+
+        <transition state="gotXferReq" event="dialog.exit" name="evt">
+            <!-- We're back from terminating the vxml dialog.  -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.transfer'" target="session.id"/>
+        </transition>
+
+        <transition state="gotXferReq" event="dialog.user.transfer" name="evt">
+            <!-- Here, we call the attended transfer ccxml script -->
+            <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
+            <fetch next="'file:'+APP_PATH+'attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID"/>
+        </transition>
 
         <transition event="connection.disconnected" name="evt">
             <!-- We've detected a hang up while on hold. We need to remove any records associated

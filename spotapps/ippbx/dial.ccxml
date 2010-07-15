@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/14/2010
+    <!-- Last Modified 07/15/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -16,8 +16,8 @@
     <var name="ibconnid"/>  <!-- Inbound connection ID -->
     <var name="obconnid"/>  <!-- Outbound connection ID -->
     <var name="isClosed"/>  <!-- Flag to determine if the office is closed -->
-    <var name="EXT_LENGTH"/>    <!-- Extension length -->
-    <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
+    <var name="EXT_LENGTH"/>        <!-- Extension length -->
+    <var name="importedValue"/>     <!-- Imported Value. Values passed in from Listen application -->
 
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>       <!-- State. Used to track which state a transition is in -->
@@ -30,6 +30,7 @@
     <var name="clientFlag" expr="''"/>
     <var name="record" expr="''"/>
     <var name="officeOptr" expr="'101'"/>   <!-- Operator's extension -->
+    <var name="moveRequestSID" expr="''"/>  <!-- Session ID involved in an attended transfer -->
 
     <!-- Out dial vars -->
     <var name="AREA_CODE" expr="'402'"/>
@@ -77,15 +78,12 @@
             was called from hold.ccxml, then we'll sit in this transition until the next event comes in.
             Otherwise, we'll attempt to create a call to the destination value we have --> 
             <log>INFO: Entered [dialog.user.chkCallType] with state [<value expr="state"/>]</log>
-            <if cond="callType == 'fromHold'">
+            <if cond="((callType == 'fromHold') || (callType == 'fromXfer'))">
                 <log>INFO: Call in progress...</log>
+                <log target="status">Call in progress</log>
+                <assign name="state" expr="'callConnected'"/>
                 <!-- Nothing to do here. Call should be connected. Wait for next event -->
             <else/>
-                <if cond="callType == 'notify'">
-                    <assign name="whichID" expr="msgID"/>
-                    <assign name="whichMBox" expr="mBox"/>
-                    <assign name="NOTIFY_PATH" expr="APP_PATH+'notification/'"/>
-                </if>
                 <send data="'dialog.user.call'" target="session.id"/>
             </if>
         </transition>
@@ -121,16 +119,11 @@
                 </if>
             </if>
             <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
-             <if cond="callType == 'notify'">
-                 <!-- This logic is used when notifying an individual of a new voice message. -->
-                <assign name="state" expr="'notify'"/>
-            <else/>
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'ring'+'.00'+'.wav'"/> <!-- Play ringing tone -->
-                <var name="II_SB_repeat" expr="'y'"/>
-                <var name="II_SB_interval" expr="'2000'"/> <!-- Number of milliseconds repeat -->
-                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
-                <assign name="state" expr="'dialing'"/>
-            </if>
+            <assign name="II_SB_promptID" expr="AUDIO_PATH+'ring'+'.00'+'.wav'"/> <!-- Play ringing tone -->
+            <var name="II_SB_repeat" expr="'y'"/>
+            <var name="II_SB_interval" expr="'2000'"/> <!-- Number of milliseconds repeat -->
+            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+            <assign name="state" expr="'dialing'"/>
         </transition>
 
         <transition state="endRing" event="dialog.started" name="evt">
@@ -149,18 +142,6 @@
             <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
             <assign name="dialogID" expr="evt.dialogid"/>
             <assign name="inVXML" expr="'y'"/>
-        </transition>
-
-    	<transition state="notify" event="connection.connected" name="evt">
-            <!-- The out dial attempt was successful. We'll join our new connection to a voice channel. -->
-            <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
-            <join id1="obconnid" id2="'VXML_CHANNEL'"/>
-		</transition>
-
-        <transition state="notify" event="conference.joined">
-            <!-- Our join attempt was successful. Let's play the notification. -->
-            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
-            <dialogstart src="'file:'+NOTIFY_PATH+'newMessage.vxml'" namelist="ANI whichID whichMBox"/>
         </transition>
 
 		<transition event="connection.connected" name="evt">
@@ -219,18 +200,81 @@
             <fetch next="'file:'+APP_PATH+'hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
 		</transition>
 
+        <transition state="callConnected" event="dialog.user.moveRequest" name="evt">
+            <!-- In here, we're in the process of doing an attended move. First, we'll unjoin the 
+            current call -->
+            <log>INFO: Entered [dialog.user.moveRequest] with state [<value expr="state"/>]</log>
+            <assign name="moveRequestSID" expr="evt.moveRequestSID"/>
+            <assign name="state" expr="'xferUnjoin'"/>
+            <unjoin id1="ibconnid" id2="obconnid"/>
+		</transition>
+
+        <transition state="xferUnjoin" event="conference.unjoined" name="evt">
+            <!-- We've unjoined the parties. Next, we'll disconnect the caller; since they are the ones
+            attempting the transfer -->
+            <log>INFO: Entered [conference.unjoined] with state [<value expr="state"/>]</log>
+		    <assign name="state" expr="'attdXferMoveDisc'"/>
+            <disconnect connectionid="ibconnid"/>
+        </transition>
+
+        <transition state="attdXferMoveDisc" event="connection.disconnected" name="evt" cond="evt.connectionid == ibconnid">
+            <!-- Got the disconnect -->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <!-- Remove the caller's record in the db -->
+            <assign name="record" expr="ibconnid + '|' + tmpANI"/>
+            <assign name="clientFlag" expr="'delete'"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition state="attdXferMoveDisc" event="dialog.exit" name="evt">
+            <!-- Caller's record has been removed. Before continuing with the transfer,
+            let's join callee to a voice channel -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+		    <assign name="state" expr="'attdXferVChnnel'"/>
+            <join id1="obconnid" id2="'VXML_CHANNEL'"/>
+        </transition>
+
+        <transition state="attdXferVChnnel" event="conference.joined" name="evt">
+            <!-- We're joined to a voice channel. Let's continue with the transfer. Need to move the
+            callee to the other transfer party who is on hold -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+		    <assign name="state" expr="'attdXferMoveAttempt'"/>
+            <move source="obconnid" sessionid="moveRequestSID"/>
+        </transition>
+
+        <transition state="attdXferMoveAttempt" event="move.successful" name="evt">
+            <!-- Looks like our move worked. Let's send control to the attendedTransfer.ccxml script and end this line-->
+            <log>INFO: Entered [move.successful] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="obconnid"/>
+            <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition state="attdXferMoveAttempt" event="error.move" name="evt">
+            <!-- Looks like our move failed. We'll need to end this session and the session controlling the 
+            attendedTransfer.ccxml script -->
+            <log>INFO: Entered [move.successful] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.moveFailed'" target="moveRequestSID" namelist="obconnid"/>
+            <assign name="record" expr="ibconnid + '|' + tmpDNIS"/>
+            <assign name="clientFlag" expr="'delete'"/>
+  		    <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition state="xferUnjoin" event="error.conference.unjoined" name="evt">
+            <log>INFO: Entered [error.conference.unjoined] with state [<value expr="state"/>]</log>
+            <!-- TODO: How do we handle this? Just end? -->
+            <send data="'dialog.user.moveFailed'" target="moveRequestSID" namelist="obconnid"/>
+            <assign name="state" expr="'hangUp'"/>
+            <!-- Remove the records associated with this call in the db prior to exiting -->
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
+        </transition>
+
 		<transition state="callConnected" event="error.conference.join" name="evt">
             <!-- Our join attempt failed -->
             <log>INFO: Entered [error.conference.join] with state [<value expr="state"/>]</log>
             <!-- TODO: How do we handle this? Allow a retry? Play a prompt and end? -->
 		</transition>
-
-        <transition state="notify" event="connection.failed" name="evt">
-            <!-- The out dial attempt failed for some reason -->
-            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
-            <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.endCall'" target="session.id"/>
-        </transition>
 
         <transition event="connection.failed" name="evt">
             <!-- The out dial attempt failed for some reason -->
@@ -359,18 +403,6 @@
             <else/>
                 <!-- Remove the caller's record in the db prior to exiting -->
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
-            </if>
-        </transition>
-
-        <transition state="notify" event="connection.disconnected" name="evt">
-            <!-- We've detected a hang up while notifying a user about a new voice message -->
-            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
-            <log>INFO: Detected hangup</log>
-            <assign name="state" expr="'endCall'"/>
-            <if cond="inVXML == 'y'">
-      	    	<dialogterminate dialogid="dialogID" immediate="true"/>
-            <else/>
-                <send data="'dialog.user.endCall'" target="session.id"/>
             </if>
         </transition>
 
