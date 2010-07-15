@@ -37,10 +37,10 @@ public class Conference extends Resource implements Serializable
     private String description;
 
     @Column(name = "IS_STARTED", nullable = false)
-    private Boolean isStarted;
+    private Boolean isStarted = Boolean.FALSE;
     
     @Column(name = "IS_RECORDING", nullable = false)
-    private Boolean isRecording;
+    private Boolean isRecording = Boolean.FALSE;
     
     @Column(name = "START_TIME")
     private Date startTime;

@@ -1,10 +1,13 @@
 package com.interact.listen.spot;
 
+import com.interact.listen.history.Channel;
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.httpclient.HttpClientImpl;
+import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Participant;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -22,14 +25,18 @@ public class SpotSystem
 {
     // e.g. "http://apps2/spot"
     private String httpInterfaceUri;
+    
+    /** {@link Subscriber} performing the operations to this {@code SpotSystem} */
+    private Subscriber performingSubscriber;
 
     private HttpClient httpClient = new HttpClientImpl();
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmssSSS");
     private StatSender statSender = new InsaStatSender();
 
-    public SpotSystem(String httpInterfaceUri)
+    public SpotSystem(String httpInterfaceUri, Subscriber performingSubscriber)
     {
         this.httpInterfaceUri = httpInterfaceUri;
+        this.performingSubscriber = performingSubscriber;
     }
 
     public void setHttpClient(HttpClient httpClient)
@@ -99,7 +106,8 @@ public class SpotSystem
      * @throws IOException if an HTTP error occurs
      * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
      */
-    public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber) throws IOException, SpotCommunicationException
+    public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber)
+        throws IOException, SpotCommunicationException
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("uri", "/interact/apps/iistart.ccxml");
@@ -107,7 +115,6 @@ public class SpotSystem
                                           "\",\"sessionid\":\"" + adminSessionId + "\",\"destination\":\"" + numbers +
                                           "\",\"conferenceId\":\"" + String.valueOf(conferenceId) + "\",\"ani\":\"" +
                                           requestingNumber + "\"}");
-        
         sendBasicHttpRequest(params, "createsession");
     }
     
@@ -119,7 +126,8 @@ public class SpotSystem
      * @throws IOException if an HTTP error occurs
      * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
      */
-    public void startRecording(Conference conference, String adminSessionId) throws IOException, SpotCommunicationException
+    public void startRecording(Conference conference, String adminSessionId) throws IOException,
+        SpotCommunicationException
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("sessionid", adminSessionId);
@@ -128,7 +136,6 @@ public class SpotSystem
         String argument = createRecordingArgument(SpotRequestEvent.START_RECORDING, conference, adminSessionId);
         params.put("II_SB_argument", argument);
         params.put("II_SB_URI", "listen_main/listen_main.ccxml");
-        
         sendBasicHttpRequest(params, "basichttp");
     }
 
@@ -149,7 +156,6 @@ public class SpotSystem
         String argument = createRecordingArgument(SpotRequestEvent.STOP_RECORDING, conference, adminSessionId);
         params.put("II_SB_argument", argument);
         params.put("II_SB_URI", "listen_main/listen_main.ccxml");
-        
         sendBasicHttpRequest(params, "basichttp");
     }
 
@@ -172,6 +178,8 @@ public class SpotSystem
 
     private void sendBasicHttpRequest(Map<String, String> params, String target) throws IOException, SpotCommunicationException
     {
+        addCommonParams(params);
+
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
         
         String uri = httpInterfaceUri + "/ccxml/" + target;
@@ -207,5 +215,19 @@ public class SpotSystem
         argument.append("\"description\":\"").append(description).append("\"");
         argument.append("}");
         return argument.toString();
+    }
+
+    /**
+     * Adds common parameters to the provided parameter {@code Map}. This method modifies the passed-in {@code Map}.
+     * 
+     * @param params params {@code Map} to augument
+     */
+    private void addCommonParams(Map<String, String> params)
+    {
+        if(performingSubscriber != null)
+        {
+            params.put("II_SB_listenSubscriber", Marshaller.buildHref(performingSubscriber));
+        }
+        params.put("II_SB_listenChannel", Channel.GUI.toString());
     }
 }

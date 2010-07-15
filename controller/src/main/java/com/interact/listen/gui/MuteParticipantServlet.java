@@ -68,7 +68,7 @@ public class MuteParticipantServlet extends HttpServlet
         List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
         for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
         {
-            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(), subscriber);
             try
             {
                 spotSystem.muteParticipant(participant);

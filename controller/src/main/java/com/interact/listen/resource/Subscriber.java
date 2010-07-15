@@ -365,6 +365,11 @@ public class Subscriber extends Resource implements Serializable
         }
     }
 
+    public static Subscriber queryById(Session session, Long id)
+    {
+        return (Subscriber)session.get(Subscriber.class, id);
+    }
+
     public static Long count(Session session)
     {
         Criteria criteria = session.createCriteria(Subscriber.class);

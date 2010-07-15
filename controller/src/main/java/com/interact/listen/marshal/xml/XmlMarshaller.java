@@ -39,7 +39,7 @@ public class XmlMarshaller extends Marshaller
         sortMethods(methods);
 
         String resourceName = getTagForClass(resource.getClass().getSimpleName());
-        xml.append(marshalReferenceTag(resourceName, buildSpecificHref(resourceName + "s", resource.getId()), false));
+        xml.append(marshalReferenceTag(resourceName, buildHref(resource), false));
 
         for(Method method : methods)
         {
@@ -60,8 +60,7 @@ public class XmlMarshaller extends Marshaller
                 }
                 else
                 {
-                    String href = buildSpecificHref(getTagForClass(returnType.getSimpleName()) + "s",
-                                                    ((Resource)result).getId());
+                    String href = buildHref((Resource)result);
                     xml.append(marshalReferenceTag(propertyName, href, true));
                 }
             }
@@ -71,7 +70,7 @@ public class XmlMarshaller extends Marshaller
                 String name = s.substring(s.lastIndexOf(".") + 1);
                 String referenceName = getTagForClass(name);
 
-                String collectionHref = buildSpecificHref(resourceName + "s", resource.getId());
+                String collectionHref = buildHref(resource);
                 String href = buildListHref(referenceName + "s", 0, 100, null, resourceName + "=" +
                                                                                encodeUrl(collectionHref));
                 href = escape(href);
@@ -122,7 +121,7 @@ public class XmlMarshaller extends Marshaller
         {
             String className = getTagForClass(resource.getClass().getSimpleName());
 
-            String itemHref = buildSpecificHref(className + "s", resource.getId());
+            String itemHref = buildHref(resource);
             itemHref = escape(itemHref);
             xml.append(marshalReferenceTagWithoutEnd(className, itemHref));
 
@@ -152,8 +151,7 @@ public class XmlMarshaller extends Marshaller
                     }
                     else
                     {
-                        String referenceName = getTagForClass(returnType.getSimpleName());
-                        String resourceHref = buildSpecificHref(referenceName + "s", ((Resource)result).getId());
+                        String resourceHref = buildHref((Resource)result);
                         resourceHref = escape(resourceHref);
                         xml.append(resourceHref);
                     }

@@ -9,6 +9,7 @@ import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.MarshallerNotFoundException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Resource;
+import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
 import java.util.*;
@@ -30,7 +31,7 @@ public class ApiServlet extends HttpServlet
 {
     static
     {
-        // prime the Hibernate config, optionally bootstrap data
+        // prime the Hibernate config, bootstrap
         HibernateUtil.getSessionFactory();
         // FIXME ideally this could go somewhere else
     }
@@ -45,7 +46,7 @@ public class ApiServlet extends HttpServlet
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, null, Channel.TUI); // FIXME probably not TUI
+        PersistenceService persistenceService = getPersistenceService(session, request);
 
         UriResourceAttributes attributes = getResourceAttributes(request);
         if(attributes.getResourceClass() == null)
@@ -140,7 +141,7 @@ public class ApiServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, null, Channel.TUI); // FIXME probably not TUI
+        PersistenceService persistenceService = getPersistenceService(session, request);
 
         Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
         try
@@ -202,7 +203,7 @@ public class ApiServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, null, Channel.TUI); // FIXME probably not TUI
+        PersistenceService persistenceService = getPersistenceService(session, request);
 
         Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
         if(!isValidResourceId(attributes.getId()))
@@ -277,7 +278,7 @@ public class ApiServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, null, Channel.TUI); // FIXME probably not TUI
+        PersistenceService persistenceService = getPersistenceService(session, request);
 
         if(!isValidResourceId(attributes.getId()))
         {
@@ -398,6 +399,43 @@ public class ApiServlet extends HttpServlet
         {
             return false;
         }
+    }
+
+    private static PersistenceService getPersistenceService(Session session, HttpServletRequest request)
+    {
+        String subscriberHeader = request.getHeader("ListenSubscriber");
+        String channelHeader = request.getHeader("ListenChannel");
+
+        Subscriber subscriber = null;
+        if(subscriberHeader != null)
+        {
+            Long id = Marshaller.getIdFromHref(subscriberHeader);
+            if(id != null)
+            {
+                subscriber = Subscriber.queryById(session, id);
+            }
+
+            if(subscriber == null || id == null)
+            {
+                LOG.warn("ListenSubscriber HTTP header contained unknown subscriber href [" + subscriberHeader + "]");
+            }
+        }
+
+        Channel channel = Channel.TUI;
+        if(channelHeader != null)
+        {
+            try
+            {
+                channel = Channel.valueOf(channelHeader);
+            }
+            catch(IllegalArgumentException e)
+            {
+                LOG.warn("Unknown ListenChannel HTTP header value [" + channelHeader + "] provided, defaulting to TUI");
+                channel = Channel.TUI;
+            }
+        }
+
+        return new PersistenceService(session, subscriber, channel);
     }
 
     private static class UriResourceAttributes

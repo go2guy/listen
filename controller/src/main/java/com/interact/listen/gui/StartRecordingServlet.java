@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
@@ -44,7 +45,7 @@ public class StartRecordingServlet extends HttpServlet
         }
         statSender.send(Stat.GUI_START_RECORDING);
 
-        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
             throw new UnauthorizedServletException();
@@ -77,7 +78,7 @@ public class StartRecordingServlet extends HttpServlet
         List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
         for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
         {
-            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi());
+            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(), subscriber);
             try
             {
                 spotSystem.startRecording(conference, adminSessionId);

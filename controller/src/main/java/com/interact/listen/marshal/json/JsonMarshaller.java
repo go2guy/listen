@@ -33,7 +33,7 @@ public class JsonMarshaller extends Marshaller
         sortMethods(methods);
 
         String resourceTag = getTagForClass(clazz.getSimpleName());
-        String href = buildSpecificHref(resourceTag + "s", resource.getId());
+        String href = buildHref(resource);
 
         StringBuilder json = new StringBuilder();
         json.append("{");
@@ -59,8 +59,7 @@ public class JsonMarshaller extends Marshaller
                 }
                 else
                 {
-                    String associatedTag = getTagForClass(returnType.getSimpleName());
-                    String itemHref = buildSpecificHref(associatedTag + "s", ((Resource)result).getId());
+                    String itemHref = buildHref((Resource)result);
                     json.append("{\"href\":\"").append(itemHref).append("\"").append("}");
                 }
             }
@@ -153,8 +152,7 @@ public class JsonMarshaller extends Marshaller
                     }
                     else
                     {
-                        String associatedTag = getTagForClass(returnType.getSimpleName());
-                        String resourceHref = buildSpecificHref(associatedTag + "s", ((Resource)result).getId());
+                        String resourceHref = buildHref(((Resource)result));
                         json.append("{\"href\":\"").append(resourceHref).append("\"}");
                     }
                 }

@@ -34,7 +34,7 @@ public class SpotSystemTest
         mockHttpClient = mock(HttpClient.class);
         mockStatSender = mock(StatSender.class);
 
-        spotSystem = new SpotSystem(httpInterfaceUri);
+        spotSystem = new SpotSystem(httpInterfaceUri, null);
         spotSystem.setHttpClient(mockHttpClient);
         spotSystem.setStatSender(mockStatSender);
 
@@ -50,6 +50,7 @@ public class SpotSystemTest
         expectedParams.put("name", "dialog.user.customEvent");
         expectedParams.put("II_SB_eventToPass", "DROP");
         expectedParams.put("II_SB_valueToPass", "");
+        expectedParams.put("II_SB_listenChannel", "GUI");
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 
@@ -108,6 +109,7 @@ public class SpotSystemTest
         expectedParams.put("name", "dialog.user.customEvent");
         expectedParams.put("II_SB_eventToPass", "MUTE");
         expectedParams.put("II_SB_valueToPass", "");
+        expectedParams.put("II_SB_listenChannel", "GUI");
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 
@@ -171,6 +173,7 @@ public class SpotSystemTest
                                                   "\",\"destination\":\"" + number + "\",\"conferenceId\":\"" +
                                                   String.valueOf(conferenceId) + "\",\"ani\":\"" + requestingNumber +
                                                   "\"}");
+        expectedParams.put("II_SB_listenChannel", "GUI");
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 
@@ -228,6 +231,7 @@ public class SpotSystemTest
         expectedParams.put("name", "dialog.user.customEvent");
         expectedParams.put("II_SB_eventToPass", "UNMUTE");
         expectedParams.put("II_SB_valueToPass", "");
+        expectedParams.put("II_SB_listenChannel", "GUI");
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 

@@ -325,9 +325,10 @@ public abstract class Marshaller
         }
     }
 
-    protected final String buildSpecificHref(String resource, Long id)
+    public static final String buildHref(Resource resource)
     {
-        return "/" + resource + "/" + id;
+        String name = getTagForClass(resource.getClass().getSimpleName());
+        return "/" + name + "s/" + resource.getId();
     }
 
     protected final String buildListHref(String resource, int first, int max, String fields, String properties)
