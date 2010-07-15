@@ -63,8 +63,6 @@ public class GetConferenceInfoServletTest
     public void test_doGet_withNonexistentConference_throwsListenServletExceptionWith500() throws IOException,
         ServletException
     {
-        final Long id = System.currentTimeMillis();
-
         Subscriber subscriber = new Subscriber();
 
         HttpSession session = request.getSession();

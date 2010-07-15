@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
@@ -18,9 +19,7 @@ import com.interact.listen.stats.StatSender;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -66,7 +65,10 @@ public class MuteParticipantServletTest
     public void test_doPost_withNullId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
         throws IOException, ServletException
     {
-        setSessionSubscriber(request, false);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", (String)null);
 
@@ -87,7 +89,10 @@ public class MuteParticipantServletTest
     public void test_doPost_withBlankId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
         throws IOException, ServletException
     {
-        setSessionSubscriber(request, false);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", " ");
 
@@ -123,7 +128,7 @@ public class MuteParticipantServletTest
         conference.setIsStarted(true);
         conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
-        conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        conference.setDescription(TestUtil.randomString());
         conference.setSubscriber(subscriber);
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
@@ -142,7 +147,7 @@ public class MuteParticipantServletTest
         participant.setIsMuted(false);
         participant.setIsPassive(false);
         participant.setNumber(String.valueOf(System.currentTimeMillis()));
-        participant.setSessionID(String.valueOf(System.currentTimeMillis()));
+        participant.setSessionID(TestUtil.randomString());
         session.save(participant);
 
         request.setMethod("POST");
@@ -169,16 +174,16 @@ public class MuteParticipantServletTest
     public void test_doPost_subscriberDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized() throws IOException,
         ServletException
     {
-        setSessionSubscriber(request, false);
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, false, session);
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
-        conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        conference.setDescription(TestUtil.randomString());
         session.save(conference);
 
         Participant participant = new Participant();
@@ -189,7 +194,7 @@ public class MuteParticipantServletTest
         participant.setIsMuted(false);
         participant.setIsPassive(false);
         participant.setNumber(String.valueOf(System.currentTimeMillis()));
-        participant.setSessionID(String.valueOf(System.currentTimeMillis()));
+        participant.setSessionID(TestUtil.randomString());
         session.save(participant);
 
         request.setMethod("POST");
@@ -221,8 +226,8 @@ public class MuteParticipantServletTest
 
         Subscriber subscriber = new Subscriber();
         subscriber.setIsAdministrator(false);
-        subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
-        subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
+        subscriber.setPassword(TestUtil.randomString());
+        subscriber.setUsername(TestUtil.randomString());
         subscriber.setVoicemailPin(System.currentTimeMillis());
         session.save(subscriber);
 
@@ -285,7 +290,7 @@ public class MuteParticipantServletTest
         conference.setIsStarted(true);
         conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
-        conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        conference.setDescription(TestUtil.randomString());
 
         Pin pin = Pin.newInstance(String.valueOf(System.currentTimeMillis()), PinType.ADMIN);
         session.save(pin);
@@ -325,14 +330,5 @@ public class MuteParticipantServletTest
         servlet.service(request, response);
 
         verify(statSender).send(Stat.GUI_MUTE_PARTICIPANT);
-    }
-
-    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
-    {
-        Subscriber subscriber = new Subscriber();
-        subscriber.setIsAdministrator(isAdministrator);
-
-        HttpSession session = request.getSession();
-        session.setAttribute("subscriber", subscriber);
     }
 }

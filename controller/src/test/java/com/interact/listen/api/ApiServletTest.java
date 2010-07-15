@@ -341,8 +341,6 @@ public class ApiServletTest
 
         servlet.service(request, response);
 
-        transaction.commit();
-
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
     }
 
@@ -375,10 +373,6 @@ public class ApiServletTest
             assertEquals(HttpServletResponse.SC_NOT_FOUND, e.getStatus());
             assertEquals("", e.getContent());
         }
-        finally
-        {
-            transaction.commit();
-        }
     }
 
     @Test
@@ -395,8 +389,6 @@ public class ApiServletTest
         Transaction transaction = session.beginTransaction();
 
         servlet.service(request, response);
-
-        transaction.commit();
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         expectedXml += "<conferences href=\"/conferences?_first=0&amp;_max=100\" count=\"0\" total=\"0\"/>";
@@ -431,8 +423,6 @@ public class ApiServletTest
         Transaction transaction = session.beginTransaction();
 
         servlet.service(request, response);
-
-        transaction.commit();
 
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());
@@ -492,8 +482,6 @@ public class ApiServletTest
         request.setInputStream(sstream);
 
         servlet.service(request, response);
-
-        transaction.commit();
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         assertEquals("application/xml", request.getOutputBufferType());

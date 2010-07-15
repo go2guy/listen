@@ -3,19 +3,19 @@ package com.interact.listen.gui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.ListenServletException;
-import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import org.hibernate.classic.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -61,7 +61,10 @@ public class SetPropertiesServletTest
     public void test_doPost_withNonAdministratorSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, false);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
 
@@ -81,7 +84,10 @@ public class SetPropertiesServletTest
     @Test
     public void test_doPost_withProperty_setsProperty() throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
 
         final String value = String.valueOf(System.currentTimeMillis());
 
@@ -90,15 +96,5 @@ public class SetPropertiesServletTest
         servlet.service(request, response);
 
         assertEquals(value, Configuration.get(Property.Key.MAIL_FROMADDRESS));
-    }
-
-    // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
-    {
-        Subscriber subscriber = new Subscriber();
-        subscriber.setIsAdministrator(isAdministrator);
-
-        HttpSession session = request.getSession();
-        session.setAttribute("subscriber", subscriber);
     }
 }

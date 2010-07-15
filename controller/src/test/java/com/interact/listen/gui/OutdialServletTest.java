@@ -5,17 +5,15 @@ import static org.junit.Assert.fail;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
-import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -45,8 +43,8 @@ public class OutdialServletTest
         assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
-        request.setParameter("conferenceId", randomString());
-        request.setParameter("number", randomString() + "foo");
+        request.setParameter("conferenceId", TestUtil.randomString());
+        request.setParameter("number", TestUtil.randomString() + "foo");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -72,14 +70,14 @@ public class OutdialServletTest
     public void test_doPost_withNullConferenceId_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionSubscriber(request, true);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
         request.setParameter("conferenceId", (String)null);
-        request.setParameter("number", randomString() + "foo");
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
+        request.setParameter("number", TestUtil.randomString() + "foo");
 
         try
         {
@@ -102,14 +100,14 @@ public class OutdialServletTest
     public void test_doPost_withBlankConferenceId_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionSubscriber(request, true);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
         request.setParameter("conferenceId", " ");
-        request.setParameter("number", randomString() + "foo");
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
+        request.setParameter("number", TestUtil.randomString() + "foo");
 
         try
         {
@@ -132,14 +130,14 @@ public class OutdialServletTest
     public void test_doPost_withNullNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("conferenceId", randomString());
-        request.setParameter("number", (String)null);
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("conferenceId", TestUtil.randomString());
+        request.setParameter("number", (String)null);
 
         try
         {
@@ -162,14 +160,14 @@ public class OutdialServletTest
     public void test_doPost_withBlankNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("conferenceId", randomString());
-        request.setParameter("number", " ");
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("conferenceId", TestUtil.randomString());
+        request.setParameter("number", " ");
 
         try
         {
@@ -191,14 +189,14 @@ public class OutdialServletTest
     @Test
     public void test_doPost_withConferenceNotFound_throwsListenServletExceptionWithBadRequest() throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("conferenceId", randomString()); // hopefully doesn't exist
-        request.setParameter("number", randomString() + "foo");
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("conferenceId", TestUtil.randomString()); // hopefully doesn't exist
+        request.setParameter("number", TestUtil.randomString() + "foo");
 
         try
         {
@@ -215,21 +213,5 @@ public class OutdialServletTest
         {
             tx.commit();
         }
-    }
-
-    // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
-    {
-        Subscriber subscriber = new Subscriber();
-        subscriber.setIsAdministrator(isAdministrator);
-
-        HttpSession session = request.getSession();
-        session.setAttribute("subscriber", subscriber);
-    }
-
-    // TODO refactor this out into test utils
-    private String randomString()
-    {
-        return String.valueOf(System.currentTimeMillis());
     }
 }

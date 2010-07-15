@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
@@ -20,9 +21,7 @@ import com.interact.listen.stats.StatSender;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -68,7 +67,10 @@ public class StopRecordingServletTest
     public void test_doPost_withNullId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
         throws IOException, ServletException
     {
-        setSessionSubscriber(request, false);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", (String)null);
 
@@ -89,7 +91,10 @@ public class StopRecordingServletTest
     public void test_doPost_withBlankId_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
         throws IOException, ServletException
     {
-        setSessionSubscriber(request, false);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", " ");
 
@@ -110,10 +115,10 @@ public class StopRecordingServletTest
     public void test_doPost_subscriberDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized() throws IOException,
         ServletException
     {
-        setSessionSubscriber(request, false);
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, false, session);
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
@@ -284,14 +289,5 @@ public class StopRecordingServletTest
         servlet.service(request, response);
 
         verify(statSender).send(Stat.GUI_STOP_RECORDING);
-    }
-
-    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
-    {
-        Subscriber subscriber = new Subscriber();
-        subscriber.setIsAdministrator(isAdministrator);
-
-        HttpSession session = request.getSession();
-        session.setAttribute("subscriber", subscriber);
     }
 }

@@ -44,7 +44,6 @@ public class LoginServletTest
     @Test
     public void test_doPost_validCredentials_returns200() throws IOException, ServletException
     {
-        final Long subscriberId = System.currentTimeMillis();
         final String username = String.valueOf(System.currentTimeMillis());
         final String password = "bar";
         

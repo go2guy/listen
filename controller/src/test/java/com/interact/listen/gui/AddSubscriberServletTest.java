@@ -4,8 +4,11 @@ import static org.junit.Assert.*;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.Pin;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 
 import java.io.IOException;
@@ -13,9 +16,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -43,16 +44,19 @@ public class AddSubscriberServletTest
     @Test
     public void test_doPost_withValidParameters_provisionsNewAccount() throws ServletException, IOException
     {
-        setSessionSubscriber(request, true); // admin subscriber
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
 
-        final String username = randomString();
-        final String password = randomString();
+        TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
+
+        final String username = TestUtil.randomString();
+        final String password = TestUtil.randomString();
         final String confirm = password;
-        final String voicemailPin = randomString().substring(0,10);
+        final String voicemailPin = String.valueOf(TestUtil.randomNumeric(8));
         final String enableEmail = "true";
         final String enableSms = "true";
-        final String emailAddress = randomString();
-        final String smsAddress = randomString();
+        final String emailAddress = TestUtil.randomString();
+        final String smsAddress = TestUtil.randomString();
 
         request.setMethod("POST");
         request.setParameter("username", username);
@@ -64,8 +68,6 @@ public class AddSubscriberServletTest
         request.setParameter("emailAddress", emailAddress);
         request.setParameter("smsAddress", smsAddress);
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
         servlet.service(request, response);
 
         // verify a subscriber was created for the username and is associated with the created subscriber
@@ -108,7 +110,7 @@ public class AddSubscriberServletTest
         assertTrue(admin);
         assertTrue(passive);
 
-        tx.commit();
+        tx.rollback();
     }
 
     @Test
@@ -118,10 +120,10 @@ public class AddSubscriberServletTest
         assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -147,16 +149,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withoutAdministratorSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, false);
-
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, false, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -179,16 +181,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withNullUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionSubscriber(request, true);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
         request.setParameter("username", (String)null);
-        request.setParameter("password", randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -212,16 +214,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withBlankUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionSubscriber(request, true);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
         request.setParameter("username", " ");
-        request.setParameter("password", randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
-
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -245,16 +247,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withNullPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", (String)null);
-        request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", (String)null);
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -278,16 +280,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withBlankPassword_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", " ");
-        request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", " ");
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -311,16 +313,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withNullConfirmPassword_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", (String)null);
-        request.setParameter("voicemailPin", randomString());
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
+        request.setParameter("confirmPassword", (String)null);
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -344,16 +346,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withBlankConfirmPassword_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", " ");
-        request.setParameter("voicemailPin", randomString());
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
+        request.setParameter("confirmPassword", " ");
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -377,16 +379,16 @@ public class AddSubscriberServletTest
     public void test_doPost_whenPasswordAndConfirmPasswordDontMatch_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", request.getParameter("password") + "foo");
-        request.setParameter("voicemailPin", randomString());
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
+        request.setParameter("confirmPassword", request.getParameter("password") + "foo");
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -409,16 +411,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withNullVoicemailPin_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
-
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", (String)null);
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", (String)null);
 
         try
         {
@@ -441,16 +443,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withBlankVoicemailPin_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
-        
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", "");
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", "");
 
         try
         {
@@ -473,16 +475,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withNonNumericVoicemailPin_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
-        
-        request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
-        request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", "ABC");
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session);
+
+        request.setMethod("POST");
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", "ABC");
 
         try
         {
@@ -505,16 +507,16 @@ public class AddSubscriberServletTest
     public void test_doPost_withEnableEmailCheckedAndNoEmailAddress_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
     {
-        setSessionSubscriber(request, true);
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
 
+        TestUtil.setSessionSubscriber(request, true, session);
+
         request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString().substring(0,10));
+        request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
         request.setParameter("enableEmail", "true");
 
         try
@@ -541,13 +543,13 @@ public class AddSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        setSessionSubscriber(request, true);
+        TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString().substring(0,10));
+        request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
         request.setParameter("enableSms", "true");
 
         try
@@ -568,19 +570,19 @@ public class AddSubscriberServletTest
     }
     
     @Test
-    public void test_doPost_adminSubscriberWithEmailAddresNoEnableEmail_editsAccount() throws ServletException, IOException
+    public void test_doPost_adminSubscriberWithEmailAddressNoEnableEmail_editsAccount() throws ServletException, IOException
     {
-        setSessionSubscriber(request, true); // admin subscriber
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
 
-        final String username = randomString();
-        final String password = randomString();
+        TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
+
+        final String username = TestUtil.randomString();
+        final String password = TestUtil.randomString();
         final String confirm = password;
-        final String voicemailPin = randomString().substring(0,10);
+        final String voicemailPin = String.valueOf(TestUtil.randomNumeric(8));
         final String enableEmail = "false";
-        final String emailAddress = randomString();
+        final String emailAddress = TestUtil.randomString();
 
         request.setMethod("POST");
         request.setParameter("username", username);
@@ -606,17 +608,17 @@ public class AddSubscriberServletTest
     @Test
     public void test_doPost_adminSubscriberWithSmsAddresNoEnableSms_editsAccount() throws ServletException, IOException
     {
-        setSessionSubscriber(request, true); // admin subscriber
-        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
+
+        TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
         
-        final String username = randomString();
-        final String password = randomString();
+        final String username = TestUtil.randomString();
+        final String password = TestUtil.randomString();
         final String confirm = password;
-        final String voicemailPin = randomString().substring(0,10);
+        final String voicemailPin = String.valueOf(TestUtil.randomNumeric(8));
         final String enableSms = "false";
-        final String smsAddress = randomString();
+        final String smsAddress = TestUtil.randomString();
 
         request.setMethod("POST");
         request.setParameter("username", username);
@@ -637,21 +639,5 @@ public class AddSubscriberServletTest
         assertEquals(smsAddress, subscriber.getSmsAddress());
 
         tx.commit();
-    }
-
-    // TODO this is used in several servlets - refactor it into some test utility class
-    private void setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
-    {
-        Subscriber subscriber = new Subscriber();
-        subscriber.setIsAdministrator(isAdministrator);
-
-        HttpSession session = request.getSession();
-        session.setAttribute("subscriber", subscriber);
-    }
-
-    // TODO refactor this out into test utils
-    private String randomString()
-    {
-        return String.valueOf(System.currentTimeMillis());
     }
 }

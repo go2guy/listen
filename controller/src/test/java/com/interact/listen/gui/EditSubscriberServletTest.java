@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
@@ -13,9 +14,7 @@ import com.interact.listen.security.SecurityUtil;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -47,17 +46,17 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, true); // admin subscriber
+        subscriber = TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
 
         final String id = String.valueOf(subscriber.getId());
-        final String username = randomString();
-        final String password = randomString();
+        final String username = TestUtil.randomString();
+        final String password = TestUtil.randomString();
         final String confirm = password;
         final String voicemailPin = String.valueOf(subscriber.getId());
         final String enableEmail = "true";
         final String enableSms = "true";
-        final String emailAddress = randomString();
-        final String smsAddress = randomString();
+        final String emailAddress = TestUtil.randomString();
+        final String smsAddress = TestUtil.randomString();
 
         request.setMethod("POST");
         request.setParameter("id", id);
@@ -88,17 +87,17 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
         
         final String id = String.valueOf(subscriber.getId());
-        final String username = randomString();
-        final String password = randomString();
+        final String username = TestUtil.randomString();
+        final String password = TestUtil.randomString();
         final String confirm = password;
         final String voicemailPin = String.valueOf(subscriber.getId());
         final String enableEmail = "true";
         final String enableSms = "true";
-        final String emailAddress = randomString();
-        final String smsAddress = randomString();
+        final String emailAddress = TestUtil.randomString();
+        final String smsAddress = TestUtil.randomString();
 
         request.setMethod("POST");
         request.setParameter("id", id);
@@ -131,21 +130,21 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
         
         Subscriber subscriber2 = getPopulatedSubscriber();
         session.save(subscriber2);
 
         // We want the subscriber being edited to be subscriber 2 being edited by subscriber 1 who is not an admin
         final String id = String.valueOf(subscriber2.getId());
-        final String username = randomString();
-        final String password = randomString();
+        final String username = TestUtil.randomString();
+        final String password = TestUtil.randomString();
         final String confirm = password;
         final String voicemailPin = String.valueOf(subscriber2.getId());
         final String enableEmail = "true";
         final String enableSms = "true";
-        final String emailAddress = randomString();
-        final String smsAddress = randomString();
+        final String emailAddress = TestUtil.randomString();
+        final String smsAddress = TestUtil.randomString();
 
         request.setMethod("POST");
         request.setParameter("id", id);
@@ -182,10 +181,10 @@ public class EditSubscriberServletTest
         assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
@@ -214,14 +213,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("username", (String)null);
-        request.setParameter("password", randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -248,14 +247,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
         request.setParameter("username", " ");
-        request.setParameter("password", randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -282,14 +281,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
+        request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", (String)null);
         request.setParameter("confirmPassword", "password");
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -316,14 +315,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
+        request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", " ");
         request.setParameter("confirmPassword", "password");
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -350,14 +349,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", (String)null);
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -384,14 +383,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", " ");
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -418,14 +417,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password") + "foo");
-        request.setParameter("voicemailPin", randomString());
+        request.setParameter("voicemailPin", TestUtil.randomString());
 
         try
         {
@@ -451,12 +450,12 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", (String)null);
 
@@ -484,12 +483,12 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", "");
 
@@ -517,12 +516,12 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", "ABC");
 
@@ -550,14 +549,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString().substring(0,10));
+        request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
         request.setParameter("enableEmail", "true");
 
         try
@@ -584,14 +583,14 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, false);
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
-        request.setParameter("username", randomString());
-        request.setParameter("password", randomString());
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", randomString().substring(0,10));
+        request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
         request.setParameter("enableSms", "true");
 
         try
@@ -617,15 +616,15 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, true);
+        subscriber = TestUtil.setSessionSubscriber(request, true, session);
         
         final String id = String.valueOf(subscriber.getId());
-        final String username = randomString();
-        final String password = randomString();
+        final String username = TestUtil.randomString();
+        final String password = TestUtil.randomString();
         final String confirm = password;
         final String voicemailPin = String.valueOf(subscriber.getId());
         final String enableEmail = "false";
-        final String emailAddress = randomString();
+        final String emailAddress = TestUtil.randomString();
 
         request.setMethod("POST");
         request.setParameter("id", id);
@@ -655,15 +654,15 @@ public class EditSubscriberServletTest
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction tx = session.beginTransaction();
         
-        subscriber = setSessionSubscriber(request, true);
+        subscriber = TestUtil.setSessionSubscriber(request, true, session);
         
         final String id = String.valueOf(subscriber.getId());
-        final String username = randomString();
-        final String password = randomString();
+        final String username = TestUtil.randomString();
+        final String password = TestUtil.randomString();
         final String confirm = password;
         final String voicemailPin = String.valueOf(subscriber.getId());
         final String enableSms = "false";
-        final String smsAddress = randomString();
+        final String smsAddress = TestUtil.randomString();
 
         request.setMethod("POST");
         request.setParameter("id", id);
@@ -696,29 +695,5 @@ public class EditSubscriberServletTest
         s.setVoicemailPin(System.currentTimeMillis());
         s.setVersion(1);
         return s;
-    }
-
-    // TODO this is used in several servlets - refactor it into some test utility class
-    private Subscriber setSessionSubscriber(HttpServletRequest request, Boolean isAdministrator)
-    {
-        Session hibernateSession = HibernateUtil.getSessionFactory().getCurrentSession();
-        Subscriber subscriber = new Subscriber();
-        subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
-        subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
-        subscriber.setVoicemailPin(System.currentTimeMillis());
-        subscriber.setIsAdministrator(isAdministrator);
-        
-        hibernateSession.save(subscriber);
-
-        HttpSession session = request.getSession();
-        session.setAttribute("subscriber", subscriber);
-        
-        return subscriber;
-    }
-
-    // TODO refactor this out into test utils
-    private String randomString()
-    {
-        return String.valueOf(System.currentTimeMillis());
     }
 }
