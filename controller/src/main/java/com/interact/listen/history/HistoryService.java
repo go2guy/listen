@@ -46,7 +46,8 @@ public class HistoryService
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Changed voicemail PIN");
-        history.setDescription("Changed voicemail PIN from [" + oldPin + "] to [" + newPin + "]");
+        history.setDescription("Changed [" + onSubscriber.getUsername() + "]'s voicemail PIN from [" + oldPin +
+                               "] to [" + newPin + "]");
         history.setOnSubscriber(onSubscriber);
         history.setService(Service.VOICEMAIL.toString());
         write(history);
@@ -97,6 +98,7 @@ public class HistoryService
         history.setAction("Forwarded voicemail");
         history.setDescription("Forwarded " + getFriendlyVoicemailIdentifier(voicemail));
         history.setService(Service.VOICEMAIL.toString());
+        history.setOnSubscriber(voicemail.getSubscriber());
         write(history);
     }
 
@@ -104,7 +106,8 @@ public class HistoryService
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Left voicemail");
-        history.setDescription(voicemail.getLeftBy() + " left voicemail");
+        history.setDescription(voicemail.getLeftBy() + " left voicemail for [" +
+                               voicemail.getSubscriber().getUsername() + "]");
         history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
@@ -183,7 +186,7 @@ public class HistoryService
 
     private static String getFriendlyVoicemailIdentifier(Voicemail voicemail)
     {
-        return "voicemail from [" + voicemail.getLeftBy() + "] left on [" +
-               getFormattedDate(voicemail.getDateCreated()) + "]";
+        return "voicemail for [" + voicemail.getSubscriber().getUsername() + "] from [" + voicemail.getLeftBy() +
+               "] left on [" + getFormattedDate(voicemail.getDateCreated()) + "]";
     }
 }

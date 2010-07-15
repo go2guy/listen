@@ -159,7 +159,7 @@ public class GetHistoryListServlet extends HttpServlet
 
         if(history.getSubscriber() == null || history.getSubscriber().getUsername() == null)
         {
-            json.append("\"subscriber\":\"\",");
+            json.append("\"subscriber\":\"System\",");
         }
         else
         {
@@ -175,10 +175,6 @@ public class GetHistoryListServlet extends HttpServlet
 
         String description = marshaller.convertAndEscape(Long.class, history.getDescription());
         json.append("\"description\":\"").append(description).append("\",");
-
-        String onSubscriber = marshaller.convertAndEscape(String.class,
-                                                          history.getOnSubscriber() == null ? "" : history.getOnSubscriber().getUsername());
-        json.append("\"onSubscriber\":\"").append(onSubscriber).append("\",");
 
         String channel = marshaller.convertAndEscape(String.class, history.getChannel().toString());
         json.append("\"channel\":\"").append(channel).append("\"");
