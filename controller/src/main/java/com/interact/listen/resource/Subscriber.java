@@ -355,6 +355,13 @@ public class Subscriber extends Resource implements Serializable
     }
 
     @Override
+    public void afterSave(PersistenceService persistenceService)
+    {
+        HistoryService historyService = new HistoryService(persistenceService);
+        historyService.writeCreatedSubscriber(this);
+    }
+
+    @Override
     public void afterUpdate(PersistenceService persistenceService, Resource original)
     {
         Subscriber subscriber = (Subscriber)original;

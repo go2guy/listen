@@ -1,9 +1,7 @@
 package com.interact.listen.history;
 
 import com.interact.listen.PersistenceService;
-import com.interact.listen.resource.ActionHistory;
-import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.Voicemail;
+import com.interact.listen.resource.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -51,6 +49,16 @@ public class HistoryService
         history.setDescription("Changed voicemail PIN from [" + oldPin + "] to [" + newPin + "]");
         history.setOnSubscriber(onSubscriber);
         history.setService(Service.VOICEMAIL.toString());
+        write(history);
+    }
+
+    public void writeCreatedSubscriber(Subscriber subscriber)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Created subscriber");
+        history.setDescription("Created subscriber [" + subscriber.getUsername() + "]");
+        history.setOnSubscriber(subscriber);
+        history.setService(Service.CONFIGURATION.toString());
         write(history);
     }
 
