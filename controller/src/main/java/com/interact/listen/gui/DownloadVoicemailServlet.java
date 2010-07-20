@@ -75,7 +75,7 @@ public class DownloadVoicemailServlet extends HttpServlet
         try
         {
             // input
-            URL url = new URL(ServletUtil.encodeUri(voicemail.getUri()));
+            URL url = ServletUtil.encodeUri(voicemail.getUri());
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();

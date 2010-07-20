@@ -75,7 +75,7 @@ public class GetConferenceRecordingServlet extends HttpServlet
         try
         {
             // input
-            URL url = new URL(ServletUtil.encodeUri(recording.getUri()));
+            URL url = ServletUtil.encodeUri(recording.getUri());
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
