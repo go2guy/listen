@@ -30,7 +30,7 @@ start() {
    
     echo -n $"Starting listen-controller: "
     # Start me up!
-    java -Dport=9090 -Dext=`find /interact -iname 'mysql-connector-*.jar' -type 'f' | head -1` -Dcom.interact.listen.logDir=/interact/listen/logs -jar $LISTEN_HOME/lib/listen-controller.war <&- 1>/interact/listen/logs/listen-controller.console 2>&1 &
+    java -Dport=9090 -Dcom.interact.listen.env=PROD -Dext=`find /interact -iname 'mysql-connector-*.jar' -type 'f' | head -1` -Dcom.interact.listen.logDir=/interact/listen/logs -jar $LISTEN_HOME/lib/listen-controller.war <&- 1>/interact/listen/logs/listen-controller.console 2>&1 &
     RETVAL=$?
     JPID=$!
     echo $JPID > /var/run/listen-controller.pid
