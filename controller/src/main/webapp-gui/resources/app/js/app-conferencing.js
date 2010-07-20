@@ -165,6 +165,7 @@ function Conference(id) {
         retrieveList: function(data) {
             return data;
         },
+        reverse: true,
         alternateRowColors: true,
         updateRowCallback: function(row, data, animate) {
             LISTEN.setFieldContent(row.find('.recording-cell-dateCreated'), data.dateCreated, animate);
