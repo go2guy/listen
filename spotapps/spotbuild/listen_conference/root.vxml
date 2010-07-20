@@ -68,7 +68,7 @@
 	<var name="isAdminMuted" expr="'false'" />
 	<var name="isPassive" expr="'false'" />
 	<var name="isActive" expr="'false'" />
-	<var name="pinLength" expr="'10'" />
+	<var name="pinLength" expr="'10'" /> <!-- Config Pin Length  -->
 	<var name="index" expr="'0'" />
 	<var name="memberCnt" expr="'0'" />
 	<var name="prevPath" expr="''" />
