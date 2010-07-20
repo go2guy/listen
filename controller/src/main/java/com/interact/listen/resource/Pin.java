@@ -197,7 +197,7 @@ public class Pin extends Resource implements Serializable
 
     public static String generateRandomPin()
     {
-        int pinLength = Integer.parseInt(Configuration.get(Property.Key.PINLENGTH));
+        int pinLength = Integer.parseInt(Configuration.get(Property.Key.CONFERENCING_PINLENGTH));
         SecureRandom random = new SecureRandom();
         StringBuilder number = new StringBuilder();
         while(number.length() < pinLength)

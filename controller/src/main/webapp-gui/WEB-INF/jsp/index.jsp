@@ -214,8 +214,23 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                       </tbody>
                     </table>
                   </fieldset>
-                </form>
+                </form><%
 
+  if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
+                <form id="conferencing-configuration-form">
+                  <fieldset>
+                    <legend>Conferencing</legend>
+                    <div class="form-error-message"></div>
+                    <div class="form-success-message"></div>
+                    <table>
+                      <tbody>
+                        <tr><td><label for="conferencing-configuration-pinLength">PIN length</label></td><td><input type="text" id="conferencing-configuration-pinLength" name="conferencing-configuration-pinLength"/></td></tr>
+                        <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save configuration">Save</button></td></tr>
+                      </tbody>
+                    </table>
+                  </fieldset>
+                </form><%
+  } %>
               </div>
             </div>
             

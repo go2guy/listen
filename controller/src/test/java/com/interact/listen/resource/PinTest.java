@@ -213,10 +213,10 @@ public class PinTest
     @Test
     public void test_generateRandomPin_withSystemPropertyOf30_returns30DigitNumericPin()
     {
-        String origProperty = Configuration.get(Property.Key.PINLENGTH);
+        String origProperty = Configuration.get(Property.Key.CONFERENCING_PINLENGTH);
         try
         {
-            Configuration.set(Property.Key.PINLENGTH, "30");
+            Configuration.set(Property.Key.CONFERENCING_PINLENGTH, "30");
             String number = Pin.generateRandomPin();
             assertTrue(number.matches("^[0-9]{30}$"));
         }
@@ -224,7 +224,7 @@ public class PinTest
         {
             if(origProperty != null)
             {
-                Configuration.set(Property.Key.PINLENGTH, origProperty);
+                Configuration.set(Property.Key.CONFERENCING_PINLENGTH, origProperty);
             }
         }
     }

@@ -7,14 +7,14 @@ import javax.persistence.*;
 public class Property
 {
     public static enum Key {
-        DNIS_MAPPING      ("com.interact.listen.dnisMapping", "770:mailbox;990:conferencing;*:voicemail"),
-        MAIL_SMTPHOST     ("com.interact.listen.mail.smtpHost", "localhost"),
-        MAIL_SMTPUSERNAME ("com.interact.listen.mail.smtpUsername", ""),
-        MAIL_SMTPPASSWORD ("com.interact.listen.mail.smtpPassword", ""),
-        MAIL_FROMADDRESS  ("com.interact.listen.mail.fromAddress", "noreply@localhost"),
-        PINLENGTH         ("com.interact.listen.pinLength", "10"),
-        PAGER_NUMBER      ("com.interact.listen.pagerNumber", "4024292889"),
-        ALTERNATE_NUMBER  ("com.interact.listen.alternateNumber", "");
+        DNIS_MAPPING           ("com.interact.listen.dnisMapping",            "770:mailbox;990:conferencing;*:voicemail"),
+        MAIL_SMTPHOST          ("com.interact.listen.mail.smtpHost",          "localhost"),
+        MAIL_SMTPUSERNAME      ("com.interact.listen.mail.smtpUsername",      ""),
+        MAIL_SMTPPASSWORD      ("com.interact.listen.mail.smtpPassword",      ""),
+        MAIL_FROMADDRESS       ("com.interact.listen.mail.fromAddress",       "noreply@localhost"),
+        CONFERENCING_PINLENGTH ("com.interact.listen.conferencing.pinLength", "10"),
+        PAGER_NUMBER           ("com.interact.listen.pagerNumber",            "4024292889"),
+        ALTERNATE_NUMBER       ("com.interact.listen.alternateNumber",        "");
 
         private final String key;
         private final String defaultValue;

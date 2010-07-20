@@ -24,6 +24,8 @@ $(document).ready(function() {
                         var mapping = mappings[i].split(':');
                         addDnisRow(mapping[0], mapping[1]);
                     }
+
+                    $('#conferencing-configuration-pinLength').val(data['com.interact.listen.conferencing.pinLength']);
                 },
                 complete: function(xhr, textStatus) {
                     var elapsed = LISTEN.timestamp() - start;
@@ -75,6 +77,7 @@ $(document).ready(function() {
     });
 
     $('#mail-form').submit(function() {
+        $('#mail-form .form-error-message').text('').hide();
         var start = LISTEN.timestamp();
         $.ajax({
             type: 'POST',
@@ -154,6 +157,32 @@ $(document).ready(function() {
             }
         });
 
+        return false;
+    });
+
+    $('#conferencing-configuration-form').submit(function() {
+        $('#conferencing-configuration-form .form-error-message').text('').hide();
+        var start = LISTEN.timestamp();
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/setProperties',
+            data: { 'com.interact.listen.conferencing.pinLength': $('#conferencing-configuration-pinLength').val() },
+            success: function(data) {
+                application.load();
+                var elem = $('#conferencing-configuration-form .form-success-message')
+                elem.text('Conferencing settings updated').slideDown(100);
+                setTimeout(function() {
+                    elem.slideUp(100);
+                }, 2000);
+            },
+            error: function(xhr) {
+                $('#conferencing-configuration-form .form-error-message').text(xhr.responseText).slideDown(100);
+            },
+            complete: function(xhr, textStatus) {
+                var elapsed = LISTEN.timestamp() - start;
+                $('#latency').text(elapsed);
+            }
+        });
         return false;
     });
 });

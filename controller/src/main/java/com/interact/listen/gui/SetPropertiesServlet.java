@@ -55,28 +55,50 @@ public class SetPropertiesServlet extends HttpServlet
                 continue;
             }
 
-            if(key.equals(Property.Key.DNIS_MAPPING))
+            // validation for properties that need it
+            switch(key)
             {
-                Map<String, String> mappings = GetDnisServlet.dnisConfigurationToMap(value);
-                for(Map.Entry<String, String> entry : mappings.entrySet())
-                {
-                    if(entry.getKey().contains("*") && entry.getKey().indexOf("*") != entry.getKey().length() - 1)
+                case DNIS_MAPPING:
+                    Map<String, String> mappings = GetDnisServlet.dnisConfigurationToMap(value);
+                    for(Map.Entry<String, String> entry : mappings.entrySet())
                     {
-                        throw new BadRequestServletException("Wildcard (*) may only be at the end of mapping " +
-                                                             entry.getKey());
+                        if(entry.getKey().contains("*") && entry.getKey().indexOf("*") != entry.getKey().length() - 1)
+                        {
+                            throw new BadRequestServletException("Wildcard (*) may only be at the end of mapping " +
+                                                                 entry.getKey());
+                        }
                     }
-                }
 
-                List<String> mappingKeys = GetDnisServlet.dnisConfigurationKeys(value);
-                Set<String> verify = new HashSet<String>(mappingKeys.size());
-                for(String mappingKey : mappingKeys)
-                {
-                    if(verify.contains(mappingKey))
+                    List<String> mappingKeys = GetDnisServlet.dnisConfigurationKeys(value);
+                    Set<String> verify = new HashSet<String>(mappingKeys.size());
+                    for(String mappingKey : mappingKeys)
                     {
-                        throw new BadRequestServletException("Mapping [" + mappingKey + "] cannot be defined twice");
+                        if(verify.contains(mappingKey))
+                        {
+                            throw new BadRequestServletException("Mapping [" + mappingKey + "] cannot be defined twice");
+                        }
+                        verify.add(mappingKey);
                     }
-                    verify.add(mappingKey);
-                }
+                    break;
+
+                case CONFERENCING_PINLENGTH:
+                    try
+                    {
+                        int intValue = Integer.parseInt(value);
+                        if(intValue < 3 || intValue > 16)
+                        {
+                            throw new BadRequestServletException("Conferencing PIN length [" + value +
+                                                                 "] must be between 3 and 16 (inclusive)");
+                        }
+                    }
+                    catch(NumberFormatException e)
+                    {
+                        throw new BadRequestServletException("Conferencing PIN length [" + value + "] must be a number");
+                    }
+                    
+                default:
+                    // no validation
+                    break;
             }
 
             Configuration.set(key, value);
