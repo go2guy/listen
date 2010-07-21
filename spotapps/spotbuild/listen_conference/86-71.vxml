@@ -5,18 +5,18 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'86-43'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'86-51'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Variables</log>
-            <log>INFO: Entered assign-variable.vxml [105-64]</log>
-            <log>INFO: Current value [<value expr="isActive"/>]</log>
-<assign name="isActive" expr="'true'+''" />
-<log>INFO: Updated value [<value expr="isActive"/>]</log>
-<log>INFO: Current value [<value expr="DNIS"/>]</log>
-<assign name="DNIS" expr="''+''" />
-<log>INFO: Updated value [<value expr="DNIS"/>]</log>
+	    <log target="status">Assign Rollcall Path</log>
+            <log>INFO: Entered assign-variable.vxml [86-71]</log>
+            <log>INFO: Current value [<value expr="rollcallPath"/>]</log>
+<assign name="rollcallPath" expr="rollcallPath+subscriber" />
+<log>INFO: Updated value [<value expr="rollcallPath"/>]</log>
+<log>INFO: Current value [<value expr="rollcallPath"/>]</log>
+<assign name="rollcallPath" expr="rollcallPath+rollcallPathSuf" />
+<log>INFO: Updated value [<value expr="rollcallPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

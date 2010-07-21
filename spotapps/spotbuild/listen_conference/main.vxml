@@ -69,7 +69,7 @@
 	<var name="SB_UV_pstnLength"/>
 	<var name="SB_UV_DNIS"/>
 	<var name="SB_UV_isRecording"/>
-	<var name="SB_UV_recPath"/>
+	<var name="SB_UV_recLoopAttempt"/>
 	<var name="SB_UV_recPartCnt"/>
 	<var name="SB_UV_recFile"/>
 	<var name="SB_UV_recSID"/>
@@ -79,6 +79,7 @@
 	<var name="SB_UV_destAudioFile"/>
 	<var name="SB_UV_timeStamp"/>
 	<var name="SB_UV_rollcallPath"/>
+	<var name="SB_UV_rollcallPathSuf"/>
 	<var name="SB_UV_isStarted"/>
 	<var name="SB_UV_subID"/>
 	<var name="SB_UV_confStartTime"/>
@@ -87,6 +88,8 @@
 	<var name="SB_UV_outDialStart"/>
 	<var name="SB_UV_confDescription"/>
 	<var name="SB_UV_outDialStop"/>
+	<var name="SB_UV_confStatus"/>
+	<var name="SB_UV_subscriber"/>
 
     
     <form id="beginDocument">
@@ -254,8 +257,8 @@
 			<if cond="SB_UV_isRecording != undefined">
 				<assign name="isRecording" expr="SB_UV_isRecording" />
 			</if>
-			<if cond="SB_UV_recPath != undefined">
-				<assign name="recPath" expr="SB_UV_recPath" />
+			<if cond="SB_UV_recLoopAttempt != undefined">
+				<assign name="recLoopAttempt" expr="SB_UV_recLoopAttempt" />
 			</if>
 			<if cond="SB_UV_recPartCnt != undefined">
 				<assign name="recPartCnt" expr="SB_UV_recPartCnt" />
@@ -284,6 +287,9 @@
 			<if cond="SB_UV_rollcallPath != undefined">
 				<assign name="rollcallPath" expr="SB_UV_rollcallPath" />
 			</if>
+			<if cond="SB_UV_rollcallPathSuf != undefined">
+				<assign name="rollcallPathSuf" expr="SB_UV_rollcallPathSuf" />
+			</if>
 			<if cond="SB_UV_isStarted != undefined">
 				<assign name="isStarted" expr="SB_UV_isStarted" />
 			</if>
@@ -307,6 +313,12 @@
 			</if>
 			<if cond="SB_UV_outDialStop != undefined">
 				<assign name="outDialStop" expr="SB_UV_outDialStop" />
+			</if>
+			<if cond="SB_UV_confStatus != undefined">
+				<assign name="confStatus" expr="SB_UV_confStatus" />
+			</if>
+			<if cond="SB_UV_subscriber != undefined">
+				<assign name="subscriber" expr="SB_UV_subscriber" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

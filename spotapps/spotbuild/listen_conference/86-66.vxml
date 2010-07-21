@@ -5,24 +5,25 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'86-66'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'86-77'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
 	            var result = eval("("+returnVal+")");
-return result.description;
+result = result.subscriber.href;
+return getNextElement('L',result,'/');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Description</log>
-            <log>INFO: Entered run-javascript.vxml [86-48]</log>
+            <log target="status">Get Subscriber</log>
+            <log>INFO: Entered run-javascript.vxml [86-66]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="confDescription" expr="II_SB_userJava" />   
+            <assign name="subscriber" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

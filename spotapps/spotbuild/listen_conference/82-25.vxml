@@ -14,6 +14,9 @@
             <log>INFO: Current value [<value expr="FILE1"/>]</log>
 <assign name="FILE1" expr="audioURL+''" />
 <log>INFO: Updated value [<value expr="FILE1"/>]</log>
+<log>INFO: Current value [<value expr="OPERATION"/>]</log>
+<assign name="OPERATION" expr="'delete'+''" />
+<log>INFO: Updated value [<value expr="OPERATION"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

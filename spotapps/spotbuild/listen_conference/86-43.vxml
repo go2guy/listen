@@ -5,7 +5,7 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'86-7'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'86-9'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
@@ -17,6 +17,9 @@
 <log>INFO: Current value [<value expr="request"/>]</log>
 <assign name="request" expr="'get'+''" />
 <log>INFO: Updated value [<value expr="request"/>]</log>
+<log>INFO: Current value [<value expr="params"/>]</log>
+<assign name="params" expr="'/'+confID" />
+<log>INFO: Updated value [<value expr="params"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
