@@ -19,7 +19,7 @@ return getNextElement('L',result.results[count].href,'/');
 
     <form id="beginDocument">
         <block>
-            
+            <log target="status">Grtng Select</log>
             <log>INFO: Entered run-javascript.vxml [143-19]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(grtngList,count)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="grtngSelect" expr="II_SB_userJava" />   

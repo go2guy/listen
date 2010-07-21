@@ -68,6 +68,9 @@
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_toggleLight"/>
 	<var name="SB_UV_accessNum"/>
+	<var name="SB_UV_vmPathMiddle"/>
+	<var name="SB_UV_vmPathSuffex"/>
+	<var name="SB_UV_grtPathSuffex"/>
 
     
     <form id="beginDocument">
@@ -228,6 +231,15 @@
 			</if>
 			<if cond="SB_UV_accessNum != undefined">
 				<assign name="accessNum" expr="SB_UV_accessNum" />
+			</if>
+			<if cond="SB_UV_vmPathMiddle != undefined">
+				<assign name="vmPathMiddle" expr="SB_UV_vmPathMiddle" />
+			</if>
+			<if cond="SB_UV_vmPathSuffex != undefined">
+				<assign name="vmPathSuffex" expr="SB_UV_vmPathSuffex" />
+			</if>
+			<if cond="SB_UV_grtPathSuffex != undefined">
+				<assign name="grtPathSuffex" expr="SB_UV_grtPathSuffex" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

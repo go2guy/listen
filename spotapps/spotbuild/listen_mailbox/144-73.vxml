@@ -5,18 +5,27 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'144-37'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'144-75'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">OPERATION</log>
-            <log>INFO: Entered assign-variable.vxml [144-35]</log>
-            <log>INFO: Current value [<value expr="OPERATION"/>]</log>
-<assign name="OPERATION" expr="'copy'+''" />
-<log>INFO: Updated value [<value expr="OPERATION"/>]</log>
+	    <log target="status">Assign Check Folder</log>
+            <log>INFO: Entered assign-variable.vxml [144-73]</log>
+            <log>INFO: Current value [<value expr="FILE2"/>]</log>
+<assign name="FILE2" expr="FILE1+''" />
+<log>INFO: Updated value [<value expr="FILE2"/>]</log>
 <log>INFO: Current value [<value expr="FILE1"/>]</log>
-<assign name="FILE1" expr="FILE2+''" />
+<assign name="FILE1" expr="vmPathPrefix+vmPathMiddle" />
 <log>INFO: Updated value [<value expr="FILE1"/>]</log>
+<log>INFO: Current value [<value expr="FILE1"/>]</log>
+<assign name="FILE1" expr="FILE1+subFwd" />
+<log>INFO: Updated value [<value expr="FILE1"/>]</log>
+<log>INFO: Current value [<value expr="FILE1"/>]</log>
+<assign name="FILE1" expr="FILE1+vmPathSuffex" />
+<log>INFO: Updated value [<value expr="FILE1"/>]</log>
+<log>INFO: Current value [<value expr="OPERATION"/>]</log>
+<assign name="OPERATION" expr="'create'+''" />
+<log>INFO: Updated value [<value expr="OPERATION"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
