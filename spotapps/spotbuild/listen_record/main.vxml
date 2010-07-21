@@ -25,6 +25,7 @@
 	<var name="SB_UV_recSID"/>
 	<var name="SB_UV_recFile"/>
 	<var name="SB_UV_recPath"/>
+	<var name="SB_UV_recPathSuf"/>
 	<var name="SB_UV_recSize"/>
 	<var name="SB_UV_recLength"/>
 	<var name="SB_UV_resource"/>
@@ -44,6 +45,7 @@
 	<var name="SB_UV_recInfo"/>
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_confDescription"/>
+	<var name="SB_UV_subscriber"/>
 
     
     <form id="beginDocument">
@@ -73,6 +75,9 @@
 			</if>
 			<if cond="SB_UV_recPath != undefined">
 				<assign name="recPath" expr="SB_UV_recPath" />
+			</if>
+			<if cond="SB_UV_recPathSuf != undefined">
+				<assign name="recPathSuf" expr="SB_UV_recPathSuf" />
 			</if>
 			<if cond="SB_UV_recSize != undefined">
 				<assign name="recSize" expr="SB_UV_recSize" />
@@ -130,6 +135,9 @@
 			</if>
 			<if cond="SB_UV_confDescription != undefined">
 				<assign name="confDescription" expr="SB_UV_confDescription" />
+			</if>
+			<if cond="SB_UV_subscriber != undefined">
+				<assign name="subscriber" expr="SB_UV_subscriber" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

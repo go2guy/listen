@@ -34,7 +34,8 @@
 	<var name="arcadeID" expr="''" />
 	<var name="recSID" expr="''" />
 	<var name="recFile" expr="''" />
-	<var name="recPath" expr="'/var/www/html/listen/artifacts/conference/record/'" />
+	<var name="recPath" expr="'/var/www/html/listen/artifacts/'" />
+	<var name="recPathSuf" expr="'/conference/record/'" />
 	<var name="recSize" expr="''" />
 	<var name="recLength" expr="''" />
 	<var name="resource" expr="''" />
@@ -54,6 +55,7 @@
 	<var name="recInfo" expr="'Conference Audio'" />
 	<var name="sysAccessTime" expr="''" />
 	<var name="confDescription" expr="''" />
+	<var name="subscriber" expr="''" />
 
 
     <!-- Conference Variables -->
