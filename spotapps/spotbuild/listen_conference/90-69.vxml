@@ -9,11 +9,14 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Path</log>
+	    <log target="status">Set variables</log>
             <log>INFO: Entered assign-variable.vxml [90-69]</log>
             <log>INFO: Current value [<value expr="whichPath"/>]</log>
 <assign name="whichPath" expr="'confMenu'+''" />
 <log>INFO: Updated value [<value expr="whichPath"/>]</log>
+<log>INFO: Current value [<value expr="whichEvent"/>]</log>
+<assign name="whichEvent" expr="'TOGGLE_MUTE'+''" />
+<log>INFO: Updated value [<value expr="whichEvent"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
