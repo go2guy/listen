@@ -26,9 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 public class OutdialServlet extends HttpServlet
 {
@@ -88,7 +86,7 @@ public class OutdialServlet extends HttpServlet
             throw new UnauthorizedServletException("Not allowed to outdial");
         }
 
-        String adminSessionId = getConferenceAdminSessionId(session, conference);
+        String adminSessionId = StartRecordingServlet.getConferenceAdminSessionId(session, conference);
 
         // send request to all SPOT subscribers
         List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
@@ -111,24 +109,6 @@ public class OutdialServlet extends HttpServlet
         history.setDescription("Outdialed " + number);
         history.setSubscriber("Current subscriber");
         persistenceService.save(history);
-    }
-
-    private String getConferenceAdminSessionId(Session session, Conference conference)
-    {
-        Criteria criteria = session.createCriteria(Participant.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.createAlias("conference", "conference_alias");
-        criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
-        List<Participant> participants = (List<Participant>)criteria.list();
-        for(Participant participant : participants)
-        {
-            if(participant.getIsAdmin())
-            {
-                return participant.getSessionID();
-            }
-        }
-        throw new IllegalStateException("Could not find Admin participant for Conference"); // FIXME maybe use a checked
-        // exception here
     }
 
     private boolean isSubscriberAllowedToOutdial(Subscriber subscriber, Conference conference)

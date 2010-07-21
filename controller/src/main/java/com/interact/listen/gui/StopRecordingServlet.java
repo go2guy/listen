@@ -7,7 +7,9 @@ import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
-import com.interact.listen.resource.*;
+import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.ListenSpotSubscriber;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.InsaStatSender;
@@ -22,9 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 public class StopRecordingServlet extends HttpServlet
 {
@@ -72,7 +72,7 @@ public class StopRecordingServlet extends HttpServlet
             throw new BadRequestServletException("Conference must be started for recording");
         }
 
-        String adminSessionId = getConferenceAdminSessionId(session, conference);
+        String adminSessionId = StartRecordingServlet.getConferenceAdminSessionId(session, conference);
 
         // send request to all SPOT subscribers
         List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
@@ -88,23 +88,5 @@ public class StopRecordingServlet extends HttpServlet
                 throw new ServletException(e);
             }
         }
-    }
-    
-    private String getConferenceAdminSessionId(Session session, Conference conference)
-    {
-        Criteria criteria = session.createCriteria(Participant.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.createAlias("conference", "conference_alias");
-        criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
-        List<Participant> participants = (List<Participant>)criteria.list();
-        for(Participant participant : participants)
-        {
-            if(participant.getIsAdmin())
-            {
-                return participant.getSessionID();
-            }
-        }
-        throw new IllegalStateException("Could not find Admin participant for Conference"); // FIXME maybe use a checked
-        // exception here
     }
 }

@@ -89,8 +89,9 @@ public class StartRecordingServlet extends HttpServlet
             }
         }
     }
-    
-    private String getConferenceAdminSessionId(Session session, Conference conference)
+
+    // FIXME move this method somewhere else
+    public static String getConferenceAdminSessionId(Session session, Conference conference)
     {
         Criteria criteria = session.createCriteria(Participant.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
