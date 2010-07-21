@@ -86,10 +86,11 @@
 			<var name="SB_UV_hostName" expr="evt.values.hostName"/>
 			<var name="SB_UV_id" expr="evt.values.id"/>
 			<var name="SB_UV_sysAccessTime" expr="evt.values.sysAccessTime"/>
+			<var name="SB_UV_recPath" expr="evt.values.recPath"/>
         
             <assign name="II_SB_state" expr="'createSession'"/>
 	        <assign name="II_SB_status" expr="'createSession'"/>
-    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_argList SB_UV_cntrlURL SB_UV_hostName SB_UV_id SB_UV_sysAccessTime"/>
+    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_argList SB_UV_cntrlURL SB_UV_hostName SB_UV_id SB_UV_sysAccessTime SB_UV_recPath"/>
 	    </transition>
 
 	    <transition state="createSession" event="ccxml.created" name="evt" cond="(II_SB_whichID == II_SB_obcallid) &amp;&amp; (II_SB_obcallid.length != 0)">
