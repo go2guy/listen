@@ -32,7 +32,7 @@
 	<var name="ANI" expr="'remote'" />
 	<var name="DNIS" expr="'local'" />
 	<var name="status" expr="''" />
-	<var name="fileLocation" expr="'/var/www/html/listen/artifacts/voicemail/message/'" />
+	<var name="fileLocation" expr="'/var/www/html/listen/artifacts/'" />
 	<var name="isNew" expr="'true'" />
 	<var name="subID" expr="'null'" />
 	<var name="returnVal" expr="''" />

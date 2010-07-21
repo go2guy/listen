@@ -5,17 +5,23 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'54-28'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'53-108'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set File URL</log>
-            <log>INFO: Entered assign-variable.vxml [54-48]</log>
-            <log>INFO: Current value [<value expr="FILE1"/>]</log>
-<assign name="FILE1" expr="audioURL+''" />
+	    <log target="status">Assign Check Folder</log>
+            <log>INFO: Entered assign-variable.vxml [53-100]</log>
+            <log>INFO: Current value [<value expr="fileLocation"/>]</log>
+<assign name="fileLocation" expr="fileLocation+subID" />
+<log>INFO: Updated value [<value expr="fileLocation"/>]</log>
+<log>INFO: Current value [<value expr="fileLocation"/>]</log>
+<assign name="fileLocation" expr="fileLocation+'/voicemail/message/'" />
+<log>INFO: Updated value [<value expr="fileLocation"/>]</log>
+<log>INFO: Current value [<value expr="FILE1"/>]</log>
+<assign name="FILE1" expr="fileLocation+''" />
 <log>INFO: Updated value [<value expr="FILE1"/>]</log>
 <log>INFO: Current value [<value expr="OPERATION"/>]</log>
-<assign name="OPERATION" expr="'stat'+''" />
+<assign name="OPERATION" expr="'create'+''" />
 <log>INFO: Updated value [<value expr="OPERATION"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
