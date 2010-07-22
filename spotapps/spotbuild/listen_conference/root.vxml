@@ -44,7 +44,6 @@
 	<var name="maxHelp" expr="'3'" /> <!-- Config Help Max Help Count -->
 	<var name="MODE" expr="'APPEND'" />
 	<var name="DATA" expr="''" />
-	<var name="FILE" expr="'/interact/logs/'" />
 	<var name="isInfoSaved" expr="'false'" />
 	<var name="CONF_ID" expr="''" />
 	<var name="audioURL" expr="''" />
@@ -80,8 +79,6 @@
 	<var name="DNIS" expr="'local'" />
 	<var name="isRecording" expr="'false'" />
 	<var name="recLoopAttempt" expr="'false'" />
-	<var name="recPartCnt" expr="'0'" />
-	<var name="recFile" expr="''" />
 	<var name="recSID" expr="''" />
 	<var name="passValues" expr="'importedValue'" />
 	<var name="entryTone" expr="'/interact/apps/spotbuild/listen_conference/audio/confIn.00.wav'" />

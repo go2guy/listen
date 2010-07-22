@@ -34,7 +34,6 @@
 	<var name="SB_UV_maxHelp"/>
 	<var name="SB_UV_MODE"/>
 	<var name="SB_UV_DATA"/>
-	<var name="SB_UV_FILE"/>
 	<var name="SB_UV_isInfoSaved"/>
 	<var name="SB_UV_CONF_ID"/>
 	<var name="SB_UV_audioURL"/>
@@ -70,8 +69,6 @@
 	<var name="SB_UV_DNIS"/>
 	<var name="SB_UV_isRecording"/>
 	<var name="SB_UV_recLoopAttempt"/>
-	<var name="SB_UV_recPartCnt"/>
-	<var name="SB_UV_recFile"/>
 	<var name="SB_UV_recSID"/>
 	<var name="SB_UV_passValues"/>
 	<var name="SB_UV_entryTone"/>
@@ -151,9 +148,6 @@
 			</if>
 			<if cond="SB_UV_DATA != undefined">
 				<assign name="DATA" expr="SB_UV_DATA" />
-			</if>
-			<if cond="SB_UV_FILE != undefined">
-				<assign name="FILE" expr="SB_UV_FILE" />
 			</if>
 			<if cond="SB_UV_isInfoSaved != undefined">
 				<assign name="isInfoSaved" expr="SB_UV_isInfoSaved" />
@@ -259,12 +253,6 @@
 			</if>
 			<if cond="SB_UV_recLoopAttempt != undefined">
 				<assign name="recLoopAttempt" expr="SB_UV_recLoopAttempt" />
-			</if>
-			<if cond="SB_UV_recPartCnt != undefined">
-				<assign name="recPartCnt" expr="SB_UV_recPartCnt" />
-			</if>
-			<if cond="SB_UV_recFile != undefined">
-				<assign name="recFile" expr="SB_UV_recFile" />
 			</if>
 			<if cond="SB_UV_recSID != undefined">
 				<assign name="recSID" expr="SB_UV_recSID" />
