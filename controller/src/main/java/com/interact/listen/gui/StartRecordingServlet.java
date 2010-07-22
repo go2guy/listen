@@ -62,11 +62,11 @@ public class StartRecordingServlet extends HttpServlet
         Conference conference = (Conference)session.get(Conference.class, Long.valueOf(id));
         
         // System admins and owners of the conference are the only ones that can start recording.
-        if(!subscriber.getIsAdministrator() && !(subscriber.getConferences().contains(conference)))
+        if(!subscriber.ownsConference(conference))
         {
             throw new UnauthorizedServletException("Not allowed to start recording");
         }
-        
+
         if(!conference.getIsStarted())
         {
             throw new BadRequestServletException("Conference must be started for recording");

@@ -161,11 +161,17 @@ public class DropParticipantServletTest extends ListenTest
     {
         TestUtil.setSessionSubscriber(request, false, session);
 
+        Subscriber subscriber = new Subscriber();
+        subscriber.setUsername(TestUtil.randomString());
+        subscriber.setPassword(TestUtil.randomString());
+        session.save(subscriber);
+
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        conference.setSubscriber(subscriber);
         session.save(conference);
 
         Participant participant = new Participant();
@@ -177,7 +183,7 @@ public class DropParticipantServletTest extends ListenTest
         participant.setIsPassive(false);
         participant.setNumber(String.valueOf(System.currentTimeMillis()));
         participant.setSessionID(String.valueOf(System.currentTimeMillis()));
-        session.save(participant);
+        session.save(participant); // participant needs an id
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(participant.getId()));

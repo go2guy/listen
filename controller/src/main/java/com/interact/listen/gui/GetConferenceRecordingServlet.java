@@ -18,7 +18,9 @@ import com.interact.listen.stats.StatSender;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -65,7 +67,7 @@ public class GetConferenceRecordingServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
         ConferenceRecording recording = (ConferenceRecording)session.get(ConferenceRecording.class, Long.valueOf(id));
-        if(!(subscriber.getIsAdministrator() || subscriber.getConferences().contains(recording.getConference())))
+        if(!subscriber.ownsConference(recording.getConference()))
         {
             throw new UnauthorizedServletException("Not allowed to download recording");
         }

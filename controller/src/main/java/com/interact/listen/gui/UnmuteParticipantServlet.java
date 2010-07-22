@@ -63,7 +63,7 @@ public class UnmuteParticipantServlet extends HttpServlet
         PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
 
         Participant participant = (Participant)persistenceService.get(Participant.class, Long.valueOf(id));
-        if(!isSubscriberAllowedToUnmute(subscriber, participant))
+        if(!subscriber.canModifyParticipant(participant))
         {
             throw new UnauthorizedServletException("Not allowed to unmute participant");
         }
@@ -82,27 +82,5 @@ public class UnmuteParticipantServlet extends HttpServlet
                 throw new ServletException(e);
             }
         }
-    }
-
-    private boolean isSubscriberAllowedToUnmute(Subscriber subscriber, Participant participant)
-    {
-        // admins cannot be admin muted
-        if(participant.getIsAdmin())
-        {
-            return false;
-        }
-
-        if(subscriber.getIsAdministrator())
-        {
-            return true;
-        }
-
-        // does the current subscriber own the conference?
-        if(subscriber.getConferences().contains(participant.getConference()))
-        {
-            return true;
-        }
-
-        return false;
     }
 }

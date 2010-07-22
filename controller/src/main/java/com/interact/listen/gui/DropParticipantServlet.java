@@ -60,7 +60,7 @@ public class DropParticipantServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
         Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
-        if(!isSubscriberAllowedToDrop(subscriber, participant))
+        if(!subscriber.canModifyParticipant(participant))
         {
             throw new UnauthorizedServletException("Not allowed to drop participant");
         }
@@ -81,27 +81,5 @@ public class DropParticipantServlet extends HttpServlet
                 throw new ServletException(e);
             }
         }
-    }
-
-    private boolean isSubscriberAllowedToDrop(Subscriber subscriber, Participant participant)
-    {
-        // admins cannot be dropped
-        if(participant.getIsAdmin())
-        {
-            return false;
-        }
-
-        if(subscriber.getIsAdministrator())
-        {
-            return true;
-        }
-
-        // does the current subscriber own the conference?
-        if(subscriber.getConferences().contains(participant.getConference()))
-        {
-            return true;
-        }
-
-        return false;
     }
 }

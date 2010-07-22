@@ -404,4 +404,52 @@ public class Subscriber extends Resource implements Serializable
 
         return (List<Subscriber>)criteria.list();
     }
+
+    public boolean canModifyParticipant(Participant participant)
+    {
+        if(participant == null)
+        {
+            throw new IllegalArgumentException("Participant cannot be null");
+        }
+
+        if(participant.getIsAdmin())
+        {
+            return false;
+        }
+
+        if(getIsAdministrator())
+        {
+            return true;
+        }
+
+        Conference conference = participant.getConference();
+        if(conference == null)
+        {
+            throw new IllegalStateException("Participant [" + participant.getNumber() +
+                                            "] does not belong to a Conference");
+        }
+
+        // doesn't belong to a subscriber, and if we're here, they're not an admin. PWND.
+        if(conference.getSubscriber() == null)
+        {
+            return false;
+        }
+
+        return conference.getSubscriber().equals(this);
+    }
+
+    public boolean ownsConference(Conference conference)
+    {
+        if(getIsAdministrator())
+        {
+            return true;
+        }
+
+        if(conference.getSubscriber() == null)
+        {
+            return false;
+        }
+
+        return conference.getSubscriber().equals(this);
+    }
 }

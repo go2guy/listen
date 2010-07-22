@@ -81,7 +81,7 @@ public class OutdialServlet extends HttpServlet
             throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Conference not found", "text/plain");
         }
 
-        if(!isSubscriberAllowedToOutdial(subscriber, conference))
+        if(!subscriber.ownsConference(conference))
         {
             throw new UnauthorizedServletException("Not allowed to outdial");
         }
@@ -111,22 +111,6 @@ public class OutdialServlet extends HttpServlet
         persistenceService.save(history);
     }
 
-    private boolean isSubscriberAllowedToOutdial(Subscriber subscriber, Conference conference)
-    {
-        if(subscriber.getIsAdministrator())
-        {
-            return true;
-        }
-
-        // does the current subscriber own the conference?
-        if(subscriber.getConferences().contains(conference))
-        {
-            return true;
-        }
-
-        return false;
-    }
-    
     private String removeWhitespace(String theString)
     {
         char[] theChars = theString.toCharArray();

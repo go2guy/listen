@@ -161,11 +161,17 @@ public class UnmuteParticipantServletTest extends ListenTest
     {
         TestUtil.setSessionSubscriber(request, false, session);
 
+        Subscriber subscriber = new Subscriber();
+        subscriber.setUsername(TestUtil.randomString());
+        subscriber.setPassword(TestUtil.randomString());
+        session.save(subscriber);
+
         Conference conference = new Conference();
         conference.setIsStarted(true);
         conference.setIsRecording(false);
         conference.setId(System.currentTimeMillis());
         conference.setDescription(String.valueOf(System.currentTimeMillis()));
+        conference.setSubscriber(subscriber);
         session.save(conference);
 
         Participant participant = new Participant();
