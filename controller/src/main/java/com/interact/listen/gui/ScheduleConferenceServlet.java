@@ -174,14 +174,14 @@ public class ScheduleConferenceServlet extends HttpServlet
 
         if(!serviceActiveAddresses.isEmpty())
         {
-            activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, subscriber.getUsername(), description,
+            activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, subscriber.friendlyName(), description,
                                                            parsedDate, subscriberConference, phoneNumber, protocol,
                                                            subjectPrepend.toString(), "ACTIVE");
         }
 
         if(!servicePassiveAddresses.isEmpty())
         {
-            passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, subscriber.getUsername(), description,
+            passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, subscriber.friendlyName(), description,
                                                             parsedDate, subscriberConference, phoneNumber, protocol,
                                                             subjectPrepend.toString(), "PASSIVE");
         }

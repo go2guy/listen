@@ -306,4 +306,9 @@
     <changeSet author="development" id="30">
         <addForeignKeyConstraint baseColumnNames="FORWARDED_BY_SUBSCRIBER_ID" baseTableName="AUDIO" constraintName="FK_AUDIO_SUBSCRIBER_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
     </changeSet>
+    <changeSet author="development" id="31">
+        <addColumn tableName="SUBSCRIBER">
+            <column name="REAL_NAME" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

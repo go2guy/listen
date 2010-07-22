@@ -13,6 +13,7 @@ $(document).ready(function() {
                         success: function(data, textStatus, xhr) {
                             $('#profile-form-id').val(data.id);
                             $('#profile-form-username').val(data.username);
+                            $('#profile-form-realName').val(data.realName);
                             var numbers = '';
                             for(var i = 0; i < data.accessNumbers.length; i++) {
                                 numbers += data.accessNumbers[i];
@@ -58,6 +59,7 @@ $(document).ready(function() {
                         username: $('#profile-form-username').val(),
                         password: $('#profile-form-password').val(),
                         confirmPassword: $('#profile-form-confirmPassword').val(),
+                        realName: $('#profile-form-realName').val(),
                         voicemailPin: $('#profile-form-voicemailPin').val(),
                         enableEmail: $('#profile-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#profile-form-enableSmsNotification').is(":checked"),

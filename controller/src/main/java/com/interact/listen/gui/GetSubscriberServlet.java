@@ -92,6 +92,14 @@ public class GetSubscriberServlet extends HttpServlet
         String username = marshaller.convertAndEscape(String.class, subscriber.getUsername());
         json.append("\"username\":\"").append(username).append("\",");
 
+        json.append("\"realName\":\"");
+        if(subscriber.getRealName() != null)
+        {
+            String realName = marshaller.convertAndEscape(String.class, subscriber.getRealName());
+            json.append(realName);
+        }
+        json.append("\",");
+
         String lastLogin = marshaller.convertAndEscape(Date.class, subscriber.getLastLogin());
         json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
 

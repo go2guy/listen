@@ -296,6 +296,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                               <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
                               <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
                               <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
+                              <tr><td><label for="subscriber-form-realName">Real Name</label></td><td><input type="text" id="subscriber-form-realName" name="subscriber-form-realName"/></td></tr>
                               <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr>
                               <tr><td colspan="2"><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
                               </tr>
@@ -370,6 +371,7 @@ if(subscriber != null) { %>
                         <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username"/></td></tr>
                         <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
                         <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
+                        <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        
                         <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr>
                         <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
                         <tr>

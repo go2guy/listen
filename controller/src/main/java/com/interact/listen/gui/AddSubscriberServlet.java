@@ -114,6 +114,7 @@ public class AddSubscriberServlet extends HttpServlet
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
+        subscriber.setRealName(request.getParameter("realName"));
         subscriber.setVoicemailPin(voicemailPin);
         subscriber.setIsEmailNotificationEnabled(enableEmail);
         subscriber.setIsSmsNotificationEnabled(enableSms);
@@ -145,7 +146,7 @@ public class AddSubscriberServlet extends HttpServlet
         persistenceService.save(passivePin);
 
         Conference conference = new Conference();
-        conference.setDescription(subscriber.getUsername() + "'s Conference");
+        conference.setDescription(subscriber.conferenceDescription());
         conference.setIsStarted(Boolean.FALSE);
         conference.setIsRecording(Boolean.FALSE);
         conference.addToPins(activePin);

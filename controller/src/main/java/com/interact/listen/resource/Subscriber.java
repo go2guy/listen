@@ -44,6 +44,9 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
+    @Column(name = "REAL_NAME")
+    private String realName;
+
     @Column(name = "LAST_LOGIN")
     private Date lastLogin;
 
@@ -165,6 +168,16 @@ public class Subscriber extends Resource implements Serializable
     public void setPassword(String password)
     {
         this.password = password;
+    }
+
+    public String getRealName()
+    {
+        return realName;
+    }
+
+    public void setRealName(String realName)
+    {
+        this.realName = realName;
     }
 
     public Date getLastLogin()
@@ -311,6 +324,7 @@ public class Subscriber extends Resource implements Serializable
             copy.addToAccessNumbers(accessNumber.copy(false));
         }
         copy.setPassword(password);
+        copy.setRealName(realName);
         copy.setUsername(username);
         copy.setVoicemailPin(voicemailPin);
         copy.setVoicemails(voicemails);
@@ -451,5 +465,15 @@ public class Subscriber extends Resource implements Serializable
         }
 
         return conference.getSubscriber().equals(this);
+    }
+
+    public String conferenceDescription()
+    {
+        return friendlyName() + "'s Conference";
+    }
+
+    public String friendlyName()
+    {
+        return realName != null && !realName.trim().equals("") ? realName : username;
     }
 }

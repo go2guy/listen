@@ -142,6 +142,7 @@ public class EditSubscriberServlet extends HttpServlet
 
         subscriberToEdit.setVoicemailPin(voicemailPin);
         subscriberToEdit.setUsername(username);
+        subscriberToEdit.setRealName(request.getParameter("realName"));
         subscriberToEdit.setIsEmailNotificationEnabled(enableEmail);
         subscriberToEdit.setIsSmsNotificationEnabled(enableSms);
         subscriberToEdit.setEmailAddress(emailAddress);
@@ -155,7 +156,7 @@ public class EditSubscriberServlet extends HttpServlet
             Conference conferenceToEdit = conferenceList.get(0);
             Conference originalConference = conferenceToEdit.copy(true);
 
-            conferenceToEdit.setDescription(subscriberToEdit.getUsername() + "'s Conference");
+            conferenceToEdit.setDescription(subscriberToEdit.conferenceDescription());
             persistenceService.update(conferenceToEdit, originalConference);
         }
 
