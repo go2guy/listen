@@ -68,7 +68,7 @@
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
     	    <log target="status">Dropped</log>
-            <log>INFO: Entered audio-input.vxml [116-26]</log>
+            <log>INFO: Entered audio-input.vxml [122-23]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
             <if cond="II_SB_cutIn == 'true'">
                 <goto next="#chkMode"/>

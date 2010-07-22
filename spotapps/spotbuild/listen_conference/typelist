@@ -1,10 +1,15 @@
 113-95 - decision
 113-93 - assign-variable
 122-18 - run-javascript
+122-22 - decision
+122-23 - audio-input
+122-21 - audio-input
 115-76 - assign-variable
 115-73 - assign-variable
 115-70 - assign-variable
 90-5 - decision
+122-29 - end
+122-33 - create-session
 117-50 - audio-input
 117-54 - conference-user-status
 117-109 - decision
@@ -43,6 +48,7 @@
 115-33 - audio-input
 115-32 - audio-input
 115-31 - audio-input
+122-38 - run-javascript
 109-46 - run-javascript
 109-42 - run-javascript
 109-44 - run-javascript
@@ -50,6 +56,7 @@
 115-60 - math
 115-63 - audio-input
 115-64 - audio-input
+122-40 - assign-variable
 90-14 - audio-input
 90-16 - audio-input
 109-37 - run-javascript
@@ -235,10 +242,7 @@ hang-up - hang-up
 112-53 - assign-variable
 105-114 - run-javascript
 105-116 - run-javascript
-116-26 - audio-input
-116-24 - decision
 111-43 - audio-input
-116-22 - audio-input
 110-36 - run-javascript
 112-40 - audio-input
 86-66 - run-javascript
@@ -329,14 +333,11 @@ begin - begin
 110-79 - decision
 104-8 - audio-input
 111-25 - audio-input
-116-43 - end
 110-59 - audio-input
 117-45 - decision
 117-47 - audio-input
 117-48 - audio-input
 85-32 - assign-variable
-116-47 - create-session
-116-45 - assign-variable
 79-7 - decision
 79-5 - audio-input
 85-38 - record-audio

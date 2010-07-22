@@ -9,13 +9,13 @@
     <var name="II_SB_whichID" expr="CONF_ID"/>  <!-- Connection or conference ID used in new session -->
 
     <!-- Edge Variables -->
-    <var name="II_SB_oldNxtOpt" expr="'116-24'"/>       <!-- Next option for original session -->
-    <var name="II_SB_newNxtOpt" expr="'116-22'"/>        <!-- Next option for new session -->
+    <var name="II_SB_oldNxtOpt" expr="'122-22'"/>       <!-- Next option for original session -->
+    <var name="II_SB_newNxtOpt" expr="'122-21'"/>        <!-- Next option for new session -->
     <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
     <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
 
     <!-- Global Variables -->
-    <var name="II_SB_nextOpt" expr="'116-47'"/> <!-- Next ccxml file that will be called -->
+    <var name="II_SB_nextOpt" expr="'122-33'"/> <!-- Next ccxml file that will be called -->
     <var name="II_SB_returnValues" expr="''"/>  <!-- List of values returned to ccxml layer -->
     <var name="II_SB_action"/>                  <!-- Identifies action to take -->
     <var name="II_SB_whichOpt"/>                <!-- Identifies next option -->
@@ -24,7 +24,7 @@
     <form id="beginDocument">
         <block>
 	        <log target="status">Create New Session</log> 
-            <log>INFO: Entered create-session.vxml [116-47]</log>
+            <log>INFO: Entered create-session.vxml [122-33]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>
                 <exit namelist="audioURL"/>

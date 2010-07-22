@@ -27,7 +27,7 @@
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
     <var name="II_SB_promptList" expr="'P'+audioURL+'|P'+'confOut'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'116-43'"/>  <!--  PlayAudio Next Option. Name of next file -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'122-29'"/>  <!--  PlayAudio Next Option. Name of next file -->
 	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	
 	<!-- Voice properties -->
@@ -68,7 +68,7 @@
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
     	    <log target="status">Notify Conference</log>
-            <log>INFO: Entered audio-input.vxml [116-22]</log>
+            <log>INFO: Entered audio-input.vxml [122-21]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
             <if cond="II_SB_cutIn == 'true'">
                 <goto next="#chkMode"/>
