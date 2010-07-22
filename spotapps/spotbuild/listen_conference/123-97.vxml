@@ -23,7 +23,7 @@
 
     <form id="beginDocument">
         <block>
-	        <log target="status">Start New Session</log> 
+	        <log target="status">Stop Rec Session</log> 
             <log>INFO: Entered create-session.vxml [123-97]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>

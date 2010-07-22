@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
 
-    <!-- Last Modified 06/15/2010
+    <!-- Last Modified 07/22/2010
        *   @Name   create-session.ccxml
        *   @Desc   Creates a ccxml session -->
 
@@ -183,12 +183,29 @@
             <if cond="evt.values.II_SB_status != 'Failure'">
                 <if cond="evt.values.II_SB_fileSize != ''">
                     <log>INFO: Found hang up node</log>
+                    <assign name="II_SB_state" expr="'hangUpReturn'"/>
                     <dialogstart src="'file:' + II_SB_CODE_DIR + 'hang-up.vxml'" namelist="II_SB_discID II_SB_discReason II_SB_discOriginator"/>
                 <else/>
                     <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
                 </if>
             <else/>
                 <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="hangUpReturn" event="dialog.exit" name="evt">
+            <!-- Return from vxml dialog -->
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <assign name="II_SB_status" expr="evt.values.II_SB_status"/>
+            <if cond="(II_SB_status == 'endCall') || (II_SB_status == 'hangup')">
+                <log>INFO: End call</log>
+                <assign name="II_SB_state" expr="'endCall'"/>
+                <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            <else/>
+                <assign name="II_SB_whichOpt" expr="evt.values.II_SB_nextOpt"/>
+          		<assign name="II_SB_passValues" expr="evt.values.II_SB_returnValues"/>
+                <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
             </if>
         </transition>
 
