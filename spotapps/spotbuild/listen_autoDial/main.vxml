@@ -36,6 +36,12 @@
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_params"/>
 	<var name="SB_UV_sysAccessTime"/>
+	<var name="SB_UV_subscriber"/>
+	<var name="SB_UV_audioURLsuf"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_FILE1"/>
+	<var name="SB_UV_OPERATION"/>
 
     
     <form id="beginDocument">
@@ -98,6 +104,24 @@
 			</if>
 			<if cond="SB_UV_sysAccessTime != undefined">
 				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
+			</if>
+			<if cond="SB_UV_subscriber != undefined">
+				<assign name="subscriber" expr="SB_UV_subscriber" />
+			</if>
+			<if cond="SB_UV_audioURLsuf != undefined">
+				<assign name="audioURLsuf" expr="SB_UV_audioURLsuf" />
+			</if>
+			<if cond="SB_UV_returnVal != undefined">
+				<assign name="returnVal" expr="SB_UV_returnVal" />
+			</if>
+			<if cond="SB_UV_returnStr != undefined">
+				<assign name="returnStr" expr="SB_UV_returnStr" />
+			</if>
+			<if cond="SB_UV_FILE1 != undefined">
+				<assign name="FILE1" expr="SB_UV_FILE1" />
+			</if>
+			<if cond="SB_UV_OPERATION != undefined">
+				<assign name="OPERATION" expr="SB_UV_OPERATION" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

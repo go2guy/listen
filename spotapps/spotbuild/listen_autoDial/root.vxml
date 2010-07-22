@@ -30,7 +30,7 @@
 
     <!-- User Dertermined Globals -->
 	<var name="argList" expr="'importedValue'" />
-	<var name="audioURL" expr="'/var/www/html/listen/artifacts/conference/rollcall/'" />
+	<var name="audioURL" expr="'/var/www/html/listen/artifacts/'" />
 	<var name="phoneNumber" expr="''" />
 	<var name="outBoundID" expr="''" />
 	<var name="confID" expr="''" />
@@ -46,6 +46,12 @@
 	<var name="status" expr="''" />
 	<var name="params" expr="''" />
 	<var name="sysAccessTime" expr="''" />
+	<var name="subscriber" expr="''" />
+	<var name="audioURLsuf" expr="'/conference/rollcall/'" />
+	<var name="returnVal" expr="''" />
+	<var name="returnStr" expr="''" />
+	<var name="FILE1" expr="''" />
+	<var name="OPERATION" expr="''" />
 
 
     <!-- Conference Variables -->
