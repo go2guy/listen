@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.*;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -192,8 +193,11 @@ public class JsonMarshaller extends Marshaller
     {
         try
         {
+            String input = IOUtils.toString(inputStream);
+            LOG.debug("Received JSON for unmarshalling: <<" + input + ">>");
+
             JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject)parser.parse(new InputStreamReader(inputStream));
+            JSONObject json = (JSONObject)parser.parse(input);
 
             if(unmarshalId)
             {
