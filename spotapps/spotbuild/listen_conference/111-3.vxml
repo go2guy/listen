@@ -12,26 +12,24 @@
             function II_SB_JS_function(getInput,returnVal,index,isAdmin)
             {
 	            var result;
-var whoAmI = new String(isAdmin);
-var admin = 'true';
 var tmpVal = eval("("+returnVal+")");
 var isAdminStatus = tmpVal.results[index].isAdmin;
 var isPassiveStatus = tmpVal.results[index].isPassive;
 var options = new String("1,2,3");
 if(getInput == 4)
 result = "RESTART";
-else if (whoAmI == admin)
+else if (isAdmin == 'true')
 {
-if (isAdminStatus && (options.match(getInput)))
+if (isAdminStatus && (inString(getInput,options,',')))
 result = "INVALID_ADMIN";
-else if (isPassiveStatus && (options.match(getInput)))
+else if (isPassiveStatus && (inString(getInput,options,',')))
 {
 if ((getInput == 1) || (getInput == 2))
 result ="INVALID_PASSIVE";
 else
 result = "DROP";
 }
-else if (options.match(getInput))
+else if (inString(getInput,options,','))
 {
 if(getInput == 1)
 result = "MUTE";
@@ -40,6 +38,8 @@ result = "UNMUTE";
 else
 result = "DROP";
 }
+else
+result = "REJOIN";
 }
 else
 result = "REJOIN";

@@ -9,7 +9,7 @@
     <var name="II_SB_whichID" expr="''"/>  <!-- Connection or conference ID used in new session -->
 
     <!-- Edge Variables -->
-    <var name="II_SB_oldNxtOpt" expr="'123-101'"/>       <!-- Next option for original session -->
+    <var name="II_SB_oldNxtOpt" expr="'123-135'"/>       <!-- Next option for original session -->
     <var name="II_SB_newNxtOpt" expr="'123-134'"/>        <!-- Next option for new session -->
     <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
     <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
