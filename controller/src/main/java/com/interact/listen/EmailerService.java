@@ -32,7 +32,7 @@ public class EmailerService
     private static final String EMAIL_BODY = "<html><body>Hello,<br/><br/>"
                                      + "You have been invited to a conference by %s.<br/><br/>"
                                      + "Conference details:<br/><br/>"
-                                     + "Date/Time: %s<br/>"
+                                     + "Date/Time: %s until %s<br/>"
                                      + "Description: %s<br/>"
                                      + "%s: %s<br/>" //this will be phone number or ip based on protocol
                                      + "Pin: %s<br/>"
@@ -49,7 +49,7 @@ public class EmailerService
                                                   + "The voicemail is attached."
                                                   + "</body></html>";
     
-    private static final String SMS_NOTIFICATION_BODY = "New voicemail from %s.  Retrieve it at %s";
+    private static final String SMS_NOTIFICATION_BODY = "New voicemail from %s. Retrieve it at %s";
 
     private final SimpleDateFormat sdf = new SimpleDateFormat(FriendlyIso8601DateConverter.ISO8601_FORMAT);
 
@@ -125,7 +125,7 @@ public class EmailerService
     }
 
     public boolean sendScheduleEmail(ArrayList<String> toAddressesList, String username, String description,
-                                     Date dateTime, Conference conference, String phoneNumber, String protocol,
+                                     Date dateTime, Date endDateTime, Conference conference, String phoneNumber, String protocol,
                                      String subjectPrepend, String emailType)
     {
         String body  = "";
@@ -134,11 +134,11 @@ public class EmailerService
         
         if(emailType.equals("ACTIVE"))
         {
-            body = getActiveMessageBody(username, description, conference, numberTitle, phoneNumber, dateTime);
+            body = getActiveMessageBody(username, description, conference, numberTitle, phoneNumber, dateTime, endDateTime);
         }
         else if(emailType.equals("PASSIVE"))
         {
-            body = getPassiveMessageBody(username, description, conference, numberTitle, phoneNumber, dateTime);
+            body = getPassiveMessageBody(username, description, conference, numberTitle, phoneNumber, dateTime, endDateTime);
         }
         
         InternetAddress[] toAddresses = getInternetAddresses(toAddressesList);
@@ -233,27 +233,29 @@ public class EmailerService
     }
 
     private String getActiveMessageBody(String username, String description, Conference conference, String numberTitle,
-                                        String phoneNumber, Date dateTime)
+                                        String phoneNumber, Date dateTime, Date endDateTime)
     {
         String formattedDateTime = sdf.format(dateTime);
+        String formattedEndDateTime = sdf.format(endDateTime);
         String activePin = getPin(conference.getPins(), Pin.PinType.ACTIVE);
         activePin = activePin + " (Active)";
         
-        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, numberTitle,
-                                                  phoneNumber, activePin);
+        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, formattedEndDateTime,
+                                                  description, numberTitle, phoneNumber, activePin);
         
         return formattedEmailBody;
     }
     
     private String getPassiveMessageBody(String username, String description, Conference conference,
-                                         String numberTitle, String phoneNumber, Date dateTime)
+                                         String numberTitle, String phoneNumber, Date dateTime, Date endDateTime)
     {
         String formattedDateTime = sdf.format(dateTime);
+        String formattedEndDateTime = sdf.format(endDateTime);
         String passivePin = getPin(conference.getPins(), Pin.PinType.PASSIVE);
         passivePin = passivePin + " (Passive)";
         
-        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, description, numberTitle,
-                                                  phoneNumber, passivePin);
+        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, formattedEndDateTime,
+                                                  description, numberTitle, phoneNumber, passivePin);
         
         return formattedEmailBody;
     }
@@ -318,29 +320,8 @@ public class EmailerService
         }
         finally
         {
-            if(input != null)
-            {
-                try
-                {
-                    input.close();
-                }
-                catch(IOException e)
-                {
-                    LOG.warn("Unable to close InputStream when reading [" + uri + "]");
-                }
-            }
-            
-            if(output != null)
-            {
-                try
-                {
-                    output.close();
-                }
-                catch(IOException e)
-                {
-                    LOG.warn("Unable to close OutputStream when reading [" + uri + "]");
-                }
-            }
+            IOUtils.closeQuietly(input);
+            IOUtils.closeQuietly(output);
         }
         
         return file;

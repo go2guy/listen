@@ -268,6 +268,9 @@ function scheduleConference(event) {
     var scheduleConferenceTimeHour = $('#scheduleConferenceTimeHour');
     var scheduleConferenceTimeMinute = $('#scheduleConferenceTimeMinute');
     var scheduleConferenceTimeAmPm = $('#scheduleConferenceTimeAmPm');
+    var scheduleConferenceEndTimeHour = $('#scheduleConferenceEndTimeHour');
+    var scheduleConferenceEndTimeMinute = $('#scheduleConferenceEndTimeMinute');
+    var scheduleConferenceEndTimeAmPm = $('#scheduleConferenceEndTimeAmPm');
     var scheduleConferenceSubject = $('#scheduleConferenceSubject');
     var scheduleConferenceDescription = $('#scheduleConferenceDescription');
     var scheduleConferenceActiveParticipants = $('#scheduleConferenceActiveParticipants');
@@ -281,6 +284,9 @@ function scheduleConference(event) {
                 hour: scheduleConferenceTimeHour.val(),
                 minute: scheduleConferenceTimeMinute.val(),
                 amPm: scheduleConferenceTimeAmPm.val(),
+                endHour: scheduleConferenceEndTimeHour.val(),
+                endMinute: scheduleConferenceEndTimeMinute.val(),
+                endAmPm: scheduleConferenceEndTimeAmPm.val(),
                 subject: scheduleConferenceSubject.val(),
                 description: scheduleConferenceDescription.val(),
                 activeParticipants: scheduleConferenceActiveParticipants.val(),
@@ -291,6 +297,9 @@ function scheduleConference(event) {
             scheduleConferenceTimeHour.val('1');
             scheduleConferenceTimeMinute.val('00');
             scheduleConferenceTimeAmPm.val('AM');
+            scheduleConferenceTimeEndHour.val('1');
+            scheduleConferenceTimeEndMinute.val('15');
+            scheduleConferenceTimeEndAmPm.val('AM');
             scheduleConferenceSubject.val('');
             scheduleConferenceDescription.val('');
             scheduleConferenceActiveParticipants.val('');

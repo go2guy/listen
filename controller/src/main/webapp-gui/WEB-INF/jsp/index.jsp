@@ -562,7 +562,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
               <th><label for="scheduleConferenceDate">Date &amp; Time</label></th>
               <td>
                 <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/><br/>
-                 <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour"><%
+                 From <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour"><%
 for(int i = 1; i <= 12; i++) { %>
                    <option value="<%= i %>"><%= i %></option><%
 } %>
@@ -574,6 +574,20 @@ for(int i = 1; i <= 12; i++) { %>
                   <option value="45">45</option>
                 </select>
                 <select id="scheduleConferenceTimeAmPm" name="scheduleConferenceTimeAmPm">
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select> until <select id="scheduleConferenceEndTimeHour" name="scheduleConferenceEndTimeHour"><%
+for(int i = 1; i <= 12; i++) { %>
+                   <option value="<%= i %>"><%= i %></option><%
+} %>
+                </select>
+                <select id="scheduleConferenceEndTimeMinute" name="scheduleConferenceEndTimeMinute">
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+                <select id="scheduleConferenceEndTimeAmPm" name="scheduleConferenceTimeEndAmPm">
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
                 </select>

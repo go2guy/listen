@@ -77,6 +77,24 @@ public class ScheduleConferenceServlet extends HttpServlet
             throw new BadRequestServletException("Please provide an am/pm for the conference start time");
         }
 
+        String endHour = request.getParameter("endHour");
+        if(endHour == null || endHour.equals(""))
+        {
+            throw new BadRequestServletException("Please provide an hour for the conference end time");
+        }
+
+        String endMinute = request.getParameter("endMinute");
+        if(endMinute == null || endMinute.equals(""))
+        {
+            throw new BadRequestServletException("Please provide a minute for the conference end time");
+        }
+
+        String endAmPm = request.getParameter("endAmPm");
+        if(endAmPm == null || endAmPm.equals(""))
+        {
+            throw new BadRequestServletException("Please provide an am/pm for the conference end time");
+        }
+
         StringBuilder subjectPrepend = new StringBuilder(request.getParameter("subject"));
         if(subjectPrepend == null)
         {
@@ -120,6 +138,7 @@ public class ScheduleConferenceServlet extends HttpServlet
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h mm a");
         String dateTime = date + " " + hour + " " + minute + " " + amPm;
+        String endDateTime = date + " " + endHour + " " + endMinute + " " + endAmPm;
 
         String[] activeAddresses = activeParticipants.split(",");
         String[] passiveAddresses = passiveParticipants.split(",");
@@ -162,10 +181,11 @@ public class ScheduleConferenceServlet extends HttpServlet
         boolean activeSuccess = true;
         boolean passiveSuccess = true;
 
-        Date parsedDate;
+        Date parsedDate, parsedEndDate;
         try
         {
             parsedDate = sdf.parse(dateTime);
+            parsedEndDate = sdf.parse(endDateTime);
         }
         catch(ParseException e)
         {
@@ -175,14 +195,14 @@ public class ScheduleConferenceServlet extends HttpServlet
         if(!serviceActiveAddresses.isEmpty())
         {
             activeSuccess = emailService.sendScheduleEmail(serviceActiveAddresses, subscriber.friendlyName(), description,
-                                                           parsedDate, subscriberConference, phoneNumber, protocol,
+                                                           parsedDate, parsedEndDate, subscriberConference, phoneNumber, protocol,
                                                            subjectPrepend.toString(), "ACTIVE");
         }
 
         if(!servicePassiveAddresses.isEmpty())
         {
             passiveSuccess = emailService.sendScheduleEmail(servicePassiveAddresses, subscriber.friendlyName(), description,
-                                                            parsedDate, subscriberConference, phoneNumber, protocol,
+                                                            parsedDate, parsedEndDate, subscriberConference, phoneNumber, protocol,
                                                             subjectPrepend.toString(), "PASSIVE");
         }
 
