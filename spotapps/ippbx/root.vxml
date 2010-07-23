@@ -15,46 +15,20 @@
     <var name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
     <var name="LIB_PATH" expr="SB_PATH+'lib/'"/>
     <var name="SUP_PATH" expr="APP_PATH+'support/'"/>
-    <var name="NOTIFY_PATH" expr="APP_PATH+'notification/'"/>
     <var name="ERR_LOG" expr="'/interact/logs/error.log'"/>
     <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
     <var name="LANGUAGE_ID" expr="'00'"/>
     <var name="LANGUAGE_CODE" expr="'wav'"/>
-    <var name="LOCATION" expr="'lincoln'"/>
 
     <!-- Application vars -->
     <!-- General -->
     <var name="status" expr="''"/>
-    <var name="validateType" expr="''"/>
+    <var name="listenArgs" expr="''"/>
+    <var name="contactNumber" expr="''"/>
 
     <!-- DB vars -->
     <var name="extension" expr="''"/>
     <var name="recording" expr="''"/>
-    <var name="from" expr="''"/>
-    <var name="length" expr="''"/>
-    <var name="state" expr="''"/>
-    <var name="pin" expr="''"/>
-
-    <!-- Mail Box -->
-    <var name="mBox"/>
-    <var name="validateBox" expr="''"/>
-    <var name="PASSCODE_LENGTH" expr="4"/>
-    <var name="greeting" expr="''"/>
-    <var name="notifylist" expr="''"/>
-    <var name="msgOrder" expr="'LIFO'"/>     <!-- LIFO: Last-in-first-out. Alwasy retrieve newest msgs first -->
-    <var name="supportFlag" expr="'OFF'"/>
-    <var name="notifyFlag" expr="'OFF'"/>
-
-    <!-- Messages -->
-    <var name="phoneLight" expr="'off'"/>
-    <var name="message" expr="''"/>
-    <var name="msgCnt" expr="0"/>
-    <var name="msgID" expr="''"/>
-    <var name="index" expr="0"/>
-    <var name="msgDate" expr="''"/>
-    <var name="msgTime" expr="''"/>
-    <var name="newMsgCnt" expr="0"/>
-    <var name="oldMsgCnt" expr="0"/>
 
     <!-- Menus and Fields -->
     <var name="cutIn" expr="'false'"/>
@@ -70,11 +44,6 @@
 
     <!-- Flow control -->
     <var name="gotoForm" expr="''"/>
-
-    <!-- Notification -->
-    <var name="mBoxSupportSave" expr="''"/>
-    <var name="pinSupportSave" expr="''"/>
-    <var name="badID" expr="'n'"/>
 
     <!-- Prompts -->
     <var name="promptID" expr="''"/>

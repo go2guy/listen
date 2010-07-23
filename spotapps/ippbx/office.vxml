@@ -6,6 +6,9 @@
        *   @Desc	This script controls the main auto attendant prompt
                     and available options -->
 
+    <!-- Passed in from pbx.ccxml -->
+    <var name="importedValue"/>
+
     <!-- Global Variables -->
     <var name="isClosed" expr="'n'"/>           <!-- Flag to determine if the office is closed -->
     <var name="officeOptr" expr="'101'"/>       <!-- Operator's extension -->
@@ -15,6 +18,7 @@
 	<form id="beginDocument">
 		<block>
 	        <log>INFO: Entered beginDocument</log>
+            <assign name="listenArgs" expr="importedValue"/>    <!-- Save off controller information -->
             <goto next="#getPrompt"/>
         </block>
     </form>

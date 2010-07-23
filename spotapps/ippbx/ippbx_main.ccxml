@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/12/2010
+    <!-- Last Modified 07/16/2010
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -52,46 +52,6 @@
             <else/>
                 <!-- Nothing else here -->
             </if>
-        </transition>
-
-    	<transition state="idle" event="VRU_AUTO*" name="evt">
-	    	<log>INFO: Entered [VRU_AUTO] with state [<value expr="state"/>]</log>
-    		<assign name="state" expr="'autoStart'"/>
-		    <log>INFO: Mail Box [<value expr="evt.mBox"/>]</log>
-            <log>INFO: Message ID [<value expr="evt.msgID"/>]</log>
-            <log>INFO: Destination [<value expr="evt.des"/>]</log>
-            <var name="mBox" expr="evt.mBox"/>
-            <var name="msgID" expr="evt.msgID"/>
-            <var name="DNIS" expr="evt.des"/>
-            <var name="ANI" expr="evt.from"/>
-            <assign name="callType" expr="'notify'"/>
-            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid tmpDNIS tmpANI DNIS ANI callType msgID mBox"/>
-    	</transition>
-
-        <transition state="idle" event="connection.alerting" name="evt">
-            <!-- Set up global variables from incomming call. Answer inbound call -->
-            <log>INFO: Entered [connection.ALERTING] with state [<value expr="state"/>]</log>
-            <log target="status">In coming call</log>
-            <assign name="state" expr="'alerting'"/>
-            <assign name="ibconnid" expr="evt.connectionid"/>   <!-- Get connection id for incoming call -->
-	    	<assign name="ANI" expr="iiUnescape(evt.connection.remote)"/>   <!-- Get origin of incoming call -->
-	    	<assign name="DNIS" expr="evt.connection.local"/>               <!-- Get destination of incoming call -->
-	    	<assign name="tmpANI" expr="getnum(ANI)"/>
-	    	<assign name="tmpDNIS" expr="getnum(DNIS)"/>
-            <accept/>   <!-- Accept should trigger a connection.connected if successful. An error may trigger connection.failed -->
-        </transition>
-
-        <transition state="alerting" event="connection.connected" name="evt">
-            <!-- This event is triggered once the call gets accepted. One unique thing we do
-            in this transition is to check if the caller is internal to the pbx system. If so,
-            we'll send a database transaction (later) to toggle their status to active -->
-            <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
-            <log target="status">Call accepted</log>
-            <log>INFO: ANI [<value expr="tmpANI"/>]</log>
-            <log>INFO: DNIS [<value expr="tmpDNIS"/>]</log>
-            <log>INFO: connectionid [<value expr="ibconnid"/>]</log>
-            <assign name="state" expr="'callAccepted'"/>
-            <send data="'dialog.user.chk_ANI'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.chk_ANI" name="evt">
@@ -229,14 +189,6 @@
             <!-- TODO: Write an error log file and notify someone? -->
             <assign name="state" expr="'endCall'"/>
             <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
-        </transition>
-
-        <transition event="connection.failed" name="evt">
-            <!-- This event may be triggered if the <accept/> encounters an error -->
-            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
-            <log target="status">Accepted Error</log>
-            <!-- TODO: Write an error log file and notify someone? -->
-            <send data="'dialog.user.endCall'" target="session.id"/>
         </transition>
 
         <!-- End call -->

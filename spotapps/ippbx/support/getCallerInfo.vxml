@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 01/25/2010
+       *   @Name	getCallerInfo.vxml
+       *   @Desc	This script handles getting the caller's contact number
+                    and support request -->
+
+    <!-- Global Variables -->
+    <var name="whichForm" expr="''"/>
+	<var name="LOCAL_NUM_LNGTH" expr="10"/>
+
+    <form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <assign name="errCnt" expr="0"/>
+            <goto next="#getNumber"/>
+        </block>
+    </form>
+
+    <form id="getNumber">
+        <!-- This form sets up the audio properties for the get contact information
+        prompt -->
+        <block>
+            <log>INFO: Entered getNumber</log>
+            <log target="status">Get Contact</log>
+            <assign name="promptID" expr="'AP1005'"/>
+            <assign name="cutIn" expr="'true'"/>
+            <assign name="fldTrmChar" expr="'#'"/>
+            <assign name="fieldLength" expr="30"/>
+            <assign name="digitTimeOut" expr="'3s'"/>
+            <assign name="fieldTimeOut" expr="'4s'"/>
+            <assign name="whichForm" expr="'getNumber'"/>
+            <assign name="gotoForm" expr="'#getDetails'"/>
+            <goto next="#playAudio"/>
+        </block>
+    </form>
+
+    <form id="getDetails">
+        <!-- This form sets up the audio properties for the prompt that instructs the
+        caller to leave a detailed message -->
+        <block>
+            <log>INFO: Entered getDetails</log>
+            <log target="status">Get Details</log>
+            <assign name="promptID" expr="'AP1010'"/>
+            <assign name="cutIn" expr="'false'"/>
+            <assign name="fldTrmChar" expr="''"/>
+            <assign name="fieldLength" expr="''"/>
+            <assign name="digitTimeOut" expr="''"/>
+            <assign name="fieldTimeOut" expr="''"/>
+            <assign name="whichForm" expr="'getDetails'"/>
+            <assign name="gotoForm" expr="'file:'+SUP_PATH+'recordMsg.vxml'"/>
+            <assign name="contactNumber" expr="userEntry"/>
+    	    <goto next="#playAudio"/>
+		</block>
+    </form>
+
+    <form id="playAudio">
+        <!-- This form handles all the audio playback for the script -->
+        <block>
+            <log>INFO: Entered playAudio</log>
+        </block>
+        <subdialog name="playAudio" srcexpr="'file:'+APP_PATH+'getUserEntry.vxml'">
+            <param name="dgtTimeOut" expr="digitTimeOut"/>
+            <param name="fldLength" expr="fieldLength"/>
+            <param name="fldTermchar" expr="fldTrmChar"/>
+            <param name="fldTimeOut" expr="fieldTimeOut"/>
+            <param name="interrupt" expr="cutIn"/>
+            <param name="file" expr="promptID"/>
+        </subdialog>
+        <block>
+            <assign name="userEntry" expr="playAudio.userEntry"/>
+            <if cond="userEntry == 'hangup'">
+                <goto next="#exit"/>
+			<elseif cond="((userEntry.length &lt; LOCAL_NUM_LNGTH) &amp;&amp; (whichForm == 'getNumber'))"/>
+				<goto next="#error"/>
+            <else/>
+        		<goto expr="gotoForm"/>
+            </if>
+        </block>
+    </form>
+
+	<form id="error">
+        <!-- Here, we set up the error prompt properties. This happens when a caller
+        doesn't enter a valid contact number -->
+		<block>
+			<log>INFO: Entered error</log>
+            <log target="status">Invalid entry</log>
+			<assign name="errCnt" expr="errCnt + 1"/>
+            <assign name="whichForm" expr="''"/>
+			<log>INFO: Error Count [<value expr="errCnt"/>]</log>
+            <if cond="errCnt &lt; MAX_ERR">
+	            <assign name="promptID" expr="'AP1773'"/>
+	            <assign name="fieldTimeOut" expr="''"/>
+				<assign name="gotoForm" expr="'#getNumber'"/>
+			<else/>
+	            <assign name="promptID" expr="'AP1595'"/>
+                <assign name="cutIn" expr="'false'"/>
+                <assign name="fieldLength" expr="''"/>
+                <assign name="digitTimeOut" expr="''"/>
+                <assign name="fieldTimeOut" expr="''"/>
+                <assign name="fldTrmChar" expr="''"/>
+				<assign name="gotoForm" expr="'#exit'"/>
+			</if>
+    		<goto next="#playAudio"/>
+		</block>
+	</form>
+
+    <form id="notify">
+        <!-- Here, we set up the prompts to inform caller that their page has been sent -->
+        <block>
+            <log>INFO: Entered notify</log>
+            <log target="status">Thank you</log>
+            <assign name="cutIn" expr="'false'"/>
+            <assign name="fieldTimeOut" expr="''"/>
+            <assign name="promptID" expr="'AP1015|AP1595'"/>
+            <assign name="gotoForm" expr="'#exit'"/>
+            <goto next="#playAudio"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <assign name="status" expr="'endCall'"/>
+            <exit namelist="status"/>
+        </block>
+    </form>
+
+</vxml>

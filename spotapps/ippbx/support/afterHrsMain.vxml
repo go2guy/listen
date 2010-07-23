@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 07/16/2010
+       *   @Name	afterHrsMain.vxml
+       *   @Desc	This script is the entry point for customers requesting
+                    support -->
+
+	<form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <log target="status">After hrs supprt</log>
+            <goto next="#playAudio"/>
+        </block>
+    </form>
+
+    <form id="playAudio">
+        <!-- This form handles the audio play back. Here, we instruct the caller on
+        how to leave their request for help -->
+        <block>
+            <log>INFO: Entered playAudio</log>
+            <assign name="fldTrmChar" expr="''"/>
+            <assign name="promptID" expr="'AP1000'"/>
+            <assign name="cutIn" expr="'false'"/>
+            <assign name="fieldLength" expr="''"/>
+            <assign name="digitTimeOut" expr="''"/>
+            <assign name="fieldTimeOut" expr="''"/>
+        </block>
+        <subdialog name="playAudio" srcexpr="'file:'+APP_PATH+'getUserEntry.vxml'">
+            <param name="dgtTimeOut" expr="digitTimeOut"/>
+            <param name="fldLength" expr="fieldLength"/>
+            <param name="fldTermchar" expr="fldTrmChar"/>
+            <param name="fldTimeOut" expr="fieldTimeOut"/>
+            <param name="interrupt" expr="cutIn"/>
+            <param name="file" expr="promptID"/>
+        </subdialog>
+        <block>
+            <assign name="userEntry" expr="playAudio.userEntry"/>
+            <if cond="userEntry == 'hangup'">
+                <goto next="#exit"/>
+            <else/>
+                <goto expr="'file:'+SUP_PATH+'getCallerInfo.vxml'"/> <!-- Go to getCallerInfo to get the customers ph # and message -->
+            </if>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <assign name="status" expr="'endCall'"/>
+            <exit namelist="status"/>
+        </block>
+    </form>
+
+</vxml>

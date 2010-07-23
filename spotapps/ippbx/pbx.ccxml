@@ -53,7 +53,7 @@
             <log>INFO: Go to office menu</log>
             <log target="status">Auto Attendant</log>
             <assign name="state" expr="'officeMenu'"/>
-   	    	<dialogstart src="'file:'+APP_PATH+'office.vxml'" namelist="EXT_LENGTH ANI extension"/>
+   	    	<dialogstart src="'file:'+APP_PATH+'office.vxml'" namelist="EXT_LENGTH ANI extension importedValue"/>
         </transition>
 
         <transition event="dialog.user.dial" name="evt">
