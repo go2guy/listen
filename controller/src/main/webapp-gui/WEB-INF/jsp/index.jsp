@@ -605,11 +605,11 @@ for(int i = 1; i <= 12; i++) { %>
               <td colspan="2">Enter the email addresses (comma-separated) for participants who should receive the appropriate PIN in the fields below.</td>
             </tr>
             <tr>
-              <th><label for="scheduleConferenceActiveParticipants">Active PIN</label></th>
+              <th><label for="scheduleConferenceActiveParticipants">Active caller email addresses</label></th>
               <td><textarea id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"></textarea></td>
             </tr>
             <tr>
-              <th><label for="scheduleConferencePassiveParticipants">Passive PIN</label></th>
+              <th><label for="scheduleConferencePassiveParticipants">Passive caller email addresses</label></th>
               <td><textarea id="scheduleConferencePassiveParticipants" name="scheduleConferencePassiveParticipants"></textarea></td>
             </tr>
             <tr>
