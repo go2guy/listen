@@ -98,19 +98,34 @@ function Conference(id) {
                 row.removeClass('caller-row-admin');
             }
 
+            if(!data.isAdmin && !data.isPassive && !row.hasClass('caller-row-active')) {
+                row.addClass('caller-row-active');
+            } else if(data.isAdmin || data.isPassive) {
+                row.removeClass('caller-row-active');
+            }
+
             if(data.isPassive && !row.hasClass('caller-row-passive')) {
                 row.addClass('caller-row-passive');
             } else if(!data.isPassive && row.hasClass('caller-row-passive')) {
                 row.removeClass('caller-row-passive');
             }
 
-            LISTEN.setFieldContent(row.find('.caller-cell-number'), data.number, animate);
+            var numberCell = row.find('.caller-cell-number');
+            var numberContent = data.number + (data.isAdmin ? ' *' : '');
+            numberCell.attr('title', numberContent + ': ' + (data.isAdmin ? 'Admin' : (data.isPassive ? 'Passive' : 'Active')));
+            LISTEN.setFieldContent(numberCell, numberContent, animate);
 
-            if(data.isAdmin) {
+            // mute/unmute icons
+            if(!data.isAdmin && !data.isPassive) {
+                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="icon-' + (data.isAdminMuted ? 'un' : '') + 'mute' + '" ' + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number) + '"></button>', false, true);
+            } else {
                 LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '', false);
+            }
+
+            // drop button
+            if(data.isAdmin) {
                 LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '', false);
             } else {
-                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="icon-' + (data.isAdminMuted || data.isPassive ? 'un' : '') + 'mute' + (data.isPassive ? '-disabled' : '') + '" ' + (data.isPassive ? 'disabled="disabled" readonly="readonly" ': '') + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + (data.isPassive ? 'Cannot unmute ' + data.number + ' (passive caller)' : ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number)) + '"></button>', false, true);
                 LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
             }
         }
