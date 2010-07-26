@@ -338,7 +338,7 @@ public class AddSubscriberServletTest extends ListenTest
     }
     
     @Test
-    public void test_doPost_withNullVoicemailPin_throwsListenServletExceptionWithBadRequest()
+    public void test_doPost_withNullVoicemailPin_isValid()
         throws ServletException, IOException
     {
         TestUtil.setSessionSubscriber(request, true, session);
@@ -349,21 +349,12 @@ public class AddSubscriberServletTest extends ListenTest
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", (String)null);
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Voicemail Pin Number", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        servlet.service(request, response);
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
     
     @Test
-    public void test_doPost_withBlankVoicemailPin_throwsListenServletExceptionWithBadRequest()
+    public void test_doPost_withBlankVoicemailPin_isValid()
         throws ServletException, IOException
     {
         TestUtil.setSessionSubscriber(request, true, session);
@@ -374,17 +365,8 @@ public class AddSubscriberServletTest extends ListenTest
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", "");
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Voicemail Pin Number", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        servlet.service(request, response);
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
     
     @Test
@@ -407,7 +389,7 @@ public class AddSubscriberServletTest extends ListenTest
         catch(ListenServletException e)
         {
             assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Voicemail Pin Number can only be digits 0-9", e.getContent());
+            assertEquals("Voicemail PIN must be a number", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
     }
