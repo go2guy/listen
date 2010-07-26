@@ -259,7 +259,6 @@ public final class ResourceListService
                 if(Resource.class.isAssignableFrom(returnType))
                 {
                     String tag = Marshaller.getTagForClass(returnType.getSimpleName());
-                    LOG.debug("Criteria: Set FetchMode.SELECT for field [" + tag + "]");
                     criteria.setFetchMode(tag, FetchMode.SELECT);
                 }
             }
