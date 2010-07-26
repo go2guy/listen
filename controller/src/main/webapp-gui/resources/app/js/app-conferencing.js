@@ -89,7 +89,7 @@ function Conference(id) {
         paginationId: 'conference-caller-pagination',
         countContainer: 'conference-caller-count',
         retrieveCount: function(data) {
-            return data.length;
+            return data.results.length;
         },
         updateRowCallback: function(row, data, animate) {
             if(data.isAdmin && !row.hasClass('caller-row-admin')) {

@@ -155,7 +155,7 @@ $(document).ready(function() {
 
                     if(args.countContainer && args.retrieveCount) {
                         var container = $('#' + args.countContainer);
-                        var count = args.retrieveCount.call(this, data, animate);
+                        var count = args.retrieveCount.call(this, data);
                         if(container.text() != count) {
                             container.text(count);
                         }
