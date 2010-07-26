@@ -111,24 +111,30 @@ public class HttpClientImpl implements HttpClient
     private static String buildQueryString(Map<String, String> params)
     {
         StringBuilder builder = new StringBuilder();
+        for(Map.Entry<String, String> entry : params.entrySet())
+        {
+            builder.append(encode(entry.getKey()));
+            builder.append("=");
+            builder.append(encode(entry.getValue()));
+            builder.append("&");
+        }
+        if(params.size() > 0)
+        {
+            builder.deleteCharAt(builder.length() - 1); // delete last '&'
+        }
+        return builder.toString();
+    }
+
+    public static String encode(String value)
+    {
         try
         {
-            for(Map.Entry<String, String> entry : params.entrySet())
-            {
-                builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-                builder.append("=");
-                builder.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-                builder.append("&");
-            }
-            if(params.size() > 0)
-            {
-                builder.deleteCharAt(builder.length() - 1); // delete last '&'
-            }
+            String encoded = URLEncoder.encode(value, "UTF-8");
+            return encoded.replaceAll("\\+", "%20");
         }
         catch(UnsupportedEncodingException e)
         {
             throw new AssertionError(e);
         }
-        return builder.toString();
     }
 }

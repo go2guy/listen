@@ -43,4 +43,11 @@ public class HttpClientImplTest
             assertEquals("You must make a request before getting the response entity", e.getMessage());
         }
     }
+
+    @Test
+    public void test_encode_usesSpaceInsteadOfPlus()
+    {
+        String encoded = HttpClientImpl.encode("This Is A Test");
+        assertEquals("This%20Is%20A%20Test", encoded);
+    }
 }
