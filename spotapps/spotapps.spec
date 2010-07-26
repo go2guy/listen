@@ -64,7 +64,7 @@ Requires: spotbuild-vip
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
     cp -r %{STARTDIR}/ippbx %{buildroot}/interact/apps/spotbuild
-    cp -r %{STARTDIR}/ippbx/php/*.php %{buildroot}/var/www/html/ippbx/
+    cp -r %{STARTDIR}/ippbx/php/* %{buildroot}/var/www/html/ippbx/
 
     # Remove extras
     rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
