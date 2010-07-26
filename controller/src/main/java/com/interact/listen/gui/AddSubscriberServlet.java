@@ -6,6 +6,8 @@ import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Pin;
 import com.interact.listen.resource.Pin.PinType;
@@ -72,37 +74,45 @@ public class AddSubscriberServlet extends HttpServlet
         {
             throw new BadRequestServletException("Password and Confirm Password do not match");
         }
-        
-        String voicemailPin = request.getParameter("voicemailPin");
-        if(voicemailPin != null && voicemailPin.length() > 10)
-        {
-            throw new BadRequestServletException("Please provide a Voicemail PIN with ten digits or less");
-        }
-        else if(voicemailPin != null && voicemailPin.trim().length() > 0)
-        {
-            try
-            {
-                subscriber.setVoicemailPin(Long.valueOf(voicemailPin));
-            }
-            catch(NumberFormatException e)
-            {
-                throw new BadRequestServletException("Voicemail PIN must be a number");
-            }
-        }
 
-        Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
-        Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
-        String emailAddress = request.getParameter("emailAddress");
-        String smsAddress = request.getParameter("smsAddress");
-        
-        if(enableEmail && (emailAddress == null || emailAddress.equals("")))
+        if(License.isLicensed(ListenFeature.VOICEMAIL))
         {
-            throw new BadRequestServletException("Please provide an E-mail address");
-        }
-        
-        if(enableSms && (smsAddress == null || smsAddress.equals("")))
-        {
-            throw new BadRequestServletException("Please provide an SMS address");
+            String voicemailPin = request.getParameter("voicemailPin");
+            if(voicemailPin != null && voicemailPin.length() > 10)
+            {
+                throw new BadRequestServletException("Please provide a Voicemail PIN with ten digits or less");
+            }
+            else if(voicemailPin != null && voicemailPin.trim().length() > 0)
+            {
+                try
+                {
+                    subscriber.setVoicemailPin(Long.valueOf(voicemailPin));
+                }
+                catch(NumberFormatException e)
+                {
+                    throw new BadRequestServletException("Voicemail PIN must be a number");
+                }
+            }
+
+            Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
+            Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
+            String emailAddress = request.getParameter("emailAddress");
+            String smsAddress = request.getParameter("smsAddress");
+            
+            if(enableEmail && (emailAddress == null || emailAddress.equals("")))
+            {
+                throw new BadRequestServletException("Please provide an E-mail address");
+            }
+            
+            if(enableSms && (smsAddress == null || smsAddress.equals("")))
+            {
+                throw new BadRequestServletException("Please provide an SMS address");
+            }
+
+            subscriber.setIsEmailNotificationEnabled(enableEmail);
+            subscriber.setIsSmsNotificationEnabled(enableSms);
+            subscriber.setEmailAddress(emailAddress);
+            subscriber.setSmsAddress(smsAddress);
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -111,10 +121,6 @@ public class AddSubscriberServlet extends HttpServlet
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
         subscriber.setRealName(request.getParameter("realName"));
-        subscriber.setIsEmailNotificationEnabled(enableEmail);
-        subscriber.setIsSmsNotificationEnabled(enableSms);
-        subscriber.setEmailAddress(emailAddress);
-        subscriber.setSmsAddress(smsAddress);
         
         try
         {

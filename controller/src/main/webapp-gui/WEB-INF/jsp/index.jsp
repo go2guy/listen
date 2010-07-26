@@ -310,7 +310,8 @@ if(subscriber.getIsAdministrator()) { %>
                                   <%= subscriber.accessNumberString() %><%
 } %>
                                 </td>
-                              </tr>
+                              </tr><%
+if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                               <tr><td colspan="2"><label for="subscriber-form-enableEmailNotification">Send e-mail when voicemail received</label></td></tr>
                               <tr>
                                 <td colspan="2">
@@ -326,7 +327,8 @@ if(subscriber.getIsAdministrator()) { %>
                                   <input type="text" id="subscriber-form-smsAddress" name="subscriber-form-smsAddress"/>
                                   <button class="button-save" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address" onclick="LISTEN.SUBSCRIBERS.testSmsAddress();return false;">Verify</button>
                                 </td>
-                              </tr>
+                              </tr><%
+} %>
                               <tr>
                                 <td colspan="2" class="buttons">
                                   <button class="button-add" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.SUBSCRIBERS.addSubscriber();return false;">Add</button>
@@ -376,8 +378,7 @@ if(subscriber != null) { %>
                         <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        
                         <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr><%
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-                        <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr><%
-} %>
+                        <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
                         <tr>
                           <td><label for="profile-form-enableEmailNotification">Send e-mail when voicemail received</label></td>
                           <td>
@@ -393,7 +394,8 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                             <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
                             <button class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address" onclick="LISTEN.PROFILE.testSmsAddress();return false;">Verify</button>
                           </td>
-                        </tr>
+                        </tr><%
+} %>
                         <tr>
                           <td colspan="2" class="buttons">
                             <button class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Save</button>

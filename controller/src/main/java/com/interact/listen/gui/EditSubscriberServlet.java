@@ -6,6 +6,8 @@ import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
@@ -103,44 +105,48 @@ public class EditSubscriberServlet extends HttpServlet
             updateSubscriberAccessNumbers(subscriberToEdit, accessNumbers, session, persistenceService);
         }
 
-        String voicemailPin = request.getParameter("voicemailPin");
-        if(voicemailPin != null && voicemailPin.length() > 10)
+        if(License.isLicensed(ListenFeature.VOICEMAIL))
         {
-            throw new BadRequestServletException("Please provide a Voicemail PIN with ten digits or less");
-        }
-        else if(voicemailPin != null && voicemailPin.trim().length() > 0)
-        {
-            try
+            String voicemailPin = request.getParameter("voicemailPin");
+            if(voicemailPin != null && voicemailPin.length() > 10)
             {
-                subscriberToEdit.setVoicemailPin(Long.valueOf(voicemailPin));
+                throw new BadRequestServletException("Please provide a Voicemail PIN with ten digits or less");
             }
-            catch(NumberFormatException e)
+            else if(voicemailPin != null && voicemailPin.trim().length() > 0)
             {
-                throw new BadRequestServletException("Voicemail PIN must be a number");
+                try
+                {
+                    subscriberToEdit.setVoicemailPin(Long.valueOf(voicemailPin));
+                }
+                catch(NumberFormatException e)
+                {
+                    throw new BadRequestServletException("Voicemail PIN must be a number");
+                }
             }
-        }
 
-        Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
-        Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
-        String emailAddress = request.getParameter("emailAddress");
-        String smsAddress = request.getParameter("smsAddress");
-        
-        if(enableEmail && (emailAddress == null || emailAddress.equals("")))
-        {
-            throw new BadRequestServletException("Please provide an E-mail address");
-        }
-        
-        if(enableSms && (smsAddress == null || smsAddress.equals("")))
-        {
-            throw new BadRequestServletException("Please provide an SMS address");
+            Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
+            Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
+            String emailAddress = request.getParameter("emailAddress");
+            String smsAddress = request.getParameter("smsAddress");
+            
+            if(enableEmail && (emailAddress == null || emailAddress.equals("")))
+            {
+                throw new BadRequestServletException("Please provide an E-mail address");
+            }
+            
+            if(enableSms && (smsAddress == null || smsAddress.equals("")))
+            {
+                throw new BadRequestServletException("Please provide an SMS address");
+            }
+
+            subscriberToEdit.setIsEmailNotificationEnabled(enableEmail);
+            subscriberToEdit.setIsSmsNotificationEnabled(enableSms);
+            subscriberToEdit.setEmailAddress(emailAddress);
+            subscriberToEdit.setSmsAddress(smsAddress);
         }
 
         subscriberToEdit.setUsername(username);
         subscriberToEdit.setRealName(request.getParameter("realName"));
-        subscriberToEdit.setIsEmailNotificationEnabled(enableEmail);
-        subscriberToEdit.setIsSmsNotificationEnabled(enableSms);
-        subscriberToEdit.setEmailAddress(emailAddress);
-        subscriberToEdit.setSmsAddress(smsAddress);
 
         ArrayList<Conference> conferenceList = new ArrayList<Conference>(subscriberToEdit.getConferences());
 
