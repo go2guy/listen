@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/15/2010
+    <!-- Last Modified 07/26/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -197,11 +197,16 @@
     		<!-- Got a hold request. Call the hold script -->
             <log>INFO: Entered [connection.signal] with state [<value expr="state"/>]</log>
             <var name="requestID" expr="evt.connectionid"/>
-            <fetch next="'file:'+APP_PATH+'hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
+            <if cond="evt.info.voip.direction == 'sendrecv'">
+                <!-- Here, we assume this event is in connection to a 3-way call/conference. 
+                We'll ignore it and allow the IP phone handle the call -->
+            <else/>
+                <fetch next="'file:'+APP_PATH+'hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
+            </if>
 		</transition>
 
         <transition state="callConnected" event="dialog.user.moveRequest" name="evt">
-            <!-- In here, we're in the process of doing an attended move. First, we'll unjoin the 
+            <!-- In here, we're in the process of doing an attended transfer. First, we'll unjoin the 
             current call -->
             <log>INFO: Entered [dialog.user.moveRequest] with state [<value expr="state"/>]</log>
             <assign name="moveRequestSID" expr="evt.moveRequestSID"/>

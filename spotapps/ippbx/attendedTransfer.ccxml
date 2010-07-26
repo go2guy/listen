@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/15/2010
+    <!-- Last Modified 07/26/2010
        *   @Name	attendedTransfer.ccxml
        *   @Desc	This script handles the logic for do an attended call transfer-->
 
@@ -12,7 +12,7 @@
     <var name="tmpDNIS"/>       <!-- DNIS.-->
     <var name="ibconnid"/>      <!-- Inbound connection ID -->
     <var name="obconnid"/>      <!-- Outbound connection ID -->
-    <var name="URI"/>           <!-- URI. Destination of blind transfer -->
+    <var name="URI"/>           <!-- URI. Destination of transfer -->
     <var name="xferSID"/>       <!-- Session ID of new call -->
     <var name="APP_PATH"/>      <!-- App Path. Base application directory -->
     <var name="xferConnID"/>    <!-- Connection ID of party that initiated the transfer -->
@@ -44,12 +44,12 @@
             <log>INFO: Entered [dialog.user.attendedTransfer] with state [<value expr="state"/>]</log>
             <var name="whichID" expr="''"/>
     	    <assign name="state" expr="'attendedtransfer'"/>
-            <if cond="ibconnid == xferConnID">  <!-- Inbound (caller) initiated blind transfer -->
+            <if cond="ibconnid == xferConnID">  <!-- Inbound (caller) initiated transfer -->
                 <assign name="record" expr="ibconnid + '|' + tmpANI"/>
                 <assign name="whichID" expr="ibconnid"/>    <!-- Save inbound connection ID, we'll end this connection -->
                 <assign name="ibconnid" expr="obconnid"/>   <!-- Make outbound connection ID the new inbound connection ID -->
                 <assign name="attendedXferID" expr="ANI"/>  <!-- Save off current origination number for future use -->
-            <else/> <!-- Outbound (callee) initiated blind transfer -->
+            <else/> <!-- Outbound (callee) initiated transfer -->
                 <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
                 <assign name="whichID" expr="obconnid"/>    <!-- Save onbound connection ID, we'll end this connection -->
                 <assign name="attendedXferID" expr="DNIS"/> <!-- Save off current destination number for future use -->
@@ -92,7 +92,7 @@
         </transition>
 
         <transition event="dialog.user.moveSuccessful" name="evt">
-            <!-- Our move was successful -->
+            <!-- Our move was successful. Next, we'll join the connection ids of the two parties -->
             <log>INFO: Entered [dialog.user.moveSuccessful] with state [<value expr="state"/>]</log>
     	    <assign name="state" expr="'joinID'"/>
             <assign name="obconnid" expr="evt.obconnid"/>
@@ -100,6 +100,7 @@
         </transition>
 
 		<transition state="joinID" event="conference.joined" name="evt">
+            <!-- The join was successful. Here, we send control to dial.ccxml -->
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <var name="callType" expr="'fromXfer'"/>
             <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid obconnid tmpDNIS DNIS tmpANI ANI callType"/>
