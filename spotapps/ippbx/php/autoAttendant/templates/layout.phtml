@@ -20,8 +20,12 @@
     		<div id="header-navigation"></div>
 		</div>
 		<div id="content"><?php 
-			include_once( "templates/addSpecialDate.phtml" );	
-			include_once( "templates/deleteActiveGreetings.phtml" );	?>
+			if( $error ) {	
+				include_once( "templates/error.phtml" );
+			} else {
+				include_once( "templates/addSpecialDate.phtml" );	
+				include_once( "templates/deleteActiveGreetings.phtml" );
+			} ?>
 		</div>
 	</body>
 </html>
