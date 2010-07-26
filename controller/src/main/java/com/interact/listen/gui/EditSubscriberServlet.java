@@ -102,29 +102,24 @@ public class EditSubscriberServlet extends HttpServlet
         {
             updateSubscriberAccessNumbers(subscriberToEdit, accessNumbers, session, persistenceService);
         }
-        
-        String voicemailPinString = request.getParameter("voicemailPin");
-        if(voicemailPinString == null || voicemailPinString.trim().equals(""))
+
+        String voicemailPin = request.getParameter("voicemailPin");
+        if(voicemailPin != null && voicemailPin.length() > 10)
         {
-            throw new BadRequestServletException("Please provide a Voicemail Pin Number");
+            throw new BadRequestServletException("Please provide a Voicemail PIN with ten digits or less");
         }
-        
-        if(voicemailPinString.length() > 10)
+        else if(voicemailPin != null && voicemailPin.trim().length() > 0)
         {
-            throw new BadRequestServletException("Please provide a Voicemail Pin Number with ten digits or less");
+            try
+            {
+                subscriberToEdit.setVoicemailPin(Long.valueOf(voicemailPin));
+            }
+            catch(NumberFormatException e)
+            {
+                throw new BadRequestServletException("Voicemail PIN must be a number");
+            }
         }
-        
-        Long voicemailPin = null;
-        
-        try
-        {
-            voicemailPin = Long.valueOf(voicemailPinString);
-        }
-        catch(NumberFormatException e)
-        {
-            throw new BadRequestServletException("Voicemail Pin Number can only be digits 0-9");
-        }
-        
+
         Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
         Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
         String emailAddress = request.getParameter("emailAddress");
@@ -140,7 +135,6 @@ public class EditSubscriberServlet extends HttpServlet
             throw new BadRequestServletException("Please provide an SMS address");
         }
 
-        subscriberToEdit.setVoicemailPin(voicemailPin);
         subscriberToEdit.setUsername(username);
         subscriberToEdit.setRealName(request.getParameter("realName"));
         subscriberToEdit.setIsEmailNotificationEnabled(enableEmail);

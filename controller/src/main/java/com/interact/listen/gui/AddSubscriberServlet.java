@@ -48,6 +48,8 @@ public class AddSubscriberServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
+        Subscriber subscriber = new Subscriber();
+
         String username = request.getParameter("username");
         if(username == null || username.trim().equals(""))
         {
@@ -71,28 +73,23 @@ public class AddSubscriberServlet extends HttpServlet
             throw new BadRequestServletException("Password and Confirm Password do not match");
         }
         
-        String voicemailPinString = request.getParameter("voicemailPin");
-        if(voicemailPinString == null || voicemailPinString.trim().equals(""))
+        String voicemailPin = request.getParameter("voicemailPin");
+        if(voicemailPin != null && voicemailPin.length() > 10)
         {
-            throw new BadRequestServletException("Please provide a Voicemail Pin Number");
+            throw new BadRequestServletException("Please provide a Voicemail PIN with ten digits or less");
         }
-        
-        if(voicemailPinString.length() > 10)
+        else if(voicemailPin != null && voicemailPin.trim().length() > 0)
         {
-            throw new BadRequestServletException("Please provide a Voicemail Pin number with ten digits or less");
+            try
+            {
+                subscriber.setVoicemailPin(Long.valueOf(voicemailPin));
+            }
+            catch(NumberFormatException e)
+            {
+                throw new BadRequestServletException("Voicemail PIN must be a number");
+            }
         }
-        
-        Long voicemailPin = null;
-        
-        try
-        {
-            voicemailPin = Long.valueOf(voicemailPinString);
-        }
-        catch(NumberFormatException e)
-        {
-            throw new BadRequestServletException("Voicemail Pin Number can only be digits 0-9");
-        }
-        
+
         Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
         Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
         String emailAddress = request.getParameter("emailAddress");
@@ -111,11 +108,9 @@ public class AddSubscriberServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
 
-        Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
         subscriber.setRealName(request.getParameter("realName"));
-        subscriber.setVoicemailPin(voicemailPin);
         subscriber.setIsEmailNotificationEnabled(enableEmail);
         subscriber.setIsSmsNotificationEnabled(enableSms);
         subscriber.setEmailAddress(emailAddress);
