@@ -20,7 +20,7 @@ return temp[0] + 'voicemailPin":' + pinFirst + temp[1];
 
     <form id="beginDocument">
         <block>
-            
+            <log target="status">Update Sub Info</log>
             <log>INFO: Entered run-javascript.vxml [140-57]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(subscriberInfo,pin,pinFirst)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="subscriberInfo" expr="II_SB_userJava" />   

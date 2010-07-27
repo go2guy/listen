@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    
+	    <log target="status">Subscriber Info</log>
             <log>INFO: Entered assign-variable.vxml [67-118]</log>
             <log>INFO: Current value [<value expr="subscriberInfo"/>]</log>
 <assign name="subscriberInfo" expr="returnVal+''" />

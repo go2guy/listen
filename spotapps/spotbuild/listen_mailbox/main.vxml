@@ -58,7 +58,7 @@
 	<var name="SB_UV_time"/>
 	<var name="SB_UV_pinFirst"/>
 	<var name="SB_UV_pinSecond"/>
-	<var name="SB_UV_errLoop"/>
+	<var name="SB_UV_noInputCnt"/>
 	<var name="SB_UV_subscriberInfo"/>
 	<var name="SB_UV_subscriber"/>
 	<var name="SB_UV_grtngList"/>
@@ -202,8 +202,8 @@
 			<if cond="SB_UV_pinSecond != undefined">
 				<assign name="pinSecond" expr="SB_UV_pinSecond" />
 			</if>
-			<if cond="SB_UV_errLoop != undefined">
-				<assign name="errLoop" expr="SB_UV_errLoop" />
+			<if cond="SB_UV_noInputCnt != undefined">
+				<assign name="noInputCnt" expr="SB_UV_noInputCnt" />
 			</if>
 			<if cond="SB_UV_subscriberInfo != undefined">
 				<assign name="subscriberInfo" expr="SB_UV_subscriberInfo" />

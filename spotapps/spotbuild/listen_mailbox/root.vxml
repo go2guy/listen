@@ -68,7 +68,7 @@
 	<var name="time" expr="''" />
 	<var name="pinFirst" expr="''" />
 	<var name="pinSecond" expr="''" />
-	<var name="errLoop" expr="''" />
+	<var name="noInputCnt" expr="''" />
 	<var name="subscriberInfo" expr="''" />
 	<var name="subscriber" expr="''" />
 	<var name="grtngList" expr="''" />

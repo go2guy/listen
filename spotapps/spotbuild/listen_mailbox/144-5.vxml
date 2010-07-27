@@ -14,12 +14,15 @@
             <log>INFO: Current value [<value expr="userInput"/>]</log>
 <assign name="userInput" expr="''+''" />
 <log>INFO: Updated value [<value expr="userInput"/>]</log>
-<log>INFO: Current value [<value expr="errLoop"/>]</log>
-<assign name="errLoop" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="errLoop"/>]</log>
+<log>INFO: Current value [<value expr="errCnt"/>]</log>
+<assign name="errCnt" expr="'0'+''" />
+<log>INFO: Updated value [<value expr="errCnt"/>]</log>
 <log>INFO: Current value [<value expr="nxtPath"/>]</log>
 <assign name="nxtPath" expr="'FwdMsg'+''" />
 <log>INFO: Updated value [<value expr="nxtPath"/>]</log>
+<log>INFO: Current value [<value expr="noInputCnt"/>]</log>
+<assign name="noInputCnt" expr="'0'+''" />
+<log>INFO: Updated value [<value expr="noInputCnt"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

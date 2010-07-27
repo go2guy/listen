@@ -6,13 +6,13 @@
        *   @Desc   Makes http requests and checks for success or failure -->
 
     <var name="II_SB_succeed" expr="'101-43'"/>			<!-- Next file to go to if HttpRequest Works -->
-    <var name="II_SB_failed" expr="'101-11'"/>				<!-- Next file to go to if HttpRequest Fails -->
+    <var name="II_SB_failed" expr="'65-33'"/>				<!-- Next file to go to if HttpRequest Fails -->
     <var name="II_SB_dataTimeOut" expr="'5s'"/>	<!-- Specifies length of time to wait before throwing badfetch error -->
     <var name="II_SB_nxtOpt" expr="''"/>						<!-- Variable to hold next option -->
 	
     <form id="beginDocument">
         <block>
-    	    <log target="status">Get Sub</log>
+    	    <log target="status">Get Msgs Old</log>
             <log>INFO: Entered data-query.vxml [101-42]</log>
             <data name="apiObj" src="http://localhost/spot/cgi-bin/spotbuild/listen/controller.php" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />

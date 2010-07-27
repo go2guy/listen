@@ -28,7 +28,7 @@
 
     <var name="II_SB_promptList" expr="'P'+'newPasscode'+'|P'+'followedByPound'+'|'"/>  <!--  List of audio files / speech to play -->
     <var name="II_SB_PlyAudio_nextOpt" expr="'140-5'"/>  <!--  PlayAudio Next Option. Name of next file -->
-	<var name="II_SB_fldLength" expr="20"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
+	<var name="II_SB_fldLength" expr="10"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	
 	<!-- Voice properties -->
 	<var name="II_SB_maxSpch" expr="'0s'"/>       <!--  maxspeechtimeout. This is the maximum time allowed for a speech -->
@@ -67,7 +67,7 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    
+    	    <log target="status">Get New Passcode</log>
             <log>INFO: Entered audio-input.vxml [140-3]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
             <if cond="II_SB_cutIn == 'true'">

@@ -19,7 +19,7 @@ return result.count;
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Count</log>
+            <log target="status">Get Count New</log>
             <log>INFO: Entered run-javascript.vxml [101-15]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(newResult)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="newCount" expr="II_SB_userJava" />   

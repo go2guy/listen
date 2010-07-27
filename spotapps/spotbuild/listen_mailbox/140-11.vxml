@@ -17,9 +17,9 @@
 <log>INFO: Current value [<value expr="pinSecond"/>]</log>
 <assign name="pinSecond" expr="''+''" />
 <log>INFO: Updated value [<value expr="pinSecond"/>]</log>
-<log>INFO: Current value [<value expr="errLoop"/>]</log>
-<assign name="errLoop" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="errLoop"/>]</log>
+<log>INFO: Current value [<value expr="errCnt"/>]</log>
+<assign name="errCnt" expr="'0'+''" />
+<log>INFO: Updated value [<value expr="errCnt"/>]</log>
 <log>INFO: Current value [<value expr="params"/>]</log>
 <assign name="params" expr="'/'+id" />
 <log>INFO: Updated value [<value expr="params"/>]</log>
