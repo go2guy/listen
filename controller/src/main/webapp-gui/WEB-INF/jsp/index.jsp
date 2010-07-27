@@ -155,9 +155,9 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                     </div>
                     <div class="tab-content">
                       <form id="scheduleConferenceForm">
-                        <div class="form-error-message"></div>
                         <fieldset>
                           <legend>Send Emails</legend>
+                          <div class="form-error-message"></div>
                           <table>
                             <caption>This will send an email to the specified recipients with a date, time, phone number, and PIN.</caption>
                             <tbody>
@@ -264,60 +264,74 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
             <div id="sysconfig-application" class="application">
               <div class="application-header"><div class="title">Configuration</div></div>
               <div class="application-content">
-
-                <form id="dnis-mapping-form">
-                  <fieldset>
-                    <legend>DNIS Mappings</legend>
-                    <div class="form-error-message"></div>
-                    <div class="form-success-message"></div>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td colspan="6" class="buttons">
-                            <button type="button" class="button-add" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button>
-                            <button type="submit" class="button-save" title="Save DNIS mappings">Save</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </fieldset>
-                </form>
-
-                <form id="mail-form">
-                  <fieldset>
-                    <legend>Mail</legend>
-                    <div class="form-error-message"></div>
-                    <div class="form-success-message"></div>
-                    <table>
-                      <tbody>
-                        <tr><td><label for="smtp-server">SMTP Server</label></td><td><input type="text" id="smtp-server" name="smtp-server"/></td></tr>
-                        <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
-                        <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
-                        <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
-                        <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save mail settings">Save</button></td></tr>
-                      </tbody>
-                    </table>
-                  </fieldset>
-                </form><%
-
-  if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
-                <form id="conferencing-configuration-form">
-                  <fieldset>
-                    <legend>Conferencing</legend>
-                    <div class="form-error-message"></div>
-                    <div class="form-success-message"></div>
-                    <table>
-                      <tbody>
-                        <tr><td><label for="conferencing-configuration-pinLength">PIN length</label></td><td><input type="text" id="conferencing-configuration-pinLength" name="conferencing-configuration-pinLength"/></td></tr>
-                        <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save configuration">Save</button></td></tr>
-                      </tbody>
-                    </table>
-                  </fieldset>
-                </form><%
-  } %>
+                <div class="tab-container">
+                  <div class="tabs">
+                    <ul>
+                      <li>DNIS Mappings</li>
+                      <li>Mail</li><%
+if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
+                      <li>Conferencing</li><%
+} %>
+                    </ul>
+                  </div>
+                  <div class="tab-content-default">
+                    <form id="dnis-mapping-form">
+                      <fieldset>
+                        <legend>DNIS Mappings</legend>
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <table>
+                          <tbody>
+                            <tr>
+                              <td colspan="6" class="buttons">
+                                <button type="button" class="button-add" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button>
+                                <button type="submit" class="button-save" title="Save DNIS mappings">Save</button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
+                  </div>
+                  <div class="tab-content">
+                    <form id="mail-form">
+                      <fieldset>
+                        <legend>Mail</legend>
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <table>
+                          <tbody>
+                            <tr><td><label for="smtp-server">SMTP Server</label></td><td><input type="text" id="smtp-server" name="smtp-server"/></td></tr>
+                            <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
+                            <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
+                            <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
+                            <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save mail settings">Save</button></td></tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
+                  </div><%
+if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
+                  <div class="tab-content">
+                    <form id="conferencing-configuration-form">
+                      <fieldset>
+                        <legend>Conferencing</legend>
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <table>
+                          <tbody>
+                            <tr><td><label for="conferencing-configuration-pinLength">PIN length</label></td><td><input type="text" id="conferencing-configuration-pinLength" name="conferencing-configuration-pinLength"/></td></tr>
+                            <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save configuration">Save</button></td></tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
+                  </div><%
+} %>
+                </div>
               </div>
             </div>
-            
+
             <div id="conference-list-application" class="application">
               <div class="application-header"><div class="title">Conference List</div></div>
               <div class="application-content">
@@ -371,9 +385,9 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                     <div class="panel-header"><div class="title">Subscriber Info</div></div>
                     <div class="panel-content">
                       <form id="subscriber-form">
-                        <div class="form-error-message"></div>
-                        <div class="form-success-message"></div>
                         <fieldset>
+                          <div class="form-error-message"></div>
+                          <div class="form-success-message"></div>
                           <input type="hidden" id="subscriber-form-id" name="subscriber-form-id"/>
                           <table>
                             <tbody>
@@ -447,67 +461,78 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
 
 if(subscriber != null) { %>
             <div id="profile-application" class="application">
-              <div class="application-header"><div class="title">Profile Info</div></div>
+              <div class="application-header"><div class="title">Settings</div></div>
               <div class="application-content">
-                <form id="profile-form">
-                  <div class="form-error-message"></div>
-                  <div class="form-success-message"></div>
-                  <fieldset>
-                    <input type="hidden" id="profile-form-id" name="profile-form-id"/>
-                    <table>
-                      <tbody>
-                        <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username"/></td></tr>
-                        <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
-                        <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
-                        <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        
-                        <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr><%
-if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-                        <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
-                        <tr>
-                          <td><label for="profile-form-enableEmailNotification">Send e-mail when voicemail received</label></td>
-                          <td>
-                            <input type="checkbox" id="profile-form-enableEmailNotification" name="profile-form-enableEmailNotification" value="enableEmail"/>
-                            <input type="text" id="profile-form-emailAddress" name="profile-form-emailAddress"/>
-                            <button type="button" class="button-save" id="profile-form-testEmail-button" name="profile-form-testEmail-button" title="Test Email Address">Verify</button>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><label for="profile-form-enableSmsNotification">Send SMS when voicemail received</label></td>
-                          <td>
-                            <input type="checkbox" id="profile-form-enableSmsNotification" name="profile-form-enableSmsNotification" value="enableSms"/>
-                            <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
-                            <button type="button" class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address">Verify</button>
-                          </td>
-                        </tr><%
-} %>
-                        <tr>
-                          <td colspan="2" class="buttons">
-                            <button type="submit" class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit">Save</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </fieldset>
-                </form>
-                <div class="application-header"><div class="title">Pager Info</div></div>
-                <div class="application-content">
-                  <form id="pager-form">
-                    <div class="form-error-message"></div>
-                    <div class="form-success-message"></div>
-                    <fieldset>
-                      <table>
-                        <tbody>
-                          <tr><td><label for="pager-form-number">Pager Number</label></td><td id="pager-form-number" name="pager-form-number"></td></tr>
-                          <tr><td><label for="pager-form-alternate-number">Alternate Number</label></td><td><input type="text" id="pager-form-alternate-number" name="pager-form-alternate-number" maxlength="14"/></td></tr>
-                          <tr>
-                             <td colspan="2" class="buttons">
-                             <button type="submit" class="button-edit" id="pager-form-edit-button" name="pager-form-edit-button" title="Edit">Save</button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </fieldset>
-                  </form>
+                <div class="tab-container">
+                  <div class="tabs">
+                    <ul>
+                      <li>Account</li>
+                      <li>After Hours Pager</li>
+                    </ul>
+                  </div>
+                  <div class="tab-content-default">
+                    <form id="profile-form">
+                      <fieldset>
+                        <legend>Account</legend>
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <input type="hidden" id="profile-form-id" name="profile-form-id"/>
+                        <table>
+                          <tbody>
+                            <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username"/></td></tr>
+                            <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
+                            <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
+                            <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        
+                            <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr><%
+    if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
+                            <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
+                            <tr>
+                              <td><label for="profile-form-enableEmailNotification">Send e-mail when voicemail received</label></td>
+                              <td>
+                                <input type="checkbox" id="profile-form-enableEmailNotification" name="profile-form-enableEmailNotification" value="enableEmail"/>
+                                <input type="text" id="profile-form-emailAddress" name="profile-form-emailAddress"/>
+                                <button type="button" class="button-save" id="profile-form-testEmail-button" name="profile-form-testEmail-button" title="Test Email Address">Verify</button>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td><label for="profile-form-enableSmsNotification">Send SMS when voicemail received</label></td>
+                              <td>
+                                <input type="checkbox" id="profile-form-enableSmsNotification" name="profile-form-enableSmsNotification" value="enableSms"/>
+                                <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
+                                <button type="button" class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address">Verify</button>
+                              </td>
+                            </tr><%
+    } %>
+                            <tr>
+                              <td colspan="2" class="buttons">
+                                <button type="submit" class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit">Save</button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
+                  </div>
+                  <div class="tab-content">
+                    <form id="pager-form">
+                      <fieldset>
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <legend>After Hours Pager</legend>
+                        <table>
+                          <tbody>
+                            <tr><td><label for="pager-form-number">Pager Number</label></td><td id="pager-form-number" name="pager-form-number"></td></tr>
+                            <tr><td><label for="pager-form-alternate-number">Alternate Number</label></td><td><input type="text" id="pager-form-alternate-number" name="pager-form-alternate-number" maxlength="14"/></td></tr>
+                            <tr>
+                              <td colspan="2" class="buttons">
+                                <button type="submit" class="button-edit" id="pager-form-edit-button" name="pager-form-edit-button" title="Edit">Save</button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div> <%

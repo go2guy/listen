@@ -224,12 +224,11 @@ table td, table th {
 }
 
 .tab-container .tabs {
-    background-color: #EEEEEE;
-    border-color: #CCCCCC;
+    border-color: #AAAAAA;
     border-style: solid;
     border-width: 0 0 1px 0;
-    clear: both;
     height: 2em;
+    clear: both;
     width: 100%;
 }
 
@@ -237,7 +236,7 @@ table td, table th {
     background-color: #FFFFFF;
     border-style: solid;
     border-width: 1px 1px 0 1px;
-    border-color: #CCCCCC;
+    border-color: #AAAAAA;
     cursor: pointer;
     display: block;
     float: left;
@@ -246,7 +245,8 @@ table td, table th {
 }
 
 .tab-container .tabs ul li:hover, .tab-container .tabs ul li.current {
-    background-color: #CCCCCC;
+    background-color: #AAAAAA;
+    color: #FFFFFF;
 }
 
 .tab-container .tab-content {
@@ -490,11 +490,6 @@ td.voicemail-cell-readStatus {
     width: 67%;
 }
 
-/* application - profile */
-
-#profile-application fieldset {
-    border-width: 0;
-}
 
 /* buttons */
 
