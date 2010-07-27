@@ -296,9 +296,9 @@ function scheduleConference(event) {
             scheduleConferenceTimeHour.val('1');
             scheduleConferenceTimeMinute.val('00');
             scheduleConferenceTimeAmPm.val('AM');
-            scheduleConferenceTimeEndHour.val('1');
-            scheduleConferenceTimeEndMinute.val('15');
-            scheduleConferenceTimeEndAmPm.val('AM');
+            scheduleConferenceEndTimeHour.val('1');
+            scheduleConferenceEndTimeMinute.val('15');
+            scheduleConferenceEndTimeAmPm.val('AM');
             scheduleConferenceSubject.val('');
             scheduleConferenceDescription.val('');
             scheduleConferenceActiveParticipants.val('');
