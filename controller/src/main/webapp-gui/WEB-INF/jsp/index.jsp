@@ -154,8 +154,8 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                       <div class="cleaner">&nbsp;</div>
                     </div>
                     <div class="tab-content">
-                      <div class="form-error-message"></div>
                       <form id="scheduleConferenceForm">
+                        <div class="form-error-message"></div>
                         <fieldset>
                           <legend>Send Emails</legend>
                           <table>
@@ -217,7 +217,7 @@ for(int i = 1; i <= 12; i++) { %>
                               </tr>
                               <tr>
                                 <td colspan="2" class="buttons">
-                                  <button class="button-schedule">Send Emails</button>
+                                  <button type="submit" class="button-schedule">Send Emails</button>
                                 </td>
                               </tr>
                             </tbody>

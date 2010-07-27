@@ -5,9 +5,7 @@ $(document).ready(function() {
 
     // schedule
 
-    $('#scheduleConferenceForm').submit(function(event) { return false; });
-
-    $('#scheduleConferenceDialog .button-schedule').click(function(event) {
+    $('#scheduleConferenceForm').submit(function(event) {
         scheduleConference(event);
         return false;
     });
@@ -259,7 +257,7 @@ function Conference(id) {
 }
 
 function scheduleConference(event) {
-    var div = $('#scheduleConferenceDialog .form-error-message');
+    var div = $('#scheduleConferenceForm .form-error-message');
     div.hide();
     div.text('');
 
@@ -291,7 +289,6 @@ function scheduleConference(event) {
                 activeParticipants: scheduleConferenceActiveParticipants.val(),
                 passiveParticipants: scheduleConferencePassiveParticipants.val() },
         success: function(data) {
-            $('#scheduleConferenceDialog').slideUp(200);
             scheduleConferenceDate.val('');
             scheduleConferenceTimeHour.val('1');
             scheduleConferenceTimeMinute.val('00');
@@ -306,7 +303,7 @@ function scheduleConference(event) {
             LISTEN.notify('Emails have been sent to the provided addresses');
         },
         error: function(data, status) {
-            var div = $('#scheduleConferenceDialog .form-error-message');
+            var div = $('#scheduleConferenceForm .form-error-message');
             div.text(data.responseText);
             div.slideDown(200);
         },
