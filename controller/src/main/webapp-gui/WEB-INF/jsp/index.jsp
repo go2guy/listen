@@ -217,7 +217,6 @@ for(int i = 1; i <= 12; i++) { %>
                               </tr>
                               <tr>
                                 <td colspan="2" class="buttons">
-                                  <button class="button-cancel">Cancel</button>
                                   <button class="button-schedule">Send Emails</button>
                                 </td>
                               </tr>
