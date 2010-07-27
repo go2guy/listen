@@ -5,30 +5,19 @@ $(document).ready(function() {
 
     // schedule
 
-    $('#schedule-show').click(function(event) {
-        $.modal($('#scheduleConferenceDialog'), {
-            overlayCss: {
-                'background-color': '#CCCCCC',
-                'opacity': .5
-            }
-        });
-    });
-
     $('#scheduleConferenceForm').submit(function(event) { return false; });
 
     $('#scheduleConferenceDialog .button-cancel').click(function(event) {
-        $.modal.close();
         $('#scheduleConferenceDialog .form-error-message').hide().text('');
         return false;
     });
 
     $('#scheduleConferenceDialog .button-schedule').click(function(event) {
         scheduleConference(event);
-        $.modal.close();
         return false;
     });
 
-    $("#scheduleConferenceDate").datepicker();
+    $('#scheduleConferenceDate').datepicker();
 
     // outdial
 

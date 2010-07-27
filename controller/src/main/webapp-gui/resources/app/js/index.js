@@ -10,6 +10,27 @@ $(document).ready(function() {
         }
     });
 
+    $('.tab-container').each(function(containerIndex, containerElement) {
+        var tabs = $('.tabs li', containerElement);
+        var panels = $('.tab-content, .tab-content-default', containerElement);
+
+        panels.each(function(panelIndex, panelElement) {
+            if($(panelElement).hasClass('tab-content-default')) {
+                $(tabs[panelIndex]).addClass('current');
+            }
+            $(tabs[panelIndex]).click(function(event) {
+                $(event.target).addClass('current');
+                panels.each(function(i, e) {
+                    if(i != panelIndex) {
+                        $(e).hide();
+                        $(tabs[i]).removeClass('current');
+                    }
+                });
+                $(panelElement).show();
+            });
+        });
+    });
+
     var failedTries = 0;
     setInterval(function() {
         var start = LISTEN.timestamp();

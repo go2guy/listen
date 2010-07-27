@@ -53,100 +53,180 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
               <div class="application-header"><div class="title">Conferencing</div></div>
               <div class="application-content">
                 <div class="conference-content">
-                  <div class="left">
-                    <div class="panel">
-                      <div class="panel-content">
-                        <table>
-                          <tbody>
-                            <tr><td>Conference Description</td><td id="conference-info-description" class="conference-info-value"></td></tr>
-                            <tr><td>Conference Status</td><td id="conference-info-status" class="conference-info-value"></td></tr>
-                          </tbody>
-                        </table>
-                      </div>
+                  <div class="tab-container">
+                    <div class="tabs">
+                      <ul>
+                        <li>Main</li>
+                        <li>Scheduling</li>
+                      </ul>
                     </div>
-                    <div class="panel">
-                      <div class="panel-header"><div class="title">On The Call (<span id="conference-caller-count">0</span>)</div></div>
-                      <div class="panel-content">
-                        <table id="conference-caller-table">
-                          <tbody>
-                            <tr class="placeholder"><td colspan="3">Nobody</td></tr>
-                          </tbody>
-                        </table>
-                        <div class="pagination" id="conference-caller-pagination">
-                          <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
+                    <div class="tab-content-default">
+                      <div class="left">
+                        <div class="panel">
+                          <div class="panel-content">
+                            <table>
+                              <tbody>
+                                <tr><td>Conference Description</td><td id="conference-info-description" class="conference-info-value"></td></tr>
+                                <tr><td>Conference Status</td><td id="conference-info-status" class="conference-info-value"></td></tr>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
-                        <div class="cleaner">&nbsp;</div>
+                        <div class="panel">
+                          <div class="panel-header"><div class="title">On The Call (<span id="conference-caller-count">0</span>)</div></div>
+                          <div class="panel-content">
+                            <table id="conference-caller-table">
+                              <tbody>
+                                <tr class="placeholder"><td colspan="3">Nobody</td></tr>
+                              </tbody>
+                            </table>
+                            <div class="pagination" id="conference-caller-pagination">
+                              <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
+                            </div>
+                            <div class="cleaner">&nbsp;</div>
+                          </div>
+                        </div>
                       </div>
+                      <div class="right">
+                        <div class="panel">
+                          <div class="panel-header"><div class="title">Control Panel</div></div>
+                          <div class="panel-content">
+                            <!-- outdial -->
+                            <div class="control-panel-button">
+                              <button id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
+                            </div>
+                            <div id="outdial-dialog" class="inline-dialog">
+                              <form name="outdial-form" id="outdial-form">
+                                <div class="form-error-message"></div>
+                                <div>
+                                  <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
+                                </div>
+                                <div>
+                                  <button class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
+                                  <button class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
+                                </div>
+                              </form>
+                            </div>
+                            <div id="record-button-div" class="control-panel-button">
+                              <button id="record-button" class="button-record">Record</button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="panel">
+                          <div class="panel-header"><div class="title">Available PINs (<span id="conference-pin-count">0</span>)</div></div>
+                          <div class="panel-content">
+                            <table id="conference-pin-table">
+                              <tbody>
+                                <tr class="placeholder"><td colspan="3">No PINs available</td></tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="panel">
+                          <div class="panel-header"><div class="title">Recent History</div></div>
+                          <div class="panel-content">
+                            <table id="conference-history-table">
+                              <tbody>
+                                <tr class="placeholder"><td colspan="2">No history records</td></tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="panel">
+                          <div class="panel-header"><div class="title">Recent Recordings</div></div>
+                          <div class="panel-content">
+                            <table id="conference-recording-table" class="data-table">
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Duration</th>
+                                  <th>Size</th>
+                                  <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr class="placeholder"><td colspan="4">No recordings</td></tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="cleaner">&nbsp;</div>
+                    </div>
+                    <div class="tab-content">
+                      <div class="form-error-message"></div>
+                      <form id="scheduleConferenceForm">
+                        <fieldset>
+                          <legend>Send Emails</legend>
+                          <table>
+                            <caption>This will send an email to the specified recipients with a date, time, phone number, and PIN.</caption>
+                            <tbody>
+                              <tr>
+                                <th><label for="scheduleConferenceDate">Date &amp; Time</label></th>
+                                <td>
+                                  <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/><br/>
+                                   From <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour"><%
+for(int i = 1; i <= 12; i++) { %>
+                                    <option value="<%= i %>"><%= i %></option><%
+} %>
+                                  </select>
+                                  <select id="scheduleConferenceTimeMinute" name="scheduleConferenceTimeMinute">
+                                    <option value="00">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                  </select>
+                                  <select id="scheduleConferenceTimeAmPm" name="scheduleConferenceTimeAmPm">
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                  </select> until <select id="scheduleConferenceEndTimeHour" name="scheduleConferenceEndTimeHour"><%
+for(int i = 1; i <= 12; i++) { %>
+                                     <option value="<%= i %>"><%= i %></option><%
+} %>
+                                  </select>
+                                  <select id="scheduleConferenceEndTimeMinute" name="scheduleConferenceEndTimeMinute">
+                                    <option value="00">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                  </select>
+                                  <select id="scheduleConferenceEndTimeAmPm" name="scheduleConferenceTimeEndAmPm">
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th><label for="scheduleConferenceSubject">Subject of email</label></th>
+                                <td><input type="text" id="scheduleConferenceSubject" name="scheduleConferenceSubject"/></td>
+                              </tr>
+                              <tr>
+                                <th><label for="scheduleConferenceDescription">Memo to include in email</label></th>
+                                <td><textarea id="scheduleConferenceDescription" name="scheduleConferenceDescription"></textarea>
+                              </tr>
+                              <tr>
+                                <td colspan="2">Enter the email addresses (comma-separated) for participants who should receive the appropriate PIN in the fields below.</td>
+                              </tr>
+                               <tr>
+                                <th><label for="scheduleConferenceActiveParticipants">Active caller email addresses</label></th>
+                                <td><textarea id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"></textarea></td>
+                              </tr>
+                              <tr>
+                                <th><label for="scheduleConferencePassiveParticipants">Passive caller email addresses</label></th>
+                                <td><textarea id="scheduleConferencePassiveParticipants" name="scheduleConferencePassiveParticipants"></textarea></td>
+                              </tr>
+                              <tr>
+                                <td colspan="2" class="buttons">
+                                  <button class="button-cancel">Cancel</button>
+                                  <button class="button-schedule">Send Emails</button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </fieldset>
+                      </form>
                     </div>
                   </div>
-                  <div class="right">
-                    <div class="panel">
-                      <div class="panel-header"><div class="title">Control Panel</div></div>
-                      <div class="panel-content">
-                        <!-- outdial -->
-                        <div class="control-panel-button">
-                          <button id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
-                        </div>
-                        <div id="outdial-dialog" class="inline-dialog">
-                          <form name="outdial-form" id="outdial-form">
-                            <div class="form-error-message"></div>
-                            <div>
-                              <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
-                            </div>
-                            <div>
-                              <button class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
-                              <button class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
-                            </div>
-                          </form>
-                        </div>
-                        <div id="record-button-div" class="control-panel-button">
-                          <button id="record-button" class="button-record">Record</button>
-                        </div>
-                        <div class="control-panel-button">
-                          <button id="schedule-show" class="button-schedule">Schedule</button>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="panel">
-                      <div class="panel-header"><div class="title">Available PINs (<span id="conference-pin-count">0</span>)</div></div>
-                      <div class="panel-content">
-                        <table id="conference-pin-table">
-                          <tbody>
-                            <tr class="placeholder"><td colspan="3">No PINs available</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="panel">
-                      <div class="panel-header"><div class="title">Recent History</div></div>
-                      <div class="panel-content">
-                        <table id="conference-history-table">
-                          <tbody>
-                            <tr class="placeholder"><td colspan="2">No history records</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="panel">
-                      <div class="panel-header"><div class="title">Recent Recordings</div></div>
-                      <div class="panel-content">
-                        <table id="conference-recording-table" class="data-table">
-                          <thead>
-                            <tr>
-                              <th>Date</th>
-                              <th>Duration</th>
-                              <th>Size</th>
-                              <th></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr class="placeholder"><td colspan="4">No recordings</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="cleaner">&nbsp;</div>
                 </div><!-- conference-content -->
                 <div class="conference-notloaded">
                   Conference not found.
@@ -558,76 +638,6 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
       </ul>
     </div>
 
-    <div id="scheduleConferenceDialog" class="inline-dialog">
-      <div class="form-error-message"></div>
-      <form id="scheduleConferenceForm">
-        <table>
-          <caption>This will send an email to the specified recipients with a date, time, phone number, and PIN.</caption>
-          <tbody>
-            <tr>
-              <th><label for="scheduleConferenceDate">Date &amp; Time</label></th>
-              <td>
-                <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/><br/>
-                 From <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour"><%
-for(int i = 1; i <= 12; i++) { %>
-                   <option value="<%= i %>"><%= i %></option><%
-} %>
-                </select>
-                <select id="scheduleConferenceTimeMinute" name="scheduleConferenceTimeMinute">
-                  <option value="00">00</option>
-                  <option value="15">15</option>
-                  <option value="30">30</option>
-                  <option value="45">45</option>
-                </select>
-                <select id="scheduleConferenceTimeAmPm" name="scheduleConferenceTimeAmPm">
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select> until <select id="scheduleConferenceEndTimeHour" name="scheduleConferenceEndTimeHour"><%
-for(int i = 1; i <= 12; i++) { %>
-                   <option value="<%= i %>"><%= i %></option><%
-} %>
-                </select>
-                <select id="scheduleConferenceEndTimeMinute" name="scheduleConferenceEndTimeMinute">
-                  <option value="00">00</option>
-                  <option value="15">15</option>
-                  <option value="30">30</option>
-                  <option value="45">45</option>
-                </select>
-                <select id="scheduleConferenceEndTimeAmPm" name="scheduleConferenceTimeEndAmPm">
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <th><label for="scheduleConferenceSubject">Subject of email</label></th>
-              <td><input type="text" id="scheduleConferenceSubject" name="scheduleConferenceSubject"/></td>
-            </tr>
-            <tr>
-              <th><label for="scheduleConferenceDescription">Memo to include in email</label></th>
-              <td><textarea id="scheduleConferenceDescription" name="scheduleConferenceDescription"></textarea>
-            </tr>
-            <tr>
-              <td colspan="2">Enter the email addresses (comma-separated) for participants who should receive the appropriate PIN in the fields below.</td>
-            </tr>
-            <tr>
-              <th><label for="scheduleConferenceActiveParticipants">Active caller email addresses</label></th>
-              <td><textarea id="scheduleConferenceActiveParticipants" name="scheduleConferenceActiveParticipants"></textarea></td>
-            </tr>
-            <tr>
-              <th><label for="scheduleConferencePassiveParticipants">Passive caller email addresses</label></th>
-              <td><textarea id="scheduleConferencePassiveParticipants" name="scheduleConferencePassiveParticipants"></textarea></td>
-            </tr>
-            <tr>
-              <td colspan="2" class="buttons">
-                <button class="button-cancel">Cancel</button>
-                <button class="button-schedule">Send Emails</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </form>
-    </div><!-- schedule conference dialog -->
     <div id="communication-error">Server is unavailable, please wait...</div>
     <div id="pinglatency"></div>
     <div id="latency"></div>
