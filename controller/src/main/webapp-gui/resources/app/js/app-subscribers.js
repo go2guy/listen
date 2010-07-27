@@ -1,4 +1,28 @@
 $(document).ready(function() {
+    $('#subscriber-form-cancel-button').click(function() {
+        LISTEN.SUBSCRIBERS.resetForm();
+        return false;
+    });
+
+    $('#subscriber-form-testEmail-button').click(function() {
+        LISTEN.SUBCRIBERS.testEmailAddress();
+        return false;
+    });
+
+    $('#subscriber-form-testSms-button').click(function() {
+        LISTEN.SUBSCRIBERS.testSmsAddress();
+        return false;
+    });
+
+    $('#subscriber-form').submit(function() {
+        if($('#subscriber-form-add-button').is(':visible')) {
+            LISTEN.SUBSCRIBERS.addSubscriber();
+        } else {
+            LISTEN.SUBSCRIBERS.editSubscriber();
+        }
+        return false;
+    });
+
     LISTEN.SUBSCRIBERS = function() {
         return {
             SubscribersApplication: function() {

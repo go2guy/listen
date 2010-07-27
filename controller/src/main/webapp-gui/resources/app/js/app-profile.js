@@ -1,4 +1,25 @@
 $(document).ready(function() {
+
+    $('#profile-form').submit(function() {
+        LISTEN.PROFILE.editSubscriber();
+        return false;
+    });
+
+    $('#profile-form-testEmail-button').click(function() {
+        LISTEN.PROFILE.testEmailAddress();
+        return false;
+    });
+
+    $('#profile-form-testSms-button').click(function() {
+        LISTEN.PROFILE.testSmsAddress();
+        return false;
+    });
+
+    $('#pager-form').submit(function() {
+        LISTEN.PROFILE.editPagerInfo();
+        return false;
+    });
+
     LISTEN.PROFILE = function() {
         return {
             ProfileApplication: function() {

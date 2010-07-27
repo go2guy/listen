@@ -81,7 +81,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                               </tbody>
                             </table>
                             <div class="pagination" id="conference-caller-pagination">
-                              <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
+                              <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
                             </div>
                             <div class="cleaner">&nbsp;</div>
                           </div>
@@ -93,7 +93,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                           <div class="panel-content">
                             <!-- outdial -->
                             <div class="control-panel-button">
-                              <button id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
+                              <button type="button" id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
                             </div>
                             <div id="outdial-dialog" class="inline-dialog">
                               <form name="outdial-form" id="outdial-form">
@@ -102,13 +102,13 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                                   <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
                                 </div>
                                 <div>
-                                  <button class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
-                                  <button class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
+                                  <button type="button" class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
+                                  <button type="button" class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
                                 </div>
                               </form>
                             </div>
                             <div id="record-button-div" class="control-panel-button">
-                              <button id="record-button" class="button-record">Record</button>
+                              <button type="button" id="record-button" class="button-record">Record</button>
                             </div>
                           </div>
                         </div>
@@ -244,7 +244,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                   </tbody>
                 </table>
                 <div class="pagination" id="voicemail-pagination">
-                  <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
+                  <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
                 </div>
                 <div class="cleaner">&nbsp;</div>
               </div>
@@ -272,7 +272,12 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                     <div class="form-success-message"></div>
                     <table>
                       <tbody>
-                        <tr><td colspan="6" class="buttons"><button class="button-add" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button><button type="submit" class="button-save" title="Save DNIS mappings">Save</button></td></tr>
+                        <tr>
+                          <td colspan="6" class="buttons">
+                            <button type="button" class="button-add" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button>
+                            <button type="submit" class="button-save" title="Save DNIS mappings">Save</button>
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                   </fieldset>
@@ -289,7 +294,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                         <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
                         <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
                         <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
-                        <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save mail settings">Save</button><!--<button class="button-cancel">Reset</button>--></td></tr>
+                        <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save mail settings">Save</button></td></tr>
                       </tbody>
                     </table>
                   </fieldset>
@@ -330,7 +335,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                   </tbody>
                 </table>
                 <div class="pagination" id="conference-list-pagination">
-                  <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
+                  <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
                 </div>
                 <div class="cleaner">&nbsp;</div>
               </div>
@@ -355,7 +360,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                         <tbody></tbody>
                       </table>
                       <div class="pagination" id="subscribers-pagination">
-                        <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
+                        <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
                       </div>
                       <div class="cleaner">&nbsp;</div>
                     </div>
@@ -365,7 +370,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                   <div class="panel">
                     <div class="panel-header"><div class="title">Subscriber Info</div></div>
                     <div class="panel-content">
-                      <form id="subscriber-form" onsubmit="return false;">
+                      <form id="subscriber-form">
                         <div class="form-error-message"></div>
                         <div class="form-success-message"></div>
                         <fieldset>
@@ -396,7 +401,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                 <td colspan="2">
                                   <input type="checkbox" id="subscriber-form-enableEmailNotification" name="subscriber-form-enableEmailNotification" value="enableEmail"/>
                                   <input type="text" id="subscriber-form-emailAddress" name="subscriber-form-emailAddress"/>
-                                  <button class="button-save" id="subscriber-form-testEmail-button" name="subscriber-form-testEmail-button" title="Test Email Address" onclick="LISTEN.SUBSCRIBERS.testEmailAddress();return false;">Verify</button>
+                                  <button type="button" class="button-save" id="subscriber-form-testEmail-button" name="subscriber-form-testEmail-button" title="Test Email Address">Verify</button>
                                 </td>
                               </tr>
                               <tr><td colspan="2"><label for="subscriber-form-enableSmsNotification">Send SMS when voicemail received</label></td></tr>
@@ -404,15 +409,15 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                 <td colspan="2">
                                   <input type="checkbox" id="subscriber-form-enableSmsNotification" name="subscriber-form-enableSmsNotification" value="enableSms"/>
                                   <input type="text" id="subscriber-form-smsAddress" name="subscriber-form-smsAddress"/>
-                                  <button class="button-save" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address" onclick="LISTEN.SUBSCRIBERS.testSmsAddress();return false;">Verify</button>
+                                  <button type="button" class="button-save" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address">Verify</button>
                                 </td>
                               </tr><%
 } %>
                               <tr>
                                 <td colspan="2" class="buttons">
-                                  <button class="button-add" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add" onclick="LISTEN.SUBSCRIBERS.addSubscriber();return false;">Add</button>
-                                  <button class="button-edit" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit" onclick="LISTEN.SUBSCRIBERS.editSubscriber();return false;">Edit</button>
-                                  <button class="button-cancel" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit" onclick="LISTEN.SUBSCRIBERS.resetForm();return false;">Cancel Edit</button>
+                                  <button type="submit" class="button-add" id="subscriber-form-add-button" name="subscriber-form-add-button" title="Add">Add</button>
+                                  <button type="submit" class="button-edit" id="subscriber-form-edit-button" name="subscriber-form-edit-button" title="Edit">Edit</button>
+                                  <button type="reset" class="button-cancel" id="subscriber-form-cancel-button" name="subscriber-form-cancel-button" title="Cancel Edit">Cancel Edit</button>
                                 </td>
                               </tr>
                             </tbody>
@@ -433,7 +438,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                   <li class="placeholder">No history records</li>
                 </ul>
                 <div class="pagination" id="history-pagination">
-                  <button class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button class="icon-pageright"></button>
+                  <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
                 </div>
                 <div class="cleaner">&nbsp;</div>
               </div>
@@ -444,7 +449,7 @@ if(subscriber != null) { %>
             <div id="profile-application" class="application">
               <div class="application-header"><div class="title">Profile Info</div></div>
               <div class="application-content">
-                <form id="profile-form" onsubmit="return false;">
+                <form id="profile-form">
                   <div class="form-error-message"></div>
                   <div class="form-success-message"></div>
                   <fieldset>
@@ -463,7 +468,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                           <td>
                             <input type="checkbox" id="profile-form-enableEmailNotification" name="profile-form-enableEmailNotification" value="enableEmail"/>
                             <input type="text" id="profile-form-emailAddress" name="profile-form-emailAddress"/>
-                            <button class="button-save" id="profile-form-testEmail-button" name="profile-form-testEmail-button" title="Test Email Address" onclick="LISTEN.PROFILE.testEmailAddress();return false;">Verify</button>
+                            <button type="button" class="button-save" id="profile-form-testEmail-button" name="profile-form-testEmail-button" title="Test Email Address">Verify</button>
                           </td>
                         </tr>
                         <tr>
@@ -471,13 +476,13 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                           <td>
                             <input type="checkbox" id="profile-form-enableSmsNotification" name="profile-form-enableSmsNotification" value="enableSms"/>
                             <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
-                            <button class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address" onclick="LISTEN.PROFILE.testSmsAddress();return false;">Verify</button>
+                            <button type="button" class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address">Verify</button>
                           </td>
                         </tr><%
 } %>
                         <tr>
                           <td colspan="2" class="buttons">
-                            <button class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editSubscriber();return false;">Save</button>
+                            <button type="submit" class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit">Save</button>
                           </td>
                         </tr>
                       </tbody>
@@ -486,7 +491,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                 </form>
                 <div class="application-header"><div class="title">Pager Info</div></div>
                 <div class="application-content">
-                  <form id="pager-form" onsubmit="return false;">
+                  <form id="pager-form">
                     <div class="form-error-message"></div>
                     <div class="form-success-message"></div>
                     <fieldset>
@@ -496,7 +501,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                           <tr><td><label for="pager-form-alternate-number">Alternate Number</label></td><td><input type="text" id="pager-form-alternate-number" name="pager-form-alternate-number" maxlength="14"/></td></tr>
                           <tr>
                              <td colspan="2" class="buttons">
-                             <button class="button-edit" id="pager-form-edit-button" name="pager-form-edit-button" title="Edit" onclick="LISTEN.PROFILE.editPagerInfo();return false;">Save</button>
+                             <button type="submit" class="button-edit" id="pager-form-edit-button" name="pager-form-edit-button" title="Edit">Save</button>
                             </td>
                           </tr>
                         </tbody>
@@ -615,7 +620,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
             </select>
           </td>
           <td><input type="text" value="" class="dnis-mapping-custom-destination"/></td>
-          <td><button class="icon-delete" title="Remove this DNIS mapping"></button></td>
+          <td><button type="button" class="icon-delete" title="Remove this DNIS mapping"></button></td>
         </tr>
       </tbody></table>
 
