@@ -181,7 +181,7 @@ public final class HibernateUtil
         // participant numbers are 40200N000M, where M=0..9
 
         // dummy accounts
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 25; i++)
         {
             String extension = new DecimalFormat("000").format(100 + i);
 
