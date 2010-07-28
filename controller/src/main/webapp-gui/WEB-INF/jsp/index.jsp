@@ -68,6 +68,28 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                               <tbody>
                                 <tr><td>Conference Description</td><td id="conference-info-description" class="conference-info-value"></td></tr>
                                 <tr><td>Conference Status</td><td id="conference-info-status" class="conference-info-value"></td></tr>
+                                <tr>
+                                  <td>
+                                    <div class="control-panel-button">
+                                      <button type="button" id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
+                                    </div>
+                                    <div id="outdial-dialog" class="inline-dialog">
+                                      <form name="outdial-form" id="outdial-form">
+                                        <div class="form-error-message"></div>
+                                        <div>
+                                          <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
+                                        </div>
+                                        <div>
+                                          <button type="button" class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
+                                          <button type="button" class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
+                                        </div>
+                                      </form>
+                                    </div>
+                                    <div id="record-button-div" class="control-panel-button">
+                                      <button type="button" id="record-button" class="button-record">Record</button>
+                                    </div>
+                                  </td>
+                                </tr>
                               </tbody>
                             </table>
                           </div>
@@ -88,30 +110,6 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                         </div>
                       </div>
                       <div class="right">
-                        <div class="panel">
-                          <div class="panel-header"><div class="title">Control Panel</div></div>
-                          <div class="panel-content">
-                            <!-- outdial -->
-                            <div class="control-panel-button">
-                              <button type="button" id="outdial-show" name="outdial-show" class="button-outdial">OnDemand</button>
-                            </div>
-                            <div id="outdial-dialog" class="inline-dialog">
-                              <form name="outdial-form" id="outdial-form">
-                                <div class="form-error-message"></div>
-                                <div>
-                                  <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
-                                </div>
-                                <div>
-                                  <button type="button" class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
-                                  <button type="button" class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
-                                </div>
-                              </form>
-                            </div>
-                            <div id="record-button-div" class="control-panel-button">
-                              <button type="button" id="record-button" class="button-record">Record</button>
-                            </div>
-                          </div>
-                        </div>
                         <div class="panel">
                           <div class="panel-header"><div class="title">Available PINs (<span id="conference-pin-count">0</span>)</div></div>
                           <div class="panel-content">
