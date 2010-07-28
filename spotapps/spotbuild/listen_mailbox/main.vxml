@@ -19,9 +19,9 @@
     <var name="II_SB_transfer"/>
     <var name="II_SB_projectSource"/>
     <var name="II_SB_importedValue"/>
-	<var name="SB_UV_subID"/>
 	<var name="SB_UV_nxtPath"/>
 	<var name="SB_UV_maxErr"/>
+	<var name="SB_UV_subID"/>
 	<var name="SB_UV_errCnt"/>
 	<var name="SB_UV_FILE1"/>
 	<var name="SB_UV_FILE2"/>
@@ -71,6 +71,8 @@
 	<var name="SB_UV_vmPathMiddle"/>
 	<var name="SB_UV_vmPathSuffex"/>
 	<var name="SB_UV_grtPathSuffex"/>
+	<var name="SB_UV_application"/>
+	<var name="SB_UV_quickAccess"/>
 
     
     <form id="beginDocument">
@@ -85,14 +87,14 @@
 			<assign name="ANI" expr="II_SB_remote" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
-			<if cond="SB_UV_subID != undefined">
-				<assign name="subID" expr="SB_UV_subID" />
-			</if>
 			<if cond="SB_UV_nxtPath != undefined">
 				<assign name="nxtPath" expr="SB_UV_nxtPath" />
 			</if>
 			<if cond="SB_UV_maxErr != undefined">
 				<assign name="maxErr" expr="SB_UV_maxErr" />
+			</if>
+			<if cond="SB_UV_subID != undefined">
+				<assign name="subID" expr="SB_UV_subID" />
 			</if>
 			<if cond="SB_UV_errCnt != undefined">
 				<assign name="errCnt" expr="SB_UV_errCnt" />
@@ -240,6 +242,12 @@
 			</if>
 			<if cond="SB_UV_grtPathSuffex != undefined">
 				<assign name="grtPathSuffex" expr="SB_UV_grtPathSuffex" />
+			</if>
+			<if cond="SB_UV_application != undefined">
+				<assign name="application" expr="SB_UV_application" />
+			</if>
+			<if cond="SB_UV_quickAccess != undefined">
+				<assign name="quickAccess" expr="SB_UV_quickAccess" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -6,7 +6,7 @@
                    These variables are available to all files that reference this document -->
 
     <!-- Application constants. These are used to control the flow of the application -->
-    <var name="II_SB_APP_PATH" expr="'/interact/apps/spotbuild/listen_mailbox/'"/>                 	<!--  APP_PATH. Application directory under base directory. Contains all code -->
+    <var name="II_SB_APP_PATH" expr="'/interact/apps/spotbuild/listen_quickAccessVM/'"/>                 	<!--  APP_PATH. Application directory under base directory. Contains all code -->
     <var name="II_SB_LIB_PATH" expr="'/interact/apps/spotbuild/lib/'"/>	<!-- LIB_PATH. Library directory. Contains all library functions -->
     <var name="II_SB_JS_LIB" expr="II_SB_LIB_PATH +'js/'"/>            	<!-- JS LIB_PATH. Java script directory -->
     <var name="II_SB_VXML_LIB" expr="II_SB_LIB_PATH +'vxml/'"/>        	<!-- VXML LIB_PATH. VXML script directory -->
@@ -29,60 +29,7 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
-	<var name="nxtPath" expr="''" />
-	<var name="maxErr" expr="'3'" />
-	<var name="subID" expr="''" />
-	<var name="errCnt" expr="'0'" />
-	<var name="FILE1" expr="''" />
-	<var name="FILE2" expr="''" />
-	<var name="OPERATION" expr="''" />
-	<var name="recDIR" expr="'/var/www/html/listen/artifacts/'" />
-	<var name="status" expr="''" />
-	<var name="ANI" expr="'remote'" />
-	<var name="userInput" expr="''" />
-	<var name="request" expr="'get'" />
-	<var name="resource" expr="'accessNumbers'" />
-	<var name="params" expr="''" />
-	<var name="cntrlURL" expr="''" />
-	<var name="id" expr="''" />
-	<var name="returnVal" expr="''" />
-	<var name="returnStr" expr="''" />
-	<var name="pin" expr="''" />
-	<var name="reason" expr="''" />
-	<var name="numOfVoicemails" expr="''" />
-	<var name="count" expr="'0'" />
-	<var name="voicemails" expr="''" />
-	<var name="result" expr="''" />
-	<var name="fileLocation" expr="''" />
-	<var name="menuOption" expr="''" />
-	<var name="hostName" expr="''" />
 	<var name="passValues" expr="'importedValue'" />
-	<var name="vmPathPrefix" expr="'/var/www/html'" />
-	<var name="newResult" expr="''" />
-	<var name="oldResult" expr="''" />
-	<var name="newCount" expr="''" />
-	<var name="oldCount" expr="''" />
-	<var name="vmPathOption" expr="''" />
-	<var name="vmDateCreated" expr="''" />
-	<var name="date" expr="''" />
-	<var name="time" expr="''" />
-	<var name="pinFirst" expr="''" />
-	<var name="pinSecond" expr="''" />
-	<var name="noInputCnt" expr="''" />
-	<var name="subscriberInfo" expr="''" />
-	<var name="subscriber" expr="''" />
-	<var name="grtngList" expr="''" />
-	<var name="grtngSelect" expr="''" />
-	<var name="subFwd" expr="''" />
-	<var name="DNIS" expr="'local'" />
-	<var name="sysAccessTime" expr="''" />
-	<var name="toggleLight" expr="'OFF'" />
-	<var name="accessNum" expr="''" />
-	<var name="vmPathMiddle" expr="'/listen/artifacts/'" />
-	<var name="vmPathSuffex" expr="'/voicemail/message'" />
-	<var name="grtPathSuffex" expr="'/voicemail/greeting/'" />
-	<var name="application" expr="''" />
-	<var name="quickAccess" expr="'false'" />
 
 
     <!-- Conference Variables -->

@@ -70,6 +70,7 @@ begin - begin
 157-14 - assign-variable
 140-67 - assign-variable
 157-12 - assign-variable
+67-120 - decision
 141-10 - decision
 143-53 - run-javascript
 144-57 - assign-variable
@@ -77,6 +78,7 @@ begin - begin
 144-52 - audio-input
 65-33 - audio-input
 143-55 - decision
+67-126 - decision
 143-49 - math
 103-114 - decision
 65-38 - math
@@ -123,6 +125,7 @@ begin - begin
 143-33 - decision
 157-3 - data-query
 157-7 - audio-input
+56-84 - assign-variable
 143-31 - data-query
 158-8 - assign-variable
 158-7 - run-javascript
@@ -135,6 +138,8 @@ begin - begin
 141-29 - run-javascript
 143-39 - audio-input
 143-37 - run-javascript
+56-77 - run-javascript
+56-79 - decision
 143-41 - decision
 63-108 - assign-variable
 56-72 - run-javascript
@@ -155,9 +160,11 @@ begin - begin
 143-9 - assign-variable
 140-11 - assign-variable
 65-15 - audio-input
+141-49 - decision
 101-15 - run-javascript
 65-13 - audio-input
 65-17 - audio-input
+141-47 - run-javascript
 143-16 - assign-variable
 143-14 - data-query
 147-28 - switch-application
@@ -168,7 +175,6 @@ begin - begin
 140-27 - data-query
 140-29 - decision
 65-11 - decision
-56-49 - run-javascript
 156-15 - decision
 147-6 - data-query
 147-5 - assign-variable
