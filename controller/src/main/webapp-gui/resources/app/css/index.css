@@ -712,7 +712,8 @@ td.voicemail-cell-readStatus {
 
 fieldset {
     border: 1px solid #DDDDDD;
-    display: inline-block;
+    float: left;
+    display: block;
     padding: 6px;
     margin: 3px;
 }
