@@ -125,6 +125,11 @@ public class ScheduleConferenceServlet extends HttpServlet
             throw new BadRequestServletException("Please provide a comma-separated list of passive participants");
         }
 
+        if(activeParticipants.trim().length() == 0 && passiveParticipants.trim().length() == 0)
+        {
+            throw new BadRequestServletException("Please provide at least one active or passive participant email address");
+        }
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
         EmailerService emailService = new EmailerService();

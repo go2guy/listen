@@ -225,6 +225,7 @@ for(int i = 1; i <= 12; i++) { %>
                         </fieldset>
                       </form>
                     </div>
+                    <div class="cleaner">&nbsp;</div>
                   </div>
                 </div><!-- conference-content -->
                 <div class="conference-notloaded">
