@@ -216,7 +216,6 @@ public class EditSubscriberServlet extends HttpServlet
                 newNumber.setSubscriber(subscriber);
 
                 subscriber.addToAccessNumbers(newNumber);
-                persistenceService.save(subscriber);
                 persistenceService.save(newNumber);
             }
         }
