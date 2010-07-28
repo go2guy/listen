@@ -4,6 +4,7 @@ import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.history.Channel;
+import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
@@ -86,6 +87,7 @@ public class LoginServlet extends HttpServlet
                 persistenceService.update(subscriber, original);
             }
 
+            writeLoginHistory(hibernateSession, subscriber);
             httpSession.setAttribute("subscriber", subscriber);
         }
 
@@ -113,5 +115,12 @@ public class LoginServlet extends HttpServlet
     private boolean isValidPassword(Subscriber subscriber, String password)
     {
         return subscriber.getPassword().equals(SecurityUtil.hashPassword(password));
+    }
+
+    private void writeLoginHistory(Session session, Subscriber subscriber)
+    {
+        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
+        HistoryService historyService = new HistoryService(persistenceService);
+        historyService.writeLoggedIn(subscriber);
     }
 }

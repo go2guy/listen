@@ -12,7 +12,7 @@ public class HistoryService
 
     private enum Service
     {
-        VOICEMAIL, CONFERENCING, CONFIGURATION;
+        APPLICATION, CONFERENCING, CONFIGURATION, VOICEMAIL;
 
         @Override
         public String toString()
@@ -121,6 +121,26 @@ public class HistoryService
         history.setDescription("Listened to " + getFriendlyVoicemailIdentifier(voicemail));
         history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
+        write(history);
+    }
+
+    public void writeLoggedIn(Subscriber subscriber)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Logged in");
+        history.setDescription("Logged into GUI");
+        history.setOnSubscriber(subscriber);
+        history.setService(Service.APPLICATION.toString());
+        write(history);
+    }
+
+    public void writeLoggedOut(Subscriber subscriber)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Logged out");
+        history.setDescription("Logged out of GUI");
+        history.setOnSubscriber(subscriber);
+        history.setService(Service.APPLICATION.toString());
         write(history);
     }
 

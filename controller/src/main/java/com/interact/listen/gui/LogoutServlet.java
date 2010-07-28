@@ -1,6 +1,11 @@
 package com.interact.listen.gui;
 
+import com.interact.listen.HibernateUtil;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
+import com.interact.listen.history.Channel;
+import com.interact.listen.history.HistoryService;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -8,6 +13,8 @@ import com.interact.listen.stats.StatSender;
 import java.io.IOException;
 
 import javax.servlet.http.*;
+
+import org.hibernate.Session;
 
 public class LogoutServlet extends HttpServlet
 {
@@ -37,8 +44,20 @@ public class LogoutServlet extends HttpServlet
         statSender.send(Stat.GUI_LOGOUT);
 
         HttpSession session = request.getSession();
-        session.removeAttribute("subscriber");
+        Subscriber subscriber = ServletUtil.currentSubscriber(request);
+        if(subscriber != null)
+        {
+            writeLogoutHistory(HibernateUtil.getSessionFactory().getCurrentSession(), subscriber);
+            session.removeAttribute("subscriber");
+        }
 
         ServletUtil.redirect("/login", response);
+    }
+
+    private void writeLogoutHistory(Session session, Subscriber subscriber)
+    {
+        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
+        HistoryService historyService = new HistoryService(persistenceService);
+        historyService.writeLoggedOut(subscriber);
     }
 }
