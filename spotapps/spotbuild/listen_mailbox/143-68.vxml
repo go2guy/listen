@@ -27,8 +27,8 @@
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
     <var name="II_SB_promptList" expr="'P'+'poundPrevMenu'+'|P'+'menuGreetingChange'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'143-19'"/>  <!--  PlayAudio Next Option. Name of next file -->
-	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'143-80'"/>  <!--  PlayAudio Next Option. Name of next file -->
+	<var name="II_SB_fldLength" expr="1"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	
 	<!-- Voice properties -->
 	<var name="II_SB_maxSpch" expr="'0s'"/>       <!--  maxspeechtimeout. This is the maximum time allowed for a speech -->
@@ -459,7 +459,7 @@
             <else/>
         		<log>INFO: Did not receive any input from user</log>
             </if>
-			
+			<assign name="userInput" expr="II_SB_userEntry" />
 			<if cond="II_SB_PlyAudio_nextOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_PlyAudio_nextOpt"/>.vxml]</log>
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_PlyAudio_nextOpt + '.vxml'"/>

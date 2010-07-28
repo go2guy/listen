@@ -21,7 +21,7 @@
 <assign name="errCnt" expr="'0'+''" />
 <log>INFO: Updated value [<value expr="errCnt"/>]</log>
 <log>INFO: Current value [<value expr="params"/>]</log>
-<assign name="params" expr="'/'+id" />
+<assign name="params" expr="'/'+subscriber" />
 <log>INFO: Updated value [<value expr="params"/>]</log>
 <log>INFO: Current value [<value expr="resource"/>]</log>
 <assign name="resource" expr="'subscribers'+''" />
