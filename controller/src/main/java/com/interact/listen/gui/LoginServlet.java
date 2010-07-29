@@ -32,6 +32,12 @@ public class LoginServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+        if(ServletUtil.currentSubscriber(request) != null)
+        {
+            ServletUtil.redirect("/index", response);
+            return;
+        }
+
         HttpSession session = request.getSession();
         request.setAttribute("errors", session.getAttribute("errors"));
         session.removeAttribute("errors");
