@@ -271,6 +271,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                       <li>Conferencing</li><%
 } %>
+                      <li>Alerts</li>
                     </ul>
                   </div>
                   <div class="tab-content-default">
@@ -330,6 +331,28 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                     </form>
                   </div><%
 } %>
+                  <div class="tab-content">
+                    <form id="alerts-configuration-form">
+                      <fieldset>
+                        <legend>Alerts</legend>
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <table>
+                          <tbody>
+                            <tr>
+                              <td><label for="alerts-configuration-realizeUrl">Realize URL</label></td>
+                              <td><input type="text" id="alerts-configuration-realizeUrl" name="alerts-configuration-realizeUrl"/></td>
+                            </tr>
+                            <tr>
+                              <td><label for="alerts-configuration-realizeAlertName">Pager Alert Name</label></td>
+                              <td><input type="text" id="alerts-configuration-realizeAlertName" name="alerts-configuration-realizeAlertName"/></td>
+                            </tr>
+                            <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save configuration">Save</button></td></tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
+                  </div>
                   <div class="cleaner">&nbsp;</div>
                 </div>
               </div>

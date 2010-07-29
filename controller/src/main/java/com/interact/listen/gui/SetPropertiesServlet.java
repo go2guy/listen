@@ -3,6 +3,7 @@ package com.interact.listen.gui;
 import com.interact.listen.api.GetDnisServlet;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
+import com.interact.listen.config.Property.Key;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Subscriber;
@@ -44,6 +45,8 @@ public class SetPropertiesServlet extends HttpServlet
         {
             throw new UnauthorizedServletException();
         }
+
+        boolean alertChanged = false;
 
         for(String name : (List<String>)Collections.list(request.getParameterNames()))
         {
@@ -95,7 +98,11 @@ public class SetPropertiesServlet extends HttpServlet
                     {
                         throw new BadRequestServletException("Conferencing PIN length [" + value + "] must be a number");
                     }
-                    
+
+                case REALIZE_ALERT_NAME:
+                    alertChanged = value != null && !value.equals(Configuration.get(Key.REALIZE_ALERT_NAME));
+                    break;
+
                 default:
                     // no validation
                     break;
@@ -103,6 +110,13 @@ public class SetPropertiesServlet extends HttpServlet
 
             Configuration.set(key, value);
             LOG.debug("Set parameter [" + name + "] to [" + request.getParameter(name) + "]");
+        }
+
+        if(alertChanged)
+        {
+            EditPagerServlet.updateRealizeAlert(Configuration.get(Key.REALIZE_URL),
+                                                Configuration.get(Key.REALIZE_ALERT_NAME), null,
+                                                Configuration.get(Key.ALTERNATE_NUMBER));
         }
     }
 }

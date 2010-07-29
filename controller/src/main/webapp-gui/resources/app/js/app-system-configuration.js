@@ -26,6 +26,8 @@ $(document).ready(function() {
                     }
 
                     $('#conferencing-configuration-pinLength').val(data['com.interact.listen.conferencing.pinLength']);
+                    $('#alerts-configuration-realizeUrl').val(data['com.interact.listen.realizeUrl']);
+                    $('#alerts-configuration-realizeAlertName').val(data['com.interact.listen.realizeAlertName']);
                 },
                 complete: function(xhr, textStatus) {
                     var elapsed = LISTEN.timestamp() - start;
@@ -177,6 +179,33 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 $('#conferencing-configuration-form .form-error-message').text(xhr.responseText).slideDown(100);
+            },
+            complete: function(xhr, textStatus) {
+                var elapsed = LISTEN.timestamp() - start;
+                $('#latency').text(elapsed);
+            }
+        });
+        return false;
+    });
+
+    $('#alerts-configuration-form').submit(function() {
+        $('#alerts-configuration-form .form-error-message').text('').hide();
+        var start = LISTEN.timestamp();
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/setProperties',
+            data: { 'com.interact.listen.realizeUrl': $('#alerts-configuration-realizeUrl').val(),
+                    'com.interact.listen.realizeAlertName': $('#alerts-configuration-realizeAlertName').val() },
+            success: function(data) {
+                application.load();
+                var elem = $('#alerts-configuration-form .form-success-message')
+                elem.text('Alert settings updated').slideDown(100);
+                setTimeout(function() {
+                    elem.slideUp(100);
+                }, 2000);
+            },
+            error: function(xhr) {
+                $('#alerts-configuration-form .form-error-message').text(xhr.responseText).slideDown(100);
             },
             complete: function(xhr, textStatus) {
                 var elapsed = LISTEN.timestamp() - start;

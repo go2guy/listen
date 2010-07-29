@@ -12,6 +12,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -28,7 +30,18 @@ public class HttpClientImpl implements HttpClient
     private boolean requestMade = false;
     private int responseStatus;
     private String responseEntity;
+    private int socketTimeout = 0;
 
+    @Override
+    public void setSocketTimeout(int millis)
+    {
+        if(millis < 0)
+        {
+            throw new IllegalArgumentException("SO timeout must be >= 0 (0 = infinite)");
+        }
+        this.socketTimeout = millis;
+    }
+    
     @Override
     public void post(String uri, Map<String, String> params) throws IOException
     {
@@ -84,6 +97,10 @@ public class HttpClientImpl implements HttpClient
     private void performRequest(HttpRequestBase request) throws IOException
     {
         org.apache.http.client.HttpClient client = new DefaultHttpClient();
+
+        HttpParams params = client.getParams();
+        HttpConnectionParams.setSoTimeout(params, socketTimeout);
+
         HttpContext context = new BasicHttpContext();
 
         requestMade = true;

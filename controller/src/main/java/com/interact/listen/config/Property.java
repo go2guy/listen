@@ -14,7 +14,9 @@ public class Property
         MAIL_FROMADDRESS       ("com.interact.listen.mail.fromAddress",       "noreply@localhost"),
         CONFERENCING_PINLENGTH ("com.interact.listen.conferencing.pinLength", "10"),
         PAGER_NUMBER           ("com.interact.listen.pagerNumber",            "4024292889"),
-        ALTERNATE_NUMBER       ("com.interact.listen.alternateNumber",        "");
+        ALTERNATE_NUMBER       ("com.interact.listen.alternateNumber",        ""),
+        REALIZE_URL            ("com.interact.listen.realizeUrl",             "http://localhost:8080/realize"),
+        REALIZE_ALERT_NAME     ("com.interact.listen.realizeAlertName",       "Listen Pager Alert");
 
         private final String key;
         private final String defaultValue;

@@ -15,6 +15,11 @@ public interface HttpClient
     // public void delete(String uri) throws IOException;
 
     /**
+     * Sets the socket timeout for this client.
+     */
+    public void setSocketTimeout(int millis);
+
+    /**
      * Makes an HTTP POST request to the provided URI with the provided parameters.
      * 
      * @param uri URI to send request to

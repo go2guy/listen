@@ -436,6 +436,10 @@ td.voicemail-cell-readStatus {
     display: none;
 }
 
+#alerts-configuration-realizeUrl, #alerts-configuration-realizeAlertName {
+    width: 50em;
+}
+
 /* application - history */
 
 #history-list li {
