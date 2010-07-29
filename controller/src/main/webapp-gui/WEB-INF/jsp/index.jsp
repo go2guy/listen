@@ -337,6 +337,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                         <legend>Alerts</legend>
                         <div class="form-error-message"></div>
                         <div class="form-success-message"></div>
+                        <div class="help">Interact's Realize&trade; monitoring system can send alerts if the Listen&trade; system goes down. Enter the URL for Realize&trade; and the Alert to be updated. When the Alternate Pager Number changes, the configured Alert will be updated with the new number.</div>
                         <table>
                           <tbody>
                             <tr>
@@ -344,7 +345,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                               <td><input type="text" id="alerts-configuration-realizeUrl" name="alerts-configuration-realizeUrl"/></td>
                             </tr>
                             <tr>
-                              <td><label for="alerts-configuration-realizeAlertName">Pager Alert Name</label></td>
+                              <td><label for="alerts-configuration-realizeAlertName">Realize Alert Name</label></td>
                               <td><input type="text" id="alerts-configuration-realizeAlertName" name="alerts-configuration-realizeAlertName"/></td>
                             </tr>
                             <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save configuration">Save</button></td></tr>

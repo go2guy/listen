@@ -772,6 +772,16 @@ table.data-table tr.odd {
     padding: 2px 4px;
 }
 
+div.help {
+    background: #FFFFD0 url('../images/sprite.png') 5px -45px no-repeat;
+    border: 1px dashed #FFE850;
+    color: #333333;
+    font-size: 90%;
+    margin: 10px;
+    padding: 5px 3px 5px 28px;
+    width: 40em;
+}
+
 /* other */
 
 #templates {
