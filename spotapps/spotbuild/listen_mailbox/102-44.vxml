@@ -20,6 +20,9 @@
 <log>INFO: Current value [<value expr="numOfVoicemails"/>]</log>
 <assign name="numOfVoicemails" expr="oldCount+''" />
 <log>INFO: Updated value [<value expr="numOfVoicemails"/>]</log>
+<log>INFO: Current value [<value expr="voicemailInfo"/>]</log>
+<assign name="voicemailInfo" expr="returnVal+''" />
+<log>INFO: Updated value [<value expr="voicemailInfo"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

@@ -73,6 +73,7 @@
 	<var name="SB_UV_grtPathSuffex"/>
 	<var name="SB_UV_application"/>
 	<var name="SB_UV_quickAccess"/>
+	<var name="SB_UV_voicemailInfo"/>
 
     
     <form id="beginDocument">
@@ -248,6 +249,9 @@
 			</if>
 			<if cond="SB_UV_quickAccess != undefined">
 				<assign name="quickAccess" expr="SB_UV_quickAccess" />
+			</if>
+			<if cond="SB_UV_voicemailInfo != undefined">
+				<assign name="voicemailInfo" expr="SB_UV_voicemailInfo" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

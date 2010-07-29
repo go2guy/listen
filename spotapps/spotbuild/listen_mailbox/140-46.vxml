@@ -11,7 +11,10 @@
         <block>
 	    
             <log>INFO: Entered assign-variable.vxml [140-46]</log>
-            <log>INFO: Current value [<value expr="request"/>]</log>
+            <log>INFO: Current value [<value expr="id"/>]</log>
+<assign name="id" expr="subscriber+''" />
+<log>INFO: Updated value [<value expr="id"/>]</log>
+<log>INFO: Current value [<value expr="request"/>]</log>
 <assign name="request" expr="'put'+''" />
 <log>INFO: Updated value [<value expr="request"/>]</log>
 <log>INFO: Current value [<value expr="pin"/>]</log>

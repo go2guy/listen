@@ -5,24 +5,26 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'102-7'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'157-12'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(voicemailInfo,count)
+            function II_SB_JS_function(voicemails)
             {
-	            var result = eval("("+voicemailInfo+")");
-return result.results[count].href;
+	            var temp = voicemails.split("/");
+var returnString = temp[temp.length-1];
+return returnString;
+
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Voicemail</log>
-            <log>INFO: Entered run-javascript.vxml [102-5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(voicemailInfo,count)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="voicemails" expr="II_SB_userJava" />   
+            <log target="status">Split Voicemails</log>
+            <log>INFO: Entered run-javascript.vxml [157-27]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(voicemails)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

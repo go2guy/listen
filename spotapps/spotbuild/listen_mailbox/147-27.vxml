@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(cntrlURL,hostName,sysAccessTime,subFwd)
             {
-	            return "{\\"sysAccessTime\\": \\""+ sysAccessTime+"\\", \\"cntrlURL\\":\\""+cntrlURL+"\\", \\"hostName\\":\\""+hostName+"\\", \\"toExt\\": \\"" + subFwd + "\\"}";
+	            return "{\"sysAccessTime\": \""+ sysAccessTime+"\", \"cntrlURL\":\""+cntrlURL+"\", \"hostName\":\""+hostName+"\", \"toExt\": \"" + subFwd + "\"}";
             }
         ]]>
     </script>

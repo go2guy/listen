@@ -14,6 +14,9 @@
             <log>INFO: Current value [<value expr="accessNum"/>]</log>
 <assign name="accessNum" expr="subID+''" />
 <log>INFO: Updated value [<value expr="accessNum"/>]</log>
+<log>INFO: Current value [<value expr="toggleLight"/>]</log>
+<assign name="toggleLight" expr="'OFF'+''" />
+<log>INFO: Updated value [<value expr="toggleLight"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

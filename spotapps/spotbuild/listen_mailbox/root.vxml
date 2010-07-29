@@ -83,6 +83,7 @@
 	<var name="grtPathSuffex" expr="'/voicemail/greeting/'" />
 	<var name="application" expr="''" />
 	<var name="quickAccess" expr="'false'" />
+	<var name="voicemailInfo" expr="''" />
 
 
     <!-- Conference Variables -->

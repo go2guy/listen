@@ -5,24 +5,18 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'102-5'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'144-90'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">New vm Setup</log>
-            <log>INFO: Entered assign-variable.vxml [102-27]</log>
-            <log>INFO: Current value [<value expr="count"/>]</log>
-<assign name="count" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="count"/>]</log>
-<log>INFO: Current value [<value expr="returnVal"/>]</log>
-<assign name="returnVal" expr="newResult+''" />
-<log>INFO: Updated value [<value expr="returnVal"/>]</log>
-<log>INFO: Current value [<value expr="numOfVoicemails"/>]</log>
-<assign name="numOfVoicemails" expr="newCount+''" />
-<log>INFO: Updated value [<value expr="numOfVoicemails"/>]</log>
-<log>INFO: Current value [<value expr="voicemailInfo"/>]</log>
-<assign name="voicemailInfo" expr="returnVal+''" />
-<log>INFO: Updated value [<value expr="voicemailInfo"/>]</log>
+	    <log target="status">Set Access Num</log>
+            <log>INFO: Entered assign-variable.vxml [144-91]</log>
+            <log>INFO: Current value [<value expr="accessNum"/>]</log>
+<assign name="accessNum" expr="userInput+''" />
+<log>INFO: Updated value [<value expr="accessNum"/>]</log>
+<log>INFO: Current value [<value expr="toggleLight"/>]</log>
+<assign name="toggleLight" expr="'ON'+''" />
+<log>INFO: Updated value [<value expr="toggleLight"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
