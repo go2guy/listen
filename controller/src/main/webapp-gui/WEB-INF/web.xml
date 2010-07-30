@@ -128,6 +128,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetConferenceRecordingListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetConferenceRecordingListServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetDnisServlet</servlet-name>
         <servlet-class>com.interact.listen.api.GetDnisServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -316,6 +322,11 @@
     <servlet-mapping>
         <servlet-name>GetConferenceRecordingServlet</servlet-name>
         <url-pattern>/ajax/getConferenceRecording</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetConferenceRecordingListServlet</servlet-name>
+        <url-pattern>/ajax/getConferenceRecordingList</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>

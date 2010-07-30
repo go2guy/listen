@@ -82,8 +82,7 @@ public class GetConferenceInfoServlet extends HttpServlet
             content.append("{");
             content.append("\"info\":").append(getInfo(conference, marshaller)).append(",");
             content.append("\"pins\":").append(getPins(conference, marshaller, session)).append(",");
-            content.append("\"history\":").append(getHistory(conference, marshaller, session)).append(",");
-            content.append("\"recordings\":").append(getRecordings(conference, marshaller, session));
+            content.append("\"history\":").append(getHistory(conference, marshaller, session));
             content.append("}");
         }
         catch(CriteriaCreationException e)
@@ -118,21 +117,6 @@ public class GetConferenceInfoServlet extends HttpServlet
             .addSearchProperty("conference", "/conferences/" + conference.getId())
             .addReturnField("dateCreated")
             .addReturnField("description")
-            .addReturnField("id")
-            .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING)
-            .withMax(15);
-        ResourceListService service = builder.build();
-        return service.list();
-    }
-
-    private String getRecordings(Conference conference, Marshaller marshaller, Session session) throws CriteriaCreationException
-    {
-        Builder builder = new ResourceListService.Builder(ConferenceRecording.class, session, marshaller)
-            .addSearchProperty("conference", "/conferences/" + conference.getId())
-            .addReturnField("dateCreated")
-            .addReturnField("description")
-            .addReturnField("duration")
-            .addReturnField("fileSize")
             .addReturnField("id")
             .sortBy("dateCreated", ResourceListService.SortOrder.DESCENDING)
             .withMax(15);

@@ -1,8 +1,16 @@
 package com.interact.listen.resource;
 
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
 
 @Entity
 public class ConferenceRecording extends Audio
@@ -40,5 +48,33 @@ public class ConferenceRecording extends Audio
         copy.setFileSize(getFileSize());
         copy.setConference(conference);
         return copy;
+    }
+
+    public static List<ConferenceRecording> queryByConferencePaged(Session session, Conference conference, int first,
+                                                                   int max)
+    {
+        DetachedCriteria subquery = DetachedCriteria.forClass(ConferenceRecording.class);
+        subquery.createAlias("conference", "conference_alias");
+        subquery.add(Restrictions.eq("conference_alias.id", conference.getId()));
+        subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        subquery.setProjection(Projections.id());
+
+        Criteria criteria = session.createCriteria(ConferenceRecording.class);
+        criteria.add(Subqueries.propertyIn("id", subquery));
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(max);
+        criteria.addOrder(Order.desc("dateCreated"));
+
+        criteria.setFetchMode("conference", FetchMode.SELECT);
+        return (List<ConferenceRecording>)criteria.list();
+    }
+
+    public static Long countByConference(Session session, Conference conference)
+    {
+        Criteria criteria = session.createCriteria(ConferenceRecording.class);
+        criteria.setProjection(Projections.rowCount());
+        criteria.createAlias("conference", "conference_alias");
+        criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
+        return (Long)criteria.list().get(0);
     }
 }

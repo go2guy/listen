@@ -58,6 +58,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                       <ul>
                         <li>Main</li>
                         <li>Scheduling</li>
+                        <li>Recordings</li>
                       </ul>
                     </div>
                     <div class="tab-content-default">
@@ -126,24 +127,6 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                             <table id="conference-history-table">
                               <tbody>
                                 <tr class="placeholder"><td colspan="2">No history records</td></tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                        <div class="panel">
-                          <div class="panel-header"><div class="title">Recent Recordings</div></div>
-                          <div class="panel-content">
-                            <table id="conference-recording-table" class="data-table">
-                              <thead>
-                                <tr>
-                                  <th>Date</th>
-                                  <th>Duration</th>
-                                  <th>Size</th>
-                                  <th></th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr class="placeholder"><td colspan="4">No recordings</td></tr>
                               </tbody>
                             </table>
                           </div>
@@ -222,6 +205,26 @@ for(int i = 1; i <= 12; i++) { %>
                           </table>
                         </fieldset>
                       </form>
+                    </div>
+                    <div class="tab-content">
+
+                            <table id="conference-recording-table" class="data-table">
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Duration</th>
+                                  <th>Size</th>
+                                  <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr class="placeholder"><td colspan="4">No recordings</td></tr>
+                              </tbody>
+                            </table>
+                            <div class="pagination" id="conference-recording-pagination">
+                              <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
+                            </div>
+
                     </div>
                     <div class="cleaner">&nbsp;</div>
                   </div>

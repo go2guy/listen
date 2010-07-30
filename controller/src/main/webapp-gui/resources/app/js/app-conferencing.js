@@ -157,14 +157,17 @@ function Conference(id) {
     });
 
     var recordingTable = new LISTEN.DynamicTable({
+        url: '/ajax/getConferenceRecordingList?id=' + conferenceId,
         tableId: 'conference-recording-table',
         templateId: 'recording-row-template',
         retrieveList: function(data) {
-            return data;
+            return data.results;
         },
         reverse: true,
         alternateRowColors: true,
+        paginationId: 'conference-recording-pagination',
         updateRowCallback: function(row, data, animate) {
+            LISTEN.log('Update recording row');
             LISTEN.setFieldContent(row.find('.recording-cell-dateCreated'), data.dateCreated, animate);
 
             if(data.duration && data.duration != '') {
@@ -181,6 +184,10 @@ function Conference(id) {
     var pollAndSet = function(animate) {
         callerTable.setUrl('/ajax/getConferenceParticipants?id=' + conferenceId);
         callerTable.pollAndSet(animate);
+
+        recordingTable.setUrl('/ajax/getConferenceRecordingList?id=' + conferenceId);
+        recordingTable.pollAndSet(animate);
+
         var start = LISTEN.timestamp();
         $.ajax({
             url: '/ajax/getConferenceInfo?id=' + conferenceId,
@@ -189,7 +196,6 @@ function Conference(id) {
             success: function(data, textStatus, xhr) {
                 historyTable.update(data.history.results, animate);
                 pinTable.update(data.pins.results, animate);
-                recordingTable.update(data.recordings.results, animate);
 
                 var infoDescription = $('#conference-info-description');
                 if(infoDescription.text() != data.info.description) {

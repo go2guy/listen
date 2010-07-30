@@ -30,42 +30,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        if(!License.isLicensed(ListenFeature.CONFERENCING))
-        {
-            throw new ServletException(new NotLicensedException(ListenFeature.CONFERENCING));
-        }
-
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_GET_CONFERENCE_PARTICIPANTS);
-
-        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
-        if(subscriber == null)
-        {
-            throw new UnauthorizedServletException("Not logged in");
-        }
-
-        Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
-
-        String id = request.getParameter("id");
-
-        Conference conference = GuiServletUtil.getConferenceFromIdOrSubscriber(id, subscriber, persistenceService);
-
-        if(conference == null)
-        {
-            throw new ListenServletException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found",
-                                             "text/plain");
-        }
-
-        if(!subscriber.equals(conference.getSubscriber()) && !subscriber.getIsAdministrator())
-        {
-            throw new UnauthorizedServletException("Conference does not belong to subscriber");
-        }
+        Conference conference = validateAndGetConference(request, Stat.GUI_GET_CONFERENCE_PARTICIPANTS);
 
         int first = 0;
         int max = Resource.DEFAULT_PAGE_SIZE;
@@ -78,6 +43,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
             max = Integer.parseInt(request.getParameter("max"));
         }
 
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List<Participant> results = Participant.queryByConferencePaged(session, conference, first, max);
         long total = results.size() > 0 ? Participant.countByConference(session, conference) : 0;
 
@@ -115,5 +81,47 @@ public class GetConferenceParticipantsServlet extends HttpServlet
         json.append("\"number\":\"").append(number).append("\"");
         json.append("}");
         return json.toString();
+    }
+
+    public static Conference validateAndGetConference(HttpServletRequest request, Stat stat) throws ServletException
+    {
+        if(!License.isLicensed(ListenFeature.CONFERENCING))
+        {
+            throw new ServletException(new NotLicensedException(ListenFeature.CONFERENCING));
+        }
+
+        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
+        if(statSender == null)
+        {
+            statSender = new InsaStatSender();
+        }
+        statSender.send(stat);
+
+        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        if(subscriber == null)
+        {
+            throw new UnauthorizedServletException("Not logged in");
+        }
+
+        Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
+
+        String id = request.getParameter("id");
+
+        Conference conference = GuiServletUtil.getConferenceFromIdOrSubscriber(id, subscriber, persistenceService);
+
+        if(conference == null)
+        {
+            throw new ListenServletException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found",
+                                             "text/plain");
+        }
+
+        if(!subscriber.equals(conference.getSubscriber()) && !subscriber.getIsAdministrator())
+        {
+            throw new UnauthorizedServletException("Conference does not belong to subscriber");
+        }
+
+        return conference;
     }
 }
