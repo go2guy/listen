@@ -10,8 +10,8 @@ import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Pin;
-import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Pin.PinType;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Subscriber.PlaybackOrder;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
@@ -101,17 +101,17 @@ public class AddSubscriberServlet extends HttpServlet
             String smsAddress = request.getParameter("smsAddress");
             Boolean enablePaging = Boolean.valueOf(request.getParameter("enablePaging"));
             PlaybackOrder playbackOrder = PlaybackOrder.valueOf(request.getParameter("voicemailPlaybackOrder"));
-            
+
             if(enableEmail && (emailAddress == null || emailAddress.equals("")))
             {
                 throw new BadRequestServletException("Please provide an E-mail address");
             }
-            
+
             if(enableSms && (smsAddress == null || smsAddress.equals("")))
             {
                 throw new BadRequestServletException("Please provide an SMS address");
             }
-            
+
             if(enablePaging && (smsAddress == null || smsAddress.equals("")))
             {
                 throw new BadRequestServletException("Please provide an SMS address for paging");
@@ -131,7 +131,7 @@ public class AddSubscriberServlet extends HttpServlet
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
         subscriber.setRealName(request.getParameter("realName"));
-        
+
         try
         {
             persistenceService.save(subscriber);
@@ -144,8 +144,7 @@ public class AddSubscriberServlet extends HttpServlet
         String accessNumbers = request.getParameter("accessNumbers");
         if(accessNumbers != null && accessNumbers.length() > 0)
         {
-            EditSubscriberServlet.updateSubscriberAccessNumbers(subscriber, accessNumbers, session,
-                                                                persistenceService);
+            EditSubscriberServlet.updateSubscriberAccessNumbers(subscriber, accessNumbers, session, persistenceService);
         }
 
         Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
