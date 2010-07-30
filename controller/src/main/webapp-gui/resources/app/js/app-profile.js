@@ -54,11 +54,16 @@ $(document).ready(function() {
                             if(data.enableSms) {                        
                                 $('#profile-form-enableSmsNotification').attr('checked', true);
                             }
+                            
+                            if(data.enablePaging) {                        
+                                $('#profile-form-paging').attr('checked', true);
+                            }
     
                             $('#profile-form-edit-button').show();
                             
                             $('#pager-form-number').text(data.pagerNumber);
                             $('#pager-form-alternate-number').val(data.pagerAlternateNumber);
+                            $('#pager-form-page-prefix').val(data.pagePrefix);
                         }
                     });
                 };
@@ -85,7 +90,8 @@ $(document).ready(function() {
                         enableEmail: $('#profile-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#profile-form-enableSmsNotification').is(":checked"),
                         emailAddress: $('#profile-form-emailAddress').val(),
-                        smsAddress: $('#profile-form-smsAddress').val()
+                        smsAddress: $('#profile-form-smsAddress').val(),
+                        enablePaging: $('#profile-form-paging').is(":checked")
                     },
                     successCallback: function() {
                         LISTEN.PROFILE.showSuccess('Profile updated');
@@ -108,7 +114,8 @@ $(document).ready(function() {
                 SERVER.post({
                     url: '/ajax/editPager',
                     properties: {
-                        alternateNumber: $('#pager-form-alternate-number').val()
+                        alternateNumber: $('#pager-form-alternate-number').val(),
+                        pagePrefix: $('#pager-form-page-prefix').val()
                     },
                     successCallback: function() {
                         var elem = $('#pager-form .form-success-message');

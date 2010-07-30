@@ -67,6 +67,9 @@ public class Subscriber extends Resource implements Serializable
     
     @Column(name = "SMS_ADDRESS")
     private String smsAddress = "";
+    
+    @Column(name = "IS_SUBSCRIBED_TO_PAGING")
+    private Boolean isSubscribedToPaging = Boolean.FALSE;
 
     public Set<AccessNumber> getAccessNumbers()
     {
@@ -265,6 +268,16 @@ public class Subscriber extends Resource implements Serializable
     {
         this.smsAddress = smsAddress;
     }
+    
+    public Boolean getIsSubscribedToPaging()
+    {
+        return isSubscribedToPaging;
+    }
+
+    public void setIsSubscribedToPaging(Boolean isSubscribedToPaging)
+    {
+        this.isSubscribedToPaging = isSubscribedToPaging;
+    }
 
     @Override
     public boolean validate()
@@ -302,6 +315,11 @@ public class Subscriber extends Resource implements Serializable
         if(isSmsNotificationEnabled && (smsAddress == null || smsAddress.equals("")))
         {
             addToErrors("must provide an SMS address when SMS notifications are enabled");
+        }
+        
+        if(isSubscribedToPaging && (smsAddress == null || smsAddress.equals("")))
+        {
+            addToErrors("must provide an SMS address when subscribed to paging");
         }
 
         return !hasErrors();
@@ -416,6 +434,16 @@ public class Subscriber extends Resource implements Serializable
         criteria.setFetchMode("accessNumbers", FetchMode.SELECT);
         criteria.setFetchMode("conferences", FetchMode.SELECT);
 
+        return (List<Subscriber>)criteria.list();
+    }
+    
+    public static List<Subscriber> queryPagingEnabledSubscribers(Session session)
+    {
+        Criteria criteria = session.createCriteria(Subscriber.class);
+        criteria.add(Restrictions.eq("isSubscribedToPaging", true));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        
+        criteria.setFetchMode("conference", FetchMode.SELECT);
         return (List<Subscriber>)criteria.list();
     }
 

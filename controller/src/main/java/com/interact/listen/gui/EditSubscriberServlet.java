@@ -128,6 +128,7 @@ public class EditSubscriberServlet extends HttpServlet
             Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
             String emailAddress = request.getParameter("emailAddress");
             String smsAddress = request.getParameter("smsAddress");
+            Boolean enablePaging = Boolean.valueOf(request.getParameter("enablePaging"));
             
             if(enableEmail && (emailAddress == null || emailAddress.equals("")))
             {
@@ -138,11 +139,17 @@ public class EditSubscriberServlet extends HttpServlet
             {
                 throw new BadRequestServletException("Please provide an SMS address");
             }
+            
+            if(enablePaging && (smsAddress == null || smsAddress.equals("")))
+            {
+                throw new BadRequestServletException("Please provide an SMS address for paging");
+            }
 
             subscriberToEdit.setIsEmailNotificationEnabled(enableEmail);
             subscriberToEdit.setIsSmsNotificationEnabled(enableSms);
             subscriberToEdit.setEmailAddress(emailAddress);
             subscriberToEdit.setSmsAddress(smsAddress);
+            subscriberToEdit.setIsSubscribedToPaging(enablePaging);
         }
 
         subscriberToEdit.setUsername(username);

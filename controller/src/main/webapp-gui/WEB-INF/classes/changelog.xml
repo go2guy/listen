@@ -211,6 +211,7 @@
             </column>
             <column name="VERSION" type="INT"/>
             <column name="VOICEMAIL_PIN" type="BIGINT"/>
+            <column name="IS_SUBSCRIBED_TO_PAGING" type="BIT"/>
         </createTable>
         <modifySql dbms="mysql">
             <append value=" engine innodb"/>

@@ -8,6 +8,7 @@ import com.interact.listen.stats.StatSender;
 import com.interact.listen.stats.StatSenderFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -192,5 +193,20 @@ public class Voicemail extends Audio implements Serializable
         criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
         criteria.setProjection(Projections.rowCount());
         return (Long)criteria.list().get(0);
+    }
+    
+    public static List<Voicemail> queryNewVoicemailsBySubscriberList(Session session, List<Long> subscriberIds)
+    {
+        Criteria criteria = session.createCriteria(Voicemail.class);
+        
+        // only new records
+        criteria.add(Restrictions.eq("isNew", true));
+
+        // belonging to this subscriber
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(org.hibernate.criterion.Property.forName("subscriber_alias.id").in(subscriberIds));
+
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return (ArrayList<Voicemail>)criteria.list();
     }
 }

@@ -452,7 +452,8 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                   <input type="text" id="subscriber-form-smsAddress" name="subscriber-form-smsAddress"/>
                                   <button type="button" class="button-save" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address">Verify</button>
                                 </td>
-                              </tr><%
+                              </tr>
+                              <tr><td><input type="checkbox" id="subscriber-form-paging" name="subscriber-form-paging" value="enablePaging"/></td><td><label for="subscriber-form-paging">Page on new voicemails</label></td></tr><%
 } %>
                               <tr>
                                 <td colspan="2" class="buttons">
@@ -528,7 +529,8 @@ if(subscriber != null) { %>
                                 <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
                                 <button type="button" class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address">Verify</button>
                               </td>
-                            </tr><%
+                            </tr>
+                            <tr><td><label for="profile-form-paging">Page on new voicemails</label></td><td><input type="checkbox" id="profile-form-paging" name="profile-form-paging" value="enablePaging"/></td></tr><%
     } %>
                             <tr>
                               <td colspan="2" class="buttons">
@@ -550,6 +552,7 @@ if(subscriber != null) { %>
                           <tbody>
                             <tr><td><label for="pager-form-number">Pager Number</label></td><td id="pager-form-number" name="pager-form-number"></td></tr>
                             <tr><td><label for="pager-form-alternate-number">Alternate Number</label></td><td><input type="text" id="pager-form-alternate-number" name="pager-form-alternate-number" maxlength="14"/></td></tr>
+                            <tr><td><label for="pager-form-page-prefix">Page Prefix</label></td><td><input type="text" id="pager-form-page-prefix" name="pager-form-page-prefix" maxlength="20"/></td></tr>
                             <tr>
                               <td colspan="2" class="buttons">
                                 <button type="submit" class="button-edit" id="pager-form-edit-button" name="pager-form-edit-button" title="Edit">Save</button>

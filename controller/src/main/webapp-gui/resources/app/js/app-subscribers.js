@@ -5,7 +5,7 @@ $(document).ready(function() {
     });
 
     $('#subscriber-form-testEmail-button').click(function() {
-        LISTEN.SUBCRIBERS.testEmailAddress();
+        LISTEN.SUBSCRIBERS.testEmailAddress();
         return false;
     });
 
@@ -102,6 +102,10 @@ $(document).ready(function() {
                         if(data.enableSms) {                        
                             $('#subscriber-form-enableSmsNotification').attr('checked', true);
                         }
+                        
+                        if(data.enablePaging) {                        
+                            $('#subscriber-form-paging').attr('checked', true);
+                        }
 
                         $('#subscriber-form-add-button').hide();
                         $('#subscriber-form-edit-button').show();
@@ -139,7 +143,8 @@ $(document).ready(function() {
                         enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
                         emailAddress: $('#subscriber-form-emailAddress').val(),
-                        smsAddress: $('#subscriber-form-smsAddress').val()
+                        smsAddress: $('#subscriber-form-smsAddress').val(),
+                        enablePaging: $('#subscriber-form-paging').is(":checked")
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();
@@ -168,7 +173,8 @@ $(document).ready(function() {
                         enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
                         emailAddress: $('#subscriber-form-emailAddress').val(),
-                        smsAddress: $('#subscriber-form-smsAddress').val()
+                        smsAddress: $('#subscriber-form-smsAddress').val(),
+                        enablePaging: $('#subscriber-form-paging').is(":checked")
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();

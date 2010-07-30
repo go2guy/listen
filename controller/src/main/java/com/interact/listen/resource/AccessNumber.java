@@ -3,8 +3,13 @@ package com.interact.listen.resource;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 @Entity
 @Table(name = "ACCESS_NUMBER")
@@ -147,5 +152,22 @@ public class AccessNumber extends Resource implements Serializable
         int hash = 1;
         hash *= prime + (getNumber() == null ? 0 : getNumber().hashCode());
         return hash;
+    }
+    
+    public static AccessNumber queryByNumber(Session session, String number)
+    {
+        AccessNumber returnNumber = new AccessNumber();
+        Criteria criteria = session.createCriteria(AccessNumber.class);
+        criteria.add(Restrictions.eq("number", number));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        
+        List<AccessNumber> queryList = criteria.list();
+        
+        if(queryList.size() > 0)
+        {
+            returnNumber = queryList.get(0); 
+        }
+        
+        return returnNumber;
     }
 }

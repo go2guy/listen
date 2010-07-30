@@ -3,6 +3,8 @@ package com.interact.listen;
 import com.interact.listen.api.GetDnisServlet;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
+import com.interact.listen.history.Channel;
+import com.interact.listen.history.HistoryService;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.resource.*;
 
@@ -21,35 +23,13 @@ import javax.mail.internet.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 public class EmailerService
 {
     private static final Logger LOG = Logger.getLogger(EmailerService.class);
-    private static final String CONFERENCE_EMAIL_SUBJECT = "Listen Conference Invitation";
-    
-    private static final String EMAIL_BODY = "<html><body>Hello,<br/><br/>"
-                                     + "You have been invited to a conference by %s.<br/><br/>"
-                                     + "Conference details:<br/><br/>"
-                                     + "Date/Time: %s until %s<br/>"
-                                     + "Description: %s<br/>"
-                                     + "%s: %s<br/>" //this will be phone number or ip based on protocol
-                                     + "Pin: %s<br/>"
-                                     + "</body></html>";
-    
-    private static final String TEST_EMAIL_NOTIFICATION_BODY = "<html><body>Hello,<br/><br/>You have correctly configured your profile to " 
-                                                       + "receive Listen E-mail notifications at this address.<br/></body></html>";
-    
-    private static final String TEST_SMS_NOTIFICATION_BODY = "You have correctly configured your profile to receive SMS notifications at this address.";
-    
-    private static final String EMAIL_NOTIFICATION_SUBJECT = "New voicemail from %s";
-    private static final String EMAIL_NOTIFICATION_BODY = "<html><body>You have recieved a new voicemail from %s at %s.<br/><br/>"
-                                                  + "Total new messages: %s<br/><br/>"
-                                                  + "The voicemail is attached."
-                                                  + "</body></html>";
-    
-    private static final String SMS_NOTIFICATION_BODY = "New voicemail from %s. Retrieve it at %s";
 
     private final SimpleDateFormat sdf = new SimpleDateFormat(FriendlyIso8601DateConverter.ISO8601_FORMAT);
 
@@ -74,7 +54,7 @@ public class EmailerService
 
         try
         {
-            javax.mail.Session mailSession = Session.getDefaultInstance(props, null);
+            javax.mail.Session mailSession = javax.mail.Session.getDefaultInstance(props, null);
             Transport transport = mailSession.getTransport();
             InternetAddress fromAddress = new InternetAddress(Configuration.get(Property.Key.MAIL_FROMADDRESS));
 
@@ -145,7 +125,7 @@ public class EmailerService
         
         if(toAddresses.length > 0)
         {
-            result = sendEmail(toAddresses, body, subjectPrepend, CONFERENCE_EMAIL_SUBJECT, null);
+            result = sendEmail(toAddresses, body, subjectPrepend, EmailerUtil.CONFERENCE_EMAIL_SUBJECT, null);
         }
 
         return result;
@@ -161,8 +141,8 @@ public class EmailerService
         
         if(toAddresses.length > 0)
         {
-            result = sendEmail(toAddresses, type.equals("email") ? TEST_EMAIL_NOTIFICATION_BODY : TEST_SMS_NOTIFICATION_BODY, 
-                                                                 "Listen Notification Test Message", "", null);
+            result = sendEmail(toAddresses, type.equals("email") ? EmailerUtil.TEST_EMAIL_NOTIFICATION_BODY
+                               : EmailerUtil.TEST_SMS_NOTIFICATION_BODY, "Listen Notification Test Message", "", null);
         }
         
         return result;
@@ -170,42 +150,103 @@ public class EmailerService
     
     public void sendEmailVoicmailNotification(Voicemail voicemail, Subscriber subscriber)
     {
+        File attachment = null;
+        boolean fileReadyForAttachment = false;
         ArrayList<String> mailAddresses = new ArrayList<String>();
         mailAddresses.add(subscriber.getEmailAddress());
         InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
         
         if(toAddresses.length > 0)
         {
-            String subject = String.format(EMAIL_NOTIFICATION_SUBJECT, voicemail.getLeftBy());
-            String body = String.format(EMAIL_NOTIFICATION_BODY, voicemail.getLeftBy(), sdf.format(voicemail.getDateCreated()),
-                                    getNewVoicemailCount(subscriber));
-            File attachment = getAttachment(voicemail.getUri());
-            
-            sendEmail(toAddresses, body, subject, attachment);
+            String subject = String.format(EmailerUtil.EMAIL_NOTIFICATION_SUBJECT, voicemail.getLeftBy());
             
             try
             {
-                attachment.delete();
+                attachment = getAttachment(voicemail.getUri());
+                fileReadyForAttachment = true;
             }
             catch(Exception e)
             {
-                LOG.error("Error deleting temp voicemail file", e);
+                LOG.error("An error occured trying to obtain the voicemail to attach. Won't attach e-mail");
+            }
+            
+            String body = String.format(EmailerUtil.EMAIL_NOTIFICATION_BODY, voicemail.getLeftBy(),
+                                        sdf.format(voicemail.getDateCreated()), getNewVoicemailCount(subscriber),
+                                        fileReadyForAttachment ? EmailerUtil.FILE_IS_ATTACHED
+                                                              : EmailerUtil.FILE_NOT_ATTACHED);
+            sendEmail(toAddresses, body, subject, attachment);
+            
+            if(attachment != null)
+            {
+                try
+                {
+                    attachment.delete();
+                }
+                catch(Exception e)
+                {
+                    LOG.error("Error deleting temp voicemail file", e);
+                }
             }
         }
     }
     
     public void sendSmsVoicemailNotification(Voicemail voicemail, Subscriber subscriber)
     {
+        sendSmsVoicemailNotification(voicemail, subscriber.getSmsAddress());
+    }
+    
+    public void sendSmsVoicemailNotification(Voicemail voicemail, String smsAddress)
+    {
         ArrayList<String> mailAddresses = new ArrayList<String>();
-        mailAddresses.add(subscriber.getSmsAddress());
+        mailAddresses.add(smsAddress);
         InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
         
         if(toAddresses.length > 0)
         {
             String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
-            String body = String.format(SMS_NOTIFICATION_BODY, voicemail.getLeftBy(), directVoicemailAccessNumber);
+            String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY, voicemail.getLeftBy(), directVoicemailAccessNumber);
         
             sendEmail(toAddresses, body, "", "");
+        }
+    }
+    
+    public void sendAlternateNumberSmsVoicemailNotification(Voicemail voicemail)
+    {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        PersistenceService persistenceService = new PersistenceService(session, null, Channel.AUTO);
+        HistoryService historyService = new HistoryService(persistenceService);
+        String alternateNumber = Configuration.get(Property.Key.ALTERNATE_NUMBER);
+        
+        if(alternateNumber != null && !alternateNumber.trim().equals(""))
+        {
+            String pagePrefix = Configuration.get(Property.Key.PAGE_PREFIX);
+            ArrayList<String> mailAddresses = new ArrayList<String>();
+            
+            for(String address : EmailerUtil.KNOWN_SMS_EMAIL_ADDRESSES)
+            {
+                mailAddresses.add(address.replace("number", alternateNumber));
+            }
+            
+            InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
+            
+            if(toAddresses.length > 0)
+            {
+                String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
+                String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY, voicemail.getLeftBy(), directVoicemailAccessNumber);
+                
+                //pages to the alternate number need to differentiate themselves from regular pages that person might be getting
+                body = pagePrefix + " " + body;
+            
+                //need to send out these pages fast, so just generate x requests to send an e-mail rather than letting the 
+                //sendEmail method do the iteration.  Seems to be too slow
+                for(InternetAddress internetAddress : toAddresses)
+                {
+                    InternetAddress[] singleAddress = new InternetAddress[] {internetAddress};
+                    sendEmail(singleAddress, body, "", "");
+                }
+                
+                historyService.writeSentVoicemailAlternatePage(voicemail);
+            }
         }
     }
 
@@ -240,7 +281,7 @@ public class EmailerService
         String activePin = getPin(conference.getPins(), Pin.PinType.ACTIVE);
         activePin = activePin + " (Active)";
         
-        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, formattedEndDateTime,
+        String formattedEmailBody = String.format(EmailerUtil.EMAIL_BODY, username, formattedDateTime, formattedEndDateTime,
                                                   description, numberTitle, phoneNumber, activePin);
         
         return formattedEmailBody;
@@ -254,7 +295,7 @@ public class EmailerService
         String passivePin = getPin(conference.getPins(), Pin.PinType.PASSIVE);
         passivePin = passivePin + " (Passive)";
         
-        String formattedEmailBody = String.format(EMAIL_BODY, username, formattedDateTime, formattedEndDateTime,
+        String formattedEmailBody = String.format(EmailerUtil.EMAIL_BODY, username, formattedDateTime, formattedEndDateTime,
                                                   description, numberTitle, phoneNumber, passivePin);
         
         return formattedEmailBody;
@@ -292,7 +333,7 @@ public class EmailerService
         return String.valueOf((Long)criteria.list().get(0));
     }
     
-    private File getAttachment(String uri)
+    private File getAttachment(String uri) throws Exception
     {
         String filename = getFilenameFromUri(uri);
         File file = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + filename);
@@ -313,10 +354,12 @@ public class EmailerService
         catch(MalformedURLException e)
         {
             LOG.error("Error with URL when getting voicemail file for attachment to notification e-mail", e);
+            throw e;
         }
         catch(Exception e)
         {
             LOG.error("Error getting voicemail file for e-mail notification", e);
+            throw e;
         }
         finally
         {

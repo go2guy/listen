@@ -15,6 +15,7 @@ public class Property
         CONFERENCING_PINLENGTH ("com.interact.listen.conferencing.pinLength", "10"),
         PAGER_NUMBER           ("com.interact.listen.pagerNumber",            "4024292889"),
         ALTERNATE_NUMBER       ("com.interact.listen.alternateNumber",        ""),
+        PAGE_PREFIX            ("com.interact.listen.pagePrefix",             ""),
         REALIZE_URL            ("com.interact.listen.realizeUrl",             "http://localhost:8080/realize"),
         REALIZE_ALERT_NAME     ("com.interact.listen.realizeAlertName",       "Listen Pager Alert");
 

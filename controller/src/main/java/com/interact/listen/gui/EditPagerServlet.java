@@ -80,6 +80,9 @@ public class EditPagerServlet extends HttpServlet
         updateRealizeAlert(Configuration.get(Key.REALIZE_URL), Configuration.get(Key.REALIZE_ALERT_NAME),
                            originalAlternateNumber, newAlternateNumber);
 
+        String pagePrefix = request.getParameter("pagePrefix");
+        Configuration.set(Property.Key.PAGE_PREFIX, pagePrefix);
+        
         historyService.writeChangedAlternatePagerNumber(alternateNumber);
     }
 

@@ -2,6 +2,7 @@ package com.interact.listen;
 
 import com.interact.listen.config.Property;
 import com.interact.listen.history.Channel;
+import com.interact.listen.jobs.NewVoicemailPagerJob;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
@@ -22,6 +23,8 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "REC_CATCH_EXCEPTION", justification = "For any Throwable we need to rethrow it as an ExceptionInInitializerError")
 public final class HibernateUtil
@@ -149,6 +152,8 @@ public final class HibernateUtil
             {
                 bootstrap(persistenceService);
             }
+            
+            startPagingThread();
 
             transaction.commit();
         }
@@ -291,6 +296,24 @@ public final class HibernateUtil
             {
                 liquibase.getDatabase().close();
             }
+        }
+    }
+    
+    private static void startPagingThread() throws Exception
+    {
+        try
+        {
+            SchedulerFactory sf = new StdSchedulerFactory();
+            Scheduler sched = sf.getScheduler();
+            JobDetail jobDetail = new JobDetail("job1", "group1", NewVoicemailPagerJob.class);
+            CronTrigger cronTrigger = new CronTrigger("cronTrigger", "group2", "0 0/1 * * * ?");
+            sched.scheduleJob(jobDetail, cronTrigger);
+            sched.start();
+        }
+        catch(Exception e)
+        {
+            LOG.fatal("Exception starting voicemail paging job", e);
+            throw e;
         }
     }
 }

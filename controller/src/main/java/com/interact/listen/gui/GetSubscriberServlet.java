@@ -121,10 +121,12 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"enableSms\":").append(subscriber.getIsSmsNotificationEnabled()).append(",");
         json.append("\"emailAddress\":\"").append(subscriber.getEmailAddress()).append("\",");
         json.append("\"smsAddress\":\"").append(subscriber.getSmsAddress()).append("\",");
+        json.append("\"enablePaging\":").append(subscriber.getIsSubscribedToPaging()).append(",");
         
         //temporary until after-hours pager is moved to it's final location
         json.append("\"pagerNumber\":\"").append(Configuration.get(Property.Key.PAGER_NUMBER)).append("\",");
-        json.append("\"pagerAlternateNumber\":\"").append(Configuration.get(Property.Key.ALTERNATE_NUMBER)).append("\"");
+        json.append("\"pagerAlternateNumber\":\"").append(Configuration.get(Property.Key.ALTERNATE_NUMBER)).append("\",");
+        json.append("\"pagePrefix\":\"").append(Configuration.get(Property.Key.PAGE_PREFIX)).append("\"");
         json.append("}");
         return json.toString();
     }

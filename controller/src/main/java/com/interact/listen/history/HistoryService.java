@@ -1,6 +1,8 @@
 package com.interact.listen.history;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.resource.*;
 
 import java.text.SimpleDateFormat;
@@ -150,6 +152,26 @@ public class HistoryService
         history.setAction("Muted conference caller");
         history.setDescription("Muted caller [" + mutedCaller + "] in conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
+        write(history);
+    }
+    
+    public void writeSentVoicemailAlternatePage(Voicemail voicemail)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Sent voicemail alternate number page");
+        history.setDescription("Sent page to [" + Configuration.get(Property.Key.ALTERNATE_NUMBER) + "] for " 
+                               + getFriendlyVoicemailIdentifier(voicemail));
+        history.setService(Service.VOICEMAIL.toString());
+        write(history);
+    }
+    
+    public void writeSentVoicemailPage(Voicemail voicemail)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Sent voicemail page");
+        history.setDescription("Sent page to [" + voicemail.getSubscriber().getSmsAddress() + "] for "
+                               + getFriendlyVoicemailIdentifier(voicemail));
+        history.setService(Service.VOICEMAIL.toString());
         write(history);
     }
 

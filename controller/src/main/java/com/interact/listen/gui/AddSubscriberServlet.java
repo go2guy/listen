@@ -98,6 +98,7 @@ public class AddSubscriberServlet extends HttpServlet
             Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
             String emailAddress = request.getParameter("emailAddress");
             String smsAddress = request.getParameter("smsAddress");
+            Boolean enablePaging = Boolean.valueOf(request.getParameter("enablePaging"));
             
             if(enableEmail && (emailAddress == null || emailAddress.equals("")))
             {
@@ -108,11 +109,17 @@ public class AddSubscriberServlet extends HttpServlet
             {
                 throw new BadRequestServletException("Please provide an SMS address");
             }
+            
+            if(enablePaging && (smsAddress == null || smsAddress.equals("")))
+            {
+                throw new BadRequestServletException("Please provide an SMS address for paging");
+            }
 
             subscriber.setIsEmailNotificationEnabled(enableEmail);
             subscriber.setIsSmsNotificationEnabled(enableSms);
             subscriber.setEmailAddress(emailAddress);
             subscriber.setSmsAddress(smsAddress);
+            subscriber.setIsSubscribedToPaging(enablePaging);
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

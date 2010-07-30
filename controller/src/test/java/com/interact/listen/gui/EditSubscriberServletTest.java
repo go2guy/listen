@@ -53,6 +53,7 @@ public class EditSubscriberServletTest extends ListenTest
         final String enableSms = "true";
         final String emailAddress = TestUtil.randomString();
         final String smsAddress = TestUtil.randomString();
+        final String enablePaging = "true";
 
         request.setMethod("POST");
         request.setParameter("id", id);
@@ -64,6 +65,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("enableSms", enableSms);
         request.setParameter("emailAddress", emailAddress);
         request.setParameter("smsAddress", smsAddress);
+        request.setParameter("enablePaging", enablePaging);
 
         servlet.service(request, response);
 
@@ -508,6 +510,33 @@ public class EditSubscriberServletTest extends ListenTest
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(emailAddress, subscriber.getEmailAddress());
+    }
+    
+    @Test
+    public void test_doPost_withEnablePagingCheckedAndNoSmsAddress_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
+    {
+        subscriber = TestUtil.setSessionSubscriber(request, false, session);
+
+        request.setMethod("POST");
+        request.setParameter("id", String.valueOf(subscriber.getId()));
+        request.setParameter("username", TestUtil.randomString());
+        request.setParameter("password", TestUtil.randomString());
+        request.setParameter("confirmPassword", request.getParameter("password"));
+        request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
+        request.setParameter("enablePaging", "true");
+
+        try
+        {
+            servlet.service(request, response);
+            fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
+            assertEquals("Please provide an SMS address for paging", e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
     }
     
     @Test
