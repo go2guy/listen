@@ -58,9 +58,9 @@ $(document).ready(function() {
                             if(data.enablePaging) {                        
                                 $('#profile-form-paging').attr('checked', true);
                             }
-    
+                            $('#profile-form-voicemailPlaybackOrder').val(data.voicemailPlaybackOrder);
                             $('#profile-form-edit-button').show();
-                            
+
                             $('#pager-form-number').text(data.pagerNumber);
                             $('#pager-form-alternate-number').val(data.pagerAlternateNumber);
                             $('#pager-form-page-prefix').val(data.pagePrefix);
@@ -91,7 +91,8 @@ $(document).ready(function() {
                         enableSms: $('#profile-form-enableSmsNotification').is(":checked"),
                         emailAddress: $('#profile-form-emailAddress').val(),
                         smsAddress: $('#profile-form-smsAddress').val(),
-                        enablePaging: $('#profile-form-paging').is(":checked")
+                        enablePaging: $('#profile-form-paging').is(":checked"),
+                        voicemailPlaybackOrder: $('#profile-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
                         LISTEN.PROFILE.showSuccess('Profile updated');

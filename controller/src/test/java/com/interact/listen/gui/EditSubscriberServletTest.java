@@ -10,6 +10,7 @@ import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.Subscriber.PlaybackOrder;
 import com.interact.listen.security.SecurityUtil;
 
 import java.io.IOException;
@@ -66,6 +67,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("emailAddress", emailAddress);
         request.setParameter("smsAddress", smsAddress);
         request.setParameter("enablePaging", enablePaging);
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         servlet.service(request, response);
 
@@ -102,6 +104,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("enableSms", enableSms);
         request.setParameter("emailAddress", emailAddress);
         request.setParameter("smsAddress", smsAddress);
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         servlet.service(request, response);
 
@@ -144,6 +147,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("enableSms", enableSms);
         request.setParameter("emailAddress", emailAddress);
         request.setParameter("smsAddress", smsAddress);
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -169,6 +173,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -195,6 +200,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -221,6 +227,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -247,6 +254,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", (String)null);
         request.setParameter("confirmPassword", "password");
         request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -273,6 +281,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", " ");
         request.setParameter("confirmPassword", "password");
         request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -299,6 +308,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", (String)null);
         request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -325,6 +335,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", " ");
         request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -351,6 +362,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password") + "foo");
         request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -377,6 +389,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", (String)null);
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         servlet.service(request, response);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -394,6 +407,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", "");
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         servlet.service(request, response);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -411,6 +425,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", "ABC");
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -438,6 +453,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
         request.setParameter("enableEmail", "true");
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -465,6 +481,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
         request.setParameter("enableSms", "true");
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -500,6 +517,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", voicemailPin);
         request.setParameter("enableEmail", enableEmail);
         request.setParameter("emailAddress", emailAddress);
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         servlet.service(request, response);
 
@@ -525,6 +543,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("confirmPassword", request.getParameter("password"));
         request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
         request.setParameter("enablePaging", "true");
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         try
         {
@@ -560,6 +579,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", voicemailPin);
         request.setParameter("enableSms", enableSms);
         request.setParameter("smsAddress", smsAddress);
+        request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         servlet.service(request, response);
 

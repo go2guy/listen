@@ -456,7 +456,16 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                   <button type="button" class="button-save" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address">Verify</button>
                                 </td>
                               </tr>
-                              <tr><td><input type="checkbox" id="subscriber-form-paging" name="subscriber-form-paging" value="enablePaging"/></td><td><label for="subscriber-form-paging">Page on new voicemails</label></td></tr><%
+                              <tr><td><input type="checkbox" id="subscriber-form-paging" name="subscriber-form-paging" value="enablePaging"/></td><td><label for="subscriber-form-paging">Page on new voicemails</label></td></tr>
+                              <tr>
+                                <td><label for="subscriber-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
+                                <td>
+                                  <select name="subscriber-form-voicemailPlaybackOrder" id="subscriber-form-voicemailPlaybackOrder">
+                                    <option value="NEWEST_TO_OLDEST">Newest to Oldest</option>
+                                    <option value="OLDEST_TO_NEWEST">Oldest to Newest</option>
+                                  </select>
+                                </td>
+                              </tr><%
 } %>
                               <tr>
                                 <td colspan="2" class="buttons">
@@ -533,7 +542,16 @@ if(subscriber != null) { %>
                                 <button type="button" class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address">Verify</button>
                               </td>
                             </tr>
-                            <tr><td><label for="profile-form-paging">Page on new voicemails</label></td><td><input type="checkbox" id="profile-form-paging" name="profile-form-paging" value="enablePaging"/></td></tr><%
+                            <tr><td><label for="profile-form-paging">Page on new voicemails</label></td><td><input type="checkbox" id="profile-form-paging" name="profile-form-paging" value="enablePaging"/></td></tr>
+                            <tr>
+                              <td><label for="profile-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
+                              <td>
+                                <select name="voicemailPlaybackOrder" id="voicemailPlaybackOrder">
+                                  <option value="NEWEST_TO_OLDEST">Newest to Oldest</option>
+                                  <option value="OLDEST_TO_NEWEST">Oldest to Newest</option>
+                                </select>
+                              </td>
+                            </tr><%
     } %>
                             <tr>
                               <td colspan="2" class="buttons">

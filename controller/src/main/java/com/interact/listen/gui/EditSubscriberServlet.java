@@ -11,6 +11,7 @@ import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.Subscriber.PlaybackOrder;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -129,6 +130,7 @@ public class EditSubscriberServlet extends HttpServlet
             String emailAddress = request.getParameter("emailAddress");
             String smsAddress = request.getParameter("smsAddress");
             Boolean enablePaging = Boolean.valueOf(request.getParameter("enablePaging"));
+            PlaybackOrder playbackOrder = PlaybackOrder.valueOf(request.getParameter("voicemailPlaybackOrder"));
             
             if(enableEmail && (emailAddress == null || emailAddress.equals("")))
             {
@@ -150,6 +152,7 @@ public class EditSubscriberServlet extends HttpServlet
             subscriberToEdit.setEmailAddress(emailAddress);
             subscriberToEdit.setSmsAddress(smsAddress);
             subscriberToEdit.setIsSubscribedToPaging(enablePaging);
+            subscriberToEdit.setVoicemailPlaybackOrder(playbackOrder);
         }
 
         subscriberToEdit.setUsername(username);

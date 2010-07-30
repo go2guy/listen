@@ -10,8 +10,9 @@ import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Pin;
-import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.Pin.PinType;
+import com.interact.listen.resource.Subscriber.PlaybackOrder;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -99,6 +100,7 @@ public class AddSubscriberServlet extends HttpServlet
             String emailAddress = request.getParameter("emailAddress");
             String smsAddress = request.getParameter("smsAddress");
             Boolean enablePaging = Boolean.valueOf(request.getParameter("enablePaging"));
+            PlaybackOrder playbackOrder = PlaybackOrder.valueOf(request.getParameter("voicemailPlaybackOrder"));
             
             if(enableEmail && (emailAddress == null || emailAddress.equals("")))
             {
@@ -120,6 +122,7 @@ public class AddSubscriberServlet extends HttpServlet
             subscriber.setEmailAddress(emailAddress);
             subscriber.setSmsAddress(smsAddress);
             subscriber.setIsSubscribedToPaging(enablePaging);
+            subscriber.setVoicemailPlaybackOrder(playbackOrder);
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

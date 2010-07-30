@@ -71,6 +71,16 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "IS_SUBSCRIBED_TO_PAGING")
     private Boolean isSubscribedToPaging = Boolean.FALSE;
 
+    @Column(name = "VOICEMAIL_PLAYBACK_ORDER", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PlaybackOrder voicemailPlaybackOrder = PlaybackOrder.OLDEST_TO_NEWEST;
+
+    public enum PlaybackOrder
+    {
+        NEWEST_TO_OLDEST,
+        OLDEST_TO_NEWEST;
+    }
+
     public Set<AccessNumber> getAccessNumbers()
     {
         return accessNumbers;
@@ -151,6 +161,16 @@ public class Subscriber extends Resource implements Serializable
     public void setVoicemails(List<Voicemail> voicemails)
     {
         this.voicemails = voicemails;
+    }
+
+    public PlaybackOrder getVoicemailPlaybackOrder()
+    {
+        return voicemailPlaybackOrder;
+    }
+
+    public void setVoicemailPlaybackOrder(PlaybackOrder voicemailPlaybackOrder)
+    {
+        this.voicemailPlaybackOrder = voicemailPlaybackOrder;
     }
 
     public String getUsername()

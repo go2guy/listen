@@ -312,4 +312,11 @@
             <column name="REAL_NAME" type="VARCHAR(255)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="32">
+        <addColumn tableName="SUBSCRIBER">
+            <column name="VOICEMAIL_PLAYBACK_ORDER" type="VARCHAR(255)" defaultValue="OLDEST_TO_NEWEST">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -106,6 +106,7 @@ $(document).ready(function() {
                         if(data.enablePaging) {                        
                             $('#subscriber-form-paging').attr('checked', true);
                         }
+                        $('#subscriber-form-voicemailPlaybackOrder').val(data.voicemailPlaybackOrder);
 
                         $('#subscriber-form-add-button').hide();
                         $('#subscriber-form-edit-button').show();
@@ -144,7 +145,8 @@ $(document).ready(function() {
                         enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
                         emailAddress: $('#subscriber-form-emailAddress').val(),
                         smsAddress: $('#subscriber-form-smsAddress').val(),
-                        enablePaging: $('#subscriber-form-paging').is(":checked")
+                        enablePaging: $('#subscriber-form-paging').is(":checked"),
+                        voicemailPlaybackOrder: $('#subscriber-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();
@@ -174,7 +176,8 @@ $(document).ready(function() {
                         enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
                         emailAddress: $('#subscriber-form-emailAddress').val(),
                         smsAddress: $('#subscriber-form-smsAddress').val(),
-                        enablePaging: $('#subscriber-form-paging').is(":checked")
+                        enablePaging: $('#subscriber-form-paging').is(":checked"),
+                        voicemailPlaybackOrder: $('#subscriber-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
                         LISTEN.SUBSCRIBERS.resetForm();
