@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/16/2010
+    <!-- Last Modified 08/02/2010
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -18,8 +18,7 @@
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
     <var name="callType" expr="''"/>    <!-- Call Type. Identifies a call as: service, extension, or external -->
-    <var name="iiLincoln" expr="'14024768786,14028029608,14028029609'"/>  <!-- SIP Trunk access for Lincon Office -->
-    <var name="iiAustin" expr="'15122999104,15123801239,44,206.81.53.128'"/>   <!-- Access for Austin Office -->
+    <var name="iiLincoln" expr="'4024768786,8002428649'"/>  <!-- PSTN access for Lincon Office -->
     <var name="importedValue"/>         <!-- Imported Value. Values passed in from Listen application -->
     <var name="remote"/>
     <var name="local"/>
@@ -32,7 +31,6 @@
     <var name="EXT_LENGTH" expr="4"/>   <!-- Extensions are less than four digit numbers -->
     <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>    <!-- Base directory for Spotbuild -->
     <var name="APP_PATH" expr="SB_PATH+'ippbx/'"/>              <!-- Base directory for PBX application -->
-    <var name="LIB_PATH" expr="SB_PATH+'lib/'"/>                <!-- Directory for lib files -->
     <var name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>    <!-- Direcotry for transaction files -->
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>
@@ -45,7 +43,7 @@
             <if cond="projectSource == 'LISTEN'">
                 <assign name="ibconnid" expr="connectionid"/>   <!-- Get connection id for incoming call -->
 	    	    <assign name="ANI" expr="iiUnescape(remote)"/>  <!-- Get origin of incoming call -->
-	    	    <assign name="DNIS" expr="local"/>              <!-- Get destination of incoming call -->
+	    	    <assign name="DNIS" expr="iiUnescape(local)"/>  <!-- Get destination of incoming call -->
 	    	    <assign name="tmpDNIS" expr="getnum(DNIS)"/>
                 <assign name="tmpANI" expr="getnum(ANI)"/>
                 <send data="'dialog.user.chk_ANI'" target="session.id"/>
@@ -94,11 +92,15 @@
             <!-- We need to figure out how to route this call based on what caller dialed -->
             <log>INFO: Entered [dialog.user.routeCall] with state [<value expr="state"/>]</log>
             <log target="status">Routing call...</log>
-            <if cond="inString(tmpDNIS,iiLincoln,',') || inString(tmpDNIS,iiAustin,',')"> <!-- If caller is trying to reach lincoln or austin office -->
+            <if cond="inString(tmpDNIS,iiLincoln,',')"> <!-- If caller is trying to reach lincoln office -->
                 <assign name="route" expr="'dialog.user.autoAttendant'"/>   <!-- Set route to auto attendant -->
                 <send data="'dialog.user.pbx'" target="session.id"/>
             <elseif cond="tmpDNIS == PAGE"/> <!-- If caller is trying to use page service -->
                 <send data="'dialog.user.page'" target="session.id"/>
+            <elseif cond="((tmpDNIS[0]+tmpDNIS[1]) == '#3') &amp;&amp; (tmpANI.length &lt; EXT_LENGTH)"/> <!-- Assume caller is trying to use forward service -->
+                <send data="'dialog.user.forward'" target="session.id"/>
+            <elseif cond="((tmpDNIS[0]+tmpDNIS[1]) == '#9') &amp;&amp; (tmpANI.length &lt; EXT_LENGTH)"/> <!-- Assume caller is trying to pick up a line that's on hold -->
+                <send data="'dialog.user.pickUpCall'" target="session.id"/>
             <elseif cond="tmpDNIS.length &lt; EXT_LENGTH"/>    <!-- Assume this is an internal call between extensions -->
                 <assign name="callType" expr="'extension'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
@@ -130,8 +132,29 @@
             <fetch next="'file:'+APP_PATH+'page.ccxml'" namelist="SB_PATH APP_PATH ibconnid tmpANI tmpDNIS DNIS ANI"/>
         </transition>
 
+        <transition event="dialog.user.forward" name="evt">
+            <!-- Here we determine how to handle the call based on the incoming DNIS -->
+            <log>INFO: Entered [dialog.user.forward] with state [<value expr="state"/>]</log>
+            <var name="fwdCode" expr="iiSubstr(tmpDNIS,0,3)"/>
+            <var name="mBox" expr="tmpANI"/>
+            <if cond="fwdCode == '#33'">        <!-- Caller is attempting to forward an extension -->
+       	   		<dialogstart src="'file:'+APP_PATH+'forward/getFwdInfo.vxml'" namelist="mBox importedValue EXT_LENGTH"/>
+            <elseif cond="fwdCode == '#34'"/>   <!-- Caller is attempting to cancel the forward on an extension -->
+       	   		<dialogstart src="'file:'+APP_PATH+'forward/.vxml'" namelist="extension"/>
+            <else/>
+                <log>ERROR: Unknown forward code [<value expr="fwdCode"/>]</log>
+                <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.pickUpCall" name="evt">
+            <!-- Here we'll pass control to the transfer hold ccxml script -->
+            <log>INFO: Entered [dialog.user.pickUpCall] with state [<value expr="state"/>]</log>
+            <fetch next="'file:'+APP_PATH+'transfer/transferHold.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI importedValue"/>
+        </transition>
+
         <transition event="connection.disconnected" name="evt">
-            <!-- Caller has hung up. If caller is internal to pbx, we need to toggle their status to inactive -->
+            <!-- Caller has hung up. If caller is internal to pbx, we need to remove their information from the db -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
             <if cond="inVXML == 'y'">   <!-- If this is true, we need to terminate the current VXML before doing anything else -->
@@ -179,7 +202,7 @@
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
             <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
         </transition>
 
         <transition event="error.*" name="evt">

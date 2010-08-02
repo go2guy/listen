@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/14/2010
+    <!-- Last Modified 08/02/2010
        *   @Name	hold.ccxml
        *   @Desc	This script handles the logic for placing a call on hold -->
 
@@ -28,8 +28,12 @@
     <var name="LIB_PATH" expr="''"/>    <!-- Audio Path. Directory for audio files -->
     <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
     <var name="xferConnID" expr="''"/>
+    <var name="record" expr="''"/>
+    <var name="holdRecord" expr="''"/>
+    <var name="moveRequestSID" expr="''"/>
     <var name="xferSID" expr="''"/>
     <var name="URI" expr="''"/>
+    <var name="tmpSID" expr="''"/>
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
 
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
@@ -53,13 +57,35 @@
             <assign name="state" expr="'setID'"/>
             <if cond="ibconnid == requestID">  <!-- Means inbound caller initiated request -->
                 <assign name="holdID" expr="obconnid"/> <!-- We'll be putting the called party on hold -->
+                <assign name="holdRecord" expr="obconnid + '|' + tmpDNIS"/>
                 <assign name="activeID" expr="ibconnid"/>
+                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
             <else/> <!-- Called party initiated request -->
                 <assign name="holdID" expr="ibconnid"/> <!-- Put the caller on hold -->
+                <assign name="holdRecord" expr="ibconnid + '|' + tmpANI"/>
                 <assign name="activeID" expr="obconnid"/>
+                <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
             </if>
-            <unjoin id1="ibconnid" id2="obconnid"/> <!-- Unjoin caller and callee -->
+            <!-- When a party is on hold, there's a possibility they will be "picked up" by another caller.
+            In preparation for that, we'll insert the session id of this call into the db -->
+            <assign name="tmpSID" expr="session.id"/>
+            <send data="'dialog.user.updateRecord'" target="session.id"/>
         </transition>
+
+        <transition state="updateSID setID" event="dialog.user.updateRecord" name="evt">
+            <!-- Here, we start the vxml dialog to update the database -->
+            <log>INFO: Entered [dialog.user.updateRecord] with state [<value expr="state"/>]</log>
+            <var name="sessionID" expr="tmpSID"/>
+            <var name="flag" expr="'update'"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag sessionID record EXT_LENGTH"/>
+        </transition>
+
+        <transition state="setID" event="dialog.exit" name="evt">
+            <!-- We're back from updating the db -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <unjoin id1="ibconnid" id2="obconnid"/> <!-- Unjoin caller and callee -->
+		</transition>
 
 		<transition state="setID" event="conference.unjoined" name="evt">
             <!-- We've unjoined caller from callee. Next, we need to put the appropriate party on hold.
@@ -114,6 +140,8 @@
 
         <transition state="reverseHold" event="dialog.exit" name="evt">
             <!-- We're back from terminating the music. Next we need to swap connectionIDs -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
             <assign name="holdID" expr="activeID"/> <!-- We'll be putting the current active party on hold -->
             <if cond="activeID == ibconnid"> <!-- And making the current hold party active -->
                 <assign name="activeID" expr="obconnid"/>
@@ -133,8 +161,23 @@
         </transition>
 
         <transition event="dialog.user.pickUp" name="evt">
-            <!-- Here, we rejoin the callers, making sure that join id 1 belongs to the inbound caller -->
+            <!-- Since the caller on hold is being picked up, we blank out the session ID of the active client in the db -->
             <log>INFO: Entered [dialog.user.pickUp] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'updateSID'"/>
+            <assign name="tmpSID" expr="''"/>
+            <send data="'dialog.user.updateRecord'" target="session.id"/> <!-- Before putting party on hold, let's update db -->
+        </transition>
+
+        <transition state="updateSID" event="dialog.exit" name="evt">
+            <!-- We're back from updating the sessionID in the db. Next, we call the transition that rejoins the callers -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.joinID'" target="session.id"/>
+        </transition>
+
+		<transition state="updateSID" event="dialog.user.joinID" name="evt">
+            <log>INFO: Entered [dialog.user.joinID] with state [<value expr="state"/>]</log>
+            <!-- Here, we rejoin the callers, making sure that join id 1 belongs to the inbound caller -->
             <assign name="state" expr="'rejoin'"/>
             <if cond="holdID == ibconnid">
                 <join id1="holdID" id2="activeID"/>
@@ -181,7 +224,79 @@
         <transition state="gotXferReq" event="dialog.user.transfer" name="evt">
             <!-- Here, we call the attended transfer ccxml script -->
             <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID"/>
+            <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID"/>
+        </transition>
+
+        <transition state="hold reverseHold" event="dialog.user.moveRequest" name="evt">
+            <!-- In here, we're in the process of doing a call transfer. We have a call on hold,
+            and it is about to be "picked up" by another call -->
+            <log>INFO: Entered [dialog.user.moveRequest] with state [<value expr="state"/>]</log>
+            <assign name="moveRequestSID" expr="evt.moveRequestSID"/>
+            <assign name="state" expr="'endMusic'"/>
+            <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
+                <send data="'dialog.user.terminate'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.endActiveID'" target="session.id"/>
+            </if>
+		</transition>
+
+        <transition state="endMusic" event="dialog.exit" name="evt">
+            <!-- We're back from terminating the vxml dialog.  -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.endActiveID'" target="session.id"/>
+        </transition>
+
+        <transition state="endMusic" event="dialog.user.endActiveID" name="evt">
+            <!-- Here, we disconnect the active connection ID (Caller that is NOT on hold) -->
+            <log>INFO: Entered [dialog.user.endActiveID] with state [<value expr="state"/>]</log>
+		    <assign name="state" expr="'activeDisc'"/>
+            <disconnect connectionid="activeID"/>
+        </transition>
+
+        <transition state="activeDisc" event="connection.disconnected" name="evt" cond="evt.connectionid == activeID">
+            <!-- Got the disconnect -->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <!-- Remove the caller's record in the db. The 'record' variable was set earlier; no need to update it -->
+            <var name="flag" expr="'delete'"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag sessionID record EXT_LENGTH"/>
+        </transition>
+
+        <transition state="activeDisc" event="dialog.exit" name="evt">
+            <!-- Caller's record has been removed. Before continuing with the transfer,
+            let's join the party on hold to a voice channel -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+		    <assign name="state" expr="'getVChnnel'"/>
+            <join id1="holdID" id2="'VXML_CHANNEL'"/>
+        </transition>
+
+        <transition state="getVChnnel" event="conference.joined" name="evt">
+            <!-- We're joined to a voice channel. Let's continue with the transfer. Need to move the
+            party on hold to the new call -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+		    <assign name="state" expr="'holdMoveAttempt'"/>
+            <move source="holdID" sessionid="moveRequestSID"/>
+        </transition>
+
+        <transition state="holdMoveAttempt" event="move.successful" name="evt">
+            <!-- Looks like our move worked. Let's send control to the transferHold.ccxml script and end this line-->
+            <log>INFO: Entered [move.successful] with state [<value expr="state"/>]</log>
+            <assign name="record" expr="holdRecord"/>
+            <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="record"/>
+            <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition state="holdMoveAttempt" event="error.move" name="evt">
+            <!-- Looks like our move failed. We'll need to end this session and the session controlling the 
+            transferHold.ccxml script -->
+            <log>INFO: Entered [error.move] with state [<value expr="state"/>]</log>
+            <assign name="record" expr="holdRecord"/>
+            <send data="'dialog.user.moveFailed'" target="moveRequestSID" namelist="record"/>
+  		    <assign name="state" expr="'endCall'"/>
+            <var name="flag" expr="'delete'"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
         </transition>
 
         <transition event="connection.disconnected" name="evt">
@@ -207,10 +322,9 @@
         <transition state="hangUp" event="dialog.user.deleteRecord" name="evt">
             <!-- Here, we start the vxml dialog to update the database -->
             <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
-            <assign name="clientFlag" expr="'delete'"/>
   		    <assign name="state" expr="'endCall'"/>
             <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
-            <var name="flag" expr="clientFlag"/>
+            <var name="flag" expr="'delete'"/>
    	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
         </transition>
 

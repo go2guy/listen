@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/30/2010
+    <!-- Last Modified 08/02/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -191,7 +191,7 @@
             <log target="status">Blind transfer request</log>
             <var name="xferConnID" expr="evt.connectionid"/>
             <var name="URI" expr="evt.uri"/>
-            <fetch next="'file:'+APP_PATH+'blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID"/>
+            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID"/>
 		</transition>
 
 		<transition state="callConnected" event="connection.signal" name="evt">
@@ -202,7 +202,7 @@
                 <!-- Here, we assume this event is in connection to a 3-way call/conference. 
                 We'll ignore it and allow the IP phone handle the call -->
             <else/>
-                <fetch next="'file:'+APP_PATH+'hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
+                <fetch next="'file:'+APP_PATH+'transfer/hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
             </if>
 		</transition>
 
@@ -236,6 +236,7 @@
             <!-- Caller's record has been removed. Before continuing with the transfer,
             let's join callee to a voice channel -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
 		    <assign name="state" expr="'attdXferVChnnel'"/>
             <join id1="obconnid" id2="'VXML_CHANNEL'"/>
         </transition>
@@ -259,7 +260,7 @@
         <transition state="attdXferMoveAttempt" event="error.move" name="evt">
             <!-- Looks like our move failed. We'll need to end this session and the session controlling the 
             attendedTransfer.ccxml script -->
-            <log>INFO: Entered [move.successful] with state [<value expr="state"/>]</log>
+            <log>INFO: Entered [error.move] with state [<value expr="state"/>]</log>
             <send data="'dialog.user.moveFailed'" target="moveRequestSID" namelist="obconnid"/>
             <assign name="record" expr="ibconnid + '|' + tmpDNIS"/>
             <assign name="clientFlag" expr="'delete'"/>

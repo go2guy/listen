@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
+<ccxml version="1.0">
+    <!-- Last Modified 07/26/2010
+       *   @Name	transferHold.ccxml
+       *   @Desc	This script handles the logic for transferring a party
+                    that's currently on hold to a new call -->
+
+    <!-- Values passed in from other ccxml -->
+    <var name="ANI"/>           <!-- ANI. Origination ID of current call -->
+    <var name="DNIS"/>          <!-- DNIS. Destination ID -->
+    <var name="tmpANI"/>        <!-- ANI.-->
+    <var name="tmpDNIS"/>       <!-- DNIS.-->
+    <var name="ibconnid"/>      <!-- Inbound connection ID -->
+    <var name="obconnid"/>      <!-- Outbound connection ID -->
+    <var name="APP_PATH"/>      <!-- App Path. Base application directory -->
+    <var name="EXT_LENGTH"/>    <!-- Extensions are less than seven digit numbers -->
+    <var name="SB_PATH"/>       <!-- Spotbuild Path. Base directory for spotbuild -->
+    <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
+
+    <!-- Global Vars -->
+    <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
+    <var name="record" expr="''"/>
+    <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
+    <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
+    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+
+    <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
+        <transition state="idle" event="ccxml.loaded" name="evt">
+            <!-- Load ccxml document. Set variables -->
+            <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
+            <log target="status">Transfer Call</log>
+            <assign name="state" expr="'loaded'"/>
+            <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
+            <send data="'dialog.user.getInfo'" target="session.id"/>
+        </transition>
+
+		<transition event="dialog.user.getInfo" name="evt">
+            <!-- In here, we query the db for the session id of the caller who is on hold -->
+            <log>INFO: Entered [dialog.user.getInfo] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'dbInfo'"/>
+            <var name="flag" expr="'select'"/>
+            <assign name="record" expr="ibconnid + '|' + getNextElement(1,tmpDNIS,'#9')"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+		</transition>
+
+        <transition state="dbInfo" event="dialog.exit" name="evt">
+            <!-- Back from getting the session id --> 
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <if cond="evt.values.result != 'Faliure'">
+                <var name="holdSID" expr="evt.values.result"/>
+                <var name="moveRequestSID" expr="session.id"/>  <!-- Save off current session id for future use -->
+                <send data="'dialog.user.moveRequest'" target="holdSID" namelist="moveRequestSID"/> <!-- This send event should end up in hold.ccxml -->
+            <else/>
+                <!-- TODO: Maybe play a prompt or some tones to indicate failure -->
+                <!-- Looks like we had some issues. End this call. -->
+                <assign name="state" expr="'endCall'"/>
+                <var name="flag" expr="'delete'"/>
+                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
+   	   		    <dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.moveSuccessful" name="evt">
+            <!-- Our move was successful. Next, we'll join the connection ids of the two parties -->
+            <log>INFO: Entered [dialog.user.moveSuccessful] with state [<value expr="state"/>]</log>
+    	    <assign name="state" expr="'joinID'"/>
+            <assign name="record" expr="evt.record"/>
+            <assign name="obconnid" expr="getNextElement(0,record,'|')"/>
+            <assign name="tmpDNIS" expr="getNextElement(1,record,'|')"/>
+            <join id1="ibconnid" id2="obconnid"/>
+        </transition>
+
+		<transition state="joinID" event="conference.joined" name="evt">
+            <!-- The join was successful. Here, we send control to dial.ccxml -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+            <var name="callType" expr="'fromXfer'"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid obconnid tmpDNIS DNIS tmpANI ANI callType"/>
+		</transition>
+
+        <transition event="dialog.user.moveFailed" name="evt">
+            <!-- Our move failed. -->
+            <log>INFO: Entered [dialog.user.moveFailed] with state [<value expr="state"/>]</log>
+    	    <assign name="state" expr="'endCall'"/>
+            <assign name="record" expr="ibconnid + '|' + tmpANI"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition event="connection.disconnected" name="evt">
+            <!-- Got a hang up. Let's remove any records associated with this call in the db -->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <log>INFO: Detected hangup</log>
+    	    <assign name="state" expr="'endCall'"/>
+            <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.updateClientRecord" name="evt">
+            <!-- Here, we start the vxml dialog to update the database -->
+            <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
+            <var name="flag" expr="'delete'"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+        </transition>
+
+        <transition event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.endCall'" target="session.id" />
+        </transition>
+
+        <transition event="dialog.started" name="evt">
+            <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
+            <assign name="dialogID" expr="evt.dialogid"/>
+            <assign name="inVXML" expr="'y'"/>
+        </transition>
+
+        <transition event="dialog.user.terminate" name="evt">
+            <log>INFO: Entered [dialog.user.terminate] with state [<value expr="state"/>]</log>
+   	    	<dialogterminate dialogid="dialogID" immediate="true"/>
+        </transition>
+
+        <transition event="fetch.done" name="evt">
+            <log>INFO: Fetched document [<value expr="evt.uri"/>]</log>
+            <goto fetchid="evt.fetchid" />
+        </transition>
+
+        <transition event="error.*" name="evt">
+            <!-- Use catch all error for now -->
+            <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- Remove user's info from db b/4 exiting -->
+            <!-- TODO: Write an error log file and notify someone? -->
+    	    <assign name="state" expr="'endCall'"/>
+            <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.endCall" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
+            <exit/>
+        </transition>
+
+	</eventprocessor>
+</ccxml>
