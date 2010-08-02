@@ -414,18 +414,6 @@ public class Conference extends Resource implements Serializable
         return hash;
     }
 
-    // TODO is this used anywhere anymore?
-    public static Conference findByPinNumber(String pinNumber, Session session)
-    {
-        final String hql = "select c from Conference c join c.pins as p where p.number = ?";
-
-        org.hibernate.Query query = session.createQuery(hql);
-        query.setMaxResults(1);
-        query.setString(0, pinNumber);
-
-        return (Conference)query.uniqueResult();
-    }
-
     public static List<Conference> queryAllPaged(Session session, int first, int max)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(Conference.class);
@@ -455,5 +443,16 @@ public class Conference extends Resource implements Serializable
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setProjection(Projections.rowCount());
         return (Long)criteria.list().get(0);
+    }
+
+    public String firstAdminSessionId(Session session)
+    {
+        List<Participant> admins = Participant.queryAdminsByConference(session, this);
+        if(admins.size() == 0)
+        {
+            // FIXME maybe use a checked exception here
+            throw new IllegalStateException("Could not find Admin participant for Conference");
+        }
+        return admins.get(0).getSessionID();
     }
 }

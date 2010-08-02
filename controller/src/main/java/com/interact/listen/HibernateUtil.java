@@ -18,10 +18,10 @@ import liquibase.database.DatabaseFactory;
 import liquibase.exception.LiquibaseException;
 
 import org.apache.log4j.Logger;
-import org.hibernate.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -250,14 +250,7 @@ public final class HibernateUtil
 
     private static void createAdminSubscriberIfNotPresent(Session session, PersistenceService persistenceService)
     {
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.setFirstResult(0);
-        criteria.setProjection(Projections.rowCount());
-        criteria.add(Restrictions.eq("isAdministrator", Boolean.TRUE));
-
-        Long count = (Long)criteria.list().get(0);
-
+        Long count = Subscriber.count(session);
         if(count == 0)
         {
             LOG.debug("Created admin Subscriber");

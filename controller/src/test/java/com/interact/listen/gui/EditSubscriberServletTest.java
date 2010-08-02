@@ -8,7 +8,6 @@ import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
-import com.interact.listen.license.License;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Subscriber.PlaybackOrder;
 import com.interact.listen.security.SecurityUtil;
@@ -18,8 +17,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -71,9 +68,7 @@ public class EditSubscriberServletTest extends ListenTest
 
         servlet.service(request, response);
 
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("id", Long.valueOf(id)));
-        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        Subscriber subscriber = Subscriber.queryById(session, Long.parseLong(id));
         assertNotNull(subscriber);
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
@@ -109,9 +104,7 @@ public class EditSubscriberServletTest extends ListenTest
         servlet.service(request, response);
 
         // verify a subscriber was modified for the username and is associated with the created subscriber
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("username", username));
-        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        Subscriber subscriber = Subscriber.queryByUsername(session, username);
         assertNotNull(subscriber);
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
@@ -521,9 +514,7 @@ public class EditSubscriberServletTest extends ListenTest
 
         servlet.service(request, response);
 
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("username", username));
-        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        Subscriber subscriber = Subscriber.queryByUsername(session, username);
         assertNotNull(subscriber);
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
@@ -583,9 +574,7 @@ public class EditSubscriberServletTest extends ListenTest
 
         servlet.service(request, response);
 
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("username", username));
-        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        Subscriber subscriber = Subscriber.queryByUsername(session, username);
         assertNotNull(subscriber);
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());

@@ -376,4 +376,13 @@ public class Participant extends Resource implements Serializable
         criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
         return (Long)criteria.list().get(0);
     }
+
+    public static List<Participant> queryAdminsByConference(Session session, Conference conference)
+    {
+        Criteria criteria = session.createCriteria(Participant.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.createAlias("conference", "conference_alias");
+        criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
+        return (List<Participant>)criteria.list();
+    }
 }

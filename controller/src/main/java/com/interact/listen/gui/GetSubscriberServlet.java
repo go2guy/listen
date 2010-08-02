@@ -23,9 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 /**
  * Provides a GET implementation that retrieves a list of {@link Subscribers}.
@@ -104,7 +102,7 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
 
         json.append(",\"accessNumbers\":[");
-        List<AccessNumber> accessNumbers = getAccessNumbers(subscriber, session);
+        List<AccessNumber> accessNumbers = AccessNumber.queryBySubscriber(session, subscriber);
         for(AccessNumber accessNumber : accessNumbers)
         {
             json.append("\"").append(accessNumber.getNumber()).append("\",");
@@ -130,16 +128,5 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"pagePrefix\":\"").append(Configuration.get(Property.Key.PAGE_PREFIX)).append("\"");
         json.append("}");
         return json.toString();
-    }
-
-    // retrieving the AccessNumbers from the Subscriber collection doesn't seem to work right
-    // when numbers are added via the API - this is a quick fix for that (query them manually)
-    public static List<AccessNumber> getAccessNumbers(Subscriber subscriber, Session session)
-    {
-        Criteria criteria = session.createCriteria(AccessNumber.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.createAlias("subscriber", "subscriber_alias");
-        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
-        return (List<AccessNumber>)criteria.list();
     }
 }

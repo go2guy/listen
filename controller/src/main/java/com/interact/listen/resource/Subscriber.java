@@ -429,6 +429,16 @@ public class Subscriber extends Resource implements Serializable
         return (Subscriber)session.get(Subscriber.class, id);
     }
 
+    public static Subscriber queryByUsername(Session session, String username)
+    {
+        // FIXME this query is not eagerly fetching associations, (e.g. the accessNumbers collection)
+        // need to figure out why
+        Criteria criteria = session.createCriteria(Subscriber.class);
+        criteria.add(Restrictions.eq("username", username));
+        criteria.setMaxResults(1);
+        return (Subscriber)criteria.uniqueResult();
+    }
+
     public static Long count(Session session)
     {
         Criteria criteria = session.createCriteria(Subscriber.class);

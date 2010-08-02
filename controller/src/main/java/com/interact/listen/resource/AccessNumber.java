@@ -153,21 +153,21 @@ public class AccessNumber extends Resource implements Serializable
         hash *= prime + (getNumber() == null ? 0 : getNumber().hashCode());
         return hash;
     }
-    
+
     public static AccessNumber queryByNumber(Session session, String number)
     {
-        AccessNumber returnNumber = new AccessNumber();
         Criteria criteria = session.createCriteria(AccessNumber.class);
         criteria.add(Restrictions.eq("number", number));
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
-        List<AccessNumber> queryList = criteria.list();
-        
-        if(queryList.size() > 0)
-        {
-            returnNumber = queryList.get(0); 
-        }
-        
-        return returnNumber;
+        return (AccessNumber)criteria.uniqueResult();
+    }
+
+    public static List<AccessNumber> queryBySubscriber(Session session, Subscriber subscriber)
+    {
+        Criteria criteria = session.createCriteria(AccessNumber.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        return (List<AccessNumber>)criteria.list();
     }
 }

@@ -17,15 +17,14 @@ import java.util.*;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.mail.*;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Transport;
 import javax.mail.internet.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 
 public class EmailerService
 {
@@ -169,9 +168,12 @@ public class EmailerService
             {
                 LOG.error("An error occured trying to obtain the voicemail to attach. Won't attach e-mail");
             }
-            
+
+            org.hibernate.Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+
             String body = String.format(EmailerUtil.EMAIL_NOTIFICATION_BODY, voicemail.getLeftBy(),
-                                        sdf.format(voicemail.getDateCreated()), getNewVoicemailCount(subscriber),
+                                        sdf.format(voicemail.getDateCreated()),
+                                        Voicemail.countNewBySubscriber(session, subscriber),
                                         fileReadyForAttachment ? EmailerUtil.FILE_IS_ATTACHED
                                                               : EmailerUtil.FILE_NOT_ATTACHED);
             sendEmail(toAddresses, body, subject, attachment);
@@ -209,7 +211,7 @@ public class EmailerService
             sendEmail(toAddresses, body, "", "");
         }
     }
-    
+
     public void sendAlternateNumberSmsVoicemailNotification(Voicemail voicemail)
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -312,25 +314,6 @@ public class EmailerService
         }
         
         return null;
-    }
-    
-    private String getNewVoicemailCount(Subscriber subscriber)
-    {
-        org.hibernate.Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria criteria = session.createCriteria(Voicemail.class);
-
-        // only new records
-        criteria.add(Restrictions.eq("isNew", true));
-
-        // belonging to this subscriber
-        criteria.createAlias("subscriber", "subscriber_alias");
-        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
-
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.setFirstResult(0);
-        criteria.setProjection(Projections.rowCount());
-
-        return String.valueOf((Long)criteria.list().get(0));
     }
     
     private File getAttachment(String uri) throws Exception

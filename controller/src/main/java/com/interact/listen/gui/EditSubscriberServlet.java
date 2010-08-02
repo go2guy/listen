@@ -24,9 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
 import org.hibernate.classic.Session;
-import org.hibernate.criterion.Restrictions;
 
 public class EditSubscriberServlet extends HttpServlet
 {
@@ -55,8 +53,8 @@ public class EditSubscriberServlet extends HttpServlet
         }
         
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Subscriber subscriberToEdit = findSubscriberById(id, session);
-        
+        Subscriber subscriberToEdit = Subscriber.queryById(session, Long.parseLong(id));
+
         if(subscriberToEdit == null)
         {
             throw new BadRequestServletException("Subscriber not found");
@@ -172,14 +170,6 @@ public class EditSubscriberServlet extends HttpServlet
 
         persistenceService.update(subscriberToEdit, originalSubscriber);
     }
-    
-    private Subscriber findSubscriberById(String id, Session session)
-    {
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("id", Long.valueOf(id)));
-        criteria.setMaxResults(1);
-        return (Subscriber)criteria.uniqueResult();
-    }
 
     public static void updateSubscriberAccessNumbers(Subscriber subscriber, String accessNumberString, Session session,
                                                      PersistenceService persistenceService)
@@ -209,11 +199,7 @@ public class EditSubscriberServlet extends HttpServlet
 
         for(String number : newNumbers)
         {
-            Criteria criteria = session.createCriteria(AccessNumber.class);
-            criteria.add(Restrictions.eq("number", number));
-            criteria.setMaxResults(1);
-            AccessNumber result = (AccessNumber)criteria.uniqueResult();
-
+            AccessNumber result = AccessNumber.queryByNumber(session, number);
             if(result != null && !result.getSubscriber().equals(subscriber))
             {
                 throw new BadRequestServletException("Access number [" + number +

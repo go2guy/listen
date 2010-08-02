@@ -86,7 +86,7 @@ public class OutdialServlet extends HttpServlet
             throw new UnauthorizedServletException("Not allowed to outdial");
         }
 
-        String adminSessionId = StartRecordingServlet.getConferenceAdminSessionId(session, conference);
+        String adminSessionId = conference.firstAdminSessionId(session);
 
         // send request to all SPOT subscribers
         List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);

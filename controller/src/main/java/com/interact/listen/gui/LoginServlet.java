@@ -20,9 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 public class LoginServlet extends HttpServlet
 {
@@ -72,7 +70,7 @@ public class LoginServlet extends HttpServlet
 
         if(errors.size() == 0)
         {
-            Subscriber subscriber = findSubscriberByUsername(username, hibernateSession);
+            Subscriber subscriber = Subscriber.queryByUsername(hibernateSession, username);
             if(subscriber == null || !isValidPassword(subscriber, password))
             {
                 errors.put("username", "Sorry, those aren't valid credentials");
@@ -100,16 +98,6 @@ public class LoginServlet extends HttpServlet
         {
             ServletUtil.redirect("/index", response);
         }
-    }
-
-    private Subscriber findSubscriberByUsername(String username, Session session)
-    {
-        // FIXME this query is not eagerly fetching associations, (e.g. the accessNumbers collection)
-        // need to figure out why
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("username", username));
-        criteria.setMaxResults(1);
-        return (Subscriber)criteria.uniqueResult();
     }
 
     private boolean isValidPassword(Subscriber subscriber, String password)

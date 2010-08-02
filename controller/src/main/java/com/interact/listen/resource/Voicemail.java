@@ -191,6 +191,7 @@ public class Voicemail extends Audio implements Serializable
         criteria.add(Restrictions.eq("isNew", true));
         criteria.createAlias("subscriber", "subscriber_alias");
         criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setProjection(Projections.rowCount());
         return (Long)criteria.list().get(0);
     }

@@ -19,8 +19,6 @@ import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -70,9 +68,7 @@ public class AddSubscriberServletTest extends ListenTest
         servlet.service(request, response);
 
         // verify a subscriber was created for the username and is associated with the created subscriber
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("username", username));
-        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        Subscriber subscriber = Subscriber.queryByUsername(session, username);
         assertNotNull(subscriber);
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(true, subscriber.getIsEmailNotificationEnabled());
@@ -487,9 +483,7 @@ public class AddSubscriberServletTest extends ListenTest
 
         servlet.service(request, response);
 
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("username", username));
-        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        Subscriber subscriber = Subscriber.queryByUsername(session, username);
         assertNotNull(subscriber);
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
@@ -519,9 +513,7 @@ public class AddSubscriberServletTest extends ListenTest
 
         servlet.service(request, response);
 
-        Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("username", username));
-        Subscriber subscriber = (Subscriber)criteria.uniqueResult();
+        Subscriber subscriber = Subscriber.queryByUsername(session, username);
         assertNotNull(subscriber);
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
