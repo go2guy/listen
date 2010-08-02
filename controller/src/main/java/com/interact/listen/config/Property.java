@@ -7,17 +7,20 @@ import javax.persistence.*;
 public class Property
 {
     public static enum Key {
-        DNIS_MAPPING           ("com.interact.listen.dnisMapping",            "770:mailbox;990:conferencing;*:voicemail"),
-        MAIL_SMTPHOST          ("com.interact.listen.mail.smtpHost",          "localhost"),
-        MAIL_SMTPUSERNAME      ("com.interact.listen.mail.smtpUsername",      ""),
-        MAIL_SMTPPASSWORD      ("com.interact.listen.mail.smtpPassword",      ""),
-        MAIL_FROMADDRESS       ("com.interact.listen.mail.fromAddress",       "noreply@localhost"),
-        CONFERENCING_PINLENGTH ("com.interact.listen.conferencing.pinLength", "10"),
-        PAGER_NUMBER           ("com.interact.listen.pagerNumber",            "4024292889"),
-        ALTERNATE_NUMBER       ("com.interact.listen.alternateNumber",        ""),
-        PAGE_PREFIX            ("com.interact.listen.pagePrefix",             ""),
-        REALIZE_URL            ("com.interact.listen.realizeUrl",             "http://localhost:8080/realize"),
-        REALIZE_ALERT_NAME     ("com.interact.listen.realizeAlertName",       "Listen Pager Alert");
+        DNIS_MAPPING             ("com.interact.listen.dnisMapping",             "770:mailbox;990:conferencing;*:voicemail"),
+        MAIL_SMTPHOST            ("com.interact.listen.mail.smtpHost",           "localhost"),
+        MAIL_SMTPUSERNAME        ("com.interact.listen.mail.smtpUsername",       ""),
+        MAIL_SMTPPASSWORD        ("com.interact.listen.mail.smtpPassword",       ""),
+        MAIL_FROMADDRESS         ("com.interact.listen.mail.fromAddress",        "noreply@localhost"),
+        CONFERENCING_PINLENGTH   ("com.interact.listen.conferencing.pinLength",  "10"),
+        PAGER_NUMBER             ("com.interact.listen.pagerNumber",             "4024292889"),
+        ALTERNATE_NUMBER         ("com.interact.listen.alternateNumber",         ""),
+        PAGE_PREFIX              ("com.interact.listen.pagePrefix",              ""),
+        REALIZE_URL              ("com.interact.listen.realizeUrl",              "http://localhost:8080/realize"),
+        REALIZE_ALERT_NAME       ("com.interact.listen.realizeAlertName",        "Listen Pager Alert"),
+        ACTIVE_DIRECTORY_ENABLED ("com.interact.listen.activeDirectory.enabled", Boolean.FALSE.toString()),
+        ACTIVE_DIRECTORY_SERVER  ("com.interact.listen.activeDirectory.server",  ""),
+        ACTIVE_DIRECTORY_DOMAIN  ("com.interact.listen.activeDirectory.domain",  "");
 
         private final String key;
         private final String defaultValue;

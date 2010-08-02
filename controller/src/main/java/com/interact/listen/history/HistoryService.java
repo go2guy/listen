@@ -126,11 +126,11 @@ public class HistoryService
         write(history);
     }
 
-    public void writeLoggedIn(Subscriber subscriber)
+    public void writeLoggedIn(Subscriber subscriber, boolean isActiveDirectory)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Logged in");
-        history.setDescription("Logged into GUI");
+        history.setDescription("Logged into GUI (" + (isActiveDirectory ? "Active Directory" : "Local Account") + ")");
         history.setOnSubscriber(subscriber);
         history.setService(Service.APPLICATION.toString());
         write(history);

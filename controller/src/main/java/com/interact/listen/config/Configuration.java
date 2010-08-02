@@ -52,8 +52,7 @@ public final class Configuration
             transaction.commit();
             if(property == null)
             {
-                LOG.warn("Property [" + key + "] was null, using default value [" + key.getDefaultValue() + "]");
-                return key.getDefaultValue();
+                return getDefaultValue(key);
             }
             return property.getValue();
         }
@@ -65,11 +64,23 @@ public final class Configuration
             {
                 transaction.rollback();
             }
-            return key.getDefaultValue();
+            return getDefaultValue(key);
         }
         finally
         {
             session.clear();
         }
+    }
+
+    private static String getDefaultValue(Property.Key key)
+    {
+        String systemProperty = System.getProperty(key.getKey());
+        if(systemProperty != null)
+        {
+            LOG.warn("Using Property [" + key + "] system value [" + systemProperty + "]");
+            return systemProperty;
+        }
+        LOG.warn("Using Property [" + key + "] default value [" + key.getDefaultValue() + "]");
+        return key.getDefaultValue();
     }
 }

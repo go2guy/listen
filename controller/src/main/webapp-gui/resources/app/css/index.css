@@ -782,6 +782,11 @@ div.help {
     width: 40em;
 }
 
+input.disabled {
+    background-color: #EEEEEE;
+    color: #666666;
+}
+
 /* other */
 
 #templates {

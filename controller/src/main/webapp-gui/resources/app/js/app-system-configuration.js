@@ -28,6 +28,11 @@ $(document).ready(function() {
                     $('#conferencing-configuration-pinLength').val(data['com.interact.listen.conferencing.pinLength']);
                     $('#alerts-configuration-realizeUrl').val(data['com.interact.listen.realizeUrl']);
                     $('#alerts-configuration-realizeAlertName').val(data['com.interact.listen.realizeAlertName']);
+
+                    $('#sysconfig-authentication-activeDirectoryEnabled').attr('checked', data['com.interact.listen.activeDirectory.enabled'] == "true" ? true : false);
+                    $('#sysconfig-authentication-activeDirectoryServer').val(data['com.interact.listen.activeDirectory.server']);
+                    $('#sysconfig-authentication-activeDirectoryDomain').val(data['com.interact.listen.activeDirectory.domain']);
+                    toggleActiveDirectoryFields();
                 },
                 complete: function(xhr, textStatus) {
                     var elapsed = LISTEN.timestamp() - start;
@@ -214,4 +219,44 @@ $(document).ready(function() {
         });
         return false;
     });
+
+    $('#sysconfig-authentication-form').submit(function() {
+        $('#sysconfig-authentication-form .form-error-message').text('').hide();
+        var start = LISTEN.timestamp();
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/setProperties',
+            data: { 'com.interact.listen.activeDirectory.enabled': $('#sysconfig-authentication-activeDirectoryEnabled').attr('checked'),
+                    'com.interact.listen.activeDirectory.server': $('#sysconfig-authentication-activeDirectoryServer').val(),
+                    'com.interact.listen.activeDirectory.domain': $('#sysconfig-authentication-activeDirectoryDomain').val() },
+            success: function(data) {
+                application.load();
+                var elem = $('#sysconfig-authentication-form .form-success-message')
+                elem.text('Authentication settings updated').slideDown(100);
+                setTimeout(function() {
+                    elem.slideUp(100);
+                }, 2000);
+            },
+            error: function(xhr) {
+                $('#sysconfig-authentication-form .form-error-message').text(xhr.responseText).slideDown(100);
+            },
+            complete: function(xhr, textStatus) {
+                var elapsed = LISTEN.timestamp() - start;
+                $('#latency').text(elapsed);
+            }
+        });
+        return false;
+    });
+
+    function toggleActiveDirectoryFields() {
+        var elem = $('#sysconfig-authentication-activeDirectoryEnabled');
+        if(elem.is(':checked')) {
+            $('#sysconfig-authentication-activeDirectoryServer').removeAttr('readonly').removeClass('disabled');
+            $('#sysconfig-authentication-activeDirectoryDomain').removeAttr('readonly').removeClass('disabled');
+        } else {
+            $('#sysconfig-authentication-activeDirectoryServer').attr('readonly', true).addClass('disabled');
+            $('#sysconfig-authentication-activeDirectoryDomain').attr('readonly', true).addClass('disabled');
+        }
+    }
+    $('#sysconfig-authentication-activeDirectoryEnabled').click(toggleActiveDirectoryFields);
 });

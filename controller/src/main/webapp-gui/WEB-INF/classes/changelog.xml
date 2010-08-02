@@ -323,4 +323,14 @@
             <column name="IS_SUBSCRIBED_TO_PAGING" type="BIT"/>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="34">
+        <addColumn tableName="SUBSCRIBER">
+            <column name="IS_ACTIVE_DIRECTORY" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="development" id="35">
+        <dropNotNullConstraint tableName="SUBSCRIBER" columnName="PASSWORD" columnDataType="VARCHAR(255)"/>
+    </changeSet>
 </databaseChangeLog>

@@ -41,7 +41,7 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "USERNAME", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(name = "PASSWORD", nullable = true)
     private String password;
 
     @Column(name = "REAL_NAME")
@@ -74,6 +74,9 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "VOICEMAIL_PLAYBACK_ORDER", nullable = false)
     @Enumerated(EnumType.STRING)
     private PlaybackOrder voicemailPlaybackOrder = PlaybackOrder.OLDEST_TO_NEWEST;
+
+    @Column(name = "IS_ACTIVE_DIRECTORY", nullable = false)
+    private Boolean isActiveDirectory = Boolean.FALSE;
 
     public enum PlaybackOrder
     {
@@ -299,6 +302,16 @@ public class Subscriber extends Resource implements Serializable
         this.isSubscribedToPaging = isSubscribedToPaging;
     }
 
+    public Boolean getIsActiveDirectory()
+    {
+        return isActiveDirectory;
+    }
+
+    public void setIsActiveDirectory(Boolean isActiveDirectory)
+    {
+        this.isActiveDirectory = isActiveDirectory;
+    }
+
     @Override
     public boolean validate()
     {
@@ -476,7 +489,7 @@ public class Subscriber extends Resource implements Serializable
         criteria.setFetchMode("conference", FetchMode.SELECT);
         return (List<Subscriber>)criteria.list();
     }
-
+    
     public boolean canModifyParticipant(Participant participant)
     {
         if(participant == null)

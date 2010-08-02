@@ -275,6 +275,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                       <li>Conferencing</li><%
 } %>
                       <li>Alerts</li>
+                      <li>Authentication</li>
                     </ul>
                   </div>
                   <div class="tab-content-default">
@@ -352,6 +353,29 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                               <td><input type="text" id="alerts-configuration-realizeAlertName" name="alerts-configuration-realizeAlertName"/></td>
                             </tr>
                             <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save configuration">Save</button></td></tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
+                  </div>
+
+                  <div class="tab-content">
+                    <form id="sysconfig-authentication-form">
+                      <fieldset>
+                        <legend>Authentication</legend>
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <table>
+                          <tbody>
+                            <tr>
+                              <td colspan="2">
+                                <input type="checkbox" name="sysconfig-authentication-activeDirectoryEnabled" id="sysconfig-authentication-activeDirectoryEnabled"/>
+                                <label for="sysconfig-authentication-activeDirectoryEnabled">Use Active Directory?</label>
+                              </td>
+                            </tr>
+                            <tr><td><label for="sysconfig-authentication-activeDirectoryServer">Active Directory Server</label></td><td><input type="text" id="sysconfig-authentication-activeDirectoryServer" name="sysconfig-authentication-activeDirectoryServer"/></td></tr>
+                            <tr><td><label for="sysconfig-authentication-activeDirectoryDomain">Active Directory Domain</label></td><td><input type="text" id="sysconfig-authentication-activeDirectoryDomain" name="sysconfig-authentication-activeDirectoryDomain"/></td></tr>
+                            <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save authentication settings">Save</button></td></tr>
                           </tbody>
                         </table>
                       </fieldset>

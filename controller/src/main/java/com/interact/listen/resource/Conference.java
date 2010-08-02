@@ -2,6 +2,7 @@ package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
 import com.interact.listen.history.HistoryService;
+import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 import com.interact.listen.stats.StatSenderFactory;
@@ -454,5 +455,28 @@ public class Conference extends Resource implements Serializable
             throw new IllegalStateException("Could not find Admin participant for Conference");
         }
         return admins.get(0).getSessionID();
+    }
+
+    public static Conference createNew(PersistenceService persistenceService, Subscriber forSubscriber)
+    {
+        Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
+        Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
+        Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
+
+        persistenceService.save(activePin);
+        persistenceService.save(adminPin);
+        persistenceService.save(passivePin);
+
+        Conference conference = new Conference();
+        conference.setDescription(forSubscriber.conferenceDescription());
+        conference.setIsStarted(Boolean.FALSE);
+        conference.setIsRecording(Boolean.FALSE);
+        conference.addToPins(activePin);
+        conference.addToPins(adminPin);
+        conference.addToPins(passivePin);
+        persistenceService.save(conference);
+
+        forSubscriber.addToConferences(conference);
+        return conference;
     }
 }

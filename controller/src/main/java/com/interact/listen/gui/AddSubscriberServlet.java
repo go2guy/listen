@@ -9,8 +9,6 @@ import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.Pin;
-import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Subscriber.PlaybackOrder;
 import com.interact.listen.security.SecurityUtil;
@@ -147,23 +145,6 @@ public class AddSubscriberServlet extends HttpServlet
             EditSubscriberServlet.updateSubscriberAccessNumbers(subscriber, accessNumbers, session, persistenceService);
         }
 
-        Pin activePin = Pin.newRandomInstance(PinType.ACTIVE);
-        Pin adminPin = Pin.newRandomInstance(PinType.ADMIN);
-        Pin passivePin = Pin.newRandomInstance(PinType.PASSIVE);
-
-        persistenceService.save(activePin);
-        persistenceService.save(adminPin);
-        persistenceService.save(passivePin);
-
-        Conference conference = new Conference();
-        conference.setDescription(subscriber.conferenceDescription());
-        conference.setIsStarted(Boolean.FALSE);
-        conference.setIsRecording(Boolean.FALSE);
-        conference.addToPins(activePin);
-        conference.addToPins(adminPin);
-        conference.addToPins(passivePin);
-        persistenceService.save(conference);
-
-        subscriber.addToConferences(conference);
+        Conference.createNew(persistenceService, subscriber);
     }
 }
