@@ -4,11 +4,11 @@ import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
-import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Subscriber.PlaybackOrder;
@@ -17,7 +17,7 @@ import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -104,7 +104,15 @@ public class EditSubscriberServlet extends HttpServlet
         String accessNumbers = request.getParameter("accessNumbers");
         if(currentSubscriber.getIsAdministrator() && accessNumbers != null)
         {
-            updateSubscriberAccessNumbers(subscriberToEdit, accessNumbers, session, persistenceService);
+            try
+            {
+                subscriberToEdit.updateAccessNumbers(session, persistenceService, accessNumbers);
+            }
+            catch(NumberAlreadyInUseException e)
+            {
+                throw new BadRequestServletException("Access number [" + e.getNumber() +
+                                                     "] is already in use by another account");
+            }
         }
 
         if(License.isLicensed(ListenFeature.VOICEMAIL))
@@ -172,51 +180,5 @@ public class EditSubscriberServlet extends HttpServlet
         }
 
         persistenceService.update(subscriberToEdit, originalSubscriber);
-    }
-
-    public static void updateSubscriberAccessNumbers(Subscriber subscriber, String accessNumberString, Session session,
-                                                     PersistenceService persistenceService)
-        throws BadRequestServletException
-    {
-        Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();
-        for(AccessNumber accessNumber : AccessNumber.queryBySubscriber(session, subscriber))
-        {
-            existingNumbers.put(accessNumber.getNumber(), accessNumber);
-        }
-
-        List<String> newNumbers = new ArrayList<String>();
-
-        String[] split = accessNumberString.split(",");
-        for(String an : split)
-        {
-            newNumbers.add(an.trim());
-        }
-
-        for(Map.Entry<String, AccessNumber> entry : existingNumbers.entrySet())
-        {
-            if(!newNumbers.contains(entry.getKey()))
-            {
-                session.delete(entry.getValue());
-            }
-        }
-
-        for(String number : newNumbers)
-        {
-            AccessNumber result = AccessNumber.queryByNumber(session, number);
-            if(result != null && !result.getSubscriber().equals(subscriber))
-            {
-                throw new BadRequestServletException("Access number [" + number +
-                                                     "] is already in use by another account");
-            }
-            else if(result == null)
-            {
-                AccessNumber newNumber = new AccessNumber();
-                newNumber.setNumber(number);
-                newNumber.setSubscriber(subscriber);
-
-                subscriber.addToAccessNumbers(newNumber);
-                persistenceService.save(newNumber);
-            }
-        }
     }
 }

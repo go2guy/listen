@@ -1,6 +1,7 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.util.ComparisonUtil;
 
@@ -546,5 +547,49 @@ public class Subscriber extends Resource implements Serializable
     public String friendlyName()
     {
         return realName != null && !realName.trim().equals("") ? realName : username;
+    }
+
+    public void updateAccessNumbers(Session session, PersistenceService persistenceService, String accessNumberString)
+        throws NumberAlreadyInUseException
+    {
+        Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();
+        for(AccessNumber accessNumber : AccessNumber.queryBySubscriber(session, this))
+        {
+            existingNumbers.put(accessNumber.getNumber(), accessNumber);
+        }
+
+        List<String> newNumbers = new ArrayList<String>();
+
+        String[] split = accessNumberString.split(",");
+        for(String an : split)
+        {
+            newNumbers.add(an.trim());
+        }
+
+        for(Map.Entry<String, AccessNumber> entry : existingNumbers.entrySet())
+        {
+            if(!newNumbers.contains(entry.getKey()))
+            {
+                session.delete(entry.getValue());
+            }
+        }
+
+        for(String number : newNumbers)
+        {
+            AccessNumber result = AccessNumber.queryByNumber(session, number);
+            if(result != null && !result.getSubscriber().equals(this))
+            {
+                throw new NumberAlreadyInUseException(number);
+            }
+            else if(result == null)
+            {
+                AccessNumber newNumber = new AccessNumber();
+                newNumber.setNumber(number);
+                newNumber.setSubscriber(this);
+
+                addToAccessNumbers(newNumber);
+                persistenceService.save(newNumber);
+            }
+        }
     }
 }

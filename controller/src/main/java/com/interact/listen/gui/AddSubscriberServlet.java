@@ -4,6 +4,7 @@ import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
@@ -142,7 +143,15 @@ public class AddSubscriberServlet extends HttpServlet
         String accessNumbers = request.getParameter("accessNumbers");
         if(accessNumbers != null && accessNumbers.length() > 0)
         {
-            EditSubscriberServlet.updateSubscriberAccessNumbers(subscriber, accessNumbers, session, persistenceService);
+            try
+            {
+                subscriber.updateAccessNumbers(session, persistenceService, accessNumbers);
+            }
+            catch(NumberAlreadyInUseException e)
+            {
+                throw new BadRequestServletException("Access number [" + e.getNumber() +
+                                                     "] is already in use by another account");
+            }
         }
 
         Conference.createNew(persistenceService, subscriber);

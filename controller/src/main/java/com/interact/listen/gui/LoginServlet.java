@@ -5,7 +5,7 @@ import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
-import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.Conference;
@@ -125,14 +125,13 @@ public class LoginServlet extends HttpServlet
                             {
                                 try
                                 {
-                                    EditSubscriberServlet.updateSubscriberAccessNumbers(subscriber,
-                                                                                        result.getTelephoneNumber(),
-                                                                                        hibernateSession, ps);
+
+                                    subscriber.updateAccessNumbers(hibernateSession, ps, result.getTelephoneNumber());
                                 }
-                                catch(BadRequestServletException e)
+                                catch(NumberAlreadyInUseException e)
                                 {
                                     LOG.warn("When adding new AD Subscriber [" + username + "], accessNumber [" +
-                                             result.getTelephoneNumber() + "] was already in use by another Subscriber");
+                                             e.getNumber() + "] was already in use by another Subscriber");
                                 }
                             }
 
