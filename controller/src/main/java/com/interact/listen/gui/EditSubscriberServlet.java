@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 public class EditSubscriberServlet extends HttpServlet
 {
@@ -176,7 +176,7 @@ public class EditSubscriberServlet extends HttpServlet
         throws BadRequestServletException
     {
         Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();
-        for(AccessNumber accessNumber : GetSubscriberServlet.getAccessNumbers(subscriber, session))
+        for(AccessNumber accessNumber : AccessNumber.queryBySubscriber(session, subscriber))
         {
             existingNumbers.put(accessNumber.getNumber(), accessNumber);
         }
