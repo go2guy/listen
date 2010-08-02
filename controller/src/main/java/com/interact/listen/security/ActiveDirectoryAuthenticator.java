@@ -1,8 +1,8 @@
 package com.interact.listen.security;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -26,8 +26,10 @@ public class ActiveDirectoryAuthenticator
         this.domain = domain;
     }
 
-    public boolean authenticate(String username, String password) throws AuthenticationException
+    public AuthenticationResult authenticate(String username, String password) throws AuthenticationException
     {
+        AuthenticationResult result = new AuthenticationResult();
+
         String principal = username + "@" + domain;
         String url = "ldap://" + server + "." + domain + "/";
 
@@ -44,13 +46,19 @@ public class ActiveDirectoryAuthenticator
         try
         {
             LdapContext context = new InitialLdapContext(props, null);
-            NamingEnumeration<SearchResult> results = queryUserRecord(principal, context);
-            List<String> groups = extractUserGroups(results, context);
-            for(String group : groups)
+            SearchResult searchResult = queryUserRecord(principal, context);
+            result.setGroups(extractUserGroups(searchResult, context));
+            result.setSuccessful(true);
+
+            try
             {
-                LOG.debug("User is a member of [" + group + "]");
+                result.setDisplayName(extractAttribute(searchResult, "displayName"));
+                result.setTelephoneNumber(extractAttribute(searchResult, "telephoneNumber"));
             }
-            return true;
+            catch(NamingException e)
+            {
+                LOG.warn("Error extracting attribute data for user [" + username + "]", e);
+            }
         }
         catch(javax.naming.AuthenticationException e)
         {
@@ -62,7 +70,8 @@ public class ActiveDirectoryAuthenticator
                 switch(ldapErrorCode)
                 {
                     case 49: // invalid credentials
-                        return false;
+                        result.setSuccessful(false);
+                        break;
                     default:
                         throw new AuthenticationException(e);
                 }
@@ -78,6 +87,8 @@ public class ActiveDirectoryAuthenticator
             LOG.error(e);
             throw new AuthenticationException(e);
         }
+        LOG.debug("AuthenticationResult: " + result);
+        return result;
     }
 
     /**
@@ -105,8 +116,7 @@ public class ActiveDirectoryAuthenticator
         return dc.toString();
     }
 
-    private NamingEnumeration<SearchResult> queryUserRecord(String principal, DirContext context)
-        throws AuthenticationException
+    private SearchResult queryUserRecord(String principal, DirContext context) throws AuthenticationException
     {
         try
         {
@@ -118,7 +128,7 @@ public class ActiveDirectoryAuthenticator
             {
                 throw new AuthenticationException("Cannot locate user information for [" + principal + "]");
             }
-            return results;
+            return results.next();
         }
         catch(NamingException e)
         {
@@ -126,13 +136,11 @@ public class ActiveDirectoryAuthenticator
         }
     }
 
-    private List<String> extractUserGroups(NamingEnumeration<SearchResult> results, DirContext context)
-        throws AuthenticationException
+    private Set<String> extractUserGroups(SearchResult result, DirContext context) throws AuthenticationException
     {
         try
         {
-            SearchResult result = results.next();
-            List<String> groups = new ArrayList<String>();
+            Set<String> groups = new HashSet<String>();
             Attribute memberOf = result.getAttributes().get("memberOf");
             if(memberOf != null) // null if this user belongs to no group at all
             {
@@ -151,5 +159,15 @@ public class ActiveDirectoryAuthenticator
         {
             throw new AuthenticationException(e);
         }
+    }
+
+    private String extractAttribute(SearchResult result, String attributeName) throws NamingException
+    {
+        Attribute attribute = result.getAttributes().get(attributeName);
+        if(attribute == null)
+        {
+            return null;
+        }
+        return attribute.get().toString();
     }
 }

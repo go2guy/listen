@@ -34,6 +34,16 @@ $(document).ready(function() {
                         success: function(data, textStatus, xhr) {
                             $('#profile-form-id').val(data.id);
                             $('#profile-form-username').val(data.username);
+
+                            $('#profile-form-accountType').text(data.isActiveDirectory ? 'Active Directory' : 'Local');
+                            if(data.isActiveDirectory) {
+                                $('#profile-form-password').attr('readonly', true).addClass('disabled');
+                                $('#profile-form-confirmPassword').attr('readonly', true).addClass('disabled');
+                            } else {
+                                $('#profile-form-password').removeAttr('readonly').removeClass('disabled');
+                                $('#profile-form-confirmPassword').removeAttr('readonly').removeClass('disabled');
+                            }
+
                             $('#profile-form-realName').val(data.realName);
                             var numbers = '';
                             for(var i = 0; i < data.accessNumbers.length; i++) {

@@ -446,6 +446,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                           <table>
                             <tbody>
                               <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
+                              <tr><td>Account Type</td><td id="subscriber-form-accountType"></td></tr>
                               <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
                               <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
                               <tr><td><label for="subscriber-form-realName">Real Name</label></td><td><input type="text" id="subscriber-form-realName" name="subscriber-form-realName"/></td></tr><%
@@ -544,6 +545,7 @@ if(subscriber != null) { %>
                         <table>
                           <tbody>
                             <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username"/></td></tr>
+                            <tr><td>Account Type</td><td id="profile-form-accountType"></td></tr>
                             <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
                             <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
                             <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        

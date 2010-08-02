@@ -73,27 +73,30 @@ public class EditSubscriberServlet extends HttpServlet
             throw new BadRequestServletException("Please provide a Username");
         }
 
-        String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirmPassword");
-        if((password != null && !password.trim().equals("")) ||
-           (confirmPassword != null && !confirmPassword.trim().equals("")))
+        if(!subscriberToEdit.getIsActiveDirectory())
         {
-            if(password == null || password.trim().equals(""))
+            String password = request.getParameter("password");
+            String confirmPassword = request.getParameter("confirmPassword");
+            if((password != null && !password.trim().equals("")) ||
+               (confirmPassword != null && !confirmPassword.trim().equals("")))
             {
-                throw new BadRequestServletException("Please provide a Password");
+                if(password == null || password.trim().equals(""))
+                {
+                    throw new BadRequestServletException("Please provide a Password");
+                }
+    
+                if(confirmPassword == null || confirmPassword.trim().equals(""))
+                {
+                    throw new BadRequestServletException("Please provide a Confirm Password");
+                }
+    
+                if(!password.equals(confirmPassword))
+                {
+                    throw new BadRequestServletException("Password and Confirm Password do not match");
+                }
+    
+                subscriberToEdit.setPassword(SecurityUtil.hashPassword(password));
             }
-
-            if(confirmPassword == null || confirmPassword.trim().equals(""))
-            {
-                throw new BadRequestServletException("Please provide a Confirm Password");
-            }
-
-            if(!password.equals(confirmPassword))
-            {
-                throw new BadRequestServletException("Password and Confirm Password do not match");
-            }
-
-            subscriberToEdit.setPassword(SecurityUtil.hashPassword(password));
         }
 
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);

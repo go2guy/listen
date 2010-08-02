@@ -5,13 +5,12 @@ import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
+import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.security.ActiveDirectoryAuthenticator;
-import com.interact.listen.security.AuthenticationException;
-import com.interact.listen.security.SecurityUtil;
+import com.interact.listen.security.*;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -101,7 +100,8 @@ public class LoginServlet extends HttpServlet
                 ActiveDirectoryAuthenticator auth = new ActiveDirectoryAuthenticator(server, domain);
                 try
                 {
-                    if(!auth.authenticate(username, password))
+                    AuthenticationResult result = auth.authenticate(username, password);
+                    if(!result.isSuccessful())
                     {
                         errors.put("username", "Sorry, those aren't valid credentials");
                         LOG.warn("AD Auth: Invalid credentials for [" + username + "], (invalid AD password)");
@@ -116,10 +116,25 @@ public class LoginServlet extends HttpServlet
                             subscriber.setUsername(username);
                             subscriber.setIsActiveDirectory(true);
                             subscriber.setLastLogin(new Date());
-                            // TODO can we get their real name, etc. from AD?
+                            subscriber.setRealName(result.getDisplayName());
 
                             PersistenceService ps = new PersistenceService(hibernateSession, subscriber, Channel.GUI);
                             ps.save(subscriber);
+
+                            if(result.getTelephoneNumber() != null)
+                            {
+                                try
+                                {
+                                    EditSubscriberServlet.updateSubscriberAccessNumbers(subscriber,
+                                                                                        result.getTelephoneNumber(),
+                                                                                        hibernateSession, ps);
+                                }
+                                catch(BadRequestServletException e)
+                                {
+                                    LOG.warn("When adding new AD Subscriber [" + username + "], accessNumber [" +
+                                             result.getTelephoneNumber() + "] was already in use by another Subscriber");
+                                }
+                            }
 
                             Conference.createNew(ps, subscriber);
                         }

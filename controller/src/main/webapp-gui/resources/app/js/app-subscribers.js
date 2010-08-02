@@ -80,6 +80,16 @@ $(document).ready(function() {
                     success: function(data, textStatus, xhr) {
                         $('#subscriber-form-id').val(data.id);
                         $('#subscriber-form-username').val(data.username);
+
+                        $('#subscriber-form-accountType').text(data.isActiveDirectory ? 'Active Directory' : 'Local');
+                        if(data.isActiveDirectory) {
+                            $('#subscriber-form-password').attr('readonly', true).addClass('disabled');
+                            $('#subscriber-form-confirmPassword').attr('readonly', true).addClass('disabled');
+                        } else {
+                            $('#subscriber-form-password').removeAttr('readonly').removeClass('disabled');
+                            $('#subscriber-form-confirmPassword').removeAttr('readonly').removeClass('disabled');
+                        }
+
                         $('#subscriber-form-realName').val(data.realName);
 
                         var numbers = '';
