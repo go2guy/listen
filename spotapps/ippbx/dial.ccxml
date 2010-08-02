@@ -127,7 +127,7 @@
             <assign name="state" expr="'dialing'"/>
         </transition>
 
-        <transition state="endRing" event="dialog.started" name="evt">
+        <transition state="dialing endRing" event="dialog.started" name="evt">
             <!-- This is a unique dialog started transition that will only get called when
             an out dial attempt fails almost immediately. We need to terminate the ring tone
             on the caller side -->
@@ -389,7 +389,7 @@
             <!-- Caller is holding for operator, Set variables and attempt to call operator's extension -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <assign name="DNIS" expr="officeOptr"/>
+            <assign name="tmpDNIS" expr="officeOptr"/>
             <send data="'dialog.user.call'" target="session.id"/>
         </transition>
 
