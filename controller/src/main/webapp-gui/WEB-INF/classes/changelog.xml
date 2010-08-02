@@ -211,7 +211,6 @@
             </column>
             <column name="VERSION" type="INT"/>
             <column name="VOICEMAIL_PIN" type="BIGINT"/>
-            <column name="IS_SUBSCRIBED_TO_PAGING" type="BIT"/>
         </createTable>
         <modifySql dbms="mysql">
             <append value=" engine innodb"/>
@@ -317,6 +316,11 @@
             <column name="VOICEMAIL_PLAYBACK_ORDER" type="VARCHAR(255)" defaultValue="OLDEST_TO_NEWEST">
                 <constraints nullable="false"/>
             </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="development" id="33">
+        <addColumn tableName="SUBSCRIBER">
+            <column name="IS_SUBSCRIBED_TO_PAGING" type="BIT"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
