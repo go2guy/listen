@@ -447,7 +447,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                           <table>
                             <tbody>
                               <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
-                              <tr><td>Account Type</td><td id="subscriber-form-accountType"></td></tr>
+                              <tr><td>Account Type</td><td id="subscriber-form-accountType">Local</td></tr>
                               <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
                               <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
                               <tr><td><label for="subscriber-form-realName">Real Name</label></td><td><input type="text" id="subscriber-form-realName" name="subscriber-form-realName"/></td></tr><%

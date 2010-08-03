@@ -139,6 +139,11 @@ $(document).ready(function() {
                 $('#subscriber-form-cancel-button').hide();
                 $('#subscriber-form-edit-button').hide();
                 $('#subscriber-form-add-button').show();
+                $('#subscriber-form-accountType').val('Local');
+                $('#subscriber-form-username').removeAttr('readonly').removeClass('disabled');
+                $('#subscriber-form-password').removeAttr('readonly').removeClass('disabled');
+                $('#subscriber-form-confirmPassword').removeAttr('readonly').removeClass('disabled');
+                $('#subscriber-form-accountType').text('Local');
             },
 
             addSubscriber: function() {
