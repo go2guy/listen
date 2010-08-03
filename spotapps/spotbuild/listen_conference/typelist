@@ -31,7 +31,6 @@
 117-72 - assign-variable
 117-71 - assign-variable
 115-48 - decision
-79-15 - audio-input
 115-46 - run-javascript
 90-32 - conference-user-status
 110-6 - audio-input
@@ -104,14 +103,12 @@
 115-29 - decision
 113-38 - decision
 79-30 - assign-variable
-79-28 - math
 90-68 - assign-variable
 90-69 - assign-variable
 90-64 - assign-variable
 121-7 - run-javascript
 90-67 - assign-variable
 94-39 - data-query
-79-23 - run-javascript
 94-35 - run-javascript
 115-15 - run-javascript
 113-48 - run-javascript

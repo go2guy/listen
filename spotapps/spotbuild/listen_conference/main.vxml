@@ -57,7 +57,6 @@
 	<var name="SB_UV_isAdminMuted"/>
 	<var name="SB_UV_isPassive"/>
 	<var name="SB_UV_isActive"/>
-	<var name="SB_UV_pinLength"/>
 	<var name="SB_UV_index"/>
 	<var name="SB_UV_memberCnt"/>
 	<var name="SB_UV_prevPath"/>
@@ -217,9 +216,6 @@
 			</if>
 			<if cond="SB_UV_isActive != undefined">
 				<assign name="isActive" expr="SB_UV_isActive" />
-			</if>
-			<if cond="SB_UV_pinLength != undefined">
-				<assign name="pinLength" expr="SB_UV_pinLength" />
 			</if>
 			<if cond="SB_UV_index != undefined">
 				<assign name="index" expr="SB_UV_index" />

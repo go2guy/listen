@@ -64,21 +64,6 @@
                 </property>
             </question>
 
-            <question level="not_in_backup" severity="take_default">
-                <text>Enter the pin length</text>
-                <default>10</default>
-                <validateRegex preset="DIGITS"/>
-
-                <property format="ccvxml" action="update" quotes="yes">
-                    <name>pinLength</name>
-                    <group>Pin</group>
-                    <description>Length</description>
-                    <tag>var</tag>
-                    <attribute>expr</attribute>
-                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
-                </property>
-            </question>
-
             <question level="not_in_backup" severity="ask">
                 <text>Enter the maximum allowed errors</text>
                 <default>3</default>
