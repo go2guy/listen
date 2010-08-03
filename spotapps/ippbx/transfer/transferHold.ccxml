@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/26/2010
+    <!-- Last Modified 08/03/2010
        *   @Name	transferHold.ccxml
        *   @Desc	This script handles the logic for transferring a party
                     that's currently on hold to a new call -->
@@ -51,7 +51,9 @@
             <if cond="evt.values.result != 'Faliure'">
                 <var name="holdSID" expr="evt.values.result"/>
                 <var name="moveRequestSID" expr="session.id"/>  <!-- Save off current session id for future use -->
-                <send data="'dialog.user.moveRequest'" target="holdSID" namelist="moveRequestSID"/> <!-- This send event should end up in hold.ccxml -->
+                <!-- This send event below should end up in either dial.ccxml or hold.ccxml; 
+                depending on when the "pick up" is attempted -->
+                <send data="'dialog.user.moveRequest'" target="holdSID" namelist="moveRequestSID"/>
             <else/>
                 <!-- TODO: Maybe play a prompt or some tones to indicate failure -->
                 <!-- Looks like we had some issues. End this call. -->

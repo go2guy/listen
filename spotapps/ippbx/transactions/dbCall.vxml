@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/02/2010
+    <!-- Last Modified 08/03/2010
        *   @Name	dbCall.vxml
        *   @Desc	This script performs two functions. It is used to insert/delete an
                     active client into/from the database. It also retreives the list of
@@ -11,7 +11,6 @@
     <var name="ext"/>           <!-- Extension. Extension whose status will be toggled. Could be a pipe ('|') delimited list -->
     <var name="flag"/>          <!-- Flag. Controls which php script will be called -->
     <var name="activeClient"/>  <!-- Active Client. Identifies active or inactive status -->
-    <var name="connectionID"/>  <!-- Client's Connection ID -->
     <var name="record"/>        <!-- Record to be inserted into db table. Format is 'connectionID|client,connectionID|client' -->
     <var name="sessionID"/>
     <var name="EXT_LENGTH"/>

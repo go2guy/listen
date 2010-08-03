@@ -21,7 +21,7 @@ if(!(mysql_select_db("ip_pbx", $t_connect)))
 
 # Set sql statement
 if ($t_flag == 'insert')
-    $t_update = "INSERT INTO active_clients (connection_id, client) VALUES (\"$t_id\", \"$t_ext\")";
+    $t_update = "INSERT INTO active_clients (connection_id, client, session_id) VALUES (\"$t_id\", \"$t_ext\", \"$t_sid\")";
 else if ($t_flag == 'delete')
     $t_update = "DELETE FROM active_clients WHERE connection_id=\"$t_id\" AND client=\"$t_ext\" LIMIT 1";
 else if ($t_flag == 'update')

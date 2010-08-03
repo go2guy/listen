@@ -115,14 +115,37 @@
                     <assign name="OBCALL.noproxy" expr="'true'"/>
                     <assign name="CALL_ANI" expr="ANI"/>
                     <if cond="inString('*',tmpDNIS,'')">  <!-- Check if destination is an IP address -->
-                        <assign name="tmpDNIS" expr="iiReplace(tmpDNIS,'*','.')"/>    <!-- Replace '*' with '.' -->
+                        <assign name="tmpDNIS" expr="iiReplace(tmpDNIS,'*','.')"/>  <!-- If so, replace '*' with '.' -->
                     </if>
                     <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS"/>
                 </if>
             </if>
-            <assign name="state" expr="'dialing'"/>
+            <assign name="state" expr="'storeInfo'"/>
             <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
-            <send data="'dialog.user.ringTone'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
+            <send data="'dialog.user.storeInfo'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
+        </transition>
+
+		<transition state="storeInfo" event="dialog.user.storeInfo" name="evt">
+            <!-- In here, we check if the dialed destination is within ippbx. If it is, there's a possibility of the call
+            being "pickup" from another extension. Therefore, we need to update the db with information about this call -->
+            <log>INFO: Entered [dialog.user.storeInfo] with state [<value expr="state"/>]</log>
+            <if cond="tmpDNIS.length &lt; EXT_LENGTH">
+                <var name="flag" expr="'insert'"/>
+                <var name="sessionID" expr="session.id"/>
+                <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
+   	   		    <dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record sessionID EXT_LENGTH"/>
+            <else/>
+                <assign name="state" expr="'dialing'"/> <!-- Not an ippbx call. Play ring tone -->
+                <send data="'dialog.user.ringTone'" target="session.id"/>
+            </if>
+		</transition>
+
+        <transition state="storeInfo" event="dialog.exit" name="evt">
+            <!-- Back from updating the db. Let's play the ring tone -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <assign name="state" expr="'dialing'"/>
+            <send data="'dialog.user.ringTone'" target="session.id"/>
         </transition>
 
 		<transition state="dialing" event="dialog.user.ringTone" name="evt">
@@ -160,21 +183,22 @@
         </transition>
 
 		<transition state="callConnected" event="conference.joined" name="evt">
-            <!-- Our join attempt was successful. -->
+            <!-- Our join attempt was successful -->
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <log>INFO: Call in progress...</log>
             <log target="status">Call in progress</log>
-            <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to insert a record into the db -->
-    		    <assign name="state" expr="'insertClient'"/>
-                <assign name="clientFlag" expr="'insert'"/>
+            <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to update a record into the db -->
+    		    <assign name="state" expr="'updateClient'"/>
+                <var name="flag" expr="'update'"/>
+                <var name="sessionID" expr="''"/>
                 <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
-                <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+   	   		    <dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record sessionID EXT_LENGTH"/>
             <else/>
                 <!-- Nothing more to do at this point. Wait here for the next event -->
             </if>
 		</transition>
 
-        <transition state="insertClient" event="dialog.exit" name="evt">
+        <transition state="updateClient" event="dialog.exit" name="evt">
             <!-- We're back from inserting the callee's record into the db -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
 		    <assign name="state" expr="'callConnected'"/>
@@ -203,13 +227,19 @@
             </if>
 		</transition>
 
-        <transition state="callConnected" event="dialog.user.moveRequest" name="evt">
-            <!-- In here, we're in the process of doing an attended transfer. First, we'll unjoin the 
-            current call -->
+        <transition state="dialing callConnected" event="dialog.user.moveRequest" name="evt">
+            <!-- In here, we're in the process of doing an attended transfer or a "ringing pick up" -->
             <log>INFO: Entered [dialog.user.moveRequest] with state [<value expr="state"/>]</log>
             <assign name="moveRequestSID" expr="evt.moveRequestSID"/>
-            <assign name="state" expr="'xferUnjoin'"/>
-            <unjoin id1="ibconnid" id2="obconnid"/>
+            <if cond="state == 'callConnected'"> <!-- This is for attenden transfer. First, we'll unjoin the current call -->
+                <assign name="state" expr="'xferUnjoin'"/>
+                <unjoin id1="ibconnid" id2="obconnid"/>
+            <elseif cond="state == 'dialing'"/> <!-- This is for ringing pick up. Here, we disconnect our dial attempt and end the current ring tone -->
+                <assign name="state" expr="'ringPickUpDisc'"/>
+                <disconnect connectionid="obconnid"/>
+            <else/> <!-- Something is wrong. End the call -->
+                <send data="'dialog.user.deleteRecord'" target="session.id"/>
+            </if>
 		</transition>
 
         <transition state="xferUnjoin" event="conference.unjoined" name="evt">
@@ -229,36 +259,66 @@
             <send data="'dialog.user.updateClientRecord'" target="session.id"/>
         </transition>
 
-        <transition state="attdXferMoveDisc" event="dialog.exit" name="evt">
-            <!-- Caller's record has been removed. Before continuing with the transfer,
-            let's join callee to a voice channel -->
+        <transition state="ringPickUpDisc" event="connection.failed" name="evt" cond="evt.connectionid == obconnid">
+            <!-- Got the response to our disconnect. Now, terminate the ring tone on the caller's side -->
+            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
+  	    	<dialogterminate dialogid="dialogID" immediate="true"/>
+        </transition>
+
+        <transition state="ringPickUpDisc" event="dialog.exit" name="evt">
+            <!-- Back from ending the ring tone. Remove the callee's record in the db -->
+		    <assign name="state" expr="'ringRecDelete'"/>
+            <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
+            <assign name="clientFlag" expr="'delete'"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+        </transition>
+
+        <transition state="ringRecDelete attdXferMoveDisc" event="dialog.exit" name="evt">
+            <!-- Record has been removed. Before continuing with the transfer/pickup,
+            let's join remaining party to a voice channel -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-		    <assign name="state" expr="'attdXferVChnnel'"/>
-            <join id1="obconnid" id2="'VXML_CHANNEL'"/>
+            <if cond="state == 'attdXferMoveDisc'">
+		        <assign name="state" expr="'attdXferVChnnel'"/>
+                <join id1="obconnid" id2="'VXML_CHANNEL'"/>
+            <else/>
+		        <assign name="state" expr="'pickUpVChnnel'"/>
+                <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
+            </if>
         </transition>
 
-        <transition state="attdXferVChnnel" event="conference.joined" name="evt">
-            <!-- We're joined to a voice channel. Let's continue with the transfer. Need to move the
-            callee to the other transfer party who is on hold -->
+        <transition state="pickUpVChnnel attdXferVChnnel" event="conference.joined" name="evt">
+            <!-- We're joined to a voice channel. Let's continue with the transfer/pickup. Need to move this
+            call to the appropriate location -->
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
-		    <assign name="state" expr="'attdXferMoveAttempt'"/>
-            <move source="obconnid" sessionid="moveRequestSID"/>
+            <if cond="state == 'attdXferVChnnel'">
+		        <assign name="state" expr="'attdXferMoveAttempt'"/>
+                <move source="obconnid" sessionid="moveRequestSID"/>
+            <else/>
+		        <assign name="state" expr="'pickUpMoveAttempt'"/>
+                <move source="ibconnid" sessionid="moveRequestSID"/>
+            </if>
         </transition>
 
-        <transition state="attdXferMoveAttempt" event="move.successful" name="evt">
-            <!-- Looks like our move worked. Let's send control to the attendedTransfer.ccxml script and end this line-->
+        <transition state="pickUpMoveAttempt attdXferMoveAttempt" event="move.successful" name="evt">
+            <!-- Looks like our move worked. Let's send control to the attendedTransfer.ccxml or transferHold.ccxml
+            script and end this call -->
             <log>INFO: Entered [move.successful] with state [<value expr="state"/>]</log>
-            <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="obconnid"/>
+            <if cond="state == 'attdXferMoveAttempt'">
+                <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="obconnid"/>
+            <else/>
+                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
+                <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="record"/>
+            </if>
             <assign name="state" expr="'endCall'"/>
             <send data="'dialog.user.endCall'" target="session.id"/>
         </transition>
 
-        <transition state="attdXferMoveAttempt" event="error.move" name="evt">
+        <transition state="pickUpMoveAttempt attdXferMoveAttempt" event="error.move" name="evt">
             <!-- Looks like our move failed. We'll need to end this session and the session controlling the 
-            attendedTransfer.ccxml script -->
+            attendedTransfer.ccxml or transferHold.ccxlm script -->
             <log>INFO: Entered [error.move] with state [<value expr="state"/>]</log>
-            <send data="'dialog.user.moveFailed'" target="moveRequestSID" namelist="obconnid"/>
+            <send data="'dialog.user.moveFailed'" target="moveRequestSID"/>
             <assign name="record" expr="ibconnid + '|' + tmpDNIS"/>
             <assign name="clientFlag" expr="'delete'"/>
   		    <assign name="state" expr="'endCall'"/>
@@ -289,6 +349,11 @@
                 <log target="status">Call not answered</log>
                 <assign name="state" expr="'noAns'"/>
     	    	<dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone on caller side -->
+            <elseif cond="ringToneID.length &gt; 0"/>
+                <!-- Implies call failed immediately (before we started playing the ring tone). Here, we'll
+                cancel our attempt to play the ring tone and proceed with the call failed logic -->
+                <cancel sendid="ringToneID"/>
+                <send data="'dialog.user.callFailed'" target="session.id"/>
             <elseif cond="inString(evt.reason,ERR_BUSY,',')"/> <!-- Destination was busy -->
                 <log target="status">Destination busy</log>
                 <assign name="state" expr="'busy'"/>
@@ -296,14 +361,7 @@
             <else/>
                 <log target="status">Call failed</log>
                 <assign name="state" expr="'callFailed'"/>
-                <if cond="((evt.reason == ERR_NOT_FOUND) &amp;&amp; (ringToneID.length &gt; 0))">
-                    <!-- Implies call failed immediately (before we started playing the ring tone). Here, we'll
-                    cancel our attempt to play the ring tone and proceed with the call failed logic -->
-                    <cancel sendid="ringToneID"/>
-                    <send data="'dialog.user.callFailed'" target="session.id"/>
-                <else/> <!-- Call failed for some other reason -->
-  	    	        <dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone on caller side -->
-                </if>
+       	        <dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone on caller side -->
             </if>
         </transition>
 
@@ -349,7 +407,7 @@
             <send data="'dialog.user.callFailed'" target="session.id"/>
         </transition>
 
-		<transition state="callFailed" event="dialog.user.callFailed" name="evt">
+		<transition state="storeInfo callFailed" event="dialog.user.callFailed" name="evt">
             <log>INFO: Entered [dialog.user.callFailed] with state [<value expr="state"/>]</log>
             <if cond="callType == 'external'">  <!-- Caller tried to reach an invalid external (outside IP PBX) destination -->
                 <!-- Nothing to do here. Just end the call -->
@@ -401,7 +459,7 @@
             <dialogstart src="'file:'+SUP_PATH+'afterHrsMain.vxml'" namelist="setForm"/>
         </transition>
 
-        <transition state="dialing" event="connection.disconnected" name="evt">
+        <transition state="storeInfo dialing" event="connection.disconnected" name="evt">
             <!-- We've detected a hang up while dialing the destination number -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
