@@ -80,9 +80,10 @@ public class EditSubscriberServletTest extends ListenTest
         subscriber = TestUtil.setSessionSubscriber(request, false, session);
         
         final String id = String.valueOf(subscriber.getId());
-        final String username = TestUtil.randomString();
-        final String password = TestUtil.randomString();
-        final String confirm = password;
+//        final String username = TestUtil.randomString();
+//        final String password = TestUtil.randomString();
+//        final String confirm = password;
+        final String realName = TestUtil.randomString();
         final String voicemailPin = String.valueOf(subscriber.getId());
         final String enableEmail = "true";
         final String enableSms = "true";
@@ -91,9 +92,10 @@ public class EditSubscriberServletTest extends ListenTest
 
         request.setMethod("POST");
         request.setParameter("id", id);
-        request.setParameter("username", username);
-        request.setParameter("password", password);
-        request.setParameter("confirmPassword", confirm);
+//        request.setParameter("username", username);
+//        request.setParameter("password", password);
+//        request.setParameter("confirmPassword", confirm);
+        request.setParameter("realName", realName);
         request.setParameter("voicemailPin", voicemailPin);
         request.setParameter("enableEmail", enableEmail);
         request.setParameter("enableSms", enableSms);
@@ -104,10 +106,10 @@ public class EditSubscriberServletTest extends ListenTest
         servlet.service(request, response);
 
         // verify a subscriber was modified for the username and is associated with the created subscriber
-        Subscriber subscriber = Subscriber.queryByUsername(session, username);
+        Subscriber subscriber = (Subscriber)session.get(Subscriber.class, Long.parseLong(id));
         assertNotNull(subscriber);
-        assertEquals(username, subscriber.getUsername());
-        assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
+//        assertEquals(username, subscriber.getUsername());
+        assertEquals(realName, subscriber.getRealName());
     }
     
     @Test
@@ -182,10 +184,10 @@ public class EditSubscriberServletTest extends ListenTest
     }
 
     @Test
-    public void test_doPost_withNullUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
+    public void test_doPost_withNullUsernameAndAdminSubscriber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        subscriber = TestUtil.setSessionSubscriber(request, false, session);
+        subscriber = TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
@@ -209,10 +211,10 @@ public class EditSubscriberServletTest extends ListenTest
     }
 
     @Test
-    public void test_doPost_withBlankUsername_throwsListenServletExceptionWithBadRequest() throws ServletException,
+    public void test_doPost_withBlankUsernameAndAdminSubscriber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        subscriber = TestUtil.setSessionSubscriber(request, false, session);
+        subscriber = TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(subscriber.getId()));
