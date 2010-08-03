@@ -74,7 +74,17 @@ $(document).ready(function() {
                             $('#profile-form-edit-button').show();
 
                             $('#pager-form-number').text(data.pagerNumber);
-                            $('#pager-form-alternate-number').val(data.pagerAlternateNumber);
+                            
+                            if(data.pagerAlternateNumber != '')
+                            {
+                                var fullAlternateNumber = data.pagerAlternateNumber.split("@");
+                                var alternateNumber = fullAlternateNumber[0];
+                                var alternateAddress = fullAlternateNumber[1];
+                                
+                                $('#pager-form-alternate-number').val(alternateNumber);
+                                $('#pager-form-alternate-address').val(alternateAddress);
+                            }
+                            
                             $('#pager-form-page-prefix').val(data.pagePrefix);
                         }
                     });
@@ -119,15 +129,15 @@ $(document).ready(function() {
             editPagerInfo: function() {
                 LISTEN.trace('LISTEN.PROFILE.editPagerInfo');
                 $('#pager-form .form-error-message').text('').hide();
-                var alternateNumber = $('#pager-form-alternate-number').val()
                 
-                $('#pager-form-alternate-number').val(alternateNumber.replace(/[-\.]/g, ""));
+                $('#pager-form-alternate-number').val($('#pager-form-alternate-number').val().replace(/[-\.]/g, ""));
                 
                 $('#pager-form button').attr('readonly', 'readonly');
                 SERVER.post({
                     url: '/ajax/editPager',
                     properties: {
                         alternateNumber: $('#pager-form-alternate-number').val(),
+                        alternateAddress: $('#pager-form-alternate-address').val(),
                         pagePrefix: $('#pager-form-page-prefix').val()
                     },
                     successCallback: function() {

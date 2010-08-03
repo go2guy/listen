@@ -42,9 +42,10 @@ public class EditPagerServletTest extends ListenTest
         {
             request.setMethod("POST");
             request.setParameter("alternateNumber", "123456789");
+            request.setParameter("alternateAddress", "example.com");
 
             servlet.service(request, response);
-            assertEquals(Configuration.get(Property.Key.ALTERNATE_NUMBER), "123456789");
+            assertEquals(Configuration.get(Property.Key.ALTERNATE_NUMBER), "123456789@example.com");
         }
         finally
         {
@@ -63,6 +64,7 @@ public class EditPagerServletTest extends ListenTest
         {
             request.setMethod("POST");
             request.setParameter("alternateNumber", "");
+            request.setParameter("alternateAddress", "example.com");
 
             servlet.service(request, response);
             assertEquals(Configuration.get(Property.Key.ALTERNATE_NUMBER), "");

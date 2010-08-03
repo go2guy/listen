@@ -40,7 +40,16 @@ public class NewVoicemailPagerJob implements Job
         
         // We need the 'pagerSubscriber' so we know when to send pages to the alternate number, null if one doesn't exist
         String pagerNumber = Configuration.get(Property.Key.PAGER_NUMBER);
-        Subscriber pagerSubscriber = AccessNumber.queryByNumber(session, pagerNumber).getSubscriber();
+        Subscriber pagerSubscriber = null;
+        
+        try
+        {
+            pagerSubscriber = AccessNumber.queryByNumber(session, pagerNumber).getSubscriber();
+        }
+        catch(NullPointerException e)
+        {
+            LOG.info("No subscriber is currently setup as the after-hours pager subscriber");
+        }
         
         List<Subscriber> subscribers = Subscriber.queryPagingEnabledSubscribers(session);
         List<Long> subscriberIds = new ArrayList<Long>();

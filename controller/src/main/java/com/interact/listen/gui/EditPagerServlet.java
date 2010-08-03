@@ -56,6 +56,7 @@ public class EditPagerServlet extends HttpServlet
         HistoryService historyService = new HistoryService(persistenceService);
 
         String alternateNumber = request.getParameter("alternateNumber");
+        String alternateAddress = request.getParameter("alternateAddress");
 
         if(alternateNumber == null)
         {
@@ -75,8 +76,14 @@ public class EditPagerServlet extends HttpServlet
         }
 
         String originalAlternateNumber = Configuration.get(Key.ALTERNATE_NUMBER);
-        String newAlternateNumber = alternateNumber;
-        Configuration.set(Property.Key.ALTERNATE_NUMBER, alternateNumber);
+        String newAlternateNumber = "";
+        
+        if(!alternateNumber.equals(""))
+        {
+            newAlternateNumber = alternateNumber + "@" + alternateAddress;
+        }
+        
+        Configuration.set(Property.Key.ALTERNATE_NUMBER, newAlternateNumber);
         updateRealizeAlert(Configuration.get(Key.REALIZE_URL), Configuration.get(Key.REALIZE_ALERT_NAME),
                            originalAlternateNumber, newAlternateNumber);
 

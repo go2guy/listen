@@ -2,6 +2,7 @@
 <%@ page import="com.interact.listen.license.License" %>
 <%@ page import="com.interact.listen.license.ListenFeature" %>
 <%@ page import="com.interact.listen.resource.Subscriber" %>
+<%@ page import="com.interact.listen.EmailerUtil" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html><%
 Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
@@ -598,7 +599,16 @@ if(subscriber != null) { %>
                         <table>
                           <tbody>
                             <tr><td><label for="pager-form-number">Pager Number</label></td><td id="pager-form-number" name="pager-form-number"></td></tr>
-                            <tr><td><label for="pager-form-alternate-number">Alternate Number</label></td><td><input type="text" id="pager-form-alternate-number" name="pager-form-alternate-number" maxlength="14"/></td></tr>
+                            <tr>
+                              <td><label for="pager-form-alternate-number">Alternate Number</label></td><td><input type="text" id="pager-form-alternate-number" name="pager-form-alternate-number" maxlength="14"/></td>
+                              <td>
+                                <select id="pager-form-alternate-address" name="pager-form-alternate-address"><%
+    for(EmailerUtil.SmsEmailAddress entry : EmailerUtil.SmsEmailAddress.values()) { %>
+                                     <option value="<%= entry.getEmailAddress() %>"><%= entry.getProvider() %></option><%
+    } %>
+                                </select>
+                              </td>
+                            </tr>
                             <tr><td><label for="pager-form-page-prefix">Page Prefix</label></td><td><input type="text" id="pager-form-page-prefix" name="pager-form-page-prefix" maxlength="20"/></td></tr>
                             <tr>
                               <td colspan="2" class="buttons">

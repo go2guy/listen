@@ -1,7 +1,6 @@
 package com.interact.listen;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public final class EmailerUtil
 {
@@ -32,48 +31,38 @@ public final class EmailerUtil
     public static final String FILE_IS_ATTACHED = "The voicemail is attached.";
     public static final String FILE_NOT_ATTACHED = "The voicemail could not be attached.  Contact a system administrator for assistance.";
     
-    public static final ArrayList<String> KNOWN_SMS_EMAIL_ADDRESSES = new ArrayList<String>
-    (Arrays.asList(new String[] {"number@message.alltel.com",
-                                 "number@messaging.sprintpcs.com",
-                                 "number@sprintpcs.com",
-                                 "number@vtext.com",
-                                 "number@paging.acswireless.com",
-                                 "number@txt.bellmobility.ca",
-                                 "number@blsdcs.net",
-                                 "number@blueskyfrog.com",
-                                 "number@myboostmobile.com",
-                                 "number@csouth1.com",
-                                 "number@mobile.celloneusa.com",
-                                 "number@gocbw.com",
-                                 "number@mmode.com",
-                                 "number@imcingular.com",
-                                 "number@sms.edgewireless.com",
-                                 "number@einsteinsms.com",
-                                 "number@sms.goldentele.com",
-                                 "number@mymetropcs.com",
-                                 "number@page.metrocall.com",
-                                 "number@page.mobilfone.com",
-                                 "number@messaging.nextel.com",
-                                 "number@pagenet.net",
-                                 "number@pcs.rogers.com",
-                                 "number@pager.qualcomm.com",
-                                 "number@qwestmp.com",
-                                 "number@safaricomsms.com",
-                                 "number@satelindogsm.com",
-                                 "number@text.simplefreedom.net",
-                                 "number@skytel.com",
-                                 "number@page.southernlinc.com",
-                                 "number@tms.suncom.com",
-                                 "number@mobile.surewest.com",
-                                 "number@tmomail.net",
-                                 "number@tmail.com",
-                                 "number@movistar.net",
-                                 "number@email.uscc.net",
-                                 "number@myairmail.com",
-                                 "number@vmobl.com",
-                                 "number@airmessage.net",
-                                 "number@wyndtell.com",
-                                 "number@txt.att.net" }));
+    public static enum SmsEmailAddress
+    {   
+        ALLTEL       ("Alltel",        "message.alltel.com"),
+        ATT          ("AT&T",          "txt.att.net"),
+        BOOST_MOBILE ("Boost Mobile",  "myboostmobile.com"),
+        CRICKET      ("Cricket",       "sms.mycricket.com"),
+        QWEST        ("Qwest",         "qwestmp.com"),
+        SPRINT       ("Sprint",        "messaging.sprintpcs.com"),
+        TMOBILE      ("T-Mobile",      "tmomail.net"),
+        US_CELLULAR  ("US Cellular",   "email.uscc.net"),
+        VERIZON      ("Verizon",       "vtext.com"),
+        VIRGIN_MOBILE("Virgin Mobile", "vmobl.com");
+        
+        private String provider;
+        private String emailAddress;
+        
+        private SmsEmailAddress(String name, String address)
+        {
+            this.provider = name;
+            this.emailAddress = address;
+        }
+        
+        public String getProvider()
+        {
+            return provider;
+        }
+        
+        public String getEmailAddress()
+        {
+            return emailAddress;
+        }
+    }
 
     private EmailerUtil()
     {

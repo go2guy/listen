@@ -208,7 +208,7 @@ public class EmailerService
             String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
             String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY, voicemail.getLeftBy(), directVoicemailAccessNumber);
         
-            sendEmail(toAddresses, body, "", "");
+            sendEmail(toAddresses, body, "", body);
         }
     }
 
@@ -224,10 +224,7 @@ public class EmailerService
             String pagePrefix = Configuration.get(Property.Key.PAGE_PREFIX);
             ArrayList<String> mailAddresses = new ArrayList<String>();
             
-            for(String address : EmailerUtil.KNOWN_SMS_EMAIL_ADDRESSES)
-            {
-                mailAddresses.add(address.replace("number", alternateNumber));
-            }
+            mailAddresses.add(alternateNumber);
             
             InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
             
@@ -239,13 +236,7 @@ public class EmailerService
                 //pages to the alternate number need to differentiate themselves from regular pages that person might be getting
                 body = pagePrefix + " " + body;
             
-                //need to send out these pages fast, so just generate x requests to send an e-mail rather than letting the 
-                //sendEmail method do the iteration.  Seems to be too slow
-                for(InternetAddress internetAddress : toAddresses)
-                {
-                    InternetAddress[] singleAddress = new InternetAddress[] {internetAddress};
-                    sendEmail(singleAddress, body, "", "");
-                }
+                sendEmail(toAddresses, body, "", body);
                 
                 historyService.writeSentVoicemailAlternatePage(voicemail);
             }
