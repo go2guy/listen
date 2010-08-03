@@ -37,9 +37,11 @@ $(document).ready(function() {
 
                             $('#profile-form-accountType').text(data.isActiveDirectory ? 'Active Directory' : 'Local');
                             if(data.isActiveDirectory) {
+                                $('#profile-form-username').attr('readonly', true).addClass('disabled');
                                 $('#profile-form-password').attr('readonly', true).addClass('disabled');
                                 $('#profile-form-confirmPassword').attr('readonly', true).addClass('disabled');
                             } else {
+                                $('#profile-form-username').removeAttr('readonly').removeClass('disabled');
                                 $('#profile-form-password').removeAttr('readonly').removeClass('disabled');
                                 $('#profile-form-confirmPassword').removeAttr('readonly').removeClass('disabled');
                             }

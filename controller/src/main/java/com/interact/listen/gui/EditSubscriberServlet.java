@@ -67,14 +67,19 @@ public class EditSubscriberServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
-        String username = request.getParameter("username");
-        if(username == null || username.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a Username");
-        }
-
         if(!subscriberToEdit.getIsActiveDirectory())
         {
+            // username can only be changed by admin, and only if it's not an AD account
+            if(currentSubscriber.getIsAdministrator())
+            {
+                String username = request.getParameter("username");
+                if(username == null || username.trim().equals(""))
+                {
+                    throw new BadRequestServletException("Please provide a Username");
+                }
+                subscriberToEdit.setUsername(username);
+            }
+
             String password = request.getParameter("password");
             String confirmPassword = request.getParameter("confirmPassword");
             if((password != null && !password.trim().equals("")) ||
@@ -164,7 +169,6 @@ public class EditSubscriberServlet extends HttpServlet
             subscriberToEdit.setVoicemailPlaybackOrder(playbackOrder);
         }
 
-        subscriberToEdit.setUsername(username);
         subscriberToEdit.setRealName(request.getParameter("realName"));
 
         ArrayList<Conference> conferenceList = new ArrayList<Conference>(subscriberToEdit.getConferences());

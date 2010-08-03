@@ -83,9 +83,11 @@ $(document).ready(function() {
 
                         $('#subscriber-form-accountType').text(data.isActiveDirectory ? 'Active Directory' : 'Local');
                         if(data.isActiveDirectory) {
+                            $('#subscriber-form-username').attr('readonly', true).addClass('disabled');
                             $('#subscriber-form-password').attr('readonly', true).addClass('disabled');
                             $('#subscriber-form-confirmPassword').attr('readonly', true).addClass('disabled');
                         } else {
+                            $('#subscriber-form-username').removeAttr('readonly').removeClass('disabled');
                             $('#subscriber-form-password').removeAttr('readonly').removeClass('disabled');
                             $('#subscriber-form-confirmPassword').removeAttr('readonly').removeClass('disabled');
                         }
