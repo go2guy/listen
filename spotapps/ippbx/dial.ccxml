@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/02/2010
+    <!-- Last Modified 08/03/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -24,6 +24,7 @@
     <var name="dialogID" expr="''"/>        <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="status" expr="''"/>          <!-- Status. Stores application status -->
     <var name="inVXML" expr="'n'"/>         <!-- In VXML. Determines if this session is currently running a vxml dialog -->
+    <var name="ringToneID" expr="''"/>      <!-- Dialog ID of ring tone -->
     <var name="whichMBox" expr="''"/>
     <var name="whichID" expr="''"/>
     <var name="II_SB_promptID" expr="''"/>
@@ -119,24 +120,20 @@
                     <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS"/>
                 </if>
             </if>
+            <assign name="state" expr="'dialing'"/>
             <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
+            <send data="'dialog.user.ringTone'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
+        </transition>
+
+		<transition state="dialing" event="dialog.user.ringTone" name="evt">
+            <!-- Here, we start up a vxml dialog to play a ring tone to the caller -->
+            <log>INFO: Entered [dialog.user.ringTone] with state [<value expr="state"/>]</log>
             <assign name="II_SB_promptID" expr="AUDIO_PATH+'ring'+'.00'+'.wav'"/> <!-- Play ringing tone -->
+            <assign name="ringToneID" expr="''"/>
             <var name="II_SB_repeat" expr="'y'"/>
             <var name="II_SB_interval" expr="'2000'"/> <!-- Number of milliseconds repeat -->
             <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
-            <assign name="state" expr="'dialing'"/>
-        </transition>
-
-        <transition state="dialing endRing" event="dialog.started" name="evt">
-            <!-- This is a unique dialog started transition that will only get called when
-            an out dial attempt fails almost immediately. We need to terminate the ring tone
-            on the caller side -->
-            <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
-            <assign name="dialogID" expr="evt.dialogid"/>
-            <assign name="inVXML" expr="'y'"/>
-  	    	<dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone -->
-            <assign name="state" expr="'callFailed'"/>
-        </transition>
+		</transition>
 
         <transition event="dialog.started" name="evt">
             <!-- Save off ID of VXML dialog that was started -->
@@ -299,12 +296,11 @@
             <else/>
                 <log target="status">Call failed</log>
                 <assign name="state" expr="'callFailed'"/>
-                <if cond="evt.reason == ERR_NOT_FOUND">
-                    <!-- Implies call failed immediately. We'll wait until we get the dialog.started event
-                    with state = "endRing". We need the dialogID from that event so we can terminate the ring tone
-                    that the caller is currently hearing. -->
-                    <assign name="state" expr="'endRing'"/>
-                    <log>INFO: Waiting for dialogID...</log>
+                <if cond="((evt.reason == ERR_NOT_FOUND) &amp;&amp; (ringToneID.length &gt; 0))">
+                    <!-- Implies call failed immediately (before we started playing the ring tone). Here, we'll
+                    cancel our attempt to play the ring tone and proceed with the call failed logic -->
+                    <cancel sendid="ringToneID"/>
+                    <send data="'dialog.user.callFailed'" target="session.id"/>
                 <else/> <!-- Call failed for some other reason -->
   	    	        <dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone on caller side -->
                 </if>
@@ -350,6 +346,11 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
             <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.callFailed'" target="session.id"/>
+        </transition>
+
+		<transition state="callFailed" event="dialog.user.callFailed" name="evt">
+            <log>INFO: Entered [dialog.user.callFailed] with state [<value expr="state"/>]</log>
             <if cond="callType == 'external'">  <!-- Caller tried to reach an invalid external (outside IP PBX) destination -->
                 <!-- Nothing to do here. Just end the call -->
                 <!-- Remove the caller's record in the db prior to exiting -->
@@ -375,7 +376,7 @@
                 <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
                 <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
             </if>
-        </transition>
+		</transition>
 
         <transition state="invalidExt" event="dialog.exit" name="evt">
             <!-- In here, we've just returned from informing the caller that extension they tried to reach does not exist -->
