@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Query Params</log>
+	    <log target="status">Set Variables</log>
             <log>INFO: Entered assign-variable.vxml [86-43]</log>
             <log>INFO: Current value [<value expr="resource"/>]</log>
 <assign name="resource" expr="'conferences'+''" />
@@ -20,6 +20,9 @@
 <log>INFO: Current value [<value expr="params"/>]</log>
 <assign name="params" expr="'/'+confID" />
 <log>INFO: Updated value [<value expr="params"/>]</log>
+<log>INFO: Current value [<value expr="playHelp"/>]</log>
+<assign name="playHelp" expr="'true'+''" />
+<log>INFO: Updated value [<value expr="playHelp"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

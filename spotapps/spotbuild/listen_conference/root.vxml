@@ -96,6 +96,7 @@
 	<var name="outDialStop" expr="''" />
 	<var name="confStatus" expr="''" />
 	<var name="subscriber" expr="''" />
+	<var name="playHelp" expr="'true'" />
 
 
     <!-- Conference Variables -->

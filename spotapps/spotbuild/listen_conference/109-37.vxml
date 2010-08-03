@@ -12,7 +12,7 @@
             function II_SB_JS_function(passValues)
             {
 	            var result = eval("("+passValues+")");
-return result.phoneNumber;
+return result.destination;
             }
         ]]>
     </script>

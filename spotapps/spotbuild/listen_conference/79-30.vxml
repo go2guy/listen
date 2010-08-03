@@ -9,11 +9,14 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Return Path</log>
+	    <log target="status">Set Variables</log>
             <log>INFO: Entered assign-variable.vxml [79-30]</log>
             <log>INFO: Current value [<value expr="whichPath"/>]</log>
 <assign name="whichPath" expr="'getPin'+''" />
 <log>INFO: Updated value [<value expr="whichPath"/>]</log>
+<log>INFO: Current value [<value expr="playHelp"/>]</log>
+<assign name="playHelp" expr="'false'+''" />
+<log>INFO: Updated value [<value expr="playHelp"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

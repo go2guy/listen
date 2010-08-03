@@ -86,6 +86,7 @@
 	<var name="SB_UV_outDialStop"/>
 	<var name="SB_UV_confStatus"/>
 	<var name="SB_UV_subscriber"/>
+	<var name="SB_UV_playHelp"/>
 
     
     <form id="beginDocument">
@@ -303,6 +304,9 @@
 			</if>
 			<if cond="SB_UV_subscriber != undefined">
 				<assign name="subscriber" expr="SB_UV_subscriber" />
+			</if>
+			<if cond="SB_UV_playHelp != undefined">
+				<assign name="playHelp" expr="SB_UV_playHelp" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
