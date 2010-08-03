@@ -1,3 +1,6 @@
+create database ip_pbx;
+use ip_pbx;
+
 -- phpMyAdmin SQL Dump
 -- version 2.11.10
 -- http://www.phpmyadmin.net
