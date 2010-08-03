@@ -487,7 +487,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                 <td><label for="subscriber-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
                                 <td>
                                   <select name="subscriber-form-voicemailPlaybackOrder" id="subscriber-form-voicemailPlaybackOrder">
-                                    <option value="NEWEST_TO_OLDEST">Newest to Oldest</option>
+                                    <option value="NEWEST_TO_OLDEST" selected="selected">Newest to Oldest</option>
                                     <option value="OLDEST_TO_NEWEST">Oldest to Newest</option>
                                   </select>
                                 </td>
