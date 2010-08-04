@@ -131,7 +131,7 @@ public class Voicemail extends Audio implements Serializable
             historyService.writeForwardedVoicemail(this);
         }
 
-        EmailerService emailService = new EmailerService();
+        EmailerService emailService = new EmailerService(persistenceService);
         StatSender statSender = StatSenderFactory.getStatSender();
         Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
 

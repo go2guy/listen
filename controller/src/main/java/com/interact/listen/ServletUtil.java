@@ -82,7 +82,6 @@ public final class ServletUtil
         response.sendRedirect(to);
     }
     
-    // This method will URL encode the filename, but not the path to it.  Needed so that the slashes in the url are not encoded
     public static URL encodeUri(String stringUri)
     {
         URI uri = null;

@@ -3,7 +3,6 @@ package com.interact.listen;
 import com.interact.listen.api.GetDnisServlet;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
-import com.interact.listen.history.Channel;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.resource.*;
@@ -24,13 +23,19 @@ import javax.mail.internet.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 public class EmailerService
 {
     private static final Logger LOG = Logger.getLogger(EmailerService.class);
 
     private final SimpleDateFormat sdf = new SimpleDateFormat(FriendlyIso8601DateConverter.ISO8601_FORMAT);
+    
+    private PersistenceService persistenceService;
+    
+    public EmailerService(PersistenceService persistenceService)
+    {
+        this.persistenceService = persistenceService;
+    }
 
     private boolean sendEmail(InternetAddress[] toAddresses, String body, String subjectPrepend, String subject)
     {
@@ -169,7 +174,7 @@ public class EmailerService
                 LOG.error("An error occured trying to obtain the voicemail to attach. Won't attach e-mail");
             }
 
-            org.hibernate.Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            org.hibernate.Session session = persistenceService.getSession();
 
             String body = String.format(EmailerUtil.EMAIL_NOTIFICATION_BODY, voicemail.getLeftBy(),
                                         sdf.format(voicemail.getDateCreated()),
@@ -214,8 +219,6 @@ public class EmailerService
 
     public void sendAlternateNumberSmsVoicemailNotification(Voicemail voicemail)
     {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, null, Channel.AUTO);
         HistoryService historyService = new HistoryService(persistenceService);
         String alternateNumber = Configuration.get(Property.Key.ALTERNATE_NUMBER);
         
@@ -316,7 +319,7 @@ public class EmailerService
         
         try
         {
-            URL url = new URL(uri);
+            URL url = ServletUtil.encodeUri(uri);
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();

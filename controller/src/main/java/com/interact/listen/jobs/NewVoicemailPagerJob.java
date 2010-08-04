@@ -28,14 +28,15 @@ public class NewVoicemailPagerJob implements Job
     private static final Logger LOG = Logger.getLogger(NewVoicemailPagerJob.class);
     private static Map<Long, DateTime> voicemailPagingStatus = new HashMap<Long, DateTime>();
     
-    private EmailerService emailerService = new EmailerService();
     private StatSender statSender = StatSenderFactory.getStatSender();
     
     public void execute(JobExecutionContext arg0) throws JobExecutionException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction tx = session.beginTransaction();
         PersistenceService persistenceService = new PersistenceService(session, null, Channel.AUTO);
+        EmailerService emailerService = new EmailerService(persistenceService);
+        
+        Transaction tx = session.beginTransaction();
         HistoryService historyService = new HistoryService(persistenceService);
         
         // We need the 'pagerSubscriber' so we know when to send pages to the alternate number, null if one doesn't exist
@@ -89,14 +90,14 @@ public class NewVoicemailPagerJob implements Job
                     //Need the isAfterNow check for daylight savings changes
                     if(lastPage.isBefore(nineMinutesAgo) || lastPage.isAfterNow())
                     {
-                        sendPage(newVoicemail, newVoicemail.getSubscriber(), pagerSubscriber, historyService);
+                        sendPage(newVoicemail, newVoicemail.getSubscriber(), pagerSubscriber, historyService, emailerService);
                         voicemailPagingStatus.put(newVoicemail.getId(), new DateTime());
                     }
                 }
                 else
                 {
                     //This is a new voicemail that hasn't been paged for yet, page for it and add it to the paging status map
-                    sendPage(newVoicemail, newVoicemail.getSubscriber(), pagerSubscriber, historyService);
+                    sendPage(newVoicemail, newVoicemail.getSubscriber(), pagerSubscriber, historyService, emailerService);
                     voicemailPagingStatus.put(newVoicemail.getId(), new DateTime());
                 }
             }
@@ -127,7 +128,8 @@ public class NewVoicemailPagerJob implements Job
         return voicemailIds;
     }
     
-    private void sendPage(Voicemail voicemail, Subscriber subscriber, Subscriber pagerSubscriber, HistoryService historyService)
+    private void sendPage(Voicemail voicemail, Subscriber subscriber, Subscriber pagerSubscriber,
+                          HistoryService historyService, EmailerService emailerService)
     {
         emailerService.sendSmsVoicemailNotification(voicemail, subscriber);
         statSender.send(Stat.VOICEMAIL_PAGE_SENT);
