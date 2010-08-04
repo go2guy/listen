@@ -36,7 +36,7 @@ function Voicemail() {
     });
 
     this.load = function() {
-        LISTEN.log('Loading voicemail');
+        LISTEN.trace('Loading voicemail');
         dynamicTable.pollAndSet(false);
         interval = setInterval(function() {
             dynamicTable.pollAndSet(true);
@@ -44,7 +44,7 @@ function Voicemail() {
     };
 
     this.unload = function() {
-        LISTEN.log('Unloading voicemail');
+        LISTEN.trace('Unloading voicemail');
         if(interval) {
             clearInterval(interval);
         }

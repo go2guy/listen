@@ -5,7 +5,7 @@ $(document).ready(function() {
             if(xhr && xhr.status == 401) {
                 window.location = '/logout';
             } else {
-                LISTEN.log('ERROR: textStatus = [' + textStatus + '], xhrStatus = [' + xhr.status + ']');
+                LISTEN.error('textStatus = [' + textStatus + '], xhrStatus = [' + xhr.status + ']');
             }
         }
     });
@@ -110,9 +110,9 @@ $(document).ready(function() {
                 };
 
                 this.swapWith = function(other, withContent) {
-                    LISTEN.log('Swapping, this = [' + this.name + '], other = [' + other.name + ']');
+                    LISTEN.debug('Swapping, this = [' + this.name + '], other = [' + other.name + ']');
                     if(this === other) {
-                        LISTEN.log('Tried to switch to same application, no switch will be performed');
+                        LISTEN.debug('Tried to switch to same application, no switch will be performed');
                         return;
                     }
                     this.hide(LISTEN.bind(this, function() {
@@ -308,7 +308,7 @@ $(document).ready(function() {
                             }
                         });
                     } else {
-                        LISTEN.log('Warning - DynamicTable.pollAndSet() invoked without args.url');
+                        LISTEN.error('Warning - DynamicTable.pollAndSet() invoked without args.url');
                     }
                 };
             },
@@ -405,23 +405,25 @@ $(document).ready(function() {
                 }
             },
 
-            log: function(message) {
+            debug: function(message) {
                 if(LISTEN.enableLogging) {
-                    this.writeLog('LOG:   ' + message);
+                    this.writeLog('DEBUG:   ' + message);
                 }
             },
 
+            error: function(message) {
+                this.writeLog('ERROR: ' + message);
+            },
+
             writeLog: function(message) {
-                if(LISTEN.enableLogging) {
+                try {
+                    console.log(message);
+                    return true;
+                } catch(e) {
                     try {
-                        console.log(message);
+                        opera.postError(message);
                         return true;
-                    } catch(e) {
-                        try {
-                            opera.postError(message);
-                            return true;
-                        } catch(e2) { }
-                    }
+                    } catch(e2) { }
                 }
             },
 

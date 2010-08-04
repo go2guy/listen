@@ -26,7 +26,7 @@ function ConferenceList() {
     });
 
     this.load = function() {
-        LISTEN.log('Loading conference list');
+        LISTEN.trace('Loading conference list');
         dynamicTable.pollAndSet(false);
         interval = setInterval(function() {
             dynamicTable.pollAndSet(true);
@@ -34,7 +34,7 @@ function ConferenceList() {
     };
 
     this.unload = function() {
-        LISTEN.log('Unloading conference-list');
+        LISTEN.trace('Unloading conference-list');
         if(interval) {
             clearInterval(interval);
         }

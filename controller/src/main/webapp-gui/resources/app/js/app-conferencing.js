@@ -38,13 +38,13 @@ function Conference(id) {
     var conferenceId;
 
     if(LISTEN.isDefined(id)) {
-        LISTEN.log('Constructing conference, id provided [' + id + ']')
+        LISTEN.debug('Constructing conference, id provided [' + id + ']')
         conferenceId = id;
     } else {
-        LISTEN.log('Constructing conference without id; asking server');
+        LISTEN.debug('Constructing conference without id; asking server');
         $.getJSON('/ajax/getConferenceInfo', LISTEN.bind(this, function(data) {
             conferenceId = data.info.id;
-            LISTEN.log('Got id [' + conferenceId + '] from server');
+            LISTEN.debug('Got id [' + conferenceId + '] from server');
             // if conferencing is the first loaded application, the LISTEN object will try and load it;
             // however, this ajax response might be returned AFTER the LISTEN object loads this application,
             // which means that this.conferenceId will not be set and the load() function will not actually
@@ -52,7 +52,7 @@ function Conference(id) {
             // therefore, if the current LISTEN application is this one (conferencing), we need to force it
             // to re-load, since it now has the conferenceId
             if(LISTEN.getCurrentApplication().name == 'conferencing') {
-                LISTEN.log("Current application is 'conferencing', forcing load()");
+                LISTEN.debug("Current application is 'conferencing', forcing load()");
                 this.load();
             }
         }));
@@ -167,7 +167,6 @@ function Conference(id) {
         alternateRowColors: true,
         paginationId: 'conference-recording-pagination',
         updateRowCallback: function(row, data, animate) {
-            LISTEN.log('Update recording row');
             LISTEN.setFieldContent(row.find('.recording-cell-dateCreated'), data.dateCreated, animate);
 
             if(data.duration && data.duration != '') {
@@ -238,7 +237,7 @@ function Conference(id) {
     }
 
     this.load = function() {
-        LISTEN.log('Loading conferencing, conference id = [' + conferenceId + ']');
+        LISTEN.trace('Loading conferencing, conference id = [' + conferenceId + ']');
         if(LISTEN.isDefined(conferenceId)) {
             pollAndSet(false);
             $('#conferencing-application .conference-notloaded').hide();
@@ -253,7 +252,7 @@ function Conference(id) {
     };
 
     this.unload = function() {
-        LISTEN.log('Unloading conferencing');
+        LISTEN.trace('Unloading conferencing');
         $('#conferencing-application .conference-content').hide();
         $('#conferencing-application .conference-notloaded').show();
         if(interval) {

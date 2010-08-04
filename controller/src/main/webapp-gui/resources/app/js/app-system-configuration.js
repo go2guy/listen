@@ -5,7 +5,7 @@ $(document).ready(function() {
 
     function SystemConfigurationApplication() {
         this.load = function() {
-            LISTEN.log('Loading system configuration');
+            LISTEN.trace('Loading system configuration');
             var start = LISTEN.timestamp();
             $.ajax({
                 url: '/ajax/getProperties',
@@ -42,7 +42,7 @@ $(document).ready(function() {
         };
 
         this.unload = function() {
-            LISTEN.log('Unloading system configuration');
+            LISTEN.trace('Unloading system configuration');
             // no-op
         };
     };

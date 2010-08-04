@@ -26,7 +26,7 @@ $(document).ready(function() {
                 LISTEN.trace('LISTEN.PROFILE.ProfileApplication [construct]');                
                 
                 this.load = function() {
-                    LISTEN.log('Loading profile');
+                    LISTEN.trace('Loading profile');
                     $.ajax({
                         url: '/ajax/getSubscriber',
                         dataType: 'json',
@@ -91,7 +91,7 @@ $(document).ready(function() {
                 };
                 
                 this.unload = function() {
-                    LISTEN.log('Unloading profile');
+                    LISTEN.trace('Unloading profile');
                     LISTEN.PROFILE.clearError();
                     $('#pager-form .form-error-message').text('').hide();
                 };

@@ -16,7 +16,7 @@ $(document).ready(function() {
                         } else if(dataRow.type == 'Call') {
                             return 'history-call-template';
                         } else {
-                            LISTEN.log('No template found for [' + dataRow.type + ']');
+                            LISTEN.error('No template found for [' + dataRow.type + ']');
                             return false;
                         }
                     },
