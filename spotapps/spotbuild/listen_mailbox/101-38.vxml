@@ -9,10 +9,10 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(subscriber)
+            function II_SB_JS_function(subscriber,playbackOrder)
             {
 	            var result;
-result = "?subscriber=/subscriber/"+subscriber+"&isNew=false";
+result = "?subscriber=/subscriber/"+subscriber+"&isNew=false&_sortBy=dateCreated&_sortOrder="+playbackOrder;
 return result;
             }
         ]]>
@@ -22,7 +22,7 @@ return result;
         <block>
             <log target="status">Set Parameter Old</log>
             <log>INFO: Entered run-javascript.vxml [101-38]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(subscriber)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(subscriber,playbackOrder)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

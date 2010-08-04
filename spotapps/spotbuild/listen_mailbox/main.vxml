@@ -74,6 +74,7 @@
 	<var name="SB_UV_application"/>
 	<var name="SB_UV_quickAccess"/>
 	<var name="SB_UV_voicemailInfo"/>
+	<var name="SB_UV_playbackOrder"/>
 
     
     <form id="beginDocument">
@@ -252,6 +253,9 @@
 			</if>
 			<if cond="SB_UV_voicemailInfo != undefined">
 				<assign name="voicemailInfo" expr="SB_UV_voicemailInfo" />
+			</if>
+			<if cond="SB_UV_playbackOrder != undefined">
+				<assign name="playbackOrder" expr="SB_UV_playbackOrder" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
