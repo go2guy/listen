@@ -30,37 +30,37 @@
             </if>
             <data name="fwdExt" srcexpr="DB_PATH+'fwdExtension.php'" namelist="flag extension destination"/>
             <assign name="result" expr="fwdExt.result"/>
-            <if cond="flag == 'select'">
-                <exit namelist="result"/>
-            <else/>
-                <goto next="#exit"/>
-            </if>
+            <goto next="#exit"/>
         </block>
     </form>
 
     <form id="exit">
         <!-- Set up parameters that are used by the play audio subdialog -->
         <block>
-            <if cond="result == 'Success'">
-                <log target="status">Success</log>
-                <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
+            <if cond="flag == 'select'">
+                <exit namelist="result"/>
             <else/>
-                <log target="status">Failed</log>
-                <assign name="promptID" expr="'APserviceErr|APnotifyAdmin|APthankYou|APgoodbye'"/>
+                <if cond="result == 'Success'">
+                    <log target="status">Success</log>
+                    <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
+                <else/>
+                    <log target="status">Failed</log>
+                    <assign name="promptID" expr="'APserviceErr|APnotifyAdmin|APthankYou|APgoodbye'"/>
+                </if>
+                <assign name="status" expr="'endCall'"/>
+                <assign name="fldTrmChar" expr="''"/>
+                <assign name="digitTimeOut" expr="''"/>
+                <assign name="fieldLength" expr="''"/>
+                <assign name="fieldTimeOut" expr="''"/>
+                <assign name="cutIn" expr="'false'"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#playAudio'"/>
             </if>
-            <assign name="status" expr="'endCall'"/>
-            <assign name="fldTrmChar" expr="''"/>
-            <assign name="digitTimeOut" expr="''"/>
-            <assign name="fieldLength" expr="''"/>
-            <assign name="fieldTimeOut" expr="''"/>
-            <assign name="cutIn" expr="'false'"/>
-            <assign name="gotoForm" expr="'#exit'"/>
-            <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#playAudio'"/>
         </block>
     </form>
 
     <catch event="error.badfetch">  <!-- This logic handles connection errors to the db -->
-        <log>ERROR: Unable to forward extension</log>
+        <log>ERROR: While attempting HTTP connection</log>
         <assign name="result" expr="'Failure'"/> <!-- Set db response -->
         <goto next="#exit"/>
     </catch>
