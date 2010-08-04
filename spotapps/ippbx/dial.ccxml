@@ -84,9 +84,29 @@
                 <log target="status">Call in progress</log>
                 <assign name="state" expr="'callConnected'"/>
                 <!-- Nothing to do here. Call should be connected. Wait for next event -->
+            <elseif cond="tmpDNIS.length &lt; EXT_LENGTH"/>
+                <!-- This is part of the forwarding logic. Before dialing an internal extension
+                we need to make sure it is not forwarded -->
+                <assign name="state" expr="'chkFwd'"/>
+                <var name="mBox" expr="tmpDNIS"/>
+                <var name="flag" expr="'select'"/>
+       	   		<dialogstart src="'file:'+TRANS_PATH+'forward.vxml'" namelist="mBox flag"/>
             <else/>
                 <send data="'dialog.user.call'" target="session.id"/>
             </if>
+        </transition>
+
+        <transition state="chkFwd" event="dialog.exit" name="evt">
+            <!-- Back from checking if extension is forwared -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <var name="result" expr="evt.values.result"/>
+            <if cond="result.length &gt; 0">
+                <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
+                <assign name="DNIS" expr="result"/>
+                <assign name="tmpDNIS" expr="result"/>
+            </if>
+            <send data="'dialog.user.call'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.call" name="evt">
@@ -169,16 +189,26 @@
             <!-- The out dial attempt was successful. Let's terminate the ring tone on the caller's side -->
             <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
 		    <assign name="state" expr="'callConnected'"/>
-            <dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone -->
+            <if cond="inVXML == 'y'">
+                <dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone -->
+            <else/>
+                <send data="'dialog.user.joinID'" target="session.id"/>
+            </if>
 		</transition>
 
         <transition state="callConnected" event="dialog.exit" name="evt">
             <!-- We're back from terminating the ring tone. We'll join the caller and callee to one another -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.joinID'" target="session.id"/>
+        </transition>
+
+		<transition state="callConnected" event="dialog.user.joinID" name="evt">
+            <!-- Here, we start up a vxml dialog to play a ring tone to the caller -->
+            <log>INFO: Entered [dialog.user.joinID] with state [<value expr="state"/>]</log>
 	    	<log>INFO: Joining call legs</log>
             <log>INFO: ibconnid [<value expr="ibconnid"/>]</log>
             <log>INFO: obconnid [<value expr="obconnid"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
 		    <join id1="ibconnid" id2="obconnid"/>
         </transition>
 
@@ -353,7 +383,7 @@
                 <!-- Implies call failed immediately (before we started playing the ring tone). Here, we'll
                 cancel our attempt to play the ring tone and proceed with the call failed logic -->
                 <cancel sendid="ringToneID"/>
-                <if cond="inString(evt.reason,ERR_BUSY,',')"/> <!-- Destination was busy -->
+                <if cond="inString(evt.reason,ERR_BUSY,',')"> <!-- Destination was busy -->
                     <log target="status">Destination busy</log>
                     <assign name="state" expr="'busy'"/>
                     <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->

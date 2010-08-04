@@ -129,7 +129,6 @@
                 <log target="status">End Call</log>
             <else/>
                 <if cond="userEntry.length != 0">  <!-- We can assume this is an invalid extension number -->
-            
                     <assign name="promptID" expr="'AP1850'"/>
                 </if>
                 <assign name="extension" expr="officeOptr"/>

@@ -11,7 +11,8 @@
         <![CDATA[
             function II_SB_JS_function(DNIS)
             {
-	            return getnum(DNIS);
+		var tmpVal = unescape(DNIS);
+		return getnum(tmpVal );
             }
         ]]>
     </script>

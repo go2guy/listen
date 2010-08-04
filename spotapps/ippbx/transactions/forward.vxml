@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 08/04/2010
+       *   @Name	forward.vxml
+       *   @Desc	This script calls the php code that handles the updating 
+                    the database for forwarding and cancelling a forward -->
+
+    <!-- Global Variables -->
+    <var name="mBox"/>
+    <var name="flag"/>
+
+    <form id="beginDocument">
+        <!-- In this form, we check if we need to forward or cancel a forward -->
+        <block>
+            <log>INFO: Entered beginDocument</log>
+            <if cond="mBox == undefined">
+                <!-- This implies we're in the process of forwarding an extension.
+                We alreaady got the information we need; nothing more to do here -->
+                <assign name="flag" expr="'forward'"/>
+            <else/>
+                <assign name="extension" expr="mBox"/>
+                <assign name="destination" expr="''"/>
+                <if cond="flag == 'select'">
+                    <!-- This implies we want to check if extension is currently forwarded -->
+                <else/>
+                    <!-- This implies we want to cancel a forward -->
+                    <assign name="flag" expr="'cancel'"/>
+                </if>
+            </if>
+            <data name="fwdExt" srcexpr="DB_PATH+'fwdExtension.php'" namelist="flag extension destination"/>
+            <assign name="result" expr="fwdExt.result"/>
+            <if cond="flag == 'select'">
+                <exit namelist="result"/>
+            <else/>
+                <goto next="#exit"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="exit">
+        <!-- Set up parameters that are used by the play audio subdialog -->
+        <block>
+            <if cond="result == 'Success'">
+                <log target="status">Success</log>
+                <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
+            <else/>
+                <log target="status">Failed</log>
+                <assign name="promptID" expr="'APserviceErr|APnotifyAdmin|APthankYou|APgoodbye'"/>
+            </if>
+            <assign name="status" expr="'endCall'"/>
+            <assign name="fldTrmChar" expr="''"/>
+            <assign name="digitTimeOut" expr="''"/>
+            <assign name="fieldLength" expr="''"/>
+            <assign name="fieldTimeOut" expr="''"/>
+            <assign name="cutIn" expr="'false'"/>
+            <assign name="gotoForm" expr="'#exit'"/>
+            <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#playAudio'"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the db -->
+        <log>ERROR: Unable to forward extension</log>
+        <assign name="result" expr="'Failure'"/> <!-- Set db response -->
+        <goto next="#exit"/>
+    </catch>
+
+</vxml>

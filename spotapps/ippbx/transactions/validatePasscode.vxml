@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 07/27/2010
+       *   @Name	validatePasscode.vxml
+       *   @Desc	This script is part of the logic for forwarding an extension.
+                    Here, we validate the passcode associated with an extension -->
+
+    <!-- Global Variable -->
+    <var name="resource" expr="'accessNumbers'"/>
+    <var name="params" expr="''"/>
+    <var name="cntrlURL" expr="''"/>
+    <var name="request"  expr="'get'"/>
+    <var name="subID" expr="''"/>
+
+	<form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <log target="status">Get Sub ID</log>
+            <assign name="cntrlURL" expr="getCntrl(listenArgs)"/>
+            <assign name="params" expr="setGetParam(extension)"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="sendEvent">
+        <block>
+            <log>INFO: Entered sendEvent</log>
+            <data name="apiObj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="result" expr="apiObj.Result" />
+            <goto next="#chkResult"/>
+        </block>
+    </form>
+
+    <form id="chkResult">
+        <!-- -->
+        <block cond="((status == 'Success') &amp;&amp; (resource == 'accessNumbers'))">
+            <log>INFO: Entered chkResult</log>
+            <var name="count" expr="getCount(result)"/>
+            <if cond="count == 1">
+                <log target="status">Get Sub Info</log>
+                <assign name="params" expr="getID(result)"/>
+                <assign name="resource" expr="'subscribers/'"/>
+                <goto next="#sendEvent"/>
+            </if>
+        </block>
+        <block cond="((status == 'Success') &amp;&amp; (resource == 'subscribers/'))">
+            <log>INFO: Entered chkResult</log>
+            <var name="pin" expr="getPin(result)"/>
+            <if cond="pin == passcode">
+                <goto next="#getDestination"/>
+            </if>
+        </block>
+        <block>
+            <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#error'"/>
+        </block>
+    </form>
+
+    <form id="getDestination">
+        <!-- Set up parameters that are used by the play audio subdialog for get pass code -->
+        <block>
+            <log>INFO: Entered getPrompt</log>
+            <log target="status">Get Pass Code</log>
+            <assign name="status" expr="'destination'"/>
+            <assign name="fldTrmChar" expr="'#'"/>
+            <assign name="digitTimeOut" expr="'3s'"/>
+            <assign name="fieldLength" expr="11"/>
+            <assign name="fieldTimeOut" expr="'4s'"/>
+            <assign name="cutIn" expr="'true'"/>
+            <assign name="promptID" expr="'APgetDestination'"/>
+            <assign name="tmpVal" expr="'APgetDestination'"/>
+            <assign name="gotoForm" expr="'#userKeyPress'"/>
+            <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#playAudio'"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the db -->
+        <log>ERROR: Unable to connect with controller</log>
+        <assign name="promptID" expr="'APserviceError|APserviceError2|APtryAgainLater|APthankYou|APgoodbye'"/>
+        <assign name="gotoForm" expr="'#exit'"/>
+        <assign name="status" expr="'endCall'"/>
+        <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#playAudio'"/>
+    </catch>
+
+    <script>
+        <![CDATA[
+            function getCntrl(jsonObj) {
+                var tmpVal = eval("("+jsonObj+")");
+                return tmpVal.cntrlURL;
+            }
+
+            function getCount(jsonObj) {
+                var tmpVal = eval("("+jsonObj+")");
+                return tmpVal.count;
+            }
+
+            function setGetParam(inStr) {
+                return "?_fields=subscriber&number=" + inStr;
+            }
+
+            function getPin(jsonObj) {
+                var tmpVal = eval("("+jsonObj+")");
+                var result = tmpVal.voicemailPin;
+                if (result == null) {
+                    result = "";
+                }
+                return result;
+            }
+
+            function getID(jsonObj) {
+                var result = eval("("+jsonObj+")");
+                var subscriber = result.results[0].subscriber.href;
+                subscriber = getNextElement('L',subscriber,'/');
+                return subscriber;
+            }
+        ]]>
+    </script>
+
+</vxml>

@@ -25,9 +25,13 @@
     <var name="status" expr="''"/>
     <var name="listenArgs" expr="''"/>
     <var name="contactNumber" expr="''"/>
+    <var name="result" expr="''"/>
+    <var name="tmpVal" expr="''"/>
+    <var name="passcode" expr="''"/>
 
     <!-- DB vars -->
     <var name="extension" expr="''"/>
+    <var name="destination" expr="''"/>
     <var name="recording" expr="''"/>
 
     <!-- Menus and Fields -->

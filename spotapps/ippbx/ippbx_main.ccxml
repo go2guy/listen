@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/02/2010
+    <!-- Last Modified 08/04/2010
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -135,12 +135,14 @@
         <transition event="dialog.user.forward" name="evt">
             <!-- Here we determine how to handle the call based on the incoming DNIS -->
             <log>INFO: Entered [dialog.user.forward] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'fwd'"/>
             <var name="fwdCode" expr="iiSubstr(tmpDNIS,0,3)"/>
-            <var name="mBox" expr="tmpANI"/>
             <if cond="fwdCode == '#33'">        <!-- Caller is attempting to forward an extension -->
+                <var name="mBox" expr="tmpANI"/>
        	   		<dialogstart src="'file:'+APP_PATH+'forward/getFwdInfo.vxml'" namelist="mBox importedValue EXT_LENGTH"/>
             <elseif cond="fwdCode == '#34'"/>   <!-- Caller is attempting to cancel the forward on an extension -->
-       	   		<dialogstart src="'file:'+APP_PATH+'forward/.vxml'" namelist="extension"/>
+                <var name="mBox" expr="iiSubstr(tmpDNIS,3,-1)"/>
+       	   		<dialogstart src="'file:'+TRANS_PATH+'forward.vxml'" namelist="mBox"/>
             <else/>
                 <log>ERROR: Unknown forward code [<value expr="fwdCode"/>]</log>
                 <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
@@ -165,8 +167,8 @@
             </if>
         </transition>
 
-        <transition state="hangUp" event="dialog.exit" name="evt">
-            <!-- This transition handles the return from terminating the VXML session after receiving a hangup -->
+        <transition state="fwd hangUp" event="dialog.exit" name="evt">
+            <!-- This transition handles the return from a VXML dialog -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <assign name="state" expr="'endCall'"/>
@@ -186,6 +188,7 @@
         </transition>
 
         <transition event="dialog.exit" name="evt">
+            <!-- This transition handles the return from a VXML dialog -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <send data="'dialog.user.endCall'" target="session.id"/>
