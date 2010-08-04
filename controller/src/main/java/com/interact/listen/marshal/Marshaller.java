@@ -156,7 +156,7 @@ public abstract class Marshaller
      * @param methodName method name for which to derive field name
      * @return the field name that should be used as the XML tag
      */
-    protected final String getTagForMethod(String methodName)
+    public static final String getTagForMethod(String methodName)
     {
         String withoutGet = methodName.substring("get".length());
         return withoutGet.substring(0, 1).toLowerCase() + withoutGet.substring(1);

@@ -181,6 +181,7 @@ public final class ResourceListService
      */
     private Criteria createCriteria(boolean forCount) throws CriteriaCreationException
     {
+        LOG.debug("Building list criteria for [" + resourceClass + "], forCount = [" + forCount + "]");
         Criteria criteria = session.createCriteria(resourceClass);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
@@ -253,13 +254,14 @@ public final class ResourceListService
         Method[] methods = resourceClass.getMethods();
         for(Method method : methods)
         {
-            if(!method.getName().startsWith("set"))
+            if(method.getName().startsWith("get"))
             {
                 Class<?> returnType = method.getReturnType();
-                if(Resource.class.isAssignableFrom(returnType))
+                if(Resource.class.isAssignableFrom(returnType) || Collection.class.isAssignableFrom(returnType))
                 {
-                    String tag = Marshaller.getTagForClass(returnType.getSimpleName());
+                    String tag = Marshaller.getTagForMethod(method.getName());
                     criteria.setFetchMode(tag, FetchMode.SELECT);
+                    LOG.debug("Set field [" + tag + "] to FetchMode.SELECT");
                 }
             }
         }

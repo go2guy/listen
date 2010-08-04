@@ -2,6 +2,7 @@ package com.interact.listen.api;
 
 import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;
+import com.interact.listen.ResourceListService.SortOrder;
 import com.interact.listen.exception.*;
 import com.interact.listen.history.Channel;
 import com.interact.listen.marshal.MalformedContentException;
@@ -82,6 +83,10 @@ public class ApiServlet extends HttpServlet
             if(query.containsKey("_or"))
             {
                 builder.or(Boolean.valueOf(query.get("_or")));
+            }
+            if(query.containsKey("_sortBy") && query.containsKey("_sortOrder"))
+            {
+                builder.sortBy(query.get("_sortBy"), SortOrder.valueOf(query.get("_sortOrder")));
             }
 
             ResourceListService listService = builder.build();
@@ -342,7 +347,7 @@ public class ApiServlet extends HttpServlet
             {
                 max = param;
             }
-        }
+        }   
         return max;
     }
 
