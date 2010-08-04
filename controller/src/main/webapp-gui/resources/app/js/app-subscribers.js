@@ -66,6 +66,7 @@ $(document).ready(function() {
                     if(interval) {
                         clearInterval(interval);
                     }
+                    LISTEN.SUBSCRIBERS.resetForm();
                 };
             },
 
