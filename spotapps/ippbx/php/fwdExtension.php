@@ -41,7 +41,7 @@ if ($t_flag == 'select') {
     }
     else {
         #We didn't find a record
-        $result = '';
+        $result = 'EMPTY';
     }
     exitresult($objName, $result);
 }
@@ -62,7 +62,6 @@ else {
         else
             $result = "Failure";
     }
-
     exitresult($objName,$result);
 }
 
@@ -70,10 +69,10 @@ else {
 function exitresult($objName, $result, $reason=""){
     echo "<?xml version=\"1.0\"?>\n";
     echo "<$objName>\n";
-    echo "\t<result>$result</result>\n";
+    echo "\t<Result>$result</Result>\n";
     if ($result == "Failure")
         $reason=mysql_error();
-    echo "\t<reason>$reason</reason>\n";
+    echo "\t<Reason>$reason</Reason>\n";
     echo "</$objName>\n";
     exit;
 }

@@ -101,7 +101,8 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <var name="result" expr="evt.values.result"/>
-            <if cond="result.length &gt; 0">
+            <var name="list" expr="'EMPTY,Failure'"/>
+            <if cond="((result.length &gt; 0) &amp;&amp; !(inString(result,list,',')))">
                 <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
                 <assign name="DNIS" expr="result"/>
                 <assign name="tmpDNIS" expr="result"/>

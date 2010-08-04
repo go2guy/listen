@@ -28,8 +28,8 @@
                     <assign name="flag" expr="'cancel'"/>
                 </if>
             </if>
-            <data name="fwdExt" srcexpr="DB_PATH+'fwdExtension.php'" namelist="flag extension destination"/>
-            <assign name="result" expr="fwdExt.result"/>
+            <data name="fwdExt" srcexpr="DB_PATH+'fwdExtension.php'" namelist="flag extension destination" fetchtimeout="1s" method="post"/>
+            <assign name="result" expr="fwdExt.Result"/>
             <goto next="#exit"/>
         </block>
     </form>
