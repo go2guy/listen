@@ -1,34 +1,34 @@
 $(document).ready(function() {
     $('#subscriber-form-cancel-button').click(function() {
-        LISTEN.SUBSCRIBERS.resetForm();
+        Listen.Subscribers.resetForm();
         return false;
     });
 
     $('#subscriber-form-testEmail-button').click(function() {
-        LISTEN.SUBSCRIBERS.testEmailAddress();
+        Listen.Subscribers.testEmailAddress();
         return false;
     });
 
     $('#subscriber-form-testSms-button').click(function() {
-        LISTEN.SUBSCRIBERS.testSmsAddress();
+        Listen.Subscribers.testSmsAddress();
         return false;
     });
 
     $('#subscriber-form').submit(function() {
         if($('#subscriber-form-add-button').is(':visible')) {
-            LISTEN.SUBSCRIBERS.addSubscriber();
+            Listen.Subscribers.addSubscriber();
         } else {
-            LISTEN.SUBSCRIBERS.editSubscriber();
+            Listen.Subscribers.editSubscriber();
         }
         return false;
     });
 
-    LISTEN.SUBSCRIBERS = function() {
+    Listen.Subscribers = function() {
         return {
-            SubscribersApplication: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.SubscribersApplication [construct]');
+            Application: function() {
+                Listen.trace('Listen.Subscribers.Application [construct]');
                 var interval;
-                var dynamicTable = new LISTEN.DynamicTable({
+                var dynamicTable = new Listen.DynamicTable({
                     url: '/ajax/getSubscriberList',
                     tableId: 'subscribers-table',
                     templateId: 'subscriber-row-template',
@@ -37,7 +37,7 @@ $(document).ready(function() {
                     },
                     paginationId: 'subscribers-pagination',
                     updateRowCallback: function(row, data, animate) {
-                        LISTEN.setFieldContent(row.find('.subscriber-cell-username'), data.username, animate);
+                        Listen.setFieldContent(row.find('.subscriber-cell-username'), data.username, animate);
 
                         var numbers = '';
                         for(var i = 0; i < data.accessNumbers.length; i++) {
@@ -47,14 +47,14 @@ $(document).ready(function() {
                             }
                         }
 
-                        LISTEN.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, animate);
-                        LISTEN.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, animate);
-                        LISTEN.setFieldContent(row.find('.subscriber-cell-editButton'), '<button class="button-edit" title="Edit subscriber" onclick="LISTEN.SUBSCRIBERS.loadSubscriber(' + data.id + ');return false;">Edit</button>', false, true);
+                        Listen.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, animate);
+                        Listen.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, animate);
+                        Listen.setFieldContent(row.find('.subscriber-cell-editButton'), '<button class="button-edit" title="Edit subscriber" onclick="Listen.Subscribers.loadSubscriber(' + data.id + ');return false;">Edit</button>', false, true);
                     }
                 });
 
                 this.load = function() {
-                    LISTEN.trace('LISTEN.SUBSCRIBERS.SubscribersApplication.load');
+                    Listen.trace('Listen.Subscribers.Application.load');
                     dynamicTable.pollAndSet(false);
                     interval = setInterval(function() {
                         dynamicTable.pollAndSet(true);
@@ -62,18 +62,18 @@ $(document).ready(function() {
                 };
 
                 this.unload = function() {
-                    LISTEN.trace('LISTEN.SUBSCRIBERS.SubscribersApplication.unload');
+                    Listen.trace('Listen.Subscribers.Application.unload');
                     if(interval) {
                         clearInterval(interval);
                     }
-                    LISTEN.SUBSCRIBERS.resetForm();
+                    Listen.Subscribers.resetForm();
                 };
             },
 
             loadSubscriber: function(id) {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.loadSubscriber ' + id);
-                LISTEN.SUBSCRIBERS.resetForm();
-                var start = LISTEN.timestamp();
+                Listen.trace('Listen.Subscribers.loadSubscriber ' + id);
+                Listen.Subscribers.resetForm();
+                var start = Listen.timestamp();
                 $.ajax({
                     url: '/ajax/getSubscriber?id=' + id,
                     dataType: 'json',
@@ -126,7 +126,7 @@ $(document).ready(function() {
                         $('#subscriber-form-cancel-button').show();
                     },
                     complete: function(xhr, textStatus) {
-                        var elapsed = LISTEN.timestamp() - start;
+                        var elapsed = Listen.timestamp() - start;
                         $('#latency').text(elapsed);
                     }
                 });
@@ -134,8 +134,8 @@ $(document).ready(function() {
             },
 
             resetForm: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.resetForm');
-                LISTEN.SUBSCRIBERS.clearError();
+                Listen.trace('Listen.Subscribers.resetForm');
+                Listen.Subscribers.clearError();
                 $('#subscriber-form')[0].reset();
                 $('#subscriber-form-cancel-button').hide();
                 $('#subscriber-form-edit-button').hide();
@@ -148,8 +148,8 @@ $(document).ready(function() {
             },
 
             addSubscriber: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.addSubscriber');
-                LISTEN.SUBSCRIBERS.disableButtons();
+                Listen.trace('Listen.Subscribers.addSubscriber');
+                Listen.Subscribers.disableButtons();
                 SERVER.post({
                     url: '/ajax/addSubscriber',
                     properties: {
@@ -167,19 +167,19 @@ $(document).ready(function() {
                         voicemailPlaybackOrder: $('#subscriber-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
-                        LISTEN.SUBSCRIBERS.resetForm();
-                        LISTEN.SUBSCRIBERS.showSuccess('Subscriber added');
-                        LISTEN.SUBSCRIBERS.enableButtons();
+                        Listen.Subscribers.resetForm();
+                        Listen.Subscribers.showSuccess('Subscriber added');
+                        Listen.Subscribers.enableButtons();
                     },
                     errorCallback: function(message) {
-                        LISTEN.SUBSCRIBERS.showError(message);
+                        Listen.Subscribers.showError(message);
                     }
                 });
             },
 
             editSubscriber: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.editSubscriber');
-                LISTEN.SUBSCRIBERS.disableButtons();
+                Listen.trace('Listen.Subscribers.editSubscriber');
+                Listen.Subscribers.disableButtons();
                 SERVER.post({
                     url: '/ajax/editSubscriber',
                     properties: {
@@ -198,29 +198,29 @@ $(document).ready(function() {
                         voicemailPlaybackOrder: $('#subscriber-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
-                        LISTEN.SUBSCRIBERS.resetForm();
-                        LISTEN.SUBSCRIBERS.showSuccess('Subscriber updated');
-                        LISTEN.SUBSCRIBERS.enableButtons();
+                        Listen.Subscribers.resetForm();
+                        Listen.Subscribers.showSuccess('Subscriber updated');
+                        Listen.Subscribers.enableButtons();
                     },
                     errorCallback: function(message) {
-                        LISTEN.SUBSCRIBERS.showError(message);
+                        Listen.Subscribers.showError(message);
                     }
                 });
             },
 
             clearError: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.clearError');
+                Listen.trace('Listen.Subscribers.clearError');
                 $('#subscriber-form .form-error-message').text('').hide();
             },
 
             showError: function(message) {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.showError');
+                Listen.trace('Listen.Subscribers.showError');
                 $('#subscriber-form .form-error-message').text(message).slideDown(100);
             },
 
             showSuccess: function(message) {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.showSuccess');
-                LISTEN.SUBSCRIBERS.clearError();
+                Listen.trace('Listen.Subscribers.showSuccess');
+                Listen.Subscribers.clearError();
                 var elem = $('#subscriber-form .form-success-message');
                 elem.text(message).slideDown(100);
                 setTimeout(function() {
@@ -229,23 +229,23 @@ $(document).ready(function() {
             },
 
             disableButtons: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.disableButtons');
+                Listen.trace('Listen.Subscribers.disableButtons');
                 $('#subscriber-form button').attr('readonly', 'readonly');
             },
 
             enableButtons: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.enableButtons');
+                Listen.trace('Listen.Subscribers.enableButtons');
                 $('#subscriber-form button').removeAttr('readonly');
             },
             
             testEmailAddress: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.testEmailAddress');
-                LISTEN.SUBSCRIBERS.testAddress('email', $('#subscriber-form-emailAddress').val());
+                Listen.trace('Listen.Subscribers.testEmailAddress');
+                Listen.Subscribers.testAddress('email', $('#subscriber-form-emailAddress').val());
             },
             
             testSmsAddress: function() {
-                LISTEN.trace('LISTEN.SUBSCRIBERS.testSmsAddress');
-                LISTEN.SUBSCRIBERS.testAddress('sms', $('#subscriber-form-smsAddress').val());
+                Listen.trace('Listen.Subscribers.testSmsAddress');
+                Listen.Subscribers.testAddress('sms', $('#subscriber-form-smsAddress').val());
             },
             
             testAddress: function(type, address) {
@@ -256,16 +256,16 @@ $(document).ready(function() {
                         address: address
                     },
                     successCallback: function() {
-                        LISTEN.SUBSCRIBERS.showSuccess("Test notification sent to " + address);
+                        Listen.Subscribers.showSuccess("Test notification sent to " + address);
                     },
                     errorCallback: function(message) {
-                        LISTEN.SUBSCRIBERS.showError(message);
+                        Listen.Subscribers.showError(message);
                     }
                 });
             }
         }
     }();
 
-    var app = new LISTEN.SUBSCRIBERS.SubscribersApplication();
-    LISTEN.registerApp(new LISTEN.Application('subscribers', 'subscribers-application', 'menu-subscribers', app));
+    var app = new Listen.Subscribers.Application();
+    Listen.registerApp(new Listen.Application('subscribers', 'subscribers-application', 'menu-subscribers', app));
 });

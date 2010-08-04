@@ -1,3 +1,3 @@
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('findme', 'findme-application', 'menu-findme'));
+    Listen.registerApp(new Listen.Application('findme', 'findme-application', 'menu-findme'));
 });

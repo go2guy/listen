@@ -1,7 +1,7 @@
 var currentConference;
 
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('conferencing', 'conferencing-application', 'menu-conferencing', new Conference()));
+    Listen.registerApp(new Listen.Application('conferencing', 'conferencing-application', 'menu-conferencing', new Conference()));
 
     // schedule
 
@@ -37,22 +37,22 @@ $(document).ready(function() {
 function Conference(id) {
     var conferenceId;
 
-    if(LISTEN.isDefined(id)) {
-        LISTEN.debug('Constructing conference, id provided [' + id + ']')
+    if(Listen.isDefined(id)) {
+        Listen.debug('Constructing conference, id provided [' + id + ']')
         conferenceId = id;
     } else {
-        LISTEN.debug('Constructing conference without id; asking server');
-        $.getJSON('/ajax/getConferenceInfo', LISTEN.bind(this, function(data) {
+        Listen.debug('Constructing conference without id; asking server');
+        $.getJSON('/ajax/getConferenceInfo', Listen.bind(this, function(data) {
             conferenceId = data.info.id;
-            LISTEN.debug('Got id [' + conferenceId + '] from server');
-            // if conferencing is the first loaded application, the LISTEN object will try and load it;
-            // however, this ajax response might be returned AFTER the LISTEN object loads this application,
+            Listen.debug('Got id [' + conferenceId + '] from server');
+            // if conferencing is the first loaded application, the Listen object will try and load it;
+            // however, this ajax response might be returned AFTER the Listen object loads this application,
             // which means that this.conferenceId will not be set and the load() function will not actually
             // poll for the conference.
-            // therefore, if the current LISTEN application is this one (conferencing), we need to force it
+            // therefore, if the current Listen application is this one (conferencing), we need to force it
             // to re-load, since it now has the conferenceId
-            if(LISTEN.getCurrentApplication().name == 'conferencing') {
-                LISTEN.debug("Current application is 'conferencing', forcing load()");
+            if(Listen.getCurrentApplication().name == 'conferencing') {
+                Listen.debug("Current application is 'conferencing', forcing load()");
                 this.load();
             }
         }));
@@ -61,7 +61,7 @@ function Conference(id) {
     currentConference = this;
     var interval;
 
-    var callerTable = new LISTEN.DynamicTable({
+    var callerTable = new Listen.DynamicTable({
         url: '/ajax/getConferenceParticipants?id=' + conferenceId,
         tableId: 'conference-caller-table',
         templateId: 'caller-row-template',
@@ -95,25 +95,25 @@ function Conference(id) {
             var numberCell = row.find('.caller-cell-number');
             var numberContent = data.number + (data.isAdmin ? ' *' : '');
             numberCell.attr('title', numberContent + ': ' + (data.isAdmin ? 'Admin' : (data.isPassive ? 'Passive' : 'Active')));
-            LISTEN.setFieldContent(numberCell, numberContent, animate);
+            Listen.setFieldContent(numberCell, numberContent, animate);
 
             // mute/unmute icons
             if(!data.isAdmin && !data.isPassive) {
-                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="icon-' + (data.isAdminMuted ? 'un' : '') + 'mute' + '" ' + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number) + '"></button>', false, true);
+                Listen.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="icon-' + (data.isAdminMuted ? 'un' : '') + 'mute' + '" ' + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number) + '"></button>', false, true);
             } else {
-                LISTEN.setFieldContent(row.find('.caller-cell-muteIcon'), '', false);
+                Listen.setFieldContent(row.find('.caller-cell-muteIcon'), '', false);
             }
 
             // drop button
             if(data.isAdmin) {
-                LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '', false);
+                Listen.setFieldContent(row.find('.caller-cell-dropIcon'), '', false);
             } else {
-                LISTEN.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
+                Listen.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
             }
         }
     });
 
-    var historyTable = new LISTEN.DynamicTable({
+    var historyTable = new Listen.DynamicTable({
         tableId: 'conference-history-table',
         templateId: 'conferencehistory-row-template',
         retrieveList: function(data) {
@@ -122,12 +122,12 @@ function Conference(id) {
         alternateRowColors: true,
         reverse: true,
         updateRowCallback: function(row, data, animate) {
-            LISTEN.setFieldContent(row.find('.conferencehistory-cell-date'), data.dateCreated, animate);
-            LISTEN.setFieldContent(row.find('.conferencehistory-cell-description'), data.description, animate);
+            Listen.setFieldContent(row.find('.conferencehistory-cell-date'), data.dateCreated, animate);
+            Listen.setFieldContent(row.find('.conferencehistory-cell-description'), data.description, animate);
         }
     });
 
-    var pinTable = new LISTEN.DynamicTable({
+    var pinTable = new Listen.DynamicTable({
         tableId: 'conference-pin-table',
         templateId: 'pin-row-template',
         retrieveList: function(data) {
@@ -150,13 +150,13 @@ function Conference(id) {
                 row.removeClass('pin-row-passive');
             }
 
-            LISTEN.setFieldContent(row.find('.pin-cell-number'), data.number, animate);
-            LISTEN.setFieldContent(row.find('.pin-cell-type'), data.type, animate);
-            LISTEN.setFieldContent(row.find('.pin-cell-removeIcon'), '<button class="button-delete" readonly="readonly" disabled="disabled"></button>', false, true);
+            Listen.setFieldContent(row.find('.pin-cell-number'), data.number, animate);
+            Listen.setFieldContent(row.find('.pin-cell-type'), data.type, animate);
+            Listen.setFieldContent(row.find('.pin-cell-removeIcon'), '<button class="button-delete" readonly="readonly" disabled="disabled"></button>', false, true);
         }
     });
 
-    var recordingTable = new LISTEN.DynamicTable({
+    var recordingTable = new Listen.DynamicTable({
         url: '/ajax/getConferenceRecordingList?id=' + conferenceId,
         tableId: 'conference-recording-table',
         templateId: 'recording-row-template',
@@ -167,16 +167,16 @@ function Conference(id) {
         alternateRowColors: true,
         paginationId: 'conference-recording-pagination',
         updateRowCallback: function(row, data, animate) {
-            LISTEN.setFieldContent(row.find('.recording-cell-dateCreated'), data.dateCreated, animate);
+            Listen.setFieldContent(row.find('.recording-cell-dateCreated'), data.dateCreated, animate);
 
             if(data.duration && data.duration != '') {
                 var d = Math.floor(parseInt(data.duration) / 1000);
                 var durationText = (d < 60 ? '0' : (Math.floor(d / 60))) + ":" + (d % 60 < 10 ? '0' : '') + (d % 60);
-                LISTEN.setFieldContent(row.find('.recording-cell-duration'), durationText, animate);
+                Listen.setFieldContent(row.find('.recording-cell-duration'), durationText, animate);
             }
 
-            LISTEN.setFieldContent(row.find('.recording-cell-fileSize'), (Math.floor((parseInt(data.fileSize) / 1024) * 100) / 100) + "KB", animate);
-            LISTEN.setFieldContent(row.find('.recording-cell-download'), '<a href="/ajax/getConferenceRecording?id=' + data.id + '">Download</a>', false, true);
+            Listen.setFieldContent(row.find('.recording-cell-fileSize'), (Math.floor((parseInt(data.fileSize) / 1024) * 100) / 100) + "KB", animate);
+            Listen.setFieldContent(row.find('.recording-cell-download'), '<a href="/ajax/getConferenceRecording?id=' + data.id + '">Download</a>', false, true);
         }
     });
 
@@ -187,7 +187,7 @@ function Conference(id) {
         recordingTable.setUrl('/ajax/getConferenceRecordingList?id=' + conferenceId);
         recordingTable.pollAndSet(animate);
 
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             url: '/ajax/getConferenceInfo?id=' + conferenceId,
             dataType: 'json',
@@ -226,7 +226,7 @@ function Conference(id) {
                 }
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -237,8 +237,8 @@ function Conference(id) {
     }
 
     this.load = function() {
-        LISTEN.trace('Loading conferencing, conference id = [' + conferenceId + ']');
-        if(LISTEN.isDefined(conferenceId)) {
+        Listen.trace('Loading conferencing, conference id = [' + conferenceId + ']');
+        if(Listen.isDefined(conferenceId)) {
             pollAndSet(false);
             $('#conferencing-application .conference-notloaded').hide();
             $('#conferencing-application .conference-content').show();
@@ -252,7 +252,7 @@ function Conference(id) {
     };
 
     this.unload = function() {
-        LISTEN.trace('Unloading conferencing');
+        Listen.trace('Unloading conferencing');
         $('#conferencing-application .conference-content').hide();
         $('#conferencing-application .conference-notloaded').show();
         if(interval) {
@@ -278,7 +278,7 @@ function scheduleConference(event) {
     var scheduleConferenceActiveParticipants = $('#scheduleConferenceActiveParticipants');
     var scheduleConferencePassiveParticipants = $('#scheduleConferencePassiveParticipants'); 
 
-    var start = LISTEN.timestamp();
+    var start = Listen.timestamp();
     $.ajax({
         type: 'POST',
         url: '/ajax/scheduleConference',
@@ -305,7 +305,7 @@ function scheduleConference(event) {
             scheduleConferenceDescription.val('');
             scheduleConferenceActiveParticipants.val('');
             scheduleConferencePassiveParticipants.val('');
-            LISTEN.notify('Emails have been sent to the provided addresses');
+            Listen.notify('Emails have been sent to the provided addresses');
         },
         error: function(data, status) {
             var div = $('#scheduleConferenceForm .form-error-message');
@@ -313,7 +313,7 @@ function scheduleConference(event) {
             div.slideDown(200);
         },
         complete: function(xhr, textStatus) {
-            var elapsed = LISTEN.timestamp() - start;
+            var elapsed = Listen.timestamp() - start;
             $('#latency').text(elapsed);
         }
     });

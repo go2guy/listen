@@ -1,12 +1,12 @@
 $(document).ready(function() {
-    LISTEN.HISTORY = function() {
+    Listen.History = function() {
         return {
-            HistoryApplication: function() {
-                LISTEN.trace('LISTEN.HISTORY.HistoryApplication [construct]');
+            Application: function() {
+                Listen.trace('Listen.History.Application [construct]');
                 var first = 0;
                 var max = 25;
 
-                var historyList = new LISTEN.DynamicTable({
+                var historyList = new Listen.DynamicTable({
                     url: '/ajax/getHistoryList',
                     tableId: 'history-list',
                     isList: true,
@@ -16,7 +16,7 @@ $(document).ready(function() {
                         } else if(dataRow.type == 'Call') {
                             return 'history-call-template';
                         } else {
-                            LISTEN.error('No template found for [' + dataRow.type + ']');
+                            Listen.error('No template found for [' + dataRow.type + ']');
                             return false;
                         }
                     },
@@ -32,25 +32,25 @@ $(document).ready(function() {
                             row.addClass(c);
                         }
                         if(data.type == 'Action') {
-                            LISTEN.setFieldContent(row.find('.history-action-date'), data.date, animate);
-                            LISTEN.setFieldContent(row.find('.history-action-type'), '<div class="image-edit"></div>', animate, true);
-                            LISTEN.setFieldContent(row.find('.history-action-subscriber'), data.subscriber, animate);
+                            Listen.setFieldContent(row.find('.history-action-date'), data.date, animate);
+                            Listen.setFieldContent(row.find('.history-action-type'), '<div class="image-edit"></div>', animate, true);
+                            Listen.setFieldContent(row.find('.history-action-subscriber'), data.subscriber, animate);
 
                             var description = '<b>' + data.action + '</b> [' + data.channel + '] - ' + data.description;
-                            LISTEN.setFieldContent(row.find('.history-action-description'), description, animate, true);
+                            Listen.setFieldContent(row.find('.history-action-description'), description, animate, true);
                         } else if(data.type == 'Call') {
-                            LISTEN.setFieldContent(row.find('.history-call-date'), data.date, animate);
-                            LISTEN.setFieldContent(row.find('.history-call-type'), '<div class="image-outdial"></div>', animate, true);
-                            LISTEN.setFieldContent(row.find('.history-call-subscriber'), data.subscriber, animate);
+                            Listen.setFieldContent(row.find('.history-call-date'), data.date, animate);
+                            Listen.setFieldContent(row.find('.history-call-type'), '<div class="image-outdial"></div>', animate, true);
+                            Listen.setFieldContent(row.find('.history-call-subscriber'), data.subscriber, animate);
 
                             var description = '<b>' + data.ani + '</b> dialed <b>' + data.dnis + '</b> <i>(' + data.duration + ')</i>';
-                            LISTEN.setFieldContent(row.find('.history-call-description'), description, animate, true);
+                            Listen.setFieldContent(row.find('.history-call-description'), description, animate, true);
                         }
                     }
                 });
 
                 this.load = function() {
-                    LISTEN.trace('LISTEN.HISTORY.HistoryApplication.load');
+                    Listen.trace('Listen.History.Application.load');
                     historyList.pollAndSet();
                 };
 
@@ -61,6 +61,6 @@ $(document).ready(function() {
         }
     }();
 
-    var app = new LISTEN.HISTORY.HistoryApplication();
-    LISTEN.registerApp(new LISTEN.Application('history', 'history-application', 'menu-history', app));
+    var app = new Listen.History.Application();
+    Listen.registerApp(new Listen.Application('history', 'history-application', 'menu-history', app));
 });

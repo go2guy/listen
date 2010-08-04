@@ -1,11 +1,11 @@
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('voicemail', 'voicemail-application', 'menu-voicemail', new Voicemail()));
+    Listen.registerApp(new Listen.Application('voicemail', 'voicemail-application', 'menu-voicemail', new Voicemail()));
 });
 
 function Voicemail() {
     var interval;
 
-    var dynamicTable = new LISTEN.DynamicTable({
+    var dynamicTable = new Listen.DynamicTable({
         url: '/ajax/getVoicemailList',
         tableId: 'voicemail-table',
         templateId: 'voicemail-row-template',
@@ -27,16 +27,16 @@ function Voicemail() {
                 row.addClass('voicemail-read');
             }
 
-            LISTEN.setFieldContent(row.find('.voicemail-cell-readStatus'), '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'SERVER.markVoicemailReadStatus(' + data.id + ', true);' : 'SERVER.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as old' : 'Mark as new') + '"></button>', false, true);
-            LISTEN.setFieldContent(row.find('.voicemail-cell-from'), data.leftBy, animate);
-            LISTEN.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
-            LISTEN.setFieldContent(row.find('.voicemail-cell-duration'), data.duration, animate);
-            LISTEN.setFieldContent(row.find('.voicemail-cell-download'), '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>', false, true);
+            Listen.setFieldContent(row.find('.voicemail-cell-readStatus'), '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'SERVER.markVoicemailReadStatus(' + data.id + ', true);' : 'SERVER.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as old' : 'Mark as new') + '"></button>', false, true);
+            Listen.setFieldContent(row.find('.voicemail-cell-from'), data.leftBy, animate);
+            Listen.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
+            Listen.setFieldContent(row.find('.voicemail-cell-duration'), data.duration, animate);
+            Listen.setFieldContent(row.find('.voicemail-cell-download'), '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>', false, true);
         }
     });
 
     this.load = function() {
-        LISTEN.trace('Loading voicemail');
+        Listen.trace('Loading voicemail');
         dynamicTable.pollAndSet(false);
         interval = setInterval(function() {
             dynamicTable.pollAndSet(true);
@@ -44,7 +44,7 @@ function Voicemail() {
     };
 
     this.unload = function() {
-        LISTEN.trace('Unloading voicemail');
+        Listen.trace('Unloading voicemail');
         if(interval) {
             clearInterval(interval);
         }

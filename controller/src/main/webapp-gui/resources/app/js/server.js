@@ -1,6 +1,6 @@
 var SERVER = {
     post: function(args) {
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: args.url,
@@ -16,14 +16,14 @@ var SERVER = {
                 }
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     dropCaller: function(id) {
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/dropParticipant',
@@ -35,14 +35,14 @@ var SERVER = {
                 //noticeError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     markVoicemailReadStatus: function(id, readStatus) {
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/markVoicemailReadStatus',
@@ -50,14 +50,14 @@ var SERVER = {
             success: function(data) { /* TODO anything? */ },
             error: function(req) { /* TODO anything? */ },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     muteCaller: function(id) {
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/muteParticipant',
@@ -69,7 +69,7 @@ var SERVER = {
                 //noticeError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -80,7 +80,7 @@ var SERVER = {
         errorDiv.hide();
         errorDiv.text('');
 
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/outdial',
@@ -88,7 +88,7 @@ var SERVER = {
                     conferenceId: conferenceId },
             success: function(data) {
                 $('#outdial-dialog').slideUp(200);
-                LISTEN.notify('Number ' + number + ' is being dialed');
+                Listen.notify('Number ' + number + ' is being dialed');
             },
             error: function(req) {
                 errorDiv.text(req.responseText);
@@ -96,14 +96,14 @@ var SERVER = {
                 //notify('An error occurred dialing the number - please contact an Administrator.');
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
     
     startRecording: function(id) {
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/startRecording',
@@ -115,14 +115,14 @@ var SERVER = {
                 //noticeError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
     
     stopRecording: function(id) {
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/stopRecording',
@@ -134,14 +134,14 @@ var SERVER = {
                 //noticeError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     unmuteCaller: function(id) {
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/unmuteParticipant',
@@ -153,7 +153,7 @@ var SERVER = {
                 //noticeError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });

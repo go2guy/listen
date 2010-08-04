@@ -1,32 +1,32 @@
 $(document).ready(function() {
 
     $('#profile-form').submit(function() {
-        LISTEN.PROFILE.editSubscriber();
+        Listen.Profile.editSubscriber();
         return false;
     });
 
     $('#profile-form-testEmail-button').click(function() {
-        LISTEN.PROFILE.testEmailAddress();
+        Listen.Profile.testEmailAddress();
         return false;
     });
 
     $('#profile-form-testSms-button').click(function() {
-        LISTEN.PROFILE.testSmsAddress();
+        Listen.Profile.testSmsAddress();
         return false;
     });
 
     $('#pager-form').submit(function() {
-        LISTEN.PROFILE.editPagerInfo();
+        Listen.Profile.editPagerInfo();
         return false;
     });
 
-    LISTEN.PROFILE = function() {
+    Listen.Profile = function() {
         return {
-            ProfileApplication: function() {
-                LISTEN.trace('LISTEN.PROFILE.ProfileApplication [construct]');                
+            Application: function() {
+                Listen.trace('Listen.Profile.Application [construct]');                
                 
                 this.load = function() {
-                    LISTEN.trace('Loading profile');
+                    Listen.trace('Loading profile');
                     $.ajax({
                         url: '/ajax/getSubscriber',
                         dataType: 'json',
@@ -91,15 +91,15 @@ $(document).ready(function() {
                 };
                 
                 this.unload = function() {
-                    LISTEN.trace('Unloading profile');
-                    LISTEN.PROFILE.clearError();
+                    Listen.trace('Unloading profile');
+                    Listen.Profile.clearError();
                     $('#pager-form .form-error-message').text('').hide();
                 };
             },
             
             editSubscriber: function() {
-                LISTEN.trace('LISTEN.PROFILE.editSubscriber');
-                LISTEN.PROFILE.disableButtons();
+                Listen.trace('Listen.Profile.editSubscriber');
+                Listen.Profile.disableButtons();
                 SERVER.post({
                     url: '/ajax/editSubscriber',
                     properties: {
@@ -117,17 +117,17 @@ $(document).ready(function() {
                         voicemailPlaybackOrder: $('#profile-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
-                        LISTEN.PROFILE.showSuccess('Profile updated');
-                        LISTEN.PROFILE.enableButtons();
+                        Listen.Profile.showSuccess('Profile updated');
+                        Listen.Profile.enableButtons();
                     },
                     errorCallback: function(message) {
-                        LISTEN.PROFILE.showError(message);
+                        Listen.Profile.showError(message);
                     }
                 });
             },
             
             editPagerInfo: function() {
-                LISTEN.trace('LISTEN.PROFILE.editPagerInfo');
+                Listen.trace('Listen.Profile.editPagerInfo');
                 $('#pager-form .form-error-message').text('').hide();
                 
                 $('#pager-form-alternate-number').val($('#pager-form-alternate-number').val().replace(/[-\.]/g, ""));
@@ -156,18 +156,18 @@ $(document).ready(function() {
             },
 
             clearError: function() {
-                LISTEN.trace('LISTEN.PROFILE.clearError');
+                Listen.trace('Listen.Profile.clearError');
                 $('#profile-form .form-error-message').text('').hide();
             },
 
             showError: function(message) {
-                LISTEN.trace('LISTEN.PROFILE.showError');
+                Listen.trace('Listen.Profile.showError');
                 $('#profile-form .form-error-message').text(message).slideDown(100);
             },
 
             showSuccess: function(message) {
-                LISTEN.trace('LISTEN.PROFILE.showSuccess');
-                LISTEN.PROFILE.clearError();
+                Listen.trace('Listen.Profile.showSuccess');
+                Listen.Profile.clearError();
                 var elem = $('#profile-form .form-success-message');
                 elem.text(message).slideDown(100);
                 setTimeout(function() {
@@ -176,23 +176,23 @@ $(document).ready(function() {
             },
 
             disableButtons: function() {
-                LISTEN.trace('LISTEN.PROFILE.disableButtons');
+                Listen.trace('Listen.Profile.disableButtons');
                 $('#profile-form button').attr('readonly', 'readonly');
             },
 
             enableButtons: function() {
-                LISTEN.trace('LISTEN.PROFILE.enableButtons');
+                Listen.trace('Listen.Profile.enableButtons');
                 $('#profile-form button').removeAttr('readonly');
             },
             
             testEmailAddress: function() {
-                LISTEN.trace('LISTEN.PROFILE.testEmailAddress');
-                LISTEN.PROFILE.testAddress('email', $('#profile-form-emailAddress').val());
+                Listen.trace('Listen.Profile.testEmailAddress');
+                Listen.Profile.testAddress('email', $('#profile-form-emailAddress').val());
             },
             
             testSmsAddress: function() {
-                LISTEN.trace('LISTEN.PROFILE.testSmsAddress');
-                LISTEN.PROFILE.testAddress('sms', $('#profile-form-smsAddress').val());
+                Listen.trace('Listen.Profile.testSmsAddress');
+                Listen.Profile.testAddress('sms', $('#profile-form-smsAddress').val());
             },
             
             testAddress: function(type, address) {
@@ -203,16 +203,16 @@ $(document).ready(function() {
                         address: address
                     },
                     successCallback: function() {
-                        LISTEN.PROFILE.showSuccess("Test notification sent to " + address);
+                        Listen.Profile.showSuccess("Test notification sent to " + address);
                     },
                     errorCallback: function(message) {
-                        LISTEN.PROFILE.showError(message);
+                        Listen.Profile.showError(message);
                     }
                 });
             }
         }
     }();
 
-    var app = new LISTEN.PROFILE.ProfileApplication();
-    LISTEN.registerApp(new LISTEN.Application('profile', 'profile-application', 'profile-button', app));
+    var app = new Listen.Profile.Application();
+    Listen.registerApp(new Listen.Application('profile', 'profile-application', 'profile-button', app));
 });

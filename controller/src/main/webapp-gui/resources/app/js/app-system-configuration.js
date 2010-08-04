@@ -1,12 +1,12 @@
 $(document).ready(function() {
     var application = new SystemConfigurationApplication();
 
-    LISTEN.registerApp(new LISTEN.Application('sysconfig', 'sysconfig-application', 'menu-sysconfig', application));
+    Listen.registerApp(new Listen.Application('sysconfig', 'sysconfig-application', 'menu-sysconfig', application));
 
     function SystemConfigurationApplication() {
         this.load = function() {
-            LISTEN.trace('Loading system configuration');
-            var start = LISTEN.timestamp();
+            Listen.trace('Loading system configuration');
+            var start = Listen.timestamp();
             $.ajax({
                 url: '/ajax/getProperties',
                 dataType: 'json',
@@ -35,14 +35,14 @@ $(document).ready(function() {
                     toggleActiveDirectoryFields();
                 },
                 complete: function(xhr, textStatus) {
-                    var elapsed = LISTEN.timestamp() - start;
+                    var elapsed = Listen.timestamp() - start;
                     $('#latency').text(elapsed);
                 }
             });
         };
 
         this.unload = function() {
-            LISTEN.trace('Unloading system configuration');
+            Listen.trace('Unloading system configuration');
             // no-op
         };
     };
@@ -85,7 +85,7 @@ $(document).ready(function() {
 
     $('#mail-form').submit(function() {
         $('#mail-form .form-error-message').text('').hide();
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/setProperties',
@@ -105,7 +105,7 @@ $(document).ready(function() {
                 $('#mail-form .form-error-message').text(xhr.responseText).slideDown(100);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -142,7 +142,7 @@ $(document).ready(function() {
             value = value.substring(0, value.length - 1); // remove last semicolon
         }
 
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/setProperties',
@@ -159,7 +159,7 @@ $(document).ready(function() {
                 $('#dnis-mapping-form .form-error-message').text(xhr.responseText).slideDown(100);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -169,7 +169,7 @@ $(document).ready(function() {
 
     $('#conferencing-configuration-form').submit(function() {
         $('#conferencing-configuration-form .form-error-message').text('').hide();
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/setProperties',
@@ -186,7 +186,7 @@ $(document).ready(function() {
                 $('#conferencing-configuration-form .form-error-message').text(xhr.responseText).slideDown(100);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -195,7 +195,7 @@ $(document).ready(function() {
 
     $('#alerts-configuration-form').submit(function() {
         $('#alerts-configuration-form .form-error-message').text('').hide();
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/setProperties',
@@ -213,7 +213,7 @@ $(document).ready(function() {
                 $('#alerts-configuration-form .form-error-message').text(xhr.responseText).slideDown(100);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -222,7 +222,7 @@ $(document).ready(function() {
 
     $('#sysconfig-authentication-form').submit(function() {
         $('#sysconfig-authentication-form .form-error-message').text('').hide();
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: '/ajax/setProperties',
@@ -241,7 +241,7 @@ $(document).ready(function() {
                 $('#sysconfig-authentication-form .form-error-message').text(xhr.responseText).slideDown(100);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });

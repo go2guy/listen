@@ -1,11 +1,11 @@
-var LISTEN;
+var Listen;
 $(document).ready(function() {
     $.ajaxSetup({
         error: function(xhr, textStatus, errorThrown) {
             if(xhr && xhr.status == 401) {
                 window.location = '/logout';
             } else {
-                LISTEN.error('textStatus = [' + textStatus + '], xhrStatus = [' + xhr.status + ']');
+                Listen.error('textStatus = [' + textStatus + '], xhrStatus = [' + xhr.status + ']');
             }
         }
     });
@@ -33,7 +33,7 @@ $(document).ready(function() {
 
     var failedTries = 0;
     setInterval(function() {
-        var start = LISTEN.timestamp();
+        var start = Listen.timestamp();
         $.ajax({
             url: '/meta/ping?auth=true',
             cache: 'false',
@@ -67,13 +67,13 @@ $(document).ready(function() {
                 }
             },
             complete: function(xhr, textStatus) {
-                var elapsed = LISTEN.timestamp() - start;
+                var elapsed = Listen.timestamp() - start;
                 $('#pinglatency').text(elapsed);
             }
         });
     }, 2000);
 
-    LISTEN = function() {
+    Listen = function() {
         var applications = [];
         var currentApplication;
 
@@ -96,7 +96,7 @@ $(document).ready(function() {
                 var windowDiv = $('#' + windowId);
                 var menuItem = $('#' + menuId);
                 if(menuItem && windowDiv) {
-                    menuItem.click(LISTEN.bind(this, function() {
+                    menuItem.click(Listen.bind(this, function() {
                         pub.switchApp(this);
                     }));
                 }
@@ -110,12 +110,12 @@ $(document).ready(function() {
                 };
 
                 this.swapWith = function(other, withContent) {
-                    LISTEN.debug('Swapping, this = [' + this.name + '], other = [' + other.name + ']');
+                    Listen.debug('Swapping, this = [' + this.name + '], other = [' + other.name + ']');
                     if(this === other) {
-                        LISTEN.debug('Tried to switch to same application, no switch will be performed');
+                        Listen.debug('Tried to switch to same application, no switch will be performed');
                         return;
                     }
-                    this.hide(LISTEN.bind(this, function() {
+                    this.hide(Listen.bind(this, function() {
                         if(this.content) {
                             this.content.unload();
                         }
@@ -198,7 +198,7 @@ $(document).ready(function() {
                         left.unbind('click');
                         right.unbind('click');
                         if(first > 0) {
-                            left.click(LISTEN.bind(this, function() {
+                            left.click(Listen.bind(this, function() {
                                 currentFirst = Math.max(first - max, 0);
                                 currentMax = max;
                                 this.pollAndSet(false);
@@ -208,7 +208,7 @@ $(document).ready(function() {
                             left.hide();
                         }
                         if(first + count + 1 <= total) {
-                            right.click(LISTEN.bind(this, function() {
+                            right.click(Listen.bind(this, function() {
                                 currentFirst = first + count;
                                 currentMax = max;
                                 this.pollAndSet(false);
@@ -294,21 +294,21 @@ $(document).ready(function() {
                             url += '&';
                         }
                         url += 'first=' + currentFirst + '&max=' + currentMax;
-                        var start = LISTEN.timestamp();
+                        var start = Listen.timestamp();
                         $.ajax({
                             url: url,
                             dataType: 'json',
                             cache: false,
-                            success: LISTEN.bind(this, function(data, textStatus, xhr) {
+                            success: Listen.bind(this, function(data, textStatus, xhr) {
                                 this.update(data, animate);
                             }),
                             complete: function(xhr, textStatus) {
-                                var elapsed = LISTEN.timestamp() - start;
+                                var elapsed = Listen.timestamp() - start;
                                 $('#latency').text(elapsed);
                             }
                         });
                     } else {
-                        LISTEN.error('Warning - DynamicTable.pollAndSet() invoked without args.url');
+                        Listen.error('Warning - DynamicTable.pollAndSet() invoked without args.url');
                     }
                 };
             },
@@ -339,7 +339,7 @@ $(document).ready(function() {
                     }
                 }
                 if(changed && animate === true) {
-                    LISTEN.highlight(field);
+                    Listen.highlight(field);
                 }
             },
 
@@ -350,7 +350,7 @@ $(document).ready(function() {
             registerApp: function(app) {
                 applications.push(app);
                 if(!currentApplication) {
-                    LISTEN.trace('[' + app.name + '] is the first registered application - loading it for display');
+                    Listen.trace('[' + app.name + '] is the first registered application - loading it for display');
                     this.switchApp(app);
                 }
             },
@@ -400,13 +400,13 @@ $(document).ready(function() {
             },
 
             trace: function(message) {
-                if(LISTEN.enableLogging) {
+                if(Listen.enableLogging) {
                     this.writeLog('TRACE: ' + message);
                 }
             },
 
             debug: function(message) {
-                if(LISTEN.enableLogging) {
+                if(Listen.enableLogging) {
                     this.writeLog('DEBUG:   ' + message);
                 }
             },

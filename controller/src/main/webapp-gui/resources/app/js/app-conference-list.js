@@ -1,11 +1,11 @@
 $(document).ready(function() {
-    LISTEN.registerApp(new LISTEN.Application('conference-list', 'conference-list-application', 'menu-conference-list', new ConferenceList()));
+    Listen.registerApp(new Listen.Application('conference-list', 'conference-list-application', 'menu-conference-list', new ConferenceList()));
 });
 
 function ConferenceList() {
     var interval;
 
-    var dynamicTable = new LISTEN.DynamicTable({
+    var dynamicTable = new Listen.DynamicTable({
         url: '/ajax/getConferenceList',
         tableId: 'conference-list-table',
         templateId: 'conference-row-template',
@@ -14,19 +14,19 @@ function ConferenceList() {
         },
         paginationId: 'conference-list-pagination',
         updateRowCallback: function(row, data, animate) {
-            LISTEN.setFieldContent(row.find('.conference-cell-description'), data.description, animate);
+            Listen.setFieldContent(row.find('.conference-cell-description'), data.description, animate);
             var status = data.isStarted ? 'Started' : 'Not Started';
             if(data.isStarted) {
                 status += ' ' + data.startDate;
             }
-            LISTEN.setFieldContent(row.find('.conference-cell-status'), status, animate);
-            LISTEN.setFieldContent(row.find('.conference-cell-callerCount'), data.callerCount, animate);
-            LISTEN.setFieldContent(row.find('.conference-cell-view'), '<button class="button-view" onclick="viewConference(' + data.id + ');">View</button>', false, true);
+            Listen.setFieldContent(row.find('.conference-cell-status'), status, animate);
+            Listen.setFieldContent(row.find('.conference-cell-callerCount'), data.callerCount, animate);
+            Listen.setFieldContent(row.find('.conference-cell-view'), '<button class="button-view" onclick="viewConference(' + data.id + ');">View</button>', false, true);
         }
     });
 
     this.load = function() {
-        LISTEN.trace('Loading conference list');
+        Listen.trace('Loading conference list');
         dynamicTable.pollAndSet(false);
         interval = setInterval(function() {
             dynamicTable.pollAndSet(true);
@@ -34,7 +34,7 @@ function ConferenceList() {
     };
 
     this.unload = function() {
-        LISTEN.trace('Unloading conference-list');
+        Listen.trace('Unloading conference-list');
         if(interval) {
             clearInterval(interval);
         }
@@ -43,5 +43,5 @@ function ConferenceList() {
 
 function viewConference(id) {
     var conference = new Conference(id);
-    LISTEN.switchApp('conferencing', conference);
+    Listen.switchApp('conferencing', conference);
 }
