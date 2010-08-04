@@ -131,9 +131,9 @@ public class ScheduleConferenceServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-
-        EmailerService emailService = new EmailerService();
         PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
+
+        EmailerService emailService = new EmailerService(persistenceService);
 
         // I would think I could just get the pins directly from the first conference in the ArrayList, but that is
         // only providing one pin, for some reason. By querying explicitly, I get access to all the pins.

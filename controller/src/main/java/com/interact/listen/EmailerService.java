@@ -36,6 +36,11 @@ public class EmailerService
     {
         this.persistenceService = persistenceService;
     }
+    
+    public EmailerService()
+    {
+        this.persistenceService = null;
+    }
 
     private boolean sendEmail(InternetAddress[] toAddresses, String body, String subjectPrepend, String subject)
     {
