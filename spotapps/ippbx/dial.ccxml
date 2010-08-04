@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/03/2010
+    <!-- Last Modified 08/04/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -353,7 +353,19 @@
                 <!-- Implies call failed immediately (before we started playing the ring tone). Here, we'll
                 cancel our attempt to play the ring tone and proceed with the call failed logic -->
                 <cancel sendid="ringToneID"/>
-                <send data="'dialog.user.callFailed'" target="session.id"/>
+                <if cond="inString(evt.reason,ERR_BUSY,',')"/> <!-- Destination was busy -->
+                    <log target="status">Destination busy</log>
+                    <assign name="state" expr="'busy'"/>
+                    <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+                        <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+                    <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
+                        <!-- Remove the caller's record in the db prior to exiting -->
+                        <send data="'dialog.user.deleteRecord'" target="session.id"/>
+                    </if>
+                <else/>
+                    <!-- Call failed due to some other reason -->
+                    <send data="'dialog.user.callFailed'" target="session.id"/>
+                </if>
             <elseif cond="inString(evt.reason,ERR_BUSY,',')"/> <!-- Destination was busy -->
                 <log target="status">Destination busy</log>
                 <assign name="state" expr="'busy'"/>
