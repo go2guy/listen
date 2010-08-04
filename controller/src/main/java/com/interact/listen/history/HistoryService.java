@@ -106,10 +106,12 @@ public class HistoryService
 
     public void writeLeftVoicemail(Voicemail voicemail)
     {
+        Long subscriberId = voicemail.getSubscriber().getId();
+        Subscriber subscriber = Subscriber.queryById(persistenceService.getSession(), subscriberId);
+        
         ActionHistory history = new ActionHistory();
         history.setAction("Left voicemail");
-        history.setDescription(voicemail.getLeftBy() + " left voicemail for [" +
-                               voicemail.getSubscriber().getUsername() + "]");
+        history.setDescription(voicemail.getLeftBy() + " left voicemail for [" + subscriber.getUsername() + "]");
         history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
@@ -226,9 +228,12 @@ public class HistoryService
         return format.format(date);
     }
 
-    private static String getFriendlyVoicemailIdentifier(Voicemail voicemail)
+    private String getFriendlyVoicemailIdentifier(Voicemail voicemail)
     {
-        return "voicemail for [" + voicemail.getSubscriber().getUsername() + "] from [" + voicemail.getLeftBy() +
+        Long subscriberId = voicemail.getSubscriber().getId();
+        Subscriber subscriber = Subscriber.queryById(persistenceService.getSession(), subscriberId);
+        
+        return "voicemail for [" + subscriber.getUsername() + "] from [" + voicemail.getLeftBy() +
                "] left on [" + getFormattedDate(voicemail.getDateCreated()) + "]";
     }
 }
