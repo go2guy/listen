@@ -69,7 +69,7 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "SMS_ADDRESS")
     private String smsAddress = "";
     
-    @Column(name = "IS_SUBSCRIBED_TO_PAGING")
+    @Column(name = "IS_SUBSCRIBED_TO_PAGING", nullable = false)
     private Boolean isSubscribedToPaging = Boolean.FALSE;
 
     @Column(name = "VOICEMAIL_PLAYBACK_ORDER", nullable = false)

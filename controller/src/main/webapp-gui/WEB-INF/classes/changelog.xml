@@ -320,7 +320,9 @@
     </changeSet>
     <changeSet author="development" id="33">
         <addColumn tableName="SUBSCRIBER">
-            <column name="IS_SUBSCRIBED_TO_PAGING" type="BIT"/>
+            <column name="IS_SUBSCRIBED_TO_PAGING" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
     </changeSet>
     <changeSet author="development" id="34">
