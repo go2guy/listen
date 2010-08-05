@@ -150,7 +150,7 @@ $(document).ready(function() {
             addSubscriber: function() {
                 Listen.trace('Listen.Subscribers.addSubscriber');
                 Listen.Subscribers.disableButtons();
-                SERVER.post({
+                Server.post({
                     url: '/ajax/addSubscriber',
                     properties: {
                         username: $('#subscriber-form-username').val(),
@@ -180,7 +180,7 @@ $(document).ready(function() {
             editSubscriber: function() {
                 Listen.trace('Listen.Subscribers.editSubscriber');
                 Listen.Subscribers.disableButtons();
-                SERVER.post({
+                Server.post({
                     url: '/ajax/editSubscriber',
                     properties: {
                         id: $('#subscriber-form-id').val(),
@@ -249,7 +249,7 @@ $(document).ready(function() {
             },
             
             testAddress: function(type, address) {
-                SERVER.post({
+                Server.post({
                     url: '/ajax/testNotificationSettings',
                     properties: {
                         messageType: type,

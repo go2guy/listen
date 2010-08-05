@@ -29,7 +29,7 @@ $(document).ready(function() {
     });
 
     $('#outdial-submit').click(function() {
-        SERVER.outdial($('#outdial-number').val(), currentConference.getConferenceId()); // FIXME referencing a global here is gross
+        Server.outdial($('#outdial-number').val(), currentConference.getConferenceId()); // FIXME referencing a global here is gross
         return false;
     });
 });
@@ -99,7 +99,7 @@ function Conference(id) {
 
             // mute/unmute icons
             if(!data.isAdmin && !data.isPassive) {
-                Listen.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="icon-' + (data.isAdminMuted ? 'un' : '') + 'mute' + '" ' + 'onclick="' + (data.isAdminMuted ? 'SERVER.unmuteCaller(' + data.id + ');' : 'SERVER.muteCaller(' + data.id + ');return false;') + '" title="' + ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number) + '"></button>', false, true);
+                Listen.setFieldContent(row.find('.caller-cell-muteIcon'), '<button class="icon-' + (data.isAdminMuted ? 'un' : '') + 'mute' + '" ' + 'onclick="' + (data.isAdminMuted ? 'Server.unmuteCaller(' + data.id + ');' : 'Server.muteCaller(' + data.id + ');return false;') + '" title="' + ((data.isAdminMuted ? 'Unmute' : 'Mute') + ' ' + data.number) + '"></button>', false, true);
             } else {
                 Listen.setFieldContent(row.find('.caller-cell-muteIcon'), '', false);
             }
@@ -108,7 +108,7 @@ function Conference(id) {
             if(data.isAdmin) {
                 Listen.setFieldContent(row.find('.caller-cell-dropIcon'), '', false);
             } else {
-                Listen.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="SERVER.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
+                Listen.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="Server.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
             }
         }
     });
@@ -220,7 +220,7 @@ function Conference(id) {
                     $('#outdial-show').hide();
                 }
 
-                var recordHtml = '<button class="button-' + (data.info.isRecording ? 'stop' : 'record') + '" onclick="' + (data.info.isRecording ? 'SERVER.stopRecording(' + conferenceId + ');return false;' : 'SERVER.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';
+                var recordHtml = '<button class="button-' + (data.info.isRecording ? 'stop' : 'record') + '" onclick="' + (data.info.isRecording ? 'Server.stopRecording(' + conferenceId + ');return false;' : 'Server.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';
                 if(recordButton.html() != recordHtml) {
                     recordButton.html(recordHtml);
                 }

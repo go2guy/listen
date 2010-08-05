@@ -34,18 +34,7 @@ $(document).ready(function() {
                         success: function(data, textStatus, xhr) {
                             $('#profile-form-id').val(data.id);
                             $('#profile-form-username').val(data.username);
-
                             $('#profile-form-accountType').text(data.isActiveDirectory ? 'Active Directory' : 'Local');
-                            if(data.isActiveDirectory) {
-                                $('#profile-form-username').attr('readonly', true).addClass('disabled');
-                                $('#profile-form-password').attr('readonly', true).addClass('disabled');
-                                $('#profile-form-confirmPassword').attr('readonly', true).addClass('disabled');
-                            } else {
-                                $('#profile-form-username').removeAttr('readonly').removeClass('disabled');
-                                $('#profile-form-password').removeAttr('readonly').removeClass('disabled');
-                                $('#profile-form-confirmPassword').removeAttr('readonly').removeClass('disabled');
-                            }
-
                             $('#profile-form-realName').val(data.realName);
                             var numbers = '';
                             for(var i = 0; i < data.accessNumbers.length; i++) {
@@ -100,7 +89,7 @@ $(document).ready(function() {
             editSubscriber: function() {
                 Listen.trace('Listen.Profile.editSubscriber');
                 Listen.Profile.disableButtons();
-                SERVER.post({
+                Server.post({
                     url: '/ajax/editSubscriber',
                     properties: {
                         id: $('#profile-form-id').val(),
@@ -133,7 +122,7 @@ $(document).ready(function() {
                 $('#pager-form-alternate-number').val($('#pager-form-alternate-number').val().replace(/[-\.]/g, ""));
                 
                 $('#pager-form button').attr('readonly', 'readonly');
-                SERVER.post({
+                Server.post({
                     url: '/ajax/editPager',
                     properties: {
                         alternateNumber: $('#pager-form-alternate-number').val(),
@@ -196,7 +185,7 @@ $(document).ready(function() {
             },
             
             testAddress: function(type, address) {
-                SERVER.post({
+                Server.post({
                     url: '/ajax/testNotificationSettings',
                     properties: {
                         messageType: type,

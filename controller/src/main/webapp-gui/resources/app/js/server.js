@@ -1,4 +1,4 @@
-var SERVER = {
+var Server = {
     post: function(args) {
         var start = Listen.timestamp();
         $.ajax({
