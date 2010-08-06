@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/13/2010
+    <!-- Last Modified 08/06/2010
        *   @Name	pbx.ccxml
        *   @Desc	This script handles all the control logic for the PBX application -->
 
@@ -124,6 +124,9 @@
                 <assign name="tmpDNIS" expr="evt.values.extension"/>
                 <assign name="isClosed" expr="evt.values.isClosed"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
+            <elseif cond="status == 'forward'"/>
+                <var name="fwdInfo" expr="evt.values.userEntry"/>
+                <fetch next="'file:'+APP_PATH+'ippbx_main.ccxml'" namelist="fwdInfo importedValue"/>
             <else/>
                 <assign name="state" expr="'endCall'"/>
                 <send data="'dialog.user.endCall'" target="session.id"/>

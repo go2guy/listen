@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 07/13/2010
+    <!-- Last Modified 08/06/2010
        *   @Name	office.vxml
        *   @Desc	This script controls the main auto attendant prompt
                     and available options -->
@@ -41,7 +41,7 @@
         <!-- Set up parameters that are used by the play audio subdialog -->
         <block>
             <log>INFO: Entered setUp</log>
-            <assign name="fldTrmChar" expr="'#'"/>
+            <assign name="fldTrmChar" expr="''"/>
             <assign name="digitTimeOut" expr="'3s'"/>
             <assign name="fieldLength" expr="(parseInt(EXT_LENGTH) - 1) + '|' + CUSTOMER_SERVICE + '|' + '*'"/>
             <assign name="fieldTimeOut" expr="'4s'"/>
@@ -57,7 +57,7 @@
         <block>
             <log>INFO: Entered playAudio</log>
         </block>
-        <subdialog name="playAudio" srcexpr="'file:'+APP_PATH+'getUserEntry.vxml'">
+        <subdialog name="playAudio" srcexpr="'file:'+APP_PATH+'getAttendantEntry.vxml'">
             <param name="dgtTimeOut" expr="digitTimeOut"/>
             <param name="fldLength" expr="fieldLength"/>
             <param name="fldTermchar" expr="fldTrmChar"/>
@@ -89,6 +89,10 @@
             <if cond="userEntry == '*'">
                 <assign name="status" expr="'mailBox'"/>
                 <log>INFO: Send caller to mailBox</log>
+                <goto next="#exit"/>
+            <elseif cond="(userEntry[0] + userEntry[1]) == '#3'"/>
+                <assign name="status" expr="'forward'"/>
+                <log>INFO: Send caller to forward app</log>
                 <goto next="#exit"/>
             <elseif cond="userEntry == CUSTOMER_SERVICE"/>
                 <!-- This logic is here to check how to route the call to customer service.

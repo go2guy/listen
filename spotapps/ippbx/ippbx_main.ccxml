@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/04/2010
+    <!-- Last Modified 08/06/2010
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -24,6 +24,7 @@
     <var name="local"/>
     <var name="clientFlag" expr="''"/>
     <var name="isClosed" expr="'n'"/>   <!-- Flag to determine if the office is closed -->
+    <var name="fwdInfo"/>
     <!-- End global vars -->
 
     <!-- Constants -->
@@ -47,6 +48,9 @@
 	    	    <assign name="tmpDNIS" expr="getnum(DNIS)"/>
                 <assign name="tmpANI" expr="getnum(ANI)"/>
                 <send data="'dialog.user.chk_ANI'" target="session.id"/>
+            <elseif cond="fwdInfo != undefined"/>
+                <assign name="tmpDNIS" expr="fwdInfo"/>
+                <send data="'dialog.user.forward'" target="session.id"/>
             <else/>
                 <!-- Nothing else here -->
             </if>

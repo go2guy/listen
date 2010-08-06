@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 07/27/2010
+    <!-- Last Modified 08/06/2010
        *   @Name	getFwdInfo.vxml.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we get the mailbox/passcode information -->
@@ -19,8 +19,30 @@
 		<block>
 	        <log>INFO: Entered beginDocument</log>
             <assign name="listenArgs" expr="importedValue"/>    <!-- Save off controller information -->
-            <assign name="extension" expr="mBox"/>
-            <goto next="#getPasscode"/>
+            <assign name="fldTrmChar" expr="'#'"/>
+            <assign name="digitTimeOut" expr="'3s'"/>
+            <assign name="fieldTimeOut" expr="'4s'"/>
+            <assign name="cutIn" expr="'true'"/>
+            <assign name="gotoForm" expr="'#userKeyPress'"/>
+            <if cond="mBox.length == 0">
+                <goto next="#getMbx"/>
+            <else/>
+                <assign name="extension" expr="mBox"/>
+                <goto next="#getPasscode"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="getMbx">
+        <!-- Set up parameters that are used by the play audio subdialog for get mailbox -->
+        <block>
+            <log>INFO: Entered getMbx</log>
+            <log target="status">Get Mailbox</log>
+            <assign name="status" expr="'mailBox'"/>
+            <assign name="fieldLength" expr="parseInt(EXT_LENGTH) - 1"/>
+            <assign name="promptID" expr="'APgetMbx'"/>
+            <assign name="tmpVal" expr="'APgetMbx'"/>
+			<goto next="#playAudio"/>
         </block>
     </form>
 
@@ -30,14 +52,9 @@
             <log>INFO: Entered getPrompt</log>
             <log target="status">Get Pass Code</log>
             <assign name="status" expr="'passCode'"/>
-            <assign name="fldTrmChar" expr="'#'"/>
-            <assign name="digitTimeOut" expr="'3s'"/>
             <assign name="fieldLength" expr="passCodeLngth + '|*'"/>
-            <assign name="fieldTimeOut" expr="'4s'"/>
-            <assign name="cutIn" expr="'true'"/>
             <assign name="promptID" expr="'APgetPasscode'"/>
             <assign name="tmpVal" expr="'APgetPasscode'"/>
-            <assign name="gotoForm" expr="'#userKeyPress'"/>
 			<goto next="#playAudio"/>
         </block>
     </form>
@@ -76,16 +93,13 @@
                 <!-- To prevent an endless loop, we'll use a counter here -->
                 <assign name="mbxCnt" expr="mbxCnt + 1"/>
                 <if cond="mbxCnt &lt; MAX_ERR">
-                    <assign name="status" expr="'mailBox'"/>
-                    <assign name="fieldLength" expr="parseInt(EXT_LENGTH) - 1"/>
-                    <assign name="promptID" expr="'APgetMbx'"/>
-                    <assign name="tmpVal" expr="'APgetMbx'"/>
+                    <goto next="#getMbx"/>
                 <else/>
                     <assign name="promptID" expr="'APgoodbye'"/>
                     <assign name="status" expr="'endCall'"/>
                     <assign name="gotoForm" expr="'#exit'"/>
+                    <goto next="#playAudio"/>
                 </if>
-                <goto next="#playAudio"/>
             <elseif cond="((status == 'mailBox') &amp;&amp; (userEntry.length != fieldLength))"/>
                 <!-- Assume caller did not enter a valid mailbox number -->
             <elseif cond="userEntry.length == 0"/>
@@ -107,7 +121,7 @@
     </form>
 
     <form id="error">
-        <!-- -->
+        <!-- In here, we handle the error sequence -->
         <block>
             <log>INFO: Entered error</log>
             <assign name="errCnt" expr="errCnt + 1"/>
