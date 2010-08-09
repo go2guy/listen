@@ -11,8 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(voicemailInfo,count)
             {
-	            var result = eval("("+voicemailInfo+")");
-return result.results[count].href;
+	            var result = eval("("+voicemailInfo+")");return result.results[count].href;
             }
         ]]>
     </script>

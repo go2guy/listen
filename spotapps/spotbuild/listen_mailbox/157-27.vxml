@@ -11,10 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(voicemails)
             {
-	            var temp = voicemails.split("/");
-var returnString = temp[temp.length-1];
-return returnString;
-
+	            var temp = voicemails.split("/");var returnString = temp[temp.length-1];return returnString;
             }
         ]]>
     </script>

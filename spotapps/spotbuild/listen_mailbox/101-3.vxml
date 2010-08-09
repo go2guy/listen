@@ -11,9 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(subscriber,playbackOrder)
             {
-	            var result;
-result = "?subscriber=/subscriber/"+subscriber+"&isNew=true&_sortBy=dateCreated&_sortOrder="+playbackOrder;
-return result;
+	            var result;result = "?subscriber=/subscriber/"+subscriber+"&isNew=true&_sortBy=dateCreated&_sortOrder="+playbackOrder;return result;
             }
         ]]>
     </script>

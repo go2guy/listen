@@ -11,8 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(newResult)
             {
-	            var result = eval("("+newResult+")");
-return result.count;
+	            var result = eval("("+newResult+")");return result.count;
             }
         ]]>
     </script>

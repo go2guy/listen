@@ -85,6 +85,7 @@
 	<var name="quickAccess" expr="'false'" />
 	<var name="voicemailInfo" expr="''" />
 	<var name="playbackOrder" expr="''" />
+	<var name="HTTPcontroller" expr="''" />
 
 
     <!-- Conference Variables -->

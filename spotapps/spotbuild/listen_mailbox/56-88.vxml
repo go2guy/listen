@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'102-19'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'56-79'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(vmDateCreated)
+            function II_SB_JS_function(passValues)
             {
-	            var date = vmDateCreated.split('T');date = date[1].split(':');var hour = date[0];if (hour == 0){return '12:' + date[1] + 'am';}if (hour == 12){return date[0] + ':' + date[1] + 'pm'}if (hour < 12){return date[0] + ':' + date[1] + 'am'; }return (date[0]-12) + ':' + date[1] + 'pm';
+	            var result = eval("("+passValues+")");return result.HTTPcontroller;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            
-            <log>INFO: Entered run-javascript.vxml [102-52]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(vmDateCreated)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="time" expr="II_SB_userJava" />   
+            <log target="status">Get HTTPcontoller</log>
+            <log>INFO: Entered run-javascript.vxml [56-88]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="HTTPcontroller" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

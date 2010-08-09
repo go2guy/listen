@@ -13,8 +13,8 @@
     <form id="beginDocument">
         <block>
     	    <log target="status">Create Filepath</log>
-            <log>INFO: Entered data-query.vxml [143-72]</log>
-            <data name="fileOBJ" src="http://localhost/spot/cgi-bin/spotbuild/fileops.php" method="get" namelist="FILE1 OPERATION " fetchtimeout="II_SB_dataTimeOut"/>
+            <log>INFO: Entered data-query.vxml [143-84]</log>
+            <data name="fileOBJ" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="get" namelist="FILE1 OPERATION " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="fileOBJ.Result" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>

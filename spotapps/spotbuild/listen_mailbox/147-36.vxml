@@ -11,11 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(FILE1)
             {
-	            var fileName = getNextElement('L',FILE1,'/');
-
-var ext = fileName.split('-');
-
-return ext[0];
+	            var fileName = getNextElement('L',FILE1,'/');var ext = fileName.split('-');return ext[0];
             }
         ]]>
     </script>

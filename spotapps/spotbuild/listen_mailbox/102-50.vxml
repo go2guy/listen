@@ -11,10 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(vmDateCreated)
             {
-	            var date = vmDateCreated.split('T');
-var date = date[0].split('-');
-return 'YYYY'+date[1]+date[2];
-
+	            var date = vmDateCreated.split('T');var date = date[0].split('-');return 'YYYY'+date[1]+date[2];
             }
         ]]>
     </script>

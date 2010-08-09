@@ -11,15 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(subscriberInfo)
             {
-	            var result = eval("("+subscriberInfo+")");
-if (result.voicemailPlaybackOrder == 'NEWEST_TO_OLDEST')
-    {
-    return "DESCENDING";
-}
-else
-{
-    return "ASCENDING";
-}
+	            var result = eval("("+subscriberInfo+")");if (result.voicemailPlaybackOrder == 'NEWEST_TO_OLDEST')    {    return "DESCENDING";}else{    return "ASCENDING";}
             }
         ]]>
     </script>

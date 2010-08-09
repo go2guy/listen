@@ -11,8 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(subscriberInfo)
             {
-	            var result = eval("("+subscriberInfo+")");
-return iiSubstr(result.accessNumbers.href,14,-1);
+	            var result = eval("("+subscriberInfo+")");return iiSubstr(result.accessNumbers.href,14,-1);
             }
         ]]>
     </script>

@@ -5,15 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'103-92'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'103-142'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(result)
             {
-	            var strObj = result.split('isNew":true');               
-return strObj[0] + 'isNew":false' + strObj[1];
-
+	            var strObj = result.split('isNew":true');               return strObj[0] + 'isNew":false' + strObj[1];
             }
         ]]>
     </script>

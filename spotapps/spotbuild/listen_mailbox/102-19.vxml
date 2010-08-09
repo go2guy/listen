@@ -11,10 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(result,vmPathPrefix,hostName)
             {
-	            var result = eval("("+result+")");
-result = result.uri;
-result = result.split('http://'+hostName);
-return vmPathPrefix + result[1];
+	            var result = eval("("+result+")");result = result.uri;result = result.split('http://'+hostName);return vmPathPrefix + result[1];
             }
         ]]>
     </script>

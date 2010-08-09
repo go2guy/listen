@@ -5,19 +5,19 @@
        *   @Name   data-query.vxml
        *   @Desc   Makes http requests and checks for success or failure -->
 
-    <var name="II_SB_succeed" expr="'143-33'"/>			<!-- Next file to go to if HttpRequest Works -->
+    <var name="II_SB_succeed" expr="'102-38'"/>			<!-- Next file to go to if HttpRequest Works -->
     <var name="II_SB_failed" expr="'65-33'"/>				<!-- Next file to go to if HttpRequest Fails -->
     <var name="II_SB_dataTimeOut" expr="'5s'"/>	<!-- Specifies length of time to wait before throwing badfetch error -->
     <var name="II_SB_nxtOpt" expr="''"/>						<!-- Variable to hold next option -->
 	
     <form id="beginDocument">
         <block>
-    	    <log target="status">Get User Info</log>
-            <log>INFO: Entered data-query.vxml [143-31]</log>
-            <data name="apiObj" src="http://localhost/spot/cgi-bin/spotbuild/listen/controller.php" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
+    	    <log target="status">Get Sub</log>
+            <log>INFO: Entered data-query.vxml [102-60]</log>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
-			<assign name="returnVal" expr="apiObj.Result" />
-			<assign name="returnStr" expr="apiObj.Reason" />
+			<assign name="result" expr="apiObj.Result" />
+			<assign name="reason" expr="apiObj.Reason" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>

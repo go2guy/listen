@@ -75,6 +75,7 @@
 	<var name="SB_UV_quickAccess"/>
 	<var name="SB_UV_voicemailInfo"/>
 	<var name="SB_UV_playbackOrder"/>
+	<var name="SB_UV_HTTPcontroller"/>
 
     
     <form id="beginDocument">
@@ -256,6 +257,9 @@
 			</if>
 			<if cond="SB_UV_playbackOrder != undefined">
 				<assign name="playbackOrder" expr="SB_UV_playbackOrder" />
+			</if>
+			<if cond="SB_UV_HTTPcontroller != undefined">
+				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

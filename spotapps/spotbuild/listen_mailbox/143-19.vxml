@@ -11,8 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(grtngList,count)
             {
-	            var result = eval("("+grtngList+")");
-return getNextElement('L',result.results[count].href,'/');
+	            var result = eval("("+grtngList+")");return getNextElement('L',result.results[count].href,'/');
             }
         ]]>
     </script>

@@ -11,8 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(result)
             {
-	            var result = eval("("+result+")");
-return result.dateCreated;
+	            var result = eval("("+result+")");return result.dateCreated;
             }
         ]]>
     </script>
