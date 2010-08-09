@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
+<ccxml version="1.0">
+    <!-- Last Modified 08/09/2010
+       *   @Name	page.ccxml
+       *   @Desc	This script handles the group paging logic -->
+
+    <!-- Values passed in from other ccxml -->
+    <var name="ANI"/>       <!-- ANI. Origination ID of current call -->
+    <var name="DNIS"/>      <!-- DNIS. Destination ID -->
+    <var name="APP_PATH"/>  <!-- App Path. Base application directory -->
+    <var name="ibconnid"/>  <!-- Inbound connection ID -->
+    <var name="EXT_LENGTH"/>
+    <var name="SB_PATH"/>
+    <var name="tmpANI"/>
+    <var name="tmpDNIS"/>
+
+    <!-- Global Vars -->
+    <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
+    <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
+    <var name="LIB_PATH" expr="''"/>    <!-- Lib Path. Directory for lib files -->
+    <var name="TRANS_PATH" expr="''"/>  <!-- Transaction Path. Directory for transaction files -->
+    <var name="clientCnt" expr="0"/>    <!-- Client Count. Number of sip clients registred with SPOT server -->
+    <var name="clientList" expr="''"/>  <!-- Client List. Comma delimited list of client names -->
+    <var name="clientIndex" expr="0"/>  <!-- Client Index. Index used to loop through client list -->
+    <var name="activeList" expr="'|'"/> <!-- Active List. List of active sip clients -->
+    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
+    <var name="pageMaxID" expr="''"/>   <!-- Page Max ID. ID of delayed event that terminates a group page connection -->
+    <var name="PAGE_MAX_TIME" expr="'30s'"/>    <!-- Max number of seconds allowed for a page -->
+    <var name="II_SB_promptID" expr="''"/>      <!-- ID/URL of audio to be played -->
+
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+
+    <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
+        <transition state="idle" event="ccxml.loaded" name="evt">
+            <!-- Load ccxml document. Set variables -->
+            <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
+            <assign name="AUDIO_PATH" expr="APP_PATH+'audio/'"/>
+            <assign name="LIB_PATH" expr="SB_PATH+'lib/vxml/'"/>
+            <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
+            <assign name="state" expr="'loaded'"/>
+            <log>INFO: APP Path [<value expr="APP_PATH"/>]</log>
+            <log>INFO: Origination [<value expr="ANI"/>]</log>
+            <send data="'dialog.user.getActiveClients'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.getActiveClients" name="evt">
+            <!-- Group paging works by placing every phone in the pbx system on auto answer; regardless of
+            if they are idle or in use. Since we have a record of all active extensions, let's get that list
+            from the db. These extensions will  NOT be paged. -->
+            <log>INFO: Entered [dialog.user.getActiveClients] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'getActiveList'"/>
+            <var name="flag" expr="'getList'"/>
+            <var name="record" expr="ibconnid + '|' + tmpANI"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+        </transition>
+
+        <transition state="getActiveList" event="dialog.exit" name="evt">
+            <!-- We should either have a '|' delimited list or a value of 0 in the result field -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <if cond="evt.values.result == 'Failure'">
+                <!-- hmmmm.... Something bad happened! -->
+                <assign name="state" expr="'failed'"/>
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceError.00.wav '+AUDIO_PATH+'serviceError2.00.wav '+AUDIO_PATH+'tryAgainLater.00.wav '+AUDIO_PATH+'thankYou.00.wav '+AUDIO_PATH+'goodbye.00.wav'"/>
+            <else/>
+                <assign name="state" expr="'onHold'"/>
+                <assign name="activeList" expr="activeList + evt.values.result"/>
+                <assign name="II_SB_promptID" expr="'rtsp://live.cumulusstreaming.com/KDEZ-FM?com.iivip.volume=-3'"/> 
+            </if>
+            <send data="'dialog.user.playAudio'" target="session.id"/>    <!-- Put caller on hold while we set up for paging -->
+        </transition>
+
+        <transition event="dialog.user.playAudio" name="evt">
+            <!-- This transition is used to play audio to the caller -->
+            <log>INFO: Entered [dialog.user.playAudio] with state [<value expr="state"/>]</log>
+            <var name="II_SB_repeat" expr="'n'"/>
+            <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
+            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+        </transition>
+
+        <transition event="dialog.started" name="evt">
+            <!-- Here, we save off the ID of the last VXML dialog that was started. One unique thing we do here
+            is send a request to the iisip process for all the registered sip clients. -->
+            <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'y'"/>
+            <assign name="dialogID" expr="evt.dialogid"/>
+            <if cond="state == 'onHold'">
+                <log target="status">Get all clients</log>
+                <!-- Fire off event to get list/count of registered sip clients.
+                TODO: What happens if we don't get a response from iisip? Maybe, have a max wait time
+                and end the page if there's no response? -->
+                <send data="'listclients'" targettype="'x-iievent'" target="'iisip'"/>
+            <else/>
+                <!-- Nothing here -->
+            </if>
+        </transition>
+
+        <transition event="sipclientlist" name="evt">
+            <!-- Our request for information on registered sip clients has triggered this response. 
+            We'll extract the list of clients and also a count.
+            KLUDGE: One unique thing we're doing here is to send a delayed event that ends the group page functionality.
+            We're doing this to prevent and endless group page; since paging will cause every phone to auto answer -->
+            <log>INFO: Entered [sipclientlist] with state [<value expr="state"/>]</log>
+            <assign name="clientCnt" expr="evt.numclients"/>
+            <assign name="clientList" expr="evt.clients"/>
+            <assign name="state" expr="'paging'"/>
+            <send data="'dialog.user.endPage'" target="session.id" delay="PAGE_MAX_TIME" sendid="pageMaxID"/>
+            <send data="'dialog.user.call'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.call" name="evt">
+            <!-- This transition handles paging all phones. We'll use the auto answer syntax to call each phone.
+            WARNING: The auto answer syntax is unique per client. May have to set up logic in the future that 
+            works with different clients -->
+            <log>INFO: Entered [dialog.user.call] with state [<value expr="state"/>]</log>
+            <if cond="clientIndex &lt; clientCnt">  <!-- Found a client to call -->
+                <var name="dest" expr="getNextElement(clientIndex,clientList,',')"/>
+                <var name="ext" expr="iiSubstr(dest,3,-1)"/>
+                <if cond="!(inString(ext,activeList,'|'))"> <!-- Verify that client is NOT included in the active list -->
+                    <createcall dest="'sip:aa.spa941.' + dest + '@iipbx'" callerid="'sip:page@softspot'" timeout="'1s'"/>
+                </if>
+                <assign name="clientIndex" expr="clientIndex + 1"/>
+                <send data="'dialog.user.call'" target="session.id"/>
+            <else/> <!-- No more clients to call -->
+                <assign name="state" expr="'signal'"/>
+                <dialogterminate dialogid="dialogID" immediate="true"/> <!-- We're doing this to get caller off the hold music -->
+            </if>
+        </transition>
+
+        <transition state="paging" event="connection.connected" name="evt">
+            <!-- Every client we call we be joined to the caller for paging -->
+	        <join id2="ibconnid" id1="evt.connectionid" duplex="'half'"/>
+        </transition>
+
+	    <transition state="paging" event="connection.failed">
+            <!-- Looks like one of the clients we called was unable to connect. We'll ignore this -->
+            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
+        </transition>
+
+        <transition state="signal" event="dialog.exit" name="evt">
+            <!-- In here, the caller is almost ready to page. Let's play a brief beep first -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <assign name="state" expr="'paging'"/>
+            <assign name="II_SB_promptID" expr="AUDIO_PATH+'pageBeep.00.wav'"/> 
+            <send data="'dialog.user.playAudio'" target="session.id"/>    <!-- Put caller on hold while we set up for paging -->
+        </transition>
+
+        <transition state="paging" event="dialog.exit" name="evt">
+            <!-- We are ready to begin paging -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <log target="status">Paging from [EXT <value expr="tmpANI"/>]</log>
+        </transition>
+
+	    <transition state="paging" event="connection.disconnected" name="evt" cond="evt.connectionid==ibconnid">
+            <!-- We got a disconnect event. We're only interested in handling the caller's disconnect. We need
+            to toggle the callers extension to inactive. -->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.updateDB'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.updateDB" name="evt">
+            <!-- Here we delete the caller's information from the db -->
+            <log>INFO: Entered [dialog.user.updateDB] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'endCall'"/>
+            <var name="flag" expr="'dltList'"/>
+            <var name="record" expr="ibconnid + '|' + tmpANI"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+        </transition>
+
+        <transition state="endCall failed" event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <if cond="state == failed">
+                <send data="'dialog.user.updateDB'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.endCall'" target="session.id" />
+            </if>
+        </transition>
+
+	    <transition event="dialog.user.endPage">
+            <!-- If we got this event, it means that the caller has exceeded the max time allowed
+            for paging. Let's end the call -->
+            <log>INFO: Entered [dialog.user.endPage] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.updateDB'" target="session.id"/>
+	    </transition>
+
+        <transition event="error.*" name="evt">
+            <!-- Use catch all error for now -->
+            <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- TODO: Write an error log file and notify someone? -->
+            <send data="'dialog.user.updateDB'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.endCall" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
+            <exit/>
+        </transition>
+
+	</eventprocessor>
+</ccxml>

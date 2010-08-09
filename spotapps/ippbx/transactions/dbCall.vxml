@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/03/2010
+    <!-- Last Modified 08/09/2010
        *   @Name	dbCall.vxml
        *   @Desc	This script performs two functions. It is used to insert/delete an
                     active client into/from the database. It also retreives the list of
-                    active clients from the database -->
+                    active clients from the database. Clients that have been in the db
+                    longer than the max time allowed are deleted -->
 
     <!-- Passed in from ccxml -->
-    <var name="ext"/>           <!-- Extension. Extension whose status will be toggled. Could be a pipe ('|') delimited list -->
     <var name="flag"/>          <!-- Flag. Controls which php script will be called -->
-    <var name="activeClient"/>  <!-- Active Client. Identifies active or inactive status -->
     <var name="record"/>        <!-- Record to be inserted into db table. Format is 'connectionID|client,connectionID|client' -->
     <var name="sessionID"/>
     <var name="EXT_LENGTH"/>
@@ -22,31 +21,23 @@
     <var name="cnt" expr="0"/>
     <var name="gotoForm" expr="''"/>
     <var name="id" expr="''"/>
+    <var name="maxTime" expr="'28800000'"/> <!-- Max time allowed. 8 hours in milliseconds -->
 
     <form id="beginDocument">
         <!-- Here we figure out which php script to call. If our flag is set to insert/delete, we need
         to check our record variable to figure out how many values we have.-->
         <block>
             <log>INFO: Enter beginDocument</log>
-            <var name="list" expr="'insert,delete,update,select'"/>
             <if cond="sessionID == undefined">
                 <assign name="sessionID" expr="''"/>
             </if>
-            <if cond="inString(flag,list,',')">
-                <log>INFO: Attempting [<value expr="flag"/>] of record [<value expr="record"/>]</log>
-                <if cond="inString(',',record,'')">
-                    <goto next="#parseRecord"/>
-                <else/>
-                    <assign name="id" expr="getNextElement(0,record,'|')"/>
-                    <assign name="extension" expr="getNextElement(1,record,'|')"/>
-                    <assign name="gotoForm" expr="'#exit'"/>
-                    <goto next="#dbAccess"/>
-                </if>
-            <elseif cond="flag == 'getList'"/>
-                <log>INFO: Attempting to get list of extensions currently in use</log>
-                <goto next="#getClientList"/>
+            <if cond="inString(',',record,'')">
+                <goto next="#parseRecord"/>
             <else/>
-                <goto next="#exit"/>
+                <assign name="id" expr="getNextElement(0,record,'|')"/>
+                <assign name="extension" expr="getNextElement(1,record,'|')"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <goto next="#dbAccess"/>
             </if>
         </block>
     </form>
@@ -73,30 +64,16 @@
         <block>
             <log>INFO: Entered dbAccess</log>
             <if cond="extension.length &lt; EXT_LENGTH">
-                <data name="update" srcexpr="DB_PATH+'activeClients.php'" namelist="extension id flag sessionID" fetchtimeout="1s" method="post"/>
+                <data name="update" srcexpr="DB_PATH+'activeClients.php'" namelist="extension id flag sessionID maxTime" fetchtimeout="1s" method="post"/>
                 <assign name="result" expr="update.result"/>
                 <log>INFO: Result [<value expr="result"/>]</log>
+                <if cond="((flag == 'getList') &amp;&amp; (result != 'Failure'))">
+                    <assign name="result" expr="update.clients"/>
+                </if>
             <else/>
                 <log>ERROR: Invalid extension [<value expr="extension"/>]</log>
             </if>
             <goto expr="gotoForm"/>
-        </block>
-    </form>
-
-    <form id="getClientList">
-        <!-- We retrieve the list of active extensions from the db -->
-        <block>
-            <log>INFO: Entered getClientList</log>
-            <var name="status" expr="activeClient"/>
-            <assign name="result" expr="0"/>
-            <data name="activeList" srcexpr="DB_PATH+'getActive.php'" namelist="status" method="post"/>
-            <log>INFO: Found [<value expr="activeList.result"/>] active clients</log>
-            <if cond="activeList.result != 0">
-                <assign name="result" expr="activeList.clients"/>
-            <else/>
-                <assign name="result" expr="activeList.result"/>                
-            </if>
-            <goto next="#exit"/>
         </block>
     </form>
 
@@ -108,9 +85,8 @@
 
     <!-- Catch bad fetch event -->
     <catch event="error.badfetch">
-        <assign name="status" expr="'badfetch'"/>
         <assign name="result" expr="'Failure'"/>
-        <log>ERROR: Status [<value expr="status"/>]</log>
+        <log>ERROR: Status [<value expr="'badfetch'"/>]</log>
         <goto next="#exit"/>
     </catch>
 </vxml>
