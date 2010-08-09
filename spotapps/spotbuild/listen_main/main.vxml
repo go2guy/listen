@@ -32,6 +32,7 @@
 	<var name="SB_UV_sipURL"/>
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_HTTPcontroller"/>
 
     
     <form id="beginDocument">
@@ -84,6 +85,9 @@
 			</if>
 			<if cond="SB_UV_ANI != undefined">
 				<assign name="ANI" expr="SB_UV_ANI" />
+			</if>
+			<if cond="SB_UV_HTTPcontroller != undefined">
+				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

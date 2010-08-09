@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime)
+            function II_SB_JS_function(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller)
             {
-	            return "{\"application\":\""+appToAccess+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\"}";
+	            return "{\"application\":\""+appToAccess+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\"}";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set passValues</log>
             <log>INFO: Entered run-javascript.vxml [51-79]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
