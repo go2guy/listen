@@ -56,6 +56,7 @@
 	<var name="sysAccessTime" expr="''" />
 	<var name="confDescription" expr="''" />
 	<var name="subscriber" expr="''" />
+	<var name="HTTPcontroller" expr="''" />
 
 
     <!-- Conference Variables -->
