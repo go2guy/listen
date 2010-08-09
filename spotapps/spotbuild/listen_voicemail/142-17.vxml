@@ -11,9 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            var result = eval("("+passValues+")");
-result = result.toExt;
-if (result == null) {  result = "";}return result;
+	            var result = eval("("+passValues+")");result = result.toExt;if (result == null) {  result = "";}return result;
             }
         ]]>
     </script>

@@ -44,6 +44,7 @@
 	<var name="SB_UV_accessNum"/>
 	<var name="SB_UV_accessID"/>
 	<var name="SB_UV_toExt"/>
+	<var name="SB_UV_HTTPcontroller"/>
 
     
     <form id="beginDocument">
@@ -132,6 +133,9 @@
 			</if>
 			<if cond="SB_UV_toExt != undefined">
 				<assign name="toExt" expr="SB_UV_toExt" />
+			</if>
+			<if cond="SB_UV_HTTPcontroller != undefined">
+				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

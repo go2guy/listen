@@ -11,10 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+returnVal+")");
-var subscriber = result.results[0].subscriber.href;
-subscriber = getNextElement('L',subscriber,'/');
-return subscriber;
+	            var result = eval("("+returnVal+")");var subscriber = result.results[0].subscriber.href;subscriber = getNextElement('L',subscriber,'/');return subscriber;
             }
         ]]>
     </script>

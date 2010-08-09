@@ -11,10 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+returnVal+")");
-var accessID = result.results[0].href;
-accessID = getNextElement('L',accessID,'/');
-return accessID;
+	            var result = eval("("+returnVal+")");var accessID = result.results[0].href;accessID = getNextElement('L',accessID,'/');return accessID;
             }
         ]]>
     </script>

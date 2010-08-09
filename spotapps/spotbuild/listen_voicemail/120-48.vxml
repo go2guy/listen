@@ -5,14 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'120-49'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'120-62'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(ANI,DNIS,subID,sysAccessTime)
             {
-	            var duration = new Date().getTime() - sysAccessTime;
-return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"subscriber\": {\"href\":\"/subscribers/"+subID+"\"}, \"service\": \"Voicemail\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\"INBOUND\"}";
+	            var duration = new Date().getTime() - sysAccessTime;return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"subscriber\": {\"href\":\"/subscribers/"+subID+"\"}, \"service\": \"Voicemail\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\"INBOUND\"}";
             }
         ]]>
     </script>

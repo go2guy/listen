@@ -11,11 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result;
-var tmpVal = eval("("+returnVal+")");
-result = tmpVal.greetingLocation;
-if (result == null) {result = "";}
-return result;
+	            var result;var tmpVal = eval("("+returnVal+")");result = tmpVal.greetingLocation;if (result == null) {result = "";}return result;
             }
         ]]>
     </script>
