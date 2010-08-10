@@ -5,14 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'135-34'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'135-59'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var result = eval("("+argList+")");
-return result.cntrlURL;
+	            var result = eval("("+argList+")");return result.cntrlURL;
             }
         ]]>
     </script>

@@ -52,6 +52,7 @@
 	<var name="returnStr" expr="''" />
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="''" />
+	<var name="HTTPcontroller" expr="''" />
 
 
     <!-- Conference Variables -->

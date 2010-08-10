@@ -13,8 +13,8 @@
     <form id="beginDocument">
         <block>
     	    <log target="status">Load Conference Info</log>
-            <log>INFO: Entered data-query.vxml [135-35]</log>
-            <data name="apiObj" src="http://localhost/spot/cgi-bin/spotbuild/listen/controller.php" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
+            <log>INFO: Entered data-query.vxml [135-58]</log>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
 			<assign name="returnVal" expr="apiObj.Result" />
 			<assign name="returnStr" expr="apiObj.Reason" />

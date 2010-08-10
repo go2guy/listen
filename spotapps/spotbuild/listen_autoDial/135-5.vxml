@@ -11,20 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList,index)
             {
-	            var result = eval("("+argList+")");
-var phoneNumber = getNextElement(index,result.destination,',');
-if(phoneNumber != '-1')
-{
-var sipURL = result.sipURL;
-var str = new String(phoneNumber);
-var num = /^\d+$/;
-if ((num.test(str)) && (sipURL != 'null'))
-return phoneNumber + "@" + sipURL;
-else
-return phoneNumber;
-}
-else
-return "DONE";
+	            var result = eval("("+argList+")");var phoneNumber = getNextElement(index,result.destination,',');if(phoneNumber != '-1'){var sipURL = result.sipURL;var str = new String(phoneNumber);var num = /^\d+$/;if ((num.test(str)) && (sipURL != 'null'))return phoneNumber + "@" + sipURL;elsereturn phoneNumber;}elsereturn "DONE";
             }
         ]]>
     </script>

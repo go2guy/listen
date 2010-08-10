@@ -42,6 +42,7 @@
 	<var name="SB_UV_returnStr"/>
 	<var name="SB_UV_FILE1"/>
 	<var name="SB_UV_OPERATION"/>
+	<var name="SB_UV_HTTPcontroller"/>
 
     
     <form id="beginDocument">
@@ -122,6 +123,9 @@
 			</if>
 			<if cond="SB_UV_OPERATION != undefined">
 				<assign name="OPERATION" expr="SB_UV_OPERATION" />
+			</if>
+			<if cond="SB_UV_HTTPcontroller != undefined">
+				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

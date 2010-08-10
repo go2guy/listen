@@ -11,9 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList,phoneNumber)
             {
-	            var result = eval("("+argList+")");
-result.phoneNumber = getNextElement(0,phoneNumber,'@');
-return iiStringify(result);
+	            var result = eval("("+argList+")");result.phoneNumber = getNextElement(0,phoneNumber,'@');return iiStringify(result);
             }
         ]]>
     </script>

@@ -11,9 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList,audioURL)
             {
-	            var result = eval("("+argList+")");
-var sid = result.sessionid;
-return audioURL + getNextElement(0,sid,'.') + ".wav";
+	            var result = eval("("+argList+")");var sid = result.sessionid;return audioURL + getNextElement(0,sid,'.') + ".wav";
             }
         ]]>
     </script>

@@ -11,14 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(phoneNumber,argList)
             {
-	            var result = eval("("+argList+")");
-sipURL = result.sipURL;
-var str = new String(phoneNumber);
-var num = /^\d+$/;
-if ((num.test(str)) && (sipURL != 'null'))
-return result.ani + "@" + sipURL;
-else
-return result.ani + "@iipbx";
+	            var result = eval("("+argList+")");sipURL = result.sipURL;var str = new String(phoneNumber);var num = /^\d+$/;if ((num.test(str)) && (sipURL != 'null'))return getnum(result.ani) + "@" + sipURL;elsereturn getnum(result.ani) + "@" + result.hostName;
             }
         ]]>
     </script>
