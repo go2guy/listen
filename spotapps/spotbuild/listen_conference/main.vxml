@@ -87,6 +87,7 @@
 	<var name="SB_UV_confStatus"/>
 	<var name="SB_UV_subscriber"/>
 	<var name="SB_UV_playHelp"/>
+	<var name="SB_UV_HTTPcontroller"/>
 
     
     <form id="beginDocument">
@@ -307,6 +308,9 @@
 			</if>
 			<if cond="SB_UV_playHelp != undefined">
 				<assign name="playHelp" expr="SB_UV_playHelp" />
+			</if>
+			<if cond="SB_UV_HTTPcontroller != undefined">
+				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

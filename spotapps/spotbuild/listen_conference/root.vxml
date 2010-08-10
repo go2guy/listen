@@ -97,6 +97,7 @@
 	<var name="confStatus" expr="''" />
 	<var name="subscriber" expr="''" />
 	<var name="playHelp" expr="'true'" />
+	<var name="HTTPcontroller" expr="''" />
 
 
     <!-- Conference Variables -->
