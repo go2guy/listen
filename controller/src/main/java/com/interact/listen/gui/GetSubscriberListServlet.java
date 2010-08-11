@@ -76,7 +76,7 @@ public class GetSubscriberListServlet extends HttpServlet
         json.append("\"results\":[");
         for(Subscriber result : results)
         {
-            json.append(GetSubscriberServlet.marshalSubscriberToJson(result, marshaller, session));
+            json.append(GetSubscriberServlet.marshalSubscriberToJson(result, marshaller, session, subscriber));
             json.append(",");
         }
         if(results.size() > 0)

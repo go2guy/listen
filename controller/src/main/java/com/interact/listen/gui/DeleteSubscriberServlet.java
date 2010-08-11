@@ -58,6 +58,11 @@ public class DeleteSubscriberServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
+        if(subscriberToDelete.equals(currentSubscriber))
+        {
+            throw new UnauthorizedServletException();
+        }
+
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
         History.deleteAllBySubscriber(session, subscriberToDelete);
         persistenceService.delete(subscriberToDelete);

@@ -2,6 +2,7 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.UnauthorizedServletException;
@@ -74,13 +75,14 @@ public class GetSubscriberServlet extends HttpServlet
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 
-        String content = marshalSubscriberToJson(s, marshaller, session);
+        String content = marshalSubscriberToJson(s, marshaller, session, ServletUtil.currentSubscriber(request));
 
         response.setStatus(HttpServletResponse.SC_OK);
         OutputBufferFilter.append(request, content, marshaller.getContentType());
     }
 
-    public static String marshalSubscriberToJson(Subscriber subscriber, Marshaller marshaller, Session session)
+    public static String marshalSubscriberToJson(Subscriber subscriber, Marshaller marshaller, Session session,
+                                                 Subscriber currentSubscriber)
     {
         StringBuilder json = new StringBuilder();
 
@@ -112,9 +114,9 @@ public class GetSubscriberServlet extends HttpServlet
             json.deleteCharAt(json.length() - 1); // last comma
         }
         json.append("]").append(",");
-        
+
         json.append("\"voicemailPin\":").append(subscriber.getVoicemailPin()).append(",");
-        
+
         json.append("\"enableEmail\":").append(subscriber.getIsEmailNotificationEnabled()).append(",");
         json.append("\"enableSms\":").append(subscriber.getIsSmsNotificationEnabled()).append(",");
         json.append("\"emailAddress\":\"").append(subscriber.getEmailAddress()).append("\",");
@@ -126,7 +128,9 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"pagerNumber\":\"").append(Configuration.get(Property.Key.PAGER_NUMBER)).append("\",");
         json.append("\"pagerAlternateNumber\":\"").append(Configuration.get(Property.Key.ALTERNATE_NUMBER)).append("\",");
         json.append("\"pagePrefix\":\"").append(Configuration.get(Property.Key.PAGE_PREFIX)).append("\",");
-        json.append("\"isActiveDirectory\":").append(subscriber.getIsActiveDirectory());
+
+        json.append("\"isActiveDirectory\":").append(subscriber.getIsActiveDirectory()).append(",");
+        json.append("\"isCurrentSubscriber\":").append(subscriber.equals(currentSubscriber));
         json.append("}");
         return json.toString();
     }

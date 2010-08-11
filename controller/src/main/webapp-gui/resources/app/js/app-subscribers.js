@@ -50,7 +50,11 @@ $(document).ready(function() {
                         Listen.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, animate);
                         Listen.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, animate);
                         Listen.setFieldContent(row.find('.subscriber-cell-editButton'), '<button type="button" class="button-edit" title="Edit subscriber" onclick="Listen.Subscribers.loadSubscriber(' + data.id + ');">Edit</button>', false, true);
-                        Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '<button type="button" class="button-delete" title="Delete subscriber" onclick="Listen.Subscribers.confirmDeleteSubscriber(' + data.id + ');">Delete</button>', false, true);
+                        if(data.isCurrentSubscriber) {
+                            Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '', animate);
+                        } else {
+                            Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '<button type="button" class="button-delete" title="Delete subscriber" onclick="Listen.Subscribers.confirmDeleteSubscriber(' + data.id + ');">Delete</button>', false, true);
+                        }
                     }
                 });
 
