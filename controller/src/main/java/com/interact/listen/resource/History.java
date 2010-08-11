@@ -114,4 +114,10 @@ public abstract class History extends Resource implements Serializable
 
         return (List<History>)criteria.list();
     }
+
+    public static final void deleteAllBySubscriber(Session session, Subscriber subscriber)
+    {
+        String hql = "delete from History h where h.subscriber = :subscriber or h.onSubscriber = :subscriber";
+        session.createQuery(hql).setEntity("subscriber", subscriber).executeUpdate();
+    }
 }

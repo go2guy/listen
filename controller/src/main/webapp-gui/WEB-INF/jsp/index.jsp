@@ -424,6 +424,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                             <th>Access Numbers</th>
                             <th>Last Login</th>
                             <th></th>
+                            <th></th>
                           </tr>
                         </thead>
                         <tbody></tbody>
@@ -705,6 +706,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
           <td class="subscriber-cell-accessNumbers"></td>
           <td class="subscriber-cell-lastLogin"></td>
           <td class="subscriber-cell-editButton"></td>
+          <td class="subscriber-cell-deleteButton"></td>
         </tr>
 
         <tr id="voicemail-row-template">

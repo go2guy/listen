@@ -74,6 +74,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>DeleteSubscriberServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.DeleteSubscriberServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>DownloadVoicemailServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.DownloadVoicemailServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -278,6 +284,11 @@
     </servlet-mapping>
 
     <!-- ajax -->
+
+    <servlet-mapping>
+        <servlet-name>DeleteSubscriberServlet</servlet-name>
+        <url-pattern>/ajax/deleteSubscriber</url-pattern>    
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>DownloadVoicemailServlet</servlet-name>

@@ -30,7 +30,7 @@ public class Subscriber extends Resource implements Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.EAGER)
     private Set<AccessNumber> accessNumbers = new HashSet<AccessNumber>();
 
     @Column(name = "VOICEMAIL_PIN")
@@ -54,7 +54,7 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "IS_ADMINISTRATOR")
     private Boolean isAdministrator = Boolean.FALSE;
 
-    @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
     
     @Column(name = "EMAIL_NOTIFICATION_ENABLED")

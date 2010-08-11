@@ -49,7 +49,8 @@ $(document).ready(function() {
 
                         Listen.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, animate);
                         Listen.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, animate);
-                        Listen.setFieldContent(row.find('.subscriber-cell-editButton'), '<button class="button-edit" title="Edit subscriber" onclick="Listen.Subscribers.loadSubscriber(' + data.id + ');return false;">Edit</button>', false, true);
+                        Listen.setFieldContent(row.find('.subscriber-cell-editButton'), '<button type="button" class="button-edit" title="Edit subscriber" onclick="Listen.Subscribers.loadSubscriber(' + data.id + ');">Edit</button>', false, true);
+                        Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '<button type="button" class="button-delete" title="Delete subscriber" onclick="Listen.Subscribers.confirmDeleteSubscriber(' + data.id + ');">Delete</button>', false, true);
                     }
                 });
 
@@ -205,6 +206,21 @@ $(document).ready(function() {
                     errorCallback: function(message) {
                         Listen.Subscribers.showError(message);
                     }
+                });
+            },
+
+            confirmDeleteSubscriber: function(id) {
+                Listen.trace('Listen.Subscribers.confirmDeleteSubscriber');
+                if(confirm('Are you sure?')) {
+                    Listen.Subscribers.deleteSubscriber(id);
+                }
+            },
+
+            deleteSubscriber: function(id) {
+                Listen.trace('Listen.Subscribers.deleteSubscriber');
+                Server.post({
+                    url: '/ajax/deleteSubscriber',
+                    properties: { id: id }
                 });
             },
 
