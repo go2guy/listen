@@ -438,6 +438,13 @@ public class Subscriber extends Resource implements Serializable
         }
     }
 
+    @Override
+    public void afterDelete(PersistenceService persistenceService)
+    {
+        HistoryService historyService = new HistoryService(persistenceService);
+        historyService.writeDeletedSubscriber(this);
+    }
+
     public static Subscriber queryById(Session session, Long id)
     {
         return (Subscriber)session.get(Subscriber.class, id);

@@ -65,6 +65,15 @@ public class HistoryService
         write(history);
     }
 
+    public void writeDeletedSubscriber(Subscriber deletedSubscriber)
+    {
+        ActionHistory history = new ActionHistory();
+        history.setAction("Deleted subscriber");
+        history.setDescription("Deleted subscriber [" + deletedSubscriber.getUsername() + "]");
+        history.setService(Service.APPLICATION.toString());
+        write(history);
+    }
+
     public void writeDeletedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
