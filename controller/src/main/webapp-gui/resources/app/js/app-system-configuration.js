@@ -150,7 +150,7 @@ $(document).ready(function() {
             success: function(data) {
                 application.load();
                 var elem = $('#dnis-mapping-form .form-success-message')
-                elem.text('DNIS mappings updated').slideDown(100);
+                elem.text('Phone numbers updated').slideDown(100);
                 setTimeout(function() {
                     elem.slideUp(100);
                 }, 2000);

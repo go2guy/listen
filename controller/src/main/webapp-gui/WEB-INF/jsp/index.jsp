@@ -270,7 +270,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
                 <div class="tab-container">
                   <div class="tabs">
                     <ul>
-                      <li>DNIS Mappings</li>
+                      <li>Phone Numbers</li>
                       <li>Mail</li><%
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                       <li>Conferencing</li><%
@@ -282,15 +282,15 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                   <div class="tab-content-default">
                     <form id="dnis-mapping-form">
                       <fieldset>
-                        <legend>DNIS Mappings</legend>
+                        <legend>Phone Numbers</legend>
                         <div class="form-error-message"></div>
                         <div class="form-success-message"></div>
                         <table>
                           <tbody>
                             <tr>
                               <td colspan="6" class="buttons">
-                                <button type="button" class="button-add" id="add-dnis-mapping" title="Add a new DNIS mapping">Add</button>
-                                <button type="submit" class="button-save" title="Save DNIS mappings">Save</button>
+                                <button type="button" class="button-add" id="add-dnis-mapping" title="Add a new phone number">Add</button>
+                                <button type="submit" class="button-save" title="Save phone numbers">Save</button>
                               </td>
                             </tr>
                           </tbody>
@@ -735,7 +735,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
             </select>
           </td>
           <td><input type="text" value="" class="dnis-mapping-custom-destination"/></td>
-          <td><button type="button" class="icon-delete" title="Remove this DNIS mapping"></button></td>
+          <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
         </tr>
       </tbody></table>
 
