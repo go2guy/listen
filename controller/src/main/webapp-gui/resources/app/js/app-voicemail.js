@@ -31,6 +31,7 @@ $(document).ready(function() {
                         Listen.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
                         Listen.setFieldContent(row.find('.voicemail-cell-duration'), data.duration, animate);
                         Listen.setFieldContent(row.find('.voicemail-cell-download'), '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>', false, true);
+                        Listen.setFieldContent(row.find('.voicemail-cell-deleteButton'), '<button type="button" class="icon-delete" onclick="Listen.Voicemail.confirmDeleteVoicemail(' + data.id + ');" title="Delete this voicemail"></button>', false, true);
                     }
                 });
 
@@ -48,6 +49,21 @@ $(document).ready(function() {
                         clearInterval(interval);
                     }
                 };
+            },
+
+            confirmDeleteVoicemail: function(id) {
+                Listen.trace('Listen.Voicemail.confirmDeleteVoicemail');
+                if(confirm('Are you sure?')) {
+                    Listen.Voicemail.deleteVoicemail(id);
+                }
+            },
+
+            deleteVoicemail: function(id) {
+                Listen.trace('Listen.Voicemail.deleteVoicemail');
+                Server.post({
+                    url: '/ajax/deleteVoicemail',
+                    properties: { id: id }
+                });
             }
         }
     }();

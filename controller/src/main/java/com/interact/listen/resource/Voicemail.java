@@ -155,6 +155,11 @@ public class Voicemail extends Audio implements Serializable
         historyService.writeDeletedVoicemail(this);
     }
 
+    public static Voicemail queryById(Session session, Long id)
+    {
+        return (Voicemail)session.get(Voicemail.class, id);
+    }
+
     public static List<Voicemail> queryBySubscriberPaged(Session session, Subscriber subscriber, int first, int max)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(Voicemail.class);

@@ -243,7 +243,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
               <div class="application-content">
                 <table id="voicemail-table">
                   <tbody>
-                    <tr class="placeholder"><td colspan="4">No voicemail</td></tr>
+                    <tr class="placeholder"><td colspan="6">No voicemail</td></tr>
                   </tbody>
                 </table>
                 <div class="pagination" id="voicemail-pagination">
@@ -715,6 +715,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
           <td class="voicemail-cell-received"></td>
           <td class="voicemail-cell-duration"></td>
           <td class="voicemail-cell-download"></td>
+          <td class="voicemail-cell-deleteButton"></td>
         </tr>
 
         <tr id="dnis-row-template">
