@@ -39,10 +39,14 @@ hang-up - hang-up
 143-70 - assign-variable
 157-32 - data-query
 140-88 - data-query
+65-54 - math
+65-55 - decision
 144-35 - assign-variable
 144-27 - run-javascript
 102-50 - run-javascript
 102-52 - run-javascript
+65-57 - audio-input
+65-59 - audio-input
 157-29 - data-query
 68-30 - run-javascript
 68-3 - audio-input
