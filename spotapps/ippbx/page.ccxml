@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/09/2010
+    <!-- Last Modified 08/11/2010
        *   @Name	page.ccxml
        *   @Desc	This script handles the group paging logic -->
 
@@ -118,7 +118,7 @@
                 <var name="dest" expr="getNextElement(clientIndex,clientList,',')"/>
                 <var name="ext" expr="iiSubstr(dest,3,-1)"/>
                 <if cond="!(inString(ext,activeList,'|'))"> <!-- Verify that client is NOT included in the active list -->
-                    <createcall dest="'sip:aa.spa941.' + dest + '@iipbx'" callerid="'sip:page@softspot'" timeout="'1s'"/>
+                    <createcall dest="'sip:aa.spa941.' + dest + '@iipbx'" callerid="'sip:'+tmpANI+'@iipbx'" timeout="'1s'"/>
                 </if>
                 <assign name="clientIndex" expr="clientIndex + 1"/>
                 <send data="'dialog.user.call'" target="session.id"/>
@@ -151,7 +151,7 @@
             <!-- We are ready to begin paging -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <log target="status">Paging from [EXT <value expr="tmpANI"/>]</log>
+            <log target="status">Paging from [<value expr="tmpANI"/>]</log>
         </transition>
 
 	    <transition state="paging" event="connection.disconnected" name="evt" cond="evt.connectionid==ibconnid">

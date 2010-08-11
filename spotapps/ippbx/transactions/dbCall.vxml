@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/09/2010
+    <!-- Last Modified 08/11/2010
        *   @Name	dbCall.vxml
        *   @Desc	This script performs two functions. It is used to insert/delete an
                     active client into/from the database. It also retreives the list of
@@ -21,7 +21,7 @@
     <var name="cnt" expr="0"/>
     <var name="gotoForm" expr="''"/>
     <var name="id" expr="''"/>
-    <var name="maxTime" expr="'28800000'"/> <!-- Max time allowed. 8 hours in milliseconds -->
+    <var name="maxTime" expr="'28800'"/> <!-- Max time allowed. 8 hours in seconds -->
 
     <form id="beginDocument">
         <!-- Here we figure out which php script to call. If our flag is set to insert/delete, we need
