@@ -36,7 +36,7 @@ public class DeleteVoicemailServlet extends HttpServlet
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
-            throw new UnauthorizedServletException();
+            throw new UnauthorizedServletException("Not logged in");
         }
 
         String id = request.getParameter("id");
@@ -55,7 +55,7 @@ public class DeleteVoicemailServlet extends HttpServlet
 
         if(!(subscriber.getIsAdministrator() || voicemail.getSubscriber().equals(subscriber)))
         {
-            throw new UnauthorizedServletException();
+            throw new UnauthorizedServletException("Subscriber does not own Voicemail");
         }
 
         PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);

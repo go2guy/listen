@@ -119,7 +119,7 @@
 
       <batchtest fork="yes"
                  todir="${target.dir}/junit">
-        <fileset dir="${src.dir}/test/java" includes="**/*Test.java" excludes="**/ListenTest.java"/>
+        <fileset dir="${src.dir}/test/java" includes="**/*Test.java" excludes="**/ListenTest.java,**/ListenServletTest.java"/>
       </batchtest>
     </junit>
 

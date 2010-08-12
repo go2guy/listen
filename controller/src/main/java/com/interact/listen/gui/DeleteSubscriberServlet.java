@@ -36,7 +36,7 @@ public class DeleteSubscriberServlet extends HttpServlet
         Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         if(currentSubscriber == null)
         {
-            throw new UnauthorizedServletException();
+            throw new UnauthorizedServletException("Not logged in");
         }
 
         String id = request.getParameter("id");
@@ -55,12 +55,12 @@ public class DeleteSubscriberServlet extends HttpServlet
 
         if(!currentSubscriber.getIsAdministrator())
         {
-            throw new UnauthorizedServletException();
+            throw new UnauthorizedServletException("Insufficient privileges");
         }
 
         if(subscriberToDelete.equals(currentSubscriber))
         {
-            throw new UnauthorizedServletException();
+            throw new BadRequestServletException("Cannot delete yourself");
         }
 
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
