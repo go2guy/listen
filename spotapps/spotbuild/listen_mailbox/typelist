@@ -136,8 +136,8 @@ hang-up - hang-up
 140-7 - audio-input
 140-3 - audio-input
 60-5 - decision
-102-47 - run-javascript
 60-3 - audio-input
+102-47 - run-javascript
 140-8 - decision
 102-44 - assign-variable
 102-42 - decision
