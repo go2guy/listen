@@ -71,7 +71,7 @@ Requires: spotbuild-vip
     rm -rf %{buildroot}/interact/apps/spotbuild/ippbx/php
 
     # Run Encryption
-    /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/
+    /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/ %{buildroot}/interact/apps/spotbuild/listen_artifacts/
     /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/ %{buildroot}/interact/apps/spotbuild/listen_autoDial/
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/
     /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
