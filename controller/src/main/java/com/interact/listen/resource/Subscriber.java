@@ -3,13 +3,17 @@ package com.interact.listen.resource;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.history.HistoryService;
+import com.interact.listen.spot.SpotCommunicationException;
+import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.util.ComparisonUtil;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
 import javax.persistence.*;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
@@ -20,6 +24,8 @@ import org.hibernate.criterion.*;
 public class Subscriber extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOG = Logger.getLogger(Subscriber.class);
 
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -56,19 +62,19 @@ public class Subscriber extends Resource implements Serializable
 
     @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
-    
+
     @Column(name = "EMAIL_NOTIFICATION_ENABLED")
     private boolean isEmailNotificationEnabled = Boolean.FALSE;
-    
+
     @Column(name = "SMS_NOTIFICATION_ENABLED")
     private boolean isSmsNotificationEnabled = Boolean.FALSE;
-    
+
     @Column(name = "EMAIL_ADDRESS")
     private String emailAddress = "";
-    
+
     @Column(name = "SMS_ADDRESS")
     private String smsAddress = "";
-    
+
     @Column(name = "IS_SUBSCRIBED_TO_PAGING", nullable = false)
     private Boolean isSubscribedToPaging = Boolean.FALSE;
 
@@ -81,8 +87,7 @@ public class Subscriber extends Resource implements Serializable
 
     public enum PlaybackOrder
     {
-        NEWEST_TO_OLDEST,
-        OLDEST_TO_NEWEST;
+        NEWEST_TO_OLDEST, OLDEST_TO_NEWEST;
     }
 
     public Set<AccessNumber> getAccessNumbers()
@@ -252,7 +257,7 @@ public class Subscriber extends Resource implements Serializable
         conference.setSubscriber(null);
         this.conferences.remove(conference);
     }
-    
+
     public Boolean getIsEmailNotificationEnabled()
     {
         return isEmailNotificationEnabled;
@@ -262,7 +267,7 @@ public class Subscriber extends Resource implements Serializable
     {
         this.isEmailNotificationEnabled = isEmailNotificationEnabled;
     }
-    
+
     public Boolean getIsSmsNotificationEnabled()
     {
         return isSmsNotificationEnabled;
@@ -272,7 +277,7 @@ public class Subscriber extends Resource implements Serializable
     {
         this.isSmsNotificationEnabled = isSmsNotificationEnabled;
     }
-    
+
     public String getEmailAddress()
     {
         return emailAddress;
@@ -282,7 +287,7 @@ public class Subscriber extends Resource implements Serializable
     {
         this.emailAddress = emailAddress;
     }
-    
+
     public String getSmsAddress()
     {
         return smsAddress;
@@ -292,7 +297,7 @@ public class Subscriber extends Resource implements Serializable
     {
         this.smsAddress = smsAddress;
     }
-    
+
     public Boolean getIsSubscribedToPaging()
     {
         return isSubscribedToPaging;
@@ -330,27 +335,27 @@ public class Subscriber extends Resource implements Serializable
         {
             addToErrors("username cannot be null");
         }
-        
-        if(voicemailPin ==  null)
+
+        if(voicemailPin == null)
         {
             addToErrors("voicemail pin cannot be null");
         }
-        
+
         if(voicemailPin != null && String.valueOf(voicemailPin).length() > 10)
         {
             addToErrors("voicemailPin cannot be more than ten digits");
         }
-        
+
         if(isEmailNotificationEnabled && (emailAddress == null || emailAddress.equals("")))
         {
             addToErrors("must provide an E-mail address when E-mail notifications are enabled");
         }
-        
+
         if(isSmsNotificationEnabled && (smsAddress == null || smsAddress.equals("")))
         {
             addToErrors("must provide an SMS address when SMS notifications are enabled");
         }
-        
+
         if(isSubscribedToPaging && (smsAddress == null || smsAddress.equals("")))
         {
             addToErrors("must provide an SMS address when subscribed to paging");
@@ -443,6 +448,26 @@ public class Subscriber extends Resource implements Serializable
     {
         HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeDeletedSubscriber(this);
+
+        // TODO we duplicate this looping code several places, it should be refactored
+        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(persistenceService.getSession());
+        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        {
+            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(),
+                                                   persistenceService.getCurrentSubscriber());
+            try
+            {
+                spotSystem.deleteAllSubscriberArtifacts(this);
+            }
+            catch(SpotCommunicationException e)
+            {
+                LOG.error(e);
+            }
+            catch(IOException e)
+            {
+                LOG.error(e);
+            }
+        }
     }
 
     public static Subscriber queryById(Session session, Long id)
@@ -487,17 +512,17 @@ public class Subscriber extends Resource implements Serializable
 
         return (List<Subscriber>)criteria.list();
     }
-    
+
     public static List<Subscriber> queryPagingEnabledSubscribers(Session session)
     {
         Criteria criteria = session.createCriteria(Subscriber.class);
         criteria.add(Restrictions.eq("isSubscribedToPaging", true));
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
+
         criteria.setFetchMode("conference", FetchMode.SELECT);
         return (List<Subscriber>)criteria.list();
     }
-    
+
     public boolean canModifyParticipant(Participant participant)
     {
         if(participant == null)

@@ -3,10 +3,13 @@ package com.interact.listen.resource;
 import com.interact.listen.EmailerService;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.history.HistoryService;
+import com.interact.listen.spot.SpotCommunicationException;
+import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 import com.interact.listen.stats.StatSenderFactory;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +17,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
@@ -23,6 +27,8 @@ import org.hibernate.criterion.*;
 public class Voicemail extends Audio implements Serializable
 {
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOG = Logger.getLogger(Voicemail.class);
 
     @JoinColumn(name = "FORWARDED_BY_SUBSCRIBER_ID", nullable = true)
     @ManyToOne
@@ -153,6 +159,26 @@ public class Voicemail extends Audio implements Serializable
     {
         HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeDeletedVoicemail(this);
+
+        // TODO we duplicate this looping code several places, it should be refactored
+        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(persistenceService.getSession());
+        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        {
+            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(),
+                                                   persistenceService.getCurrentSubscriber());
+            try
+            {
+                spotSystem.deleteArtifact(getUri());
+            }
+            catch(SpotCommunicationException e)
+            {
+                LOG.error(e);
+            }
+            catch(IOException e)
+            {
+                LOG.error(e);
+            }
+        }
     }
 
     public static Voicemail queryById(Session session, Long id)

@@ -4,7 +4,6 @@ import com.interact.listen.history.Channel;
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.httpclient.HttpClientImpl;
 import com.interact.listen.marshal.Marshaller;
-import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.Subscriber;
@@ -17,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONValue;
+
 /**
  * Represents a SPOT IVR system that this application can communicate with. Provides a defined set of operations that a
  * SPOT system allows via HTTP request.
@@ -25,7 +26,7 @@ public class SpotSystem
 {
     // e.g. "http://apps2/spot"
     private String httpInterfaceUri;
-    
+
     /** {@link Subscriber} performing the operations to this {@code SpotSystem} */
     private Subscriber performingSubscriber;
 
@@ -49,17 +50,36 @@ public class SpotSystem
         this.statSender = statSender;
     }
 
-    private enum SpotRequestEvent
+    /**
+     * Deletes the provided file on the SPOT system.
+     * 
+     * @param filePath HTTP file URL to delete
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
+    public void deleteArtifact(String filePath) throws IOException, SpotCommunicationException
     {
-        DROP_PARTICIPANT("DROP"), MUTE_PARTICIPANT("MUTE"), OUTDIAL("AUTO_DIAL"), START_RECORDING("START_REC"), STOP_RECORDING("STOP_REC"),
-        UNMUTE_PARTICIPANT("UNMUTE");
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "DEL_ARTIFACT");
+        importedValue.put("action", "FILE");
+        importedValue.put("artifact", filePath);
+        buildAndSendRequest(importedValue);
+    }
 
-        private String eventName;
-
-        private SpotRequestEvent(String eventName)
-        {
-            this.eventName = eventName;
-        }
+    /**
+     * Deletes all artifacts on the SPOT system for the provided subscriber.
+     * 
+     * @param subscriber subscriber for which to delete artifacts
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
+    public void deleteAllSubscriberArtifacts(Subscriber subscriber) throws IOException, SpotCommunicationException
+    {
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "DEL_ARTIFACT");
+        importedValue.put("action", "SUB");
+        importedValue.put("artifact", subscriber.getId());
+        buildAndSendRequest(importedValue);
     }
 
     /**
@@ -71,12 +91,11 @@ public class SpotSystem
      */
     public void dropParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("sessionid", participant.getSessionID());
-        params.put("name", "dialog.user.customEvent");
-        params.put("II_SB_eventToPass", SpotRequestEvent.DROP_PARTICIPANT.eventName);
-        params.put("II_SB_valueToPass", "");
-        sendBasicHttpRequest(params, "basichttp");
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "CONF_EVENT");
+        importedValue.put("action", "DROP");
+        importedValue.put("sessionid", participant.getSessionID());
+        buildAndSendRequest(importedValue);
     }
 
     /**
@@ -88,12 +107,11 @@ public class SpotSystem
      */
     public void muteParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("sessionid", participant.getSessionID());
-        params.put("name", "dialog.user.customEvent");
-        params.put("II_SB_eventToPass", SpotRequestEvent.MUTE_PARTICIPANT.eventName);
-        params.put("II_SB_valueToPass", "");
-        sendBasicHttpRequest(params, "basichttp");
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "CONF_EVENT");
+        importedValue.put("action", "MUTE");
+        importedValue.put("sessionid", participant.getSessionID());
+        buildAndSendRequest(importedValue);
     }
 
     /**
@@ -109,15 +127,16 @@ public class SpotSystem
     public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber)
         throws IOException, SpotCommunicationException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("uri", "/interact/apps/iistart.ccxml");
-        params.put("II_SB_importedValue", "{\"application\":\"" + SpotRequestEvent.OUTDIAL.eventName +
-                                          "\",\"sessionid\":\"" + adminSessionId + "\",\"destination\":\"" + numbers +
-                                          "\",\"conferenceId\":\"" + String.valueOf(conferenceId) + "\",\"ani\":\"" +
-                                          requestingNumber + "\"}");
-        sendBasicHttpRequest(params, "createsession");
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "AUTO_DIAL");
+        importedValue.put("action", "DIAL");
+        importedValue.put("sessionid", adminSessionId);
+        importedValue.put("conferenceId", String.valueOf(conferenceId));
+        importedValue.put("destination", numbers);
+        importedValue.put("ani", requestingNumber);
+        buildAndSendRequest(importedValue);
     }
-    
+
     /**
      * Starts recording the provided {@code Conference}.
      * 
@@ -129,14 +148,15 @@ public class SpotSystem
     public void startRecording(Conference conference, String adminSessionId) throws IOException,
         SpotCommunicationException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("sessionid", adminSessionId);
-        params.put("name", "dialog.user.basichttp");
-        params.put("II_SB_basichttpEvent", "CREATESESSION");
-        String argument = createRecordingArgument(SpotRequestEvent.START_RECORDING, conference, adminSessionId);
-        params.put("II_SB_argument", argument);
-        params.put("II_SB_URI", "listen_main/listen_main.ccxml");
-        sendBasicHttpRequest(params, "basichttp");
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "RECORD");
+        importedValue.put("action", "START");
+        importedValue.put("sessionid", adminSessionId);
+        importedValue.put("conferenceId", String.valueOf(conference.getId()));
+        importedValue.put("startTime", sdf.format(conference.getStartTime()));
+        importedValue.put("recordingSessionId", conference.getRecordingSessionId());
+        importedValue.put("arcadeId", conference.getArcadeId());
+        buildAndSendRequest(importedValue);
     }
 
     /**
@@ -147,16 +167,18 @@ public class SpotSystem
      * @throws IOException if an HTTP error occurs
      * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
      */
-    public void stopRecording(Conference conference, String adminSessionId) throws IOException, SpotCommunicationException
+    public void stopRecording(Conference conference, String adminSessionId) throws IOException,
+        SpotCommunicationException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("sessionid", adminSessionId);
-        params.put("name", "dialog.user.basichttp");
-        params.put("II_SB_basichttpEvent", "CREATESESSION");
-        String argument = createRecordingArgument(SpotRequestEvent.STOP_RECORDING, conference, adminSessionId);
-        params.put("II_SB_argument", argument);
-        params.put("II_SB_URI", "listen_main/listen_main.ccxml");
-        sendBasicHttpRequest(params, "basichttp");
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "RECORD");
+        importedValue.put("action", "STOP");
+        importedValue.put("sessionid", adminSessionId);
+        importedValue.put("conferenceId", String.valueOf(conference.getId()));
+        importedValue.put("startTime", sdf.format(conference.getStartTime()));
+        importedValue.put("recordingSessionId", conference.getRecordingSessionId());
+        importedValue.put("arcadeId", conference.getArcadeId());
+        buildAndSendRequest(importedValue);
     }
 
     /**
@@ -168,66 +190,43 @@ public class SpotSystem
      */
     public void unmuteParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("sessionid", participant.getSessionID());
-        params.put("name", "dialog.user.customEvent");
-        params.put("II_SB_eventToPass", SpotRequestEvent.UNMUTE_PARTICIPANT.eventName);
-        params.put("II_SB_valueToPass", "");
-        sendBasicHttpRequest(params, "basichttp");
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "CONF_EVENT");
+        importedValue.put("action", "UNMUTE");
+        importedValue.put("sessionid", participant.getSessionID());
+        buildAndSendRequest(importedValue);
     }
 
-    private void sendBasicHttpRequest(Map<String, String> params, String target) throws IOException, SpotCommunicationException
+    private void buildAndSendRequest(Map<String, Object> importedValue) throws IOException, SpotCommunicationException
     {
-        addCommonParams(params);
+        if(performingSubscriber != null)
+        {
+            importedValue.put("initiatingSubscriber", Marshaller.buildHref(performingSubscriber));
+        }
+        importedValue.put("initiatingChannel", Channel.GUI.toString());
 
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("uri", "/interact/apps/iistart.ccxml");
+        params.put("II_SB_importedValue", JSONValue.toJSONString(importedValue));
+        sendRequest(params);
+    }
+
+    private void sendRequest(Map<String, String> params) throws IOException, SpotCommunicationException
+    {
         statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
-        
-        String uri = httpInterfaceUri + "/ccxml/" + target;
+        String uri = httpInterfaceUri + "/ccxml/createsession";
         httpClient.post(uri, params);
 
         int status = httpClient.getResponseStatus();
         if(!isSuccessStatus(status))
         {
-            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" +
-                                                 uri + "]");
+            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" + uri +
+                                                 "]");
         }
     }
-    
+
     private boolean isSuccessStatus(int status)
     {
         return status >= 200 && status <= 299;
-    }
-
-    private String createRecordingArgument(SpotRequestEvent event, Conference conference, String adminSessionId)
-    {
-        StringBuilder argument = new StringBuilder();
-        JsonMarshaller marshaller = new JsonMarshaller();
-        argument.append("{");
-        argument.append("\"application\":\"RECORD\",");
-        argument.append("\"action\":\"").append(event.eventName).append("\",");
-        argument.append("\"conferenceId\":\"").append(String.valueOf(conference.getId())).append("\",");
-        argument.append("\"startTime\":\"").append(sdf.format(conference.getStartTime())).append("\",");
-        argument.append("\"interface\":\"GUI\",");
-        argument.append("\"recordingSessionId\":\"").append(conference.getRecordingSessionId()).append("\",");
-        argument.append("\"arcadeId\":\"").append(conference.getArcadeId()).append("\",");
-        argument.append("\"adminSID\":\"").append(adminSessionId).append("\",");
-        String description = marshaller.convertAndEscape(String.class, conference.getDescription());
-        argument.append("\"description\":\"").append(description).append("\"");
-        argument.append("}");
-        return argument.toString();
-    }
-
-    /**
-     * Adds common parameters to the provided parameter {@code Map}. This method modifies the passed-in {@code Map}.
-     * 
-     * @param params params {@code Map} to augument
-     */
-    private void addCommonParams(Map<String, String> params)
-    {
-        if(performingSubscriber != null)
-        {
-            params.put("II_SB_listenSubscriber", Marshaller.buildHref(performingSubscriber));
-        }
-        params.put("II_SB_listenChannel", Channel.GUI.toString());
     }
 }

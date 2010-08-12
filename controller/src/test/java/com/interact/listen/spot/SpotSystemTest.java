@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.interact.listen.history.Channel;
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.stats.Stat;
@@ -27,7 +28,7 @@ public class SpotSystemTest
     private Participant participant;
 
     private final String httpInterfaceUri = "http://www.example.com";
-    private final String postStringAddition = "/ccxml/basichttp";
+    private final String postStringAddition = "/ccxml/createsession";
     @Before
     public void setUp()
     {
@@ -45,12 +46,17 @@ public class SpotSystemTest
     @Test
     public void test_dropParticipant_invokesPostWithParams() throws SpotCommunicationException, IOException
     {
+        String value = "{";
+        value += "\"application\":\"CONF_EVENT\",";
+        value += "\"initiatingChannel\":\"GUI\",";
+        value += "\"action\":\"DROP\",";
+        value += "\"sessionid\":\"" + participant.getSessionID() + "\"";
+        value += "}";
+        
         Map<String, String> expectedParams = new HashMap<String, String>();
-        expectedParams.put("sessionid", participant.getSessionID());
-        expectedParams.put("name", "dialog.user.customEvent");
-        expectedParams.put("II_SB_eventToPass", "DROP");
-        expectedParams.put("II_SB_valueToPass", "");
-        expectedParams.put("II_SB_listenChannel", "GUI");
+        expectedParams.put("II_SB_importedValue", value);
+        expectedParams.put("uri", "/interact/apps/iistart.ccxml");
+
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 
@@ -104,12 +110,16 @@ public class SpotSystemTest
     @Test
     public void test_muteParticipant_invokesPostWithParams() throws SpotCommunicationException, IOException
     {
+        String value = "{";
+        value += "\"application\":\"CONF_EVENT\",";
+        value += "\"initiatingChannel\":\"GUI\",";
+        value += "\"action\":\"MUTE\",";
+        value += "\"sessionid\":\"" + participant.getSessionID() + "\"";
+        value += "}";
+
         Map<String, String> expectedParams = new HashMap<String, String>();
-        expectedParams.put("sessionid", participant.getSessionID());
-        expectedParams.put("name", "dialog.user.customEvent");
-        expectedParams.put("II_SB_eventToPass", "MUTE");
-        expectedParams.put("II_SB_valueToPass", "");
-        expectedParams.put("II_SB_listenChannel", "GUI");
+        expectedParams.put("II_SB_importedValue", value);
+        expectedParams.put("uri", "/interact/apps/iistart.ccxml");
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 
@@ -167,13 +177,19 @@ public class SpotSystemTest
         final Long conferenceId = Long.valueOf(System.currentTimeMillis());
         final String requestingNumber = String.valueOf(System.currentTimeMillis());
 
+        String value = "{";
+        value += "\"application\":\"AUTO_DIAL\",";
+        value += "\"ani\":\"" + requestingNumber + "\",";
+        value += "\"initiatingChannel\":\"GUI\",";
+        value += "\"action\":\"DIAL\",";
+        value += "\"sessionid\":\"" + adminSessionId + "\",";
+        value += "\"conferenceId\":\"" + String.valueOf(conferenceId) + "\",";
+        value += "\"destination\":\"" + number + "\"";
+        value += "}";
+
         Map<String, String> expectedParams = new HashMap<String, String>();
+        expectedParams.put("II_SB_importedValue", value);
         expectedParams.put("uri", "/interact/apps/iistart.ccxml");
-        expectedParams.put("II_SB_importedValue", "{\"application\":\"AUTO_DIAL\",\"sessionid\":\"" + adminSessionId +
-                                                  "\",\"destination\":\"" + number + "\",\"conferenceId\":\"" +
-                                                  String.valueOf(conferenceId) + "\",\"ani\":\"" + requestingNumber +
-                                                  "\"}");
-        expectedParams.put("II_SB_listenChannel", "GUI");
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 
@@ -226,12 +242,16 @@ public class SpotSystemTest
     @Test
     public void test_unmuteParticipant_invokesPostWithParams() throws SpotCommunicationException, IOException
     {
+        String value = "{";
+        value += "\"application\":\"CONF_EVENT\",";
+        value += "\"initiatingChannel\":\"GUI\",";
+        value += "\"action\":\"UNMUTE\",";
+        value += "\"sessionid\":\"" + participant.getSessionID() + "\"";
+        value += "}";
+
         Map<String, String> expectedParams = new HashMap<String, String>();
-        expectedParams.put("sessionid", participant.getSessionID());
-        expectedParams.put("name", "dialog.user.customEvent");
-        expectedParams.put("II_SB_eventToPass", "UNMUTE");
-        expectedParams.put("II_SB_valueToPass", "");
-        expectedParams.put("II_SB_listenChannel", "GUI");
+        expectedParams.put("II_SB_importedValue", value);
+        expectedParams.put("uri", "/interact/apps/iistart.ccxml");
 
         when(mockHttpClient.getResponseStatus()).thenReturn(200);
 
