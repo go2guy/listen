@@ -49,7 +49,6 @@
 115-33 - audio-input
 115-32 - audio-input
 115-31 - audio-input
-109-51 - data-query
 122-38 - run-javascript
 109-46 - run-javascript
 109-48 - run-javascript
@@ -288,7 +287,6 @@ hang-up - hang-up
 110-24 - run-javascript
 105-120 - data-query
 112-20 - decision
-109-7 - run-javascript
 86-17 - run-javascript
 109-8 - run-javascript
 86-15 - decision
