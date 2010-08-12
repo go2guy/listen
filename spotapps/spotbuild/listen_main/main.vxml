@@ -33,6 +33,7 @@
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_HTTPcontroller"/>
+	<var name="SB_UV_callType"/>
 
     
     <form id="beginDocument">
@@ -45,6 +46,7 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
+			<assign name="callType" expr="II_SB_type" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_appToAccess != undefined">
@@ -88,6 +90,9 @@
 			</if>
 			<if cond="SB_UV_HTTPcontroller != undefined">
 				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
+			</if>
+			<if cond="SB_UV_callType != undefined">
+				<assign name="callType" expr="SB_UV_callType" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

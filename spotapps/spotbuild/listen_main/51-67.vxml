@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            var appList = new String("AUTO_DIAL, RECORD");if(passValues == undefined){return "DEFAULT";}else{var result = eval("("+passValues+")");}if (appList.match(result.application)) {return result.application;}else{return "DEFAULT";}
+	            var result = "DEFAULT";if(passValues != undefined){    var tmpVal = eval("("+passValues+")");    switch (tmpVal.application)    {        case "AUTO_DIAL":            result = "listen_autoDial";            break;        case "RECORD":            result = "listen_record";            break;        case "DEL_ARTIFACT":            result = "listen_artifacts";            break;        case "CONF_EVENT":            result = "listen_confEvent";            break;        case "MSG_LIGHT":            result = "listen_msgLightCntrl";            break;        default:    }}return result;
             }
         ]]>
     </script>

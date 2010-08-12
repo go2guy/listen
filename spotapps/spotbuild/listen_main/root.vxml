@@ -36,13 +36,14 @@
 	<var name="subID" expr="''" />
 	<var name="passValues" expr="'importedValue'" />
 	<var name="params" expr="''" />
-	<var name="resource" expr="'meta/'" />
-	<var name="request" expr="'GET'" />
+	<var name="resource" expr="'listenSpotSubscribers'" />
+	<var name="request" expr="'post'" />
 	<var name="status" expr="''" />
 	<var name="sipURL" expr="'null'" /> <!-- Config SIP Server Name -->
 	<var name="sysAccessTime" expr="''" />
 	<var name="ANI" expr="'remote'" />
 	<var name="HTTPcontroller" expr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" />
+	<var name="callType" expr="'type'" />
 
 
     <!-- Conference Variables -->

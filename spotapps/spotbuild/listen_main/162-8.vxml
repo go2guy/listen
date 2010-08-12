@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'51-95'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'162-9'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL)
+            function II_SB_JS_function(DNIS)
             {
-	            var result = eval("("+passValues+")");result.cntrlURL = cntrlURL + "/api";result.hostName = hostName;result.sipURL = sipURL;result.sysAccessTime = sysAccessTime;result.HTTPcontroller = HTTPcontroller;return iiStringify(result);
+	            return getnum(DNIS);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Var</log>
-            <log>INFO: Entered run-javascript.vxml [51-73]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="passValues" expr="II_SB_userJava" />   
+            <log target="status">Get Number</log>
+            <log>INFO: Entered run-javascript.vxml [162-8]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(DNIS)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="subID" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

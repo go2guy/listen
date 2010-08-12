@@ -5,13 +5,13 @@
        *   @Name   switch-app.vxml
        *   @Desc   Transfers application control to a new program -->
 
-    <var name="II_SB_nextOpt" expr="status"/>  <!-- Name of next project -->
+    <var name="II_SB_nextOpt" expr="appToAccess"/>  <!-- Name of next project -->
     <var name="II_SB_valueToPass" expr="passValues"/> <!-- Value to pass -->
     
     <form id="beginDocument">
         <block>
-	        <log target="status">Switch Application</log>
-            <log>INFO: Entered switch-application.vxml [51-95]</log>
+	        <log target="status">Custom App</log>
+            <log>INFO: Entered switch-application.vxml [162-19]</log>
 			<if cond="II_SB_nextOpt != ''">
 				<log>INFO: Switch application to [/interact/apps/spotbuild/<value expr="II_SB_nextOpt"/>/main.ccxml]</log>
                 <assign name="II_SB_status" expr="'transfer'"/>
