@@ -11,9 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var tmpVal = eval("("+returnVal+")");
-var result = (tmpVal.subscriber.href).split('/');
-return "{\"href\":\"/subscribers/"+result[2]+"\"}";
+	            var tmpVal = eval("("+returnVal+")");var result = (tmpVal.subscriber.href).split('/');return "{\"href\":\"/subscribers/"+result[2]+"\"}";
             }
         ]]>
     </script>

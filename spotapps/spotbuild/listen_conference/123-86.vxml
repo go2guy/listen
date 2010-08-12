@@ -11,11 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+returnVal+")");
-if ((result.recordingSessionId != 'null') && (result.recordingSessionId != ''))
-return result.recordingSessionId;
-else
-return "ERROR";
+	            var result = eval("("+returnVal+")");if ((result.recordingSessionId != 'null') && (result.recordingSessionId != ''))return result.recordingSessionId;else{return "ERROR";}
             }
         ]]>
     </script>

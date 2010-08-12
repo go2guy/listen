@@ -11,8 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(confID,isRecording,isStarted,confDescription)
             {
-	            var tmpVal = new String('null');
-return "{\"href\": \"/conferences/"+confID+"\", \"id\":"+confID+", \"description\":\""+confDescription+"\", \"arcadeId\":\""+tmpVal+"\", \"isRecording\":"+isRecording+", \"isStarted\": \""+isStarted+"\"}";
+	            var tmpVal = new String('null');return "{\"href\": \"/conferences/"+confID+"\", \"id\":"+confID+", \"description\":\""+confDescription+"\", \"arcadeId\":\""+tmpVal+"\", \"isRecording\":"+isRecording+", \"isStarted\": \""+isStarted+"\"}";
             }
         ]]>
     </script>

@@ -11,11 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+returnVal+")");
-if ((result.arcadeId == "null") || (result.arcadeId.length == 0))
-return "UPDATE";
-else
-return "SKIP";
+	            var result = eval("("+returnVal+")");if ((result.arcadeId == "null") || (result.arcadeId.length == 0))return "UPDATE";else{return "SKIP";}
             }
         ]]>
     </script>

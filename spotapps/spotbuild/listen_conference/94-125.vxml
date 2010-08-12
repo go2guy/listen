@@ -11,9 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result= eval("("+returnVal+")");
-var tmpVal = new String(result.startTime).replace(/\D/g,'');
-return tmpVal;
+	            var result= eval("("+returnVal+")");var tmpVal = new String(result.startTime).replace(/\D/g,'');return tmpVal;
             }
         ]]>
     </script>
