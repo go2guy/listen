@@ -6,7 +6,7 @@
                    These variables are available to all files that reference this document -->
 
     <!-- Application constants. These are used to control the flow of the application -->
-    <var name="II_SB_APP_PATH" expr="'/interact/apps/spotbuild/listen_main/'"/>                 	<!--  APP_PATH. Application directory under base directory. Contains all code -->
+    <var name="II_SB_APP_PATH" expr="'/interact/apps/spotbuild/listen_confEvents/'"/>                 	<!--  APP_PATH. Application directory under base directory. Contains all code -->
     <var name="II_SB_LIB_PATH" expr="'/interact/apps/spotbuild/lib/'"/>	<!-- LIB_PATH. Library directory. Contains all library functions -->
     <var name="II_SB_JS_LIB" expr="II_SB_LIB_PATH +'js/'"/>            	<!-- JS LIB_PATH. Java script directory -->
     <var name="II_SB_VXML_LIB" expr="II_SB_LIB_PATH +'vxml/'"/>        	<!-- VXML LIB_PATH. VXML script directory -->
@@ -29,21 +29,9 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
-	<var name="appToAccess" expr="''" />
-	<var name="DNIS" expr="'local'" />
-	<var name="cntrlURL" expr="''" /> <!-- Config Controller URL -->
-	<var name="hostName" expr="''" /> <!-- Config System Local Host Name -->
-	<var name="subID" expr="''" />
-	<var name="passValues" expr="'importedValue'" />
-	<var name="params" expr="''" />
-	<var name="resource" expr="'api/listenSpotSubscribers'" />
-	<var name="request" expr="'post'" />
-	<var name="status" expr="''" />
-	<var name="sipURL" expr="'null'" /> <!-- Config SIP Server Name -->
-	<var name="sysAccessTime" expr="''" />
-	<var name="ANI" expr="'remote'" />
-	<var name="HTTPcontroller" expr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" />
-	<var name="callType" expr="'type'" />
+	<var name="eventName" expr="''" />
+	<var name="sessionID" expr="''" />
+	<var name="argList" expr="'importedValue'" />
 
 
     <!-- Conference Variables -->

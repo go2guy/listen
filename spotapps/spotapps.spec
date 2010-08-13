@@ -72,7 +72,7 @@ Requires: spotbuild-vip
 
     # Run Encryption
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/ %{buildroot}/interact/apps/spotbuild/listen_artifacts/
-    /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/ %{buildroot}/interact/apps/spotbuild/listen_autoDial/
+    /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/ %{buildroot}/interact/apps/spotbuild/listen_autoDial/ %{buildroot}/interact/apps/spotbuild/listen_confEvents/
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/
     /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
     /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/
