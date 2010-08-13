@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(CONF_ID,confID,confStartTime,SID,hostName,cntrlURL,confDescription)
+            function II_SB_JS_function(CONF_ID,confID,confStartTime,SID,confDescription)
             {
-	            return "{\"cntrlURL\":\""+cntrlURL+"\", \"hostName\":\""+hostName+"\", \"description\":\""+confDescription+"\", \"application\":\"RECORD\", \"action\":\"START_REC\", \"conferenceId\":"+confID+", \"startTime\":\""+confStartTime+"\", \"interface\":\"TUI\",\"recordingSessionId\":null, \"arcadeId\":\""+CONF_ID+"\", \"adminSID\":\""+SID+"\"}";
+	            return "{ \"description\":\""+confDescription+"\", \"application\":\"RECORD\", \"action\":\"START\", \"conferenceId\":"+confID+", \"startTime\":\""+confStartTime+"\", \"initiatingChannel\":\"TUI\",\"recordingSessionId\":null, \"arcadeId\":\""+CONF_ID+"\", \"sessionId\":\""+SID+"\"}";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set passValues</log>
             <log>INFO: Entered run-javascript.vxml [121-7]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(CONF_ID,confID,confStartTime,SID,hostName,cntrlURL,confDescription)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(CONF_ID,confID,confStartTime,SID,confDescription)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

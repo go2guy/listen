@@ -11,9 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList,recPath,id)
             {
-	            var result = eval("("+argList+")");
-
-return recPath + id + "-" + result.startTime + "-" + getTimeStamp(1) + ".wav";
+	            var result = eval("("+argList+")");return recPath + id + "-" + result.startTime + "-" + getTimeStamp(1) + ".wav";
             }
         ]]>
     </script>

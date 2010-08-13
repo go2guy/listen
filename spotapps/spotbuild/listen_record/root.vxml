@@ -57,6 +57,7 @@
 	<var name="confDescription" expr="''" />
 	<var name="subscriber" expr="''" />
 	<var name="HTTPcontroller" expr="''" />
+	<var name="sessionID" expr="''" />
 
 
     <!-- Conference Variables -->

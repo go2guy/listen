@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
-<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_conference/root.vxml"> <!-- Set location of root document -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_record/root.vxml"> <!-- Set location of root document -->
     <!-- Last Modified 11/02/2009
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'123-97'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'167-60'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(CONF_ID,confID,timeStamp,SID,recSID,confDescription)
+            function II_SB_JS_function(argList)
             {
-	            return "{\"description\":\""+confDescription+"\", \"application\":\"RECORD\", \"action\":\"STOP\", \"conferenceId\":"+confID+", \"startTime\":\""+timeStamp+"\", \"initiatingChannel\":\"TUI\",\"recordingSessionId\":\""+recSID+"\", \"arcadeId\":\""+CONF_ID+"\", \"sessionId\":\""+SID+"\"}";
+	            var result = eval("("+argList+")");return result.sessionId;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set passValues</log>
-            <log>INFO: Entered run-javascript.vxml [123-74]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(CONF_ID,confID,timeStamp,SID,recSID,confDescription)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="passValues" expr="II_SB_userJava" />   
+            <log target="status">Get SID</log>
+            <log>INFO: Entered run-javascript.vxml [167-58]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="sessionID" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

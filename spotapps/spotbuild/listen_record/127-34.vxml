@@ -11,12 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var result = eval("("+argList+")");
-
-if (result.interface == 'TUI')
-return result.adminSID;
-else
-return "GUI";
+	            var result = eval("("+argList+")");if (result.interface == 'TUI')return result.adminSID;elsereturn "GUI";
             }
         ]]>
     </script>
