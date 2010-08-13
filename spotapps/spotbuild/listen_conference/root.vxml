@@ -51,7 +51,7 @@
 	<var name="params" expr="''" />
 	<var name="id" expr="''" />
 	<var name="cntrlURL" expr="''" />
-	<var name="resource" expr="'listenSpotSubscribers'" />
+	<var name="resource" expr="''" />
 	<var name="status" expr="''" />
 	<var name="returnVal" expr="''" />
 	<var name="returnStr" expr="''" />

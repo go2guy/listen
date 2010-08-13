@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">End Conf</log>
             <log>INFO: Entered data-query.vxml [117-120]</log>
-            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL params resource request 'id' " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL params resource request id " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
 			<assign name="returnVal" expr="apiObj.Result" />
 			<assign name="returnStr" expr="apiObj.Reason" />
