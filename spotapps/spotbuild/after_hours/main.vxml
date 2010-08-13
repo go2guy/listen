@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/after_hours/root.vxml"> <!--  Set location of root document -->
+    <!-- Last Modified 10/21/2009
+       *   @Name   main.vxml
+       *   @Desc   Sets up call parameters -->
+
+    <!-- Passed in from CCXML -->
+    <var name="II_SB_local"/>
+    <var name="II_SB_remote"/>
+    <var name="II_SB_originator"/>
+    <var name="II_SB_protocol"/>
+    <var name="II_SB_connectionID"/>
+    <var name="II_SB_type"/>
+    <var name="II_SB_line"/>
+    <var name="II_SB_sessionID"/>
+    <var name="II_SB_CODE_DIR"/>
+    <var name="II_SB_NEXT_OPTION"/>
+    <var name="II_SB_transfer"/>
+    <var name="II_SB_projectSource"/>
+    <var name="II_SB_importedValue"/>
+	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_params"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_request"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_userInput"/>
+	<var name="SB_UV_pin"/>
+	<var name="SB_UV_nxtPath"/>
+	<var name="SB_UV_subscriber"/>
+	<var name="SB_UV_maxErr"/>
+	<var name="SB_UV_errCnt"/>
+	<var name="SB_UV_fileLocation"/>
+	<var name="SB_UV_afterHourSub"/>
+	<var name="SB_UV_passValues"/>
+	<var name="SB_UV_reason"/>
+	<var name="SB_UV_newResult"/>
+	<var name="SB_UV_newCount"/>
+	<var name="SB_UV_oldResult"/>
+	<var name="SB_UV_oldCount"/>
+	<var name="SB_UV_vmPathOption"/>
+	<var name="SB_UV_numOfVoicemails"/>
+	<var name="SB_UV_count"/>
+	<var name="SB_UV_voicemails"/>
+	<var name="SB_UV_result"/>
+	<var name="SB_UV_vmDateCreated"/>
+	<var name="SB_UV_date"/>
+	<var name="SB_UV_time"/>
+	<var name="SB_UV_FILE1"/>
+	<var name="SB_UV_FILE2"/>
+	<var name="SB_UV_vmPathPrefix"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_menuOption"/>
+	<var name="SB_UV_id"/>
+	<var name="SB_UV_OPERATION"/>
+	<var name="SB_UV_errLoop"/>
+	<var name="SB_UV_subFwd"/>
+	<var name="SB_UV_playbackOrder"/>
+	<var name="SB_UV_voicemailInfo"/>
+	<var name="SB_UV_subscriberInfo"/>
+	<var name="SB_UV_HTTPcontroller"/>
+
+    
+    <form id="beginDocument">
+        <block>
+	        
+            <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
+            <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
+            <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
+            <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
+            <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="passValues" expr="II_SB_importedValue" />
+
+			<if cond="SB_UV_cntrlURL != undefined">
+				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
+			</if>
+			<if cond="SB_UV_params != undefined">
+				<assign name="params" expr="SB_UV_params" />
+			</if>
+			<if cond="SB_UV_resource != undefined">
+				<assign name="resource" expr="SB_UV_resource" />
+			</if>
+			<if cond="SB_UV_request != undefined">
+				<assign name="request" expr="SB_UV_request" />
+			</if>
+			<if cond="SB_UV_status != undefined">
+				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_returnVal != undefined">
+				<assign name="returnVal" expr="SB_UV_returnVal" />
+			</if>
+			<if cond="SB_UV_returnStr != undefined">
+				<assign name="returnStr" expr="SB_UV_returnStr" />
+			</if>
+			<if cond="SB_UV_userInput != undefined">
+				<assign name="userInput" expr="SB_UV_userInput" />
+			</if>
+			<if cond="SB_UV_pin != undefined">
+				<assign name="pin" expr="SB_UV_pin" />
+			</if>
+			<if cond="SB_UV_nxtPath != undefined">
+				<assign name="nxtPath" expr="SB_UV_nxtPath" />
+			</if>
+			<if cond="SB_UV_subscriber != undefined">
+				<assign name="subscriber" expr="SB_UV_subscriber" />
+			</if>
+			<if cond="SB_UV_maxErr != undefined">
+				<assign name="maxErr" expr="SB_UV_maxErr" />
+			</if>
+			<if cond="SB_UV_errCnt != undefined">
+				<assign name="errCnt" expr="SB_UV_errCnt" />
+			</if>
+			<if cond="SB_UV_fileLocation != undefined">
+				<assign name="fileLocation" expr="SB_UV_fileLocation" />
+			</if>
+			<if cond="SB_UV_afterHourSub != undefined">
+				<assign name="afterHourSub" expr="SB_UV_afterHourSub" />
+			</if>
+			<if cond="SB_UV_passValues != undefined">
+				<assign name="passValues" expr="SB_UV_passValues" />
+			</if>
+			<if cond="SB_UV_reason != undefined">
+				<assign name="reason" expr="SB_UV_reason" />
+			</if>
+			<if cond="SB_UV_newResult != undefined">
+				<assign name="newResult" expr="SB_UV_newResult" />
+			</if>
+			<if cond="SB_UV_newCount != undefined">
+				<assign name="newCount" expr="SB_UV_newCount" />
+			</if>
+			<if cond="SB_UV_oldResult != undefined">
+				<assign name="oldResult" expr="SB_UV_oldResult" />
+			</if>
+			<if cond="SB_UV_oldCount != undefined">
+				<assign name="oldCount" expr="SB_UV_oldCount" />
+			</if>
+			<if cond="SB_UV_vmPathOption != undefined">
+				<assign name="vmPathOption" expr="SB_UV_vmPathOption" />
+			</if>
+			<if cond="SB_UV_numOfVoicemails != undefined">
+				<assign name="numOfVoicemails" expr="SB_UV_numOfVoicemails" />
+			</if>
+			<if cond="SB_UV_count != undefined">
+				<assign name="count" expr="SB_UV_count" />
+			</if>
+			<if cond="SB_UV_voicemails != undefined">
+				<assign name="voicemails" expr="SB_UV_voicemails" />
+			</if>
+			<if cond="SB_UV_result != undefined">
+				<assign name="result" expr="SB_UV_result" />
+			</if>
+			<if cond="SB_UV_vmDateCreated != undefined">
+				<assign name="vmDateCreated" expr="SB_UV_vmDateCreated" />
+			</if>
+			<if cond="SB_UV_date != undefined">
+				<assign name="date" expr="SB_UV_date" />
+			</if>
+			<if cond="SB_UV_time != undefined">
+				<assign name="time" expr="SB_UV_time" />
+			</if>
+			<if cond="SB_UV_FILE1 != undefined">
+				<assign name="FILE1" expr="SB_UV_FILE1" />
+			</if>
+			<if cond="SB_UV_FILE2 != undefined">
+				<assign name="FILE2" expr="SB_UV_FILE2" />
+			</if>
+			<if cond="SB_UV_vmPathPrefix != undefined">
+				<assign name="vmPathPrefix" expr="SB_UV_vmPathPrefix" />
+			</if>
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_menuOption != undefined">
+				<assign name="menuOption" expr="SB_UV_menuOption" />
+			</if>
+			<if cond="SB_UV_id != undefined">
+				<assign name="id" expr="SB_UV_id" />
+			</if>
+			<if cond="SB_UV_OPERATION != undefined">
+				<assign name="OPERATION" expr="SB_UV_OPERATION" />
+			</if>
+			<if cond="SB_UV_errLoop != undefined">
+				<assign name="errLoop" expr="SB_UV_errLoop" />
+			</if>
+			<if cond="SB_UV_subFwd != undefined">
+				<assign name="subFwd" expr="SB_UV_subFwd" />
+			</if>
+			<if cond="SB_UV_playbackOrder != undefined">
+				<assign name="playbackOrder" expr="SB_UV_playbackOrder" />
+			</if>
+			<if cond="SB_UV_voicemailInfo != undefined">
+				<assign name="voicemailInfo" expr="SB_UV_voicemailInfo" />
+			</if>
+			<if cond="SB_UV_subscriberInfo != undefined">
+				<assign name="subscriberInfo" expr="SB_UV_subscriberInfo" />
+			</if>
+			<if cond="SB_UV_HTTPcontroller != undefined">
+				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
+			</if>
+
+            <log>INFO: Completed global variable setup</log>
+			<if cond="II_SB_nextOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>
+				<goto expr="'file:'+II_SB_APP_PATH + II_SB_nextOpt +'.vxml'"/>
+			<else/> <!-- Exit to ccxml layer -->
+				<assign name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set. Exit to CCXML.</log>
+				<log>INFO: Exit Status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+        </block>
+    </form>
+</vxml>
