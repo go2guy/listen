@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 07/16/2010
+    <!-- Last Modified 08/13/2010
        *   @Name	recordMsg.vxml
        *   @Desc	This script handles all recording activities for the after
                     hours mailbox -->
@@ -148,7 +148,7 @@
         <else/>
 		    <assign name="size" expr="recording$.size"/>
             <assign name="duration" expr="recording$.duration"/>
-            <goto next="postRec"/>
+            <goto next="#postRec"/>
         </if>
     </catch>
 
