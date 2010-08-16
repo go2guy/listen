@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'169-23'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'169-40'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(argList)
+            function II_SB_JS_function(phoneNumber,argList)
             {
-	            var result = eval("("+argList+")");return result.HTTPcontroller;
+	            var result = eval("("+argList+")");sipURL = result.sipURL;var str = new String(phoneNumber);var num = /^\d+$/;if ((num.test(str)) && (sipURL != 'null'))return getnum(result.ani) + "@" + sipURL;else{return getnum(result.ani) + "@" + result.hostName;}
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get HTTPcontroller</log>
-            <log>INFO: Entered run-javascript.vxml [135-59]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="HTTPcontroller" expr="II_SB_userJava" />   
+            <log target="status">Set Calling ID</log>
+            <log>INFO: Entered run-javascript.vxml [169-27]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(phoneNumber,argList)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="outBoundID" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
