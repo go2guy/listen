@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 07/13/2010
+    <!-- Last Modified 08/16/2010
        *   @Name	autoAttendantPrompt.vxml
        *   @Desc	Retrieves auto attendant prompt list from database -->
 
@@ -23,7 +23,8 @@
 
     <form id="verify">
         <!-- Here, we check the return from the db. If no prompts were found, then we need
-        to decide what prompt the auto attendant should play based on the regular office hours -->
+        to decide what prompt the auto attendant should play based on the regular office hours.
+        If a prompt is found, we'll assume that the office is closed -->
         <block>
             <log>INFO: Entered Verify</log>
             <if cond="prompt == '0'">   <!-- No prompts found for current time in db -->
@@ -38,6 +39,7 @@
                     <assign name="prompt" expr="'AP1600'"/> <!-- Return regular auto attendant prompt -->
                 </if>
             <else/>
+                <assign name="isClosed" expr="'y'"/>
                 <assign name="prompt" expr="'AP'+prompt+'|AP1650'"/>
             </if>
             <goto next="#exit"/>

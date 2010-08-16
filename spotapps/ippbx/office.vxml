@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/06/2010
+    <!-- Last Modified 08/16/2010
        *   @Name	office.vxml
        *   @Desc	This script controls the main auto attendant prompt
                     and available options -->
@@ -102,7 +102,7 @@
                 <var name="PM_CLOSE" expr="1700"/> <!-- Office close time -->
                 <var name="currTime" expr="getTimeStamp(1)"/>  <!-- Format is yyyymmddhhMMss -->
                 <assign name="currTime" expr="iiSubstr(currTime, 8, 12)"/>
-                <if cond="((parseFloat(currTime) &gt; PM_CLOSE) || (parseFloat(currTime) &lt; AM_OPEN))">
+                <if cond="((isClosed == 'y') || (parseFloat(currTime) &gt; PM_CLOSE) || (parseFloat(currTime) &lt; AM_OPEN))">
                     <log>INFO: Send caller to pager service</log>
                     <goto expr="'file:'+SUP_PATH+'afterHrsMain.vxml'"/>
                 <else/>
