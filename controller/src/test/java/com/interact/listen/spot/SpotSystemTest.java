@@ -48,9 +48,9 @@ public class SpotSystemTest
     {
         String value = "{";
         value += "\"application\":\"CONF_EVENT\",";
+        value += "\"sessionId\":\"" + participant.getSessionID() + "\",";
         value += "\"initiatingChannel\":\"GUI\",";
-        value += "\"action\":\"DROP\",";
-        value += "\"sessionid\":\"" + participant.getSessionID() + "\"";
+        value += "\"action\":\"DROP\"";
         value += "}";
         
         Map<String, String> expectedParams = new HashMap<String, String>();
@@ -112,9 +112,9 @@ public class SpotSystemTest
     {
         String value = "{";
         value += "\"application\":\"CONF_EVENT\",";
+        value += "\"sessionId\":\"" + participant.getSessionID() + "\",";
         value += "\"initiatingChannel\":\"GUI\",";
-        value += "\"action\":\"MUTE\",";
-        value += "\"sessionid\":\"" + participant.getSessionID() + "\"";
+        value += "\"action\":\"MUTE\"";
         value += "}";
 
         Map<String, String> expectedParams = new HashMap<String, String>();
@@ -180,9 +180,9 @@ public class SpotSystemTest
         String value = "{";
         value += "\"application\":\"AUTO_DIAL\",";
         value += "\"ani\":\"" + requestingNumber + "\",";
+        value += "\"sessionId\":\"" + adminSessionId + "\",";
         value += "\"initiatingChannel\":\"GUI\",";
         value += "\"action\":\"DIAL\",";
-        value += "\"sessionid\":\"" + adminSessionId + "\",";
         value += "\"conferenceId\":\"" + String.valueOf(conferenceId) + "\",";
         value += "\"destination\":\"" + number + "\"";
         value += "}";
@@ -244,9 +244,9 @@ public class SpotSystemTest
     {
         String value = "{";
         value += "\"application\":\"CONF_EVENT\",";
+        value += "\"sessionId\":\"" + participant.getSessionID() + "\",";
         value += "\"initiatingChannel\":\"GUI\",";
-        value += "\"action\":\"UNMUTE\",";
-        value += "\"sessionid\":\"" + participant.getSessionID() + "\"";
+        value += "\"action\":\"UNMUTE\"";
         value += "}";
 
         Map<String, String> expectedParams = new HashMap<String, String>();
