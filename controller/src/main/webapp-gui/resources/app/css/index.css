@@ -749,6 +749,10 @@ fieldset table .buttons button {
     margin-right: 6px;
 }
 
+label.required {
+    font-weight: bold;
+}
+
 table.data-table {
     border: 1px solid #CCCCCC;
 }

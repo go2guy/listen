@@ -144,7 +144,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                             <caption>This will send an email to the specified recipients with a date, time, phone number, and PIN.</caption>
                             <tbody>
                               <tr>
-                                <th><label for="scheduleConferenceDate">Date &amp; Time</label></th>
+                                <th><label for="scheduleConferenceDate" class="required">Date &amp; Time</label></th>
                                 <td>
                                   <input type="text" id="scheduleConferenceDate" name="scheduleConferenceDate"/><br/>
                                    From <select id="scheduleConferenceTimeHour" name="scheduleConferenceTimeHour"><%
@@ -326,7 +326,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                         <table>
                           <tbody>
                             <tr>
-                              <td><label for="conferencing-configuration-pinLength">PIN length</label></td>
+                              <td><label for="conferencing-configuration-pinLength" class="required">PIN length</label></td>
                               <td><input type="text" id="conferencing-configuration-pinLength" name="conferencing-configuration-pinLength"/></td>
                             </tr>
                             <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save configuration">Save</button></td></tr>
@@ -447,10 +447,10 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                           <input type="hidden" id="subscriber-form-id" name="subscriber-form-id"/>
                           <table>
                             <tbody>
-                              <tr><td><label for="subscriber-form-username">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
+                              <tr><td><label for="subscriber-form-username" class="required">Username</label></td><td><input type="text" id="subscriber-form-username" name="subscriber-form-username"/></td></tr>
                               <tr><td>Account Type</td><td id="subscriber-form-accountType">Local</td></tr>
-                              <tr><td><label for="subscriber-form-password">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
-                              <tr><td><label for="subscriber-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
+                              <tr><td><label for="subscriber-form-password" class="required">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
+                              <tr><td><label for="subscriber-form-confirmPassword" class="required">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
                               <tr><td><label for="subscriber-form-realName">Real Name</label></td><td><input type="text" id="subscriber-form-realName" name="subscriber-form-realName"/></td></tr><%
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                               <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr><%

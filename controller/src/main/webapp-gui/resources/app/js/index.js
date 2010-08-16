@@ -31,6 +31,11 @@ $(document).ready(function() {
         });
     });
 
+    $('label.required').each(function(index, elem) {
+        var text = $(elem).text();
+        $(elem).text(text + '*');
+    });
+
     var failedTries = 0;
     setInterval(function() {
         var start = Listen.timestamp();
