@@ -55,6 +55,11 @@
 	<var name="accessID" expr="''" />
 	<var name="toExt" expr="''" />
 	<var name="HTTPcontroller" expr="''" />
+	<var name="STATcontroller" expr="''" />
+	<var name="id" expr="''" />
+	<var name="source" expr="'voicemail'" />
+	<var name="value" expr="''" />
+	<var name="operation" expr="'increment'" />
 
 
     <!-- Conference Variables -->
