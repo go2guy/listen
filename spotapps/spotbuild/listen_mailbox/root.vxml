@@ -86,6 +86,10 @@
 	<var name="voicemailInfo" expr="''" />
 	<var name="playbackOrder" expr="''" />
 	<var name="HTTPcontroller" expr="''" />
+	<var name="STATcontroller" expr="''" />
+	<var name="source" expr="''" />
+	<var name="value" expr="''" />
+	<var name="operation" expr="'increment'" />
 
 
     <!-- Conference Variables -->
