@@ -44,6 +44,11 @@
 	<var name="ANI" expr="'remote'" />
 	<var name="HTTPcontroller" expr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" />
 	<var name="callType" expr="'type'" />
+	<var name="STATcontroller" expr="'http://replace:9413/collect/stat'" />
+	<var name="id" expr="''" />
+	<var name="source" expr="''" />
+	<var name="value" expr="''" />
+	<var name="operation" expr="''" />
 
 
     <!-- Conference Variables -->
