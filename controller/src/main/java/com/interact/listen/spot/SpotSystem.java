@@ -94,7 +94,7 @@ public class SpotSystem
         Map<String, Object> importedValue = new HashMap<String, Object>();
         importedValue.put("application", "CONF_EVENT");
         importedValue.put("action", "DROP");
-        importedValue.put("sessionid", participant.getSessionID());
+        importedValue.put("sessionId", participant.getSessionID());
         buildAndSendRequest(importedValue);
     }
 
@@ -110,7 +110,7 @@ public class SpotSystem
         Map<String, Object> importedValue = new HashMap<String, Object>();
         importedValue.put("application", "CONF_EVENT");
         importedValue.put("action", "MUTE");
-        importedValue.put("sessionid", participant.getSessionID());
+        importedValue.put("sessionId", participant.getSessionID());
         buildAndSendRequest(importedValue);
     }
 
@@ -130,7 +130,7 @@ public class SpotSystem
         Map<String, Object> importedValue = new HashMap<String, Object>();
         importedValue.put("application", "AUTO_DIAL");
         importedValue.put("action", "DIAL");
-        importedValue.put("sessionid", adminSessionId);
+        importedValue.put("sessionId", adminSessionId);
         importedValue.put("conferenceId", String.valueOf(conferenceId));
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
@@ -151,11 +151,12 @@ public class SpotSystem
         Map<String, Object> importedValue = new HashMap<String, Object>();
         importedValue.put("application", "RECORD");
         importedValue.put("action", "START");
-        importedValue.put("sessionid", adminSessionId);
+        importedValue.put("sessionId", adminSessionId);
         importedValue.put("conferenceId", String.valueOf(conference.getId()));
         importedValue.put("startTime", sdf.format(conference.getStartTime()));
         importedValue.put("recordingSessionId", conference.getRecordingSessionId());
         importedValue.put("arcadeId", conference.getArcadeId());
+        importedValue.put("description", conference.getDescription());
         buildAndSendRequest(importedValue);
     }
 
@@ -173,11 +174,12 @@ public class SpotSystem
         Map<String, Object> importedValue = new HashMap<String, Object>();
         importedValue.put("application", "RECORD");
         importedValue.put("action", "STOP");
-        importedValue.put("sessionid", adminSessionId);
+        importedValue.put("sessionId", adminSessionId);
         importedValue.put("conferenceId", String.valueOf(conference.getId()));
         importedValue.put("startTime", sdf.format(conference.getStartTime()));
         importedValue.put("recordingSessionId", conference.getRecordingSessionId());
         importedValue.put("arcadeId", conference.getArcadeId());
+        importedValue.put("description", conference.getDescription());
         buildAndSendRequest(importedValue);
     }
 
@@ -193,7 +195,7 @@ public class SpotSystem
         Map<String, Object> importedValue = new HashMap<String, Object>();
         importedValue.put("application", "CONF_EVENT");
         importedValue.put("action", "UNMUTE");
-        importedValue.put("sessionid", participant.getSessionID());
+        importedValue.put("sessionId", participant.getSessionID());
         buildAndSendRequest(importedValue);
     }
 
