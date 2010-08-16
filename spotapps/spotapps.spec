@@ -64,6 +64,7 @@ Requires: spotbuild-vip
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
     cp -r %{STARTDIR}/ippbx %{buildroot}/interact/apps/spotbuild
+    cp -r %{STARTDIR}/msgLightCntrl %{buildroot}/interact/apps/spotbuild
     cp -r %{STARTDIR}/ippbx/php/* %{buildroot}/var/www/html/ippbx/
 
     # Remove extras
@@ -73,7 +74,7 @@ Requires: spotbuild-vip
     # Run Encryption
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/ %{buildroot}/interact/apps/spotbuild/listen_artifacts/
     /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/ %{buildroot}/interact/apps/spotbuild/listen_autoDial/ %{buildroot}/interact/apps/spotbuild/listen_confEvents/
-    /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/
+    /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/ %{buildroot}/interact/apps/spotbuild/msgLightCntrl/
     /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
     /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/ %{buildroot}/interact/apps/spotbuild/after_hours/
 
@@ -103,6 +104,7 @@ Requires: spotbuild-vip
     %defattr(777,interact,operator)
     /interact/apps/spotbuild/listen*
     /interact/apps/spotbuild/ippbx*
+    /interact/apps/spotbuild/msgLightCntrl*
     /interact/apps/spotbuild/after_hours*
     /interact/apps/spotbuild/lib/cgi-bin/listen
     /var/www/html/listen/artifacts
