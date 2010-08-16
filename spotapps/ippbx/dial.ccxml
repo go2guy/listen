@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/04/2010
+    <!-- Last Modified 08/16/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -34,11 +34,13 @@
     <var name="moveRequestSID" expr="''"/>  <!-- Session ID involved in an attended transfer -->
 
     <!-- Out dial vars -->
-    <var name="AREA_CODE" expr="'402'"/>
+    <var name="LOCAL_CALL" expr="7"/>       <!-- Number of digits in a local call -->
+    <var name="AREA_CODE" expr="'402'"/>    <!-- Local area code -->
+    <var name="OUT_BOUND_ID" expr="'14024768786'"/>         <!-- Caller ID used for outbound calls -->
 
     <!-- Dial Errors -->
     <var name="ERR_CODE" expr="''"/>            <!-- Dial error code -->
-    <var name="ERR_BUSY" expr="'486,600'"/>    <!-- Dialed destination return a busy response -->
+    <var name="ERR_BUSY" expr="'486,600'"/>     <!-- Dialed destination return a busy response -->
     <var name="ERR_NOT_FOUND" expr="'404'"/>    <!-- Dialed destination was not found -->
 
     <!-- Constants -->
@@ -48,8 +50,7 @@
     <var name="NOTIFY_PATH" expr="''"/> 
     <var name="AUDIO_PATH" expr="''"/>  <!-- Audio Path. Directory for audio files -->
     <var name="SIP_SERVER" expr="''"/>   <!-- Name of SIP Trunk server for inbound/outbound calls -->
-    <var name="OUT_BOUND_ID" expr="'14024768786'"/>         <!-- Caller ID used for outbound calls -->
-    <var name="LOCAL_CALL" expr="7"/>   <!-- Number of digits in a local call -->
+
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
 
