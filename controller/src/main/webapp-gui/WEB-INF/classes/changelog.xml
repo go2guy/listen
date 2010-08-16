@@ -335,4 +335,11 @@
     <changeSet author="development" id="35">
         <dropNotNullConstraint tableName="SUBSCRIBER" columnName="PASSWORD" columnDataType="VARCHAR(255)"/>
     </changeSet>
+    <changeSet author="development" id="36">
+        <addColumn tableName="ACCESS_NUMBER">
+            <column name="SUPPORTS_MESSAGE_LIGHT" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -4,9 +4,7 @@ import com.interact.listen.history.Channel;
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.httpclient.HttpClientImpl;
 import com.interact.listen.marshal.Marshaller;
-import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.Participant;
-import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.*;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -59,11 +57,7 @@ public class SpotSystem
      */
     public void deleteArtifact(String filePath) throws IOException, SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
-        importedValue.put("application", "DEL_ARTIFACT");
-        importedValue.put("action", "FILE");
-        importedValue.put("artifact", filePath);
-        buildAndSendRequest(importedValue);
+        sendDeleteArtifactEvent("FILE", filePath);
     }
 
     /**
@@ -75,11 +69,7 @@ public class SpotSystem
      */
     public void deleteAllSubscriberArtifacts(Subscriber subscriber) throws IOException, SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
-        importedValue.put("application", "DEL_ARTIFACT");
-        importedValue.put("action", "SUB");
-        importedValue.put("artifact", subscriber.getId());
-        buildAndSendRequest(importedValue);
+        sendDeleteArtifactEvent("SUB", String.valueOf(subscriber.getId()));
     }
 
     /**
@@ -91,11 +81,7 @@ public class SpotSystem
      */
     public void dropParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
-        importedValue.put("application", "CONF_EVENT");
-        importedValue.put("action", "DROP");
-        importedValue.put("sessionId", participant.getSessionID());
-        buildAndSendRequest(importedValue);
+        sendConferenceParticipantEvent("DROP", participant);
     }
 
     /**
@@ -107,11 +93,7 @@ public class SpotSystem
      */
     public void muteParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
-        importedValue.put("application", "CONF_EVENT");
-        importedValue.put("action", "MUTE");
-        importedValue.put("sessionId", participant.getSessionID());
-        buildAndSendRequest(importedValue);
+        sendConferenceParticipantEvent("MUTE", participant);
     }
 
     /**
@@ -148,16 +130,7 @@ public class SpotSystem
     public void startRecording(Conference conference, String adminSessionId) throws IOException,
         SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
-        importedValue.put("application", "RECORD");
-        importedValue.put("action", "START");
-        importedValue.put("sessionId", adminSessionId);
-        importedValue.put("conferenceId", String.valueOf(conference.getId()));
-        importedValue.put("startTime", sdf.format(conference.getStartTime()));
-        importedValue.put("recordingSessionId", conference.getRecordingSessionId());
-        importedValue.put("arcadeId", conference.getArcadeId());
-        importedValue.put("description", conference.getDescription());
-        buildAndSendRequest(importedValue);
+        sendConferenceRecordingEvent("START", adminSessionId, conference);
     }
 
     /**
@@ -171,16 +144,31 @@ public class SpotSystem
     public void stopRecording(Conference conference, String adminSessionId) throws IOException,
         SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
-        importedValue.put("application", "RECORD");
-        importedValue.put("action", "STOP");
-        importedValue.put("sessionId", adminSessionId);
-        importedValue.put("conferenceId", String.valueOf(conference.getId()));
-        importedValue.put("startTime", sdf.format(conference.getStartTime()));
-        importedValue.put("recordingSessionId", conference.getRecordingSessionId());
-        importedValue.put("arcadeId", conference.getArcadeId());
-        importedValue.put("description", conference.getDescription());
-        buildAndSendRequest(importedValue);
+        sendConferenceRecordingEvent("STOP", adminSessionId, conference);
+    }
+
+    /**
+     * Sends an event to the phone at the specified {@link AccessNumber} to turn the message light off.
+     * 
+     * @param accessNumber {@code AccessNumber} for which to turn message light off
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
+    public void turnMessageLightOff(AccessNumber accessNumber) throws IOException, SpotCommunicationException
+    {
+        sendMessageLightEvent("OFF", accessNumber);
+    }
+
+    /**
+     * Sends an event to the phone at the specified {@link AccessNumber} to turn the message light on.
+     * 
+     * @param accessNumber {@code AccessNumber} for which to turn message light on
+     * @throws IOException if an HTTP error occurs
+     * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
+     */
+    public void turnMessageLightOn(AccessNumber accessNumber) throws IOException, SpotCommunicationException
+    {
+        sendMessageLightEvent("ON", accessNumber);
     }
 
     /**
@@ -192,10 +180,50 @@ public class SpotSystem
      */
     public void unmuteParticipant(Participant participant) throws IOException, SpotCommunicationException
     {
+        sendConferenceParticipantEvent("UNMUTE", participant);
+    }
+
+    private void sendConferenceParticipantEvent(String action, Participant participant) throws IOException,
+        SpotCommunicationException
+    {
         Map<String, Object> importedValue = new HashMap<String, Object>();
         importedValue.put("application", "CONF_EVENT");
-        importedValue.put("action", "UNMUTE");
+        importedValue.put("action", action);
         importedValue.put("sessionId", participant.getSessionID());
+        buildAndSendRequest(importedValue);
+    }
+
+    private void sendConferenceRecordingEvent(String action, String adminSessionId, Conference conference)
+        throws IOException, SpotCommunicationException
+    {
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "RECORD");
+        importedValue.put("action", action);
+        importedValue.put("sessionId", adminSessionId);
+        importedValue.put("conferenceId", String.valueOf(conference.getId()));
+        importedValue.put("startTime", sdf.format(conference.getStartTime()));
+        importedValue.put("recordingSessionId", conference.getRecordingSessionId());
+        importedValue.put("arcadeId", conference.getArcadeId());
+        importedValue.put("description", conference.getDescription());
+        buildAndSendRequest(importedValue);
+    }
+
+    private void sendDeleteArtifactEvent(String action, String filePath) throws IOException, SpotCommunicationException
+    {
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "DEL_ARTIFACT");
+        importedValue.put("action", action);
+        importedValue.put("artifact", filePath);
+        buildAndSendRequest(importedValue);
+    }
+
+    private void sendMessageLightEvent(String action, AccessNumber accessNumber) throws IOException,
+        SpotCommunicationException
+    {
+        Map<String, Object> importedValue = new HashMap<String, Object>();
+        importedValue.put("application", "MSG_LIGHT"); // monosodium glutimate light, on!
+        importedValue.put("action", action);
+        importedValue.put("destination", accessNumber.getNumber());
         buildAndSendRequest(importedValue);
     }
 

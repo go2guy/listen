@@ -23,6 +23,10 @@ $(document).ready(function() {
         return false;
     });
 
+    $('#subscriber-form-addAccessNumber').click(function() {
+        Listen.Subscribers.addAccessNumberRow();
+    });
+
     Listen.Subscribers = function() {
         return {
             Application: function() {
@@ -41,9 +45,9 @@ $(document).ready(function() {
 
                         var numbers = '';
                         for(var i = 0; i < data.accessNumbers.length; i++) {
-                            numbers += data.accessNumbers[i];
+                            numbers += data.accessNumbers[i].number;
                             if(i < data.accessNumbers.length - 1) {
-                                numbers += ', ';
+                                numbers += ',';
                             }
                         }
 
@@ -100,15 +104,11 @@ $(document).ready(function() {
 
                         $('#subscriber-form-realName').val(data.realName);
 
-                        var numbers = '';
+                        Listen.Subscribers.clearAllAccessNumberRows();
                         for(var i = 0; i < data.accessNumbers.length; i++) {
-                            numbers += data.accessNumbers[i];
-                            if(i < data.accessNumbers.length - 1) {
-                                numbers += ',';
-                            }
+                            Listen.Subscribers.addAccessNumberRow(data.accessNumbers[i].number, data.accessNumbers[i].messageLight);
                         }
-                        
-                        $('#subscriber-form-accessNumbers').val(numbers);
+
                         $('#subscriber-form-voicemailPin').val(data.voicemailPin);
                         $('#subscriber-form-emailAddress').val(data.emailAddress);
                         $('#subscriber-form-smsAddress').val(data.smsAddress);
@@ -150,6 +150,7 @@ $(document).ready(function() {
                 $('#subscriber-form-password').removeAttr('readonly').removeClass('disabled');
                 $('#subscriber-form-confirmPassword').removeAttr('readonly').removeClass('disabled');
                 $('#subscriber-form-accountType').text('Local');
+                Listen.Subscribers.clearAllAccessNumberRows();
             },
 
             addSubscriber: function() {
@@ -162,7 +163,7 @@ $(document).ready(function() {
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
                         realName: $('#subscriber-form-realName').val(),
-                        accessNumbers: $('#subscriber-form-accessNumbers').val(),
+                        accessNumbers: Listen.Subscribers.buildAccessNumberString(),
                         voicemailPin: $('#subscriber-form-voicemailPin').val(),
                         enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
@@ -193,7 +194,7 @@ $(document).ready(function() {
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
                         realName: $('#subscriber-form-realName').val(),
-                        accessNumbers: $('#subscriber-form-accessNumbers').val(),
+                        accessNumbers: Listen.Subscribers.buildAccessNumberString(),
                         voicemailPin: $('#subscriber-form-voicemailPin').val(),
                         enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
@@ -257,17 +258,17 @@ $(document).ready(function() {
                 Listen.trace('Listen.Subscribers.enableButtons');
                 $('#subscriber-form button').removeAttr('readonly');
             },
-            
+
             testEmailAddress: function() {
                 Listen.trace('Listen.Subscribers.testEmailAddress');
                 Listen.Subscribers.testAddress('email', $('#subscriber-form-emailAddress').val());
             },
-            
+
             testSmsAddress: function() {
                 Listen.trace('Listen.Subscribers.testSmsAddress');
                 Listen.Subscribers.testAddress('sms', $('#subscriber-form-smsAddress').val());
             },
-            
+
             testAddress: function(type, address) {
                 Server.post({
                     url: '/ajax/testNotificationSettings',
@@ -282,6 +283,42 @@ $(document).ready(function() {
                         Listen.Subscribers.showError(message);
                     }
                 });
+            },
+
+            clearAllAccessNumberRows: function() {
+                $('#subscriber-form-accessNumbersTable tbody tr').not(':last').remove();
+            },
+
+            addAccessNumberRow: function(number, messageLight) {
+                var clone = $('#accessNumber-row-template').clone();
+                clone.removeAttr('id');
+                $('.accessNumber-row-number', clone).val(number);
+                if(messageLight) {
+                    $('.accessNumber-row-messageLight', clone).attr('checked', 'checked');
+                } else {
+                    $('.accessNumber-row-messageLight', clone).removeAttr('checked');
+                }
+                $('.icon-delete', clone).click(function() {
+                    $(this).parent().parent().remove();
+                });
+                $('#subscriber-form-accessNumbersTable tbody tr:last').before(clone);
+            },
+
+            buildAccessNumberString: function() {
+                var value = '';
+                var rows = $('#subscriber-form-accessNumbersTable tr');
+                for(var i = 0; i < rows.length - 1; i++) {
+                    var number = $('.accessNumber-row-number', rows[i]).val();
+                    if(number.length == 0) {
+                        continue;
+                    }
+                    var messageLight = $('.accessNumber-row-messageLight').is(':checked');
+                    value += number + ':' + messageLight + ';';
+                }
+                if(value.length > 0) {
+                    value = value.substring(0, value.length - 1); // remove last semicolon
+                }
+                return value;
             }
         }
     }();

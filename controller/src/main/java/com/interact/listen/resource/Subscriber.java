@@ -590,12 +590,17 @@ public class Subscriber extends Resource implements Serializable
             existingNumbers.put(accessNumber.getNumber(), accessNumber);
         }
 
-        List<String> newNumbers = new ArrayList<String>();
+        List<AccessNumber> newNumbers = new ArrayList<AccessNumber>();
 
-        String[] split = accessNumberString.split(",");
+        String[] split = accessNumberString.split(";");
         for(String an : split)
         {
-            newNumbers.add(an.trim());
+            String[] parts = an.split(":");
+
+            AccessNumber newNumber = new AccessNumber();
+            newNumber.setNumber(parts[0].trim());
+            newNumber.setSupportsMessageLight(Boolean.valueOf(parts[1]));
+            newNumbers.add(newNumber);
         }
 
         for(Map.Entry<String, AccessNumber> entry : existingNumbers.entrySet())
@@ -606,19 +611,16 @@ public class Subscriber extends Resource implements Serializable
             }
         }
 
-        for(String number : newNumbers)
+        for(AccessNumber newNumber : newNumbers)
         {
-            AccessNumber result = AccessNumber.queryByNumber(session, number);
+            AccessNumber result = AccessNumber.queryByNumber(session, newNumber.getNumber());
             if(result != null && !result.getSubscriber().equals(this))
             {
-                throw new NumberAlreadyInUseException(number);
+                throw new NumberAlreadyInUseException(newNumber.getNumber());
             }
             else if(result == null)
             {
-                AccessNumber newNumber = new AccessNumber();
-                newNumber.setNumber(number);
                 newNumber.setSubscriber(this);
-
                 addToAccessNumbers(newNumber);
                 persistenceService.save(newNumber);
             }

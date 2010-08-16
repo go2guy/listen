@@ -36,6 +36,9 @@ public class AccessNumber extends Resource implements Serializable
     @Column(name = "GREETING_LOCATION")
     private String greetingLocation;
 
+    @Column(name = "SUPPORTS_MESSAGE_LIGHT", nullable = false)
+    private Boolean supportsMessageLight = Boolean.FALSE;
+    
     public Long getId()
     {
         return id;
@@ -86,6 +89,16 @@ public class AccessNumber extends Resource implements Serializable
         this.greetingLocation = greetingLocation;
     }
 
+    public Boolean getSupportsMessageLight()
+    {
+        return supportsMessageLight;
+    }
+
+    public void setSupportsMessageLight(Boolean supportsMessageLight)
+    {
+        this.supportsMessageLight = supportsMessageLight;
+    }
+
     @Override
     public boolean validate()
     {
@@ -114,6 +127,7 @@ public class AccessNumber extends Resource implements Serializable
         copy.setGreetingLocation(greetingLocation);
         copy.setNumber(number);
         copy.setSubscriber(subscriber);
+        copy.setSupportsMessageLight(supportsMessageLight);
         return copy;
     }
 
@@ -164,10 +178,23 @@ public class AccessNumber extends Resource implements Serializable
 
     public static List<AccessNumber> queryBySubscriber(Session session, Subscriber subscriber)
     {
+        Criteria criteria = buildCriteriaForSubscriberQuery(session, subscriber);
+        return (List<AccessNumber>)criteria.list();
+    }
+
+    public static List<AccessNumber> queryBySubscriberWhereSupportsMessageLightTrue(Session session, Subscriber subscriber)
+    {
+        Criteria criteria = buildCriteriaForSubscriberQuery(session, subscriber);
+        criteria.add(Restrictions.eq("supportsMessageLight", Boolean.TRUE));
+        return (List<AccessNumber>)criteria.list();
+    }
+
+    private static Criteria buildCriteriaForSubscriberQuery(Session session, Subscriber subscriber)
+    {
         Criteria criteria = session.createCriteria(AccessNumber.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.createAlias("subscriber", "subscriber_alias");
         criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
-        return (List<AccessNumber>)criteria.list();
+        return criteria;
     }
 }

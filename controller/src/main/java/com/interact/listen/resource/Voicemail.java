@@ -11,9 +11,7 @@ import com.interact.listen.stats.StatSenderFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -152,6 +150,8 @@ public class Voicemail extends Audio implements Serializable
             statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
             emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
         }
+
+        toggleMessageLight(persistenceService, getSubscriber());
     }
 
     @Override
@@ -179,6 +179,14 @@ public class Voicemail extends Audio implements Serializable
                 LOG.error(e);
             }
         }
+
+        toggleMessageLight(persistenceService, getSubscriber());
+    }
+
+    @Override
+    public void afterUpdate(PersistenceService persistenceService, Resource original)
+    {
+        toggleMessageLight(persistenceService, getSubscriber());
     }
 
     public static Voicemail queryById(Session session, Long id)
@@ -226,7 +234,7 @@ public class Voicemail extends Audio implements Serializable
         criteria.setProjection(Projections.rowCount());
         return (Long)criteria.list().get(0);
     }
-    
+
     public static List<Voicemail> queryNewVoicemailsBySubscriberList(Session session, List<Long> subscriberIds)
     {
         Criteria criteria = session.createCriteria(Voicemail.class);
@@ -240,5 +248,46 @@ public class Voicemail extends Audio implements Serializable
 
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (ArrayList<Voicemail>)criteria.list();
+    }
+
+    private static void toggleMessageLight(PersistenceService persistenceService, Subscriber subscriber)
+    {
+        Session session = persistenceService.getSession();
+        boolean hasNew = countNewBySubscriber(session, subscriber) > 0;
+
+        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(persistenceService.getSession());
+        Set<SpotSystem> spotSystems = new HashSet<SpotSystem>();
+        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        {
+            spotSystems.add(new SpotSystem(spotSubscriber.getHttpApi(), persistenceService.getCurrentSubscriber()));
+        }
+
+        // FIXME once implemented, this should only grab SIP phone access numbers
+        List<AccessNumber> accessNumbers = AccessNumber.queryBySubscriberWhereSupportsMessageLightTrue(session, subscriber); 
+        for(AccessNumber accessNumber : accessNumbers)
+        {
+            for(SpotSystem spotSystem : spotSystems)
+            {
+                try
+                {
+                    if(hasNew)
+                    {
+                        spotSystem.turnMessageLightOn(accessNumber);
+                    }
+                    else
+                    {
+                        spotSystem.turnMessageLightOff(accessNumber);
+                    }
+                }
+                catch(SpotCommunicationException e)
+                {
+                    LOG.error(e);
+                }
+                catch(IOException e)
+                {
+                    LOG.error(e);
+                }
+            }
+        }
     }
 }

@@ -38,7 +38,7 @@ $(document).ready(function() {
                             $('#profile-form-realName').val(data.realName);
                             var numbers = '';
                             for(var i = 0; i < data.accessNumbers.length; i++) {
-                                numbers += data.accessNumbers[i];
+                                numbers += data.accessNumbers[i].number;
                                 if(i < data.accessNumbers.length - 1) {
                                     numbers += ',';
                                 }

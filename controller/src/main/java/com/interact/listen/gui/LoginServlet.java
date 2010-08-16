@@ -125,8 +125,7 @@ public class LoginServlet extends HttpServlet
                             {
                                 try
                                 {
-
-                                    subscriber.updateAccessNumbers(hibernateSession, ps, result.getTelephoneNumber());
+                                    subscriber.updateAccessNumbers(hibernateSession, ps, result.getTelephoneNumber() + ":true");
                                 }
                                 catch(NumberAlreadyInUseException e)
                                 {

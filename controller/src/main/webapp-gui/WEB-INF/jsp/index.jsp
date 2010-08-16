@@ -455,15 +455,18 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                               <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr><%
 } %>
-                              <tr><td colspan="2"><label for="subscriber-form-accessNumbers">Access Numbers (comma-separated)</label></td>
-                              </tr>
+                              <tr><td colspan="2"><label>Access Numbers</label></td></tr>
                               <tr>
-                                <td colspan="2"><%
-if(subscriber.getIsAdministrator()) { %>
-                                  <textarea rows="4" cols="25" id="subscriber-form-accessNumbers" name="subscriber-form-accessNumbers"></textarea><%
-} else { %>
-                                  <%= subscriber.accessNumberString() %><%
-} %>
+                                <td colspan="2">
+                                  <table id="subscriber-form-accessNumbersTable">
+                                    <tbody>
+                                      <tr>
+                                        <td colspan="3" class="buttons">
+                                          <button type="button" class="button-add" id="subscriber-form-addAccessNumber" title="New access number">New access number</button>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
                                 </td>
                               </tr><%
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
@@ -736,6 +739,12 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
             </select>
           </td>
           <td><input type="text" value="" class="dnis-mapping-custom-destination"/></td>
+          <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
+        </tr>
+
+        <tr id="accessNumber-row-template">
+          <td><input type="text" class="accessNumber-row-number" value=""/></td>
+          <td><input type="checkbox" class="accessNumber-row-messageLight"/>&nbsp;<label>Message Light</label></td>
           <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
         </tr>
       </tbody></table>

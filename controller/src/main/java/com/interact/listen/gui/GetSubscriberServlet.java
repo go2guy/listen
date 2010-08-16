@@ -107,7 +107,10 @@ public class GetSubscriberServlet extends HttpServlet
         List<AccessNumber> accessNumbers = AccessNumber.queryBySubscriber(session, subscriber);
         for(AccessNumber accessNumber : accessNumbers)
         {
-            json.append("\"").append(accessNumber.getNumber()).append("\",");
+            json.append("{");
+            json.append("\"number\":\"").append(accessNumber.getNumber()).append("\",");
+            json.append("\"messageLight\":").append(accessNumber.getSupportsMessageLight() ? "true" : "false");
+            json.append("},");
         }
         if(accessNumbers.size() > 0)
         {
