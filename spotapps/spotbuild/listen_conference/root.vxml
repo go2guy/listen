@@ -98,6 +98,10 @@
 	<var name="subscriber" expr="''" />
 	<var name="playHelp" expr="'true'" />
 	<var name="HTTPcontroller" expr="''" />
+	<var name="STATcontroller" expr="''" />
+	<var name="source" expr="'conference'" />
+	<var name="value" expr="''" />
+	<var name="operation" expr="'increment'" />
 
 
     <!-- Conference Variables -->

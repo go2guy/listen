@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'122-3'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'83-53'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(userID,isInfoSaved)
+            function II_SB_JS_function(returnStr)
             {
-	            if((userID.length !=0) && (isInfoSaved == 'true'))return "NEXT";else{return "END";}
+	            return inString('404',returnStr,' ');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Status</log>
-            <log>INFO: Entered run-javascript.vxml [122-18]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(userID,isInfoSaved)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="tmpVal" expr="II_SB_userJava" />   
+            <log target="status">check returnStr</log>
+            <log>INFO: Entered run-javascript.vxml [83-51]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnStr)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="getInput" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

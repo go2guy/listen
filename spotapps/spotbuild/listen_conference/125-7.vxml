@@ -11,15 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(phoneNumber,maxHelp,helpCnt,isInteractiveCall,pstnLength)
             {
-	            var ipAddSect = 4;
-if ((phoneNumber == '*') && (helpCnt < maxHelp))
-return "HELP";
-else if (iiNumber(phoneNumber) && (phoneNumber.length >= pstnLength))
-return isInteractiveCall;
-else if (iiStrCnt(phoneNumber,'*') >= ipAddSect)
-return isInteractiveCall;
-else
-return "ERROR";
+	            var ipAddSect = 4;if ((phoneNumber == '*') && (helpCnt < maxHelp))return "HELP";else if (iiNumber(phoneNumber) && (phoneNumber.length >= pstnLength))return isInteractiveCall;else if (iiStrCnt(phoneNumber,'*') >= ipAddSect)return isInteractiveCall;else{return "ERROR";}
             }
         ]]>
     </script>

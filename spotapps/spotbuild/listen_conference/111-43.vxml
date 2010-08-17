@@ -42,7 +42,7 @@
 	<var name="II_SB_fldTermChar" expr="''"/>    <!--  DTMF Terminating Character. Identifies the terminating character of a DTMF input -->
 
     <!-- Prompt properties -->
-    <var name="II_SB_cutIn" expr="''"/>      <!--  Cut In. true / false - Controls if prompts are interruptable with a key press -->
+    <var name="II_SB_cutIn" expr="'true'"/>      <!--  Cut In. true / false - Controls if prompts are interruptable with a key press -->
     
     <!-- Misc Properties -->
     <var name="II_SB_mode" expr="'dtmf'"/>   <!--  Input Mode. This allows the system to detect either dtmf, voice or both voic and dtmf -->

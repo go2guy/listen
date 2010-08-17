@@ -11,12 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(errCnt,maxErr,helpCnt,maxHelp)
             {
-	            if (helpCnt == maxHelp)
-return "MAX_HELP";
-else if (errCnt < maxErr)
-return errCnt;
-else
-return maxErr;
+	            if (helpCnt == maxHelp)return "MAX_HELP";else if (errCnt < maxErr)return errCnt;else{return maxErr;}
             }
         ]]>
     </script>

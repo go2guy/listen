@@ -11,10 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(whichPath)
             {
-	            if ((whichPath == 'getOnDemand') || (whichPath == 'enterDestination'))
-return "NEXT";
-else
-return "END";
+	            if ((whichPath == 'getOnDemand') || (whichPath == 'enterDestination'))return "NEXT";else{return "END";}
             }
         ]]>
     </script>
