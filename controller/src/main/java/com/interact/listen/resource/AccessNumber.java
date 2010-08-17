@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.PersistenceService;
+import com.interact.listen.resource.Voicemail.MessageLightState;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
@@ -166,6 +168,36 @@ public class AccessNumber extends Resource implements Serializable
         int hash = 1;
         hash *= prime + (getNumber() == null ? 0 : getNumber().hashCode());
         return hash;
+    }
+
+    @Override
+    public void afterSave(PersistenceService persistenceService)
+    {
+        if(supportsMessageLight)
+        {
+            Voicemail.toggleMessageLight(persistenceService, this);
+        }
+    }
+
+    @Override
+    public void afterUpdate(PersistenceService persistenceService, Resource originalResource)
+    {
+        AccessNumber original = (AccessNumber)originalResource;
+        if(supportsMessageLight && (!original.getNumber().equals(number) || !original.getSupportsMessageLight()))
+        {
+            Voicemail.toggleMessageLight(persistenceService, original, MessageLightState.OFF);
+            Voicemail.toggleMessageLight(persistenceService, this);
+        }
+        else if(original.getSupportsMessageLight() && !supportsMessageLight)
+        {
+            Voicemail.toggleMessageLight(persistenceService, this, MessageLightState.OFF);
+        }
+    }
+
+    @Override
+    public void afterDelete(PersistenceService persistenceService)
+    {
+        Voicemail.toggleMessageLight(persistenceService, this, MessageLightState.OFF);
     }
 
     public static AccessNumber queryByNumber(Session session, String number)

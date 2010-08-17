@@ -42,6 +42,11 @@ public class Voicemail extends Audio implements Serializable
     @ManyToOne
     private Subscriber subscriber;
 
+    public enum MessageLightState
+    {
+        ON, OFF;
+    }
+
     public Subscriber getForwardedBy()
     {
         return forwardedBy;
@@ -250,44 +255,57 @@ public class Voicemail extends Audio implements Serializable
         return (ArrayList<Voicemail>)criteria.list();
     }
 
-    private static void toggleMessageLight(PersistenceService persistenceService, Subscriber subscriber)
+    public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber, MessageLightState state)
+    {
+        Set<SpotSystem> spotSystems = listSpotSystems(persistenceService);
+        for(SpotSystem spotSystem : spotSystems)
+        {
+            try
+            {
+                if(state == MessageLightState.ON)
+                {
+                    spotSystem.turnMessageLightOn(accessNumber);
+                }
+                else
+                {
+                    spotSystem.turnMessageLightOff(accessNumber);
+                }
+            }
+            catch(SpotCommunicationException e)
+            {
+                LOG.error(e);
+            }
+            catch(IOException e)
+            {
+                LOG.error(e);
+            }
+        }
+    }
+
+    public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber)
+    {
+        boolean hasNew = countNewBySubscriber(persistenceService.getSession(), accessNumber.getSubscriber()) > 0;
+        toggleMessageLight(persistenceService, accessNumber, hasNew ? MessageLightState.ON : MessageLightState.OFF);
+    }
+
+    public static void toggleMessageLight(PersistenceService persistenceService, Subscriber subscriber)
     {
         Session session = persistenceService.getSession();
-        boolean hasNew = countNewBySubscriber(session, subscriber) > 0;
+        List<AccessNumber> numbers = AccessNumber.queryBySubscriberWhereSupportsMessageLightTrue(session, subscriber);
+        for(AccessNumber accessNumber : numbers)
+        {
+            toggleMessageLight(persistenceService, accessNumber);
+        }
+    }
 
+    private static Set<SpotSystem> listSpotSystems(PersistenceService persistenceService)
+    {
         List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(persistenceService.getSession());
         Set<SpotSystem> spotSystems = new HashSet<SpotSystem>();
         for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
         {
             spotSystems.add(new SpotSystem(spotSubscriber.getHttpApi(), persistenceService.getCurrentSubscriber()));
         }
-
-        // FIXME once implemented, this should only grab SIP phone access numbers
-        List<AccessNumber> accessNumbers = AccessNumber.queryBySubscriberWhereSupportsMessageLightTrue(session, subscriber); 
-        for(AccessNumber accessNumber : accessNumbers)
-        {
-            for(SpotSystem spotSystem : spotSystems)
-            {
-                try
-                {
-                    if(hasNew)
-                    {
-                        spotSystem.turnMessageLightOn(accessNumber);
-                    }
-                    else
-                    {
-                        spotSystem.turnMessageLightOff(accessNumber);
-                    }
-                }
-                catch(SpotCommunicationException e)
-                {
-                    LOG.error(e);
-                }
-                catch(IOException e)
-                {
-                    LOG.error(e);
-                }
-            }
-        }
+        return spotSystems;
     }
 }
