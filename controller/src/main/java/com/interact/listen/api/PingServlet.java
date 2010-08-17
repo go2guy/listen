@@ -16,7 +16,7 @@ public class PingServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        if(request.getParameter("auth") != null && request.getParameter("auth").equalsIgnoreCase("true"))
+        if(request.getParameter("auth") != null && Boolean.valueOf(request.getParameter("auth")))
         {
             if(ServletUtil.currentSubscriber(request) == null)
             {
