@@ -549,7 +549,7 @@ if(subscriber != null) { %>
                         <input type="hidden" id="profile-form-id" name="profile-form-id"/>
                         <table>
                           <tbody>
-                            <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username" readonly="readonly" class="disabled"/></td></tr>
+                            <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username"<%= !subscriber.getIsAdministrator() ? " readonly=\"readonly\" class=\"disabled\"" : "" %>/></td></tr>
                             <tr><td>Account Type</td><td id="profile-form-accountType"></td></tr>
                             <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
                             <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
