@@ -190,7 +190,7 @@ public class AccessNumber extends Resource implements Serializable
         }
         else if(original.getSupportsMessageLight() && !supportsMessageLight)
         {
-            Voicemail.toggleMessageLight(persistenceService, this, MessageLightState.OFF);
+            Voicemail.toggleMessageLight(persistenceService, original, MessageLightState.OFF);
         }
     }
 
