@@ -550,9 +550,11 @@ if(subscriber != null) { %>
                         <table>
                           <tbody>
                             <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username"<%= !subscriber.getIsAdministrator() ? " readonly=\"readonly\" class=\"disabled\"" : "" %>/></td></tr>
-                            <tr><td>Account Type</td><td id="profile-form-accountType"></td></tr>
+                            <tr><td>Account Type</td><td id="profile-form-accountType"></td></tr> <%
+    if(!subscriber.getIsActiveDirectory()) { %>
                             <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
-                            <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr>
+                            <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr> <%
+    } %>
                             <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        
                             <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr><%
     if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
