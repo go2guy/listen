@@ -1,12 +1,10 @@
 package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
@@ -25,21 +23,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class StartRecordingServletTest extends ListenTest
+public class StartRecordingServletTest extends ListenServletTest
 {
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private StartRecordingServlet servlet;
+    private StartRecordingServlet servlet = new StartRecordingServlet();
 
     @Before
     public void setUp()
     {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
-        servlet = new StartRecordingServlet();
         License.setLicense(new AlwaysTrueMockLicense());
     }
 
@@ -48,17 +39,7 @@ public class StartRecordingServletTest extends ListenTest
         throws IOException, ServletException
     {
         request.setMethod("POST");
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Unauthorized", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
     @Test
@@ -69,17 +50,7 @@ public class StartRecordingServletTest extends ListenTest
         request.setMethod("POST");
         request.setParameter("id", (String)null);
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide an id", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an id");
     }
 
     @Test
@@ -90,22 +61,12 @@ public class StartRecordingServletTest extends ListenTest
         request.setMethod("POST");
         request.setParameter("id", " ");
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide an id", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an id");
     }
 
     @Test
-    public void test_doPost_subscriberDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized() throws IOException,
-        ServletException
+    public void test_doPost_subscriberDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized()
+        throws IOException, ServletException
     {
         TestUtil.setSessionSubscriber(request, false, session);
 
@@ -125,22 +86,13 @@ public class StartRecordingServletTest extends ListenTest
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(conference.getId()));
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Unauthorized - Not allowed to start recording", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED,
+                                      "Unauthorized - Not allowed to start recording");
     }
-    
+
     @Test
-    public void test_doPost_conferenceNotStarted_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent() throws IOException,
-        ServletException
+    public void test_doPost_conferenceNotStarted_throwsListenServletExceptionWithBadRequestStatusAndTextPlainContent()
+        throws IOException, ServletException
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setIsAdministrator(false);
@@ -169,20 +121,11 @@ public class StartRecordingServletTest extends ListenTest
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(conference.getId()));
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Conference must be started for recording", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST,
+                                      "Conference must be started for recording");
     }
 
-    //@Test
+    // @Test
     public void test_doPost_subscriberOwnsConferenceAndRequestValid_sendsSpotRequestAndReturns200() throws IOException,
         ServletException
     {
@@ -219,7 +162,7 @@ public class StartRecordingServletTest extends ListenTest
         // TODO assert that the spot system was called
     }
 
-    //@Test
+    // @Test
     public void test_doPost_subscriberIsAdministratorButDoesNotOwnConferenceAndRequestValid_sendsSpotRequestAndReturns200()
         throws IOException, ServletException
     {

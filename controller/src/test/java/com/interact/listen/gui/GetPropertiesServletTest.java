@@ -2,54 +2,28 @@ package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.TestUtil;
-import com.interact.listen.exception.ListenServletException;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class GetPropertiesServletTest extends ListenTest
+public class GetPropertiesServletTest extends ListenServletTest
 {
-    private InputStreamMockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private GetPropertiesServlet servlet;
-
-    @Before
-    public void setUp()
-    {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
-        servlet = new GetPropertiesServlet();
-    }
+    private GetPropertiesServlet servlet = new GetPropertiesServlet();
 
     @Test
-    public void test_doGet_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws ServletException,
-        IOException
+    public void test_doGet_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
+        throws ServletException, IOException
     {
         assert request.getSession().getAttribute("subscriber") == null;
-
         request.setMethod("GET");
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("Unauthorized", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
     @Test
@@ -58,18 +32,7 @@ public class GetPropertiesServletTest extends ListenTest
     {
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("GET");
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("Unauthorized", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
     @Test

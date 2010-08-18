@@ -44,13 +44,8 @@ public class ApiStatFilterTest
     public void test_doFilter_withConferenceResourceAndGetMethod_invokesSendWithCorrectStatAndInvokesFilterChain()
         throws IOException, ServletException
     {
-        request.setPathInfo("/conferences");
-        request.setMethod("GET");
-
-        filter.doFilter(request, response, mockFilterChain);
-
+        performDoFilterAndVerify("/conferences");
         verify(mockStatSender).send(Stat.API_CONFERENCE_GET);
-        verify(mockFilterChain).doFilter(request, response);
     }
 
     @Test
@@ -58,26 +53,23 @@ public class ApiStatFilterTest
         throws IOException, ServletException
     {
         // this method shouldn't throw an Exception :)
-
-        request.setPathInfo("/mandarinOranges");
-        request.setMethod("GET");
-
-        filter.doFilter(request, response, mockFilterChain);
-
+        performDoFilterAndVerify("/mandarinOranges");
         verifyZeroInteractions(mockStatSender);
-        verify(mockFilterChain).doFilter(request, response);
     }
 
     @Test
     public void test_doFilter_withNullResource_doesNotInvokeSendAndThrowsNoexceptionAndInvokesFilterChain()
         throws IOException, ServletException
     {
-        request.setPathInfo(null); // null pathInfo will yield null resource
-        request.setMethod("GET");
-
-        filter.doFilter(request, response, mockFilterChain);
-
+        performDoFilterAndVerify(null); // null pathInfo will yield null resource
         verifyZeroInteractions(mockStatSender);
+    }
+
+    private void performDoFilterAndVerify(String pathInfo) throws IOException, ServletException
+    {
+        request.setPathInfo(pathInfo);
+        request.setMethod("GET");
+        filter.doFilter(request, response, mockFilterChain);
         verify(mockFilterChain).doFilter(request, response);
     }
 }

@@ -1,13 +1,10 @@
 package com.interact.listen.gui;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
@@ -24,19 +21,14 @@ import javax.servlet.http.HttpSession;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class GetConferenceInfoServletTest extends ListenTest
+public class GetConferenceInfoServletTest extends ListenServletTest
 {
-    private InputStreamMockHttpServletRequest request;
-    private MockHttpServletResponse response;
     private GetConferenceInfoServlet servlet = new GetConferenceInfoServlet();
 
     @Before
     public void setUp()
     {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
         License.setLicense(new AlwaysTrueMockLicense());
     }
 
@@ -45,16 +37,7 @@ public class GetConferenceInfoServletTest extends ListenTest
         ServletException
     {
         request.setMethod("GET");
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("Unauthorized - Not logged in", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - Not logged in");
     }
 
     @Test
@@ -68,16 +51,7 @@ public class GetConferenceInfoServletTest extends ListenTest
 
         request.setMethod("GET");
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getStatus());
-            assertEquals("Conference not found", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found");
     }
 
     @Test

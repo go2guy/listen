@@ -6,8 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.Stat;
@@ -21,30 +20,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class LoginServletTest extends ListenTest
+// TODO this test class has quite a bit of duplication, and is a good target for some refactoring
+public class LoginServletTest extends ListenServletTest
 {
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
     private LoginServlet servlet = new LoginServlet();
-
-    @Before
-    public void setUp()
-    {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
-    }
 
     @Test
     public void test_doPost_validCredentials_returns200() throws IOException, ServletException
     {
         final String username = String.valueOf(System.currentTimeMillis());
         final String password = "bar";
-        
+
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
@@ -61,12 +49,12 @@ public class LoginServletTest extends ListenTest
     }
 
     @Test
-    public void test_doPost_validSubscriberButWrongPassword_populatesSessionErrorMapAndRedirectsToGet() throws IOException,
-        ServletException
+    public void test_doPost_validSubscriberButWrongPassword_populatesSessionErrorMapAndRedirectsToGet()
+        throws IOException, ServletException
     {
         final String username = String.valueOf(System.currentTimeMillis());
         final String password = String.valueOf(System.currentTimeMillis());
-        
+
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);

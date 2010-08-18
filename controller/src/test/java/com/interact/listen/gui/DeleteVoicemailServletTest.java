@@ -97,13 +97,7 @@ public class DeleteVoicemailServletTest extends ListenServletTest
     {
         TestUtil.setSessionSubscriber(request, false, session);
 
-        Long id;
-        do
-        {
-            id = TestUtil.randomNumeric(12);
-        }
-        while(Voicemail.queryById(session, id) != null);
-
+        Long id = getUniqueVoicemailId();
         try
         {
             doPost(id);
@@ -113,6 +107,17 @@ public class DeleteVoicemailServletTest extends ListenServletTest
         {
             assertEquals("Voicemail not found", e.getContent());
         }
+    }
+
+    private Long getUniqueVoicemailId()
+    {
+        Long id;
+        do
+        {
+            id = TestUtil.randomNumeric(12);
+        }
+        while(Voicemail.queryById(session, id) != null);
+        return id;
     }
 
     @Test

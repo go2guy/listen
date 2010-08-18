@@ -1,38 +1,22 @@
 package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
-import com.interact.listen.exception.ListenServletException;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class SetPropertiesServletTest extends ListenTest
+public class SetPropertiesServletTest extends ListenServletTest
 {
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private SetPropertiesServlet servlet;
-
-    @Before
-    public void setUp()
-    {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
-        servlet = new SetPropertiesServlet();
-    }
+    private SetPropertiesServlet servlet = new SetPropertiesServlet();
 
     @Test
     public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
@@ -41,18 +25,7 @@ public class SetPropertiesServletTest extends ListenTest
         assert request.getSession().getAttribute("subscriber") == null;
 
         request.setMethod("POST");
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("Unauthorized", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
     @Test
@@ -62,18 +35,7 @@ public class SetPropertiesServletTest extends ListenTest
         TestUtil.setSessionSubscriber(request, false, session);
 
         request.setMethod("POST");
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("Unauthorized", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
     @Test

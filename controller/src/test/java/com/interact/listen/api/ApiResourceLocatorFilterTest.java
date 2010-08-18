@@ -38,8 +38,7 @@ public class ApiResourceLocatorFilterTest
     @Test
     public void test_doFilter_withPathContainingOnlyResource_setsClassKey() throws IOException, ServletException
     {
-        request.setPathInfo("/subscribers");
-        filter.doFilter(request, response, mockFilterChain);
+        performDoFilter("/subscribers");
         assertEquals(Subscriber.class, request.getAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY));
     }
 
@@ -47,8 +46,7 @@ public class ApiResourceLocatorFilterTest
     public void test_doFilter_withPathContainingResourceAndId_setsBothKeys() throws IOException, ServletException
     {
         final String id = String.valueOf(System.currentTimeMillis());
-        request.setPathInfo("/subscribers/" + id);
-        filter.doFilter(request, response, mockFilterChain);
+        performDoFilter("/subscribers/" + id);
         assertEquals(Subscriber.class, request.getAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY));
         assertEquals(id, request.getAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY));
     }
@@ -59,8 +57,7 @@ public class ApiResourceLocatorFilterTest
     {
         try
         {
-            request.setPathInfo("/chickenNuggets");
-            filter.doFilter(request, response, mockFilterChain);
+            performDoFilter("/chickenNuggets");
             fail("Expected BadRequestServletException for unrecognized resource");
         }
         catch(BadRequestServletException e)
@@ -74,8 +71,7 @@ public class ApiResourceLocatorFilterTest
     {
         try
         {
-            request.setPathInfo("noStartingSlash");
-            filter.doFilter(request, response, mockFilterChain);
+            performDoFilter("noStartingSlash");
             fail("Expected BadRequestServletException for unparseable URL");
         }
         catch(BadRequestServletException e)
@@ -87,8 +83,7 @@ public class ApiResourceLocatorFilterTest
     @Test
     public void test_doFilter_nullPathInfo_setsNoAttributes() throws IOException, ServletException
     {
-        request.setPathInfo(null);
-        filter.doFilter(request, response, mockFilterChain);
+        performDoFilter(null);
         assertNull(request.getAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY));
         assertNull(request.getAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY));
     }
@@ -96,8 +91,7 @@ public class ApiResourceLocatorFilterTest
     @Test
     public void test_doFilter_pathInfoLengthLessThanOne_setsNoAttributes() throws IOException, ServletException
     {
-        request.setPathInfo("");
-        filter.doFilter(request, response, mockFilterChain);
+        performDoFilter("");
         assertNull(request.getAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY));
         assertNull(request.getAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY));
     }
@@ -108,8 +102,7 @@ public class ApiResourceLocatorFilterTest
     {
         try
         {
-            request.setPathInfo("/subscribers/");
-            filter.doFilter(request, response, mockFilterChain);
+            performDoFilter("/subscribers/");
             fail("Expected BadRequestServletException for unparseable URL");
         }
         catch(BadRequestServletException e)
@@ -124,13 +117,18 @@ public class ApiResourceLocatorFilterTest
     {
         try
         {
-            request.setPathInfo("/subscribers/1234/");
-            filter.doFilter(request, response, mockFilterChain);
+            performDoFilter("/subscribers/1234/");
             fail("Expected BadRequestServletException for unparseable URL");
         }
         catch(BadRequestServletException e)
         {
             assertEquals("Unparseable URL", e.getContent());
         }
+    }
+
+    private void performDoFilter(String pathInfo) throws IOException, ServletException
+    {
+        request.setPathInfo(pathInfo);
+        filter.doFilter(request, response, mockFilterChain);
     }
 }

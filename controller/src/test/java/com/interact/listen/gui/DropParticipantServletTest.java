@@ -1,12 +1,10 @@
 package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
@@ -23,21 +21,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class DropParticipantServletTest extends ListenTest
+public class DropParticipantServletTest extends ListenServletTest
 {
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private DropParticipantServlet servlet;
+    private DropParticipantServlet servlet = new DropParticipantServlet();
 
     @Before
     public void setUp()
     {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
-        servlet = new DropParticipantServlet();
         License.setLicense(new AlwaysTrueMockLicense());
     }
 
@@ -46,17 +37,7 @@ public class DropParticipantServletTest extends ListenTest
         throws IOException, ServletException
     {
         request.setMethod("POST");
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Unauthorized", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
     @Test
@@ -66,18 +47,7 @@ public class DropParticipantServletTest extends ListenTest
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", (String)null);
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide an id", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an id");
     }
 
     @Test
@@ -87,18 +57,7 @@ public class DropParticipantServletTest extends ListenTest
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", " ");
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide an id", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an id");
     }
 
     @Test
@@ -142,22 +101,13 @@ public class DropParticipantServletTest extends ListenTest
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(participant.getId()));
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Unauthorized - Not allowed to drop participant", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED,
+                                      "Unauthorized - Not allowed to drop participant");
     }
 
     @Test
-    public void test_doPost_subscriberDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized() throws IOException,
-        ServletException
+    public void test_doPost_subscriberDoesNotOwnConference_throwsListenServletExceptionWithUnauthorized()
+        throws IOException, ServletException
     {
         TestUtil.setSessionSubscriber(request, false, session);
 
@@ -188,17 +138,8 @@ public class DropParticipantServletTest extends ListenTest
         request.setMethod("POST");
         request.setParameter("id", String.valueOf(participant.getId()));
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Unauthorized - Not allowed to drop participant", e.getContent());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED,
+                                      "Unauthorized - Not allowed to drop participant");
     }
 
     @Test

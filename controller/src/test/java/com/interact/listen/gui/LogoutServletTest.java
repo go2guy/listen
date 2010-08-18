@@ -5,8 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -17,25 +16,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class LogoutServletTest extends ListenTest
+public class LogoutServletTest extends ListenServletTest
 {
     private static final String SESSION_SUBSCRIBER_KEY = "subscriber";
-
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
     private LogoutServlet servlet = new LogoutServlet();
-
-    @Before
-    public void setUp()
-    {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
-    }
 
     @Test
     public void test_doGet_removesSubscriberFromSessionAndReturns200() throws IOException, ServletException

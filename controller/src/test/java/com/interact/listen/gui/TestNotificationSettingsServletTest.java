@@ -1,12 +1,7 @@
 package com.interact.listen.gui;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.TestUtil;
-import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 
@@ -17,113 +12,50 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class TestNotificationSettingsServletTest extends ListenTest
+public class TestNotificationSettingsServletTest extends ListenServletTest
 {
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private TestNotificationSettingsServlet servlet;
+    private TestNotificationSettingsServlet servlet = new TestNotificationSettingsServlet();
 
     @Before
     public void setUp()
     {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
-        servlet = new TestNotificationSettingsServlet();
         License.setLicense(new AlwaysTrueMockLicense());
     }
-    
-    @Test
-    public void test_doPost_blankMessageType_returnsError()
-        throws IOException, ServletException
-    {
-        TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
-        
-        request.setMethod("POST");
-        request.setParameter("messageType", "");
-        request.setParameter("address", "foo@bar");
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide a message type", e.getContent());
-        }
+    @Test
+    public void test_doPost_blankMessageType_returnsError() throws IOException, ServletException
+    {
+        testExceptionCausingRequest("", "foo@example.com", "Please provide a message type");
     }
-    
-    @Test
-    public void test_doPost_nullMessageType_returnsError()
-        throws IOException, ServletException
-    {
-        TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
-        
-        request.setMethod("POST");
-        request.setParameter("messageType", (String)null);
-        request.setParameter("address", "foo@bar");
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide a message type", e.getContent());
-        }
+    @Test
+    public void test_doPost_nullMessageType_returnsError() throws IOException, ServletException
+    {
+        testExceptionCausingRequest(null, "foo@example.com", "Please provide a message type");
     }
-    
+
     @Test
-    public void test_doPost_blankAddress_returnsError()
-        throws IOException, ServletException
+    public void test_doPost_blankAddress_returnsError() throws IOException, ServletException
     {
-        TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
-
-        request.setMethod("POST");
-        request.setParameter("messageType", String.valueOf(System.currentTimeMillis()));
-        request.setParameter("address", "");
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide an address", e.getContent());
-        }
+        testExceptionCausingRequest(TestUtil.randomString(), "", "Please provide an address");
     }
-    
+
     @Test
-    public void test_doPost_nullAddress_returnsError()
+    public void test_doPost_nullAddress_returnsError() throws IOException, ServletException
+    {
+        testExceptionCausingRequest(TestUtil.randomString(), null, "Please provide an address");
+    }
+
+    private void testExceptionCausingRequest(String messageType, String address, String expectedContent)
         throws IOException, ServletException
     {
         TestUtil.setSessionSubscriber(request, true, session); // admin subscriber
-        
-        request.setMethod("POST");
-        request.setParameter("messageType", String.valueOf(System.currentTimeMillis()));
-        request.setParameter("address", (String)null);
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide an address", e.getContent());
-        }
+        request.setMethod("POST");
+        request.setParameter("messageType", messageType);
+        request.setParameter("address", address);
+
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, expectedContent);
     }
 }

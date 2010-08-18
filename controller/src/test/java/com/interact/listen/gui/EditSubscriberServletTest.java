@@ -2,12 +2,9 @@ package com.interact.listen.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.TestUtil;
-import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Subscriber.PlaybackOrder;
 import com.interact.listen.security.SecurityUtil;
@@ -17,25 +14,12 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class EditSubscriberServletTest extends ListenTest
+public class EditSubscriberServletTest extends ListenServletTest
 {
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private EditSubscriberServlet servlet;
+    private EditSubscriberServlet servlet = new EditSubscriberServlet();
     private Subscriber subscriber;
-
-    @Before
-    public void setUp()
-    {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
-        servlet = new EditSubscriberServlet();
-    }
 
     @Test
     public void test_doPost_adminSubscriberWithValidParameters_editsAccount() throws ServletException, IOException
@@ -73,16 +57,16 @@ public class EditSubscriberServletTest extends ListenTest
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
     }
-    
+
     @Test
     public void test_doPost_nonAdminWithValidParameters_editsAccount() throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, false, session);
-        
+
         final String id = String.valueOf(subscriber.getId());
-//        final String username = TestUtil.randomString();
-//        final String password = TestUtil.randomString();
-//        final String confirm = password;
+        // final String username = TestUtil.randomString();
+        // final String password = TestUtil.randomString();
+        // final String confirm = password;
         final String realName = TestUtil.randomString();
         final String voicemailPin = String.valueOf(subscriber.getId());
         final String enableEmail = "true";
@@ -92,9 +76,9 @@ public class EditSubscriberServletTest extends ListenTest
 
         request.setMethod("POST");
         request.setParameter("id", id);
-//        request.setParameter("username", username);
-//        request.setParameter("password", password);
-//        request.setParameter("confirmPassword", confirm);
+        // request.setParameter("username", username);
+        // request.setParameter("password", password);
+        // request.setParameter("confirmPassword", confirm);
         request.setParameter("realName", realName);
         request.setParameter("voicemailPin", voicemailPin);
         request.setParameter("enableEmail", enableEmail);
@@ -108,18 +92,17 @@ public class EditSubscriberServletTest extends ListenTest
         // verify a subscriber was modified for the username and is associated with the created subscriber
         Subscriber subscriber = (Subscriber)session.get(Subscriber.class, Long.parseLong(id));
         assertNotNull(subscriber);
-//        assertEquals(username, subscriber.getUsername());
+        // assertEquals(username, subscriber.getUsername());
         assertEquals(realName, subscriber.getRealName());
     }
-    
+
     @Test
     public void test_doPost_differentNonAdminWithValidParameters_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, false, session);
-        
-        Subscriber subscriber2 = getPopulatedSubscriber();
-        session.save(subscriber2);
+
+        Subscriber subscriber2 = createSubscriber(session);
 
         // We want the subscriber being edited to be subscriber 2 being edited by subscriber 1 who is not an admin
         final String id = String.valueOf(subscriber2.getId());
@@ -144,22 +127,12 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("smsAddress", smsAddress);
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("Unauthorized", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
     @Test
-    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws ServletException,
-        IOException
+    public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
+        throws ServletException, IOException
     {
         assert request.getSession().getAttribute("subscriber") == null;
 
@@ -170,22 +143,12 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatus());
-            assertEquals("Unauthorized", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
     @Test
-    public void test_doPost_withNullUsernameAndAdminSubscriber_throwsListenServletExceptionWithBadRequest() throws ServletException,
-        IOException
+    public void test_doPost_withNullUsernameAndAdminSubscriber_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, true, session);
 
@@ -197,22 +160,12 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Username", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username");
     }
 
     @Test
-    public void test_doPost_withBlankUsernameAndAdminSubscriber_throwsListenServletExceptionWithBadRequest() throws ServletException,
-        IOException
+    public void test_doPost_withBlankUsernameAndAdminSubscriber_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, true, session);
 
@@ -224,22 +177,12 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Username", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username");
     }
 
     @Test
-    public void test_doPost_withNullPasswordIfPasswordConfirmPresent_throwsListenServletExceptionWithBadRequest() throws ServletException,
-        IOException
+    public void test_doPost_withNullPasswordIfPasswordConfirmPresent_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
@@ -251,22 +194,12 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Password", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password");
     }
 
-    //@Test
-    public void test_doPost_withBlankPasswordAndConfirmPasswordPresent_throwsListenServletExceptionWithBadRequest() throws ServletException,
-        IOException
+    // @Test
+    public void test_doPost_withBlankPasswordAndConfirmPasswordPresent_throwsListenServletExceptionWithBadRequest()
+        throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
@@ -278,17 +211,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Password", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password");
     }
 
     @Test
@@ -305,17 +228,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Confirm Password", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Confirm Password");
     }
 
     @Test
@@ -332,17 +245,7 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide a Confirm Password", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Confirm Password");
     }
 
     @Test
@@ -359,22 +262,12 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Password and Confirm Password do not match", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST,
+                                      "Password and Confirm Password do not match");
     }
-    
+
     @Test
-    public void test_doPost_withNullVoicemailPin_isValid()
-        throws ServletException, IOException
+    public void test_doPost_withNullVoicemailPin_isValid() throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
@@ -389,10 +282,9 @@ public class EditSubscriberServletTest extends ListenTest
         servlet.service(request, response);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
-    
+
     @Test
-    public void test_doPost_withBlankVoicemailPin_isValid()
-        throws ServletException, IOException
+    public void test_doPost_withBlankVoicemailPin_isValid() throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, false, session);
 
@@ -407,7 +299,7 @@ public class EditSubscriberServletTest extends ListenTest
         servlet.service(request, response);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
-    
+
     @Test
     public void test_doPost_withNonNumericVoicemailPin_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
@@ -422,19 +314,9 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("voicemailPin", "ABC");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Voicemail PIN must be a number", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Voicemail PIN must be a number");
     }
-    
+
     @Test
     public void test_doPost_withEnableEmailCheckedAndNoEmailAddress_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
@@ -450,19 +332,9 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("enableEmail", "true");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide an E-mail address", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an E-mail address");
     }
-    
+
     @Test
     public void test_doPost_withEnableSmsCheckedAndNoSmsAddress_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
@@ -478,24 +350,15 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("enableSms", "true");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide an SMS address", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an SMS address");
     }
-    
+
     @Test
-    public void test_doPost_adminSubscriberWithEmailAddresNoEnableEmail_editsAccount() throws ServletException, IOException
+    public void test_doPost_adminSubscriberWithEmailAddresNoEnableEmail_editsAccount() throws ServletException,
+        IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, true, session);
-        
+
         final String id = String.valueOf(subscriber.getId());
         final String username = TestUtil.randomString();
         final String password = TestUtil.randomString();
@@ -522,7 +385,7 @@ public class EditSubscriberServletTest extends ListenTest
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(emailAddress, subscriber.getEmailAddress());
     }
-    
+
     @Test
     public void test_doPost_withEnablePagingCheckedAndNoSmsAddress_throwsListenServletExceptionWithBadRequest()
         throws ServletException, IOException
@@ -538,24 +401,15 @@ public class EditSubscriberServletTest extends ListenTest
         request.setParameter("enablePaging", "true");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("Please provide an SMS address for paging", e.getContent());
-            assertEquals("text/plain", e.getContentType());
-        }
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST,
+                                      "Please provide an SMS address for paging");
     }
-    
+
     @Test
     public void test_doPost_adminSubscriberWithSmsAddresNoEnableSms_editsAccount() throws ServletException, IOException
     {
         subscriber = TestUtil.setSessionSubscriber(request, true, session);
-        
+
         final String id = String.valueOf(subscriber.getId());
         final String username = TestUtil.randomString();
         final String password = TestUtil.randomString();
@@ -581,16 +435,5 @@ public class EditSubscriberServletTest extends ListenTest
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(smsAddress, subscriber.getSmsAddress());
-    }
-
-    private Subscriber getPopulatedSubscriber()
-    {
-        Subscriber s = new Subscriber();
-        s.setId(System.currentTimeMillis());
-        s.setPassword("password");
-        s.setUsername("username");
-        s.setVoicemailPin(System.currentTimeMillis());
-        s.setVersion(1);
-        return s;
     }
 }

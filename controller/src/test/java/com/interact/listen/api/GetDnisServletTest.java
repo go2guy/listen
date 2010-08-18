@@ -3,7 +3,7 @@ package com.interact.listen.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
+import com.interact.listen.ListenServletTest;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.ListenServletException;
@@ -13,148 +13,101 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-public class GetDnisServletTest
+public class GetDnisServletTest extends ListenServletTest
 {
-    private InputStreamMockHttpServletRequest request;
-    private MockHttpServletResponse response;
     private GetDnisServlet servlet;
+    private String originalDnisConfiguration;
 
     @Before
     public void setUp()
     {
-        request = new InputStreamMockHttpServletRequest();
-        response = new MockHttpServletResponse();
         servlet = new GetDnisServlet();
+        originalDnisConfiguration = Configuration.get(Property.Key.DNIS_MAPPING);
+    }
+
+    @After
+    public void tearDown()
+    {
+        Configuration.set(Property.Key.DNIS_MAPPING, originalDnisConfiguration);
     }
 
     @Test
     public void test_doGet_nullNumber_throwsListenServletExceptionWithBadRequest() throws ServletException, IOException
     {
-        request.setMethod("GET");
-        request.setParameter("number", (String)null);
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide a number", e.getContent());
-        }
+        testExpectedListenServletException("", null, HttpServletResponse.SC_BAD_REQUEST, "Please provide a number",
+                                           "text/plain");
     }
 
     @Test
     public void test_doGet_blankNumber_throwsListenServletExceptionWithBadRequest() throws ServletException,
         IOException
     {
-        request.setMethod("GET");
-        request.setParameter("number", " ");
-
-        try
-        {
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_BAD_REQUEST, e.getStatus());
-            assertEquals("text/plain", e.getContentType());
-            assertEquals("Please provide a number", e.getContent());
-        }
+        testExpectedListenServletException("", " ", HttpServletResponse.SC_BAD_REQUEST, "Please provide a number",
+                                           "text/plain");
     }
 
     @Test
     public void test_doGet_numberNotFound_throwsListenServletExceptionWith404NotFound() throws ServletException,
         IOException
     {
-        final String originalDnisValue = Configuration.get(Property.Key.DNIS_MAPPING);
-        try
-        {
-            Configuration.set(Property.Key.DNIS_MAPPING, "");
-            request.setMethod("GET");
-            request.setParameter("number", "1234");
-            servlet.service(request, response);
-            fail("Expected ListenServletException");
-        }
-        catch(ListenServletException e)
-        {
-            assertEquals(HttpServletResponse.SC_NOT_FOUND, e.getStatus());
-        }
-        finally
-        {
-            Configuration.set(Property.Key.DNIS_MAPPING, originalDnisValue);
-        }
+        testExpectedListenServletException("", "1234", HttpServletResponse.SC_NOT_FOUND, "", "");
     }
 
     @Test
     public void test_doGet_numberFound_returnsMappedValue() throws ServletException, IOException
     {
-        final String originalDnisValue = Configuration.get(Property.Key.DNIS_MAPPING);
-        try
-        {
-            Configuration.set(Property.Key.DNIS_MAPPING, "1234:voicemail;1800AWESOME:conferencing;4242:mailbox");
-            request.setMethod("GET");
-            request.setParameter("number", "1800AWESOME");
-            servlet.service(request, response);
-
-            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            assertEquals("text/plain", request.getOutputBufferType());
-            assertEquals("conferencing", request.getOutputBufferString());
-        }
-        finally
-        {
-            Configuration.set(Property.Key.DNIS_MAPPING, originalDnisValue);
-        }
+        testSuccessfulResponse("1234:voicemail;1800AWESOME:conferencing;4242:mailbox", "1800AWESOME", "conferencing");
     }
 
     @Test
     public void test_doGet_wildcardFirstButLookingForLaterNumber_returnsLaterNumber() throws ServletException,
         IOException
     {
-        final String originalDnisValue = Configuration.get(Property.Key.DNIS_MAPPING);
-        try
-        {
-            Configuration.set(Property.Key.DNIS_MAPPING, "*:voicemail;1800AWESOME:conferencing;4242:conferencing");
-            request.setMethod("GET");
-            request.setParameter("number", "4242");
-            servlet.service(request, response);
-
-            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            assertEquals("text/plain", request.getOutputBufferType());
-            assertEquals("conferencing", request.getOutputBufferString());
-        }
-        finally
-        {
-            Configuration.set(Property.Key.DNIS_MAPPING, originalDnisValue);
-        }
+        testSuccessfulResponse("*:voicemail;1800AWESOME:conferencing;4242:conferencing", "4242", "conferencing");
     }
 
     @Test
     public void test_doGet_configurationHasWildcardAndNotQueryString_returnsWildcardMapping() throws ServletException,
         IOException
     {
-        final String originalDnisValue = Configuration.get(Property.Key.DNIS_MAPPING);
+        testSuccessfulResponse("*:voicemail;1800AWESOME:conferencing;4242:conferencing", "9999", "voicemail");
+    }
+
+    private void setDnisAndPerformRequest(String dnisMappings, String number) throws IOException, ServletException
+    {
+        Configuration.set(Property.Key.DNIS_MAPPING, dnisMappings);
+        request.setMethod("GET");
+        request.setParameter("number", number);
+        servlet.service(request, response);
+    }
+
+    private void testSuccessfulResponse(String dnis, String number, String expectedContent) throws IOException,
+        ServletException
+    {
+        setDnisAndPerformRequest(dnis, number);
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertOutputBufferContentEquals(expectedContent);
+        assertOutputBufferContentTypeEquals("text/plain");
+    }
+
+    private void testExpectedListenServletException(String dnis, String number, int expectedStatus,
+                                                    String expectedContent, String expectedContentType)
+        throws IOException, ServletException
+    {
         try
         {
-            Configuration.set(Property.Key.DNIS_MAPPING, "*:voicemail;1800AWESOME:conferencing;4242:conferencing");
-            request.setMethod("GET");
-            request.setParameter("number", "9999");
-            servlet.service(request, response);
-
-            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            assertEquals("text/plain", request.getOutputBufferType());
-            assertEquals("voicemail", request.getOutputBufferString());
+            setDnisAndPerformRequest(dnis, number);
+            fail("Expected ListenServletException");
         }
-        finally
+        catch(ListenServletException e)
         {
-            Configuration.set(Property.Key.DNIS_MAPPING, originalDnisValue);
+            assertEquals(expectedStatus, e.getStatus());
+            assertEquals(expectedContent, e.getContent());
+            assertEquals(expectedContentType, e.getContentType());
         }
     }
 }
