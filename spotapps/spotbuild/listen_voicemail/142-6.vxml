@@ -21,7 +21,7 @@
             <log target="status">Get CntrlURL</log>
             <log>INFO: Entered run-javascript.vxml [142-6]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="cntrlURL" expr="II_SB_userJava" />   
+<!--            <assign name="cntrlURL" expr="II_SB_userJava" />   -->
 	        <goto next="#exit"/>
         </block>
     </form>

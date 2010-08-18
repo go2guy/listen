@@ -5,17 +5,17 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'146-70'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'54-79'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
 	    <log target="status">Assign STAT Vars</log>
-            <log>INFO: Entered assign-variable.vxml [146-68]</log>
+            <log>INFO: Entered assign-variable.vxml [54-78]</log>
             <log>INFO: Current value [<value expr="value"/>]</log>
 <assign name="value" expr="'1'+''" />
 <log>INFO: Updated value [<value expr="value"/>]</log>
 <log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LSTNAPP_SERVICE_ERROR'+''" />
+<assign name="id" expr="'LSTNAPP_RECORD_ERROR'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
