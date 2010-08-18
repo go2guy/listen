@@ -12,7 +12,7 @@
 	    <log target="status">Assign Stat Vars</log>
             <log>INFO: Entered assign-variable.vxml [145-21]</log>
             <log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LISTEN_SERVICE_ERROR'+''" />
+<assign name="id" expr="'LSTNAPP_SERVICE_ERROR'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
 <log>INFO: Current value [<value expr="source"/>]</log>
 <assign name="source" expr="'main'+''" />

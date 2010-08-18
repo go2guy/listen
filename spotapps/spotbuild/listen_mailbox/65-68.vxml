@@ -18,7 +18,7 @@
 <assign name="value" expr="'1'+''" />
 <log>INFO: Updated value [<value expr="value"/>]</log>
 <log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LISTEN_SERVICE_ERROR'+''" />
+<assign name="id" expr="'LSTNAPP_SERVICE_ERROR'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
