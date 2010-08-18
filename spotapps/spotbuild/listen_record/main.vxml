@@ -48,6 +48,10 @@
 	<var name="SB_UV_subscriber"/>
 	<var name="SB_UV_HTTPcontroller"/>
 	<var name="SB_UV_sessionID"/>
+	<var name="SB_UV_STATcontroller"/>
+	<var name="SB_UV_source"/>
+	<var name="SB_UV_value"/>
+	<var name="SB_UV_operation"/>
 
     
     <form id="beginDocument">
@@ -146,6 +150,18 @@
 			</if>
 			<if cond="SB_UV_sessionID != undefined">
 				<assign name="sessionID" expr="SB_UV_sessionID" />
+			</if>
+			<if cond="SB_UV_STATcontroller != undefined">
+				<assign name="STATcontroller" expr="SB_UV_STATcontroller" />
+			</if>
+			<if cond="SB_UV_source != undefined">
+				<assign name="source" expr="SB_UV_source" />
+			</if>
+			<if cond="SB_UV_value != undefined">
+				<assign name="value" expr="SB_UV_value" />
+			</if>
+			<if cond="SB_UV_operation != undefined">
+				<assign name="operation" expr="SB_UV_operation" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
