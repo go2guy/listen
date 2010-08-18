@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified: 08/06/2010
+    <!-- Last Modified: 08/17/2010
          @Name: getAttendantEntry.vxml
          @Desc: This script handles playing audio files
                 and receiving user input for the auto attendant. -->
@@ -54,7 +54,6 @@
             <log>INFO: Entered dgtMatch</log>
             <if cond="inString('|',fieldLength,'')">
                 <!-- We need to watch for a particular keypress on our first pass -->
-                <assign name="match_key" expr="getNextElement(1,fieldLength,'|')"/>
                 <assign name="match_key" expr="iiSubstr(fieldLength,1,-1)"/>
                 <assign name="fieldLength" expr="getNextElement(0,fieldLength,'|')"/>
             <else/>
@@ -196,7 +195,7 @@
             <if cond="userEntry == '#33'"> <!-- Attempting a forward -->
                 <goto next="#exit"/> <!-- We have max allowed input or user pressed term key -->
             <elseif cond="userEntry == '#34'"/>
-                <assign name="fieldLength" expr="6"/>
+                <assign name="fieldLength" expr="userEntry.length + fieldLength"/>
             <elseif cond="userEntry.length == fieldLength"/>
                 <goto next="#exit"/> <!-- We have max allowed input or user pressed term key -->
             <else/>

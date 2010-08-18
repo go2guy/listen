@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 08/18/2010
+       *   @Name	office.vxml
+       *   @Desc	This script controls the main auto attendant prompt
+                    and available options -->
+
+    <!-- Passed in from pbx.ccxml -->
+    <var name="importedValue"/>
+
+    <!-- Global Variables -->
+    <var name="isClosed" expr="'n'"/>           <!-- Flag to determine if the office is closed -->
+    <var name="officeOptr" expr="'101'"/>       <!-- Operator's extension -->
+    <var name="CUSTOMER_SERVICE" expr="5"/>     <!-- This number represents the menu option for customer service -->
+    <var name="customerService" expr="'181'"/>  <!-- Customer Service extension -->
+
+	<form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <assign name="listenArgs" expr="importedValue"/>    <!-- Save off controller information -->
+            <goto next="#getPrompt"/>
+        </block>
+    </form>
+
+    <form id="getPrompt">
+        <!-- Here we use a subdialog to retrieve the prompt(s) to be played by 
+        the auto attendant -->
+        <block>
+            <log>INFO: Entered getPrompt</log>
+        </block>
+        <subdialog name="promptString" srcexpr="'file:'+TRANS_PATH+'autoAttendantPrompt.vxml'"></subdialog>
+        <block> <!-- Get return from subdialog -->
+            <assign name="promptID" expr="promptString.prompt"/>
+            <assign name="isClosed" expr="promptString.isClosed"/>
+            <goto next="#setUp"/>
+        </block>
+    </form>
+
+    <form id="setUp">
+        <!-- Set up parameters that are used by the play audio subdialog -->
+        <block>
+            <log>INFO: Entered setUp</log>
+            <assign name="fldTrmChar" expr="''"/>
+            <assign name="digitTimeOut" expr="'3s'"/>
+            <assign name="fieldLength" expr="(parseInt(EXT_LENGTH) - 1) + '|' + CUSTOMER_SERVICE"/>
+            <assign name="fieldTimeOut" expr="'4s'"/>
+            <assign name="cutIn" expr="'true'"/>
+            <assign name="gotoForm" expr="'#userKeyPress'"/>
+			<goto next="#playAudio"/>
+		</block>
+	</form>
+
+    <form id="playAudio">
+        <!-- This form allows us to play a prompt and capture a user's response. We
+        use it to play the various prompts found in this script -->
+        <block>
+            <log>INFO: Entered playAudio</log>
+        </block>
+        <subdialog name="playAudio" srcexpr="'file:'+APP_PATH+'getAttendantEntry.vxml'">
+            <param name="dgtTimeOut" expr="digitTimeOut"/>
+            <param name="fldLength" expr="fieldLength"/>
+            <param name="fldTermchar" expr="fldTrmChar"/>
+            <param name="fldTimeOut" expr="fieldTimeOut"/>
+            <param name="interrupt" expr="cutIn"/>
+            <param name="file" expr="promptID"/>
+        </subdialog>
+        <block>
+            <assign name="userEntry" expr="playAudio.userEntry"/>
+            <if cond="userEntry == 'hangup'">
+                <assign name="status" expr="'endCall'"/>
+                <goto next="#exit"/>
+            <else/>
+                <goto expr="gotoForm"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="userKeyPress">
+        <!-- In here, we analyse the user's key press and route the call accordingly -->
+        <block>
+            <log>INFO: Entered userKeyPress</log>
+            <if cond="(userEntry[0] + userEntry[1]) == '#3'">
+                <!-- This implies caller is trying to forward an extension. Transfer control
+                to the forwarding app -->
+                <assign name="status" expr="'forward'"/>
+                <log>INFO: Send caller to forward app</log>
+                <goto next="#exit"/>
+            <elseif cond="userEntry == CUSTOMER_SERVICE"/>
+                <!-- This logic is here to check how to route the call to customer service.
+                    If the office is closed, then go to after hrs functionality. Otherwise,
+                    call the extension designated as customer service. -->
+                <var name="currTime" expr="getTimeStamp(1)"/>  <!-- Format is yyyymmddhhMMss -->
+                <assign name="currTime" expr="iiSubstr(currTime, 8, 12)"/>
+                <if cond="((isClosed == 'y') || (parseFloat(currTime) &gt; PM_CLOSE) || (parseFloat(currTime) &lt; AM_OPEN))">
+                    <log>INFO: Send caller to pager service</log>
+                    <goto expr="'file:'+SUP_PATH+'afterHrsMain.vxml'"/>
+                <else/>
+                    <log>INFO: Send caller to customer service</log>
+                    <log target="status">Customer Service</log>
+                    <assign name="promptID" expr="'AP1605'"/>
+                    <assign name="fieldTimeOut" expr="''"/>
+                    <assign name="cutIn" expr="'false'"/>
+                    <assign name="extension" expr="customerService"/>
+                    <assign name="status" expr="'callExt'"/>
+                    <assign name="gotoForm" expr="'#exit'"/>
+                    <goto next="#playAudio"/>
+                </if>
+            <elseif cond="userEntry.length == 0"/>
+                <!-- Caller did not press any keys. Let's check what prompt to play -->
+                <goto next="#chkOffice"/>
+            <else/>
+                <!-- Caller entered some keys. Check the dnis mapping for associated app -->
+                <goto next="#chkDnisMap"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="chkOffice">
+        <!-- Here, we determine what prompt to play based on whether the office is opened or closed -->
+        <block>
+            <log>INFO: Entered chkOffice</log>
+            <if cond="isClosed == 'y'">
+                <!-- Office is closed. Let's end the call. -->
+                <if cond="userEntry.length != 0">
+                    <assign name="promptID" expr="'AP1851|AP1595'"/>
+                <else/>
+                    <assign name="promptID" expr="'AP1595'"/>
+                </if>
+                <assign name="status" expr="'endCall'"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <log>INFO: End Call</log>
+                <log target="status">End Call</log>
+            <else/>
+                <!-- Otherwise, send caller to operator -->
+                <if cond="userEntry.length != 0">
+                    <assign name="promptID" expr="'AP1850'"/>
+                <else/>
+                    <assign name="promptID" expr="'AP1605'"/>
+                </if>
+                <assign name="fieldTimeOut" expr="''"/>
+                <assign name="cutIn" expr="'false'"/>
+                <assign name="status" expr="'callExt'"/>
+                <assign name="extension" expr="officeOptr"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <log>INFO: Send caller to operator</log>
+                <log target="status">Call operator</log>
+            </if>
+            <goto next="#playAudio"/>
+        </block>
+    </form>
+
+    <form id="chkDnisMap">
+        <!-- This subdialog handles sending an event to the controller to figure out
+        what app is associated with a particular dnis -->
+        <block>
+            <log>INFO: Entered chkDnisMap</log>
+        </block>
+        <subdialog name="chkMap" srcexpr="'file:'+TRANS_PATH+'dnisMap.vxml'">
+            <param name="dnis" expr="userEntry"/>
+            <param name="argList" expr="importedValue"/>
+        </subdialog>
+        <block>
+            <if cond="chkMap.status == 'Success'">
+                <if cond="chkMap.result == 'ippbx'">
+                    <log>INFO: User trying to call ext [<value expr="extension"/>]</log>
+                    <log target="status">One moment...</log>
+                    <assign name="extension" expr="userEntry"/>
+                    <assign name="fieldTimeOut" expr="''"/>
+                    <assign name="promptID" expr="'AP1605'"/>
+                    <assign name="cutIn" expr="'false'"/>
+                    <assign name="status" expr="'callExt'"/>
+                    <assign name="gotoForm" expr="'#exit'"/>
+                    <goto next="#playAudio"/>
+                <else/>
+                    <assign name="status" expr="chkMap.result"/>
+                    <goto next="#exit"/>
+                </if>
+            <else/>
+                <!-- Controller didn't find a dnis map -->
+                <goto expr="chkOffice"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <exit namelist="userEntry status extension isClosed"/>
+        </block>
+    </form>
+
+</vxml>
+

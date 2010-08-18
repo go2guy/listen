@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/06/2010
+    <!-- Last Modified 08/18/2010
        *   @Name	pbx.ccxml
        *   @Desc	This script handles all the control logic for the PBX application -->
 
@@ -53,7 +53,7 @@
             <log>INFO: Go to office menu</log>
             <log target="status">Auto Attendant</log>
             <assign name="state" expr="'officeMenu'"/>
-   	    	<dialogstart src="'file:'+APP_PATH+'office.vxml'" namelist="EXT_LENGTH ANI extension importedValue"/>
+   	    	<dialogstart src="'file:'+APP_PATH+'autoAttendant/autoAttendant.vxml'" namelist="EXT_LENGTH ANI extension importedValue"/>
         </transition>
 
         <transition event="dialog.user.dial" name="evt">
@@ -89,9 +89,10 @@
             </if>
         </transition>
 
-        <transition event="dialog.user.listenMailBox" name="evt">
+        <transition event="dialog.user.listenApps" name="evt">
             <!-- Here we'll pass control to the begin ccxml script which calls the Listen Mail Box project -->
             <log>INFO: Entered [dialog.user.listenMailBox] with state [<value expr="state"/>]</log>
+                <var name="appName" expr="evt.appName"/>
                 <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
                 <var name="II_SB_status" expr="''"/>
                 <var name="II_SB_local" expr="DNIS"/>
@@ -99,7 +100,7 @@
                 <var name="II_SB_originator" expr="''"/>
                 <var name="II_SB_protocol" expr="'VOIP'"/>
                 <var name="II_SB_connectionID" expr="ibconnid"/>
-                <var name="II_SB_type" expr="''"/>
+                <var name="II_SB_type" expr="'VOIP'"/>
                 <var name="II_SB_ibcallid" expr="ibconnid"/>
                 <var name="II_SB_transfer" expr="'yes'"/>
                 <var name="II_SB_projectSource" expr="'ippbx'"/>
@@ -107,17 +108,28 @@
                 <var name="II_SB_CODE_DIR" expr="''"/>
                 <var name="II_SB_line" expr="''"/>
                 <var name="II_SB_importedValue" expr="importedValue"/>
-                <fetch next="'file:'+SB_PATH+'listen_mailbox/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+                <fetch next="'file:'+SB_PATH+appName+'/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
         </transition>
 
         <transition event="dialog.exit" name="evt">
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
+            <var name="listenApps" expr="'conferencing,mailbox,voicemail,directVoicemail,after_hours'"/>
             <var name="status" expr="evt.values.status"/>
             <if cond="state == 'hangUp'">
                 <send data="'dialog.user.updateClientRecord'" target="session.id"/>
-            <elseif cond="status == 'mailBox'"/>
-                <send data="'dialog.user.listenMailBox'" target="session.id"/>
+            <elseif cond="inString(status,listenApps,',')"/>
+                <var name="appName" expr="''"/>
+                <if cond="status == 'conferencing'">
+                    <assign name="appName" expr="'listen_conference'"/>
+                <elseif cond="status == 'voicemail'"/>
+                    <assign name="appName" expr="'listen_voicemail'"/>
+                <elseif cond="((status == 'mailbox') || (status == 'directVoicemail'))"/>
+                    <assign name="appName" expr="'listen_mailbox'"/>
+                <else/>
+                    <assign name="appName" expr="status"/>
+                </if>
+                <send data="'dialog.user.listenApps'" target="session.id" namelist="appName"/>
             <elseif cond="status == 'callExt'"/>
                 <assign name="callType" expr="'extension'"/>
                 <assign name="DNIS" expr="evt.values.extension"/>
