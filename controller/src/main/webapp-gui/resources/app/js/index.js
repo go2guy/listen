@@ -36,6 +36,16 @@ $(document).ready(function() {
         $(elem).text(text + '*');
     });
 
+    function showUnavailableModal() {
+        $.modal($('#communication-error'), {
+            overlayCss: {
+                'background-color': '#CCCCCC',
+                'opacity': .5
+            },
+            close: false
+        });
+    }
+
     var failedTries = 0;
     setInterval(function() {
         var start = Listen.timestamp();
@@ -45,12 +55,7 @@ $(document).ready(function() {
             success: function(data, textStatus, xhr) {
                 if(!data || data != 'pong') {
                     if(failedTries++ > 2) {
-                        $.modal($('#communication-error'), {
-                            overlayCss: {
-                                'background-color': '#CCCCCC',
-                                'opacity': .5
-                            }
-                        });
+                        showUnavailableModal();
                     }
                 } else if(data == 'pong' && failedTries > 2) {
                     failedTries = 0;
@@ -63,12 +68,7 @@ $(document).ready(function() {
                     return;
                 }
                 if(failedTries++ > 2) {
-                    $.modal($('#communication-error'), {
-                        overlayCss: {
-                            'background-color': '#CCCCCC',
-                            'opacity': .5
-                        }
-                    });
+                    showUnavailableModal();
                 }
             },
             complete: function(xhr, textStatus) {
