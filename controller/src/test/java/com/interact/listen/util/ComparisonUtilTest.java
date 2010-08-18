@@ -1,13 +1,13 @@
 package com.interact.listen.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import com.interact.listen.ListenTest;
 
 import org.junit.Test;
 
-public class ComparisonUtilTest
+public class ComparisonUtilTest extends ListenTest
 {
     private static final String NON_NULL_OBJECT1 = "foo";
     private static final String NON_NULL_OBJECT2 = "bar";
@@ -46,19 +46,6 @@ public class ComparisonUtilTest
     public void test_constructor_throwsAssertionErrorWithMessage() throws IllegalAccessException,
         InstantiationException
     {
-        Constructor<?> constructor = ComparisonUtil.class.getDeclaredConstructors()[0];
-        constructor.setAccessible(true);
-
-        try
-        {
-            constructor.newInstance();
-            fail("Expected InvocationTargetException with root cause of AssertionError for utility class constructor");
-        }
-        catch(InvocationTargetException e)
-        {
-            Throwable cause = e.getCause();
-            assertTrue(cause instanceof AssertionError);
-            assertEquals("Cannot instantiate utility class ComparisonUtil", cause.getMessage());
-        }
+        assertConstructorThrowsAssertionError(ComparisonUtil.class, "Cannot instantiate utility class ComparisonUtil");
     }
 }

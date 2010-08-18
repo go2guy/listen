@@ -31,7 +31,7 @@ public final class HibernateUtil
 {
     private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
     private static final SessionFactory SESSION_FACTORY;
-    private static final Environment ENVIRONMENT = Environment.valueOf(System.getProperty("com.interact.listen.env", "PROD"));
+    private static final Environment ENVIRONMENT = Environment.valueOf(System.getProperty("com.interact.listen.env", "DEV"));
 
     /**
      * Provides default configuration values for various environments.

@@ -22,7 +22,7 @@ public final class DateUtil
 
     public static Duration roundUpToNearestSecond(Duration duration)
     {
-        return new Duration(((duration.getMillis() + 500) / 1000) * 1000);
+        return new Duration(((duration.getMillis() + 999) / 1000) * 1000);
     }
 
     public static LocalDateTime toJoda(Date date)

@@ -1,10 +1,16 @@
 package com.interact.listen;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import org.hibernate.Session;
@@ -34,6 +40,25 @@ public abstract class ListenTest
     public void tearDownHibernate()
     {
         transaction.rollback();
+    }
+
+    public void assertConstructorThrowsAssertionError(Class<?> clazz, String expectedMessage)
+        throws IllegalAccessException, InstantiationException
+    {
+        Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+        constructor.setAccessible(true);
+
+        try
+        {
+            constructor.newInstance();
+            fail("Expected InvocationTargetException with root cause of AssertionError for utility class constructor");
+        }
+        catch(InvocationTargetException e)
+        {
+            Throwable cause = e.getCause();
+            assertTrue(cause instanceof AssertionError);
+            assertEquals(expectedMessage, cause.getMessage());
+        }
     }
 
     public static Subscriber createSubscriber(Session session)
