@@ -108,7 +108,7 @@ function Conference(id) {
             if(data.isAdmin) {
                 Listen.setFieldContent(row.find('.caller-cell-dropIcon'), '', false);
             } else {
-                Listen.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="Server.dropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
+                Listen.setFieldContent(row.find('.caller-cell-dropIcon'), '<button class="icon-delete" onclick="confirmDropCaller(' + data.id + ');" title="Drop ' + data.number + ' from the conference"/>', false, true);
             }
         }
     });
@@ -317,4 +317,10 @@ function scheduleConference(event) {
             $('#latency').text(elapsed);
         }
     });
+}
+
+function confirmDropCaller(id) {
+    if(confirm('Are you sure?')) {
+        Server.dropCaller(id);
+    }
 }
