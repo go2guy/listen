@@ -312,7 +312,7 @@ $(document).ready(function() {
                     if(number.length == 0) {
                         continue;
                     }
-                    var messageLight = $('.accessNumber-row-messageLight').is(':checked');
+                    var messageLight = $('.accessNumber-row-messageLight', rows[i]).is(':checked');
                     value += number + ':' + messageLight + ';';
                 }
                 if(value.length > 0) {
