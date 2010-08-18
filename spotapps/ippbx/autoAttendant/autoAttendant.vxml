@@ -2,9 +2,9 @@
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
     <!-- Last Modified 08/18/2010
-       *   @Name	office.vxml
-       *   @Desc	This script controls the main auto attendant prompt
-                    and available options -->
+       *   @Name	autoAttendant.vxml
+       *   @Desc	This script controls the auto attendant prompts
+                    and options -->
 
     <!-- Passed in from pbx.ccxml -->
     <var name="importedValue"/>

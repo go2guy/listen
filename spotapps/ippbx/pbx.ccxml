@@ -26,7 +26,9 @@
     <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
     <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
 
-    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+    <!-- Location of Java script file -->
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"/>
 
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
         <transition state="idle" event="ccxml.loaded" name="evt">
@@ -120,6 +122,7 @@
                 <send data="'dialog.user.updateClientRecord'" target="session.id"/>
             <elseif cond="inString(status,listenApps,',')"/>
                 <var name="appName" expr="''"/>
+                <assign name="importedValue" expr="setApp(importedValue, status)"/>
                 <if cond="status == 'conferencing'">
                     <assign name="appName" expr="'listen_conference'"/>
                 <elseif cond="status == 'voicemail'"/>
@@ -166,4 +169,13 @@
         </transition>
 
 	</eventprocessor>
+    <script>
+        <![CDATA[
+            function setApp(jsonObj, appName) {
+                var result = eval("("+jsonObj+")");
+                result.application = appName;
+                return iiStringify(result);
+            }
+        ]]>
+    </script>
 </ccxml>
