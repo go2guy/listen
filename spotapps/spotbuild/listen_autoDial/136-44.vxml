@@ -11,9 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList,sysAccessTime)
             {
-	            var result = eval("("+argList+")");
-result.sysAccessTime = sysAccessTime;
-return iiStringify(result);
+	            var result = eval("("+argList+")");result.sysAccessTime = sysAccessTime;return iiStringify(result);
             }
         ]]>
     </script>
