@@ -99,6 +99,7 @@ public class AddSubscriberServlet extends HttpServlet
             String emailAddress = request.getParameter("emailAddress");
             String smsAddress = request.getParameter("smsAddress");
             Boolean enablePaging = Boolean.valueOf(request.getParameter("enablePaging"));
+            Boolean enableAdmin = Boolean.valueOf(request.getParameter("enableAdmin"));
             PlaybackOrder playbackOrder = PlaybackOrder.valueOf(request.getParameter("voicemailPlaybackOrder"));
 
             if(enableEmail && (emailAddress == null || emailAddress.equals("")))
@@ -121,6 +122,7 @@ public class AddSubscriberServlet extends HttpServlet
             subscriber.setEmailAddress(emailAddress);
             subscriber.setSmsAddress(smsAddress);
             subscriber.setIsSubscribedToPaging(enablePaging);
+            subscriber.setIsAdministrator(enableAdmin);
             subscriber.setVoicemailPlaybackOrder(playbackOrder);
         }
 

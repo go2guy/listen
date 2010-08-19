@@ -487,6 +487,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                 </td>
                               </tr>
                               <tr><td><label for="subscriber-form-paging">Page on new voicemails</label></td><td><input type="checkbox" id="subscriber-form-paging" name="subscriber-form-paging" value="enablePaging"/></td></tr>
+                              <tr><td><label for="subscriber-form-isAdmin">Subscriber is an Admin</label></td><td><input type="checkbox" id="subscriber-form-isAdmin" name="subscriber-form-isAdmin" value="enableAdmin"/></td></tr>
                               <tr>
                                 <td><label for="subscriber-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
                                 <td>

@@ -124,6 +124,10 @@ $(document).ready(function() {
                         if(data.enablePaging) {                        
                             $('#subscriber-form-paging').attr('checked', true);
                         }
+
+                        if(data.enableAdmin) {                        
+                            $('#subscriber-form-isAdmin').attr('checked', true);
+                        }
                         $('#subscriber-form-voicemailPlaybackOrder').val(data.voicemailPlaybackOrder);
 
                         $('#subscriber-form-add-button').hide();
@@ -170,6 +174,7 @@ $(document).ready(function() {
                         emailAddress: $('#subscriber-form-emailAddress').val(),
                         smsAddress: $('#subscriber-form-smsAddress').val(),
                         enablePaging: $('#subscriber-form-paging').is(":checked"),
+                        enableAdmin: $('#subscriber-form-isAdmin').is(":checked"),
                         voicemailPlaybackOrder: $('#subscriber-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
@@ -201,6 +206,7 @@ $(document).ready(function() {
                         emailAddress: $('#subscriber-form-emailAddress').val(),
                         smsAddress: $('#subscriber-form-smsAddress').val(),
                         enablePaging: $('#subscriber-form-paging').is(":checked"),
+                        enableAdmin: $('#subscriber-form-isAdmin').is(":checked"),
                         voicemailPlaybackOrder: $('#subscriber-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
