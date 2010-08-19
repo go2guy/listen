@@ -9,7 +9,7 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(argList)
+            function II_SB_JS_function(argList,confDescription)
             {
 	            var result = eval("("+argList+")");result.arcadeId = "GET_ID";return iiStringify(result);
             }
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Update ArgList</log>
             <log>INFO: Entered run-javascript.vxml [167-66]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList,confDescription)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="argList" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

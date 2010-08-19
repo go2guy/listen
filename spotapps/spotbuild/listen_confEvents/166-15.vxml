@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var tmpVal = eval("("+argList+")");return tmpVal.sessionid;
+	            var tmpVal = eval("("+argList+")");return tmpVal.sessionId;
             }
         ]]>
     </script>
