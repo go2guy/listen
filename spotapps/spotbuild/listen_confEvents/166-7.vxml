@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<vxml version="2.0">
-    <!-- Last Modified 10/20/2009
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_confEvents/root.vxml">
+    <!-- Last Modified 08/19/2010
        *   @Name   end.vxml
        *   @Desc   Returns control to ccxml layer -->
 
