@@ -70,7 +70,6 @@ public class EmailerService
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(fromAddress);
             message.setSubject(subjectPrepend + subject);
-            //message.setContent(body, "text/html; charset=UTF-8");
             message.addRecipients(MimeMessage.RecipientType.TO, toAddresses);
             
             if(attachment == null)
@@ -238,12 +237,8 @@ public class EmailerService
             
             if(toAddresses.length > 0)
             {
-                String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
-                String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY, voicemail.getLeftBy(), directVoicemailAccessNumber);
+                String body = String.format(EmailerUtil.ALTERNATE_NUMBER_SMS_NOTIFICATION_BODY, pagePrefix, voicemail.getLeftBy());
                 
-                //pages to the alternate number need to differentiate themselves from regular pages that person might be getting
-                body = pagePrefix + " " + body;
-            
                 sendEmail(toAddresses, body, "", body);
                 
                 historyService.writeSentVoicemailAlternatePage(voicemail);

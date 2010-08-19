@@ -28,6 +28,7 @@ public final class EmailerUtil
                                                          + "</body></html>";
     
     public static final String SMS_NOTIFICATION_BODY = "New voicemail from %s.  Retrieve it at %s";
+    public static final String ALTERNATE_NUMBER_SMS_NOTIFICATION_BODY = "%s New voicemail from %s.";
     public static final String FILE_IS_ATTACHED = "The voicemail is attached.";
     public static final String FILE_NOT_ATTACHED = "The voicemail could not be attached.  Contact a system administrator for assistance.";
     
