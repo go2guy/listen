@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">Get AcardeID</log>
             <log>INFO: Entered data-query.vxml [167-65]</log>
-            <data name="obj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/basicHTTP.php'" method="get" namelist="argList sessionID " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="obj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/basicHTTP.php'" method="post" namelist="argList sessionID " fetchtimeout="II_SB_dataTimeOut"/>
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>

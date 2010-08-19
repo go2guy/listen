@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'167-65'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'167-7'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(argList)
+            function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+argList+")");result.arcadeId = "GET_ID";return iiStringify(result);
+	            var result = eval("("+returnVal+")");return result.description;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Update ArgList</log>
-            <log>INFO: Entered run-javascript.vxml [167-66]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="argList" expr="II_SB_userJava" />   
+            <log target="status">Get Description</log>
+            <log>INFO: Entered run-javascript.vxml [167-74]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="confDescription" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
