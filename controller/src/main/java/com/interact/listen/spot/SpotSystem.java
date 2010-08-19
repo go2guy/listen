@@ -11,8 +11,8 @@ import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.json.simple.JSONValue;
 
@@ -109,7 +109,7 @@ public class SpotSystem
     public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber)
         throws IOException, SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "AUTO_DIAL");
         importedValue.put("action", "DIAL");
         importedValue.put("sessionId", adminSessionId);
@@ -186,7 +186,7 @@ public class SpotSystem
     private void sendConferenceParticipantEvent(String action, Participant participant) throws IOException,
         SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "CONF_EVENT");
         importedValue.put("action", action);
         importedValue.put("sessionId", participant.getSessionID());
@@ -196,7 +196,7 @@ public class SpotSystem
     private void sendConferenceRecordingEvent(String action, String adminSessionId, Conference conference)
         throws IOException, SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "RECORD");
         importedValue.put("action", action);
         importedValue.put("sessionId", adminSessionId);
@@ -210,7 +210,7 @@ public class SpotSystem
 
     private void sendDeleteArtifactEvent(String action, String filePath) throws IOException, SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "DEL_ARTIFACT");
         importedValue.put("action", action);
         importedValue.put("artifact", filePath);
@@ -220,7 +220,7 @@ public class SpotSystem
     private void sendMessageLightEvent(String action, AccessNumber accessNumber) throws IOException,
         SpotCommunicationException
     {
-        Map<String, Object> importedValue = new HashMap<String, Object>();
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "MSG_LIGHT"); // monosodium glutimate light, on!
         importedValue.put("action", action);
         importedValue.put("destination", accessNumber.getNumber());
@@ -235,7 +235,7 @@ public class SpotSystem
         }
         importedValue.put("initiatingChannel", Channel.GUI.toString());
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new TreeMap<String, String>();
         params.put("uri", "/interact/apps/iistart.ccxml");
         params.put("II_SB_importedValue", JSONValue.toJSONString(importedValue));
         sendRequest(params);

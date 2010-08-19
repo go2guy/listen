@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
+import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
 
@@ -88,5 +89,19 @@ public abstract class ListenTest
         voicemail.setUri(TestUtil.randomString());
         session.save(voicemail);
         return voicemail;
+    }
+
+    public static Conference createConference(Session session, Subscriber forSubscriber)
+    {
+        Conference conference = new Conference();
+        conference.setArcadeId(TestUtil.randomString());
+        conference.setDescription(TestUtil.randomString());
+        conference.setIsRecording(false);
+        conference.setIsStarted(false);
+        conference.setRecordingSessionId(null);
+        conference.setStartTime(null);
+        conference.setSubscriber(forSubscriber);
+        session.save(conference);
+        return conference;
     }
 }
