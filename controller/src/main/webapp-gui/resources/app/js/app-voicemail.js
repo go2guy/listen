@@ -39,8 +39,8 @@ $(document).ready(function() {
 
                         var transcriptionField = row.find('.voicemail-cell-transcription');
                         if(data.transcription != null && data.transcription.length > 0) {
-                            var more = '<a href="#" onclick="Listen.Voicemail.toggleTranscription(' + data.id + ', \'full\');return false;" title="Show the entire transcription.">show&raquo;</a>';
-                            var less = '<a href="#" onclick="Listen.Voicemail.toggleTranscription(' + data.id + ', \'abbr\');return false;" title="Hide the transcription.">&laquo;hide</a>';
+                            var more = '<a href="#" onclick="Listen.Voicemail.toggleTranscription(' + data.id + ', \'full\');return false;" title="Show the entire transcription.">show&nbsp;&raquo;</a>';
+                            var less = '<a href="#" onclick="Listen.Voicemail.toggleTranscription(' + data.id + ', \'abbr\');return false;" title="Hide the transcription.">&laquo;&nbsp;hide</a>';
 
                             var abbrField = row.find('.voicemail-cell-transcription-abbr');
                             var fullField = row.find('.voicemail-cell-transcription-full');
