@@ -125,7 +125,7 @@ public abstract class Audio extends Resource implements Serializable
 
     public boolean hasTranscription()
     {
-        return transcription != null && transcription.length() > 0;
+        return transcription != null && transcription.trim().length() > 0;
     }
 
     @Override

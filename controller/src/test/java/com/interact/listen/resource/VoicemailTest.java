@@ -2,6 +2,8 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
+import com.interact.listen.TestUtil;
+
 import java.util.Date;
 
 import org.junit.Before;
@@ -57,6 +59,30 @@ public class VoicemailTest
         voicemail.setIsNew(isNew);
 
         assertEquals(isNew, voicemail.getIsNew());
+    }
+
+    @Test
+    public void test_setTranscription_withValidString_setsTranscription()
+    {
+        final String transcription = TestUtil.randomString();
+        voicemail.setTranscription(transcription);
+        
+        assertEquals(transcription, voicemail.getTranscription());
+        assertTrue(voicemail.hasTranscription());
+    }
+
+    @Test
+    public void test_hasTranscription_withNullTranscription_returnsFalse()
+    {
+        voicemail.setTranscription(null);
+        assertFalse(voicemail.hasTranscription());
+    }
+
+    @Test
+    public void test_hasTranscription_withBlankTranscription_returnsFalse()
+    {
+        voicemail.setTranscription("   ");
+        assertFalse(voicemail.hasTranscription());
     }
 
     @Test
