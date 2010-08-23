@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/18/2010
+    <!-- Last Modified 08/19/2010
        *   @Name	pbx.ccxml
        *   @Desc	This script handles all the control logic for the PBX application -->
 
@@ -54,7 +54,7 @@
             <log>INFO: Entered [dialog.user.autoAttendant] with state [<value expr="state"/>]</log>
             <log>INFO: Go to office menu</log>
             <log target="status">Auto Attendant</log>
-            <assign name="state" expr="'officeMenu'"/>
+            <assign name="state" expr="'attendantMenu'"/>
    	    	<dialogstart src="'file:'+APP_PATH+'autoAttendant/autoAttendant.vxml'" namelist="EXT_LENGTH ANI extension importedValue"/>
         </transition>
 

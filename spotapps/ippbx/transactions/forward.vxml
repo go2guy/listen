@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/04/2010
+    <!-- Last Modified 08/19/2010
        *   @Name	forward.vxml
        *   @Desc	This script calls the php code that handles the updating 
                     the database for forwarding and cancelling a forward -->
@@ -28,6 +28,22 @@
                     <assign name="flag" expr="'cancel'"/>
                 </if>
             </if>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="setFlag">
+        <block>
+            <log>INFO: Entered setExt</log>
+            <assign name="destination" expr="''"/>
+            <assign name="flag" expr="'cancel'"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="sendEvent">
+        <block>
+            <log>INFO: Entered sendEvent</log>
             <data name="fwdExt" srcexpr="DB_PATH+'fwdExtension.php'" namelist="flag extension destination" fetchtimeout="1s" method="post"/>
             <assign name="result" expr="fwdExt.Result"/>
             <goto next="#exit"/>

@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/06/2010
+    <!-- Last Modified 08/19/2010
        *   @Name	getFwdInfo.vxml.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we get the mailbox/passcode information -->
 
     <!-- Passed in from pbx.ccxml -->
     <var name="mBox"/>
+    <var name="flag"/>
     <var name="importedValue"/>
     <var name="EXT_LENGTH"/>
     <var name="mbxCnt" expr="0"/>
@@ -110,7 +111,11 @@
             <else/>
                 <if cond="status == 'mailBox'">
                     <assign name="extension" expr="userEntry"/>
-                    <goto next="#getPasscode"/>
+                    <if cond="flag == 'cancelFWD'">
+                        <goto expr="'file:'+TRANS_PATH+'forward.vxml#setFlag'"/>
+                    <else/>
+                        <goto next="#getPasscode"/>
+                    </if>
                 <else/>
                     <assign name="passcode" expr="userEntry"/>
                     <goto expr="'file:'+TRANS_PATH+'validatePasscode.vxml'"/>
