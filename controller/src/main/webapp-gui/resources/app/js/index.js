@@ -279,14 +279,13 @@ $(document).ready(function() {
                         if(!found) {
                             row.animate({ opacity: 0 }, (animate === true ? 1000 : 0), function() {
                                 $(this).remove();
+                                if(serverList.length == 0) {
+                                    $('#' + args.tableId).find('.placeholder').show();
+                                } else {
+                                    $('#' + args.tableId).find('.placeholder').hide();
+                                }
                             });
                         }
-                    }
-
-                    if(serverList.length == 0) {
-                        $('#' + args.tableId).find('.placeholder').show();
-                    } else {
-                        $('#' + args.tableId).find('.placeholder').hide();
                     }
                 };
 

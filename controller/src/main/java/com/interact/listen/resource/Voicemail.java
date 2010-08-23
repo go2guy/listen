@@ -123,6 +123,7 @@ public class Voicemail extends Audio implements Serializable
         copy.setIsNew(isNew);
         copy.setLeftBy(leftBy);
         copy.setSubscriber(subscriber);
+        copy.setTranscription(getTranscription());
         copy.setUri(getUri());
         return copy;
     }

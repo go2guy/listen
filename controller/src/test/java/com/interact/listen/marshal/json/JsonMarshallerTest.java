@@ -58,6 +58,7 @@ public class JsonMarshallerTest
         expected.append("\"isNew\":").append(voicemail.getIsNew()).append(",");
         expected.append("\"leftBy\":\"").append(voicemail.getLeftBy()).append("\",");
         expected.append("\"subscriber\":{\"href\":\"/subscribers/").append(subscriber.getId()).append("\"},");
+        expected.append("\"transcription\":null,");
         expected.append("\"uri\":\"").append(voicemail.getUri()).append("\",");
         expected.append("\"version\":").append(voicemail.getVersion());
         expected.append("}");

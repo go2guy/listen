@@ -373,27 +373,52 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
     color: #FFFFFF;
 }
 
-#voicemail-table td {
+#voicemail-table li {
     border-color: #FFE472;
     border-style: solid;
     border-width: 0 0 1px 0;
-    height: 2em;
+    padding: 3px 0 0 3px;
 }
 
-tr.voicemail-unread {
+#voicemail-table li div div {
+    float: left;
+    margin-right: 1em;
+}
+#voicemail-table div.voicemail-cell-from,
+#voicemail-table div.voicemail-cell-received,
+#voicemail-table div.voicemail-cell-actions,
+#voicemail-table div.voicemail-cell-play {
+    float: left;
+    height: 2em;
+    width: 25%;
+}
+#voicemail-table div.voicemail-cell-actions {
+    clear: right;
+}
+#voicemail-table div.voicemail-cell-actions div {
+    float: right;
+}
+#voicemail-table div.voicemail-cell-transcription {
+    display: none;
+    float: left;
+    font-weight: normal;
+    font-style: italic;
+    padding-left: 2.5em;
+    width: 90%;
+}
+#voicemail-table div.voicemail-cell-transcription-abbr,
+#voicemail-table div.voicemail-cell-transcription-full {
+    display: none;
+}
+#voicemail-table li.voicemail-unread {
     background-color: #FFFFFF;
     color: #000000;
     font-weight: bold;
 }
-
-tr.voicemail-read {
+#voicemail-table li.voicemail-read {
     background-color: #FFFFBB;
     color: #AAAAAA;
     font-weight: normal;
-}
-
-td.voicemail-cell-readStatus {
-    width: 26px;
 }
 
 /* application - findme */

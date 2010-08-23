@@ -241,11 +241,9 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
             <div id="voicemail-application" class="application">
               <div class="application-header"><div class="title">Voicemail (<span id="voicemail-new-count">0</span> New)</div></div>
               <div class="application-content">
-                <table id="voicemail-table">
-                  <tbody>
-                    <tr class="placeholder"><td colspan="6">No voicemail</td></tr>
-                  </tbody>
-                </table>
+                <ul id="voicemail-table">
+                  <li class="placeholder">No voicemail</td></tr>
+                </ul>
                 <div class="pagination" id="voicemail-pagination">
                   <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
                 </div>
@@ -715,15 +713,6 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
           <td class="subscriber-cell-deleteButton"></td>
         </tr>
 
-        <tr id="voicemail-row-template">
-          <td class="voicemail-cell-readStatus"></td>
-          <td class="voicemail-cell-from"></td>
-          <td class="voicemail-cell-received"></td>
-          <td class="voicemail-cell-duration"></td>
-          <td class="voicemail-cell-download"></td>
-          <td class="voicemail-cell-deleteButton"></td>
-        </tr>
-
         <tr id="dnis-row-template">
           <td>Number</td>
           <td><input type="text" value="" class="dnis-mapping-number"/></td>
@@ -766,6 +755,16 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <div class="history-action-subscriber"></div>
           <div class="history-action-description"></div>
           <div class="history-action-onSubscriber"></div>
+        </li>
+        <li id="voicemail-row-template">
+          <div class="voicemail-cell-from"></div>
+          <div class="voicemail-cell-received"></div>
+          <div class="voicemail-cell-play"></div>
+          <div class="voicemail-cell-actions"></div>
+          <div class="voicemail-cell-transcription"></div>
+          <div class="voicemail-cell-transcription-abbr"></div>
+          <div class="voicemail-cell-transcription-full"></div>
+          <div class="cleaner">&nbsp;</div>
         </li>
       </ul>
     </div>

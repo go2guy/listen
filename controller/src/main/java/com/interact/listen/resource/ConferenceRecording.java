@@ -47,6 +47,7 @@ public class ConferenceRecording extends Audio
         copy.setDuration(getDuration());
         copy.setFileSize(getFileSize());
         copy.setConference(conference);
+        copy.setTranscription(getTranscription());
         return copy;
     }
 

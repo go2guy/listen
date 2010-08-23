@@ -1,9 +1,10 @@
 $(document).ready(function() {
-
+    var displayingFullTranscription = [];
     Listen.Voicemail = function() {
         return {
             Application: function() {
                 var interval;
+
                 var dynamicTable = new Listen.DynamicTable({
                     url: '/ajax/getVoicemailList',
                     tableId: 'voicemail-table',
@@ -16,6 +17,7 @@ $(document).ready(function() {
                         return data.newCount;
                     },
                     reverse: true,
+                    isList: true,
                     paginationId: 'voicemail-pagination',
                     updateRowCallback: function(row, data, animate) {
                         if(data.isNew) {
@@ -26,12 +28,42 @@ $(document).ready(function() {
                             row.addClass('voicemail-read');
                         }
 
-                        Listen.setFieldContent(row.find('.voicemail-cell-readStatus'), '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'Server.markVoicemailReadStatus(' + data.id + ', true);' : 'Server.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as old' : 'Mark as new') + '"></button>', false, true);
-                        Listen.setFieldContent(row.find('.voicemail-cell-from'), data.leftBy, animate);
+                        var statusButton = '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'Server.markVoicemailReadStatus(' + data.id + ', true);' : 'Server.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as old' : 'Mark as new') + '"></button>';
+                        Listen.setFieldContent(row.find('.voicemail-cell-from'), '<div>' + statusButton + '</div><div>' + data.leftBy + '</div>', false, true);
                         Listen.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
-                        Listen.setFieldContent(row.find('.voicemail-cell-duration'), data.duration, animate);
-                        Listen.setFieldContent(row.find('.voicemail-cell-download'), '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>', false, true);
-                        Listen.setFieldContent(row.find('.voicemail-cell-deleteButton'), '<button type="button" class="icon-delete" onclick="Listen.Voicemail.confirmDeleteVoicemail(' + data.id + ');" title="Delete this voicemail"></button>', false, true);
+                        Listen.setFieldContent(row.find('.voicemail-cell-play'), data.duration, animate);
+
+                        var downloadAction = '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>';
+                        var deleteAction = '<a href="#" onclick="Listen.Voicemail.confirmDeleteVoicemail(' + data.id + ');return false;" title="Delete this voicemail">Delete</a>';
+                        Listen.setFieldContent(row.find('.voicemail-cell-actions'), '<div>' + deleteAction + '</div><div>' + downloadAction + '</div>', false, true);
+
+                        var transcriptionField = row.find('.voicemail-cell-transcription');
+                        if(data.transcription != null && data.transcription.length > 0) {
+                            var more = '<a href="#" onclick="Listen.Voicemail.toggleTranscription(' + data.id + ', \'full\');return false;" title="Show the entire transcription.">show&raquo;</a>';
+                            var less = '<a href="#" onclick="Listen.Voicemail.toggleTranscription(' + data.id + ', \'abbr\');return false;" title="Hide the transcription.">&laquo;hide</a>';
+
+                            var abbrField = row.find('.voicemail-cell-transcription-abbr');
+                            var fullField = row.find('.voicemail-cell-transcription-full');
+                            Listen.setFieldContent(abbrField, data.transcription.substring(0, 75) + '...&nbsp;' + more, false, true);
+                            Listen.setFieldContent(fullField, data.transcription + '&nbsp;' + less, false, true);
+
+                            var contains = false;
+                            for(var i = 0; i < displayingFullTranscription.length; i++) {
+                                if(displayingFullTranscription[i] == data.id) {
+                                    contains = true;
+                                    break;
+                                }
+                            }
+
+                            if(contains) {
+                                Listen.setFieldContent(transcriptionField, fullField.html(), false, true);
+                            } else {
+                                Listen.setFieldContent(transcriptionField, abbrField.html(), false, true);
+                            }
+                            transcriptionField.css('display', 'block');
+                        } else {
+                            transcriptionField.css('display', 'none');
+                        }
                     }
                 });
 
@@ -64,6 +96,27 @@ $(document).ready(function() {
                     url: '/ajax/deleteVoicemail',
                     properties: { id: id }
                 });
+            },
+
+            toggleTranscription: function(id, action) {
+                Listen.trace('Listen.Voicemail.toggleTranscription');
+                var row = $('#voicemail-table-row-' + id);
+                var transcription = row.find('.voicemail-cell-transcription');
+                var abbr = row.find('.voicemail-cell-transcription-abbr');
+                var full = row.find('.voicemail-cell-transcription-full');
+                if(action == 'full') {
+                    displayingFullTranscription.push(id);
+                    Listen.setFieldContent(transcription, full.html(), false, true);
+                } else {
+                    var newArr = [];
+                    for(var i = 0; i < displayingFullTranscription.length; i++) {
+                        if(displayingFullTranscription[i] != id) {
+                            newArr.push(displayingFullTranscription[i]);
+                        }
+                    }
+                    displayingFullTranscription = newArr;
+                    Listen.setFieldContent(transcription, abbr.html(), false, true);
+                }
             }
         }
     }();

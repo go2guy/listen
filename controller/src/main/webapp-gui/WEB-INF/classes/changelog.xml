@@ -342,4 +342,9 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="37">
+        <addColumn tableName="AUDIO">
+            <column name="TRANSCRIPTION" type="java.sql.Types.LONGVARCHAR"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

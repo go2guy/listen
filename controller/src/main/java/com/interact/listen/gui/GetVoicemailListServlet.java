@@ -106,7 +106,18 @@ public class GetVoicemailListServlet extends HttpServlet
         json.append("\"leftBy\":\"").append(leftBy).append("\",");
 
         Duration duration = new Duration(Long.parseLong(voicemail.getDuration()));
-        json.append("\"duration\":\"").append(DateUtil.printDuration(duration)).append("\"");
+        json.append("\"duration\":\"").append(DateUtil.printDuration(duration)).append("\",");
+
+        json.append("\"transcription\":");
+        if(voicemail.getTranscription() == null || voicemail.getTranscription().trim().equals(""))
+        {
+            json.append("null");
+        }
+        else
+        {
+            String transcription = marshaller.convertAndEscape(String.class, voicemail.getTranscription());
+            json.append("\"").append(transcription).append("\"");
+        }
 
         json.append("}");
         return json.toString();

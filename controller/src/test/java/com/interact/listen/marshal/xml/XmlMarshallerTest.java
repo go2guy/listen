@@ -56,6 +56,7 @@ public class XmlMarshallerTest
         expected.append("<isNew>").append(voicemail.getIsNew()).append("</isNew>");
         expected.append("<leftBy>").append(voicemail.getLeftBy()).append("</leftBy>");
         expected.append("<subscriber href=\"/subscribers/").append(subscriber.getId()).append("\"/>");
+        expected.append("<transcription nil=\"true\"/>");
         expected.append("<uri>").append(voicemail.getUri()).append("</uri>");
         expected.append("<version>").append(voicemail.getVersion()).append("</version>");
         expected.append("</voicemail>");
