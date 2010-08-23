@@ -123,6 +123,11 @@ public abstract class Audio extends Resource implements Serializable
         this.transcription = transcription;
     }
 
+    public boolean hasTranscription()
+    {
+        return transcription != null && transcription.length() > 0;
+    }
+
     @Override
     public boolean validate()
     {

@@ -11,7 +11,7 @@ public class Property
         MAIL_SMTPHOST            ("com.interact.listen.mail.smtpHost",           "localhost"),
         MAIL_SMTPUSERNAME        ("com.interact.listen.mail.smtpUsername",       ""),
         MAIL_SMTPPASSWORD        ("com.interact.listen.mail.smtpPassword",       ""),
-        MAIL_FROMADDRESS         ("com.interact.listen.mail.fromAddress",        "noreply@localhost"),
+        MAIL_FROMADDRESS         ("com.interact.listen.mail.fromAddress",        "no-reply@localhost"),
         CONFERENCING_PINLENGTH   ("com.interact.listen.conferencing.pinLength",  "10"),
         PAGER_NUMBER             ("com.interact.listen.pagerNumber",             "4024292889"),
         ALTERNATE_NUMBER         ("com.interact.listen.alternateNumber",         ""),

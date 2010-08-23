@@ -1,7 +1,5 @@
 package com.interact.listen;
 
-import java.util.*;
-
 public final class EmailerUtil
 {
     public static final String CONFERENCE_EMAIL_SUBJECT = "Listen Conference Invitation";
@@ -22,11 +20,7 @@ public final class EmailerUtil
     		                                                "at this address.";
     
     public static final String EMAIL_NOTIFICATION_SUBJECT = "New voicemail from %s";
-    public static final String EMAIL_NOTIFICATION_BODY = "<html><body>You have recieved a new voicemail from %s at %s.<br/><br/>"
-                                                         + "Total new messages: %s<br/><br/>"
-                                                         + "%s"
-                                                         + "</body></html>";
-    
+
     public static final String SMS_NOTIFICATION_BODY = "New voicemail from %s.  Retrieve it at %s";
     public static final String ALTERNATE_NUMBER_SMS_NOTIFICATION_BODY = "%s New voicemail from %s.";
     public static final String FILE_IS_ATTACHED = "The voicemail is attached.";
@@ -69,5 +63,4 @@ public final class EmailerUtil
     {
         throw new AssertionError("Cannot instantiate utility class EmailerUtil");
     }
-
 }

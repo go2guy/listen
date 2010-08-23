@@ -259,6 +259,10 @@ $(document).ready(function() {
                             } else {
                                 appendTo.append(clone);
                             }
+                            var placeholder = $('#' + args.tableId).find('.placeholder');
+                            if(placeholder.is(':visible')) {
+                                placeholder.hide();
+                            }
                             clone.animate({ opacity: 1 }, (animate === true ? 1000 : 0));
                         }
 
@@ -281,8 +285,6 @@ $(document).ready(function() {
                                 $(this).remove();
                                 if(serverList.length == 0) {
                                     $('#' + args.tableId).find('.placeholder').show();
-                                } else {
-                                    $('#' + args.tableId).find('.placeholder').hide();
                                 }
                             });
                         }

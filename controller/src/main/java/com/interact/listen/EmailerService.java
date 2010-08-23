@@ -9,7 +9,6 @@ import com.interact.listen.resource.*;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -31,15 +30,13 @@ public class EmailerService
     private final SimpleDateFormat sdf = new SimpleDateFormat(FriendlyIso8601DateConverter.ISO8601_FORMAT);
     
     private PersistenceService persistenceService;
-    
+
+    public EmailerService()
+    { }
+
     public EmailerService(PersistenceService persistenceService)
     {
         this.persistenceService = persistenceService;
-    }
-    
-    public EmailerService()
-    {
-        this.persistenceService = null;
     }
 
     private boolean sendEmail(InternetAddress[] toAddresses, String body, String subjectPrepend, String subject)
@@ -155,52 +152,66 @@ public class EmailerService
         
         return result;
     }
-    
+
     public void sendEmailVoicmailNotification(Voicemail voicemail, Subscriber subscriber)
     {
-        File attachment = null;
         boolean fileReadyForAttachment = false;
         ArrayList<String> mailAddresses = new ArrayList<String>();
         mailAddresses.add(subscriber.getEmailAddress());
         InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
-        
+
         if(toAddresses.length > 0)
         {
-            String subject = String.format(EmailerUtil.EMAIL_NOTIFICATION_SUBJECT, voicemail.getLeftBy());
-            
+            File attachment = null;
             try
             {
                 attachment = getAttachment(voicemail.getUri());
                 fileReadyForAttachment = true;
             }
-            catch(Exception e)
+            catch(IOException e)
             {
-                LOG.error("An error occured trying to obtain the voicemail to attach. Won't attach e-mail");
+                LOG.error("Error attaching voicemail", e);
             }
 
-            org.hibernate.Session session = persistenceService.getSession();
-
-            String body = String.format(EmailerUtil.EMAIL_NOTIFICATION_BODY, voicemail.getLeftBy(),
-                                        sdf.format(voicemail.getDateCreated()),
-                                        Voicemail.countNewBySubscriber(session, subscriber),
-                                        fileReadyForAttachment ? EmailerUtil.FILE_IS_ATTACHED
-                                                              : EmailerUtil.FILE_NOT_ATTACHED);
+            Long newCount = Voicemail.countNewBySubscriber(persistenceService.getSession(), subscriber);
+            String body = getEmailNotificationBody(voicemail, newCount, fileReadyForAttachment);
+            String subject = String.format(EmailerUtil.EMAIL_NOTIFICATION_SUBJECT, voicemail.getLeftBy());
             sendEmail(toAddresses, body, subject, attachment);
-            
-            if(attachment != null)
+
+            if(attachment != null && !attachment.delete())
             {
-                try
-                {
-                    attachment.delete();
-                }
-                catch(Exception e)
-                {
-                    LOG.error("Error deleting temp voicemail file", e);
-                }
+                LOG.error("Error removing temporary voicemail attachment file");
             }
         }
     }
-    
+
+    private String getEmailNotificationBody(Voicemail voicemail, Long newCount, boolean withAttachment)
+    {
+        StringBuilder body = new StringBuilder();
+        body.append("<html><body>");
+        body.append("You received a new voicemail from ").append(voicemail.getLeftBy());
+        body.append(" at ").append(sdf.format(voicemail.getDateCreated())).append(".");
+        body.append("<br/><br/>");
+        if(voicemail.hasTranscription())
+        {
+            body.append("<i>Transcription:</i> ").append(voicemail.getTranscription());
+            body.append("<br/><br/>");
+        }
+        body.append("You currently have ").append(newCount).append(" new message");
+        body.append(newCount == 1 ? "." : "s.");
+        body.append("<br/><br/>");
+        if(withAttachment)
+        {
+            body.append(EmailerUtil.FILE_IS_ATTACHED);
+        }
+        else
+        {
+            body.append(EmailerUtil.FILE_NOT_ATTACHED);
+        }
+        body.append("</body></html>");
+        return body.toString();
+    }
+
     public void sendSmsVoicemailNotification(Voicemail voicemail, Subscriber subscriber)
     {
         sendSmsVoicemailNotification(voicemail, subscriber.getSmsAddress());
@@ -310,13 +321,13 @@ public class EmailerService
         return null;
     }
     
-    private File getAttachment(String uri) throws Exception
+    private File getAttachment(String uri) throws IOException
     {
         String filename = getFilenameFromUri(uri);
         File file = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + filename);
         InputStream input = null;
         OutputStream output = null;
-        
+
         try
         {
             URL url = ServletUtil.encodeUri(uri);
@@ -325,25 +336,15 @@ public class EmailerService
             connection.connect();
             input = connection.getInputStream();
             output = new FileOutputStream(file);
-            
+
             IOUtils.copy(input, output);
-        }
-        catch(MalformedURLException e)
-        {
-            LOG.error("Error with URL when getting voicemail file for attachment to notification e-mail", e);
-            throw e;
-        }
-        catch(Exception e)
-        {
-            LOG.error("Error getting voicemail file for e-mail notification", e);
-            throw e;
         }
         finally
         {
             IOUtils.closeQuietly(input);
             IOUtils.closeQuietly(output);
         }
-        
+
         return file;
     }
     
