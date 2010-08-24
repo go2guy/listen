@@ -484,8 +484,8 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                   <button type="button" class="button-save" id="subscriber-form-testSms-button" name="subscriber-form-testSms-button" title="Test SMS Address">Verify</button>
                                 </td>
                               </tr>
-                              <tr><td><label for="subscriber-form-paging">Page on new voicemails</label></td><td><input type="checkbox" id="subscriber-form-paging" name="subscriber-form-paging" value="enablePaging"/></td></tr>
-                              <tr><td><label for="subscriber-form-isAdmin">Subscriber is an Admin</label></td><td><input type="checkbox" id="subscriber-form-isAdmin" name="subscriber-form-isAdmin" value="enableAdmin"/></td></tr>
+                              <tr><td><label for="subscriber-form-paging">Page on new voicemail</label></td><td><input type="checkbox" id="subscriber-form-paging" name="subscriber-form-paging" value="enablePaging"/></td></tr>
+                              <tr><td><label for="subscriber-form-isAdmin">Administrator</label></td><td><input type="checkbox" id="subscriber-form-isAdmin" name="subscriber-form-isAdmin" value="enableAdmin"/></td></tr>
                               <tr>
                                 <td><label for="subscriber-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
                                 <td>
@@ -574,7 +574,7 @@ if(subscriber != null) { %>
                                 <button type="button" class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address">Verify</button>
                               </td>
                             </tr>
-                            <tr><td><label for="profile-form-paging">Page on new voicemails</label></td><td><input type="checkbox" id="profile-form-paging" name="profile-form-paging" value="enablePaging"/></td></tr>
+                            <tr><td><label for="profile-form-paging">Send SMS notification for voicemails until read</label></td><td><input type="checkbox" id="profile-form-paging" name="profile-form-paging" value="enablePaging"/></td></tr>
                             <tr>
                               <td><label for="profile-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
                               <td>
