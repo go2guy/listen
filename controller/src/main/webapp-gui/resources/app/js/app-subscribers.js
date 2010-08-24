@@ -40,6 +40,7 @@ $(document).ready(function() {
                         return data.results;
                     },
                     paginationId: 'subscribers-pagination',
+                    alternateRowColors: true,
                     updateRowCallback: function(row, data, animate) {
                         Listen.setFieldContent(row.find('.subscriber-cell-username'), data.username, animate);
 
@@ -53,11 +54,11 @@ $(document).ready(function() {
 
                         Listen.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, animate);
                         Listen.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, animate);
-                        Listen.setFieldContent(row.find('.subscriber-cell-editButton'), '<button type="button" class="button-edit" title="Edit subscriber" onclick="Listen.Subscribers.loadSubscriber(' + data.id + ');">Edit</button>', false, true);
+                        Listen.setFieldContent(row.find('.subscriber-cell-editButton'), '<button type="button" class="icon-edit" title="Edit subscriber" onclick="Listen.Subscribers.loadSubscriber(' + data.id + ');"></button>', false, true);
                         if(data.isCurrentSubscriber) {
                             Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '', false);
                         } else {
-                            Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '<button type="button" class="button-delete" title="Delete subscriber" onclick="Listen.Subscribers.confirmDeleteSubscriber(' + data.id + ');">Delete</button>', false, true);
+                            Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '<button type="button" class="icon-delete" title="Delete subscriber" onclick="Listen.Subscribers.confirmDeleteSubscriber(' + data.id + ');"></button>', false, true);
                         }
                     }
                 });
