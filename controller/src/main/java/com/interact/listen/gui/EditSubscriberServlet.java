@@ -138,6 +138,10 @@ public class EditSubscriberServlet extends HttpServlet
                     throw new BadRequestServletException("Voicemail PIN must be a number");
                 }
             }
+            else if(voicemailPin != null && voicemailPin.trim().length() == 0)
+            {
+                subscriberToEdit.setVoicemailPin(null);
+            }
 
             Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
             Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));

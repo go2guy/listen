@@ -44,7 +44,9 @@ $(document).ready(function() {
                                 }
                             }
                             $('#profile-form-accessNumbers').text(numbers);
-                            $('#profile-form-voicemailPin').val(data.voicemailPin);
+                            if(data.voicemailPin !== null) {
+                                $('#profile-form-voicemailPin').val(data.voicemailPin);
+                            }
                             $('#profile-form-emailAddress').val(data.emailAddress);
                             $('#profile-form-smsAddress').val(data.smsAddress);
                             

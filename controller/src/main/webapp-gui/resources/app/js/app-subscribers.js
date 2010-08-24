@@ -109,7 +109,10 @@ $(document).ready(function() {
                             Listen.Subscribers.addAccessNumberRow(data.accessNumbers[i].number, data.accessNumbers[i].messageLight);
                         }
 
-                        $('#subscriber-form-voicemailPin').val(data.voicemailPin);
+                        if(data.voicemailPin !== null) {
+                            $('#subscriber-form-voicemailPin').val(data.voicemailPin);
+                        }
+
                         $('#subscriber-form-emailAddress').val(data.emailAddress);
                         $('#subscriber-form-smsAddress').val(data.smsAddress);
                         
