@@ -652,10 +652,10 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 .icon-pageright               { background-position: 0   -1550px; }
 .icon-pageright:hover         { background-position: 0   -1600px; }
 
-.button-read                  { background-position: 2px -1348px; }
-.button-read:hover            { background-position: 2px -1398px; }
-.icon-read                    { background-position: 0   -1350px; }
-.icon-read:hover              { background-position: 0   -1400px; }
+.button-read                  { background-position: 2px -1248px; }
+.button-read:hover            { background-position: 2px -1298px; }
+.icon-read                    { background-position: 0   -1250px; }
+.icon-read:hover              { background-position: 0   -1300px; }
 
 .button-record                { background-position: 2px -248px; }
 .button-record:hover          { background-position: 2px -298px; }
@@ -682,10 +682,10 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 .icon-unmute, .icon-unmute-disabled { background-position: 0 -650px; }
 .icon-unmute:hover            { background-position: 0   -700px; }
 
-.button-unread                { background-position: 2px -1248px; }
-.button-unread:hover          { background-position: 2px -1298px; }
-.icon-unread                  { background-position: 0   -1250px; }
-.icon-unread:hover            { background-position: 0   -1300px; }
+.button-unread                  { background-position: 2px -1348px; }
+.button-unread:hover            { background-position: 2px -1398px; }
+.icon-unread                    { background-position: 0   -1350px; }
+.icon-unread:hover              { background-position: 0   -1400px; }
 
 .button-view                  { background-position: 2px -1148px; }
 .button-view:hover            { background-position: 2px -1198px; }
