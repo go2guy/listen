@@ -30,7 +30,7 @@
 
     <!-- User Dertermined Globals -->
 	<var name="argList" expr="'importedValue'" />
-	<var name="audioURL" expr="'/var/www/html/listen/artifacts/'" />
+	<var name="audioURL" expr="''" />
 	<var name="phoneNumber" expr="''" />
 	<var name="outBoundID" expr="''" />
 	<var name="confID" expr="''" />
@@ -58,6 +58,7 @@
 	<var name="source" expr="'autoDial'" />
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
+	<var name="artifactsDIR" expr="''" />
 
 
     <!-- Conference Variables -->
