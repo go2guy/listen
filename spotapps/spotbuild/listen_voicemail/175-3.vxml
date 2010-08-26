@@ -68,7 +68,7 @@
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
     	    <log target="status">Service Error</log>
-            <log>INFO: Entered audio-input.vxml [54-60]</log>
+            <log>INFO: Entered audio-input.vxml [175-3]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
             <if cond="II_SB_cutIn == 'true'">
                 <goto next="#chkMode"/>

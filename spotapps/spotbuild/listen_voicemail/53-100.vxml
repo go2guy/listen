@@ -11,14 +11,14 @@
         <block>
 	    <log target="status">Assign Check Folder</log>
             <log>INFO: Entered assign-variable.vxml [53-100]</log>
-            <log>INFO: Current value [<value expr="fileLocation"/>]</log>
-<assign name="fileLocation" expr="fileLocation+subID" />
-<log>INFO: Updated value [<value expr="fileLocation"/>]</log>
-<log>INFO: Current value [<value expr="fileLocation"/>]</log>
-<assign name="fileLocation" expr="fileLocation+'/voicemail/message/'" />
-<log>INFO: Updated value [<value expr="fileLocation"/>]</log>
+            <log>INFO: Current value [<value expr="artifactsDIR"/>]</log>
+<assign name="artifactsDIR" expr="artifactsDIR+subID" />
+<log>INFO: Updated value [<value expr="artifactsDIR"/>]</log>
+<log>INFO: Current value [<value expr="artifactsDIR"/>]</log>
+<assign name="artifactsDIR" expr="artifactsDIR+msgDIR" />
+<log>INFO: Updated value [<value expr="artifactsDIR"/>]</log>
 <log>INFO: Current value [<value expr="FILE1"/>]</log>
-<assign name="FILE1" expr="fileLocation+''" />
+<assign name="FILE1" expr="artifactsDIR+''" />
 <log>INFO: Updated value [<value expr="FILE1"/>]</log>
 <log>INFO: Current value [<value expr="OPERATION"/>]</log>
 <assign name="OPERATION" expr="'create'+''" />

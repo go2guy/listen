@@ -5,7 +5,7 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'120-38'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'120-21'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>

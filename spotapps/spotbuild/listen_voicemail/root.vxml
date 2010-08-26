@@ -32,7 +32,7 @@
 	<var name="ANI" expr="'remote'" />
 	<var name="DNIS" expr="'local'" />
 	<var name="status" expr="''" />
-	<var name="fileLocation" expr="'/var/www/html/listen/artifacts/'" />
+	<var name="fileLocation" expr="''" />
 	<var name="isNew" expr="'true'" />
 	<var name="subID" expr="'null'" />
 	<var name="returnVal" expr="''" />
@@ -60,6 +60,8 @@
 	<var name="source" expr="'voicemail'" />
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
+	<var name="artifactsDIR" expr="''" />
+	<var name="msgDIR" expr="'/voicemail/message/'" />
 
 
     <!-- Conference Variables -->
