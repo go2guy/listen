@@ -33,6 +33,7 @@
 163-2 - audio-input
 153-43 - decision
 150-9 - audio-input
+148-13 - run-javascript
 150-2 - end
 148-11 - run-javascript
 hang-up - hang-up
@@ -134,4 +135,6 @@ begin - begin
 152-15 - assign-variable
 150-55 - audio-input
 153-118 - data-query
+150-62 - data-query
 152-21 - assign-variable
+150-61 - assign-variable
