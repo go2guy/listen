@@ -14,15 +14,9 @@
             <log>INFO: Current value [<value expr="id"/>]</log>
 <assign name="id" expr="'LSTNAPP_SERVICE_ERROR'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
-<log>INFO: Current value [<value expr="source"/>]</log>
-<assign name="source" expr="'main'+''" />
-<log>INFO: Updated value [<value expr="source"/>]</log>
 <log>INFO: Current value [<value expr="value"/>]</log>
 <assign name="value" expr="'1'+''" />
 <log>INFO: Updated value [<value expr="value"/>]</log>
-<log>INFO: Current value [<value expr="operation"/>]</log>
-<assign name="operation" expr="'increment'+''" />
-<log>INFO: Updated value [<value expr="operation"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

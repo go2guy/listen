@@ -46,9 +46,10 @@
 	<var name="callType" expr="'type'" />
 	<var name="STATcontroller" expr="'http://localhost:9413/collect/stat'" />
 	<var name="id" expr="''" />
-	<var name="source" expr="''" />
+	<var name="source" expr="'main'" />
 	<var name="value" expr="''" />
-	<var name="operation" expr="''" />
+	<var name="operation" expr="'increment'" />
+	<var name="artifactsDIR" expr="'/interact/listen/artifacts/'" />
 
 
     <!-- Conference Variables -->
