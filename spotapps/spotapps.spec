@@ -60,7 +60,8 @@ Requires: spotbuild-vip
     # Install vxml & ccxml scripts
     mkdir -p %{buildroot}/interact/apps/
     mkdir -p %{buildroot}/var/www/html/ippbx/
-    mkdir -p %{buildroot}/var/www/html/listen/artifacts/
+    mkdir -p %{buildroot}/interact/listen/artifacts/
+    mkdir -p %{buildroot}/var/www/html/interact/listen/
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
     cp -r %{STARTDIR}/ippbx %{buildroot}/interact/apps/spotbuild
@@ -107,7 +108,8 @@ Requires: spotbuild-vip
     /interact/apps/spotbuild/msgLightCntrl*
     /interact/apps/spotbuild/after_hours*
     /interact/apps/spotbuild/lib/cgi-bin/listen
-    /var/www/html/listen/artifacts
+    /interact/listen/artifacts
+    /var/www/html/interact/listen/
     /var/www/html/ippbx/*
 
 #######################################################################
@@ -180,6 +182,8 @@ Requires: spotbuild-vip
     rm -f /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
     ln -s /interact/apps/spotbuild/listen_main/listen_main.ccxml /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
 
+    ln -s /interact/listen/artifacts /var/www/html/interact/listen/artifacts >> ${debug} 2>> ${error}
+
     if [ ! -e /var/lib/mysql/ip_pbx ]
     then
         mysql -u root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql
@@ -245,6 +249,9 @@ Requires: spotbuild-vip
             ln -s /interact/apps/iidefault.ccxml /interact/apps/iistart.ccxml
         else
             echo "Can't relink iistart because iidefault does not exist."  >> ${debug}
+
+        # Remove artifacts link
+        rm -f /var/www/html/interact/listen/artifacts
         fi
     fi
 
