@@ -34,7 +34,7 @@
 	<var name="arcadeID" expr="''" />
 	<var name="recSID" expr="''" />
 	<var name="recFile" expr="''" />
-	<var name="recPath" expr="'/var/www/html/listen/artifacts/'" />
+	<var name="recPath" expr="''" />
 	<var name="recPathSuf" expr="'/conference/record/'" />
 	<var name="recSize" expr="''" />
 	<var name="recLength" expr="''" />
@@ -62,6 +62,7 @@
 	<var name="source" expr="'record'" />
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
+	<var name="artifactsDIR" expr="''" />
 
 
     <!-- Conference Variables -->

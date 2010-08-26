@@ -52,6 +52,7 @@
 	<var name="SB_UV_source"/>
 	<var name="SB_UV_value"/>
 	<var name="SB_UV_operation"/>
+	<var name="SB_UV_artifactsDIR"/>
 
     
     <form id="beginDocument">
@@ -162,6 +163,9 @@
 			</if>
 			<if cond="SB_UV_operation != undefined">
 				<assign name="operation" expr="SB_UV_operation" />
+			</if>
+			<if cond="SB_UV_artifactsDIR != undefined">
+				<assign name="artifactsDIR" expr="SB_UV_artifactsDIR" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
