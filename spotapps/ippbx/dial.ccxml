@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/16/2010
+    <!-- Last Modified 08/26/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -126,7 +126,7 @@
             <else/> <!-- Call to an external number (outside PBX) -->
                 <assign name="TIME_OUT" expr="'60s'"/>
                 <if cond="iiNumber(tmpDNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
-                    <assign name="SIP_SERVER" expr="getURL(importedValue)"/>
+                    <assign name="SIP_SERVER" expr="getJsonVal(importedValue, 'sipURL')"/>
                     <assign name="CALL_ANI" expr="'sip:' + OUT_BOUND_ID + '@' + SIP_SERVER"/>  <!-- Make caller ID office number -->
                     <if cond="tmpDNIS.length == LOCAL_CALL">
                         <assign name="CALL_DNIS" expr="'sip:' + AREA_CODE + tmpDNIS + '@' + SIP_SERVER"/>  <!-- Need to prefix dest with area code -->
@@ -588,13 +588,4 @@
         </transition>
 
 	</eventprocessor>
-
-    <script>
-        <![CDATA[
-            function getURL(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                return tmpVal.sipURL;
-            }
-        ]]>
-    </script>
 </ccxml>

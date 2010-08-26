@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/18/2010
+    <!-- Last Modified 08/26/2010
        *   @Name	dnisMap.vxml
        *   @Desc	This script checks the DNIS mapping on the controller  -->
 
@@ -27,7 +27,7 @@
     <form id="sendEvent">
         <block>
             <log>INFO: Entered sendEvent</log>
-            <data name="apiObj" srcexpr="getServer(listenArgs)" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <return namelist="status result"/>
@@ -49,12 +49,6 @@
                 tmpVal = result.split('/api');
                 return tmpVal[0];
             }
-
-            function getServer(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                return tmpVal.HTTPcontroller;
-            }
-
         ]]>
     </script>
 

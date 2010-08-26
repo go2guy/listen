@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/13/2010
+    <!-- Last Modified 08/26/2010
        *   @Name	recordMsg.vxml
        *   @Desc	This script handles all recording activities for the after
                     hours mailbox -->
 
     <!-- Global Variables -->
     <var name="subID" expr="''"/>
-    <var name="msgPath" expr="'/var/www/html/listen/artifacts/'"/>
+    <var name="msgPath" expr="''"/>
     <var name="tmpDir" expr="'/interact/tmp/'"/>
     <var name="size" expr="0"/>
     <var name="duration" expr="''"/>
@@ -28,7 +28,7 @@
 	        <log>INFO: Entered beginDocument</log>
             <assign name="REQUEST"  expr="'get'"/>
             <assign name="RESOURCE" expr="'subscribers'"/>
-            <assign name="PARAMS" expr="setGetParam()"/>
+            <assign name="PARAMS" expr="setParam(aftHrsMbxName)"/>
             <assign name="gotoForm" expr="'#chkPath'"/>
             <goto next="#sendEvent"/>
 		</block>
@@ -38,11 +38,11 @@
         <!-- Send event to listen controller -->
 		<block>
 	        <log>INFO: Entered sendEvent</log>
-            <assign name="cntrlURL" expr="getCntrl(listenArgs)"/>
+            <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
             <assign name="request"  expr="REQUEST"/>
             <assign name="resource" expr="RESOURCE"/>
             <assign name="params" expr="PARAMS"/>
-            <data name="apiObj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <goto expr="gotoForm"/>
@@ -59,7 +59,7 @@
             <if cond="subID == 'Failure'">
                 <assign name="msgPath" expr="tmpDir"/>
             <else/>
-                <assign name="msgPath" expr="msgPath + subID + '/mailbox/messages/'"/>
+                <assign name="msgPath" expr="getJsonVal(listenArgs, 'artifactsDIR') + subID + '/voicemail/message/'"/>
                 <var name="FILE1" expr="msgPath"/>
                 <var name="OPERATION" expr="'create'"/>
                 <data name="fileOBJ" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="get" namelist="FILE1 OPERATION" fetchtimeout="1s"/>
@@ -120,11 +120,10 @@
     <form id="postRec">
         <block>
             <log>INFO: Entered postRec</log>
-            <var name="filePath" expr="iiSubstr(msgPath, 13, -1)"/>
             <assign name="REQUEST"  expr="'post'"/>
             <assign name="RESOURCE" expr="'voicemails'"/>
-            <assign name="PARAMS" expr="setPostParam(listenArgs,filePath,duration,size,contactNumber,subID)"/>
-            <data name="apiObj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="PARAMS" expr="setPostParam(listenArgs,msgPath,duration,size,contactNumber,subID)"/>
+            <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="gotoForm" expr="'#exit'"/>
             <goto next="#sendEvent"/>
         </block>
@@ -154,22 +153,12 @@
 
     <script>
         <![CDATA[
-            function getCntrl(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                return tmpVal.cntrlURL;
-            }
-
-            function getHost(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                return tmpVal.hostName;
-            }
-
-            function setGetParam() {
-                return "?_fields=id&username=" + escape('After Hours');
+            function setParam(mbxName) {
+                return "?_fields=id&username=" + escape(mbxName);
             }
 
             function setPostParam(listenArgs,filePath,duration,size,contactNumber,subID) {
-                return "{\"uri\": \"http://"+getHost(listenArgs)+filePath+"\",\"duration\":\""+duration+"\",\"fileSize\":\""+size+"\",\"leftBy\":\""+contactNumber+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
+                return "{\"uri\": \"http://"+getJsonVal(listenArgs, 'hostName')+filePath+"\",\"duration\":\""+duration+"\",\"fileSize\":\""+size+"\",\"leftBy\":\""+contactNumber+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
             }
 
             function getID(jsonObj) {

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 07/27/2010
+    <!-- Last Modified 08/26/2010
        *   @Name	validatePasscode.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we validate the passcode associated with an extension -->
@@ -17,7 +17,7 @@
 		<block>
 	        <log>INFO: Entered beginDocument</log>
             <log target="status">Get Sub ID</log>
-            <assign name="cntrlURL" expr="getCntrl(listenArgs)"/>
+            <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
             <assign name="params" expr="setGetParam(extension)"/>
             <goto next="#sendEvent"/>
         </block>
@@ -26,7 +26,7 @@
     <form id="sendEvent">
         <block>
             <log>INFO: Entered sendEvent</log>
-            <data name="apiObj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <goto next="#chkResult"/>
@@ -37,7 +37,7 @@
         <!-- -->
         <block cond="((status == 'Success') &amp;&amp; (resource == 'accessNumbers'))">
             <log>INFO: Entered chkResult</log>
-            <var name="count" expr="getCount(result)"/>
+            <var name="count" expr="getJsonVal(result, 'count')"/>
             <if cond="count == 1">
                 <log target="status">Get Sub Info</log>
                 <assign name="params" expr="getID(result)"/>
@@ -47,7 +47,7 @@
         </block>
         <block cond="((status == 'Success') &amp;&amp; (resource == 'subscribers/'))">
             <log>INFO: Entered chkResult</log>
-            <var name="pin" expr="getPin(result)"/>
+            <var name="pin" expr="getJsonVal(result, 'voicemailPin')"/>
             <if cond="pin == passcode">
                 <goto next="#getDestination"/>
             </if>
@@ -85,27 +85,8 @@
 
     <script>
         <![CDATA[
-            function getCntrl(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                return tmpVal.cntrlURL;
-            }
-
-            function getCount(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                return tmpVal.count;
-            }
-
             function setGetParam(inStr) {
                 return "?_fields=subscriber&number=" + inStr;
-            }
-
-            function getPin(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                var result = tmpVal.voicemailPin;
-                if (result == null) {
-                    result = "";
-                }
-                return result;
             }
 
             function getID(jsonObj) {
