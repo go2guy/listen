@@ -1,4 +1,6 @@
 <?php
+require_once('db.php');
+
 # Set Global Variables
 $objName = "fwdExt";
 $result  = "Failure";
@@ -7,15 +9,6 @@ $result  = "Failure";
 $t_flag     = @$_REQUEST['flag']            or exitresult ($objName,$result,"'flag' argument missing from request");
 $t_ext      = @$_REQUEST['extension']       or exitresult ($objName,$result,"'extension' argument missing from request");
 $t_dest     = @$_REQUEST['destination'];
-
-# Connect to mysql
-$t_connect = mysql_connect("localhost","root");
-if (!$t_connect)
-    exitresult($objName, $result);
-
-# Select db
-if(!(mysql_select_db("ip_pbx", $t_connect)))
-    exitresult($objName, $result);
 
 if($t_flag == 'select') {
 # Set sql statement

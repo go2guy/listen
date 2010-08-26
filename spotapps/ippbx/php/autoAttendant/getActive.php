@@ -1,5 +1,5 @@
 <?php
-require_once('db.php');
+require_once('../db.php');
 # get list of available prompts
 $t_now = time();
 $t_sql = "SELECT name FROM available_prompts p, active_prompts a WHERE p.id=a.available_prompts_id AND '$t_now' BETWEEN start AND end ORDER BY start DESC LIMIT 0, 1";

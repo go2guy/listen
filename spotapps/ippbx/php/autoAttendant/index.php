@@ -1,5 +1,5 @@
 <?php
-require_once( 'db.php' );
+require_once('../db.php');
 # get list of available prompts
 $t_sql = "SELECT * FROM available_prompts";
 $t_result = mysql_query( $t_sql );

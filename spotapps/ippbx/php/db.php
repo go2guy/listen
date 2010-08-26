@@ -5,5 +5,5 @@ $db_user = "root";
 $db_pass = "";
 $database = "ip_pbx";
 
-mysql_connect( $db_host, $db_user, $db_pass );
+$t_connect = mysql_connect( $db_host, $db_user, $db_pass );
 @mysql_select_db( $database ) or die( "Unable to select database");

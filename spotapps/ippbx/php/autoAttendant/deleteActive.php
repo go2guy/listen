@@ -1,5 +1,5 @@
 <?php
-require_once('db.php');
+require_once('../db.php');
 
 if( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
 	throw new Exception( 'Invalid access attempt' );

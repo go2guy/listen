@@ -4,6 +4,8 @@ The main purpose of this script is to track IP phones (clients) that
 are in-use.
 */
 
+require_once('db.php');
+
 # Set Global Variables
 $objName = "update";
 $result  = "Failure";
@@ -17,15 +19,6 @@ $t_id       = $_REQUEST['id'];
 $t_sid      = $_REQUEST['sessionID'];
 $t_maxTime  = $_REQUEST['maxTime'];
 $t_maxTime  = (int)$t_maxTime;
-
-# Connect to mysql
-$t_connect = mysql_connect("localhost","root");
-if (!$t_connect)
-    exitresult($objName, $result);
-
-# Select db
-if(!(mysql_select_db("ip_pbx", $t_connect)))
-    exitresult($objName, $result);
 
 #Get Epoch
 $t_currTime = time();

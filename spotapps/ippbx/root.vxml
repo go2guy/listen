@@ -30,6 +30,7 @@
     <var name="passcode" expr="''"/>
     <var name="AM_OPEN" expr="800"/> <!-- Office start time -->
     <var name="PM_CLOSE" expr="1700"/> <!-- Office close time -->
+    <var name="aftHrsMbxName" expr="'After Hours'"/>
 
     <!-- DB vars -->
     <var name="extension" expr="''"/>
