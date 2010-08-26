@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    
+	    <log target="status">Set Variables</log>
             <log>INFO: Entered assign-variable.vxml [143-29]</log>
             <log>INFO: Current value [<value expr="params"/>]</log>
 <assign name="params" expr="'/'+grtngSelect" />

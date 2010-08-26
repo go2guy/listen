@@ -16,7 +16,7 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'lt,'+newCount+',143-19|else,143-58'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_expList" expr="'lt,'+newCount+',143-129|else,143-58'"/>	<!-- List of expression to be evaluated -->
     <var name="II_SB_operand1" expr="count"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
@@ -27,7 +27,7 @@
 
 	<form id="beginDocument">
 		<block>
-    	    <log target="status">count</log>
+    	    <log target="status">More Numbers</log>
 			<log>INFO: Entered decision.vxml [143-55]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>

@@ -18,7 +18,7 @@
 
     <form id="beginDocument">
         <block>
-            
+            <log target="status">Get Access Number</log>
             <log>INFO: Entered run-javascript.vxml [143-37]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="grtngSelect" expr="II_SB_userJava" />   

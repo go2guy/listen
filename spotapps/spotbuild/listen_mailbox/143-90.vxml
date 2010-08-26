@@ -12,7 +12,7 @@
 	
     <form id="beginDocument">
         <block>
-    	    <log target="status">Get User Greeting List</log>
+    	    <log target="status">Get Greeting URL</log>
             <log>INFO: Entered data-query.vxml [143-90]</log>
             <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />

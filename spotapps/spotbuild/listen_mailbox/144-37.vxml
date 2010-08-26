@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(FILE1,subscriber,subFwd)
             {
-	            var fileName = FILE1.split(subscriber+'.wav');fileName = fileName[0] + subFwd + '.wav';fileName = fileName.split('/'+subscriber+'/');return fileName[0] + '/' + subFwd + '/' + fileName[1];
+	                var tmpVal = new String(FILE1).split('://');    var fileName = new String();    if (tmpVal.length > 1) {        var i = tmpVal[1].indexOf('/');        fileName = tmpVal[1].slice(i);    }    else {        fileName = tmpVal[0];    }    tmpVal = fileName.split(subscriber+'.wav');    fileName = tmpVal[0]+subFwd+'.wav';    tmpVal = fileName.split('/'+subscriber+'/');    return tmpVal[0]+'/'+subFwd+'/'+tmpVal[1];
             }
         ]]>
     </script>

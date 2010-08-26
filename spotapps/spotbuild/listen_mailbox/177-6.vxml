@@ -5,14 +5,14 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'143-84'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'177-12'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
 	    <log target="status">Assign Check Folder</log>
-            <log>INFO: Entered assign-variable.vxml [143-70]</log>
+            <log>INFO: Entered assign-variable.vxml [177-6]</log>
             <log>INFO: Current value [<value expr="recDIR"/>]</log>
-<assign name="recDIR" expr="recDIR+subscriber" />
+<assign name="recDIR" expr="artifactsDIR+subscriber" />
 <log>INFO: Updated value [<value expr="recDIR"/>]</log>
 <log>INFO: Current value [<value expr="recDIR"/>]</log>
 <assign name="recDIR" expr="recDIR+grtPathSuffex" />

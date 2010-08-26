@@ -47,7 +47,6 @@
 	<var name="SB_UV_menuOption"/>
 	<var name="SB_UV_hostName"/>
 	<var name="SB_UV_passValues"/>
-	<var name="SB_UV_vmPathPrefix"/>
 	<var name="SB_UV_newResult"/>
 	<var name="SB_UV_oldResult"/>
 	<var name="SB_UV_newCount"/>
@@ -68,7 +67,6 @@
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_toggleLight"/>
 	<var name="SB_UV_accessNum"/>
-	<var name="SB_UV_vmPathMiddle"/>
 	<var name="SB_UV_vmPathSuffex"/>
 	<var name="SB_UV_grtPathSuffex"/>
 	<var name="SB_UV_application"/>
@@ -80,6 +78,7 @@
 	<var name="SB_UV_source"/>
 	<var name="SB_UV_value"/>
 	<var name="SB_UV_operation"/>
+	<var name="SB_UV_artifactsDIR"/>
 
     
     <form id="beginDocument">
@@ -178,9 +177,6 @@
 			<if cond="SB_UV_passValues != undefined">
 				<assign name="passValues" expr="SB_UV_passValues" />
 			</if>
-			<if cond="SB_UV_vmPathPrefix != undefined">
-				<assign name="vmPathPrefix" expr="SB_UV_vmPathPrefix" />
-			</if>
 			<if cond="SB_UV_newResult != undefined">
 				<assign name="newResult" expr="SB_UV_newResult" />
 			</if>
@@ -241,9 +237,6 @@
 			<if cond="SB_UV_accessNum != undefined">
 				<assign name="accessNum" expr="SB_UV_accessNum" />
 			</if>
-			<if cond="SB_UV_vmPathMiddle != undefined">
-				<assign name="vmPathMiddle" expr="SB_UV_vmPathMiddle" />
-			</if>
 			<if cond="SB_UV_vmPathSuffex != undefined">
 				<assign name="vmPathSuffex" expr="SB_UV_vmPathSuffex" />
 			</if>
@@ -276,6 +269,9 @@
 			</if>
 			<if cond="SB_UV_operation != undefined">
 				<assign name="operation" expr="SB_UV_operation" />
+			</if>
+			<if cond="SB_UV_artifactsDIR != undefined">
+				<assign name="artifactsDIR" expr="SB_UV_artifactsDIR" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

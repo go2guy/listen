@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(cntrlURL,hostName,sysAccessTime,subFwd,HTTPcontroller)
+            function II_SB_JS_function(subFwd,passValues)
             {
-	            return "{\"sysAccessTime\": \""+ sysAccessTime+"\",\"HTTPcontroller\":\""+HTTPcontroller+"\", \"cntrlURL\":\""+cntrlURL+"\", \"hostName\":\""+hostName+"\", \"toExt\": \"" + subFwd + "\"}";
+	            var result = eval("("+passValues+")");result.toExt = subFwd;return iiStringify(result);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set passValues</log>
             <log>INFO: Entered run-javascript.vxml [147-27]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(cntrlURL,hostName,sysAccessTime,subFwd,HTTPcontroller)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(subFwd,passValues)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

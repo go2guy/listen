@@ -15,10 +15,7 @@
 <assign name="FILE2" expr="FILE1+''" />
 <log>INFO: Updated value [<value expr="FILE2"/>]</log>
 <log>INFO: Current value [<value expr="FILE1"/>]</log>
-<assign name="FILE1" expr="vmPathPrefix+vmPathMiddle" />
-<log>INFO: Updated value [<value expr="FILE1"/>]</log>
-<log>INFO: Current value [<value expr="FILE1"/>]</log>
-<assign name="FILE1" expr="FILE1+subFwd" />
+<assign name="FILE1" expr="artifactsDIR+subFwd" />
 <log>INFO: Updated value [<value expr="FILE1"/>]</log>
 <log>INFO: Current value [<value expr="FILE1"/>]</log>
 <assign name="FILE1" expr="FILE1+vmPathSuffex" />

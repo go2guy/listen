@@ -36,7 +36,7 @@
 	<var name="FILE1" expr="''" />
 	<var name="FILE2" expr="''" />
 	<var name="OPERATION" expr="''" />
-	<var name="recDIR" expr="'/var/www/html/listen/artifacts/'" />
+	<var name="recDIR" expr="''" />
 	<var name="status" expr="''" />
 	<var name="ANI" expr="'remote'" />
 	<var name="userInput" expr="''" />
@@ -57,7 +57,6 @@
 	<var name="menuOption" expr="''" />
 	<var name="hostName" expr="''" />
 	<var name="passValues" expr="'importedValue'" />
-	<var name="vmPathPrefix" expr="'/var/www/html'" />
 	<var name="newResult" expr="''" />
 	<var name="oldResult" expr="''" />
 	<var name="newCount" expr="''" />
@@ -78,7 +77,6 @@
 	<var name="sysAccessTime" expr="''" />
 	<var name="toggleLight" expr="'OFF'" />
 	<var name="accessNum" expr="''" />
-	<var name="vmPathMiddle" expr="'/listen/artifacts/'" />
 	<var name="vmPathSuffex" expr="'/voicemail/message'" />
 	<var name="grtPathSuffex" expr="'/voicemail/greeting/'" />
 	<var name="application" expr="''" />
@@ -90,6 +88,7 @@
 	<var name="source" expr="''" />
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
+	<var name="artifactsDIR" expr="''" />
 
 
     <!-- Conference Variables -->

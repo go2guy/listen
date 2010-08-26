@@ -12,7 +12,7 @@
 	
     <form id="beginDocument">
         <block>
-    	    <log target="status">Update Mbx Details</log>
+    	    <log target="status">Update Access Number</log>
             <log>INFO: Entered data-query.vxml [68-57]</log>
             <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params resource request id " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
