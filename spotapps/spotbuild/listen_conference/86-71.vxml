@@ -12,7 +12,7 @@
 	    <log target="status">Assign Rollcall Path</log>
             <log>INFO: Entered assign-variable.vxml [86-71]</log>
             <log>INFO: Current value [<value expr="rollcallPath"/>]</log>
-<assign name="rollcallPath" expr="rollcallPath+subscriber" />
+<assign name="rollcallPath" expr="artifactsDIR+subscriber" />
 <log>INFO: Updated value [<value expr="rollcallPath"/>]</log>
 <log>INFO: Current value [<value expr="rollcallPath"/>]</log>
 <assign name="rollcallPath" expr="rollcallPath+rollcallPathSuf" />

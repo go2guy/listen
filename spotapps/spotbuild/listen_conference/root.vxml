@@ -84,7 +84,7 @@
 	<var name="isInteractiveCall" expr="'true'" />
 	<var name="destAudioFile" expr="''" />
 	<var name="timeStamp" expr="''" />
-	<var name="rollcallPath" expr="'/var/www/html/listen/artifacts/'" />
+	<var name="rollcallPath" expr="''" />
 	<var name="rollcallPathSuf" expr="'/conference/rollcall/'" />
 	<var name="isStarted" expr="'false'" />
 	<var name="subID" expr="'null'" />
@@ -102,6 +102,7 @@
 	<var name="source" expr="'conference'" />
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
+	<var name="artifactsDIR" expr="''" />
 
 
     <!-- Conference Variables -->
