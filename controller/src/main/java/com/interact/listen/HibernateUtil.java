@@ -134,6 +134,7 @@ public final class HibernateUtil
             config.addAnnotatedClass(Participant.class);
             config.addAnnotatedClass(Pin.class);
             config.addAnnotatedClass(Property.class);
+            config.addAnnotatedClass(ScheduledConference.class);
             config.addAnnotatedClass(Subscriber.class);
             config.addAnnotatedClass(Voicemail.class);
 

@@ -347,4 +347,59 @@
             <column name="TRANSCRIPTION" type="java.sql.Types.LONGVARCHAR"/>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="38">
+        <createTable tableName="SCHEDULED_CONFERENCE">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+            <column name="START_DATE" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="END_DATE" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TOPIC" type="VARCHAR(255)"/>
+            <column name="CONFERENCE_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NOTES" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="development" id="39">
+        <createTable tableName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS">
+            <column name="SCHEDULED_CONFERENCE_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL_ADDRESS" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="development" id="40">
+        <createTable tableName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS">
+            <column name="SCHEDULED_CONFERENCE_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL_ADDRESS" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="development" id="41">
+        <addForeignKeyConstraint baseColumnNames="CONFERENCE_ID" baseTableName="SCHEDULED_CONFERENCE" constraintName="SCHEDULED_CONFERENCE_FK_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="CONFERENCE"/>
+        <addForeignKeyConstraint baseColumnNames="SCHEDULED_CONFERENCE_ID" baseTableName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS" constraintName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS_FK_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SCHEDULED_CONFERENCE"/>
+        <addForeignKeyConstraint baseColumnNames="SCHEDULED_CONFERENCE_ID" baseTableName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS" constraintName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS_FK_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SCHEDULED_CONFERENCE"/>
+        <addUniqueConstraint tableName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS" columnNames="SCHEDULED_CONFERENCE_ID,EMAIL_ADDRESS" constraintName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS_UK_1"/>
+        <addUniqueConstraint tableName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS" columnNames="SCHEDULED_CONFERENCE_ID,EMAIL_ADDRESS" constraintName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS_UK_1"/>
+    </changeSet>
 </databaseChangeLog>
