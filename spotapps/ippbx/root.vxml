@@ -32,6 +32,17 @@
     <var name="PM_CLOSE" expr="1700"/> <!-- Office close time -->
     <var name="aftHrsMbxName" expr="'After Hours'"/>
 
+    <!-- Controller vars -->
+    <var name="cntrlURL" expr="''"/>
+    <var name="request"  expr="''"/>
+    <var name="resource" expr="''"/>
+    <var name="params" expr="''"/>
+
+    <!-- STATS -->
+    <var name="errID" expr="''"/>
+    <var name="srvErrID" expr="'AFTRHRS_SERVICE_ERROR'"/>
+    <var name="recErrID" expr="'AFTRHRS_RECORD_ERROR'"/>
+
     <!-- DB vars -->
     <var name="extension" expr="''"/>
     <var name="destination" expr="''"/>

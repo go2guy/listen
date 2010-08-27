@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 08/27/2010
+       *   @Name	getCallerID.vxml
+       *   @Desc	This script checks the name of the party attempting
+                    a pbx or voip call -->
+
+    <!-- Passed in from ccxml -->
+    <var name="tmpANI"/>
+    <var name="importedValue"/>
+
+	<form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="params" expr="setParam(tmpANI)"/>
+            <assign name="request"  expr="'get'"/>
+            <assign name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="sendEvent">
+        <block>
+            <log>INFO: Entered sendEvent</log>
+            <data name="apiObj" srcexpr="getJsonVal(importedValue, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="result" expr="apiObj.Result" />
+            <goto next="#chkResult"/>
+        </block>
+    </form>
+
+    <form id="chkResult">
+        <block>
+            <log>INFO: Entered chkResult</log>
+            <if cond="resource == 'accessNumbers'">
+                <var name="tmpVal" expr="getJsonVal(result, 'count')"/>
+                <if cond="tmpVal == 1">
+                    <assign name="resource" expr="'subscribers/'"/>
+                    <assign name="params" expr="getSubID(result)"/>
+                    <assign name="request"  expr="'get'"/>
+                    <goto next="#sendEvent"/>
+                </if>
+            <else/>
+                <var name="tmpVal" expr="getJsonVal(result, 'realName')"/>                
+                <if cond="tmpVal.length != 0">
+                    <assign name="result" expr="tmpVal"/>
+                    <goto next="#exit"/>
+                </if>
+            </if>
+            <assign name="result" expr="''"/>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <exit namelist="result"/>
+        </block>
+    </form>
+
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'">
+            <param name="id" expr="errID"/>
+            <param name="statServer" expr="getJsonVal(importedValue, 'STATcontroller')"/>
+        </subdialog>
+        <block>
+            <assign name="result" expr="''" />
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the db -->
+        <log>ERROR: Unable to connect with controller</log>
+        <assign name="errID" expr="srvErrID"/>
+        <goto next="#serviceError"/>
+    </catch>
+
+    <script>
+        <![CDATA[
+            function getSubID(jsonObj) {
+                var tmpVal = eval("("+jsonObj+")");
+                var result = tmpVal.results[0].subscriber.href.split('/');
+                return result[2];
+            }
+
+            function setParam(ani) {
+             return "?_fields=subscriber&number="+ani;
+            }
+        ]]>
+    </script>
+
+</vxml>
