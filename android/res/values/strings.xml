@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Listen</string>
-    <string name="current_status">Number of voicemails:</string>
+    <string name="current_status">Inbox:</string>
 </resources>
