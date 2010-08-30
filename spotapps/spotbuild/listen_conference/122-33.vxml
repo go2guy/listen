@@ -10,7 +10,7 @@
 
     <!-- Edge Variables -->
     <var name="II_SB_oldNxtOpt" expr="'122-22'"/>       <!-- Next option for original session -->
-    <var name="II_SB_newNxtOpt" expr="'122-21'"/>        <!-- Next option for new session -->
+    <var name="II_SB_newNxtOpt" expr="'122-42'"/>        <!-- Next option for new session -->
     <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
     <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
 

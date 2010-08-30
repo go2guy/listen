@@ -39,10 +39,10 @@
 				<assign name="II_SB_assign_NxtOpt" expr="'112-20'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'ERR_REC_START'">
-				<assign name="II_SB_assign_NxtOpt" expr="'121-73'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'121-81'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'JOIN'">
-				<assign name="II_SB_assign_NxtOpt" expr="'86-22'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'86-91'"/>
 			</if>
 
             <if cond="II_SB_assign_NxtOpt != ''">

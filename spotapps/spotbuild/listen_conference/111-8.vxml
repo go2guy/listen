@@ -13,8 +13,8 @@
     <var name="II_SB_valueToPass" expr="''"/>   <!-- Config: Name of file confrence creates -->
     <var name="II_SB_eventToPass" expr="'UNMUTE'"/>
     <var name="II_SB_sessionID" expr="tempSID"/>        <!-- Config: Session ID for the message to send -->
-    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'111-48'"/>
-    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'111-49'"/>
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'111-60'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'111-61'"/>
     <var name="II_SB_nextOpt" expr="'111-8'"/>
 
     <var name="II_SB_returnValues" expr="''"/>

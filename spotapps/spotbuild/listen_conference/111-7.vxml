@@ -13,8 +13,8 @@
     <var name="II_SB_valueToPass" expr="''"/>   <!-- Config: Name of file confrence creates -->
     <var name="II_SB_eventToPass" expr="'MUTE'"/>
     <var name="II_SB_sessionID" expr="tempSID"/>        <!-- Config: Session ID for the message to send -->
-    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'111-11'"/>
-    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'111-9'"/>
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'111-64'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'111-63'"/>
     <var name="II_SB_nextOpt" expr="'111-7'"/>
 
     <var name="II_SB_returnValues" expr="''"/>

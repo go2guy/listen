@@ -18,8 +18,8 @@
     <!-- Edge Variables -->
     <var name="II_SB_drpKeyOpt" expr="'105-27'"/>        <!--  Where to go if a drop key is pressed -->
     <var name="II_SB_ansOpt" expr="''"/>            <!--  Next option when call is answered -->
-    <var name="II_SB_notAnsOpt" expr="'105-11'"/>  	<!--  Next option when call is not answered -->
-    <var name="II_SB_failedOpt" expr="'105-7'"/>     <!--  Next option when connection attempt fails -->
+    <var name="II_SB_notAnsOpt" expr="'105-126'"/>  	<!--  Next option when call is not answered -->
+    <var name="II_SB_failedOpt" expr="'105-125'"/>     <!--  Next option when connection attempt fails -->
     <var name="II_SB_maxTimeOpt" expr="''"/>      <!--  Next option when max time for call is reached -->
     <var name="II_SB_inbDiscOpt" expr="'91-93'"/>  <!--  Next option when caller hangs up -->
     <var name="II_SB_outbDiscOpt" expr="'91-95'"/> <!--  Next option when called party hangs up -->
