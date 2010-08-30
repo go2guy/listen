@@ -6,9 +6,7 @@ import com.interact.listen.ServletUtil;
 import com.interact.listen.history.Channel;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 
@@ -36,12 +34,7 @@ public class LogoutServlet extends HttpServlet
 
     private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_LOGOUT);
+        ServletUtil.sendStat(request, Stat.GUI_LOGOUT);
 
         HttpSession session = request.getSession();
         Subscriber subscriber = ServletUtil.currentSubscriber(request);

@@ -1,13 +1,12 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.OutputBufferFilter;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,14 +19,9 @@ public class GetPropertiesServlet extends HttpServlet
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_GET_PROPERTIES);
+        ServletUtil.sendStat(request, Stat.GUI_GET_PROPERTIES);
 
-        Subscriber currentSubscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         if(currentSubscriber == null)
         {
             throw new UnauthorizedServletException();

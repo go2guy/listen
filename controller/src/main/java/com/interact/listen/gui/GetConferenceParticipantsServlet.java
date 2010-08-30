@@ -97,7 +97,7 @@ public class GetConferenceParticipantsServlet extends HttpServlet
         }
         statSender.send(stat);
 
-        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");

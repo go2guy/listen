@@ -13,9 +13,7 @@ import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Subscriber.PlaybackOrder;
 import com.interact.listen.security.SecurityUtil;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.util.ArrayList;
 
@@ -33,12 +31,7 @@ public class EditSubscriberServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_EDIT_SUBSCRIBER);
+        ServletUtil.sendStat(request, Stat.GUI_EDIT_SUBSCRIBER);
 
         Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         if(currentSubscriber == null)

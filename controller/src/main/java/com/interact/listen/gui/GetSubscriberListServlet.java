@@ -2,15 +2,14 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.Resource;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.util.Date;
 import java.util.List;
@@ -32,18 +31,13 @@ public class GetSubscriberListServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        Subscriber subscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_GET_SUBSCRIBER_LIST);
+        ServletUtil.sendStat(request, Stat.GUI_GET_SUBSCRIBER_LIST);
 
         if(!subscriber.getIsAdministrator())
         {

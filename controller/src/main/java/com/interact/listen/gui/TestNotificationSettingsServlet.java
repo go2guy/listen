@@ -6,9 +6,7 @@ import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,12 +20,7 @@ public class TestNotificationSettingsServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_TEST_NOTIFICATION_SETTINGS);
+        ServletUtil.sendStat(request, Stat.GUI_TEST_NOTIFICATION_SETTINGS);
 
         Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         if(currentSubscriber == null)

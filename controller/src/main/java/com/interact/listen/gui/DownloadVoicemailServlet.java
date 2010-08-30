@@ -12,12 +12,14 @@ import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.Audio;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -42,12 +44,7 @@ public class DownloadVoicemailServlet extends HttpServlet
             throw new NotLicensedException(ListenFeature.VOICEMAIL);
         }
 
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_DOWNLOAD_VOICEMAIL);
+        ServletUtil.sendStat(request, Stat.GUI_DOWNLOAD_VOICEMAIL);
 
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)

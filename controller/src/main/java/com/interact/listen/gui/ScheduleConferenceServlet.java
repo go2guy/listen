@@ -13,9 +13,7 @@ import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.ScheduledConference;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,13 +40,7 @@ public class ScheduleConferenceServlet extends HttpServlet
             throw new NotLicensedException(ListenFeature.CONFERENCING);
         }
 
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-
-        statSender.send(Stat.GUI_SCHEDULE_CONFERENCE);
+        ServletUtil.sendStat(request, Stat.GUI_SCHEDULE_CONFERENCE);
 
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)

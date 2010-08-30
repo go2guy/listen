@@ -1,5 +1,6 @@
 package com.interact.listen.gui;
 
+import com.interact.listen.ServletUtil;
 import com.interact.listen.api.GetDnisServlet;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
@@ -7,9 +8,7 @@ import com.interact.listen.config.Property.Key;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.util.*;
 
@@ -28,14 +27,9 @@ public class SetPropertiesServlet extends HttpServlet
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_SET_PROPERTIES);
+        ServletUtil.sendStat(request, Stat.GUI_SET_PROPERTIES);
 
-        Subscriber currentSubscriber = (Subscriber)(request.getSession().getAttribute("subscriber"));
+        Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         if(currentSubscriber == null)
         {
             throw new UnauthorizedServletException();

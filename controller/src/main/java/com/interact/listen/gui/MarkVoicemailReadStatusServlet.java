@@ -11,9 +11,7 @@ import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 
@@ -36,12 +34,7 @@ public class MarkVoicemailReadStatusServlet extends HttpServlet
             throw new NotLicensedException(ListenFeature.VOICEMAIL);
         }
 
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_MARK_VOICEMAIL_READ_STATUS);
+        ServletUtil.sendStat(request, Stat.GUI_MARK_VOICEMAIL_READ_STATUS);
 
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)

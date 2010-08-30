@@ -15,15 +15,12 @@ public class IndexServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        HttpSession session = request.getSession();
-        Subscriber subscriber = (Subscriber)session.getAttribute("subscriber");
-
+        Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
             ServletUtil.redirect("/login", response);
             return;
         }
-
         ServletUtil.forward("/WEB-INF/jsp/index.jsp", request, response);
     }
 }

@@ -12,9 +12,7 @@ import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,12 +36,7 @@ public class DropParticipantServlet extends HttpServlet
             throw new NotLicensedException(ListenFeature.CONFERENCING);
         }
 
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_DROP_PARTICIPANT);
+        ServletUtil.sendStat(request, Stat.GUI_DROP_PARTICIPANT);
 
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)

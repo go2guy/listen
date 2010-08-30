@@ -13,9 +13,7 @@ import com.interact.listen.history.HistoryService;
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.httpclient.HttpClientImpl;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,12 +36,7 @@ public class EditPagerServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_EDIT_PAGER);
+        ServletUtil.sendStat(request, Stat.GUI_EDIT_PAGER);
 
         Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         if(currentSubscriber == null)

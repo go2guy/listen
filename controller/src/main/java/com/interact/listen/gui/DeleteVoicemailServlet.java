@@ -8,9 +8,7 @@ import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.Voicemail;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,12 +24,7 @@ public class DeleteVoicemailServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_DELETE_VOICEMAIL);
+        ServletUtil.sendStat(request, Stat.GUI_DELETE_VOICEMAIL);
 
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)

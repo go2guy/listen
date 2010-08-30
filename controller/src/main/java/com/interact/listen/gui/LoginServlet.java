@@ -11,9 +11,7 @@ import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.*;
-import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
-import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 import java.util.Date;
@@ -44,12 +42,7 @@ public class LoginServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
-        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
-        if(statSender == null)
-        {
-            statSender = new InsaStatSender();
-        }
-        statSender.send(Stat.GUI_LOGIN);
+        ServletUtil.sendStat(request, Stat.GUI_LOGIN);
 
         HttpSession httpSession = request.getSession(true);
         Session hibernateSession = HibernateUtil.getSessionFactory().getCurrentSession();
