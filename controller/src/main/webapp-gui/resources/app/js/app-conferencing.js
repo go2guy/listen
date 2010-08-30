@@ -1,4 +1,5 @@
 var currentConference;
+var displayingScheduledConferenceData = [];
 
 $(document).ready(function() {
     Listen.registerApp(new Listen.Application('conferencing', 'conferencing-application', 'menu-conferencing', new Conference()));
@@ -187,6 +188,7 @@ function Conference(id) {
         retrieveList: function(data) {
             return data.results;
         },
+        isList: true,
         reverse: true,
         paginationId: 'scheduled-conference-pagination',
         updateRowCallback: function(row, data, animate) {
@@ -200,6 +202,31 @@ function Conference(id) {
             Listen.setFieldContent(row.find('.scheduled-conference-cell-when'), data.startDate + ' until ' + data.endDate, animate);
             Listen.setFieldContent(row.find('.scheduled-conference-cell-topic'), data.topic, animate);
             Listen.setFieldContent(row.find('.scheduled-conference-cell-callers'), data.callers, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-notes'), 'Notes: ' + data.notes, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-activeCallers'), 'Active Callers: ' + data.activeCallers, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-passiveCallers'), 'Passive Callers: ' + data.passiveCallers, animate);
+
+            var more = '<a href="#" onclick="toggleScheduledConferenceData(' + data.id + ', \'more\');return false;" title="More information">show&nbsp;&raquo;</a>';
+            var less = '<a href="#" onclick="toggleScheduledConferenceData(' + data.id + ', \'less\');return false;" title="Hide information">&laquo;&nbsp;hide</a>';
+            var contains = false;
+            for(var i = 0; i < displayingScheduledConferenceData.length; i++) {
+                if(displayingScheduledConferenceData[i] === data.id) {
+                    contains = true;
+                    break;
+                }
+            }
+            var field = row.find('.scheduled-conference-cell-view');
+            if(contains) {
+                Listen.setFieldContent(field, less, false, true);
+                row.find('.scheduled-conference-cell-notes').css('display', 'block');
+                row.find('.scheduled-conference-cell-activeCallers').css('display', 'block');
+                row.find('.scheduled-conference-cell-passiveCallers').css('display', 'block');
+            } else {
+                Listen.setFieldContent(field, more, false, true);
+                row.find('.scheduled-conference-cell-notes').css('display', 'none');
+                row.find('.scheduled-conference-cell-activeCallers').css('display', 'none');
+                row.find('.scheduled-conference-cell-passiveCallers').css('display', 'none');
+            }
         }
     });
 
@@ -352,5 +379,31 @@ function scheduleConference(event) {
 function confirmDropCaller(id) {
     if(confirm('Are you sure?')) {
         Server.dropCaller(id);
+    }
+}
+
+function toggleScheduledConferenceData(id, action) {
+    Listen.trace('toggleScheduledConferenceData');
+    var row = $('#scheduled-conference-table-row-' + id);
+    if(action == 'more') {
+        displayingScheduledConferenceData.push(id);
+        var less = '<a href="#" onclick="toggleScheduledConferenceData(' + id + ', \'less\');return false;" title="Hide information">&laquo;&nbsp;hide</a>';
+        Listen.setFieldContent(row.find('.scheduled-conference-cell-view'), less, false, true);
+        row.find('.scheduled-conference-cell-notes').css('display', 'block');
+        row.find('.scheduled-conference-cell-activeCallers').css('display', 'block');
+        row.find('.scheduled-conference-cell-passiveCallers').css('display', 'block');
+    } else if(action === 'less') {
+        var newArr = [];
+        for(var i = 0; i < displayingScheduledConferenceData.length; i++) {
+            if(displayingScheduledConferenceData[i] !== id) {
+                newArr.push(displayingScheduledConferenceData[i]);
+            }
+        }
+        displayingScheduledConferenceData = newArr;
+        row.find('.scheduled-conference-cell-notes').css('display', 'none');
+        row.find('.scheduled-conference-cell-activeCallers').css('display', 'none');
+        row.find('.scheduled-conference-cell-passiveCallers').css('display', 'none');
+        var more = '<a href="#" onclick="toggleScheduledConferenceData(' + id + ', \'more\');return false;" title="More information">show&nbsp;&raquo;</a>';
+        Listen.setFieldContent(row.find('.scheduled-conference-cell-view'), more, false, true);
     }
 }

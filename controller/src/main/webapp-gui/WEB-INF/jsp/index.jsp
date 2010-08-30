@@ -139,20 +139,9 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                       <div class="panel">
                         <div class="panel-header"><div class="title">Scheduled Conferences</div></div>
                         <div class="panel-content">
-                          <table id="scheduled-conference-table" class="data-table">
-                            <thead>
-                              <tr>
-                                <th>When</th>
-                                <th>Topic</th>
-                                <th>Callers</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr class="placeholder">
-                                <td colspan="3">No conferences have been scheduled.</td>
-                              </tr>
-                            </tbody>
-                          </table>
+                          <ul id="scheduled-conference-table" class="data-table">
+                            <li class="placeholder">No conferences have been scheduled.</li>
+                          </ul>
                           <div class="pagination" id="scheduled-conference-pagination">
                             <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
                           </div>
@@ -767,12 +756,6 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <td><input type="checkbox" class="accessNumber-row-messageLight"/>&nbsp;<label>Message Light</label></td>
           <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
         </tr>
-
-        <tr id="scheduled-conference-row-template">
-          <td class="scheduled-conference-cell-when"></td>
-          <td class="scheduled-conference-cell-topic"></td>
-          <td class="scheduled-conference-cell-callers"></td>
-        </tr>
       </tbody></table>
 
       <ul>
@@ -798,6 +781,16 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <div class="voicemail-cell-transcription"></div>
           <div class="voicemail-cell-transcription-abbr"></div>
           <div class="voicemail-cell-transcription-full"></div>
+          <div class="cleaner">&nbsp;</div>
+        </li>
+        <li id="scheduled-conference-row-template">
+          <div class="scheduled-conference-cell-when"></div>
+          <div class="scheduled-conference-cell-topic"></div>
+          <div class="scheduled-conference-cell-callers"></div>
+          <div class="scheduled-conference-cell-view"></div>
+          <div class="scheduled-conference-cell-notes"></div>
+          <div class="scheduled-conference-cell-activeCallers"></div>
+          <div class="scheduled-conference-cell-passiveCallers"></div>
           <div class="cleaner">&nbsp;</div>
         </li>
       </ul>

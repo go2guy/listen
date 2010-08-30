@@ -361,6 +361,40 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
     font-weight: bold;
 }
 
+#scheduled-conference-table li {
+    border-color: #E8EEF4;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    padding: 3px 0 0 3px;
+}
+
+#scheduled-conference-table div.scheduled-conference-cell-when,
+#scheduled-conference-table div.scheduled-conference-cell-topic,
+#scheduled-conference-table div.scheduled-conference-cell-callers,
+#scheduled-conference-table div.scheduled-conference-cell-view {
+    float: left;
+    height: 2em;
+}
+#scheduled-conference-table div.scheduled-conference-cell-when,
+#scheduled-conference-table div.scheduled-conference-cell-topic,
+#scheduled-conference-table div.scheduled-conference-cell-callers {
+    width: 30%
+}
+#scheduled-conference-table div.scheduled-conference-cell-view {
+    clear: right;
+    width: 10%;
+}
+#scheduled-conference-table div.scheduled-conference-cell-notes,
+#scheduled-conference-table div.scheduled-conference-cell-activeCallers,
+#scheduled-conference-table div.scheduled-conference-cell-passiveCallers {
+    display: none;
+    float: left;
+    font-weight: normal;
+    height: 2em;
+    padding-left: 2.5em;
+    width: 90%;
+}
+
 /* application - voicemail */
 
 #voicemail-application {

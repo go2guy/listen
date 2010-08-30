@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 
 public class GetScheduledConferenceListServlet extends HttpServlet
@@ -107,26 +108,35 @@ public class GetScheduledConferenceListServlet extends HttpServlet
         String endDate = marshaller.convertAndEscape(Date.class, scheduledConference.getEndDate());
         json.append("\"endDate\":\"").append(endDate).append("\",");
 
-        int activeCallers = scheduledConference.getActiveCallers().size();
-        int passiveCallers = scheduledConference.getPassiveCallers().size();
-        String callers = "";
-        if(activeCallers > 0)
+        int activeCallerCount = scheduledConference.getActiveCallers().size();
+        int passiveCallerCount = scheduledConference.getPassiveCallers().size();
+        String callerCount = "";
+        String activeCallers = "";
+        String passiveCallers = "";
+        if(activeCallerCount > 0)
         {
-            callers += activeCallers + " Active";
+            callerCount += activeCallerCount + " Active";
+            activeCallers = StringUtils.join(scheduledConference.getActiveCallers(), ",");
         }
-        if(activeCallers > 0 && passiveCallers > 0)
+        if(activeCallerCount > 0 && passiveCallerCount > 0)
         {
-            callers += " / ";
+            callerCount += " / ";
         }
-        if(passiveCallers > 0)
+        if(passiveCallerCount > 0)
         {
-            callers += passiveCallers + " Passive";
+            callerCount += passiveCallerCount + " Passive";
+            passiveCallers = StringUtils.join(scheduledConference.getPassiveCallers(), ",");
         }
-        json.append("\"callers\":\"").append(callers).append("\",");
+        json.append("\"callers\":\"").append(callerCount).append("\",");
         json.append("\"topic\":\"").append(scheduledConference.getTopic()).append("\",");
 
         boolean future = scheduledConference.getStartDate().after(new Date());
-        json.append("\"isFuture\":").append(future);
+        json.append("\"isFuture\":").append(future).append(",");
+        json.append("\"activeCallers\":\"").append(activeCallers).append("\",");
+        json.append("\"passiveCallers\":\"").append(passiveCallers).append("\",");
+
+        String notes = marshaller.convertAndEscape(String.class, scheduledConference.getNotes());
+        json.append("\"notes\":\"").append(notes).append("\"");
 
         json.append("}");
         return json.toString();
