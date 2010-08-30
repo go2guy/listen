@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            var result = "DEFAULT";if(passValues != undefined){    var tmpVal = eval("("+passValues+")");    switch (tmpVal.application)    {        case "AUTO_DIAL":            result = "listen_autoDial";            break;        case "RECORD":            result = "listen_record";            break;        case "DEL_ARTIFACT":            result = "listen_artifacts";            break;        case "CONF_EVENT":            result = "listen_confEvents";            break;        case "MSG_LIGHT":            result = "msgLightCntrl";            break;        default:    }}return result;
+	            var result = "DEFAULT";if(passValues != undefined){    var tmpVal = eval("("+passValues+")");    switch (tmpVal.application)    {        case "AUTO_DIAL":            result = "listen_autoDial";            break;        case "RECORD":            result = "listen_record";            break;        case "DEL_ARTIFACT":            result = "listen_artifacts";            break;        case "CONF_EVENT":            result = "listen_confEvents";            break;        case "MSG_LIGHT":            result = "msgLightCntrl";            break;      case "conferencing":    result = "listen_conference";    break;case "mailbox":    result = "listen_mailbox";    break;case "directVoicemail":    result = "listen_mailbox";    break;case "voicemail":    result = "listen_voicemail";    break;case "":    break;case " ":    break;default:    result = tmpVal.application;    }}return result;
             }
         ]]>
     </script>
