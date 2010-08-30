@@ -1,7 +1,6 @@
 169-23 - assign-variable
 169-25 - run-javascript
 169-26 - run-javascript
-136-30 - audio-input
 169-27 - run-javascript
 136-35 - out-dial
 136-37 - switch-application
@@ -19,8 +18,9 @@
 137-16 - end
 136-15 - decision
 135-67 - run-javascript
-136-11 - audio-input
-136-13 - audio-input
+136-49 - audio-input
+136-48 - audio-input
+136-47 - audio-input
 169-3 - decision
 137-24 - assign-variable
 169-6 - decision
