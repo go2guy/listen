@@ -2,7 +2,6 @@
 54-51 - record-audio
 142-19 - decision
 53-115 - data-query
-120-30 - audio-input
 142-13 - run-javascript
 142-15 - run-javascript
 53-112 - data-query
@@ -14,7 +13,6 @@ hang-up - hang-up
 53-67 - run-javascript
 174-5 - decision
 142-21 - assign-variable
-175-3 - audio-input
 174-7 - assign-variable
 120-25 - decision
 173-9 - decision
@@ -25,14 +23,14 @@ hang-up - hang-up
 53-6 - decision
 120-58 - data-query
 142-24 - run-javascript
-173-37 - audio-input
 53-77 - run-javascript
 173-38 - decision
 173-42 - decision
-173-40 - audio-input
+120-66 - audio-input
 120-19 - assign-variable
 142-31 - run-javascript
 120-62 - data-query
+175-27 - audio-input
 54-78 - assign-variable
 142-8 - run-javascript
 173-48 - assign-variable
@@ -48,5 +46,7 @@ begin - begin
 175-16 - assign-variable
 173-14 - run-javascript
 146-12 - end
+53-126 - audio-input
 173-16 - data-query
-53-57 - audio-input
+173-64 - audio-input
+173-62 - audio-input

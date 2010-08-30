@@ -26,9 +26,9 @@
 	<property name="incompletetimeout" value="0s"/>     <!--  incompletetimeout. This is the length of silence after an incompletely recognized speech -->
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
-    <var name="II_SB_promptList" expr="'P'+'mbxGrtng'+'|V'+accessNum+'|P'+'beginRec'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'54-31'"/>  <!--  PlayAudio Next Option. Name of next file -->
-	<var name="II_SB_fldLength" expr="1"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
+    <var name="II_SB_promptList" expr="'P'+'msgSaved'+'|P'+'thankYou'+'|'"/>  <!--  List of audio files / speech to play -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'120-47'"/>  <!--  PlayAudio Next Option. Name of next file -->
+	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	
 	<!-- Voice properties -->
 	<var name="II_SB_maxSpch" expr="'0s'"/>       <!--  maxspeechtimeout. This is the maximum time allowed for a speech -->
@@ -63,13 +63,42 @@
     <var name="II_SB_plyAs" expr="''"/>         <!-- Play As. Holds information on what prompt should be played as -->
     <var name="II_SB_userEntry" expr="''"/>     <!-- User Entry. Stores value received from user -->
 
+    <script>    <!-- User's Javascript function will be written here -->
+        <![CDATA[
+            function II_SB_JS_checkTime(time)
+            {
+                if (iiNumber(time))
+                    return time + 's';
+                else if (time.match(/^\d*s$/))
+                    return time;
+                else if (time.match(/^\d*ms$/))
+                    return time;
+                else 
+                    return '0s';
+            }
+
+            function II_SB_JS_checkNum(number)
+            {
+                if (iiNumber(number))
+                    return number;
+                else
+                    return '';
+            }
+        ]]>
+    </script>
+
     <form id="begin">
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    <log target="status">Default Greeting</log>
-            <log>INFO: Entered audio-input.vxml [173-37]</log>
+    	    <log target="status">Message Saved</log>
+            <log>INFO: Entered audio-input.vxml [120-66]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
+
+            <assign name="II_SB_fldTimeout" expr="II_SB_JS_checkTime(II_SB_fldTimeout)"/>
+            <assign name="II_SB_dgtTimeOut" expr="II_SB_JS_checkTime(II_SB_dgtTimeOut)"/>
+            <assign name="II_SB_fldLength" expr="II_SB_JS_checkNum(II_SB_fldLength)"/>
+
             <if cond="II_SB_cutIn == 'true'">
                 <goto next="#chkMode"/>
             </if>
