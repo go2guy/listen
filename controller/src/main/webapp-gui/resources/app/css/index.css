@@ -353,6 +353,14 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
     color: #FFFFFF;
 }
 
+#scheduled-conference-table .past {
+    color: #CCCCCC;
+}
+
+#scheduled-conference-table .future {
+    font-weight: bold;
+}
+
 /* application - voicemail */
 
 #voicemail-application {

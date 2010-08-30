@@ -1,6 +1,9 @@
 package com.interact.listen;
 
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.stats.InsaStatSender;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -100,5 +103,15 @@ public final class ServletUtil
         }
         
         return returnUrl;
+    }
+
+    public static void sendStat(HttpServletRequest request, Stat stat)
+    {
+        StatSender statSender = (StatSender)request.getSession().getServletContext().getAttribute("statSender");
+        if(statSender == null)
+        {
+            statSender = new InsaStatSender();
+        }
+        statSender.send(stat);
     }
 }

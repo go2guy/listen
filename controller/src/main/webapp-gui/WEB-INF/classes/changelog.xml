@@ -363,6 +363,9 @@
             <column name="CONFERENCE_ID" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="SCHEDULED_BY_SUBSCRIBER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
             <column name="NOTES" type="VARCHAR(255)"/>
         </createTable>
         <modifySql dbms="mysql">
@@ -397,6 +400,7 @@
     </changeSet>
     <changeSet author="development" id="41">
         <addForeignKeyConstraint baseColumnNames="CONFERENCE_ID" baseTableName="SCHEDULED_CONFERENCE" constraintName="SCHEDULED_CONFERENCE_FK_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="CONFERENCE"/>
+        <addForeignKeyConstraint baseColumnNames="SCHEDULED_BY_SUBSCRIBER_ID" baseTableName="SCHEDULED_CONFERENCE" constraintName="SCHEDULED_CONFERENCE_FK_2" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SUBSCRIBER"/>
         <addForeignKeyConstraint baseColumnNames="SCHEDULED_CONFERENCE_ID" baseTableName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS" constraintName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS_FK_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SCHEDULED_CONFERENCE"/>
         <addForeignKeyConstraint baseColumnNames="SCHEDULED_CONFERENCE_ID" baseTableName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS" constraintName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS_FK_1" deferrable="false" initiallyDeferred="false" referencedColumnNames="ID" referencedTableName="SCHEDULED_CONFERENCE"/>
         <addUniqueConstraint tableName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS" columnNames="SCHEDULED_CONFERENCE_ID,EMAIL_ADDRESS" constraintName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS_UK_1"/>

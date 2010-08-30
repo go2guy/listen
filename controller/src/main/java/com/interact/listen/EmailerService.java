@@ -66,7 +66,13 @@ public class EmailerService
 
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(fromAddress);
-            message.setSubject(subjectPrepend + subject);
+            
+            String s = subject;
+            if(subjectPrepend.trim().length() > 0)
+            {
+                s = subjectPrepend + " - " + s;
+            }
+            message.setSubject(s);
             message.addRecipients(MimeMessage.RecipientType.TO, toAddresses);
             
             if(attachment == null)
@@ -109,40 +115,40 @@ public class EmailerService
         return result;
     }
 
-    public boolean sendScheduleEmail(ArrayList<String> toAddressesList, String username, String description,
-                                     Date dateTime, Date endDateTime, Conference conference, String phoneNumber, String protocol,
-                                     String subjectPrepend, String emailType)
+    public boolean sendScheduledConferenceActiveEmail(ScheduledConference scheduledConference, String phoneNumber, String protocol)
     {
-        String body  = "";
-        boolean result = true;
         String numberTitle = protocol.equals("PSTN") ? "Phone Number" : "IP Address";
-        
-        if(emailType.equals("ACTIVE"))
-        {
-            body = getActiveMessageBody(username, description, conference, numberTitle, phoneNumber, dateTime, endDateTime);
-        }
-        else if(emailType.equals("PASSIVE"))
-        {
-            body = getPassiveMessageBody(username, description, conference, numberTitle, phoneNumber, dateTime, endDateTime);
-        }
-        
-        InternetAddress[] toAddresses = getInternetAddresses(toAddressesList);
-        
+        String body = getActiveMessageBody(scheduledConference.getScheduledBy().friendlyName(),
+                                           scheduledConference.getNotes(), scheduledConference.getConference(),
+                                           numberTitle, phoneNumber, scheduledConference.getStartDate(),
+                                           scheduledConference.getEndDate());
+        return sendScheduledConferenceEmail(scheduledConference.getActiveCallers(), scheduledConference.getTopic(), body);
+    }
+
+    public boolean sendScheduledConferencePassiveEmail(ScheduledConference scheduledConference, String phoneNumber, String protocol)
+    {
+        String numberTitle = protocol.equals("PSTN") ? "Phone Number" : "IP Address";
+        String body = getPassiveMessageBody(scheduledConference.getScheduledBy().friendlyName(),
+                                            scheduledConference.getNotes(), scheduledConference.getConference(),
+                                            numberTitle, phoneNumber, scheduledConference.getStartDate(),
+                                            scheduledConference.getEndDate());
+        return sendScheduledConferenceEmail(scheduledConference.getPassiveCallers(), scheduledConference.getTopic(), body);
+    }
+
+    private boolean sendScheduledConferenceEmail(Set<String> addresses, String subject, String body)
+    {
+        InternetAddress[] toAddresses = getInternetAddresses(addresses);
         if(toAddresses.length > 0)
         {
-            result = sendEmail(toAddresses, body, subjectPrepend, EmailerUtil.CONFERENCE_EMAIL_SUBJECT, null);
+            return sendEmail(toAddresses, body, subject, EmailerUtil.CONFERENCE_EMAIL_SUBJECT, null);
         }
-
-        return result;
+        return true;
     }
-    
+
     public boolean sendTestNotificationSettingsMessage(String type, String toAddress)
     {
         boolean result = true;
-        
-        ArrayList<String> mailAddresses = new ArrayList<String>();
-        mailAddresses.add(toAddress);
-        InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
+        InternetAddress[] toAddresses = getInternetAddresses(toAddress);
         
         if(toAddresses.length > 0)
         {
@@ -156,9 +162,7 @@ public class EmailerService
     public void sendEmailVoicmailNotification(Voicemail voicemail, Subscriber subscriber)
     {
         boolean fileReadyForAttachment = false;
-        ArrayList<String> mailAddresses = new ArrayList<String>();
-        mailAddresses.add(subscriber.getEmailAddress());
-        InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
+        InternetAddress[] toAddresses = getInternetAddresses(subscriber.getEmailAddress());
 
         if(toAddresses.length > 0)
         {
@@ -219,9 +223,7 @@ public class EmailerService
     
     public void sendSmsVoicemailNotification(Voicemail voicemail, String smsAddress)
     {
-        ArrayList<String> mailAddresses = new ArrayList<String>();
-        mailAddresses.add(smsAddress);
-        InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
+        InternetAddress[] toAddresses = getInternetAddresses(smsAddress);
         
         if(toAddresses.length > 0)
         {
@@ -240,11 +242,7 @@ public class EmailerService
         if(alternateNumber != null && !alternateNumber.trim().equals(""))
         {
             String pagePrefix = Configuration.get(Property.Key.PAGE_PREFIX);
-            ArrayList<String> mailAddresses = new ArrayList<String>();
-            
-            mailAddresses.add(alternateNumber);
-            
-            InternetAddress[] toAddresses = getInternetAddresses(mailAddresses);
+            InternetAddress[] toAddresses = getInternetAddresses(alternateNumber);
             
             if(toAddresses.length > 0)
             {
@@ -257,17 +255,24 @@ public class EmailerService
         }
     }
 
-    private InternetAddress[] getInternetAddresses(ArrayList<String> emails)
+    private InternetAddress[] getInternetAddresses(String oneAddress)
     {
-        ArrayList<InternetAddress> mailAddresses = new ArrayList<InternetAddress>();
-        
+        List<String> list = new ArrayList<String>();
+        list.add(oneAddress);
+
+        InternetAddress[] array = new InternetAddress[1];
+        return list.toArray(array);
+    }
+
+    private InternetAddress[] getInternetAddresses(Set<String> emails)
+    {
+        List<InternetAddress> mailAddresses = new ArrayList<InternetAddress>();
         for(String email : emails)
         {
             try
             {
                 InternetAddress emailAddress = new InternetAddress(email);
                 mailAddresses.add(emailAddress);
-                    
             }
             catch(AddressException e)
             {

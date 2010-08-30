@@ -164,6 +164,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetScheduledConferenceListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetScheduledConferenceListServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetSubscriberServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetSubscriberServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -354,6 +359,11 @@
     <servlet-mapping>
         <servlet-name>GetPropertiesServlet</servlet-name>
         <url-pattern>/ajax/getProperties</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetScheduledConferenceListServlet</servlet-name>
+        <url-pattern>/ajax/getScheduledConferenceList</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>

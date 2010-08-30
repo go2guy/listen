@@ -1,13 +1,18 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.EmailerService;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.*;
+
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
 
 @Entity
 @Table(name = "SCHEDULED_CONFERENCE")
@@ -39,6 +44,10 @@ public class ScheduledConference extends Resource implements Serializable
     @JoinColumn(name = "CONFERENCE_ID", nullable = false)
     @ManyToOne
     private Conference conference;
+
+    @JoinColumn(name = "SCHEDULED_BY_SUBSCRIBER_ID", nullable = false)
+    @ManyToOne
+    private Subscriber scheduledBy;
 
     @CollectionTable(name = "SCHEDULED_CONFERENCE_ACTIVE_CALLERS", joinColumns = @JoinColumn(name = "SCHEDULED_CONFERENCE_ID"))
     @Column(name = "EMAIL_ADDRESS")
@@ -118,6 +127,16 @@ public class ScheduledConference extends Resource implements Serializable
     public void setConference(Conference conference)
     {
         this.conference = conference;
+    }
+
+    public Subscriber getScheduledBy()
+    {
+        return scheduledBy;
+    }
+
+    public void setScheduledBy(Subscriber scheduledBy)
+    {
+        this.scheduledBy = scheduledBy;
     }
 
     public Set<String> getActiveCallers()
@@ -217,5 +236,73 @@ public class ScheduledConference extends Resource implements Serializable
         hash *= prime + (getStartDate() == null ? 0 : getStartDate().hashCode());
         hash *= prime + (getConference() == null ? 0 : getConference().hashCode());
         return hash;
+    }
+
+    public static List<ScheduledConference> queryByConferencePaged(Session session, Conference conference, int first,
+                                                                   int max)
+    {
+        DetachedCriteria subquery = DetachedCriteria.forClass(ScheduledConference.class);
+        subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        subquery.setProjection(Projections.id());
+        subquery.createAlias("conference", "conference_alias");
+        subquery.add(Restrictions.eq("conference_alias.id", conference.getId()));
+
+        Criteria criteria = session.createCriteria(ScheduledConference.class);
+        criteria.add(Subqueries.propertyIn("id", subquery));
+
+        criteria.setFirstResult(first);
+        criteria.setMaxResults(max);
+        criteria.addOrder(Order.desc("startDate"));
+
+        criteria.setFetchMode("conference", FetchMode.SELECT);
+        criteria.setFetchMode("scheduledBy", FetchMode.SELECT);
+
+        return (List<ScheduledConference>)criteria.list();
+    }
+
+    public static Long countByConference(Session session, Conference conference)
+    {
+        Criteria criteria = session.createCriteria(ScheduledConference.class);
+        criteria.setProjection(Projections.rowCount());
+        criteria.createAlias("conference", "conference_alias");
+        criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
+        return (Long)criteria.list().get(0);
+    }
+
+    public boolean sendEmails(PersistenceService persistenceService)
+    {
+        EmailerService emailService = new EmailerService(persistenceService);
+        Session session = persistenceService.getSession();
+
+        String phoneNumber = ListenSpotSubscriber.firstPhoneNumber(session);
+        String protocol = ListenSpotSubscriber.firstProtocol(session);
+
+        if(phoneNumber.equals(""))
+        {
+            // ***
+            // Current implementation is a person has to have called into the spot system before the phone number is
+            // available
+            // We should still send the invites in my opinion
+            // ***
+            phoneNumber = "Contact the conference administrator for access number";
+
+            // want the label to say "Phone Number" in the e-mail when phone number is above message
+            protocol = "PSTN";
+        }
+
+        boolean activeSuccess = true;
+        boolean passiveSuccess = true;
+
+        if(!activeCallers.isEmpty())
+        {
+            activeSuccess = emailService.sendScheduledConferenceActiveEmail(this, phoneNumber, protocol);
+        }
+
+        if(!passiveCallers.isEmpty())
+        {
+            passiveSuccess = emailService.sendScheduledConferencePassiveEmail(this, phoneNumber, protocol);
+        }
+
+        return activeSuccess && passiveSuccess;
     }
 }

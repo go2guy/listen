@@ -180,12 +180,38 @@ function Conference(id) {
         }
     });
 
+    var scheduledConferenceTable = new Listen.DynamicTable({
+        url: '/ajax/getScheduledConferenceList?id=' + conferenceId,
+        tableId: 'scheduled-conference-table',
+        templateId: 'scheduled-conference-row-template',
+        retrieveList: function(data) {
+            return data.results;
+        },
+        reverse: true,
+        paginationId: 'scheduled-conference-pagination',
+        updateRowCallback: function(row, data, animate) {
+            if(data.isFuture === true) {
+                row.removeClass('past');
+                row.addClass('future');
+            } else {
+                row.removeClass('future');
+                row.addClass('past');
+            }
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-when'), data.startDate + ' until ' + data.endDate, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-topic'), data.topic, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-callers'), data.callers, animate);
+        }
+    });
+
     var pollAndSet = function(animate) {
         callerTable.setUrl('/ajax/getConferenceParticipants?id=' + conferenceId);
         callerTable.pollAndSet(animate);
 
         recordingTable.setUrl('/ajax/getConferenceRecordingList?id=' + conferenceId);
         recordingTable.pollAndSet(animate);
+
+        scheduledConferenceTable.setUrl('/ajax/getScheduledConferenceList?id=' + conferenceId);
+        scheduledConferenceTable.pollAndSet(animate);
 
         var start = Listen.timestamp();
         $.ajax({
@@ -305,7 +331,11 @@ function scheduleConference(event) {
             scheduleConferenceDescription.val('');
             scheduleConferenceActiveParticipants.val('');
             scheduleConferencePassiveParticipants.val('');
-            Listen.notify('Emails have been sent to the provided addresses');
+            var elem = $('#scheduleConferenceForm .form-success-message');
+            elem.text('Emails have been sent to the provided addresses').slideDown(100);
+            setTimeout(function() {
+                elem.slideUp(100);
+            }, 2000);
         },
         error: function(data, status) {
             var div = $('#scheduleConferenceForm .form-error-message');
