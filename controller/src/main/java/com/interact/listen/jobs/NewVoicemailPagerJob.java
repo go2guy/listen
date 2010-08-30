@@ -52,7 +52,7 @@ public class NewVoicemailPagerJob implements Job
             LOG.info("No subscriber is currently setup as the after-hours pager subscriber");
         }
         
-        List<Subscriber> subscribers = Subscriber.queryPagingEnabledSubscribers(session);
+        List<Subscriber> subscribers = Subscriber.queryByIsSubscribedToPaging(session, true);
         List<Long> subscriberIds = new ArrayList<Long>();
         
         LOG.debug("Processing pages for " + subscribers.size() + " subscribers");

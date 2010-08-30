@@ -513,10 +513,10 @@ public class Subscriber extends Resource implements Serializable
         return (List<Subscriber>)criteria.list();
     }
 
-    public static List<Subscriber> queryPagingEnabledSubscribers(Session session)
+    public static List<Subscriber> queryByIsSubscribedToPaging(Session session, boolean isSubscribedToPaging)
     {
         Criteria criteria = session.createCriteria(Subscriber.class);
-        criteria.add(Restrictions.eq("isSubscribedToPaging", true));
+        criteria.add(Restrictions.eq("isSubscribedToPaging", isSubscribedToPaging));
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         criteria.setFetchMode("conference", FetchMode.SELECT);
