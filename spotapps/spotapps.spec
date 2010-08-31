@@ -183,6 +183,7 @@ Requires: spotbuild-vip
     rm -f /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
     ln -s /interact/apps/spotbuild/listen_main/listen_main.ccxml /interact/apps/iistart.ccxml >> ${debug} 2>> ${error}
 
+    rm -f /var/www/html/interact/listen/artifacts >> ${debug} 2>> ${error}
     ln -s /interact/listen/artifacts /var/www/html/interact/listen/artifacts >> ${debug} 2>> ${error}
 
     if [ ! -e /var/lib/mysql/ip_pbx ]

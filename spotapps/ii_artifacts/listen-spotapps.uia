@@ -108,7 +108,7 @@
 
             <question level="not_in_backup" severity="ask">
                 <text>Enter the server name of the SIP trunk</text>
-                <default></default>
+                <default>null</default>
                 <validateRegex>^${HOSTNAME}$|^$</validateRegex>
                 <validateInfo>The value may be any number of letters, numbers, dashes, or periods or the value may be blank.</validateInfo>
 
