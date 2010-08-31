@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/23/2010
+    <!-- Last Modified 08/30/2010
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -151,27 +151,21 @@
     </form>
 
     <form id="chkDnisMap">
-        <!-- This subdialog handles sending an event to the controller to figure out
-        what app is associated with a particular dnis -->
+        <!-- This form has two functions. First, its subdialog handles sending an event to the controller
+        to figure out what app is associated with a particular dnis. Secondly, in the event that the
+        controller is unavailable (listenArgs variable is empty), it directs the application to dial
+        (as an extension) whatever keys a caller has entered. -->
         <block>
             <log>INFO: Entered chkDnisMap</log>
         </block>
-        <subdialog name="chkMap" srcexpr="'file:'+TRANS_PATH+'dnisMap.vxml'">
+        <subdialog name="chkMap" srcexpr="'file:'+TRANS_PATH+'dnisMap.vxml'" cond="listenArgs.length &gt; 0">
             <param name="dnis" expr="userEntry"/>
-            <param name="argList" expr="importedValue"/>
+            <param name="argList" expr="listenArgs"/>
         </subdialog>
-        <block>
+        <block cond="listenArgs.length &gt; 0">
             <if cond="chkMap.status == 'Success'">
                 <if cond="chkMap.result == 'ippbx'">
                     <log>INFO: User trying to call ext [<value expr="extension"/>]</log>
-                    <log target="status">One moment...</log>
-                    <assign name="extension" expr="userEntry"/>
-                    <assign name="fieldTimeOut" expr="''"/>
-                    <assign name="promptID" expr="'AP1605'"/>
-                    <assign name="cutIn" expr="'false'"/>
-                    <assign name="status" expr="'callExt'"/>
-                    <assign name="gotoForm" expr="'#exit'"/>
-                    <goto next="#playAudio"/>
                 <else/>
                     <assign name="status" expr="chkMap.result"/>
                     <goto next="#exit"/>
@@ -180,6 +174,16 @@
                 <!-- Controller didn't find a dnis map -->
                 <goto expr="chkOffice"/>
             </if>
+        </block>
+        <block>
+            <log target="status">One moment...</log>
+            <assign name="extension" expr="userEntry"/>
+            <assign name="fieldTimeOut" expr="''"/>
+            <assign name="promptID" expr="'AP1605'"/>
+            <assign name="cutIn" expr="'false'"/>
+            <assign name="status" expr="'callExt'"/>
+            <assign name="gotoForm" expr="'#exit'"/>
+            <goto next="#playAudio"/>
         </block>
     </form>
 
