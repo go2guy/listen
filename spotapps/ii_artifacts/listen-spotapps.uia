@@ -65,6 +65,18 @@
             </question>
 
             <question level="not_in_backup" severity="ask">
+                <text>Enter default custom application name</text>
+                <default></default>
+                <validateRegex>.*<validateRegex/>
+                <validateInfo>This value may be left blank. Otherwise the directory MUST currently exist under /interact/apps/spotbuild/</validateInfo>
+
+                <property format="cfg" action="update">
+                    <name>application</name>
+                    <location>/interact/listen/artifacts/defaultApp.cfg</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="ask">
                 <text>Enter the maximum allowed errors</text>
                 <default>3</default>
                 <validateRegex preset="DIGITS"/>
