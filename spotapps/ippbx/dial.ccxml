@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/27/2010
+    <!-- Last Modified 08/31/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -100,7 +100,8 @@
         </transition>
 
         <transition state="chkFwd" event="dialog.exit" name="evt">
-            <!-- Back from checking if extension is forwared -->
+            <!-- Back from checking if extension is forwared. If it is, we'll update our destination.
+            Our next step is to determine the caller ID to use for this call. -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <var name="result" expr="evt.values.result"/>
@@ -116,7 +117,7 @@
         <transition event="dialog.user.getCallerID" name="evt">
             <!-- This transition is used to get the callerID (where appropriate) -->
             <log>INFO: Entered [dialog.user.getCallerID] with state [<value expr="state"/>]</log>
-            <if cond="((tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,''))))">
+            <if cond="((importedValue.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,''))))">
                 <!-- Attempting a pbx or voip call -->
                 <log>INFO: Attempting a pbx or voip call</log>
                 <assign name="state" expr="'getCallID'"/>
