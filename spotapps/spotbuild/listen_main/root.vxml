@@ -50,6 +50,7 @@
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
 	<var name="artifactsDIR" expr="'/interact/listen/artifacts/'" />
+	<var name="FILE" expr="'defaultApp.cfg'" />
 
 
     <!-- Conference Variables -->

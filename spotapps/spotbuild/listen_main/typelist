@@ -1,9 +1,12 @@
 51-65 - decision
 51-67 - run-javascript
+145-47 - switch-application
+145-48 - run-javascript
 162-29 - assign-variable
 162-26 - switch-application
 145-22 - data-query
 162-23 - data-query
+145-40 - decision
 145-21 - assign-variable
 51-113 - run-javascript
 51-114 - data-query
@@ -11,6 +14,8 @@
 162-8 - run-javascript
 145-16 - end
 162-3 - decision
+145-36 - data-query
+145-37 - assign-variable
 162-19 - switch-application
 145-35 - audio-input
 begin - begin
