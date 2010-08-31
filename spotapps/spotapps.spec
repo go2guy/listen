@@ -65,6 +65,7 @@ Requires: spotbuild-vip
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
     cp -r %{STARTDIR}/ippbx %{buildroot}/interact/apps/spotbuild
+    mv %{buildroot}/interact/apps/spotbuild/defaultApp.cfg %{buildroot}/interact/listen/artifacts/
     cp -r %{STARTDIR}/msgLightCntrl %{buildroot}/interact/apps/spotbuild
     cp -r %{STARTDIR}/ippbx/php/* %{buildroot}/var/www/html/ippbx/
 
