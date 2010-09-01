@@ -131,19 +131,26 @@ public class NewVoicemailPagerJob implements Job
     private void sendPage(Voicemail voicemail, Subscriber subscriber, Subscriber pagerSubscriber,
                           HistoryService historyService, EmailerService emailerService)
     {
-        emailerService.sendSmsVoicemailNotification(voicemail, subscriber);
-        statSender.send(Stat.VOICEMAIL_PAGE_SENT);
-        
-        historyService.writeSentVoicemailPage(voicemail);
-        
-        // if this is a page to the after hours support pager, send a page to the alternate number as well
-        if(pagerSubscriber != null && subscriber.equals(pagerSubscriber))
+        try
         {
-            if(!Configuration.get(Property.Key.ALTERNATE_NUMBER).trim().equals(""))
+            emailerService.sendSmsVoicemailNotification(voicemail, subscriber);
+            statSender.send(Stat.VOICEMAIL_PAGE_SENT);
+            
+            historyService.writeSentVoicemailPage(voicemail);
+            
+            // if this is a page to the after hours support pager, send a page to the alternate number as well
+            if(pagerSubscriber != null && subscriber.equals(pagerSubscriber))
             {
-                emailerService.sendAlternateNumberSmsVoicemailNotification(voicemail);
-                statSender.send(Stat.VOICEMAIL_ALTERNATE_NUMBER_PAGE_SENT);
+                if(!Configuration.get(Property.Key.ALTERNATE_NUMBER).trim().equals(""))
+                {
+                    emailerService.sendAlternateNumberSmsVoicemailNotification(voicemail);
+                    statSender.send(Stat.VOICEMAIL_ALTERNATE_NUMBER_PAGE_SENT);
+                }
             }
+        }
+        catch(Exception e)
+        {
+            LOG.error("An error occurred sending paging e-mails.", e);
         }
     }
 }
