@@ -87,7 +87,7 @@ public class GetDnisServlet extends HttpServlet
 
             // if the first M (m = key.length) digits of number.length equal the key, we found a match
             int keyLength = entry.getKey().length();
-            if(entry.getKey().substring(0, keyLength - 2).equals(number.substring(0, keyLength - 2)))
+            if(entry.getKey().substring(0, keyLength - 1).equals(number.substring(0, keyLength - 1)))
             {
                 return entry.getValue();
             }
