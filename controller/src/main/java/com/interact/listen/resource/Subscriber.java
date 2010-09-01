@@ -584,28 +584,30 @@ public class Subscriber extends Resource implements Serializable
     public void updateAccessNumbers(Session session, PersistenceService persistenceService, String accessNumberString)
         throws NumberAlreadyInUseException
     {
+        List<AccessNumber> newNumbers = new ArrayList<AccessNumber>();
         Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();
         for(AccessNumber accessNumber : AccessNumber.queryBySubscriber(session, this))
         {
             existingNumbers.put(accessNumber.getNumber(), accessNumber);
         }
 
-        List<AccessNumber> newNumbers = new ArrayList<AccessNumber>();
-
-        String[] split = accessNumberString.split(";");
-        for(String an : split)
+        if(accessNumberString.length() > 0)
         {
-            String[] parts = an.split(":");
-
-            AccessNumber newNumber = new AccessNumber();
-            newNumber.setNumber(parts[0].trim());
-            newNumber.setSupportsMessageLight(Boolean.valueOf(parts[1]));
-            newNumbers.add(newNumber);
+            String[] split = accessNumberString.split(";");
+            for(String an : split)
+            {
+                String[] parts = an.split(":");
+    
+                AccessNumber newNumber = new AccessNumber();
+                newNumber.setNumber(parts[0].trim());
+                newNumber.setSupportsMessageLight(Boolean.valueOf(parts[1]));
+                newNumbers.add(newNumber);
+            }
         }
 
         for(Map.Entry<String, AccessNumber> entry : existingNumbers.entrySet())
         {
-            if(!newNumbers.contains(entry.getKey()))
+            if(!newNumbers.contains(entry.getValue()))
             {
                 session.delete(entry.getValue());
             }

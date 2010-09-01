@@ -100,7 +100,7 @@ public class EditSubscriberServlet extends HttpServlet
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
 
         String accessNumbers = request.getParameter("accessNumbers");
-        if(currentSubscriber.getIsAdministrator() && accessNumbers != null && !accessNumbers.trim().equals(""))
+        if(currentSubscriber.getIsAdministrator() && accessNumbers != null)
         {
             try
             {
