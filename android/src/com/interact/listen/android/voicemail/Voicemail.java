@@ -6,18 +6,20 @@ import android.util.Log;
 
 public class Voicemail
 {
-    private Boolean isNew = Boolean.TRUE;
+    private long id;
+	private Boolean isNew = Boolean.TRUE;
     private String leftBy;
     private String description;
     private String dateCreated;
     private String duration;
-    private String transcription;
+    private String transcription = "Transcription not available";
     
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
     private SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm yyyy-MM-dd");
     
-    public Voicemail(String isNew, String leftBy, String description, String dateCreated, String duration, String transcription)
+    public Voicemail(String id, String isNew, String leftBy, String description, String dateCreated, String duration, String transcription)
     {
+    	this.id = Long.valueOf(id);
     	this.isNew = Boolean.valueOf(isNew);
     	this.leftBy = leftBy;
     	this.description = description;
@@ -33,9 +35,23 @@ public class Voicemail
     	}
     	
     	this.duration = duration;
-    	this.transcription = transcription;
+    	
+    	if(transcription != null && !transcription.equals(""))
+    	{
+    		this.transcription = transcription;
+    	}
     }
 
+    public long getId()
+    {
+        return id;
+    }
+
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+    
     public Boolean getIsNew()
     {
         return isNew;

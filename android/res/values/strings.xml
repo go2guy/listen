@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">Listen</string>
     <string name="current_status">Inbox:</string>
+    <string name="received_on">Received: </string>
+    <string name="mark_read">Mark As Read</string>
+    <string name="delete">Delete</string>
 </resources>

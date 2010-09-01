@@ -1,8 +1,6 @@
 package com.interact.listen.android.voicemail;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,29 +17,27 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class ListenVoicemail extends ListActivity {
+	private static final int VIEW_DETAILS=0;
 	
-	Handler h;
-	
-    /** Called when the activity is first created. */
+	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
-        //final TextView textView = (TextView)findViewById(R.id.newVoicemails);
         
         final Button button = (Button)findViewById(R.id.ButtonGo);
         button.setOnClickListener(new Button.OnClickListener() {
@@ -49,62 +45,23 @@ public class ListenVoicemail extends ListActivity {
         		try
         		{
         			new VoicemailParser().execute("");
-        			
-        			/*String numNewMessages = "0";
-        			textView.setText("");
-        			
-        			URL connectURL = new URL("http://192.168.1.221:8080/api/voicemails?subscriber=/subscribers/26");
-            		HttpURLConnection conn = (HttpURLConnection)connectURL.openConnection(); 
-
-            		// do some setup
-            		conn.setRequestMethod("GET");
-
-            		// connect and flush the request out
-            		conn.connect();
-
-            		// now fetch the results
-            		String response = getResponse(conn);
-            		
-            		response = response.replace("total=\"", "@");
-                    response = response.substring(response.indexOf("@"));
-                    numNewMessages = response.substring(response.indexOf("@") + 1, response.indexOf("\""));
-                    
-            		textView.setText(numNewMessages);*/
-            		
         		} catch(Exception e) {
         			Log.e("TONY", "Exception getting JSON data", e);
         		}
         	}
-        	
-        	private String getResponse(HttpURLConnection conn)
-        	{
-        	    InputStream is = null;
-        	    try 
-        	    {
-        	        is = conn.getInputStream(); 
-        	        // scoop up the reply from the server
-        	        int ch; 
-        	        StringBuffer sb = new StringBuffer(); 
-        	        while( ( ch = is.read() ) != -1 ) {
-        	        	sb.append( (char)ch ); 
-        	        } 
-        	        return sb.toString(); 
-        	    }
-        	    catch(Exception e)
-        	    {
-        	    	Log.v("TONY", "Error getting response: " + e.getStackTrace());
-        	    }
-        	    finally 
-        	    {
-        	        try {
-        	        if (is != null)
-        	            is.close();
-        	        } catch (Exception e) {}
-        	    }
-
-        	    return "";
-        	}
         });
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        Voicemail voicemail = (Voicemail)getListAdapter().getItem(position);        
+        Intent i = new Intent(this, VoicemailDetails.class);
+        i.putExtra("id", voicemail.getId());
+        i.putExtra("leftBy", voicemail.getLeftBy());
+        i.putExtra("date", voicemail.getDateCreated());
+        //i.putExtra("transcription", voicemail.getTranscription());
+        startActivityForResult(i, VIEW_DETAILS);
     }
     
     private class VoicemailParser extends AsyncTask<String, Integer, Voicemail[]>{
@@ -112,7 +69,7 @@ public class ListenVoicemail extends ListActivity {
     	{}
     	
     	@Override
-		protected Voicemail[] doInBackground(String... symbols) {
+		protected Voicemail[] doInBackground(String... strings) {
     		try
     		{
     			ResponseHandler<String> handler = new ResponseHandler<String>()
@@ -136,10 +93,10 @@ public class ListenVoicemail extends ListActivity {
             	HttpConnectionParams.setSoTimeout(httpParams, 3000);
             	
             	HttpClient httpClient = new DefaultHttpClient(httpParams);
-            	HttpGet httpget = new HttpGet("http://picard.interact.nonreg:9090/api/voicemails?subscriber=/subscribers/26" +
-            			"&_fields=isNew,leftBy,description,dateCreated,duration,transcription&_sortBy=dateCreated&_sortOrder=DESCENDING");
-            	httpget.addHeader("Accept", "application/json");
-            	String response = httpClient.execute(httpget, handler);
+            	HttpGet httpGet = new HttpGet("http://picard.interact.nonreg:9090/api/voicemails?subscriber=/subscribers/26" +
+            			"&_fields=id,isNew,leftBy,description,dateCreated,duration,transcription&_sortBy=dateCreated&_sortOrder=DESCENDING");
+            	httpGet.addHeader("Accept", "application/json");
+            	String response = httpClient.execute(httpGet, handler);
             	Log.v("TONY", response);
             	
             	JSONObject jsonObj = new JSONObject(response);
@@ -152,7 +109,9 @@ public class ListenVoicemail extends ListActivity {
                 {
     				JSONObject object = voicemailArray.getJSONObject(i);
     				voicemails[i] = new Voicemail(
-    						object.getString("isNew"), object.getString("leftBy"), 
+    						object.getString("id"),
+    						object.getString("isNew"), 
+    						object.getString("leftBy"), 
     						object.getString("description"),
     						object.getString("dateCreated"),
     						object.getString("duration"),
@@ -170,8 +129,7 @@ public class ListenVoicemail extends ListActivity {
     	
     	@Override
 		protected void onPostExecute(Voicemail[] voicemails){
-        	//ArrayAdapter<Voicemail> adapter = new ArrayAdapter<Voicemail>(ListenVoicemail.this, R.layout.voicemail, voicemails);
-    		int numNew = 0;
+        	int numNew = 0;
     		
     		for(Voicemail voicemail : voicemails)
     		{
@@ -220,8 +178,9 @@ public class ListenVoicemail extends ListActivity {
 			// Bind the data efficiently with the holder.
 			holder.leftBy.setText( mVoicemails[position].getLeftBy());
 			holder.date.setText( mVoicemails[position].getDateCreated());
-			//holder.transcription.setText(mVoicemails[position].getTranscription()
-								//.equals("") ? "Transcription not available" : mVoicemails[position].getTranscription());
+			
+			//String transcription = getTruncatedTranscription(mVoicemails[position].getTranscription());
+			//holder.transcription.setText(transcription);
 			
 			final Typeface typeface;
 			
@@ -234,48 +193,29 @@ public class ListenVoicemail extends ListActivity {
 				typeface = Typeface.defaultFromStyle (Typeface.NORMAL);
 			}
 			
-			//holder.leftBy.setTextSize( 18 );
-			//holder.date.setTextSize( 14 );
-			//holder.transcription.setTextSize( 12 );
 			holder.leftBy.setTypeface( typeface );
 			holder.date.setTypeface( typeface );
 			//holder.transcription.setTypeface( typeface );
 			
-			/*switch ( position % 6 ) {
-			case 0:
-				holder.leftBy.setTextColor( 0xFFFF0000 );
-				holder.date.setTextColor( 0xFFFF0000 );
-				//holder.transcription.setTextColor( 0xFFFF0000 );
-				break;
-			case 1:
-				holder.leftBy.setTextColor( 0xFF00FF00 );
-				holder.date.setTextColor( 0xFF00FF00 );
-				//holder.transcription.setTextColor( 0xFF00FF00 );
-				break;
-			case 2:
-				holder.leftBy.setTextColor( 0xFF0000FF );
-				holder.date.setTextColor( 0xFF0000FF );
-				//holder.transcription.setTextColor( 0xFF0000FF );
-				break;
-			case 3:
-				holder.leftBy.setTextColor( 0xFFFFFF00 );
-				holder.date.setTextColor( 0xFFFFFF00 );
-				//holder.transcription.setTextColor( 0xFFFFFF00 );
-				break;
-			case 4:
-				holder.leftBy.setTextColor( 0xFF00FFFF );
-				holder.date.setTextColor( 0xFF00FFFF );
-				//holder.transcription.setTextColor( 0xFF00FFFF );
-				break;
-			default:
-				holder.leftBy.setTextColor( 0xFFFFFFFF );
-				holder.date.setTextColor( 0xFFFFFFFF );
-				//holder.transcription.setTextColor( 0xFFFFFFFF );
-				break;
-			}*/
-			
 			return convertView;
 		}
+		
+		/*private String getTruncatedTranscription(String fullTranscription)
+		{
+			StringBuilder returnString = new StringBuilder("");
+			if(fullTranscription != null && !fullTranscription.equals(""))
+			{
+				//add the transcription to what we will return
+				returnString.append(fullTranscription);
+				if(fullTranscription.length() > 45)
+				{
+					//Add ... and only show the first 45 characters
+					return returnString.insert(42, "...").substring(0, 45); 
+				}
+			}
+			
+			return returnString.toString();
+		}*/
 
 		private class ViewHolder {
 			TextView leftBy;
