@@ -147,6 +147,7 @@ public class EmailerService
 
     public boolean sendTestNotificationSettingsMessage(String type, String toAddress)
     {
+        LOG.debug("TONY entered sendTestNotificationSettingsMessage");
         boolean result = true;
         InternetAddress[] toAddresses = getInternetAddresses(toAddress);
         
@@ -257,11 +258,10 @@ public class EmailerService
 
     private InternetAddress[] getInternetAddresses(String oneAddress)
     {
-        List<String> list = new ArrayList<String>();
-        list.add(oneAddress);
-
-        InternetAddress[] array = new InternetAddress[1];
-        return list.toArray(array);
+        Set<String> singleAddress = new HashSet<String>();
+        singleAddress.add(oneAddress);
+        
+        return getInternetAddresses(singleAddress);
     }
 
     private InternetAddress[] getInternetAddresses(Set<String> emails)
