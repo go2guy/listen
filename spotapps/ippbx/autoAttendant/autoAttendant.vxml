@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/30/2010
+    <!-- Last Modified 09/01/2010
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -165,14 +165,14 @@
         <block cond="listenArgs.length &gt; 0">
             <if cond="chkMap.status == 'Success'">
                 <if cond="chkMap.result == 'ippbx'">
-                    <log>INFO: User trying to call ext [<value expr="extension"/>]</log>
+                    <log>INFO: User trying to call ext [<value expr="userEntry"/>]</log>
                 <else/>
                     <assign name="status" expr="chkMap.result"/>
                     <goto next="#exit"/>
                 </if>
             <else/>
                 <!-- Controller didn't find a dnis map -->
-                <goto expr="chkOffice"/>
+                <goto next="#chkOffice"/>
             </if>
         </block>
         <block>
