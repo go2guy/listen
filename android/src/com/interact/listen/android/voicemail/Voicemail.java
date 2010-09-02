@@ -36,7 +36,7 @@ public class Voicemail
     	
     	this.duration = duration;
     	
-    	if(transcription != null && !transcription.equals(""))
+    	if(transcription != null && !transcription.equals("null") && !transcription.equals(""))
     	{
     		this.transcription = transcription;
     	}

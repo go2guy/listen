@@ -60,7 +60,7 @@ public class ListenVoicemail extends ListActivity {
         i.putExtra("id", voicemail.getId());
         i.putExtra("leftBy", voicemail.getLeftBy());
         i.putExtra("date", voicemail.getDateCreated());
-        //i.putExtra("transcription", voicemail.getTranscription());
+        i.putExtra("transcription", voicemail.getTranscription());
         startActivityForResult(i, VIEW_DETAILS);
     }
     
@@ -166,7 +166,7 @@ public class ListenVoicemail extends ListActivity {
 				holder = new ViewHolder();
 				holder.leftBy = (TextView)convertView.findViewById(R.id.leftBy);
 				holder.date = (TextView)convertView.findViewById(R.id.date);
-				//holder.transcription = (TextView)convertView.findViewById(R.id.transcription);
+				holder.transcription = (TextView)convertView.findViewById(R.id.transcription);
 			
 				convertView.setTag(holder);
 			}
@@ -179,8 +179,8 @@ public class ListenVoicemail extends ListActivity {
 			holder.leftBy.setText( mVoicemails[position].getLeftBy());
 			holder.date.setText( mVoicemails[position].getDateCreated());
 			
-			//String transcription = getTruncatedTranscription(mVoicemails[position].getTranscription());
-			//holder.transcription.setText(transcription);
+			String transcription = getTruncatedTranscription(mVoicemails[position].getTranscription());
+			holder.transcription.setText(transcription);
 			
 			final Typeface typeface;
 			
@@ -195,12 +195,12 @@ public class ListenVoicemail extends ListActivity {
 			
 			holder.leftBy.setTypeface( typeface );
 			holder.date.setTypeface( typeface );
-			//holder.transcription.setTypeface( typeface );
+			holder.transcription.setTypeface( typeface );
 			
 			return convertView;
 		}
 		
-		/*private String getTruncatedTranscription(String fullTranscription)
+		private String getTruncatedTranscription(String fullTranscription)
 		{
 			StringBuilder returnString = new StringBuilder("");
 			if(fullTranscription != null && !fullTranscription.equals(""))
@@ -215,12 +215,12 @@ public class ListenVoicemail extends ListActivity {
 			}
 			
 			return returnString.toString();
-		}*/
+		}
 
 		private class ViewHolder {
 			TextView leftBy;
 			TextView date;
-			//TextView transcription;
+			TextView transcription;
 		}
 	}
 }

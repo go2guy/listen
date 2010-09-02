@@ -29,7 +29,7 @@ public class VoicemailDetails extends Activity
 {
 	private TextView mLeftBy;
     private TextView mDate;
-    //private TextView mTranscription;
+    private TextView mTranscription;
     private long mVoicemailId;
     
     /** Called when the activity is first created. */
@@ -49,15 +49,15 @@ public class VoicemailDetails extends Activity
         mVoicemailId = extras.getLong("id");
         String leftBy = extras.getString("leftBy");
         String date = extras.getString("date");
-        //String transcription = extras.getString("transcription");
+        String transcription = extras.getString("transcription");
         
         mLeftBy = (TextView) findViewById(R.id.detailLeftBy);
         mDate = (TextView) findViewById(R.id.detailDate);
-        //mTranscription = (TextView) findViewById(R.id.detailTranscription);
+        mTranscription = (TextView) findViewById(R.id.detailTranscription);
         
         mLeftBy.setText(leftBy);
         mDate.setText(date);
-        //mTranscription.setText(transcription);
+        mTranscription.setText(transcription);
         
         Button markReadButton = (Button) findViewById(R.id.markRead);
         Button deleteButton = (Button) findViewById(R.id.delete);
