@@ -1,25 +1,29 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/26/2010
+    <!-- Last Modified 09/02/2010
        *   @Name	validatePasscode.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we validate the passcode associated with an extension -->
 
     <!-- Global Variable -->
-    <var name="resource" expr="'accessNumbers'"/>
-    <var name="params" expr="''"/>
-    <var name="cntrlURL" expr="''"/>
-    <var name="request"  expr="'get'"/>
     <var name="subID" expr="''"/>
 
 	<form id="beginDocument">
 		<block>
 	        <log>INFO: Entered beginDocument</log>
-            <log target="status">Get Sub ID</log>
-            <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
-            <assign name="params" expr="setGetParam(extension)"/>
-            <goto next="#sendEvent"/>
+            <if cond="listenArgs.length &gt; 0">
+                <log target="status">Get Sub ID</log>
+                <assign name="resource" expr="'accessNumbers'"/>
+                <assign name="request"  expr="'get'"/>
+                <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
+                <assign name="params" expr="setParam(extension)"/>
+                <goto next="#sendEvent"/>
+            <else/>
+                <log>ERROR: Controller is unavailable</log>
+                <assign name="errID" expr="''" />
+                <goto next="#serviceError"/>
+            </if>
         </block>
     </form>
 
@@ -29,13 +33,25 @@
             <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
-            <goto next="#chkResult"/>
+            <if cond="status == 'Failure'">
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <else/>
+                    <log>INFO: No information on controller</log>
+                    <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#error'"/>
+                </if>
+            <else/>
+                <goto next="#chkResult"/>
+            </if>
         </block>
     </form>
 
     <form id="chkResult">
         <!-- -->
-        <block cond="((status == 'Success') &amp;&amp; (resource == 'accessNumbers'))">
+        <block cond="resource == 'accessNumbers'">
             <log>INFO: Entered chkResult</log>
             <var name="count" expr="getJsonVal(result, 'count')"/>
             <if cond="count == 1">
@@ -45,15 +61,12 @@
                 <goto next="#sendEvent"/>
             </if>
         </block>
-        <block cond="((status == 'Success') &amp;&amp; (resource == 'subscribers/'))">
+        <block cond="resource == 'subscribers/'">
             <log>INFO: Entered chkResult</log>
             <var name="pin" expr="getJsonVal(result, 'voicemailPin')"/>
             <if cond="pin == passcode">
                 <goto next="#getDestination"/>
             </if>
-        </block>
-        <block>
-            <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#error'"/>
         </block>
     </form>
 
@@ -75,17 +88,31 @@
         </block>
     </form>
 
-    <catch event="error.badfetch">  <!-- This logic handles connection errors to the db -->
-        <log>ERROR: Unable to connect with controller</log>
-        <assign name="promptID" expr="'APserviceError|APserviceError2|APtryAgainLater|APthankYou|APgoodbye'"/>
-        <assign name="gotoForm" expr="'#exit'"/>
-        <assign name="status" expr="'endCall'"/>
-        <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#playAudio'"/>
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'" cond="errID.length &gt; 0">
+            <param name="id" expr="errID"/>
+            <param name="statServer" expr="getJsonVal(listenArgs, 'STATcontroller')"/>
+        </subdialog>
+        <block>
+            <assign name="promptID" expr="'APserviceError|APserviceError2|APtryAgainLater|APthankYou|APgoodbye'"/>
+            <assign name="gotoForm" expr="'#exit'"/>
+            <assign name="status" expr="'endCall'"/>
+            <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#playAudio'"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
+        <log>ERROR: Unable to connect with local webserver</log>
+        <assign name="errID" expr="''" />
+        <goto next="#serviceError"/>
     </catch>
 
     <script>
         <![CDATA[
-            function setGetParam(inStr) {
+            function setParam(inStr) {
                 return "?_fields=subscriber&number=" + inStr;
             }
 
@@ -94,6 +121,22 @@
                 var subscriber = result.results[0].subscriber.href;
                 subscriber = getNextElement('L',subscriber,'/');
                 return subscriber;
+            }
+
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
             }
         ]]>
     </script>

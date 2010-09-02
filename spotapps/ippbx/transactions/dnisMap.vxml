@@ -1,25 +1,20 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/26/2010
+    <!-- Last Modified 09/02/2010
        *   @Name	dnisMap.vxml
        *   @Desc	This script checks the DNIS mapping on the controller  -->
-
-    <!-- Global Variable -->
-    <var name="resource" expr="'meta/'"/>
-    <var name="params" expr="'getDnis?number='"/>
-    <var name="cntrlURL" expr="''"/>
-    <var name="request"  expr="'get'"/>
-    <var name="listenArgs" expr="''"/>
 
 	<form id="beginDocument">
         <var name="dnis"/>
         <var name="argList"/>
 		<block>
 	        <log>INFO: Entered beginDocument</log>
+            <assign name="resource" expr="'meta/'"/>
+            <assign name="params" expr="'getDnis?number=' + dnis"/>
+            <assign name="request"  expr="'get'"/>
             <assign name="listenArgs" expr="argList"/>
             <assign name="cntrlURL" expr="getCntrl(listenArgs)"/>
-            <assign name="params" expr="params + dnis"/>
             <goto next="#sendEvent"/>
         </block>
     </form>
@@ -30,13 +25,40 @@
             <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
+            <if cond="status == 'Failure'">
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <else/>
+                    <log>INFO: No mapping for dnis</log>
+                </if>
+            <else/>
+                <log>INFO: DNIS is mapped to [<value expr="result"/>]</log>
+            </if>
             <return namelist="status result"/>
         </block>
     </form>
 
-    <catch event="error.badfetch">  <!-- This logic handles connection errors to the db -->
-        <log>ERROR: Unable to connect with controller</log>
-        <assign name="status" expr="'Failure'" />
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'">
+            <param name="id" expr="errID"/>
+            <param name="statServer" expr="getJsonVal(listenArgs, 'STATcontroller')"/>
+        </subdialog>
+        <block>
+            <assign name="status" expr="'CNTRL_DOWN'" />
+            <assign name="result" expr="''" />
+            <return namelist="status result"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
+        <log>ERROR: Unable to connect with local webserver</log>
+        <assign name="status" expr="''" />
         <assign name="result" expr="''" />
         <return namelist="status result"/>
     </catch>
@@ -48,6 +70,22 @@
                 var result = new String(tmpVal.cntrlURL);
                 tmpVal = result.split('/api');
                 return tmpVal[0];
+            }
+
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
             }
         ]]>
     </script>

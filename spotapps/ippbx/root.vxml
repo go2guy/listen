@@ -26,6 +26,7 @@
     <var name="listenArgs" expr="''"/>
     <var name="contactNumber" expr="''"/>
     <var name="result" expr="''"/>
+    <var name="reason" expr="''"/>
     <var name="tmpVal" expr="''"/>
     <var name="passcode" expr="''"/>
     <var name="AM_OPEN" expr="800"/> <!-- Office start time -->
@@ -40,8 +41,8 @@
 
     <!-- STATS -->
     <var name="errID" expr="''"/>
-    <var name="srvErrID" expr="'AFTRHRS_SERVICE_ERROR'"/>
-    <var name="recErrID" expr="'AFTRHRS_RECORD_ERROR'"/>
+    <var name="cntrlErrID" expr="'LSTNAPP_SERVICE_ERROR'"/>
+    <var name="recErrID" expr="'LSTNAPP_RECORD_ERROR'"/>
 
     <!-- DB vars -->
     <var name="extension" expr="''"/>

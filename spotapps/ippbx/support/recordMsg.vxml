@@ -1,36 +1,36 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/26/2010
+    <!-- Last Modified 09/02/2010
        *   @Name	recordMsg.vxml
        *   @Desc	This script handles all recording activities for the after
                     hours mailbox -->
 
     <!-- Global Variables -->
-    <var name="subID" expr="''"/>
+    <var name="subID" expr="'Failure'"/>
     <var name="msgPath" expr="''"/>
-    <var name="tmpDir" expr="'/interact/tmp/'"/>
+    <var name="altDir" expr="'/interact/listen/artifacts/afterHrs/'"/>
     <var name="size" expr="0"/>
     <var name="duration" expr="''"/>
-    <var name="cntrlURL" expr="''"/>
-    <var name="request"  expr="''"/>
-    <var name="resource" expr="''"/>
-    <var name="params" expr="''"/>
     <var name="REQUEST"  expr="''"/>
     <var name="RESOURCE" expr="''"/>
     <var name="PARAMS" expr="''"/>
-    <var name="result" expr="''"/>
 	
 	<form id="beginDocument">
         <!-- Here, we set up the variables needed by the controller to return the after
         hours mailbox ID -->
 		<block>
 	        <log>INFO: Entered beginDocument</log>
-            <assign name="REQUEST"  expr="'get'"/>
-            <assign name="RESOURCE" expr="'subscribers'"/>
-            <assign name="PARAMS" expr="setParam(aftHrsMbxName)"/>
-            <assign name="gotoForm" expr="'#chkPath'"/>
-            <goto next="#sendEvent"/>
+            <if cond="listenArgs.length &gt; 0">
+                <assign name="REQUEST"  expr="'get'"/>
+                <assign name="RESOURCE" expr="'subscribers'"/>
+                <assign name="PARAMS" expr="setParam(aftHrsMbxName)"/>
+                <assign name="gotoForm" expr="'#chkPath'"/>
+                <goto next="#sendEvent"/>
+            <else/>
+                <log>ERROR: Controller is unavailable</log>
+                <goto next="#chkPath"/>
+            </if>
 		</block>
 	</form>
 
@@ -45,26 +45,44 @@
             <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
-            <goto expr="gotoForm"/>
+            <if cond="status == 'Failure'">
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <elseif cond="RESOURCE == 'subscribers'"/>
+                    <log>INFO: No information about after hrs mbx on controller</log>
+                    <assign name="msgPath" expr="altDir"/>
+                    <goto next="#recMsg"/>
+                <else/>
+                    <goto next="#exit"/>
+                </if>
+            <else/>
+                <if cond="RESOURCE == 'subscribers'">
+                    <assign name="subID" expr="getID(result)" />
+                    <goto next="#chkPath"/>
+                <else/>
+                    <goto next="#exit"/>
+                </if>
+            </if>         
 		</block>
 	</form>
-
 
 	<form id="chkPath">
         <!-- Here, we set the record directory -->
 		<block>
 	        <log>INFO: Entered chkPath</log>
-            <assign name="subID" expr="getID(result)" />
             <log>INFO: SubID [<value expr="subID"/>]</log>
             <if cond="subID == 'Failure'">
-                <assign name="msgPath" expr="tmpDir"/>
+                <assign name="msgPath" expr="altDir"/>
             <else/>
                 <assign name="msgPath" expr="getJsonVal(listenArgs, 'artifactsDIR') + subID + '/voicemail/message/'"/>
                 <var name="FILE1" expr="msgPath"/>
                 <var name="OPERATION" expr="'create'"/>
                 <data name="fileOBJ" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="get" namelist="FILE1 OPERATION" fetchtimeout="1s"/>
                 <if cond="fileOBJ.result == 'Failure'">
-                    <assign name="msgPath" expr="tmpDir"/>
+                    <assign name="msgPath" expr="altDir"/>
                 </if>
             </if>
             <goto next="#recMsg"/>
@@ -85,6 +103,20 @@
         	<assign name="duration" expr="recording$.duration"/>
             <goto next="#notify"/>
 		</block>
+        <error>
+            <log target="status">Record Error</log>
+            <log>Error: [<value expr='_event'/>]</log>
+            <assign name="errID" expr="recErrID"/>
+            <if cond="listenArgs.length &gt; 0">
+                <goto next="#serviceError"/>
+            <else/>
+                <assign name="cutIn" expr="'false'"/>
+                <assign name="fieldTimeOut" expr="''"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <assign name="promptID" expr="'APserviceError|APserviceError2|APtryAgainLater|APthankYou'"/>
+                <goto next="#playAudio"/>
+            </if>
+        </error>
 	</form>
 
     <form id="notify">
@@ -94,6 +126,7 @@
             <log target="status">Thank you</log>
             <assign name="cutIn" expr="'false'"/>
             <assign name="fieldTimeOut" expr="''"/>
+            <assign name="gotoForm" expr="'#postRec'"/>
             <assign name="promptID" expr="'AP1015|AP1595'"/>
             <goto next="#playAudio"/>
         </block>
@@ -113,19 +146,46 @@
             <param name="file" expr="promptID"/>
         </subdialog>
         <block>
-        	<goto next="#postRec"/>
+        	<goto expr="#gotoForm"/>
         </block>
     </form>
 
     <form id="postRec">
         <block>
             <log>INFO: Entered postRec</log>
-            <assign name="REQUEST"  expr="'post'"/>
-            <assign name="RESOURCE" expr="'voicemails'"/>
-            <assign name="PARAMS" expr="setPostParam(listenArgs,msgPath,duration,size,contactNumber,subID)"/>
-            <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
-            <assign name="gotoForm" expr="'#exit'"/>
-            <goto next="#sendEvent"/>
+            <if cond="listenArgs.length &gt; 0">
+                <assign name="REQUEST"  expr="'post'"/>
+                <assign name="RESOURCE" expr="'voicemails'"/>
+                <assign name="PARAMS" expr="setPostParam(listenArgs,msgPath,duration,size,contactNumber,subID)"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <goto next="#sendEvent"/>
+            <else/>
+                <goto next="#exit"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'">
+            <param name="id" expr="errID"/>
+            <param name="statServer" expr="getJsonVal(listenArgs, 'STATcontroller')"/>
+        </subdialog>
+        <block>
+            <if cond="errID == recErrID">
+                <assign name="cutIn" expr="'false'"/>
+                <assign name="fieldTimeOut" expr="''"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <assign name="promptID" expr="'APserviceError|APserviceError2|APtryAgainLater|APthankYou'"/>
+                <goto next="#playAudio"/>
+            <elseif cond="RESOURCE == 'subscribers'"/>
+                <assign name="msgPath" expr="altDir"/>
+                <goto next="#recMsg"/>
+            <else/>
+                <goto next="#exit"/>
+            </if>
         </block>
     </form>
 
@@ -135,6 +195,15 @@
             <exit namelist="status"/>
         </block>
     </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
+        <log>ERROR: Unable to connect with local webserver</log>
+        <assign name="cutIn" expr="'false'"/>
+        <assign name="fieldTimeOut" expr="''"/>
+        <assign name="gotoForm" expr="'#exit'"/>
+        <assign name="promptID" expr="'APserviceError|APserviceError2|APtryAgainLater|APthankYou'"/>
+        <goto next="#playAudio"/>
+    </catch>
 
     <!-- The logic below allows us to react to a scenario where the caller hangs up after recording.
     In this case, we'll save off the recording (if there's one) and then exit the application -->
@@ -167,6 +236,22 @@
                     return obj.results[0].id;
                 else
                     return "Failure";
+            }
+
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
             }
         ]]>
     </script>

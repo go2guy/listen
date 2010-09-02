@@ -61,6 +61,7 @@ Requires: spotbuild-vip
     mkdir -p %{buildroot}/interact/apps/
     mkdir -p %{buildroot}/var/www/html/ippbx/
     mkdir -p %{buildroot}/interact/listen/artifacts/
+    mkdir -p %{buildroot}/interact/listen/artifacts/afterHrs/
     mkdir -p %{buildroot}/var/www/html/interact/listen/
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
@@ -109,7 +110,7 @@ Requires: spotbuild-vip
     /interact/apps/spotbuild/msgLightCntrl*
     /interact/apps/spotbuild/after_hours*
     /interact/apps/spotbuild/lib/cgi-bin/listen
-    /interact/listen/artifacts
+    /interact/listen/artifacts/*
     /var/www/html/interact/listen/
     /var/www/html/ippbx/*
 

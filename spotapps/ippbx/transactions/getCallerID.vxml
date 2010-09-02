@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/27/2010
+    <!-- Last Modified 09/02/2010
        *   @Name	getCallerID.vxml
        *   @Desc	This script checks the name of the party attempting
                     a pbx or voip call -->
@@ -27,7 +27,20 @@
             <data name="apiObj" srcexpr="getJsonVal(importedValue, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
-            <goto next="#chkResult"/>
+            <if cond="status == 'Failure'">
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <else/>
+                    <log>INFO: No information on controller</log>
+                    <assign name="result" expr="''"/>
+                    <goto next="#exit"/>
+                </if>
+            <else/>
+                <goto next="#chkResult"/>
+            </if>
         </block>
     </form>
 
@@ -74,10 +87,10 @@
         </block>
     </form>
 
-    <catch event="error.badfetch">  <!-- This logic handles connection errors to the db -->
-        <log>ERROR: Unable to connect with controller</log>
-        <assign name="errID" expr="srvErrID"/>
-        <goto next="#serviceError"/>
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
+        <log>ERROR: Unable to connect with local webserver</log>
+        <assign name="result" expr="''"/>
+        <goto next="#exit"/>
     </catch>
 
     <script>
@@ -90,6 +103,22 @@
 
             function setParam(ani) {
              return "?_fields=subscriber&number="+ani;
+            }
+
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
             }
         ]]>
     </script>
