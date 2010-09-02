@@ -64,6 +64,9 @@ public class Conference extends Resource implements Serializable
     @OneToMany(mappedBy = "conference", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private Set<ConferenceRecording> conferenceRecordings = new HashSet<ConferenceRecording>();
 
+    @OneToMany(mappedBy = "conference", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    private Set<ScheduledConference> scheduledConferences = new HashSet<ScheduledConference>();
+
     @JoinColumn(name = "SUBSCRIBER_ID")
     @ManyToOne
     private Subscriber subscriber;
@@ -204,6 +207,16 @@ public class Conference extends Resource implements Serializable
     public void setConferenceRecordings(Set<ConferenceRecording> conferenceRecordings)
     {
         this.conferenceRecordings = conferenceRecordings;
+    }
+
+    public Set<ScheduledConference> getScheduledConferences()
+    {
+        return scheduledConferences;
+    }
+
+    public void setScheduledConferences(Set<ScheduledConference> scheduledConferences)
+    {
+        this.scheduledConferences = scheduledConferences;
     }
 
     public Subscriber getSubscriber()
