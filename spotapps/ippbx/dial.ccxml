@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/31/2010
+    <!-- Last Modified 09/02/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -459,6 +459,7 @@
         <transition event="dialog.user.listenVoiceMail" name="evt">
             <!-- Here we'll pass control to the begin ccxml script which calls the Listen Voice Mail project -->
             <log>INFO: Entered [dialog.user.listenVoiceMail] with state [<value expr="state"/>]</log>
+            <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
                 <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
                 <var name="II_SB_status" expr="''"/>
                 <var name="II_SB_local" expr="DNIS"/>
@@ -475,6 +476,14 @@
                 <var name="II_SB_line" expr="''"/>
                 <var name="II_SB_importedValue" expr="importedValue"/>
                 <fetch next="'file:'+SB_PATH+'listen_voicemail/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+            <else/>
+                <!-- Play service error prompts -->
+                <assign name="state" expr="'cntrlDown'"/>
+                <var name="II_SB_repeat" expr="'n'"/>
+                <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceErr.00.wav'+' '+AUDIO_PATH+'tryAgainLater.00.wav'+' '+AUDIO_PATH+'thankYou.00.wav'+' '+AUDIO_PATH+'goodbye.00.wav'"/>
+                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+            </if>
         </transition>
 
         <transition state="callFailed" event="dialog.exit" name="evt">
@@ -514,8 +523,9 @@
             </if>
 		</transition>
 
-        <transition state="invalidExt" event="dialog.exit" name="evt">
-            <!-- In here, we've just returned from informing the caller that extension they tried to reach does not exist -->
+        <transition state="invalidExt cntrlDown" event="dialog.exit" name="evt">
+            <!-- We've informed the caller that extension they tried to reach does not exist,
+             or we're experiencing a technical difficulty. -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <!-- Remove the caller's record in the db prior to exiting -->
             <assign name="inVXML" expr="'n'"/>
