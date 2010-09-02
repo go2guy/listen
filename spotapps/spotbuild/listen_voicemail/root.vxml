@@ -63,6 +63,7 @@
 	<var name="artifactsDIR" expr="''" />
 	<var name="msgDIR" expr="'/voicemail/message/'" />
 	<var name="isMsgSaved" expr="'false'" />
+	<var name="callerID" expr="''" />
 
 
     <!-- Conference Variables -->

@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'120-62'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'183-3'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(callerID,DNIS,subID,sysAccessTime)
+            function II_SB_JS_function(ANI)
             {
-	            var duration = new Date().getTime() - sysAccessTime;return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"subscriber\": {\"href\":\"/subscribers/"+subID+"\"}, \"service\": \"Voicemail\", \"duration\":"+duration+", \"ani\":\""+callerID+"\", \"dnis\":\""+getnum(DNIS)+"\", \"direction\":\"INBOUND\"}";
+	            return "?_fields=subscriber&number=" + getnum(ANI);
             }
         ]]>
     </script>
@@ -19,8 +19,8 @@
     <form id="beginDocument">
         <block>
             <log target="status">Set Params</log>
-            <log>INFO: Entered run-javascript.vxml [120-48]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(callerID,DNIS,subID,sysAccessTime)"/>   <!-- Call Javascript funtion and store result -->
+            <log>INFO: Entered run-javascript.vxml [183-6]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(ANI)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

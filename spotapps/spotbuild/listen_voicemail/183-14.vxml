@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'173-7'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'183-9'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(returnVal)
+            function II_SB_JS_function(returnVal,status)
             {
-	            var result = eval("("+returnVal+")");var accessID = result.results[0].href;accessID = getNextElement('L',accessID,'/');return accessID;
+	            var result = "NOT_FOUND";var tmpVal = eval("("+returnVal+")");if ((status == 'Success') && (tmpVal .count== 1)) {result = tmpVal.results[0].subscriber.href.split('/')[2];}return result;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">get accessID</log>
-            <log>INFO: Entered run-javascript.vxml [173-14]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="accessID" expr="II_SB_userJava" />   
+            <log target="status">Chk Result</log>
+            <log>INFO: Entered run-javascript.vxml [183-14]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal,status)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
