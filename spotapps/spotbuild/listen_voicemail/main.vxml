@@ -52,6 +52,7 @@
 	<var name="SB_UV_operation"/>
 	<var name="SB_UV_artifactsDIR"/>
 	<var name="SB_UV_msgDIR"/>
+	<var name="SB_UV_isMsgSaved"/>
 
     
     <form id="beginDocument">
@@ -164,6 +165,9 @@
 			</if>
 			<if cond="SB_UV_msgDIR != undefined">
 				<assign name="msgDIR" expr="SB_UV_msgDIR" />
+			</if>
+			<if cond="SB_UV_isMsgSaved != undefined">
+				<assign name="isMsgSaved" expr="SB_UV_isMsgSaved" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
