@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal,status,ANI)
             {
-	            var result = getnum(ANI);var tmpVal = eval("("+returnVal+")");if ((status == 'Success') && (tmpVal .realName.length > 0)) {result = tmpVal.realName;}return result;
+	            var result = getnum(ANI);var tmpVal = eval("("+returnVal+")");if ((status == 'Success') && (tmpVal.realName != null) && (tmpVal .realName.length > 0)) {result = tmpVal.realName;}return result;
             }
         ]]>
     </script>
