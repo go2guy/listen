@@ -38,14 +38,14 @@ public final class HibernateUtil
      */
     private static enum Environment
     {
-        DEV  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super"),
-        TEST ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super"),
-        PROD ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc");
+        DEV  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
+        TEST ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
+        PROD ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1");
 
-        private final String dbUrl, dbUsername, dbPassword, dbDialect, dbDriver;
+        private final String dbUrl, dbUsername, dbPassword, dbDialect, dbDriver, dbTestQuery;
         private final String guiPassword;
 
-        private Environment(String dbUrl, String dbUsername, String dbPassword, String dbDialect, String dbDriver, String guiPassword)
+        private Environment(String dbUrl, String dbUsername, String dbPassword, String dbDialect, String dbDriver, String guiPassword, String dbTestQuery)
         {
             this.dbUrl = dbUrl;
             this.dbUsername = dbUsername;
@@ -53,6 +53,7 @@ public final class HibernateUtil
             this.dbDialect = dbDialect;
             this.dbDriver = dbDriver;
             this.guiPassword = guiPassword;
+            this.dbTestQuery = dbTestQuery;
         }
 
         public String getDbUrl()
@@ -84,6 +85,11 @@ public final class HibernateUtil
         {
             return guiPassword;
         }
+
+        public String getDbTestQuery()
+        {
+            return dbTestQuery;
+        }
     }
     
     private HibernateUtil()
@@ -100,26 +106,34 @@ public final class HibernateUtil
             final String dbPassword = System.getProperty("com.interact.listen.db.password", ENVIRONMENT.getDbPassword());
             final String dbDialect = System.getProperty("com.interact.listen.db.dialect", ENVIRONMENT.getDbDialect());
             final String dbDriver = System.getProperty("com.interact.listen.db.driver", ENVIRONMENT.getDbDriver());
+            final String dbTestQuery = System.getProperty("com.interact.listen.db.testQuery", ENVIRONMENT.getDbTestQuery());
 
             LOG.debug("DB connection string = [" + dbUrl + "]");
             LOG.debug("DB username =          [" + dbUsername + "]");
             LOG.debug("DB password =          [*]");
             LOG.debug("DB dialect =           [" + dbDialect + "]");
             LOG.debug("DB driver =            [" + dbDriver + "]");
-
+           
             AnnotationConfiguration config = new AnnotationConfiguration();
-            config.setProperty("hibernate.dialect", dbDialect);
+            config.setProperty("hibernate.c3p0.acquire_increment", "3");
+            config.setProperty("hibernate.c3p0.idle_test_period", "14400"); // seconds, must be less than mysql wait_timeout
+            config.setProperty("hibernate.c3p0.max_size", System.getProperty("com.interact.listen.db.maxConnections", "50"));
+            config.setProperty("hibernate.c3p0.max_statements", "0");
+            config.setProperty("hibernate.c3p0.min_size", System.getProperty("com.interact.listen.db.minConnections", "5"));
+            config.setProperty("hibernate.c3p0.preferredTestQuery", dbTestQuery);
+            config.setProperty("hibernate.c3p0.timeout", "7200");
+            config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
+            config.setProperty("hibernate.connection.autocommit", "false");
             config.setProperty("hibernate.connection.driver_class", dbDriver);
             config.setProperty("hibernate.connection.url", dbUrl);
             config.setProperty("hibernate.connection.username", dbUsername);
             config.setProperty("hibernate.connection.password", dbPassword);
-            config.setProperty("hibernate.connection.pool_size", "1");
-            config.setProperty("hibernate.connection.autocommit", "false");
-            config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
-            config.setProperty("hibernate.show_sql", "false");
-            config.setProperty("hibernate.transaction.factory_class",
-                               "org.hibernate.transaction.JDBCTransactionFactory");
+            //config.setProperty("hibernate.connection.pool_size", "1");
+            config.setProperty("hibernate.connection.provider_class", "org.hibernate.connection.C3P0ConnectionProvider");
             config.setProperty("hibernate.current_session_context_class", "thread");
+            config.setProperty("hibernate.dialect", dbDialect);
+            config.setProperty("hibernate.show_sql", "false");
+            config.setProperty("hibernate.transaction.factory_class", "org.hibernate.transaction.JDBCTransactionFactory");
 
             // application classes
             config.addAnnotatedClass(AccessNumber.class);

@@ -1,0 +1,79 @@
+The Listen Controller can be configured at the command line. As an example,
+the following command sets the 'com.interact.foo' property to a value of 'bar'.
+
+    java -Dcom.interact.foo=bar -jar listen-controller.war
+
+The properties must come before the -jar flag. All properties are optional. If
+a property is not provided at the command line, the Default value (specified
+below) will be used.
+
+SERVER/ENVIRONMENT PROPERTIES
+
+--------------------------------------------------------------------------------
+Name                                    Default
+--------------------------------------------------------------------------------
+com.interact.listen.db.url              jdbc:mysql://localhost/listen
+com.interact.listen.db.username         root
+com.interact.listen.db.password         [no default password]
+com.interact.listen.db.dialect          org.hibernate.dialect.MySQLInnoDBDialect
+com.interact.listen.db.driver           com.mysql.jdbc.Driver
+com.interact.listen.db.testQuery        SELECT 1
+
+com.interact.listen.db.maxConnections   50
+com.interact.listen.db.minConnections   5
+bootstrap                               false
+
+ENVIRONMENT PROPERTY
+
+Additionally, the following property helps to aggregate several of the above
+properties:
+
+com.interact.listen.env
+
+This property can be one of the following values: DEV, TEST, PROD. For each of
+these values, the following properties and values are set:
+
+--------------------------------------------------------------------------------
+DEV and TEST
+--------------------------------------------------------------------------------
+com.interact.listen.db.url              jdbc:hsqldb:mem:listendb
+com.interact.listen.db.username         sa
+com.interact.listen.db.password         
+com.interact.listen.db.dialect          org.hibernate.dialect.HSQLDialect
+com.interact.listen.db.driver           org.hsqldb.jdbcDriver
+com.interact.listen.db.testQuery        SELECT 1 FROM SUBSCRIBER
+
+--------------------------------------------------------------------------------
+PROD
+--------------------------------------------------------------------------------
+com.interact.listen.db.url              jdbc:mysql://localhost/listen
+com.interact.listen.db.username         root
+com.interact.listen.db.password         [no default password]
+com.interact.listen.db.dialect          org.hibernate.dialect.MySQLInnoDBDialect
+com.interact.listen.db.driver           com.mysql.jdbc.Driver
+com.interact.listen.db.testQuery        SELECT 1
+
+APPLICATION PROPERTIES
+
+Properties related to the business functions of the application can be set in
+the same way. Most of these can be configured through the GUI, but setting them
+at the command line can be convenient for testing or other automated functions.
+
+Application properties:
+--------------------------------------------------------------------------------
+Name                                        Default
+--------------------------------------------------------------------------------
+com.interact.listen.dnisMapping             770:mailbox;990:conferencing;*:voicemail
+com.interact.listen.smtpHost                localhost
+com.interact.listen.smtpUsername            
+com.interact.listen.smtpPassword            
+com.interact.listen.fromAddress             no-reply@localhost
+com.interact.listen.conferencing.pinLength  10
+com.interact.listen.pagerNumber             4024292889
+com.interact.listen.alternateNumber         
+com.interact.listen.pagePrefix              
+com.interact.listen.realizeUrl              http://localhost:8080/realize
+com.interact.listen.realizeAlertName        Listen Pager Alert
+com.interact.listen.activeDirectory.enabled false
+com.interact.listen.activeDirectory.server  
+com.interact.listen.activeDirectory.domain  
