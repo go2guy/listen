@@ -1,6 +1,7 @@
 package com.interact.listen.android.voicemail;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -18,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +33,8 @@ public class VoicemailDetails extends Activity
     private TextView mDate;
     private TextView mTranscription;
     private long mVoicemailId;
+    private ArrayList<Voicemail> mVoicemails;
+    private int mPosition;
     
     /** Called when the activity is first created. */
     @Override
@@ -50,6 +54,7 @@ public class VoicemailDetails extends Activity
         String leftBy = extras.getString("leftBy");
         String date = extras.getString("date");
         String transcription = extras.getString("transcription");
+        mPosition = extras.getInt("position");
         
         mLeftBy = (TextView) findViewById(R.id.detailLeftBy);
         mDate = (TextView) findViewById(R.id.detailDate);
@@ -67,7 +72,14 @@ public class VoicemailDetails extends Activity
         		try
         		{
         			new MarkVoicemailRead().execute(mVoicemailId);
-        			setResult(RESULT_OK);
+        			Bundle bundle = new Bundle();
+        			bundle.putInt("position", mPosition);
+        			bundle.putBoolean("deleted", false);
+        			
+        			Intent mIntent = new Intent();
+        			mIntent.putExtras(bundle);
+        			
+        			setResult(RESULT_OK, mIntent);
                     finish();
         		} catch(Exception e) {
         			Log.e("TONY", "Exception marking voicemail read", e);
@@ -80,7 +92,14 @@ public class VoicemailDetails extends Activity
         		try
         		{
         			new DeleteVoicemail().execute(mVoicemailId);
-        			setResult(RESULT_OK);
+        			Bundle bundle = new Bundle();
+        			bundle.putInt("position", mPosition);
+        			bundle.putBoolean("deleted", true);
+        			
+        			Intent mIntent = new Intent();
+        			mIntent.putExtras(bundle);
+        			
+        			setResult(RESULT_OK, mIntent);
                     finish();
         		} catch(Exception e) {
         			Log.e("TONY", "Exception deleting voicemail", e);

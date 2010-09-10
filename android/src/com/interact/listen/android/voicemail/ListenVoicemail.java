@@ -1,6 +1,7 @@
 package com.interact.listen.android.voicemail;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,17 +22,32 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 public class ListenVoicemail extends ListActivity {
 	private static final int VIEW_DETAILS=0;
+	private Handler mHandler = new Handler();
+	private Runnable mUpdateTimeTask = new Runnable() {
+		   public void run() {
+			   try
+       		   {
+       			    new VoicemailParser().execute("");
+       		   }
+			   catch(Exception e)
+       		   {
+       				Log.e("TONY", "Exception getting JSON data", e);
+       		   }
+			   
+		       mHandler.postDelayed(this, 12000);
+		   }
+		};
 	
 	/** Called when the activity is first created. */
     @Override
@@ -39,17 +55,10 @@ public class ListenVoicemail extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        final Button button = (Button)findViewById(R.id.ButtonGo);
-        button.setOnClickListener(new Button.OnClickListener() {
-        	public void onClick(View v) {
-        		try
-        		{
-        			new VoicemailParser().execute("");
-        		} catch(Exception e) {
-        			Log.e("TONY", "Exception getting JSON data", e);
-        		}
-        	}
-        });
+        VoicemailListAdapter adapter = new VoicemailListAdapter(new ArrayList<Voicemail>(0));
+        setListAdapter(adapter);
+        
+        mHandler.postDelayed(mUpdateTimeTask, 100);
     }
     
     @Override
@@ -61,15 +70,50 @@ public class ListenVoicemail extends ListActivity {
         i.putExtra("leftBy", voicemail.getLeftBy());
         i.putExtra("date", voicemail.getDateCreated());
         i.putExtra("transcription", voicemail.getTranscription());
+        i.putExtra("position", position);
         startActivityForResult(i, VIEW_DETAILS);
     }
     
-    private class VoicemailParser extends AsyncTask<String, Integer, Voicemail[]>{
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        
+		switch (requestCode)
+		{
+			case VIEW_DETAILS:
+			{
+				//intent will be null if the 'Back' button is pressed
+				if(intent != null)
+				{
+					Bundle extras = intent.getExtras();
+			        int position = extras.getInt("position");
+			        boolean deleted = extras.getBoolean("deleted");
+					VoicemailListAdapter adapter = (VoicemailListAdapter) getListAdapter();
+					ArrayList<Voicemail> voicemails = adapter.getData();
+					Voicemail updatedVoicemail = voicemails.get(position);
+					
+					if(deleted)
+					{
+						voicemails.remove(position);
+					}
+					else
+					{
+						updatedVoicemail.setIsNew(false);
+					}
+					
+					new VoicemailParser().onPostExecute(voicemails);
+				}				
+				break;
+			}
+		}
+    }
+    
+    private class VoicemailParser extends AsyncTask<String, Integer, ArrayList<Voicemail>>{
     	public VoicemailParser()
     	{}
     	
     	@Override
-		protected Voicemail[] doInBackground(String... strings) {
+		protected ArrayList<Voicemail> doInBackground(String... strings) {
     		try
     		{
     			ResponseHandler<String> handler = new ResponseHandler<String>()
@@ -97,25 +141,25 @@ public class ListenVoicemail extends ListActivity {
             			"&_fields=id,isNew,leftBy,description,dateCreated,duration,transcription&_sortBy=dateCreated&_sortOrder=DESCENDING");
             	httpGet.addHeader("Accept", "application/json");
             	String response = httpClient.execute(httpGet, handler);
-            	Log.v("TONY", response);
+            	//Log.v("TONY", response);
             	
             	JSONObject jsonObj = new JSONObject(response);
             	int total = Integer.valueOf(jsonObj.getString("total"));
             	
                 JSONArray voicemailArray = jsonObj.getJSONArray("results");
                 
-                Voicemail[] voicemails = new Voicemail[Integer.valueOf(total)];
-                for (int i = 0; i < voicemails.length; i++)
+                ArrayList<Voicemail> voicemails = new ArrayList<Voicemail>(total);
+                for (int i = 0; i < total; i++)
                 {
     				JSONObject object = voicemailArray.getJSONObject(i);
-    				voicemails[i] = new Voicemail(
+    				voicemails.add(new Voicemail(
     						object.getString("id"),
     						object.getString("isNew"), 
     						object.getString("leftBy"), 
     						object.getString("description"),
     						object.getString("dateCreated"),
     						object.getString("duration"),
-    						object.getString("transcription"));
+    						object.getString("transcription")));
                 }
                 
                 return voicemails;
@@ -123,12 +167,12 @@ public class ListenVoicemail extends ListActivity {
     		catch(Exception e)
     		{
     			Log.e("TONY", "Exception getting JSON data", e);
-    			return new Voicemail[0];
+    			return new ArrayList<Voicemail>();
     		}
     	}
     	
     	@Override
-		protected void onPostExecute(Voicemail[] voicemails){
+		protected void onPostExecute(ArrayList<Voicemail> voicemails){
         	int numNew = 0;
     		
     		for(Voicemail voicemail : voicemails)
@@ -140,19 +184,34 @@ public class ListenVoicemail extends ListActivity {
     		}
     		
     		TextView inboxStatus = (TextView)findViewById(R.id.inboxStatus);
-    		inboxStatus.setText(ListenVoicemail.this.getString(R.string.current_status) + " (" + numNew + "/" + voicemails.length + ")");
+    		inboxStatus.setText(ListenVoicemail.this.getString(R.string.current_status) + " (" + numNew + "/" + voicemails.size() + ")");
     		
-    		VoicemailListAdapter adapter = new VoicemailListAdapter(voicemails);
-            setListAdapter(adapter);
+    		VoicemailListAdapter adapter = (VoicemailListAdapter)getListAdapter();
+    		adapter.clear();
+    		adapter.setData(voicemails);
+    		for(Voicemail voicemail : voicemails)
+    		{
+    			adapter.add(voicemail);
+    		}
 		}
     }
     
     private class VoicemailListAdapter extends ArrayAdapter<Object> {
-    	Voicemail[] mVoicemails;
+    	private ArrayList<Voicemail> mVoicemails = new ArrayList<Voicemail>();
     	
-		public VoicemailListAdapter(Voicemail[] items) {
-			super(ListenVoicemail.this, R.layout.voicemail, items);
+		public VoicemailListAdapter(ArrayList<Voicemail> items) {
+			super(ListenVoicemail.this, R.layout.voicemail);
 			mVoicemails = items;
+		}
+		
+		public void setData(ArrayList<Voicemail> voicemails)
+		{
+			mVoicemails = voicemails;
+		}
+		
+		public ArrayList<Voicemail> getData()
+		{
+			return mVoicemails;
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -176,15 +235,15 @@ public class ListenVoicemail extends ListActivity {
 			}
 			
 			// Bind the data efficiently with the holder.
-			holder.leftBy.setText( mVoicemails[position].getLeftBy());
-			holder.date.setText( mVoicemails[position].getDateCreated());
+			holder.leftBy.setText( mVoicemails.get(position).getLeftBy());
+			holder.date.setText( mVoicemails.get(position).getDateCreated());
 			
-			String transcription = getTruncatedTranscription(mVoicemails[position].getTranscription());
+			String transcription = getTruncatedTranscription(mVoicemails.get(position).getTranscription());
 			holder.transcription.setText(transcription);
 			
 			final Typeface typeface;
 			
-			if(mVoicemails[position].getIsNew())
+			if(mVoicemails.get(position).getIsNew())
 			{
 				typeface = Typeface.defaultFromStyle (Typeface.BOLD);
 			}
