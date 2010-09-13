@@ -75,7 +75,7 @@ var Server = {
         });
     },
 
-    outdial: function(number, conferenceId) {
+    outdial: function(number, conferenceId, interrupt) {
         var errorDiv = $('#outdial-dialog .form-error-message');
         errorDiv.hide();
         errorDiv.text('');
@@ -85,7 +85,8 @@ var Server = {
             type: 'POST',
             url: '/ajax/outdial',
             data: { number: number,
-                    conferenceId: conferenceId },
+                    conferenceId: conferenceId, 
+                    interrupt: interrupt},
             success: function(data) {
                 $('#outdial-dialog').slideUp(200);
                 Listen.notify('Number ' + number + ' is being dialed');

@@ -29,8 +29,11 @@ $(document).ready(function() {
         return false;
     });
 
-    $('#outdial-submit').click(function() {
-        Server.outdial($('#outdial-number').val(), currentConference.getConferenceId()); // FIXME referencing a global here is gross
+    $('#outdial-submit').click(function(data) {
+        if(data.interrupt) {                        
+             $('#outdial-number').attr('checked', true);
+        }
+        Server.outdial($('#outdial-number').val(), currentConference.getConferenceId(),$('#outdial-interrupt').is(":checked")); // FIXME referencing a global here is gross
         return false;
     });
 });

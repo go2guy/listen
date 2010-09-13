@@ -59,10 +59,17 @@ public class OutdialServlet extends HttpServlet
             throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a number",
                                              "text/plain");
         }
+
+        String interrupt = request.getParameter("interrupt");
+        if(interrupt == null || interrupt.trim().equals(""))
+        {
+            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a interrupt decision",
+                                             "text/plain");
+        }
         
         number = removeWhitespace(number);
 
-        LOG.debug("Outdialing to [" + number + "] for conference id [" + conferenceId + "]");
+        LOG.debug("Outdialing to [" + number + "] for conference id [" + conferenceId + "] with admin interrupt of [" + interrupt + "]");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
@@ -89,7 +96,7 @@ public class OutdialServlet extends HttpServlet
             try
             {
                 String requestingNumber = ListenSpotSubscriber.firstPhoneNumber(session);
-                spotSystem.outdial(number, adminSessionId, conference.getId(), requestingNumber);
+                spotSystem.outdial(number, adminSessionId, conference.getId(), requestingNumber, interrupt);
             }
             catch(SpotCommunicationException e)
             {

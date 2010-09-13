@@ -82,6 +82,9 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                                           <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
                                         </div>
                                         <div>
+                                          <label for="outdial-interrupt">Interrupt when answered:</label> <input type="checkbox" id="outdial-interrupt" name="outdial-interrupt" value="interrupt"/>
+                                        </div>
+                                        <div>
                                           <button type="button" class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
                                           <button type="button" class="button-outdial" name="outdial-submit" id="outdial-submit">Make Call</button>
                                         </div>

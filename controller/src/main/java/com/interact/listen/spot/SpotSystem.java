@@ -106,7 +106,7 @@ public class SpotSystem
      * @throws IOException if an HTTP error occurs
      * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
      */
-    public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber)
+    public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber, String interrupt)
         throws IOException, SpotCommunicationException
     {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
@@ -116,6 +116,7 @@ public class SpotSystem
         importedValue.put("conferenceId", String.valueOf(conferenceId));
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
+        importedValue.put("interruptAdmin",interrupt);
         buildAndSendRequest(importedValue);
     }
 
