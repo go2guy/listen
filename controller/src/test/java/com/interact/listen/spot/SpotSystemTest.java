@@ -209,7 +209,7 @@ public class SpotSystemTest extends ListenTest
         expectedParameters.put("destination", destination);
         expectedParameters.put("initiatingChannel", "GUI");
         expectedParameters.put("sessionId", sessionId);
-        expectedParameters.put("interrupt", interrupt);
+        expectedParameters.put("interruptAdmin", interrupt);
         SpotSystemInvocation invocation = getInvocationForOutdial(destination, sessionId, conferenceId, ani, interrupt);
         testForExpectedPostArgumentsWhenSuccessful(invocation, expectedParameters);
     }
