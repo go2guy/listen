@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'136-61'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'136-50'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var result = eval("("+argList+")");return result.cntrlURL;
+	            var result = eval("("+argList+")");return result.interruptAdmin;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set cntrlURL</log>
-            <log>INFO: Entered run-javascript.vxml [136-40]</log>
+            <log target="status">Get AdminInterrupt</log>
+            <log>INFO: Entered run-javascript.vxml [136-61]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="cntrlURL" expr="II_SB_userJava" />   
+            <assign name="AdminInterrupt" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

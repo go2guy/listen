@@ -29,6 +29,10 @@
 			<if cond="II_SB_eventReceived == 'MUTE'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112-4'"/>
 			</if>
+			<if cond="II_SB_eventReceived == 'Interrupt Admin'">
+				<assign name="II_SB_assign_NxtOpt" expr="'185-3'"/>
+				<assign name="InterruptVal" expr="II_SB_valueReceived"/>
+			</if>
 			<if cond="II_SB_eventReceived == 'DROP'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112-50'"/>
 			</if>

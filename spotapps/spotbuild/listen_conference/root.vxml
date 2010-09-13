@@ -103,6 +103,7 @@
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
 	<var name="artifactsDIR" expr="''" />
+	<var name="InterruptVal" expr="''" />
 
 
     <!-- Conference Variables -->

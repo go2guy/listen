@@ -59,6 +59,10 @@
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
 	<var name="artifactsDIR" expr="''" />
+	<var name="AdminSession" expr="''" />
+	<var name="AdminInterrupt" expr="''" />
+	<var name="ConfName" expr="'connectionID'" />
+	<var name="SessionID" expr="'sessionID'" />
 
 
     <!-- Conference Variables -->

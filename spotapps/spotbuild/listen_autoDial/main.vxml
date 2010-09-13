@@ -49,6 +49,10 @@
 	<var name="SB_UV_value"/>
 	<var name="SB_UV_operation"/>
 	<var name="SB_UV_artifactsDIR"/>
+	<var name="SB_UV_AdminSession"/>
+	<var name="SB_UV_AdminInterrupt"/>
+	<var name="SB_UV_ConfName"/>
+	<var name="SB_UV_SessionID"/>
 
     
     <form id="beginDocument">
@@ -59,6 +63,8 @@
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="ConfName" expr="II_SB_connectionID" />
+			<assign name="SessionID" expr="II_SB_sessionID" />
 			<assign name="argList" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_argList != undefined">
@@ -150,6 +156,18 @@
 			</if>
 			<if cond="SB_UV_artifactsDIR != undefined">
 				<assign name="artifactsDIR" expr="SB_UV_artifactsDIR" />
+			</if>
+			<if cond="SB_UV_AdminSession != undefined">
+				<assign name="AdminSession" expr="SB_UV_AdminSession" />
+			</if>
+			<if cond="SB_UV_AdminInterrupt != undefined">
+				<assign name="AdminInterrupt" expr="SB_UV_AdminInterrupt" />
+			</if>
+			<if cond="SB_UV_ConfName != undefined">
+				<assign name="ConfName" expr="SB_UV_ConfName" />
+			</if>
+			<if cond="SB_UV_SessionID != undefined">
+				<assign name="SessionID" expr="SB_UV_SessionID" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
