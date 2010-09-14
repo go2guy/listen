@@ -143,12 +143,12 @@ def all():
 def install():
     prep()
     clean()
-    install()
+    doinstall()
     post()
 
 def upgrade():
     prep()
-    install()
+    doinstall()
     post()
 
 def clean():
@@ -180,7 +180,7 @@ def prep():
     deploy.createAlias(hostinfo)
 
 
-def install():
+def doinstall():
     # install uia packages
     deploy.run(["rpm", "-Uvh", uiapkg])
 
@@ -204,7 +204,6 @@ def install():
     # execute listed startup commands 
     for command,action in startlist.iteritems():
         deploy.run([command, action])
-
 
 def license():
     deploy.license(hostname)
