@@ -97,7 +97,7 @@ public class OutdialServletTest extends ListenServletTest
         request.setMethod("POST");
         request.setParameter("conferenceId", String.valueOf(TestUtil.randomNumeric(9))); // hopefully doesn't exist
         request.setParameter("number", TestUtil.randomString() + "foo");
-        request.setparameter("interrupt", "false");
+        request.setParameter("interrupt", "false");
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Conference not found");
     }
