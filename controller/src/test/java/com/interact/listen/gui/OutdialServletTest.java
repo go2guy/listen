@@ -32,6 +32,7 @@ public class OutdialServletTest extends ListenServletTest
         request.setMethod("POST");
         request.setParameter("conferenceId", TestUtil.randomString());
         request.setParameter("number", TestUtil.randomString() + "foo");
+        request.setParameter("interrupt", "false");
 
         testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
@@ -45,6 +46,7 @@ public class OutdialServletTest extends ListenServletTest
         request.setMethod("POST");
         request.setParameter("conferenceId", (String)null);
         request.setParameter("number", TestUtil.randomString() + "foo");
+        request.setParameter("interrupt", "false");
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a conferenceId");
     }
@@ -58,6 +60,7 @@ public class OutdialServletTest extends ListenServletTest
         request.setMethod("POST");
         request.setParameter("conferenceId", " ");
         request.setParameter("number", TestUtil.randomString() + "foo");
+        request.setParameter("interrupt", "false");
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a conferenceId");
     }
@@ -71,6 +74,7 @@ public class OutdialServletTest extends ListenServletTest
         request.setMethod("POST");
         request.setParameter("conferenceId", TestUtil.randomString());
         request.setParameter("number", (String)null);
+        request.setParameter("interrupt", "false");
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a number");
     }
@@ -84,6 +88,7 @@ public class OutdialServletTest extends ListenServletTest
         request.setMethod("POST");
         request.setParameter("conferenceId", TestUtil.randomString());
         request.setParameter("number", " ");
+        request.setParameter("interrupt", "false");
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a number");
     }
