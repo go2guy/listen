@@ -30,7 +30,7 @@ def main():
     global masterpkg
     global uiapkg
 
-	phases = {"prep": prep, "clean": clean, "license": license, "install": install, "post": post, "all": all}
+    phases = {"prep": prep, "clean": clean, "license": license, "install": install, "upgrade": upgrade, "post": post, "all": all}
 
     parser = OptionParser()
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
@@ -142,20 +142,20 @@ def all():
 
 def install():
     prep()
-	clean()
+    clean()
     install()
     post()
 
 def upgrade():
-	prep()
-	install()
-	post()
+    prep()
+    install()
+    post()
 
 def clean():
-	deploy.eraseInteractRpms()
-	deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
-	deploy.removeFiles("/var/lib/com.interact.listen/")
-	deploy.removeFiles("/var/lib/mysql/")
+    deploy.eraseInteractRpms()
+    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
+    deploy.removeFiles("/var/lib/com.interact.listen/")
+    deploy.removeFiles("/var/lib/mysql/")
 
 
 def prep():
