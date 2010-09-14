@@ -182,7 +182,7 @@ def prep():
 
 def doinstall():
     # install uia packages
-    deploy.run(["rpm", "-Uvh", uiapkg])
+    deploy.run(["rpm", "-Uvh", "--replacepkgs", uiapkg])
 
     # Make sure mysqld is running
     deploy.run(["service", "mysqld", "start"], failonerror=False)
