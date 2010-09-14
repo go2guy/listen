@@ -191,7 +191,7 @@ def doinstall():
     startlist = {}
 
     if hostname == controllerserver:
-        deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "-replacepkgs", masterpkg, "all"])
+        deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacepkgs", masterpkg, "all"])
         startlist["/etc/init.d/httpd"] = "start"
         startlist["/interact/program/iiMoap"] = ""
         startlist["/interact/program/iiSysSrvr"] = ""
