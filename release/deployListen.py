@@ -30,7 +30,7 @@ def main():
     global masterpkg
     global uiapkg
 
-    phases = {"prep": prep, "license": license, "install": install, "post": post, "all": all}
+	phases = {"prep": prep, "clean": clean, "license": license, "install": install, "post": post, "all": all}
 
     parser = OptionParser()
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
@@ -138,9 +138,24 @@ def main():
 
 
 def all():
+	install()
+
+def install():
     prep()
+	clean()
     install()
     post()
+
+def upgrade():
+	prep()
+	install()
+	post()
+
+def clean():
+	deploy.eraseInteractRpms()
+	deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
+	deploy.removeFiles("/var/lib/com.interact.listen/")
+	deploy.removeFiles("/var/lib/mysql/")
 
 
 def prep():
@@ -163,11 +178,6 @@ def prep():
                 "defaultrealize": realizeserver}
 
     deploy.createAlias(hostinfo)
-    deploy.eraseInteractRpms()
-
-    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
-    deploy.removeFiles("/var/lib/com.interact.listen/")
-    deploy.removeFiles("/var/lib/mysql/")
 
 
 def install():
