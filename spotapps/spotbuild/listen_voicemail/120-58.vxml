@@ -16,6 +16,7 @@
             <log>INFO: Entered data-query.vxml [120-58]</log>
             <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL params request resource " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
+			<assign name="returnVal" expr="apiObj.Result" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>
