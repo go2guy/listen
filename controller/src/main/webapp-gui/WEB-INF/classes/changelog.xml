@@ -406,4 +406,9 @@
         <addUniqueConstraint tableName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS" columnNames="SCHEDULED_CONFERENCE_ID,EMAIL_ADDRESS" constraintName="SCHEDULED_CONFERENCE_ACTIVE_CALLERS_UK_1"/>
         <addUniqueConstraint tableName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS" columnNames="SCHEDULED_CONFERENCE_ID,EMAIL_ADDRESS" constraintName="SCHEDULED_CONFERENCE_PASSIVE_CALLERS_UK_1"/>
     </changeSet>
+    <changeSet author="development" id="42">
+        <addColumn tableName="AUDIO">
+            <column name="HAS_NOTIFIED" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

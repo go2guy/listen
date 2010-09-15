@@ -41,6 +41,9 @@ public class Voicemail extends Audio implements Serializable
     @JoinColumn(name = "SUBSCRIBER_ID")
     @ManyToOne
     private Subscriber subscriber;
+    
+    @Column(name = "HAS_NOTIFIED", nullable = true)
+    private Boolean hasNotified = Boolean.FALSE;
 
     public enum MessageLightState
     {
@@ -85,6 +88,16 @@ public class Voicemail extends Audio implements Serializable
     public void setSubscriber(Subscriber subscriber)
     {
         this.subscriber = subscriber;
+    }
+    
+    public Boolean getHasNotified()
+    {
+        return hasNotified;
+    }
+
+    public void setHasNotified(Boolean hasNotified)
+    {
+        this.hasNotified = hasNotified;
     }
 
     @Override

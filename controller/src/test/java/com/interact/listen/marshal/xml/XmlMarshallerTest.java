@@ -52,6 +52,7 @@ public class XmlMarshallerTest
         expected.append("<duration>").append(voicemail.getDuration()).append("</duration>");
         expected.append("<fileSize>").append(voicemail.getFileSize()).append("</fileSize>");
         expected.append("<forwardedBy href=\"/subscribers/").append(subscriber.getId()).append("\"/>");
+        expected.append("<hasNotified>").append(voicemail.getHasNotified()).append("</hasNotified>");
         expected.append("<id>").append(voicemail.getId()).append("</id>");
         expected.append("<isNew>").append(voicemail.getIsNew()).append("</isNew>");
         expected.append("<leftBy>").append(voicemail.getLeftBy()).append("</leftBy>");
