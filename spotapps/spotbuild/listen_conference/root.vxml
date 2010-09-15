@@ -101,9 +101,12 @@
 	<var name="STATcontroller" expr="''" />
 	<var name="source" expr="'conference'" />
 	<var name="value" expr="''" />
-	<var name="operation" expr="'increment'" />
+	<var name="operation" expr="''" />
 	<var name="artifactsDIR" expr="''" />
 	<var name="InterruptVal" expr="''" />
+	<var name="appStartTime" expr="''" />
+	<var name="appEndTime" expr="''" />
+	<var name="whichPathStat" expr="''" />
 
 
     <!-- Conference Variables -->

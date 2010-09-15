@@ -37,6 +37,7 @@
 109-63 - run-javascript
 115-48 - decision
 109-65 - audio-input
+109-66 - run-javascript
 115-46 - run-javascript
 90-32 - conference-user-status
 82-3 - decision
@@ -169,8 +170,13 @@ hang-up - hang-up
 104-51 - math
 82-54 - data-query
 104-49 - run-javascript
+82-62 - run-javascript
+82-60 - assign-variable
 116-8 - conference
 85-14 - run-javascript
+82-66 - assign-variable
+82-65 - run-javascript
+82-63 - run-javascript
 91-97 - assign-variable
 91-95 - run-javascript
 94-132 - data-query
@@ -310,6 +316,7 @@ hang-up - hang-up
 105-127 - audio-input
 105-124 - audio-input
 105-125 - audio-input
+188-2 - data-query
 105-120 - data-query
 112-20 - decision
 86-17 - run-javascript
@@ -332,7 +339,6 @@ hang-up - hang-up
 85-54 - run-javascript
 117-24 - decision
 83-9 - decision
-84-9 - data-query
 85-58 - data-query
 83-3 - run-javascript
 110-113 - assign-variable
@@ -358,6 +364,7 @@ begin - begin
 85-32 - assign-variable
 79-7 - decision
 85-38 - record-audio
+187-2 - decision
 114-54 - create-session
 110-65 - run-javascript
 110-67 - decision
