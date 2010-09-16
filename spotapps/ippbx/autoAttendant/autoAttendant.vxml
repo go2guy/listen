@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/02/2010
+    <!-- Last Modified 09/16/2010
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -43,7 +43,7 @@
             <log>INFO: Entered setUp</log>
             <assign name="fldTrmChar" expr="''"/>
             <assign name="digitTimeOut" expr="'3s'"/>
-            <assign name="fieldLength" expr="(parseInt(EXT_LENGTH) - 1) + '|' + CUSTOMER_SERVICE"/>
+            <assign name="fieldLength" expr="(parseInt(EXT_LENGTH) - 1) + '|*|' + CUSTOMER_SERVICE"/>
             <assign name="fieldTimeOut" expr="'4s'"/>
             <assign name="cutIn" expr="'true'"/>
             <assign name="gotoForm" expr="'#userKeyPress'"/>
@@ -86,6 +86,10 @@
                 <assign name="status" expr="'forward'"/>
                 <log>INFO: Send caller to forward app</log>
                 <goto next="#exit"/>
+            <elseif cond="userEntry == '*'"/>
+                <log>INFO: Caller trying to access mailbox</log>
+                <assign name="status" expr="'mailbox'"/>
+                <goto next="#exit"/>
             <elseif cond="userEntry == CUSTOMER_SERVICE"/>
                 <!-- This logic is here to check how to route the call to customer service.
                     If the office is closed, then go to after hrs functionality. Otherwise,
@@ -99,7 +103,6 @@
                     <log>INFO: Send caller to customer service</log>
                     <log target="status">Customer Service</log>
                     <assign name="promptID" expr="'AP1605'"/>
-                    <assign name="fieldLength" expr="''"/>
                     <assign name="fieldTimeOut" expr="''"/>
                     <assign name="cutIn" expr="'false'"/>
                     <assign name="extension" expr="customerService"/>
@@ -140,7 +143,6 @@
                     <assign name="promptID" expr="'AP1605'"/>
                 </if>
                 <assign name="fieldTimeOut" expr="''"/>
-                <assign name="fieldLength" expr="''"/>
                 <assign name="cutIn" expr="'false'"/>
                 <assign name="status" expr="'callExt'"/>
                 <assign name="extension" expr="officeOptr"/>
@@ -182,7 +184,6 @@
         <block>
             <log target="status">One moment...</log>
             <assign name="extension" expr="userEntry"/>
-            <assign name="fieldLength" expr="''"/>
             <assign name="fieldTimeOut" expr="''"/>
             <assign name="promptID" expr="'AP1605'"/>
             <assign name="cutIn" expr="'false'"/>
@@ -199,4 +200,3 @@
     </form>
 
 </vxml>
-
