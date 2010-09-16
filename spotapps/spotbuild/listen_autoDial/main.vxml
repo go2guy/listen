@@ -53,6 +53,8 @@
 	<var name="SB_UV_AdminInterrupt"/>
 	<var name="SB_UV_ConfName"/>
 	<var name="SB_UV_SessionID"/>
+	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_sipURL"/>
 
     
     <form id="beginDocument">
@@ -168,6 +170,12 @@
 			</if>
 			<if cond="SB_UV_SessionID != undefined">
 				<assign name="SessionID" expr="SB_UV_SessionID" />
+			</if>
+			<if cond="SB_UV_ANI != undefined">
+				<assign name="ANI" expr="SB_UV_ANI" />
+			</if>
+			<if cond="SB_UV_sipURL != undefined">
+				<assign name="sipURL" expr="SB_UV_sipURL" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

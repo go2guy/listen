@@ -63,6 +63,8 @@
 	<var name="AdminInterrupt" expr="''" />
 	<var name="ConfName" expr="'connectionID'" />
 	<var name="SessionID" expr="'sessionID'" />
+	<var name="ANI" expr="''" />
+	<var name="sipURL" expr="''" />
 
 
     <!-- Conference Variables -->
