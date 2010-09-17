@@ -408,8 +408,8 @@ public class ApiServlet extends HttpServlet
 
     private static PersistenceService getPersistenceService(Session session, HttpServletRequest request)
     {
-        String subscriberHeader = request.getHeader("ListenSubscriber");
-        String channelHeader = request.getHeader("ListenChannel");
+        String subscriberHeader = request.getHeader("X-Listen-Subscriber");
+        String channelHeader = request.getHeader("X-Listen-Channel");
 
         Subscriber subscriber = null;
         if(subscriberHeader != null)
@@ -422,7 +422,7 @@ public class ApiServlet extends HttpServlet
 
             if(subscriber == null || id == null)
             {
-                LOG.warn("ListenSubscriber HTTP header contained unknown subscriber href [" + subscriberHeader + "]");
+                LOG.warn("X-Listen-Subscriber HTTP header contained unknown subscriber href [" + subscriberHeader + "]");
             }
         }
 
@@ -435,7 +435,7 @@ public class ApiServlet extends HttpServlet
             }
             catch(IllegalArgumentException e)
             {
-                LOG.warn("Unknown ListenChannel HTTP header value [" + channelHeader + "] provided, defaulting to TUI");
+                LOG.warn("Unknown X-Listen-Channel HTTP header value [" + channelHeader + "] provided, defaulting to TUI");
                 channel = Channel.TUI;
             }
         }
