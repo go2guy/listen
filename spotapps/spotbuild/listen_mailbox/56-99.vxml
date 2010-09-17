@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'56-99'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'56-79'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            var result = eval("("+passValues+")");return result.artifactsDIR;
+	            var result = eval("("+passValues+")");return result.sysAccessTime;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Artifacts DIR</log>
-            <log>INFO: Entered run-javascript.vxml [56-95]</log>
+            <log target="status">Get Sys Access Time</log>
+            <log>INFO: Entered run-javascript.vxml [56-99]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="artifactsDIR" expr="II_SB_userJava" />   
+            <assign name="sysAccessTime" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

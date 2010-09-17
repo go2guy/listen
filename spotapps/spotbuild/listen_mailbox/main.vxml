@@ -79,6 +79,9 @@
 	<var name="SB_UV_value"/>
 	<var name="SB_UV_operation"/>
 	<var name="SB_UV_artifactsDIR"/>
+	<var name="SB_UV_appStartTime"/>
+	<var name="SB_UV_appEndTime"/>
+	<var name="SB_UV_whichPathStat"/>
 
     
     <form id="beginDocument">
@@ -272,6 +275,15 @@
 			</if>
 			<if cond="SB_UV_artifactsDIR != undefined">
 				<assign name="artifactsDIR" expr="SB_UV_artifactsDIR" />
+			</if>
+			<if cond="SB_UV_appStartTime != undefined">
+				<assign name="appStartTime" expr="SB_UV_appStartTime" />
+			</if>
+			<if cond="SB_UV_appEndTime != undefined">
+				<assign name="appEndTime" expr="SB_UV_appEndTime" />
+			</if>
+			<if cond="SB_UV_whichPathStat != undefined">
+				<assign name="whichPathStat" expr="SB_UV_whichPathStat" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -9,19 +9,19 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Assign STAT Vars</log>
-            <log>INFO: Entered assign-variable.vxml [65-68]</log>
+	    <log target="status">App Call Time</log>
+            <log>INFO: Entered assign-variable.vxml [191-16]</log>
             <log>INFO: Current value [<value expr="value"/>]</log>
-<assign name="value" expr="'1'+''" />
+<assign name="value" expr="returnVal+''" />
 <log>INFO: Updated value [<value expr="value"/>]</log>
 <log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LSTNAPP_SERVICE_ERROR'+''" />
+<assign name="id" expr="'LSTNAPP_0010'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
 <log>INFO: Current value [<value expr="operation"/>]</log>
-<assign name="operation" expr="'increment'+''" />
+<assign name="operation" expr="'set'+''" />
 <log>INFO: Updated value [<value expr="operation"/>]</log>
 <log>INFO: Current value [<value expr="whichPathStat"/>]</log>
-<assign name="whichPathStat" expr="'serviceError'+''" />
+<assign name="whichPathStat" expr="''+''" />
 <log>INFO: Updated value [<value expr="whichPathStat"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
