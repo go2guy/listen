@@ -153,7 +153,7 @@ def upgrade():
 
 def clean():
     deploy.eraseInteractRpms()
-    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
+    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg, '/interact/mysql-connector'])
     deploy.removeFiles("/var/lib/com.interact.listen/")
     deploy.removeFiles("/var/lib/mysql/")
 
