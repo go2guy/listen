@@ -2,7 +2,7 @@
 <uia>
     <iiLoader>
         <TYPES></TYPES>
-        <PATH>/interact/apps/spotbuild/listen_conference/root.vxml</PATH>
+        <PATH>/interact/apps/spotbuild/listen_main/root.vxml:/interact/apps/spotbuild/listen_conference/root.vxml:/interact/listen/artifacts/defaultApp.cfg</PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
 
