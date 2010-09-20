@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(phoneNumber,ANI,SID,confID)
             {
-	            return "{\"application\":\"AUTO_DIAL\", \"action\":\"DIAL\", \"initiatingChannel\":\"TUI\", \"sessionId\":\""+SID+"\", \"destination\":\""+phoneNumber+"\", \"conferenceId\":"+confID+", \"ani\":"+ANI+"}";
+	            return "{\"application\":\"AUTO_DIAL\", \"action\":\"DIAL\", \"initiatingChannel\":\"TUI\", \"sessionId\":\""+SID+"\", \"destination\":\""+phoneNumber+"\", \"conferenceId\":"+confID+", \"ani\":"+ANI+", \"interruptAdmin\":\"false\"}";
             }
         ]]>
     </script>
