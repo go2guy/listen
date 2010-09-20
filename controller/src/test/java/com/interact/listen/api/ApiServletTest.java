@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import com.interact.listen.InputStreamMockHttpServletRequest;
 import com.interact.listen.ListenTest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
@@ -258,7 +259,7 @@ public class ApiServletTest extends ListenTest
         subscriber.setId(System.currentTimeMillis());
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
-        subscriber.setVoicemailPin(12345L);
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
 
         StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -289,7 +290,7 @@ public class ApiServletTest extends ListenTest
         subscriber.setId(System.currentTimeMillis());
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
-        subscriber.setVoicemailPin(12345L);
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
 
         StringBuilder content = new StringBuilder();
         content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

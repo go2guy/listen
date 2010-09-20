@@ -314,7 +314,7 @@ public class EditSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", "ABC");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Voicemail PIN must be a number");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Voicemail PIN must contain 0 to 10 numeric characters");
     }
 
     @Test
@@ -332,7 +332,7 @@ public class EditSubscriberServletTest extends ListenServletTest
         request.setParameter("enableEmail", "true");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an E-mail address");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an Email address");
     }
 
     @Test

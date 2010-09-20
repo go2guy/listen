@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import com.interact.listen.TestUtil;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
 import com.interact.listen.resource.*;
@@ -177,7 +178,7 @@ public class XmlMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setUsername("foo" + System.currentTimeMillis());
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
 
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
@@ -194,7 +195,7 @@ public class XmlMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setUsername("foo" + System.currentTimeMillis());
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
 
         String xml = marshaller.marshal(subscriber);
         ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());

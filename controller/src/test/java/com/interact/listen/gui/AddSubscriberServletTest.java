@@ -101,7 +101,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -117,7 +117,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -133,7 +133,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", (String)null);
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username");
@@ -149,7 +149,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", " ");
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username");
@@ -165,7 +165,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", (String)null);
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password");
@@ -181,7 +181,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", " ");
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password");
@@ -197,7 +197,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", (String)null);
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Confirm Password");
@@ -213,7 +213,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", " ");
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Confirm Password");
@@ -229,7 +229,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password") + "foo");
-        request.setParameter("voicemailPin", TestUtil.randomString());
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST,
@@ -281,7 +281,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", "ABC");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Voicemail PIN must be a number");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Voicemail PIN must contain 0 to 10 numeric characters");
     }
 
     @Test
@@ -294,11 +294,11 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("enableEmail", "true");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an E-mail address");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an Email address");
     }
 
     @Test
@@ -311,7 +311,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("enableSms", "true");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
@@ -327,7 +327,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         final String username = TestUtil.randomString();
         final String password = TestUtil.randomString();
         final String confirm = password;
-        final String voicemailPin = String.valueOf(TestUtil.randomNumeric(8));
+        final String voicemailPin = TestUtil.randomNumeric(4).toString();
         final String enableEmail = "false";
         final String emailAddress = TestUtil.randomString();
 
@@ -357,7 +357,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         final String username = TestUtil.randomString();
         final String password = TestUtil.randomString();
         final String confirm = password;
-        final String voicemailPin = String.valueOf(TestUtil.randomNumeric(8));
+        final String voicemailPin = TestUtil.randomNumeric(4).toString();
         final String enableSms = "false";
         final String smsAddress = TestUtil.randomString();
 
@@ -389,7 +389,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("username", TestUtil.randomString());
         request.setParameter("password", TestUtil.randomString());
         request.setParameter("confirmPassword", request.getParameter("password"));
-        request.setParameter("voicemailPin", String.valueOf(TestUtil.randomNumeric(8)));
+        request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("enablePaging", "true");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 

@@ -44,7 +44,7 @@ public class HistoryService
         write(history);
     }
 
-    public void writeChangedVoicemailPin(Subscriber onSubscriber, Long oldPin, Long newPin)
+    public void writeChangedVoicemailPin(Subscriber onSubscriber, String oldPin, String newPin)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Changed voicemail PIN");

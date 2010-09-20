@@ -20,7 +20,7 @@ public final class TestUtil
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(randomString());
         subscriber.setUsername(randomString());
-        subscriber.setVoicemailPin(randomNumeric(8));
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         subscriber.setIsAdministrator(isAdministrator);
         session.save(subscriber);
 

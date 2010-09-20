@@ -40,7 +40,7 @@ public class Subscriber extends Resource implements Serializable
     private Set<AccessNumber> accessNumbers = new HashSet<AccessNumber>();
 
     @Column(name = "VOICEMAIL_PIN")
-    private Long voicemailPin;
+    private String voicemailPin;
 
     @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
@@ -152,12 +152,12 @@ public class Subscriber extends Resource implements Serializable
         this.version = version;
     }
 
-    public Long getVoicemailPin()
+    public String getVoicemailPin()
     {
         return voicemailPin;
     }
 
-    public void setVoicemailPin(Long voicemailPin)
+    public void setVoicemailPin(String voicemailPin)
     {
         this.voicemailPin = voicemailPin;
     }
@@ -323,42 +323,37 @@ public class Subscriber extends Resource implements Serializable
     {
         if(isAdministrator == null)
         {
-            addToErrors("isAdministrator cannot be null");
+            addToErrors("Please provide a value for isAdministrator");
         }
 
         if(password == null)
         {
-            addToErrors("password cannot be null");
+            addToErrors("Please provide a Password");
         }
 
-        if(username == null)
+        if(username == null || username.trim().equals(""))
         {
-            addToErrors("username cannot be null");
+            addToErrors("Please provide a Username");
         }
 
-        if(voicemailPin == null)
+        if(voicemailPin != null && !voicemailPin.matches("^[0-9]{0,10}$"))
         {
-            addToErrors("voicemail pin cannot be null");
-        }
-
-        if(voicemailPin != null && String.valueOf(voicemailPin).length() > 10)
-        {
-            addToErrors("voicemailPin cannot be more than ten digits");
+            addToErrors("Voicemail PIN must contain 0 to 10 numeric characters");
         }
 
         if(isEmailNotificationEnabled && (emailAddress == null || emailAddress.equals("")))
         {
-            addToErrors("must provide an E-mail address when E-mail notifications are enabled");
+            addToErrors("Please provide an Email address");
         }
 
         if(isSmsNotificationEnabled && (smsAddress == null || smsAddress.equals("")))
         {
-            addToErrors("must provide an SMS address when SMS notifications are enabled");
+            addToErrors("Please provide an SMS address");
         }
 
         if(isSubscribedToPaging && (smsAddress == null || smsAddress.equals("")))
         {
-            addToErrors("must provide an SMS address when subscribed to paging");
+            addToErrors("Please provide an SMS address for paging");
         }
 
         return !hasErrors();

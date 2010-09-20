@@ -67,7 +67,7 @@ public class DropParticipantServletTest extends ListenServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(TestUtil.randomString());
         subscriber.setUsername(TestUtil.randomString());
-        subscriber.setVoicemailPin(TestUtil.randomNumeric(8));
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
 
         request.getSession().setAttribute("subscriber", subscriber);
@@ -150,7 +150,7 @@ public class DropParticipantServletTest extends ListenServletTest
         subscriber.setIsAdministrator(false);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
 
         request.getSession().setAttribute("subscriber", subscriber);
@@ -198,7 +198,7 @@ public class DropParticipantServletTest extends ListenServletTest
         subscriber.setIsAdministrator(true);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
 
         request.getSession().setAttribute("subscriber", subscriber);

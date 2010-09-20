@@ -116,25 +116,7 @@ public class EditSubscriberServlet extends HttpServlet
         if(License.isLicensed(ListenFeature.VOICEMAIL))
         {
             String voicemailPin = request.getParameter("voicemailPin");
-            if(voicemailPin != null && voicemailPin.length() > 10)
-            {
-                throw new BadRequestServletException("Please provide a Voicemail PIN with ten digits or less");
-            }
-            else if(voicemailPin != null && voicemailPin.trim().length() > 0)
-            {
-                try
-                {
-                    subscriberToEdit.setVoicemailPin(Long.valueOf(voicemailPin));
-                }
-                catch(NumberFormatException e)
-                {
-                    throw new BadRequestServletException("Voicemail PIN must be a number");
-                }
-            }
-            else if(voicemailPin != null && voicemailPin.trim().length() == 0)
-            {
-                subscriberToEdit.setVoicemailPin(null);
-            }
+            subscriberToEdit.setVoicemailPin(voicemailPin);
 
             Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
             Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
@@ -143,21 +125,6 @@ public class EditSubscriberServlet extends HttpServlet
             Boolean enablePaging = Boolean.valueOf(request.getParameter("enablePaging"));
             
             PlaybackOrder playbackOrder = PlaybackOrder.valueOf(request.getParameter("voicemailPlaybackOrder"));
-            
-            if(enableEmail && (emailAddress == null || emailAddress.equals("")))
-            {
-                throw new BadRequestServletException("Please provide an E-mail address");
-            }
-            
-            if(enableSms && (smsAddress == null || smsAddress.equals("")))
-            {
-                throw new BadRequestServletException("Please provide an SMS address");
-            }
-            
-            if(enablePaging && (smsAddress == null || smsAddress.equals("")))
-            {
-                throw new BadRequestServletException("Please provide an SMS address for paging");
-            }
 
             subscriberToEdit.setIsEmailNotificationEnabled(enableEmail);
             subscriberToEdit.setIsSmsNotificationEnabled(enableSms);
@@ -187,6 +154,10 @@ public class EditSubscriberServlet extends HttpServlet
             persistenceService.update(conferenceToEdit, originalConference);
         }
 
+        if(!subscriberToEdit.validate())
+        {
+            throw new BadRequestServletException(subscriberToEdit.errors().get(0));
+        }
         persistenceService.update(subscriberToEdit, originalSubscriber);
     }
 }

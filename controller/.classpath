@@ -48,5 +48,6 @@
 	<classpathentry kind="lib" path="lib/runtime/commons-dbcp-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-pool-1.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/quartz-all-1.8.3.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/c3p0-0.9.1.2.jar"/>
 	<classpathentry kind="output" path=".eclipse-build"/>
 </classpath>

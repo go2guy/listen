@@ -71,7 +71,7 @@ public abstract class ListenTest
         subscriber.setPassword(TestUtil.randomString());
         subscriber.setRealName(TestUtil.randomString());
         subscriber.setUsername(TestUtil.randomString());
-        subscriber.setVoicemailPin(TestUtil.randomNumeric(8));
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
         return subscriber;
     }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import com.interact.listen.TestUtil;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.converter.Iso8601DateConverter;
 import com.interact.listen.resource.*;
@@ -195,7 +196,7 @@ public class JsonMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setUsername("foo" + System.currentTimeMillis());
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         subscriber.setLastLogin(new Date());
 
         String json = marshaller.marshal(subscriber);
@@ -213,7 +214,7 @@ public class JsonMarshallerTest
         Subscriber subscriber = new Subscriber();
         subscriber.setId(System.currentTimeMillis());
         subscriber.setUsername("foo" + System.currentTimeMillis());
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         subscriber.setLastLogin(new Date());
 
         String json = marshaller.marshal(subscriber);

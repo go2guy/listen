@@ -2,6 +2,8 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
+import com.interact.listen.TestUtil;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,9 +26,17 @@ public class SubscriberTest
     @Test
     public void test_setVoicemailPin_withValidVoicemailPin_setsVoicemailPin()
     {
-        final Long pin = System.currentTimeMillis();
+        final String pin = TestUtil.randomNumeric(4).toString();
         subscriber.setVoicemailPin(pin);
 
+        assertEquals(pin, subscriber.getVoicemailPin());
+    }
+
+    @Test
+    public void test_setVoicemailPin_withLeadingZeroes_preservesLeadingZeroes()
+    {
+        final String pin = "00001";
+        subscriber.setVoicemailPin(pin);
         assertEquals(pin, subscriber.getVoicemailPin());
     }
 
@@ -144,7 +154,7 @@ public class SubscriberTest
         s.setId(System.currentTimeMillis());
         s.setPassword(String.valueOf(System.currentTimeMillis()));
         s.setUsername(String.valueOf(System.currentTimeMillis()));
-        s.setVoicemailPin(12345L);
+        s.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         s.setVersion(1);
         return s;
     }

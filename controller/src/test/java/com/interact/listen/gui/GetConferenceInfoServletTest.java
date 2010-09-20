@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.interact.listen.ListenServletTest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
@@ -70,7 +71,7 @@ public class GetConferenceInfoServletTest extends ListenServletTest
         subscriber.setId(id);
         subscriber.setPassword(String.valueOf(System.currentTimeMillis()));
         subscriber.setUsername(String.valueOf(System.currentTimeMillis()));
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         subscriber.addToConferences(conference);
         session.save(subscriber);
 

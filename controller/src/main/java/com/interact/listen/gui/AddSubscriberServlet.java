@@ -46,10 +46,6 @@ public class AddSubscriberServlet extends HttpServlet
         Subscriber subscriber = new Subscriber();
 
         String username = request.getParameter("username");
-        if(username == null || username.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a Username");
-        }
 
         String password = request.getParameter("password");
         if(password == null || password.trim().equals(""))
@@ -71,21 +67,7 @@ public class AddSubscriberServlet extends HttpServlet
         if(License.isLicensed(ListenFeature.VOICEMAIL))
         {
             String voicemailPin = request.getParameter("voicemailPin");
-            if(voicemailPin != null && voicemailPin.length() > 10)
-            {
-                throw new BadRequestServletException("Please provide a Voicemail PIN with ten digits or less");
-            }
-            else if(voicemailPin != null && voicemailPin.trim().length() > 0)
-            {
-                try
-                {
-                    subscriber.setVoicemailPin(Long.valueOf(voicemailPin));
-                }
-                catch(NumberFormatException e)
-                {
-                    throw new BadRequestServletException("Voicemail PIN must be a number");
-                }
-            }
+            subscriber.setVoicemailPin(voicemailPin);
 
             Boolean enableEmail = Boolean.valueOf(request.getParameter("enableEmail"));
             Boolean enableSms = Boolean.valueOf(request.getParameter("enableSms"));
@@ -94,21 +76,6 @@ public class AddSubscriberServlet extends HttpServlet
             Boolean enablePaging = Boolean.valueOf(request.getParameter("enablePaging"));
             Boolean enableAdmin = Boolean.valueOf(request.getParameter("enableAdmin"));
             PlaybackOrder playbackOrder = PlaybackOrder.valueOf(request.getParameter("voicemailPlaybackOrder"));
-
-            if(enableEmail && (emailAddress == null || emailAddress.equals("")))
-            {
-                throw new BadRequestServletException("Please provide an E-mail address");
-            }
-
-            if(enableSms && (smsAddress == null || smsAddress.equals("")))
-            {
-                throw new BadRequestServletException("Please provide an SMS address");
-            }
-
-            if(enablePaging && (smsAddress == null || smsAddress.equals("")))
-            {
-                throw new BadRequestServletException("Please provide an SMS address for paging");
-            }
 
             subscriber.setIsEmailNotificationEnabled(enableEmail);
             subscriber.setIsSmsNotificationEnabled(enableSms);
@@ -128,6 +95,10 @@ public class AddSubscriberServlet extends HttpServlet
 
         try
         {
+            if(!subscriber.validate())
+            {
+                throw new BadRequestServletException(subscriber.errors().get(0));
+            }
             persistenceService.save(subscriber);
         }
         catch(ConstraintViolationException e)

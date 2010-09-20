@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.interact.listen.ListenServletTest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.Stat;
@@ -36,7 +37,7 @@ public class LoginServletTest extends ListenServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
 
         session.save(subscriber);
 
@@ -58,7 +59,7 @@ public class LoginServletTest extends ListenServletTest
         Subscriber subscriber = new Subscriber();
         subscriber.setPassword(SecurityUtil.hashPassword(password));
         subscriber.setUsername(username);
-        subscriber.setVoicemailPin(System.currentTimeMillis());
+        subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
 
         session.save(subscriber);
 

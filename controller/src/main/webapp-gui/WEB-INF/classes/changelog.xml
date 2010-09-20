@@ -411,4 +411,11 @@
             <column name="HAS_NOTIFIED" type="BOOLEAN" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="43">
+        <modifyColumn tableName="SUBSCRIBER">
+            <column name="VOICEMAIL_PIN" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+        </modifyColumn>
+    </changeSet>
 </databaseChangeLog>
