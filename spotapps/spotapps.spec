@@ -110,9 +110,9 @@ Requires: spotbuild-vip
     /interact/apps/spotbuild/msgLightCntrl*
     /interact/apps/spotbuild/after_hours*
     /interact/apps/spotbuild/lib/cgi-bin/listen
-    /interact/listen/artifacts/*
-    /var/www/html/interact/listen/
-    /var/www/html/ippbx/*
+    /interact/listen/artifacts
+    /var/www/html/interact/listen
+    /var/www/html/ippbx
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
