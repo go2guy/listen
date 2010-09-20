@@ -16,7 +16,6 @@
 169-32 - decision
 135-39 - run-javascript
 169-38 - math
-169-18 - data-query
 169-30 - create-session
 169-15 - data-query
 136-69 - run-javascript
@@ -34,7 +33,6 @@
 136-48 - audio-input
 169-3 - decision
 136-47 - audio-input
-169-6 - decision
 137-24 - assign-variable
 169-5 - assign-variable
 137-25 - data-query
