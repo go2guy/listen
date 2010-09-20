@@ -259,10 +259,7 @@ $(document).ready(function() {
                             } else {
                                 appendTo.append(clone);
                             }
-                            var placeholder = $('#' + args.tableId).find('.placeholder');
-                            if(placeholder.is(':visible')) {
-                                placeholder.hide();
-                            }
+                            $('#' + args.tableId).find('.placeholder').hide();
                             clone.animate({ opacity: 1 }, (animate === true ? 1000 : 0));
                         }
 
