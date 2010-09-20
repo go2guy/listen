@@ -12,6 +12,13 @@
             </intent-filter>
         </activity>
 		<activity android:name=".VoicemailDetails"/>
-	</application>
+		<activity android:name=".ApplicationSettings"/>
+		<service android:enabled="true" android:name=".ListenVoicemailService" />
+		<receiver android:name=".UpdatedVoicemailReceiver">
+			<intent-filter>
+				<action android:name="com.interact.listen.android.voicemail.UPDATE_VOICEMAILS"/>
+			</intent-filter>
+		</receiver>
+</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest> 

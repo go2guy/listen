@@ -1,7 +1,6 @@
 package com.interact.listen.android.voicemail;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,7 +18,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,12 +31,22 @@ import android.widget.TextView;
 
 public class VoicemailDetails extends Activity
 {
-	private TextView mLeftBy;
+    private static final String TAG = "ListenVoicemailDetails";
+    private TextView mLeftBy;
     private TextView mDate;
     private TextView mTranscription;
     private long mVoicemailId;
-    private ArrayList<Voicemail> mVoicemails;
     private int mPosition;
+    private String UPDATE_ACTION_STRING = "com.interact.listen.android.voicemail.UPDATE_VOICEMAILS";
+    
+    private BroadcastReceiver receiver = new BroadcastReceiver(){
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "received broadcast");
+            //abortBroadcast();
+            //do nothing, currently we want the notification to appear
+        }
+    };
     
     /** Called when the activity is first created. */
     @Override
@@ -106,6 +118,25 @@ public class VoicemailDetails extends Activity
         		}
         	}
         });
+    }
+    
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UPDATE_ACTION_STRING);
+        filter.setPriority(2);
+
+        this.registerReceiver(this.receiver, filter);
+    }
+    
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        Log.d("TONY", "details onPause()");
+        this.unregisterReceiver(this.receiver);
     }
     
     private class MarkVoicemailRead extends AsyncTask<Long, Integer, Void>{
