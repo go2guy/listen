@@ -15,7 +15,7 @@
 <assign name="value" expr="returnVal+''" />
 <log>INFO: Updated value [<value expr="value"/>]</log>
 <log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LSTNAPP_0001'+''" />
+<assign name="id" expr="'LSTNAPP_0003'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
 <log>INFO: Current value [<value expr="operation"/>]</log>
 <assign name="operation" expr="'set'+''" />
