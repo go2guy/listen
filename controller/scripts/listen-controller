@@ -21,6 +21,7 @@ LISTEN_HOME=/interact/listen
 fi
 
 PORT=9091 # CONFIG group description
+ENVIRONMENT=PROD
 
 start() {
     if [ -f /var/lock/subsys/listen-controller ]; then
@@ -32,7 +33,7 @@ start() {
    
     echo -n $"Starting listen-controller: "
     # Start me up!
-    java -Dport=$PORT -Dcom.interact.listen.env=PROD -Dext=`find /interact -iname 'mysql-connector-*.jar' -type 'f' | head -1` -Dcom.interact.listen.logDir=/interact/listen/logs -jar $LISTEN_HOME/lib/listen-controller.war <&- 1>/interact/listen/logs/listen-controller.console 2>&1 &
+    java -Dport=$PORT -Dcom.interact.listen.env=$ENVIRONMENT -Dext=`find /interact -iname 'mysql-connector-*.jar' -type 'f' | head -1` -Dcom.interact.listen.logDir=/interact/listen/logs -jar $LISTEN_HOME/lib/listen-controller.war <&- 1>/interact/listen/logs/listen-controller.console 2>&1 &
     RETVAL=$?
     JPID=$!
     echo $JPID > /var/run/listen-controller.pid
