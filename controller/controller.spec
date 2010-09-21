@@ -86,7 +86,7 @@ Requires: xmlsecurity
 # The post section lists actions to be performed after installation
 #######################################################################
 %post
-ln -s /interact/listen/scripts/listen-controller /etc/init.d/listen-controller
+ln -sf /interact/listen/scripts/listen-controller /etc/init.d/listen-controller
 chkconfig --add listen-controller
 
 
