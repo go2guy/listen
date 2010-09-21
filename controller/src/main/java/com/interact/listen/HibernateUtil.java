@@ -29,18 +29,20 @@ import org.quartz.impl.StdSchedulerFactory;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "REC_CATCH_EXCEPTION", justification = "For any Throwable we need to rethrow it as an ExceptionInInitializerError")
 public final class HibernateUtil
 {
+    public static final Environment ENVIRONMENT = Environment.valueOf(System.getProperty("com.interact.listen.env", "PROD"));
+
     private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
     private static final SessionFactory SESSION_FACTORY;
-    private static final Environment ENVIRONMENT = Environment.valueOf(System.getProperty("com.interact.listen.env", "PROD"));
 
     /**
      * Provides default configuration values for various environments.
      */
-    private static enum Environment
+    public static enum Environment
     {
-        DEV  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
-        TEST ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
-        PROD ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1");
+        DEV   ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
+        TEST  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
+        STAGE ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1"),
+        PROD  ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1");
 
         private final String dbUrl, dbUsername, dbPassword, dbDialect, dbDriver, dbTestQuery;
         private final String guiPassword;

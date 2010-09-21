@@ -1,5 +1,6 @@
 package com.interact.listen;
 
+import com.interact.listen.HibernateUtil.Environment;
 import com.interact.listen.api.GetDnisServlet;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
@@ -51,6 +52,12 @@ public class EmailerService
     
     private boolean sendEmail(InternetAddress[] toAddresses, String body, String subjectPrepend, String subject, File attachment)
     {
+        if(HibernateUtil.ENVIRONMENT == Environment.STAGE)
+        {
+            LOG.warn("Environment is STAGE, emails will not be sent");
+            return true;
+        }
+
         Properties props = new Properties();
         props.setProperty("mail.transport.protocol", "smtp");
         props.setProperty("mail.host", Configuration.get(Property.Key.MAIL_SMTPHOST));
