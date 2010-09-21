@@ -115,7 +115,7 @@
                 <property format="ccvxml" action="update" quotes="yes">
                     <name>sipURL</name>
                     <group>SIP</group>
-                    <description>server name</description>
+                    <description>Server Name</description>
                     <tag>var</tag>
                     <attribute>expr</attribute>
                     <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
