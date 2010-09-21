@@ -64,7 +64,7 @@ public class UpdatedVoicemailReceiver extends BroadcastReceiver
             PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
             notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
             //If there is only one new message, don't show the number over the icon
-            notification.number = idsLength > 1 ? idsLength : 0;
+            //notification.number = idsLength > 1 ? idsLength : 0;
             mNotificationManager.notify(LISTEN_NOTIFICATION, notification);
         }
     }
