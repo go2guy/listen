@@ -9,14 +9,14 @@
     <var name="II_SB_confName" expr="ConfName"/>          	<!--  Conference Identifier -->
     <var name="II_SB_dtmfLength" expr="'1'"/>              <!--  Number of keys used for drop key -->
     <var name="II_SB_interDgtTime" expr="'3s'"/>            <!--  Time between drop key presses -->
-    <var name="II_SB_drpKeyEnabled" expr="''"/>       <!--  Whether drop keys are enabled -->
+    <var name="II_SB_drpKeyEnabled" expr="'true'"/>       <!--  Whether drop keys are enabled -->
 	<var name="II_SB_RsrvdTalkers" expr="'10'"/>      	<!--  Number of half duplex members -->
 	<var name="II_SB_RsrvdListeners" expr="'10'"/>	<!--  Number of full duplex members -->
 	<var name="II_SB_entryAudio" expr="''"/>  	            <!--  Audio file(s) to play when entring conference -->
 
     <!-- Edge Variables -->
     <var name="II_SB_userHangup" expr="''"/>            <!--  Next option when user hangs up -->
-    <var name="II_SB_keyPressOption" expr="''"/>    <!--  Next option when drop key(s) is pressed -->
+    <var name="II_SB_keyPressOption" expr="'184-6'"/>    <!--  Next option when drop key(s) is pressed -->
 
     <!-- Global Variables -->
     <var name="II_SB_NEXT_OPTION"/>                 <!-- ID of next vxml template -->
