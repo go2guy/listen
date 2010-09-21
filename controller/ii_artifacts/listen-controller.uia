@@ -23,20 +23,20 @@
                 <version>1.6.0</version>
             </rpm>           
         </pre>
+
+        <inquiry>
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the controller port</text>
+                <default>9091</default>
+                <validateRegex preset="DIGITS"/>
+
+                <property format="cfg" action="update">
+                    <name>PORT</name>
+                    <location>/etc/init.d/listen-controller</location>
+                </property>
+            </question>
+        </inquiry>
     </install>
-
-    <inquiry>
-        <question level="not_in_backup" severity="ask">
-            <text>Enter the controller port</text>
-            <default>9091</default>
-            <validateRegex preset="DIGITS"/>
-
-            <property format="cfg" action="update">
-                <name>PORT</name>
-                <location>/etc/init.d/listen-controller</location>
-            </property>
-        </question>
-    </inquiry>
 
     <rollback>
         <pre>
