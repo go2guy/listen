@@ -46,6 +46,14 @@ public class AddSubscriberServlet extends HttpServlet
         Subscriber subscriber = new Subscriber();
 
         String username = request.getParameter("username");
+        subscriber.setUsername(username);
+
+        if(username == null || username.trim().equals(""))
+        {
+            // TODO this should be done in Subscriber.validate(), but that method needs to handle
+            // password and passwordConfirm first
+            throw new BadRequestServletException("Please provide a Username");
+        }
 
         String password = request.getParameter("password");
         if(password == null || password.trim().equals(""))
@@ -63,6 +71,8 @@ public class AddSubscriberServlet extends HttpServlet
         {
             throw new BadRequestServletException("Password and Confirm Password do not match");
         }
+
+        subscriber.setPassword(SecurityUtil.hashPassword(password));
 
         if(License.isLicensed(ListenFeature.VOICEMAIL))
         {
@@ -89,8 +99,6 @@ public class AddSubscriberServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
 
-        subscriber.setPassword(SecurityUtil.hashPassword(password));
-        subscriber.setUsername(username);
         subscriber.setRealName(request.getParameter("realName"));
 
         try

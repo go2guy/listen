@@ -321,9 +321,9 @@ public class Subscriber extends Resource implements Serializable
     @Override
     public boolean validate()
     {
-        if(isAdministrator == null)
+        if(username == null || username.trim().equals(""))
         {
-            addToErrors("Please provide a value for isAdministrator");
+            addToErrors("Please provide a Username");
         }
 
         if(password == null)
@@ -331,9 +331,9 @@ public class Subscriber extends Resource implements Serializable
             addToErrors("Please provide a Password");
         }
 
-        if(username == null || username.trim().equals(""))
+        if(isAdministrator == null)
         {
-            addToErrors("Please provide a Username");
+            addToErrors("Please provide a value for isAdministrator");
         }
 
         if(voicemailPin != null && !voicemailPin.matches("^[0-9]{0,10}$"))
