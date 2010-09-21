@@ -27,7 +27,7 @@
             <log>INFO: Entered create-session.vxml [105-70]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>
-                <exit namelist="outBoundID confID phoneNumber cntrlURL outDialStart HTTPcontroller STATcontroller"/>
+                <exit namelist="outBoundID confID phoneNumber cntrlURL outDialStart HTTPcontroller STATcontroller artifactsDIR"/>
             <elseif cond="II_SB_action == 'nextOpt'"/>
     	    
                 <log>INFO: Next option [<value expr="II_SB_whichOpt"/>.vxml]</log>
