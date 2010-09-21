@@ -1,10 +1,14 @@
 package com.interact.listen;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -24,6 +28,7 @@ public class RequestInformationFilter implements Filter
         HttpServletRequest req = (HttpServletRequest)request;
 
         StringBuilder info = new StringBuilder();
+        info.append("[");
         info.append(req.getRemoteAddr()).append(" ");
         info.append(req.getMethod()).append(" ");
         info.append(req.getRequestURI());
@@ -31,8 +36,12 @@ public class RequestInformationFilter implements Filter
         {
             info.append("?").append(req.getQueryString());
         }
+        info.append("]");
 
-        LOG.info("--> [" + info + "]");
+        String headers = getHeaders((HttpServletRequest)request);
+        info.append(" [").append(headers ).append("]");
+
+        LOG.info("--> " + info);
 
         try
         {
@@ -40,7 +49,7 @@ public class RequestInformationFilter implements Filter
         }
         finally
         {
-            LOG.info("<-- [" + info + "] took " + (System.currentTimeMillis() - start) + "ms");
+            LOG.info("<-- " + info + " took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 
@@ -54,5 +63,18 @@ public class RequestInformationFilter implements Filter
     public void destroy()
     {
     // not implemented
+    }
+
+    private String getHeaders(HttpServletRequest request)
+    {
+        Enumeration<String> names = ((HttpServletRequest)request).getHeaderNames();
+        List<String> headers = new ArrayList<String>();
+        while(names.hasMoreElements())
+        {
+            String name = names.nextElement();
+            String value = ((HttpServletRequest)request).getHeader(name);
+            headers.add(name + ": " + value);
+        }
+        return StringUtils.join(headers, ", ");
     }
 }
