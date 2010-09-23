@@ -162,7 +162,8 @@ def prep():
     print("Preparing for deployment")
     stopcmds = ["service listen-controller stop",
                 "service collector stop",
-                "service mysqld stop"]
+                "service mysqld stop",
+                "service vipStart stop"]
 
     killprocs = ["/interact/.*/iiMoap",
                  "/interact/.*/iiSysSrvr",
@@ -192,9 +193,8 @@ def doinstall():
 
     if hostname == controllerserver:
         deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacepkgs", masterpkg, "all"])
-        startlist["/etc/init.d/httpd"] = "start"
-        startlist["/interact/program/iiMoap"] = ""
-        startlist["/interact/program/iiSysSrvr"] = ""
+        startlist["/etc/init.d/httpd"] = "restart"
+        startlist["/etc/init.d/vipStart"] = "start"
         startlist["/etc/init.d/collector"] = "start"
         startlist["/etc/init.d/listen-controller"] = "start"
 
