@@ -16,7 +16,7 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'9'+',102-27|=,'+'3'+',157-27|=,'+'7'+',102-5|=,'+'5'+',158-13|=,'+'0'+',144-5|=,'+'8'+',147-36|=,'+'*'+',103-155|else,103-27'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_expList" expr="'=,'+'9'+',101-70|=,'+'3'+',157-27|=,'+'7'+',102-5|=,'+'5'+',158-13|=,'+'0'+',144-5|=,'+'8'+',147-36|=,'+'*'+',103-155|else,103-27'"/>	<!-- List of expression to be evaluated -->
     <var name="II_SB_operand1" expr="menuOption"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->

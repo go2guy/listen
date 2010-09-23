@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">Get Msgs New</log>
             <log>INFO: Entered data-query.vxml [101-72]</log>
-            <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params resource request lstnChannel lstnSub " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
 			<assign name="newResult" expr="apiObj.Result" />
 			<assign name="reason" expr="apiObj.Reason" />

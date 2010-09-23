@@ -82,6 +82,8 @@
 	<var name="SB_UV_appStartTime"/>
 	<var name="SB_UV_appEndTime"/>
 	<var name="SB_UV_whichPathStat"/>
+	<var name="SB_UV_lstnChannel"/>
+	<var name="SB_UV_lstnSub"/>
 
     
     <form id="beginDocument">
@@ -284,6 +286,12 @@
 			</if>
 			<if cond="SB_UV_whichPathStat != undefined">
 				<assign name="whichPathStat" expr="SB_UV_whichPathStat" />
+			</if>
+			<if cond="SB_UV_lstnChannel != undefined">
+				<assign name="lstnChannel" expr="SB_UV_lstnChannel" />
+			</if>
+			<if cond="SB_UV_lstnSub != undefined">
+				<assign name="lstnSub" expr="SB_UV_lstnSub" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

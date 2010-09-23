@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">Delete Voicemail</log>
             <log>INFO: Entered data-query.vxml [157-29]</log>
-            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL id request resource params " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL id request resource params lstnChannel lstnSub " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
 			<assign name="result" expr="apiObj.Result" />
 			<assign name="reason" expr="apiObj.Reason" />

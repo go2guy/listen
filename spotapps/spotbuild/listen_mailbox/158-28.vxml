@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">Save Message</log>
             <log>INFO: Entered data-query.vxml [158-28]</log>
-            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL params resource request id " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL params resource request id lstnChannel lstnSub " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>

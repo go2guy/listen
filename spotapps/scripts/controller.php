@@ -14,6 +14,8 @@
     $data       = @$_REQUEST['params']      or exitresult ($objName,$status,$string,"'params' argument missing from request");
     $ID         = @$_REQUEST['id']          or $ID="";
     $destURL    = @$_REQUEST['cntrlURL']    or exitresult ($objName,$status,$string,"'cntrlURL' argument missing from request");
+    $lstnChannel= @$_REQUEST['lstnChannel'] or $lstnChannel="";
+    $lstnSub    = @$_REQUEST['lstnSub']     or $lstnSub="";
 
     #Set up cURL options
     $curlHandle = curl_init();
@@ -22,6 +24,8 @@
         case 'GET':
             $destURL .= "/".$rsrc.$data;
             $header = array("Accept: application/json");
+            if ($lstnChannel != "") array_push($header, "X-Listen-Channel: ". $lstnChannel);
+            if ($lstnSub != "") array_push($header, "X-Listen-Subscriber: ".  $lstnSub);
             $options = array(CURLOPT_URL => $destURL,
                             CURLOPT_HTTPHEADER => $header,
                             CURLOPT_RETURNTRANSFER => true,
@@ -32,6 +36,8 @@
         case 'POST':
             $destURL .= "/".$rsrc;
             $header = array("Content-Type: application/json");
+            if ($lstnChannel != "") array_push($header, "X-Listen-Channel: ". $lstnChannel);
+            if ($lstnSub != "") array_push($header, "X-Listen-Subscriber: ".  $lstnSub);
             $options = array(CURLOPT_URL => $destURL,
                             CURLOPT_RETURNTRANSFER => true,
                             CURLOPT_FAILONERROR => true,
@@ -45,6 +51,8 @@
         case 'DELETE':
             $destURL .= "/".$rsrc."/".(int)$ID;
             $header = array("Content-Type: application/json", "Content-Length: ". strlen($data));
+            if ($lstnChannel != "") array_push($header, "X-Listen-Channel: ". $lstnChannel);
+            if ($lstnSub != "") array_push($header, "X-Listen-Subscriber: ".  $lstnSub);
             $options = array(CURLOPT_URL => $destURL,
                             CURLOPT_RETURNTRANSFER => true,
                             CURLOPT_FAILONERROR => true,

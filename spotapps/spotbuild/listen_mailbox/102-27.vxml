@@ -11,10 +11,7 @@
         <block>
 	    <log target="status">New vm Setup</log>
             <log>INFO: Entered assign-variable.vxml [102-27]</log>
-            <log>INFO: Current value [<value expr="count"/>]</log>
-<assign name="count" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="count"/>]</log>
-<log>INFO: Current value [<value expr="returnVal"/>]</log>
+            <log>INFO: Current value [<value expr="returnVal"/>]</log>
 <assign name="returnVal" expr="newResult+''" />
 <log>INFO: Updated value [<value expr="returnVal"/>]</log>
 <log>INFO: Current value [<value expr="numOfVoicemails"/>]</log>
@@ -23,6 +20,9 @@
 <log>INFO: Current value [<value expr="voicemailInfo"/>]</log>
 <assign name="voicemailInfo" expr="returnVal+''" />
 <log>INFO: Updated value [<value expr="voicemailInfo"/>]</log>
+<log>INFO: Current value [<value expr="count"/>]</log>
+<assign name="count" expr="'0'+''" />
+<log>INFO: Updated value [<value expr="count"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
