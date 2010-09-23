@@ -33,6 +33,9 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
     <script type="text/javascript" src="./resources/app/js/app-conference-list-min.js"></script><%
     }
 }
+if(License.isLicensed(ListenFeature.ATTENDANT)) { %>
+    <script type="text/javascript" src="./resources/app/js/app-attendant-min.js"></script><%
+}
 if(License.isLicensed(ListenFeature.FINDME)) { %>
     <script type="text/javascript" src="./resources/app/js/app-findme-min.js"></script><%
 } %>
@@ -281,7 +284,17 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
             </div><%
 }
 
-if(subscriber != null && subscriber.getIsAdministrator()) { %>
+if(subscriber != null && subscriber.getIsAdministrator()) {
+
+    if(License.isLicensed(ListenFeature.ATTENDANT)) { %>
+            <div id="attendant-application" class="application">
+              <div class="application-header"><div class="title">Attendant</div></div>
+              <div class="application-content">
+                <div class="cleaner">&nbsp;</div>
+              </div>
+            </div><%
+    } %>
+
             <div id="sysconfig-application" class="application">
               <div class="application-header"><div class="title">Configuration</div></div>
               <div class="application-content">
@@ -674,7 +687,10 @@ if(License.isLicensed(ListenFeature.CONFERENCING)
 if(subscriber != null && subscriber.getIsAdministrator()) { %>
           <hr style="width: 75%;"/>
           <div class="menu">
-            <ul>
+            <ul><%
+    if(License.isLicensed(ListenFeature.ATTENDANT)) { %>
+              <li id="menu-attendant">Attendant</li><%
+    } %>
               <li id="menu-sysconfig">Configuration</li><%
     if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
               <li id="menu-conference-list">Conferences</li><%

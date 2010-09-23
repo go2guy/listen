@@ -236,6 +236,7 @@
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
     </copy>
     
+    <minify in="${war.staging.dir}/resources/app/js/app-attendant.js" out="${war.staging.dir}/resources/app/js/app-attendant-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-history.js" out="${war.staging.dir}/resources/app/js/app-history-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-conference-list.js" out="${war.staging.dir}/resources/app/js/app-conference-list-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-conferencing.js" out="${war.staging.dir}/resources/app/js/app-conferencing-min.js"/>

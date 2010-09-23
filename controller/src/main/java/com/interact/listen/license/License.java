@@ -34,6 +34,11 @@ public final class License
      */
     public static boolean isLicensed(Feature feature)
     {
+        // FIXME remove once we actually implement the licensing
+        if(feature.equals(ListenFeature.ATTENDANT))
+        {
+            return true;
+        }
         return INSTANCE.license.isFeatureLicensed(feature);
     }
 

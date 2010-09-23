@@ -463,6 +463,26 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
     font-weight: normal;
 }
 
+/* application - attendant */
+
+#attendant-application {
+    border-color: #FFE472;
+}
+
+#attendant-application .application-header {
+    background: #E8BB2B url('../images/new/header_gradient_orange_30x10.png') repeat-x bottom left;
+}
+
+#menu-attendant {
+    border-color: #E8BB2B;
+    color: #666666;
+}
+
+#menu-attendant.current, #menu-attendant:hover {
+    background-color: #E8BB2B;
+    color: #FFFFFF;
+}
+
 /* application - findme */
 
 #findme-application {
