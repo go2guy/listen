@@ -27,7 +27,7 @@
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
     <var name="II_SB_promptList" expr="'P'+'noMailbox'+'|P'+'thankYou'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'146-19'"/>  <!--  PlayAudio Next Option. Name of next file -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'146-21'"/>  <!--  PlayAudio Next Option. Name of next file -->
 	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	
 	<!-- Voice properties -->
