@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList,HTTP_dir,artifacts_dir)
             {
-	                var result = "ERROR";    var tmpVal = eval("("+argList+")");    switch (tmpVal.action)    {        case "FILE":        {            var host = tmpVal.hostName + "/";            var artifact = tmpVal.artifact;            result = HTTP_dir + getNextElement(1,artifact,host);            break;        }        case "SUB":        {            result = HTTP_dir + artifacts_dir + tmpVal.artifact;            break;        }        default:    }    return result;
+	            return getArtifact(argList, HTTP_dir, artifacts_dir);
             }
         ]]>
     </script>
