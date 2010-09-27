@@ -49,6 +49,15 @@ Requires: spotbuild-vip
 # The build section is used to compile the code.
 #######################################################################
 %build
+    cd %{STARTDIR}/spotbuild/rhinounit/test/
+    ant
+    if [ $? -ne 0 ]
+    then
+        echo -e "\nJava script unit tests failed!\n"
+    else
+        echo -e "\nPassed all Javascript tests\n"
+    fi
+    cd %{STARTDIR}
 
 #######################################################################
 # The install section is used to install the code into directories
