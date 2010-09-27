@@ -25,11 +25,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,20 +45,25 @@ import android.widget.TextView;
 public class ListenVoicemail extends ListActivity
 {
     private static final String TAG = "ListenVoicemailActivity";
+    
     private static final int VIEW_DETAILS = 0;
     private static final int EDIT_SETTINGS = 1;
     private static final int LISTEN_NOTIFICATION = 45;
     private static final int MENU_SETTINGS_ID = Menu.FIRST;
+    
     private IListenVoicemailService remoteService;
     private boolean started = false;
     private RemoteServiceConnection conn = null;
     private String UPDATE_ACTION_STRING = "com.interact.listen.android.voicemail.UPDATE_VOICEMAILS";
     private ArrayList<Voicemail> mVoicemails = new ArrayList<Voicemail>();
     
+    private SharedPreferences sharedPreferences;
+    
     private BroadcastReceiver receiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "received broadcast");
+            
             abortBroadcast();
             try
             {
@@ -73,6 +80,7 @@ public class ListenVoicemail extends ListActivity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         startService();
         bindService();
         startService(new Intent(this, ListenVoicemailService.class));
@@ -104,7 +112,7 @@ public class ListenVoicemail extends ListActivity
     {
         super.onPause();
         this.unregisterReceiver(this.receiver);
-        Log.v("TONY", "onPause()");
+        Log.v(TAG, "onPause()");
     }
 
     @Override
@@ -127,7 +135,7 @@ public class ListenVoicemail extends ListActivity
         switch(item.getItemId()) {
         case MENU_SETTINGS_ID:
             Intent i = new Intent(this, ApplicationSettings.class);
-            startActivityForResult(i, VIEW_DETAILS);
+            startActivityForResult(i, EDIT_SETTINGS);
             return true;
         }
         
@@ -214,13 +222,16 @@ public class ListenVoicemail extends ListActivity
                 HttpConnectionParams.setSoTimeout(httpParams, 3000);
 
                 HttpClient httpClient = new DefaultHttpClient(httpParams);
-                HttpGet httpGet = new HttpGet("http://192.168.1.221:9090/api/voicemails?subscriber=/subscribers/26" +
-                                              "&_fields=id,isNew,leftBy,description,dateCreated,duration,transcription,hasNotified" +
-                                              "&_sortBy=dateCreated&_sortOrder=DESCENDING");
+                HttpGet httpGet = new HttpGet("http://" + sharedPreferences.getString(ApplicationSettings.KEY_HOST_PREFERENCE, "") +
+                                                  ":" + sharedPreferences.getString(ApplicationSettings.KEY_PORT_PREFERENCE, "") +
+                                                  "/api/voicemails?subscriber=/subscribers/" + 
+                                                  sharedPreferences.getInt(ApplicationSettings.KEY_SUBSCRIBER_ID_PREFERENCE, -1) +
+                                                  "&_fields=id,isNew,leftBy,description,dateCreated,duration,transcription,hasNotified" +
+                                                  "&_sortBy=dateCreated&_sortOrder=DESCENDING");
                 
                 httpGet.addHeader("Accept", "application/json");
+                Log.d(TAG, "Trying to get voicemails from " + httpGet.getURI().toString());
                 String response = httpClient.execute(httpGet, handler);
-                // Log.v("TONY", response);
 
                 JSONObject jsonObj = new JSONObject(response);
                 int total = Integer.valueOf(jsonObj.getString("total"));
@@ -242,7 +253,7 @@ public class ListenVoicemail extends ListActivity
             }
             catch(Exception e)
             {
-                Log.e("TONY", "Exception getting JSON data", e);
+                Log.e(TAG, "Exception getting JSON data", e);
                 return new ArrayList<Voicemail>();
             }
         }
@@ -254,7 +265,6 @@ public class ListenVoicemail extends ListActivity
             {
                 long[] unnotifiedIds = filterUnnotifiedVoicemails(voicemails);
                 
-                Log.d("TONY", "unnotifiedIds.length = " + unnotifiedIds.length);
                 if(unnotifiedIds.length > 0)
                 {
                     remoteService.updateNotificationStatus(unnotifiedIds);
@@ -390,7 +400,6 @@ public class ListenVoicemail extends ListActivity
         
         for(Voicemail voicemail : voicemails)
         {
-            Log.d("TONY", "voicemail " + voicemail.getId() + " getHasNotified() = " + voicemail.getHasNotified());
             if(!voicemail.getHasNotified())
             {
                 tempVoicemails.add(voicemail);

@@ -29,6 +29,7 @@ import android.util.Log;
 public class UpdatedVoicemailReceiver extends BroadcastReceiver
 {
     private long[] ids;
+    private int newMessageCount;
     private Context mContext;
     private static final int LISTEN_NOTIFICATION = 45;
     
@@ -37,6 +38,8 @@ public class UpdatedVoicemailReceiver extends BroadcastReceiver
     {
         Bundle extras = intent.getExtras();
         ids = extras.getLongArray("ids");
+        newMessageCount = extras.getInt("newMessageCount");
+        
         Log.d("TONY", "ids = " + Arrays.toString(ids));
         
         mContext = context;
@@ -54,7 +57,7 @@ public class UpdatedVoicemailReceiver extends BroadcastReceiver
         {
             CharSequence tickerText = idsLength > 1 ? "New Listen Voicemails" : "New Listen Voicemail";
             CharSequence contentTitle = idsLength > 1 ? "New Listen Voicemails" : "New Listen Voicemail";
-            CharSequence contentText = idsLength > 1 ? "New Voicemails" : "New Voicemail";
+            CharSequence contentText = newMessageCount + " new " + (newMessageCount > 1 ?  "Voicemails" : "Voicemail");
 
             int icon = R.drawable.notification_bar_icon;
             long when = System.currentTimeMillis();

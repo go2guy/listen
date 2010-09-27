@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Account Information">
+        <EditTextPreference
+        		android:key="voicemail_username"
+                android:title="Username"
+                android:summary="Current value is "
+                android:dialogTitle="Enter your username" />
+		<EditTextPreference
+        		android:key="voicemail_password"
+                android:title="Password"
+                android:dialogTitle="Enter your password"
+                android:inputType="textPassword" />                
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="Host Information">
+        <EditTextPreference
+        		android:key="voicemail_host"
+                android:title="Host"
+                android:summary="Current value is "
+                android:dialogTitle="Enter host name" />
+		<EditTextPreference
+        		android:key="voicemail_port"
+                android:title="Port"
+                android:summary="Current value is "
+                android:dialogTitle="Enter host port"
+                android:inputType="number" />                
+	</PreferenceCategory>
+</PreferenceScreen>

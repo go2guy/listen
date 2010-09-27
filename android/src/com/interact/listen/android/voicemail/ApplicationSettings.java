@@ -1,70 +1,82 @@
 package com.interact.listen.android.voicemail;
 
-import java.util.ArrayList;
-
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.preference.EditTextPreference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 
-public class ApplicationSettings extends Activity
+public class ApplicationSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-    private static final String TAG = "ListenVoicemailDetails";
-    private TextView mLeftBy;
-    private TextView mDate;
-    private TextView mTranscription;
-    private long mVoicemailId;
-    private ArrayList<Voicemail> mVoicemails;
-    private int mPosition;
-    private String UPDATE_ACTION_STRING = "com.interact.listen.android.voicemail.UPDATE_VOICEMAILS";
-    
-    private BroadcastReceiver receiver = new BroadcastReceiver(){
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "received broadcast");
-            abortBroadcast();
-            //do nothing, we just don't want the notification to appear
-        }
-    };
-    
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.application_settings);
-        
-        Button saveButton = (Button) findViewById(R.id.settingsSave);
-        Button cancelButton = (Button) findViewById(R.id.settingsCancel);
-        
-        saveButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                try
-                {
-                    Context context = getApplicationContext();
-                    CharSequence text = "You clicked save!";
-                    int duration = Toast.LENGTH_SHORT;
+    private static final String TAG = "ListenVoicemailApplicationSettings";
+    public static final String KEY_HOST_PREFERENCE = "voicemail_host";
+    public static final String KEY_PASSWORD_PREFERENCE = "voicemail_password";
+    public static final String KEY_PORT_PREFERENCE = "voicemail_port";
+    public static final String KEY_SUBSCRIBER_ID_PREFERENCE = "subscriber_id";
+    public static final String KEY_USERNAME_PREFERENCE = "voicemail_username";
 
-                    Toast.makeText(context, text, duration).show();
-                    /*new MarkVoicemailRead().execute(mVoicemailId);
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("position", mPosition);
-                    bundle.putBoolean("deleted", false);
-                    
-                    Intent mIntent = new Intent();
-                    mIntent.putExtras(bundle);*/
-                    
-                    setResult(RESULT_OK/*, mIntent*/);
-                    finish();
-                } catch(Exception e) {
-                    Log.e("TONY", "Exception marking voicemail read", e);
-                }
-            }
-        });
+    private EditTextPreference mUsernamePreference;
+    private EditTextPreference mPasswordPreference;
+    private EditTextPreference mHostPreference;
+    private EditTextPreference mPortPreference;
+    
+    private SharedPreferences sharedPreferences;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        // Load the preferences from an XML resource
+        addPreferencesFromResource(R.xml.application_settings);
+        
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Get a reference to the preferences
+        mUsernamePreference = (EditTextPreference)getPreferenceScreen().findPreference(KEY_USERNAME_PREFERENCE);
+        mPasswordPreference = (EditTextPreference)getPreferenceScreen().findPreference(KEY_PASSWORD_PREFERENCE);
+        mHostPreference = (EditTextPreference)getPreferenceScreen().findPreference(KEY_HOST_PREFERENCE);
+        mPortPreference = (EditTextPreference)getPreferenceScreen().findPreference(KEY_PORT_PREFERENCE);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        // Setup the initial values
+        mUsernamePreference.setSummary("Current value is " + sharedPreferences.getString(KEY_USERNAME_PREFERENCE, ""));
+        mHostPreference.setSummary("Current value is " + sharedPreferences.getString(KEY_HOST_PREFERENCE, ""));
+        mPortPreference.setSummary("Current value is " + sharedPreferences.getString(KEY_PORT_PREFERENCE, ""));
+
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
+        // Let's do something a preference value changes
+        if(key.equals(KEY_USERNAME_PREFERENCE))
+        {
+            mUsernamePreference.setSummary("Current value is " + sharedPreferences.getString(key, ""));
+        }
+        else if(key.equals(KEY_HOST_PREFERENCE))
+        {
+            mHostPreference.setSummary("Current value is " + sharedPreferences.getString(key, ""));
+        }
+        else if(key.equals(KEY_PORT_PREFERENCE))
+        {
+            mPortPreference.setSummary("Current value is " + sharedPreferences.getString(key, ""));
+        }
     }
 }
