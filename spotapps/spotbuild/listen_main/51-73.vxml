@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR)
             {
-	            var result = eval("("+passValues+")");result.cntrlURL = cntrlURL + "/api";result.hostName = hostName;result.sipURL = sipURL;result.sysAccessTime = sysAccessTime;result.HTTPcontroller = HTTPcontroller;result.STATcontroller = STATcontroller;result.artifactsDIR= artifactsDIR;return iiStringify(result);
+	            return extendAppObject(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Var</log>
+            <log target="status">Extend App Obj</log>
             <log>INFO: Entered run-javascript.vxml [51-73]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   

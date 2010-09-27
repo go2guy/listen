@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(appToAccess)
             {
-	            var result = new String(appToAccess);return result.split('application:')[1];
+	            return getNextElement(1,appToAccess,':');
             }
         ]]>
     </script>

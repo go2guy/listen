@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'51-100'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'51-65'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            var result = "DEFAULT";if(passValues != undefined){    var tmpVal = eval("("+passValues+")");    switch (tmpVal.application)    {        case "AUTO_DIAL":            result = "listen_autoDial";            break;        case "RECORD":            result = "listen_record";            break;        case "DEL_ARTIFACT":            result = "listen_artifacts";            break;        case "CONF_EVENT":            result = "listen_confEvents";            break;        case "MSG_LIGHT":            result = "msgLightCntrl";            break;      case "conferencing":    result = "listen_conference";    break;case "mailbox":    result = "listen_mailbox";    break;case "directVoicemail":    result = "listen_mailbox";    break;case "voicemail":    result = "listen_voicemail";    break;case "":    break;case " ":    break;default:    result = tmpVal.application;    }}return result;
+	            return getAppName(passValues);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get App Type</log>
+            <log target="status">Get App Name</log>
             <log>INFO: Entered run-javascript.vxml [51-67]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="status" expr="II_SB_userJava" />   
+            <assign name="appToAccess" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

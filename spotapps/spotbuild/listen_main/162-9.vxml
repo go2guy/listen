@@ -9,18 +9,18 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(subID)
+            function II_SB_JS_function(DNIS)
             {
-	            return "getDnis?number=" + escape(subID);
+	            return setDnisSearchSting(DNIS);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Sets params</log>
+            <log target="status">Set DNIS Search String</log>
             <log>INFO: Entered run-javascript.vxml [162-9]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(subID)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(DNIS)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

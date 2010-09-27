@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(hostName,DNIS,callType)
             {
-	            return "{\"httpApi\": \"http://"+hostName+"/spot\", \"phoneNumber\":\""+DNIS+"\", \"phoneNumberProtocol\": \""+callType+"\" }";
+	            return createHostObject(hostName,DNIS,callType);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
+            <log target="status">Create Host Obj</log>
             <log>INFO: Entered run-javascript.vxml [51-113]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(hostName,DNIS,callType)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
