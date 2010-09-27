@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'82-60'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'112-50'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(appStartTime)
+            function II_SB_JS_function(getInput)
             {
-	            var appEndTime = new Date().getTime();if (appStartTime.length > 0)return Math.round((appEndTime - appStartTime)/1000);else {return 1};
+	            var tmpVal = eval("("+getInput+")");return tmpVal.initiatingSubscriber;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get End Time</log>
-            <log>INFO: Entered run-javascript.vxml [82-63]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(appStartTime)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="returnVal" expr="II_SB_userJava" />   
+            <log target="status">Get lstnSub</log>
+            <log>INFO: Entered run-javascript.vxml [112-68]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="lstnSub" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

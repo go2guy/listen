@@ -10,7 +10,7 @@
        */
     -->
 
-    <var name="II_SB_valueToPass" expr="''"/>   <!-- Config: Name of file confrence creates -->
+    <var name="II_SB_valueToPass" expr="getInput"/>   <!-- Config: Name of file confrence creates -->
     <var name="II_SB_eventToPass" expr="'DROP'"/>
     <var name="II_SB_sessionID" expr="tempSID"/>        <!-- Config: Session ID for the message to send -->
     <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'111-67'"/>

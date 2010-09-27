@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">Validate Pin</log>
             <log>INFO: Entered data-query.vxml [83-47]</log>
-            <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params request resource " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params request resource lstnChannel lstnSub " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
 			<assign name="returnVal" expr="apiObj.Result" />
 			<assign name="returnStr" expr="apiObj.Reason" />

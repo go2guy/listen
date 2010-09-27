@@ -5,21 +5,21 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'79-34'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'79-45'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Variables</log>
-            <log>INFO: Entered assign-variable.vxml [79-30]</log>
-            <log>INFO: Current value [<value expr="whichPath"/>]</log>
-<assign name="whichPath" expr="'getPin'+''" />
-<log>INFO: Updated value [<value expr="whichPath"/>]</log>
-<log>INFO: Current value [<value expr="playHelp"/>]</log>
-<assign name="playHelp" expr="'false'+''" />
-<log>INFO: Updated value [<value expr="playHelp"/>]</log>
-<log>INFO: Current value [<value expr="lstnSub"/>]</log>
-<assign name="lstnSub" expr="subHref+''" />
-<log>INFO: Updated value [<value expr="lstnSub"/>]</log>
+	    <log target="status">Set resource</log>
+            <log>INFO: Entered assign-variable.vxml [79-48]</log>
+            <log>INFO: Current value [<value expr="resource"/>]</log>
+<assign name="resource" expr="'accessNumbers'+''" />
+<log>INFO: Updated value [<value expr="resource"/>]</log>
+<log>INFO: Current value [<value expr="lstnChannel"/>]</log>
+<assign name="lstnChannel" expr="'TUI'+''" />
+<log>INFO: Updated value [<value expr="lstnChannel"/>]</log>
+<log>INFO: Current value [<value expr="request"/>]</log>
+<assign name="request" expr="'get'+''" />
+<log>INFO: Updated value [<value expr="request"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

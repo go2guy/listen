@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">Set ArcadeID</log>
             <log>INFO: Entered data-query.vxml [134-43]</log>
-            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL params resource request id " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL params resource request id lstnChannel lstnSub " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj." />
 			<assign name="returnVal" expr="apiObj." />
 			<assign name="returnStr" expr="apiObj." />

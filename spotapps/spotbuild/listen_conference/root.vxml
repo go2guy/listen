@@ -107,6 +107,9 @@
 	<var name="appStartTime" expr="''" />
 	<var name="appEndTime" expr="''" />
 	<var name="whichPathStat" expr="''" />
+	<var name="lstnChannel" expr="''" />
+	<var name="lstnSub" expr="''" />
+	<var name="subHref" expr="''" />
 
 
     <!-- Conference Variables -->
