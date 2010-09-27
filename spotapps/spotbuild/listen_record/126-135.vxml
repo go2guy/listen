@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'126-135'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'126-136'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var result = eval("("+argList+")");return result.STATcontroller;
+	            var tmpVal = eval("("+argList+")");return tmpVal.initiatingChannel;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get STATcontroller</log>
-            <log>INFO: Entered run-javascript.vxml [126-121]</log>
+            <log target="status">Get lstnChannel</log>
+            <log>INFO: Entered run-javascript.vxml [126-135]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="STATcontroller" expr="II_SB_userJava" />   
+            <assign name="lstnChannel" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

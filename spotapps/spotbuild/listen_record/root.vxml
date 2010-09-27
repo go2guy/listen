@@ -63,6 +63,8 @@
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
 	<var name="artifactsDIR" expr="''" />
+	<var name="lstnChannel" expr="''" />
+	<var name="lstnSub" expr="''" />
 
 
     <!-- Conference Variables -->
