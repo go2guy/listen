@@ -49,7 +49,7 @@ Requires: spotbuild-vip
 # The build section is used to compile the code.
 #######################################################################
 %build
-    cd spotbuild/rhinounit/test/
+    cd ../spotbuild/rhinounit/
     /usr/local/ant/bin/ant
     if [ $? -ne 0 ]
     then
@@ -82,6 +82,7 @@ Requires: spotbuild-vip
     # Remove extras
     rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
     rm -rf %{buildroot}/interact/apps/spotbuild/ippbx/php
+    rm -rf %{buildroot}/interact/apps/spotbuild/rhinounit
 
     # Run Encryption
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/ %{buildroot}/interact/apps/spotbuild/listen_artifacts/
