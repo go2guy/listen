@@ -49,7 +49,7 @@ Requires: spotbuild-vip
 # The build section is used to compile the code.
 #######################################################################
 %build
-    cd %{STARTDIR}/spotbuild/rhinounit/test/
+    cd spotbuild/rhinounit/test/
     /usr/local/ant/bin/ant
     if [ $? -ne 0 ]
     then
@@ -57,7 +57,7 @@ Requires: spotbuild-vip
     else
         echo -e "\nPassed all Javascript tests\n"
     fi
-    cd %{STARTDIR}
+    cd -
 
 #######################################################################
 # The install section is used to install the code into directories
