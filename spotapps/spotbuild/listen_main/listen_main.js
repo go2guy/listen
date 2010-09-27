@@ -1,7 +1,7 @@
 function getAppName(passValues) {
     var result = '';
-    var tmpVAl = new String(passValues).replace(/^\s*|\s*$|\s+/g,'');
-    if((tmpVAl == '') || (typeof(passValues) == 'undefined'))
+    var tmpVal = new String(passValues).replace(/^\s*|\s*$|\s+/g,'');
+    if((tmpVal == '') || (typeof(passValues) == 'undefined'))
         result = "DEFAULT"; 
     else {
         var tmpVal = eval("("+passValues+")");
