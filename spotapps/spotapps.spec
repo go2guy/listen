@@ -50,7 +50,7 @@ Requires: spotbuild-vip
 #######################################################################
 %build
     cd %{STARTDIR}/spotbuild/rhinounit/test/
-    ant
+    /usr/local/ant/bin/ant
     if [ $? -ne 0 ]
     then
         echo -e "\nJava script unit tests failed!\n"
