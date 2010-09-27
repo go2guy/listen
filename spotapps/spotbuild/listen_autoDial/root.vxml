@@ -65,6 +65,8 @@
 	<var name="SessionID" expr="'sessionID'" />
 	<var name="ANI" expr="''" />
 	<var name="sipURL" expr="''" />
+	<var name="lstnChannel" expr="''" />
+	<var name="lstnSub" expr="''" />
 
 
     <!-- Conference Variables -->

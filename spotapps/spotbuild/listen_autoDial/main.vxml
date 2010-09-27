@@ -55,6 +55,8 @@
 	<var name="SB_UV_SessionID"/>
 	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_sipURL"/>
+	<var name="SB_UV_lstnChannel"/>
+	<var name="SB_UV_lstnSub"/>
 
     
     <form id="beginDocument">
@@ -176,6 +178,12 @@
 			</if>
 			<if cond="SB_UV_sipURL != undefined">
 				<assign name="sipURL" expr="SB_UV_sipURL" />
+			</if>
+			<if cond="SB_UV_lstnChannel != undefined">
+				<assign name="lstnChannel" expr="SB_UV_lstnChannel" />
+			</if>
+			<if cond="SB_UV_lstnSub != undefined">
+				<assign name="lstnSub" expr="SB_UV_lstnSub" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
