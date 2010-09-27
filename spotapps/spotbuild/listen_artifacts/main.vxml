@@ -23,7 +23,6 @@
 	<var name="SB_UV_FILE1"/>
 	<var name="SB_UV_OPERATION"/>
 	<var name="SB_UV_status"/>
-	<var name="SB_UV_artifacts_dir"/>
 	<var name="SB_UV_HTTP_dir"/>
 
     
@@ -48,9 +47,6 @@
 			</if>
 			<if cond="SB_UV_status != undefined">
 				<assign name="status" expr="SB_UV_status" />
-			</if>
-			<if cond="SB_UV_artifacts_dir != undefined">
-				<assign name="artifacts_dir" expr="SB_UV_artifacts_dir" />
 			</if>
 			<if cond="SB_UV_HTTP_dir != undefined">
 				<assign name="HTTP_dir" expr="SB_UV_HTTP_dir" />
