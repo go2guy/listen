@@ -30,7 +30,7 @@ def main():
     global masterpkg
     global uiapkg
 
-    phases = {"install": install, "upgrade": upgrade, "all": all}
+    phases = {"install": install, "upgrade": upgrade, "live2stage": live2stage, "all": all}
 
     parser = OptionParser()
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
@@ -148,6 +148,18 @@ def install():
 def upgrade():
     prepupgrade()
     doupgrade()
+    post()
+
+def live2stage():
+    prepcommon()
+
+    # from prepinstall, but with more pardoned files
+    deploy.eraseInteractRpms()
+    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg, "/interact/mysql-connector", "/interact/master/.iiXmlLicense", "/interact/master/iimoap.cfg", "/interact/apps/spotbuild/listen_main/root.vxml"])
+    deploy.removeFiles("/var/lib/com.interact.listen/")
+    deploy.removeFiles("/var/lib/mysql/")
+    
+    doinstall()
     post()
 
 def prep():
