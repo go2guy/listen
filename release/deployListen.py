@@ -30,7 +30,7 @@ def main():
     global masterpkg
     global uiapkg
 
-    phases = {"prep": prep, "clean": clean, "license": license, "install": install, "upgrade": upgrade, "post": post, "all": all}
+    phases = {"install": install, "upgrade": upgrade, "all": all}
 
     parser = OptionParser()
     parser.formatter = TitledHelpFormatter(indent_increment=2, max_help_position=40, width=120)
@@ -138,32 +138,38 @@ def main():
 
 
 def all():
-	install()
+    install()
 
 def install():
-    prep()
-    clean()
+    prepinstall()
     doinstall()
     post()
 
 def upgrade():
-    prep()
-    doinstall()
+    prepupgrade()
+    doupgrade()
     post()
 
-def clean():
+def prep():
+    prepinstall()
+
+def prepinstall():
+    prepcommon()
+
     deploy.eraseInteractRpms()
-    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg, '/interact/mysql-connector', '/interact/master/.iiXmlLicense', '/interact/master/iimoap.cfg', '/interact/apps/spotbuild/listen_main/root.vxml'])
+
+    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
     deploy.removeFiles("/var/lib/com.interact.listen/")
     deploy.removeFiles("/var/lib/mysql/")
 
+def prepupgrade():
+    prepcommon()
 
-def prep():
+def prepcommon():
     print("Preparing for deployment")
     stopcmds = ["service listen-controller stop",
                 "service collector stop",
-                "service mysqld stop",
-                "service vipStart stop"]
+                "service mysqld stop"]
 
     killprocs = ["/interact/.*/iiMoap",
                  "/interact/.*/iiSysSrvr",
@@ -177,11 +183,34 @@ def prep():
     hostinfo = {"defaultcontroller": controllerserver,
                 "defaultivr": ivrserver,
                 "defaultrealize": realizeserver}
-
     deploy.createAlias(hostinfo)
 
-
 def doinstall():
+    # install uia packages
+    deploy.run(["rpm", "-Uvh", uiapkg])
+
+    # Make sure mysqld is running
+    deploy.run(["service", "mysqld", "start"], failonerror=False)
+
+    # define an empty list for startup commands
+    startlist = {}
+
+    if hostname == controllerserver:
+        deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", masterpkg, "all"])
+        startlist["/etc/init.d/httpd"] = "start"
+        startlist["/interact/program/iiMoap"] = ""
+        startlist["/interact/program/iiSysSrvr"] = ""
+        startlist["/etc/init.d/collector"] = "start"
+        startlist["/etc/init.d/listen-controller"] = "start"
+
+    # License the system before we try to start anything.
+    license()
+
+    # execute listed startup commands 
+    for command,action in startlist.iteritems():
+        deploy.run([command, action])
+
+def doupgrade():
     # install uia packages
     deploy.run(["rpm", "-Uvh", "--replacepkgs", uiapkg])
 
@@ -198,16 +227,12 @@ def doinstall():
         startlist["/etc/init.d/collector"] = "start"
         startlist["/etc/init.d/listen-controller"] = "start"
 
-    # License the system before we try to start anything.
-    license()
-
     # execute listed startup commands 
     for command,action in startlist.iteritems():
         deploy.run([command, action])
 
 def license():
     deploy.license(hostname)
-
 
 def post():    
     if hostname == controllerserver: 
