@@ -16,7 +16,7 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'getDest'+',125-3|=,'+'confCheck'+',105-97|=,'+'adminHungUp'+',122-3|else,81-3'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_expList" expr="'=,'+'getDest'+',125-3|=,'+'confCheck'+',105-97|=,'+'adminHungUp'+',122-18|else,81-3'"/>	<!-- List of expression to be evaluated -->
     <var name="II_SB_operand1" expr="tmpVal"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
