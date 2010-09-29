@@ -1,8 +1,11 @@
 package com.interact.listen;
 
+import com.interact.listen.attendant.*;
 import com.interact.listen.config.Property;
 import com.interact.listen.history.Channel;
 import com.interact.listen.jobs.NewVoicemailPagerJob;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
@@ -139,14 +142,20 @@ public final class HibernateUtil
 
             // application classes
             config.addAnnotatedClass(AccessNumber.class);
+            config.addAnnotatedClass(Action.class);
             config.addAnnotatedClass(ActionHistory.class);
             config.addAnnotatedClass(Audio.class);
             config.addAnnotatedClass(CallDetailRecord.class);
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(ConferenceHistory.class);
             config.addAnnotatedClass(ConferenceRecording.class);
+            config.addAnnotatedClass(DialPressedNumberAction.class);
+            config.addAnnotatedClass(DialNumberAction.class);
+            config.addAnnotatedClass(GoToMenuAction.class);
             config.addAnnotatedClass(History.class);
+            config.addAnnotatedClass(LaunchApplicationAction.class);
             config.addAnnotatedClass(ListenSpotSubscriber.class);
+            config.addAnnotatedClass(Menu.class);
             config.addAnnotatedClass(Participant.class);
             config.addAnnotatedClass(Pin.class);
             config.addAnnotatedClass(Property.class);
@@ -164,6 +173,7 @@ public final class HibernateUtil
             PersistenceService persistenceService = new PersistenceService(session, null, Channel.GUI);
 
             createAdminSubscriberIfNotPresent(session, persistenceService);
+            createDefaultAttendantMenuIfNotPresent(session);
 
             if(Boolean.valueOf(System.getProperty("bootstrap", "false")))
             {
@@ -282,6 +292,51 @@ public final class HibernateUtil
             subscriber.setVoicemailPin("000");
             persistenceService.save(subscriber);
         }
+    }
+
+    private static void createDefaultAttendantMenuIfNotPresent(Session session)
+    {
+        if(!License.isLicensed(ListenFeature.ATTENDANT))
+        {
+            LOG.debug("Will not create default Attendant menu, feature is not licensed");
+            return;
+        }
+
+        Action defaultAction = new DialPressedNumberAction();
+        session.save(defaultAction);
+        Action timeoutAction = new GoToMenuAction();
+        session.save(timeoutAction);
+
+        Menu menu = new Menu();
+        menu.setAudioFile("foo.wav"); // FIXME use actual default
+        menu.setName("Top Menu");
+        menu.setDefaultAction(defaultAction);
+        menu.setTimeoutAction(timeoutAction);
+        session.save(menu);
+
+        // some random actions for testing
+        DialNumberAction dialNumberAction = new DialNumberAction();
+        dialNumberAction.setMenu(menu);
+        dialNumberAction.setKeyPressed("1");
+        dialNumberAction.setNumber("1111");
+        session.save(dialNumberAction);
+
+        DialPressedNumberAction dialPressedNumberAction = new DialPressedNumberAction();
+        dialPressedNumberAction.setMenu(menu);
+        dialPressedNumberAction.setKeyPressed("2");
+        session.save(dialPressedNumberAction);
+
+        GoToMenuAction goToMenuAction = new GoToMenuAction();
+        goToMenuAction.setMenu(menu);
+        goToMenuAction.setKeyPressed("3");
+        goToMenuAction.setGoToMenu(menu);
+        session.save(goToMenuAction);
+
+        LaunchApplicationAction launchApplicationAction = new LaunchApplicationAction();
+        launchApplicationAction.setMenu(menu);
+        launchApplicationAction.setKeyPressed("4");
+        launchApplicationAction.setApplicationName("Conferencing");
+        session.save(launchApplicationAction);
     }
 
     private static void doLiquibaseUpgrades() throws SQLException, LiquibaseException
