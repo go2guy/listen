@@ -57,6 +57,7 @@
 	<var name="SB_UV_appStartTime"/>
 	<var name="SB_UV_appEndTime"/>
 	<var name="SB_UV_whichPathStat"/>
+	<var name="SB_UV_isTranscription"/>
 
     
     <form id="beginDocument">
@@ -184,6 +185,9 @@
 			</if>
 			<if cond="SB_UV_whichPathStat != undefined">
 				<assign name="whichPathStat" expr="SB_UV_whichPathStat" />
+			</if>
+			<if cond="SB_UV_isTranscription != undefined">
+				<assign name="isTranscription" expr="SB_UV_isTranscription" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

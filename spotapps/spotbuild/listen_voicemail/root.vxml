@@ -67,6 +67,7 @@
 	<var name="appStartTime" expr="''" />
 	<var name="appEndTime" expr="''" />
 	<var name="whichPathStat" expr="''" />
+	<var name="isTranscription" expr="'False'" />
 
 
     <!-- Conference Variables -->

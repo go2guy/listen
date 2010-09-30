@@ -16,8 +16,8 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'exitApp'+',146-21|=,'+'appEndTotalTime'+',146-26|=,'+'postCDR'+',120-47|=,'+'serviceError'+',146-32|=,'+'transcription'+',120-67|else,146-12'"/>	<!-- List of expression to be evaluated -->
-    <var name="II_SB_operand1" expr="whichPathStat"/>   			<!-- User defined value to be used as an operand in the expression -->
+    <var name="II_SB_expList" expr="'=,'+'True'+',120-94|else,120-93'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_operand1" expr="isTranscription"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
     <var name="II_SB_index" expr="0"/>							<!-- Index used to loop through expression list -->
@@ -27,8 +27,8 @@
 
 	<form id="beginDocument">
 		<block>
-    	    <log target="status">Which Path Stat</log>
-			<log>INFO: Entered decision.vxml [186-3]</log>
+    	    <log target="status">isTranscription</log>
+			<log>INFO: Entered decision.vxml [120-91]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>
 		</block>
