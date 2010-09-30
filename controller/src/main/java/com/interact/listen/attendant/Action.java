@@ -11,7 +11,7 @@ import org.json.simple.JSONObject;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(name = "ATTENDANT_ACTION", uniqueConstraints = { @UniqueConstraint(columnNames = {"ATTENDANT_MENU_ID", "KEY_PRESSED"})})
+@Table(name = "ATTENDANT_ACTION", uniqueConstraints = { @UniqueConstraint(columnNames = { "ATTENDANT_MENU_ID", "KEY_PRESSED" }) })
 public abstract class Action
 {
     @Column(name = "ID")
