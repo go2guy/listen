@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList,phoneNumber)
             {
-	            var number = getNextElement(0,phoneNumber,'@');return extendAppObject(argList,'phoneNumber',number);
+	            var number = getNextElement(0,phoneNumber,'@');return extendJsonObject(argList,'phoneNumber',number);
             }
         ]]>
     </script>

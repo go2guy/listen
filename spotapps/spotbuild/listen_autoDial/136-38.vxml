@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var currTime = getTimeStamp(3);return extendAppObject(argList, 'sysAccessTime', currTime);
+	            var currTime = getTimeStamp(3);return extendJsonObject(argList, 'sysAccessTime', currTime);
             }
         ]]>
     </script>

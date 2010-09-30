@@ -40,12 +40,6 @@ function setCallingID(phoneNumber, argList) {
     return result;
 }
 
-function extendAppObject(argList, key, value) {
-    var result = eval("("+argList+")");
-    result[key] = value;
-    return iiStringify(result);
-}
-
 function createDialObj(ConfName, SessionID) {
     return "{\"ConfName\":\"" + ConfName + "\",\"SessionID\":\"" + SessionID + "\"}";
 }
