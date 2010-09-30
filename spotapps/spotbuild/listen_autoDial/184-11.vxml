@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(ConfName,SessionID)
             {
-	            return "{\"ConfName\":\"" + ConfName + "\",\"SessionID\":\"" + SessionID + "\"}";
+	            return createDialObj(ConfName, SessionID);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Pass Value</log>
+            <log target="status">Create Dial Object</log>
             <log>INFO: Entered run-javascript.vxml [184-11]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(ConfName,SessionID)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="SessionID" expr="II_SB_userJava" />   

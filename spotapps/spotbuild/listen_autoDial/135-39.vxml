@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var result = eval("("+argList+")");return result.conferenceId;
+	            return getJsonVal(argList, "conferenceId");
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set confID</log>
+            <log target="status">Get confID</log>
             <log>INFO: Entered run-javascript.vxml [135-39]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="confID" expr="II_SB_userJava" />   

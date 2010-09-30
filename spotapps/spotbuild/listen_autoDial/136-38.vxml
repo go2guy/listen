@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'136-40'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'136-61'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function()
+            function II_SB_JS_function(argList)
             {
-	            return (new Date().getTime());
+	            var currTime = getTimeStamp(3);return extendAppObject(argList, 'sysAccessTime', currTime);
             }
         ]]>
     </script>
@@ -20,8 +20,8 @@
         <block>
             <log target="status">Set Start Time</log>
             <log>INFO: Entered run-javascript.vxml [136-38]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function()"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="sysAccessTime" expr="II_SB_userJava" />   
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="argList" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(argList,phoneNumber)
             {
-	            var result = eval("("+argList+")");result.phoneNumber = getNextElement(0,phoneNumber,'@');return iiStringify(result);
+	            var number = getNextElement(0,phoneNumber,'@');return extendAppObject(argList,'phoneNumber',number);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set argList</log>
+            <log target="status">Save phone Number</log>
             <log>INFO: Entered run-javascript.vxml [169-40]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList,phoneNumber)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="argList" expr="II_SB_userJava" />   

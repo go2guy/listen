@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var tmpVal = eval("("+argList+")");return tmpVal.initiatingSubscriber;
+	            return getJsonVal(argList, "initiatingSubscriber");
             }
         ]]>
     </script>

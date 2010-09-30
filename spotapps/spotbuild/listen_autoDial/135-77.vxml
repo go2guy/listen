@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var tmpVal = eval("("+argList+")");return tmpVal.initiatingChannel;
+	            return getJsonVal(argList, "initiatingChannel");
             }
         ]]>
     </script>
