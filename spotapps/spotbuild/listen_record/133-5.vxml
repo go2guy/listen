@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(id,hostName,recSize,recFile,recLength,recInfo)
             {
-	            return "{\"conference\": {\"href\": \"/conferences/"+id+"\"}, \"uri\":\"http://"+hostName+recFile+"\", \"description\":\""+recInfo+"\", \"duration\":\""+recLength+"\", \"fileSize\":\""+recSize+"\"}";
+	            return createConfRecObject(id,hostName,recSize,recFile,recLength,recInfo);
             }
         ]]>
     </script>

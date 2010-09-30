@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(id,isRecording,isStarted,recSID,arcadeID,confDescription)
             {
-	            return "{\"href\": \"/conferences/"+id+"\", \"id\":"+id+", \"description\":\""+confDescription+"\", \"arcadeId\":\""+arcadeID+"\",\"recordingSessionId\":\""+recSID+"\", \"isRecording\":"+isRecording+", \"isStarted\": "+isStarted+"}";
+	            return createConfObject (id, isRecording, isStarted, recSID, arcadeID, confDescription);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
+            <log target="status">Create Conf Object</log>
             <log>INFO: Entered run-javascript.vxml [129-7]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(id,isRecording,isStarted,recSID,arcadeID,confDescription)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   

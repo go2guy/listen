@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(argList)
             {
-	            var tmpVal = eval("("+argList+")");var result = tmpVal.arcadeId;if (result == 'null') {result =  "GET_ID"; }else {if (result == 'GET_ID') {result = tmpVal.ConferenceID;}}return result;
+	            return getArcadeId(argList);
             }
         ]]>
     </script>
