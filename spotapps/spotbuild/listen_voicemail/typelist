@@ -29,8 +29,6 @@
 120-62 - data-query
 54-31 - run-javascript
 120-91 - decision
-120-93 - assign-variable
-120-94 - assign-variable
 183-14 - run-javascript
 120-79 - audio-input
 186-3 - decision
