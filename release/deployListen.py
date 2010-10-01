@@ -230,19 +230,13 @@ def doupgrade():
     # Make sure mysqld is running
     deploy.run(["service", "mysqld", "start"], failonerror=False)
 
-    # define an empty list for startup commands
-    startlist = {}
-
     if hostname == controllerserver:
         deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacepkgs", masterpkg, "all"])
-        startlist["/etc/init.d/httpd"] = "restart"
-        startlist["/etc/init.d/vipStart"] = "start"
-        startlist["/etc/init.d/collector"] = "start"
-        startlist["/etc/init.d/listen-controller"] = "start"
 
-    # execute listed startup commands 
-    for command,action in startlist.iteritems():
-        deploy.run([command, action])
+        deploy.run(["service", "httpd", "restart"])
+        deploy.run(["service", "vipStart", "start"])
+        deploy.run(["service", "listen-controller", "start"])
+        deploy.run(["service", "collector", "start"])
 
 def license():
     deploy.license(hostname)
