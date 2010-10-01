@@ -181,7 +181,8 @@ def prepcommon():
     print("Preparing for deployment")
     stopcmds = ["service listen-controller stop",
                 "service collector stop",
-                "service mysqld stop"]
+                "service mysqld stop",
+                "service vipStart stop"]
 
     killprocs = ["/interact/.*/iiMoap",
                  "/interact/.*/iiSysSrvr",
