@@ -1,5 +1,7 @@
 package com.interact.listen.attendant;
 
+import com.interact.listen.command.IvrCommand;
+
 import java.util.List;
 
 import javax.persistence.*;
@@ -12,7 +14,7 @@ import org.json.simple.JSONObject;
 
 @Entity
 @Table(name = "ATTENDANT_MENU")
-public class Menu
+public class Menu implements IvrCommand
 {
     public static final String TOP_MENU_NAME = "Top Menu"; // TODO fix hard-coded; perhaps an 'isPermanent' field
 
@@ -117,12 +119,47 @@ public class Menu
         json.put("actions", actions);
         return json;
     }
-
+    
+    public String toIvrCommandJson(Session session)
+    {
+        JSONObject returnObject = new JSONObject();
+        returnObject.put("action", "PROMPT");
+        
+        JSONObject args = new JSONObject();
+        List<Action> targetMenuActions = Action.queryByMenuWithoutDefaultAndTimeout(session, this);
+        JSONArray keyPresses = new JSONArray();
+        for(Action action : targetMenuActions)
+        {
+            keyPresses.add(action.getKeyPressed());
+        }
+        
+        args.put("id", id);
+        args.put("keyPresses", keyPresses);
+        args.put("audioFile", audioFile);
+        
+        returnObject.put("args", args);
+        
+        return returnObject.toString();
+    }
+    
     public static List<Menu> queryAll(Session session)
     {
         Criteria criteria = session.createCriteria(Menu.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (List<Menu>)criteria.list();
+    }
+    
+    public static Menu queryById(Session session, Long id)
+    {
+        return (Menu)session.get(Menu.class, id);
+    }
+    
+    public static Menu queryTopMenu(Session session)
+    {
+        Criteria criteria = session.createCriteria(Menu.class);
+        criteria.add(Restrictions.eq("name", TOP_MENU_NAME));
+        criteria.setMaxResults(1);
+        return (Menu)criteria.uniqueResult();
     }
 
     public static List<Menu> queryByName(Session session, String name)

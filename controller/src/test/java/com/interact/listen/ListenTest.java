@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.interact.listen.attendant.*;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 import com.interact.listen.resource.Conference;
@@ -103,5 +104,44 @@ public abstract class ListenTest
         conference.setSubscriber(forSubscriber);
         session.save(conference);
         return conference;
+    }
+
+    public static Menu createMenu(Session session)
+    {
+        Menu menu = new Menu();
+        menu.setName(TestUtil.randomString());
+        menu.setAudioFile(TestUtil.randomString());
+        session.save(menu);
+        return menu;
+    }
+
+    public static Action createAction(Session session, String actionType, Menu forMenu, String keyPressed, Menu targetMenu)
+    {
+        Action action = null;
+        if(actionType.equals("DialNumberAction"))
+        {
+            action = new DialNumberAction();
+            ((DialNumberAction)action).setNumber(TestUtil.randomString());
+        }
+        else if(actionType.equals("DialPressedNumberAction"))
+        {
+            action = new DialPressedNumberAction();
+        }
+        else if(actionType.equals("GoToMenuAction"))
+        {
+            action = new GoToMenuAction();
+            ((GoToMenuAction)action).setGoToMenu(targetMenu);
+        }
+        else if(actionType.equals("LaunchApplicationAction"))
+        {
+            action = new LaunchApplicationAction();
+            ((LaunchApplicationAction)action).setApplicationName(TestUtil.randomString());
+        }
+        
+        action.setMenu(forMenu);
+        action.setKeyPressed(keyPressed);
+        session.save(action);
+        
+        return action;
     }
 }

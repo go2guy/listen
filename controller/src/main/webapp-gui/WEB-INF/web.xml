@@ -170,6 +170,12 @@
     </servlet>
     
     <servlet>
+        <servlet-name>GetMenuActionServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.GetMenuActionServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
         <servlet-name>GetPagerNumbersServlet</servlet-name>
         <servlet-class>com.interact.listen.api.GetPagerNumbersServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -300,6 +306,11 @@
     <servlet-mapping>
         <servlet-name>GetDnisServlet</servlet-name>
         <url-pattern>/meta/getDnis</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>GetMenuActionServlet</servlet-name>
+        <url-pattern>/meta/getMenuAction</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>
