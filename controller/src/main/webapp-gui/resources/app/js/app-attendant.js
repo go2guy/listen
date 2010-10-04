@@ -93,7 +93,7 @@ $(document).ready(function() {
                                 Listen.debug('Populating menu [' + id + ']');
         
                                 $('#attendant-menu-id').val(id);
-                                $('#attendant-menu-name').text(menu.name);
+                                $('#attendant-menu-name input').val(menu.name);
                                 $('#attendant-menu-audio-file').val(menu.audioFile);
         
                                 for(var i = 0; i < menu.actions.length; i++) {
@@ -125,7 +125,7 @@ $(document).ready(function() {
 
             resetMenu: function() {
                 $('#attendant-menu-id').val('');
-                $('#attendant-menu-name').text('New Menu');
+                $('#attendant-menu-name input').val('New Menu');
 
                 $('#attendant-menu-actions-default-action-container div').remove();
                 $('#attendant-menu-actions-timeout-action-container div').remove();
@@ -262,7 +262,7 @@ $(document).ready(function() {
             buildMenuObject: function() {
                 var menu = {
                     id: $('#attendant-menu-id').val(),
-                    name: $('#attendant-menu-name').text(),
+                    name: $('#attendant-menu-name input').val(),
                     audioFile: $('#attendant-menu-audio-file').val(),
                     defaultAction: Listen.Attendant.buildAction($('#attendant-menu-actions-default-action-container div:first-child')),
                     timeoutAction: Listen.Attendant.buildAction($('#attendant-menu-actions-timeout-action-container div:first-child')),

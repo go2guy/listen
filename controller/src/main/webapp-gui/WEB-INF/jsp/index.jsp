@@ -308,7 +308,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) {
                   </div>
 
                   <div id="attendant-menu-builder-container">
-                    <div id="attendant-menu-name"></div>
+                    <div id="attendant-menu-name"><label>Name:</label>&nbsp;<input type="text"/></div>
 
                     <div id="attendant-menu-information">
                       <input type="hidden" id="attendant-menu-id" name="attendant-menu-id" value=""/>
