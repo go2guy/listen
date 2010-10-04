@@ -9,18 +9,18 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(FILE2,subscriber,grtngSelect,id,hostName)
+            function II_SB_JS_function(FILE2,subscriber,grtngSelect,hostName)
             {
-	            return "{\"subscriber\": {\"href\": \"/subscribers/" + subscriber +"\"},\"greetingLocation\": \"http://"+hostName+FILE2+"\","+ "\"number\": \""+grtngSelect+"\"}";
+	            return createAccessNumberObj(FILE2, subscriber, grtngSelect, hostName);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
+            <log target="status">Set AccessNum Obj</log>
             <log>INFO: Entered run-javascript.vxml [68-30]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(FILE2,subscriber,grtngSelect,id,hostName)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(FILE2,subscriber,grtngSelect,hostName)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

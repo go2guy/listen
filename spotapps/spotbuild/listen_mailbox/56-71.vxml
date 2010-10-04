@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            var result = eval("("+passValues+")");return result.cntrlURL;
+	            return getJsonVal(passValues, 'cntrlURL');
             }
         ]]>
     </script>

@@ -9,18 +9,18 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(vmDateCreated)
+            function II_SB_JS_function(result)
             {
-	            var date = vmDateCreated.split('T');var date = date[0].split('-');return 'YYYY'+date[1]+date[2];
+	            var flag = 'date';return getVmDateTime(result, flag);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            
+            <log target="status">Get VM Date</log>
             <log>INFO: Entered run-javascript.vxml [102-50]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(vmDateCreated)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(result)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="date" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

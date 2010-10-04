@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(result)
             {
-	            var strObj = result.split('isNew":true');               return strObj[0] + 'isNew":false' + strObj[1];
+	            return updateVmState (result);
             }
         ]]>
     </script>

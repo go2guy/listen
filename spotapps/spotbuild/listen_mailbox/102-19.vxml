@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(result)
             {
-	            var result = eval("("+result+")");return result.uri;
+	            return getJsonVal(result, 'uri');
             }
         ]]>
     </script>

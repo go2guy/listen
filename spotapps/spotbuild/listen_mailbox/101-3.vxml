@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(subscriber,playbackOrder)
             {
-	            var result;result = "?subscriber=/subscriber/"+subscriber+"&isNew=true&_sortBy=dateCreated&_sortOrder="+playbackOrder;return result;
+	            var isNew = 'true';return setVmRetrievalString(subscriber, playbackOrder, isNew);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Parameter New</log>
+            <log target="status">New VM Retrieval</log>
             <log>INFO: Entered run-javascript.vxml [101-3]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(subscriber,playbackOrder)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   

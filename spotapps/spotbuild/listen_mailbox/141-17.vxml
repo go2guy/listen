@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+returnVal+")");var subscriber = result.results[0].subscriber.href;subscriber = getNextElement('L',subscriber,'/');return subscriber;
+	            var flag = 'id';return getSubscriber(returnVal, flag);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Subscriber</log>
+            <log target="status">Get Subscriber ID</log>
             <log>INFO: Entered run-javascript.vxml [141-17]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="subscriber" expr="II_SB_userJava" />   

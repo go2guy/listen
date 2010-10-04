@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(grtngSelect,recDIR)
             {
-	            return recDIR+grtngSelect+"-tmp.wav";
+	            var fileExt = '-tmp.wav';return setFileName (recDIR,grtngSelect,fileExt);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Rec File</log>
+            <log target="status">Set File Name</log>
             <log>INFO: Entered run-javascript.vxml [143-4]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(grtngSelect,recDIR)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="FILE1" expr="II_SB_userJava" />   

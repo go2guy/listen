@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(result,subFwd,hostName,FILE2,subscriber)
             {
-	            var result = eval("("+result+")");return "{\"uri\": \"http://"+hostName+FILE2+"\",\"duration\":\""+result.duration+"\",\"fileSize\":\""+result.fileSize+"\",\"leftBy\":\""+result.leftBy+"\",\"subscriber\": { \"href\": \"/subscribers/"+subFwd+"\"},\"forwardedBy\": { \"href\": \"/subscribers/"+subscriber+"\"}}";
+	            return createVoiceMailObj(result, subFwd, hostName, FILE2, subscriber);
             }
         ]]>
     </script>

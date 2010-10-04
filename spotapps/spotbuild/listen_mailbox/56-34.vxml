@@ -18,7 +18,7 @@
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Sub ID</log>
+            <log target="status">Get ANI</log>
             <log>INFO: Entered run-javascript.vxml [56-34]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(ANI)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="subID" expr="II_SB_userJava" />   

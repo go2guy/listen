@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(userInput)
             {
-	            return "?_fields=subscriber&number=" + userInput;
+	            var flag = 'GET_SUB';return accessNumSrchString(userInput, flag);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
+            <log target="status">Set Access Number Search</log>
             <log>INFO: Entered run-javascript.vxml [144-20]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(userInput)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   

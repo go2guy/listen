@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var tmpVal = eval("("+returnVal+")");var result = tmpVal.voicemailPin;if (result == null) {  result = "";}return result;
+	            return getJsonVal(returnVal, 'voicemailPin');
             }
         ]]>
     </script>

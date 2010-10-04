@@ -9,18 +9,18 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(vmDateCreated)
+            function II_SB_JS_function(result)
             {
-	            var date = vmDateCreated.split('T');date = date[1].split(':');var hour = date[0];if (hour == 0){return '12:' + date[1] + 'am';}if (hour == 12){return date[0] + ':' + date[1] + 'pm'}if (hour < 12){return date[0] + ':' + date[1] + 'am'; }return (date[0]-12) + ':' + date[1] + 'pm';
+	            var flag = 'time';return getVmDateTime(result, flag);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            
+            <log target="status">Get VM Time</log>
             <log>INFO: Entered run-javascript.vxml [102-52]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(vmDateCreated)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(result)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="time" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

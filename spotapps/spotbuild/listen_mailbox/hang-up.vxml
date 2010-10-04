@@ -5,7 +5,7 @@
        *   @Name   hang-up.vxml
        *   @Desc   Handels hang up logic -->
 
-    <var name="II_SB_nxtOpt" expr="'191-13'"/>  <!--  Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'191-28'"/>  <!--  Name of next file -->
 
 	<!-- Passed in from CCXML -->
 	<var name="II_SB_discOriginator"/>	<!-- Identity of party that triggered disconnect event -->

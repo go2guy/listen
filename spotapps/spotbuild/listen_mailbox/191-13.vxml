@@ -9,18 +9,18 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(appStartTime)
+            function II_SB_JS_function(appStartTime,appEndTime)
             {
-	            var appEndTime = new Date().getTime();if (appStartTime.length > 0)return Math.round((appEndTime - appStartTime)/1000);else{return 1};
+	            return getTimeDifference(appEndTime, appStartTime);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get End Time</log>
+            <log target="status">Get VM Time</log>
             <log>INFO: Entered run-javascript.vxml [191-13]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(appStartTime)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(appStartTime,appEndTime)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="returnVal" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

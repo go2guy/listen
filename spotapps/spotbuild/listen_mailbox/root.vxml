@@ -102,8 +102,9 @@
     <var name="II_SB_playEntryAudio" expr="'Yes'"/>     <!-- Determines if an entry tone is played on a conference -->
 
     <!-- Call to java scripts -->
-    <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->
-    <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	<!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	            <!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	        <!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_APP_PATH + 'listen_mailbox.js'"></script>	<!-- Location of java script file -->
 
     <!-- Catch hang up event. User must have hung up -->
     <catch event="connection.disconnect.hangup">

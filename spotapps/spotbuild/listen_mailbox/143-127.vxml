@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(grtngList)
             {
-	            var result = eval("("+grtngList+")");return result.count;
+	            return getJsonVal(grtngList, 'count');
             }
         ]]>
     </script>
