@@ -27,7 +27,7 @@ public class Menu implements IvrCommand
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(name = "NAME", nullable = false)
+    @Column(name = "NAME", nullable = false, unique = true)
     private String name;
 
     @Column(name = "AUDIO_FILE")

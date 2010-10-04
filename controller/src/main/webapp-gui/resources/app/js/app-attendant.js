@@ -94,6 +94,9 @@ $(document).ready(function() {
         
                                 $('#attendant-menu-id').val(id);
                                 $('#attendant-menu-name input').val(menu.name);
+                                if(menu.name === 'Top Menu') {
+                                    $('#attendant-menu-name input').attr('readonly', 'readonly').addClass('disabled');
+                                }
                                 $('#attendant-menu-audio-file').val(menu.audioFile);
         
                                 for(var i = 0; i < menu.actions.length; i++) {
@@ -125,7 +128,7 @@ $(document).ready(function() {
 
             resetMenu: function() {
                 $('#attendant-menu-id').val('');
-                $('#attendant-menu-name input').val('New Menu');
+                $('#attendant-menu-name input').val('New Menu').removeAttr('readonly').removeClass('disabled');
 
                 $('#attendant-menu-actions-default-action-container div').remove();
                 $('#attendant-menu-actions-timeout-action-container div').remove();
@@ -189,7 +192,6 @@ $(document).ready(function() {
             toggleActionFields: function(div, action) {
                 var sel = $('.attendant-menu-action-actionSelect select', div);
                 var a = {arguments: {}};
-                console.log(action);
                 if(Listen.isDefined(action)) {
                     a = action;
                 }
@@ -250,7 +252,6 @@ $(document).ready(function() {
                         break;
 
                     default:
-                        // TODO log error?
                         break;
                 }
             },
@@ -311,10 +312,13 @@ $(document).ready(function() {
                         menu: JSON.stringify(menu)
                     },
                     successCallback: function(data, textStatus, xhr) {
-                        // TODO display feedback (here, and for errorCallback)
+                        Listen.Attendant.showSuccess('Menu saved');
                         Listen.Attendant.deselectMenuList();
                         $('#attendant-menu-builder-container').hide();
                         $('#attendant-menu-builder-container-placeholder').show();
+                    },
+                    errorCallback: function(message) {
+                        Listen.Attendant.showError(message);
                     }
                 });
             },
@@ -329,10 +333,27 @@ $(document).ready(function() {
                         id: id
                     },
                     successCallback: function() {
-                        // TODO give feedback
+                        Listen.Attendant.showSuccess('Menu deleted');
                     }
                 });
-            }
+            },
+
+            clearError: function() {
+                $('#subscriber-form .form-error-message').text('').hide();
+            },
+
+            showError: function(message) {
+                $('#attendant-application .form-error-message').text(message).slideDown(100);
+            },
+
+            showSuccess: function(message) {
+                Listen.Attendant.clearError();
+                var elem = $('#attendant-application .form-success-message');
+                elem.text(message).slideDown(100);
+                setTimeout(function() {
+                    elem.slideUp(100);
+                }, 2000);
+            },
         }
     }();
 

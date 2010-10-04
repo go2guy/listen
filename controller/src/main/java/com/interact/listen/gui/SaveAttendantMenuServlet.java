@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.exception.ConstraintViolationException;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -55,39 +56,52 @@ public class SaveAttendantMenuServlet extends HttpServlet
         JSONObject json = (JSONObject)JSONValue.parse(request.getParameter("menu"));
         LOG.debug("Received menu for saving: " + json.toJSONString());
 
-        Menu menu = new Menu();
         String id = (String)json.get("id");
-        if(id != null && !id.trim().equals(""))
+        boolean modifying = id != null && !id.trim().equals("");
+
+        Menu menu = new Menu();
+        if(modifying)
         {
             menu = (Menu)session.get(Menu.class, Long.parseLong(id));
         }
 
-        menu.setName((String)json.get("name"));
+        // only set the name if we're not modifying or we're modifying a menu that's not the current Top Menu
+        if(!modifying || !menu.getName().equals(Menu.TOP_MENU_NAME))
+        {
+            menu.setName((String)json.get("name"));
+        }
         menu.setAudioFile((String)json.get("audioFile"));
+
+        if(modifying)
+        {
+            // we'll re-create these later
+            session.delete(menu.getDefaultAction());
+            session.delete(menu.getTimeoutAction());
+        }
 
         // default action
         JSONObject defaultActionJson = (JSONObject)json.get("defaultAction");
-        Action defaultAction = menu.getDefaultAction();
-        if(defaultAction == null)
-        {
-            defaultAction = keyToAction((String)defaultActionJson.get("action"));
-            menu.setDefaultAction(defaultAction);
-        }
+        Action defaultAction = keyToAction((String)defaultActionJson.get("action"));
         populateAction(defaultActionJson, defaultAction, session);
+        menu.setDefaultAction(defaultAction);
 
         // timeout action
         JSONObject timeoutActionJson = (JSONObject)json.get("timeoutAction");
-        Action timeoutAction = menu.getTimeoutAction();
-        if(timeoutAction == null)
-        {
-            timeoutAction = keyToAction((String)timeoutActionJson.get("action"));
-            menu.setTimeoutAction(timeoutAction);
-        }
+        Action timeoutAction = keyToAction((String)timeoutActionJson.get("action"));
         populateAction(timeoutActionJson, timeoutAction, session);
+        menu.setTimeoutAction(timeoutAction);
 
         session.save(defaultAction);
         session.save(timeoutAction);
-        session.save(menu);
+
+        try
+        {
+            session.save(menu);
+        }
+        catch(ConstraintViolationException e)
+        {
+            throw new BadRequestServletException("There is already a menu named '" + menu.getName() + "'");
+        }
 
         List<Action> existingActions = Action.queryByMenuWithoutDefaultAndTimeout(session, menu);
         for(Action action : existingActions)

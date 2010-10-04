@@ -469,4 +469,7 @@
         <addForeignKeyConstraint baseTableName="ATTENDANT_MENU" baseColumnNames="TIMEOUT_ACTION_ID" referencedTableName="ATTENDANT_ACTION" referencedColumnNames="ID" constraintName="FK_ATTENDANT_MENU_ATTENDANT_ACTION_2" deferrable="false" initiallyDeferred="false"/>
         <addForeignKeyConstraint baseTableName="ATTENDANT_ACTION" baseColumnNames="ATTENDANT_MENU_ID" referencedTableName="ATTENDANT_MENU" referencedColumnNames="ID" constraintName="FK_ATTENDANT_ACTION_ATTENDANT_MENU_1" deferrable="false" initiallyDeferred="false"/>
     </changeSet>
+    <changeSet author="development" id="47">
+        <addUniqueConstraint tableName="ATTENDANT_MENU" columnNames="NAME" constraintName="ATTENDANT_MENU_NAME_UK_1"/>
+    </changeSet>
 </databaseChangeLog>

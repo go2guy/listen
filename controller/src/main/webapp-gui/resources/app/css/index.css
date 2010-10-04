@@ -952,6 +952,12 @@ table#attendant-menu-list tbody tr.selected td {
     width: 100%;
 }
 
+#attendant-application .form-error-message,
+#attendant-application .form-success-message {
+    margin-left: 210px;
+    width: 50%;
+}
+
 .form-error-message {
     background-color: #CC0000;
 }

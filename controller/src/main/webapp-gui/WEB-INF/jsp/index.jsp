@@ -303,6 +303,9 @@ if(subscriber != null && subscriber.getIsAdministrator()) {
                     </table>
                   </div>
 
+                  <div class="form-error-message"></div>
+                  <div class="form-success-message"></div>
+
                   <div id="attendant-menu-builder-container-placeholder">
                     <span style="font-weight: bold; font-size: 200%;">&nbsp;&laquo;&nbsp;</span>select a menu
                   </div>
@@ -325,7 +328,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) {
                         This section would have a transcription of the audio file that is selected in the box above.
                       </div>
                     </div>
-                
+
                     <div id="attendant-menu-actions">
                       <div id="attendant-menu-actions-caption">After playing the audio file...</div>
                       <div id="attendant-menu-actions-container"></div>

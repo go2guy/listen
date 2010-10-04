@@ -314,7 +314,7 @@ public final class HibernateUtil
         session.save(timeoutAction);
 
         Menu menu = new Menu();
-        menu.setAudioFile("foo.wav"); // FIXME use actual default
+        menu.setAudioFile("");
         menu.setName(Menu.TOP_MENU_NAME);
         menu.setDefaultAction(defaultAction);
         menu.setTimeoutAction(timeoutAction);
