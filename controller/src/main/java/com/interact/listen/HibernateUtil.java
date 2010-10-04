@@ -302,6 +302,12 @@ public final class HibernateUtil
             return;
         }
 
+        if(Menu.queryByName(session, Menu.TOP_MENU_NAME).size() > 0)
+        {
+            LOG.debug("Top menu already exists, will not create a new one");
+            return;
+        }
+
         Action defaultAction = new DialPressedNumberAction();
         session.save(defaultAction);
         Action timeoutAction = new GoToMenuAction();
@@ -309,34 +315,31 @@ public final class HibernateUtil
 
         Menu menu = new Menu();
         menu.setAudioFile("foo.wav"); // FIXME use actual default
-        menu.setName("Top Menu");
+        menu.setName(Menu.TOP_MENU_NAME);
         menu.setDefaultAction(defaultAction);
         menu.setTimeoutAction(timeoutAction);
         session.save(menu);
 
-        // some random actions for testing
+        // some random actions for testing, these can be deleted after development
         DialNumberAction dialNumberAction = new DialNumberAction();
         dialNumberAction.setMenu(menu);
         dialNumberAction.setKeyPressed("1");
-        dialNumberAction.setNumber("1111");
+        dialNumberAction.setNumber("123");
         session.save(dialNumberAction);
 
         DialPressedNumberAction dialPressedNumberAction = new DialPressedNumberAction();
         dialPressedNumberAction.setMenu(menu);
-        dialPressedNumberAction.setKeyPressed("2");
+        dialPressedNumberAction.setKeyPressed("???");
         session.save(dialPressedNumberAction);
-
-        GoToMenuAction goToMenuAction = new GoToMenuAction();
-        goToMenuAction.setMenu(menu);
-        goToMenuAction.setKeyPressed("3");
-        goToMenuAction.setGoToMenu(menu);
-        session.save(goToMenuAction);
 
         LaunchApplicationAction launchApplicationAction = new LaunchApplicationAction();
         launchApplicationAction.setMenu(menu);
-        launchApplicationAction.setKeyPressed("4");
-        launchApplicationAction.setApplicationName("Conferencing");
+        launchApplicationAction.setKeyPressed("3");
+        launchApplicationAction.setApplicationName("conferencing");
         session.save(launchApplicationAction);
+
+        timeoutAction.setMenu(menu);
+        session.save(timeoutAction);
     }
 
     private static void doLiquibaseUpgrades() throws SQLException, LiquibaseException

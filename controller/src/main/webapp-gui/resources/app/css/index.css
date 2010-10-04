@@ -466,21 +466,184 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 /* application - attendant */
 
 #attendant-application {
-    border-color: #FFE472;
+    border-color: #C5A8F0;
 }
 
 #attendant-application .application-header {
-    background: #E8BB2B url('../images/new/header_gradient_orange_30x10.png') repeat-x bottom left;
+    background: #7A35DD url('../images/new/header_gradient_purple_30x10.png') repeat-x bottom left;
+}
+
+#attendant-application .tab-container .tabs {
+    background-color: #FFFFFF;
+    border-color: #DBCCF1;
+}
+
+#attendant-application .tab-container .tabs ul li {
+    border-color: #DBCCF1;
+}
+
+#attendant-application .tab-container .tabs ul li:hover,
+#attendant-application .tab-container .tabs ul li.current {
+    background-color: #DBCCF1;
+    color: #FFFFFF;
 }
 
 #menu-attendant {
-    border-color: #E8BB2B;
+    border-color: #7A35DD;
     color: #666666;
 }
 
 #menu-attendant.current, #menu-attendant:hover {
-    background-color: #E8BB2B;
+    background-color: #7A35DD ;
     color: #FFFFFF;
+}
+
+#attendant-menu-name {
+    margin: 10px 10px 0 10px;
+}
+
+#attendant-menu-information {
+    margin: 10px 10px 0 10px;
+    width: 20em;
+}
+
+#attendant-menu-information-input {
+    background-color: #DBCCF1;
+    border: 1px solid #7A35DD;
+    padding: 5px;
+}
+
+#attendant-menu-audio-file-transcription {
+    background-color: #E7E1F1;
+    border: 1px solid #DBCCF1;
+    display: none; /* TODO remove when transcriptions available */
+    margin-top: 5px;
+    padding: 5px;
+}
+
+#attendant-menu-actions {
+    margin: 10px;
+}
+
+#attendant-menu-list-container {
+    border-color: #DBCCF1;
+    border-style: dashed;
+    border-width: 0 1px 1px 0;
+    width: 200px;
+}
+
+#attendant-menu-list-container,
+#attendant-menu-builder-container,
+#attendant-menu-builder-container-placeholder {
+    float: left;
+}
+
+#attendant-menu-builder-container {
+    display: none;
+}
+
+#attendant-menu-builder-container-placeholder {
+    color: #AAAAAA;
+    font-size: 150%;
+    font-variant: small-caps;
+}
+
+table#attendant-menu-list {
+    border-collapse: separate;
+    border-spacing: 0px 5px;
+}
+
+table#attendant-menu-list tbody tr {
+    background-color: #E7E1F1;
+}
+
+table#attendant-menu-list tbody tr.selected {
+    background-color: #DBCCF1;
+}
+
+table#attendant-menu-list tbody tr.selected td {
+    border-color: #7A35DD;
+    border-style: solid;
+    border-width: 1px 0;
+}
+
+#attendant-menu-name {
+    font-size: 125%;
+    font-weight: bold;
+}
+
+#attendant-menu-information div {
+    margin-left: auto;
+    margin-right: auto;
+    width: 99%;
+}
+
+#attendant-menu-information-caption,
+#attendant-menu-actions-caption {
+    color: #666666;
+    font-size: 85%;
+    margin-bottom: 5px;
+}
+/*
+#attendant-application .application-content label,
+#attendant-application input,
+#attendant-application select {
+    font-size: 115%;
+}*/
+
+#attendant-application input {
+    font-weight: bold;
+}
+
+.attendant-menu-action {
+    background-color: #DBCCF1;
+    border: 1px solid #7A35DD;
+    height: 3em;
+    margin-bottom: 5px;
+}
+
+.attendant-menu-action div {
+    float: left;
+    height: 3em;
+    line-height: 3em;
+    margin-left: 5px;
+}
+
+.attendant-menu-action div input,
+.attendant-menu-action div select {
+    margin-top: 10px;
+}
+
+.attendant-menu-number-input {
+    width: 5em;
+}
+
+.attendant-menu-action-launchApplicationCustomInput input {
+    margin-right: 10px;
+    width: 7em;
+}
+
+.attendant-menu-button-container {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    text-align: right;
+}
+
+.attendant-menu-action-delete button {
+    margin-top: 10px;
+}
+
+.attendant-menu-action-delete,
+.attendant-menu-action-keypressLabel,
+.attendant-menu-action-defaultLabel,
+.attendant-menu-action-timeoutLabel,
+.attendant-menu-action-keypressInput,
+.attendant-menu-action-actionSelect,
+.attendant-menu-action-menuSelect,
+.attendant-menu-action-dialNumberInput,
+.attendant-menu-action-launchApplicationSelect,
+.attendant-menu-action-launchApplicationCustomInput {
+    display: none;
 }
 
 /* application - findme */
@@ -916,9 +1079,9 @@ div#pinglatency, div#latency {
 }
 
 div#pinglatency {
-    right: 34px;
+    left: 34px;
 }
 
 div#latency {
-    right: 2px;
+    left: 2px;
 }

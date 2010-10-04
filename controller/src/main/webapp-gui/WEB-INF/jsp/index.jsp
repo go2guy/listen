@@ -17,6 +17,7 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/plugins/jquery.simplemodal-1.3.5.min.js"></script>
+    <script type="text/javascript" src="./resources/json.org/json2-min.js"></script>
     <script type="text/javascript" src="./resources/app/js/index-min.js"></script>
     <script type="text/javascript" src="./resources/app/js/server-min.js"></script><%
 if(subscriber != null && subscriber.getIsAdministrator()) { %>
@@ -290,6 +291,57 @@ if(subscriber != null && subscriber.getIsAdministrator()) {
             <div id="attendant-application" class="application">
               <div class="application-header"><div class="title">Attendant</div></div>
               <div class="application-content">
+
+                  <div id="attendant-menu-list-container">
+                    <table id="attendant-menu-list">
+                      <thead>
+                        <tr>
+                          <td colspan="3"><button type="button" id="attendant-menu-add-new-menu" class="button-add">New Menu</button></td>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+
+                  <div id="attendant-menu-builder-container-placeholder">
+                    <span style="font-weight: bold; font-size: 200%;">&nbsp;&laquo;&nbsp;</span>select a menu
+                  </div>
+
+                  <div id="attendant-menu-builder-container">
+                    <div id="attendant-menu-name"></div>
+
+                    <div id="attendant-menu-information">
+                      <input type="hidden" id="attendant-menu-id" name="attendant-menu-id" value=""/>
+                      <div id="attendant-menu-information-caption">When caller enters this menu...</div>
+                      <div id="attendant-menu-information-input">
+                        <label for="attendant-menu-audio-file">Play</label>
+                        <select id="attendant-menu-audio-file" name="attendant-menu-audio-file" size="1">
+                          <option value="welcome00.wav">welcome00.wav</option>
+                          <option value="hithere03.wav">hithere02.wav</option>
+                          <option value="rickroll33.wav">rickroll33.wav</option>
+                        </select>
+                      </div>
+                      <div id="attendant-menu-audio-file-transcription">
+                        This section would have a transcription of the audio file that is selected in the box above.
+                      </div>
+                    </div>
+                
+                    <div id="attendant-menu-actions">
+                      <div id="attendant-menu-actions-caption">After playing the audio file...</div>
+                      <div id="attendant-menu-actions-container"></div>
+                      <div class="attendant-menu-button-container">
+                        <button id="attendant-menu-add-new-action" type="button" class="button-add">Add Action</button>
+                      </div>
+                      <div id="attendant-menu-actions-caption">Otherwise...</div>
+                      <div id="attendant-menu-actions-default-action-container"></div>
+                      <div id="attendant-menu-actions-timeout-action-container"></div>
+                      <div class="attendant-menu-button-container">
+                        <button type="button" class="button-cancel" id="attendant-menu-cancel">Cancel</button>
+                        <button type="button" class="button-save" id="attendant-menu-save">Save Menu</button>
+                      </div>
+                    </div>
+                  </div>
+
                 <div class="cleaner">&nbsp;</div>
               </div>
             </div><%
@@ -775,6 +827,12 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <td><input type="checkbox" class="accessNumber-row-messageLight"/>&nbsp;<label>Message Light</label></td>
           <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
         </tr>
+
+        <tr id="attendant-menu-list-row-template">
+          <td class="attendant-menu-list-cell-name"></td>
+          <td class="attendant-menu-list-cell-edit"></td>
+          <td class="attendant-menu-list-cell-delete"></td>
+        </tr>
       </tbody></table>
 
       <ul>
@@ -813,6 +871,52 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <div class="cleaner">&nbsp;</div>
         </li>
       </ul>
+
+      <div id="attendant-menu-action-template" class="attendant-menu-action">
+        <div class="attendant-menu-action-delete"></div>
+        <div class="attendant-menu-action-keypressLabel">
+          <label>If Caller Presses</label>
+        </div>
+        <div class="attendant-menu-action-defaultLabel">
+          <label>If Caller Presses Something Else</label>
+        </div>
+        <div class="attendant-menu-action-timeoutLabel">
+          <label>If Caller Waits 5 Seconds</label><!-- TODO use property value -->
+        </div>
+        <div class="attendant-menu-action-keypressInput">
+          <input type="text" class="attendant-menu-number-input"/>
+        </div>
+        <div class="attendant-menu-action-actionSelect">
+          <select>
+            <option value="GoToMenu">Go To A Menu</option>
+            <option value="DialNumber">Dial A Number</option>
+            <option value="DialPressedNumber">Dial What They Pressed</option>
+            <option value="LaunchApplication">Launch An Application</option>
+          </select>
+        </div>
+        <div class="attendant-menu-action-menuSelect">
+          <select></select>
+        </div>
+        <div class="attendant-menu-action-dialNumberInput">
+          <input type="text" class="attendant-menu-number-input"/>
+        </div>
+        <div class="attendant-menu-action-launchApplicationSelect">
+          <select><%
+if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
+            <option value="conferencing">Conferencing</option><%
+}
+if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
+            <option value="mailbox">Mailbox</option>
+            <option value="voicemail">Voicemail</option>
+            <option value="directVoicemail">Direct Voicemail</option><%
+} %>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="attendant-menu-action-launchApplicationCustomInput">
+          <input type="text"/>
+        </div>
+      </div>
     </div>
 
     <div id="communication-error">Server is unavailable, please wait...</div>

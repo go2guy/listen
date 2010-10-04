@@ -48,6 +48,8 @@ public class GetConferenceListServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
+        // FIXME i think this allows non-admins to access this servlet
+
         int first = 0;
         int max = Resource.DEFAULT_PAGE_SIZE;
         if(request.getParameter("first") != null)

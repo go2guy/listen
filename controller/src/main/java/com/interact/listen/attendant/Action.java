@@ -5,8 +5,9 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Restrictions;
 import org.json.simple.JSONObject;
 
 @Entity
@@ -87,19 +88,21 @@ public abstract class Action
         Criteria criteria = session.createCriteria(Action.class);
         criteria.createAlias("menu", "menu_alias");
         criteria.add(Restrictions.eq("menu_alias.id", menu.getId()));
+
+        criteria.setFetchMode("menu", FetchMode.SELECT);
+
         return (List<Action>)criteria.list();
     }
     
     public static List<Action> queryByMenuWithoutDefaultAndTimeout(Session session, Menu menu)
     {
-        DetachedCriteria subquery = DetachedCriteria.forClass(Action.class);
-        subquery.createAlias("menu", "menu_alias");
-        subquery.add(Restrictions.ne("menu_alias.id", menu.getDefaultAction().getId()));
-        subquery.add(Restrictions.ne("menu_alias.id", menu.getTimeoutAction().getId()));
-        subquery.setProjection(Projections.id());
-
         Criteria criteria = session.createCriteria(Action.class);
-        criteria.add(Subqueries.propertyNotIn("menu.id", subquery));
+        criteria.add(Restrictions.ne("id", menu.getDefaultAction().getId()));
+        criteria.add(Restrictions.ne("id", menu.getTimeoutAction().getId()));
+        criteria.add(Restrictions.eq("menu.id", menu.getId()));
+
+        criteria.setFetchMode("menu", FetchMode.SELECT);
+
         return (List<Action>)criteria.list();
     }
 }

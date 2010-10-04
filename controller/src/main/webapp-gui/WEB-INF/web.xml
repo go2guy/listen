@@ -68,8 +68,20 @@
     <!-- servlet definitions -->
 
     <servlet>
+        <servlet-name>AddSubscriberServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.AddSubscriberServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>ApiServlet</servlet-name>
         <servlet-class>com.interact.listen.api.ApiServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>DeleteAttendantMenuServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.DeleteAttendantMenuServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -106,6 +118,12 @@
     <servlet>
         <servlet-name>EditSubscriberServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.EditSubscriberServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GetAttendantMenuListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetAttendantMenuListServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -229,8 +247,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>AddSubscriberServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.AddSubscriberServlet</servlet-class>
+        <servlet-name>SaveAttendantMenuServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SaveAttendantMenuServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -297,6 +315,11 @@
     <!-- ajax -->
 
     <servlet-mapping>
+        <servlet-name>DeleteAttendantMenuServlet</servlet-name>
+        <url-pattern>/ajax/deleteAttendantMenu</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>DeleteSubscriberServlet</servlet-name>
         <url-pattern>/ajax/deleteSubscriber</url-pattern>    
     </servlet-mapping>
@@ -324,6 +347,11 @@
     <servlet-mapping>
         <servlet-name>EditSubscriberServlet</servlet-name>
         <url-pattern>/ajax/editSubscriber</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetAttendantMenuListServlet</servlet-name>
+        <url-pattern>/ajax/getAttendantMenuList</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -399,6 +427,11 @@
     <servlet-mapping>
         <servlet-name>AddSubscriberServlet</servlet-name>
         <url-pattern>/ajax/addSubscriber</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveAttendantMenuServlet</servlet-name>
+        <url-pattern>/ajax/saveAttendantMenu</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

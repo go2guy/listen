@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -13,6 +14,8 @@ import org.json.simple.JSONObject;
 @Table(name = "ATTENDANT_MENU")
 public class Menu
 {
+    public static final String TOP_MENU_NAME = "Top Menu"; // TODO fix hard-coded; perhaps an 'isPermanent' field
+
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
@@ -119,6 +122,13 @@ public class Menu
     {
         Criteria criteria = session.createCriteria(Menu.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return (List<Menu>)criteria.list();
+    }
+
+    public static List<Menu> queryByName(Session session, String name)
+    {
+        Criteria criteria = session.createCriteria(Menu.class);
+        criteria.add(Restrictions.eq("name", name));
         return (List<Menu>)criteria.list();
     }
 }

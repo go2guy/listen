@@ -27,16 +27,7 @@ public class GoToMenuAction extends Action
     public JSONObject toJson()
     {
         JSONObject args = new JSONObject();
-        if(goToMenu == null)
-        {
-            args.put("goToMenu", null);
-        }
-        else
-        {
-            JSONObject destination = new JSONObject();
-            destination.put("id", goToMenu.getId());
-            args.put("goToMenu", destination);
-        }
+        args.put("menuId", goToMenu == null ? null : goToMenu.getId());
         return createJsonObject("GoToMenu", args);
     }
 }
