@@ -128,12 +128,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>GetHistoryListServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetHistoryListServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetConferenceInfoServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -168,13 +162,25 @@
         <servlet-class>com.interact.listen.api.GetDnisServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
+    <servlet>
+        <servlet-name>GetHistoryListServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetHistoryListServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <servlet>
         <servlet-name>GetMenuActionServlet</servlet-name>
         <servlet-class>com.interact.listen.api.GetMenuActionServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
+    <servlet>
+        <servlet-name>GetMenuPromptsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetMenuPromptsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <servlet>
         <servlet-name>GetPagerNumbersServlet</servlet-name>
         <servlet-class>com.interact.listen.api.GetPagerNumbersServlet</servlet-class>
@@ -366,11 +372,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>GetHistoryListServlet</servlet-name>
-        <url-pattern>/ajax/getHistoryList</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
         <url-pattern>/ajax/getConferenceInfo</url-pattern>
     </servlet-mapping>
@@ -393,6 +394,16 @@
     <servlet-mapping>
         <servlet-name>GetConferenceRecordingListServlet</servlet-name>
         <url-pattern>/ajax/getConferenceRecordingList</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetHistoryListServlet</servlet-name>
+        <url-pattern>/ajax/getHistoryList</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetMenuPromptsServlet</servlet-name>
+        <url-pattern>/ajax/getMenuPrompts</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

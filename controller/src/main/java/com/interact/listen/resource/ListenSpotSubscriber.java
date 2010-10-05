@@ -131,6 +131,18 @@ public class ListenSpotSubscriber extends Resource
         return (List<ListenSpotSubscriber>)criteria.list();
     }
 
+    public static String firstUri(Session session)
+    {
+        // FIXME this method is super-hacky - there's a TP bug open to reorganize how we configure this stuff
+        List<ListenSpotSubscriber> list = list(session);
+        if(list == null || list.size() == 0)
+        {
+            throw new IllegalStateException("Cannot retrieve first system name, there are no Spot Subscribers");
+        }
+        String api = list.get(0).getHttpApi();
+        return api.substring(0, api.indexOf("/", "https://".length())); // disgusting
+    }
+
     public static String firstPhoneNumber(Session session)
     {
         for(ListenSpotSubscriber lss : list(session))

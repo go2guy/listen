@@ -318,11 +318,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) {
                       <div id="attendant-menu-information-caption">When caller enters this menu...</div>
                       <div id="attendant-menu-information-input">
                         <label for="attendant-menu-audio-file">Play</label>
-                        <select id="attendant-menu-audio-file" name="attendant-menu-audio-file" size="1">
-                          <option value="welcome00.wav">welcome00.wav</option>
-                          <option value="hithere03.wav">hithere02.wav</option>
-                          <option value="rickroll33.wav">rickroll33.wav</option>
-                        </select>
+                        <select id="attendant-menu-audio-file" name="attendant-menu-audio-file" size="1"></select>
                       </div>
                       <div id="attendant-menu-audio-file-transcription">
                         This section would have a transcription of the audio file that is selected in the box above.

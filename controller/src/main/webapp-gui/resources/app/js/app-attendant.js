@@ -21,8 +21,9 @@ $(document).ready(function() {
 
     Listen.Attendant = function() {
         return {
+            prompts: [],
             Application: function() {
-                var interval;
+                var interval, promptInterval;
                 var dynamicTable = new Listen.DynamicTable({
                     url: '/ajax/getAttendantMenuList',
                     tableId: 'attendant-menu-list',
@@ -38,19 +39,27 @@ $(document).ready(function() {
                         }
                     }
                 });
-            
+
                 this.load = function() {
                     Listen.trace('Loading Attendant');
                     dynamicTable.pollAndSet(false);
                     interval = setInterval(function() {
                         dynamicTable.pollAndSet(true);
                     }, 1000);
+                    
+                    Listen.Attendant.loadPrompts();
+                    promptInterval = setInterval(function() {
+                        Listen.Attendant.loadPrompts();
+                    }, 30000);
                 };
 
                 this.unload = function() {
                     Listen.trace('Unloading Attendant');
                     if(interval) {
                         clearInterval(interval);
+                    }
+                    if(promptInterval) {
+                        clearInterval(promptInterval);
                     }
                 };
             },
@@ -354,6 +363,24 @@ $(document).ready(function() {
                     elem.slideUp(100);
                 }, 2000);
             },
+
+            loadPrompts: function() {
+                Listen.trace('Listen.Attendant.loadPrompts');
+                $.ajax({
+                    url: '/ajax/getMenuPrompts',
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data, textStatus, xhr) {
+                        Listen.debug('Loading ' + data.length + ' prompts');
+                        Listen.Attendant.prompts = data;
+                        var select = $('#attendant-menu-audio-file');
+                        $('option', select).remove();
+                        for(var i = 0; i < data.length; i++) {
+                            select.append($('<option></option>').attr('value', data[i].file).text(Listen.isDefined(data[i].description) ? data[i].description : data[i].file));
+                        }
+                    }
+                });
+            }
         }
     }();
 

@@ -10,7 +10,6 @@ import java.util.Map;
 public interface HttpClient
 {
     // Not needed yet:
-    // public void get(String uri) throws IOException;
     // public void put(String uri, String entityContent) throws IOException;
     // public void delete(String uri) throws IOException;
 
@@ -19,6 +18,8 @@ public interface HttpClient
      */
     public void setSocketTimeout(int millis);
 
+    public void get(String uri) throws IOException;
+    
     /**
      * Makes an HTTP POST request to the provided URI with the provided parameters.
      * 

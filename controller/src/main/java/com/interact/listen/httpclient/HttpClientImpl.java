@@ -7,9 +7,7 @@ import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
@@ -41,7 +39,14 @@ public class HttpClientImpl implements HttpClient
         }
         this.socketTimeout = millis;
     }
-    
+
+    @Override
+    public void get(String uri) throws IOException
+    {
+        HttpGet request = new HttpGet(uri);
+        performRequest(request);
+    }
+
     @Override
     public void post(String uri, Map<String, String> params) throws IOException
     {

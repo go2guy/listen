@@ -24,7 +24,7 @@ import org.hibernate.Session;
 public class GetAttendantMenuListServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
-    
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
@@ -32,20 +32,20 @@ public class GetAttendantMenuListServlet extends HttpServlet
         {
             throw new NotLicensedException(ListenFeature.ATTENDANT);
         }
-        
+
         ServletUtil.sendStat(request, Stat.GUI_GET_ATTENDANT_MENU_LIST);
-        
+
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
             throw new UnauthorizedServletException("Not logged in");
         }
-        
+
         if(!subscriber.getIsAdministrator())
         {
             throw new UnauthorizedServletException("Insufficient permissions");
         }
-        
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         List<Menu> results = Menu.queryAll(session);
 
