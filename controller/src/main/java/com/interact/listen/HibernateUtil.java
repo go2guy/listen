@@ -338,7 +338,7 @@ public final class HibernateUtil
         launchApplicationAction.setApplicationName("conferencing");
         session.save(launchApplicationAction);
 
-        timeoutAction.setMenu(menu);
+        ((GoToMenuAction)timeoutAction).setGoToMenu(menu);
         session.save(timeoutAction);
     }
 

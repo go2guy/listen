@@ -11,6 +11,7 @@ $(document).ready(function() {
 
     $('#attendant-menu-cancel').click(function() {
         Listen.Attendant.deselectMenuList();
+        Listen.Attendant.clearError();
         $('#attendant-menu-builder-container').hide();
         $('#attendant-menu-builder-container-placeholder').show();
     });
@@ -314,6 +315,7 @@ $(document).ready(function() {
 
             saveMenu: function() {
                 var menu = Listen.Attendant.buildMenuObject();
+                Listen.Attendant.clearError();
                 Server.post({
                     url: '/ajax/saveAttendantMenu',
                     properties: {
