@@ -217,8 +217,6 @@ $(document).ready(function() {
 
                     case 'GoToMenu':
                         $('.attendant-menu-action-menuSelect', div).show();
-                        $('.attendant-menu-action-menuSelect select', div).val(a.arguments.menuId);
-                        
                         var select = $('.attendant-menu-action-menuSelect select', div);
                         $('option', select).remove();
 
@@ -229,6 +227,7 @@ $(document).ready(function() {
                             select.append($('<option></option>').attr('value', id).text(name));
                         });
 
+                        $('.attendant-menu-action-menuSelect select', div).val(a.arguments.menuId);
                         $('.attendant-menu-action-dialNumberInput', div).hide();
                         $('.attendant-menu-action-launchApplicationSelect', div).hide();
                         $('.attendant-menu-action-launchApplicationCustomInput', div).hide();
