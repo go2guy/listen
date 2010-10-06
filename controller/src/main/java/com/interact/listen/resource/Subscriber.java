@@ -338,7 +338,7 @@ public class Subscriber extends Resource implements Serializable
 
         if(voicemailPin != null && !voicemailPin.matches("^[0-9]{0,10}$"))
         {
-            addToErrors("Voicemail PIN must contain 0 to 10 numeric characters");
+            addToErrors("Voicemail passcode must contain 0 to 10 numeric characters");
         }
 
         if(isEmailNotificationEnabled && (emailAddress == null || emailAddress.equals("")))

@@ -314,7 +314,7 @@ public class EditSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", "ABC");
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Voicemail PIN must contain 0 to 10 numeric characters");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Voicemail passcode must contain 0 to 10 numeric characters");
     }
 
     @Test

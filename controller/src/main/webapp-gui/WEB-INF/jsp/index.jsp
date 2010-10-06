@@ -535,7 +535,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                               <tr><td><label for="subscriber-form-confirmPassword" class="required">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
                               <tr><td><label for="subscriber-form-realName">Real Name</label></td><td><input type="text" id="subscriber-form-realName" name="subscriber-form-realName"/></td></tr><%
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-                              <tr><td><label for="subscriber-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr><%
+                              <tr><td><label for="subscriber-form-voicemailPin">Voicemail Passcode</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr><%
 } %>
                               <tr><td colspan="2"><label>Access Numbers</label></td></tr>
                               <tr>
@@ -641,7 +641,7 @@ if(subscriber != null) { %>
                             <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        
                             <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr><%
     if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-                            <tr><td><label for="profile-form-voicemailPin">Voicemail Pin</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
+                            <tr><td><label for="profile-form-voicemailPin">Voicemail Passcode</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
                             <tr>
                               <td><label for="profile-form-enableEmailNotification">Send e-mail when voicemail received</label></td>
                               <td>
