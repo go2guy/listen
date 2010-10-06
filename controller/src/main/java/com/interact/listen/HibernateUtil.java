@@ -13,6 +13,7 @@ import com.interact.listen.security.SecurityUtil;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 
 import liquibase.ClassLoaderFileOpener;
 import liquibase.Liquibase;
@@ -371,21 +372,13 @@ public final class HibernateUtil
         }
     }
     
-    private static void startPagingThread() throws Exception
+    private static void startPagingThread() throws SchedulerException, ParseException
     {
-        try
-        {
-            SchedulerFactory sf = new StdSchedulerFactory();
-            Scheduler sched = sf.getScheduler();
-            JobDetail jobDetail = new JobDetail("job1", "group1", NewVoicemailPagerJob.class);
-            CronTrigger cronTrigger = new CronTrigger("cronTrigger", "group2", "0 0/1 * * * ?");
-            sched.scheduleJob(jobDetail, cronTrigger);
-            sched.start();
-        }
-        catch(Exception e)
-        {
-            LOG.fatal("Exception starting voicemail paging job", e);
-            throw e;
-        }
+        SchedulerFactory sf = new StdSchedulerFactory();
+        Scheduler sched = sf.getScheduler();
+        JobDetail jobDetail = new JobDetail("job1", "group1", NewVoicemailPagerJob.class);
+        CronTrigger cronTrigger = new CronTrigger("cronTrigger", "group2", "0 0/1 * * * ?");
+        sched.scheduleJob(jobDetail, cronTrigger);
+        sched.start();
     }
 }
