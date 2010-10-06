@@ -375,10 +375,12 @@ $(document).ready(function() {
                         Listen.debug('Loading ' + data.length + ' prompts');
                         Listen.Attendant.prompts = data;
                         var select = $('#attendant-menu-audio-file');
+                        var currentSelection = select.val();
                         $('option', select).remove();
                         for(var i = 0; i < data.length; i++) {
                             select.append($('<option></option>').attr('value', data[i].file).text(Listen.isDefined(data[i].description) ? data[i].description : data[i].file));
                         }
+                        select.val(currentSelection);
                     }
                 });
             }
