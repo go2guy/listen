@@ -621,6 +621,12 @@ public class Subscriber extends Resource implements Serializable
                 addToAccessNumbers(newNumber);
                 persistenceService.save(newNumber);
             }
+            else
+            {
+                // updating an existing record, save the found result
+                result.setSupportsMessageLight(newNumber.getSupportsMessageLight());
+                persistenceService.save(result);
+            }
         }
     }
 }
