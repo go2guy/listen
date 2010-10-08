@@ -15,9 +15,9 @@ public class RegisterSpotSystemServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        addSystem(request.getRemoteHost());
+        addSystem(request.getParameter("system"));
     }
 
     public static void addSystem(String system)
