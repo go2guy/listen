@@ -9,7 +9,6 @@ import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
-import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.spot.SpotCommunicationException;
@@ -17,7 +16,6 @@ import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.Stat;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -61,19 +59,14 @@ public class UnmuteParticipantServlet extends HttpServlet
             throw new UnauthorizedServletException("Not allowed to unmute participant");
         }
 
-        // send request to all SPOT subscribers
-        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
-        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        SpotSystem spotSystem = new SpotSystem(subscriber);
+        try
         {
-            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(), subscriber);
-            try
-            {
-                spotSystem.unmuteParticipant(participant);
-            }
-            catch(SpotCommunicationException e)
-            {
-                throw new ServletException(e);
-            }
+            spotSystem.unmuteParticipant(participant);
+        }
+        catch(SpotCommunicationException e)
+        {
+            throw new ServletException(e);
         }
     }
 }

@@ -1,0 +1,40 @@
+package com.interact.listen.api;
+
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
+import com.interact.listen.exception.BadRequestServletException;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class SetPhoneNumberServlet extends HttpServlet
+{
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
+    {
+        String number = request.getParameter("number");
+        if(number == null)
+        {
+            throw new BadRequestServletException("Missing required parameter [number]");
+        }
+
+        Set<String> validProtocols = new HashSet<String>();
+        validProtocols.add("PSTN");
+        validProtocols.add("VOIP");
+
+        if(!number.contains(":") || number.split(":").length != 2 || validProtocols.contains(number.split(":")[0]))
+        {
+            throw new BadRequestServletException("Property [number] must be in the format 'PROTOCOL:NUMBER', "
+                                                 + "where PROTOCOL = [PSTN|VOIP]");
+        }
+
+        Configuration.set(Property.Key.PHONE_NUMBER, number);
+    }
+}

@@ -1,8 +1,8 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.ServletUtil;
+import com.interact.listen.config.Configuration;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.httpclient.HttpClient;
@@ -11,7 +11,6 @@ import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.marshal.json.JsonMarshaller;
-import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
@@ -23,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -53,11 +51,9 @@ public class GetMenuPromptsServlet extends HttpServlet
             throw new UnauthorizedServletException("Insufficient permissions");
         }
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-
         try
         {
-            String uri = ListenSpotSubscriber.firstUri(session) + "/interact/listen/getPrompts.php";
+            String uri = Configuration.firstSpotSystem() + "/interact/listen/getPrompts.php";
             HttpClient client = new HttpClientImpl();
 
             client.get(uri);

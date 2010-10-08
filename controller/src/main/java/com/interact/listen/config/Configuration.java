@@ -2,6 +2,9 @@ package com.interact.listen.config;
 
 import com.interact.listen.HibernateUtil;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -82,5 +85,36 @@ public final class Configuration
         }
         LOG.warn("Using Property [" + key + "] default value [" + key.getDefaultValue() + "]");
         return key.getDefaultValue();
+    }
+
+    public static String firstSpotSystem()
+    {
+        Set<String> systems = Property.delimitedStringToSet(Configuration.get(Property.Key.SPOT_SYSTEMS), ",");
+        if(systems.size() == 0)
+        {
+            throw new IllegalStateException("Cannot retrieve first system name, there are no Spot Subscribers");
+        }
+        String system = new ArrayList<String>(systems).get(0);
+        return system.substring(0, system.indexOf("/", "https://".length())); // disgusting
+    }
+
+    public static String phoneNumber()
+    {
+        String number = Configuration.get(Property.Key.PHONE_NUMBER);
+        if(number == null)
+        {
+            return "";
+        }
+        return number.split(":")[1];
+    }
+
+    public static String phoneNumberProtocol()
+    {
+        String number = Configuration.get(Property.Key.PHONE_NUMBER);
+        if(number == null)
+        {
+            return "";
+        }
+        return number.split(":")[0];
     }
 }

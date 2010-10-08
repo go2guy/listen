@@ -1,5 +1,7 @@
 package com.interact.listen.spot;
 
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.history.Channel;
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.httpclient.HttpClientImpl;
@@ -12,6 +14,7 @@ import com.interact.listen.stats.StatSender;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.json.simple.JSONValue;
@@ -22,9 +25,6 @@ import org.json.simple.JSONValue;
  */
 public class SpotSystem
 {
-    // e.g. "http://apps2/spot"
-    private String httpInterfaceUri;
-
     /** {@link Subscriber} performing the operations to this {@code SpotSystem} */
     private Subscriber performingSubscriber;
 
@@ -32,9 +32,8 @@ public class SpotSystem
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmssSSS");
     private StatSender statSender = new InsaStatSender();
 
-    public SpotSystem(String httpInterfaceUri, Subscriber performingSubscriber)
+    public SpotSystem(Subscriber performingSubscriber)
     {
-        this.httpInterfaceUri = httpInterfaceUri;
         this.performingSubscriber = performingSubscriber;
     }
 
@@ -244,15 +243,27 @@ public class SpotSystem
 
     private void sendRequest(Map<String, String> params) throws IOException, SpotCommunicationException
     {
-        statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
-        String uri = httpInterfaceUri + "/ccxml/createsession";
-        httpClient.post(uri, params);
+        // FIXME what happens when the first one succeeds and the second one fails? do we "rollback" the first one?
+        // there's no way we can do it with 100% reliability (because the "rollback" might fail, too)
+        // - in all likelihood there will only be one Spot subscriber, but we should accommodate many
 
-        int status = httpClient.getResponseStatus();
-        if(!isSuccessStatus(status))
+        // TODO we should decouple the looping here, have some other class call this method with an argument of the
+        // system to send the request to
+
+        statSender.send(Stat.PUBLISHED_EVENT_TO_SPOT);
+
+        Set<String> systems = Property.delimitedStringToSet(Configuration.get(Property.Key.SPOT_SYSTEMS), ",");
+        for(String system : systems)
         {
-            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" + uri +
-                                                 "]");
+            String uri = system + "/ccxml/createsession";
+            httpClient.post(uri, params);
+
+            int status = httpClient.getResponseStatus();
+            if(!isSuccessStatus(status))
+            {
+                throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System at [" + uri +
+                                                     "]");
+            }
         }
     }
 

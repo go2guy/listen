@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
+import com.interact.listen.api.RegisterSpotSystemServlet;
 import com.interact.listen.httpclient.HttpClient;
 import com.interact.listen.resource.*;
 import com.interact.listen.stats.Stat;
@@ -31,7 +32,7 @@ public class SpotSystemTest extends ListenTest
 
     private Participant participant;
 
-    private final String httpInterfaceUri = "http://www.example.com";
+    private final String httpInterfaceUri = "http://www.example.com/spot";
     private final String postStringAddition = "/ccxml/createsession";
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmssSSS");
@@ -42,12 +43,14 @@ public class SpotSystemTest extends ListenTest
         httpClient = mock(HttpClient.class);
         statSender = mock(StatSender.class);
 
-        spotSystem = new SpotSystem(httpInterfaceUri, null);
+        spotSystem = new SpotSystem(null);
         spotSystem.setHttpClient(httpClient);
         spotSystem.setStatSender(statSender);
 
         participant = new Participant();
         participant.setSessionID(String.valueOf(System.currentTimeMillis()));
+
+        RegisterSpotSystemServlet.addSystem(httpInterfaceUri);
     }
 
     @Test

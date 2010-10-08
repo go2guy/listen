@@ -7,7 +7,6 @@ import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
-import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Participant;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.spot.SpotCommunicationException;
@@ -15,7 +14,6 @@ import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.Stat;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -58,21 +56,14 @@ public class DropParticipantServlet extends HttpServlet
             throw new UnauthorizedServletException("Not allowed to drop participant");
         }
 
-        // FIXME what happens when the first one succeeds and the second one fails? do we "rollback" the first one?
-        // there's no way we can do it with 100% reliability (because the "rollback" might fail, too)
-        // - in all likelihood there will only be one Spot subscriber, but we should accommodate many
-        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
-        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        SpotSystem spotSystem = new SpotSystem(subscriber);
+        try
         {
-            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(), subscriber);
-            try
-            {
-                spotSystem.dropParticipant(participant);
-            }
-            catch(SpotCommunicationException e)
-            {
-                throw new ServletException(e);
-            }
+            spotSystem.dropParticipant(participant);
+        }
+        catch(SpotCommunicationException e)
+        {
+            throw new ServletException(e);
         }
     }
 }

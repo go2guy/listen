@@ -1,5 +1,9 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.PersistenceService;
+import com.interact.listen.api.RegisterSpotSystemServlet;
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.util.List;
@@ -124,41 +128,23 @@ public class ListenSpotSubscriber extends Resource
         return copy;
     }
 
+    @Override
+    public void afterSave(PersistenceService persistenceService)
+    {
+        RegisterSpotSystemServlet.addSystem(httpApi);
+
+        if(phoneNumber != null)
+        {
+            String number = phoneNumberProtocol.name() + ":" + phoneNumber;
+            Configuration.set(Property.Key.PHONE_NUMBER, number);
+        }
+    }
+
     public static List<ListenSpotSubscriber> list(Session session)
     {
         Criteria criteria = session.createCriteria(ListenSpotSubscriber.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (List<ListenSpotSubscriber>)criteria.list();
-    }
-
-    public static String firstUri(Session session)
-    {
-        // FIXME this method is super-hacky - there's a TP bug open to reorganize how we configure this stuff
-        List<ListenSpotSubscriber> list = list(session);
-        if(list == null || list.size() == 0)
-        {
-            throw new IllegalStateException("Cannot retrieve first system name, there are no Spot Subscribers");
-        }
-        String api = list.get(0).getHttpApi();
-        return api.substring(0, api.indexOf("/", "https://".length())); // disgusting
-    }
-
-    public static String firstPhoneNumber(Session session)
-    {
-        for(ListenSpotSubscriber lss : list(session))
-        {
-            return lss.getPhoneNumber();
-        }
-        return "";
-    }
-
-    public static String firstProtocol(Session session)
-    {
-        for(ListenSpotSubscriber lss : list(session))
-        {
-            return lss.getPhoneNumberProtocol().toString();
-        }
-        return "";
     }
 
     @Override

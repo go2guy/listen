@@ -444,24 +444,18 @@ public class Subscriber extends Resource implements Serializable
         HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeDeletedSubscriber(this);
 
-        // TODO we duplicate this looping code several places, it should be refactored
-        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(persistenceService.getSession());
-        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());
+        try
         {
-            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(),
-                                                   persistenceService.getCurrentSubscriber());
-            try
-            {
-                spotSystem.deleteAllSubscriberArtifacts(this);
-            }
-            catch(SpotCommunicationException e)
-            {
-                LOG.error(e);
-            }
-            catch(IOException e)
-            {
-                LOG.error(e);
-            }
+            spotSystem.deleteAllSubscriberArtifacts(this);
+        }
+        catch(SpotCommunicationException e)
+        {
+            LOG.error(e);
+        }
+        catch(IOException e)
+        {
+            LOG.error(e);
         }
     }
 

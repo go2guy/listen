@@ -11,7 +11,9 @@ import com.interact.listen.stats.StatSenderFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -179,24 +181,18 @@ public class Voicemail extends Audio implements Serializable
         HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeDeletedVoicemail(this);
 
-        // TODO we duplicate this looping code several places, it should be refactored
-        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(persistenceService.getSession());
-        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());
+        try
         {
-            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(),
-                                                   persistenceService.getCurrentSubscriber());
-            try
-            {
-                spotSystem.deleteArtifact(getUri());
-            }
-            catch(SpotCommunicationException e)
-            {
-                LOG.error(e);
-            }
-            catch(IOException e)
-            {
-                LOG.error(e);
-            }
+            spotSystem.deleteArtifact(getUri());
+        }
+        catch(SpotCommunicationException e)
+        {
+            LOG.error(e);
+        }
+        catch(IOException e)
+        {
+            LOG.error(e);
         }
 
         toggleMessageLight(persistenceService, getSubscriber());
@@ -271,28 +267,25 @@ public class Voicemail extends Audio implements Serializable
 
     public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber, MessageLightState state)
     {
-        Set<SpotSystem> spotSystems = listSpotSystems(persistenceService);
-        for(SpotSystem spotSystem : spotSystems)
+        SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());
+        try
         {
-            try
+            if(state == MessageLightState.ON)
             {
-                if(state == MessageLightState.ON)
-                {
-                    spotSystem.turnMessageLightOn(accessNumber);
-                }
-                else
-                {
-                    spotSystem.turnMessageLightOff(accessNumber);
-                }
+                spotSystem.turnMessageLightOn(accessNumber);
             }
-            catch(SpotCommunicationException e)
+            else
             {
-                LOG.error(e);
+                spotSystem.turnMessageLightOff(accessNumber);
             }
-            catch(IOException e)
-            {
-                LOG.error(e);
-            }
+        }
+        catch(SpotCommunicationException e)
+        {
+            LOG.error(e);
+        }
+        catch(IOException e)
+        {
+            LOG.error(e);
         }
     }
 
@@ -310,16 +303,5 @@ public class Voicemail extends Audio implements Serializable
         {
             toggleMessageLight(persistenceService, accessNumber);
         }
-    }
-
-    private static Set<SpotSystem> listSpotSystems(PersistenceService persistenceService)
-    {
-        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(persistenceService.getSession());
-        Set<SpotSystem> spotSystems = new HashSet<SpotSystem>();
-        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
-        {
-            spotSystems.add(new SpotSystem(spotSubscriber.getHttpApi(), persistenceService.getCurrentSubscriber()));
-        }
-        return spotSystems;
     }
 }

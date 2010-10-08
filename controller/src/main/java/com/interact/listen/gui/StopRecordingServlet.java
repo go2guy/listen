@@ -8,14 +8,12 @@ import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.ListenSpotSubscriber;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.stats.Stat;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -67,19 +65,14 @@ public class StopRecordingServlet extends HttpServlet
 
         String adminSessionId = conference.firstAdminSessionId(session);
 
-        // send request to all SPOT subscribers
-        List<ListenSpotSubscriber> spotSubscribers = ListenSpotSubscriber.list(session);
-        for(ListenSpotSubscriber spotSubscriber : spotSubscribers)
+        SpotSystem spotSystem = new SpotSystem(subscriber);
+        try
         {
-            SpotSystem spotSystem = new SpotSystem(spotSubscriber.getHttpApi(), subscriber);
-            try
-            {
-                spotSystem.stopRecording(conference, adminSessionId);
-            }
-            catch(SpotCommunicationException e)
-            {
-                throw new ServletException(e);
-            }
+            spotSystem.stopRecording(conference, adminSessionId);
+        }
+        catch(SpotCommunicationException e)
+        {
+            throw new ServletException(e);
         }
     }
 }

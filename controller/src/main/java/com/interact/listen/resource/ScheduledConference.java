@@ -2,6 +2,7 @@ package com.interact.listen.resource;
 
 import com.interact.listen.EmailerService;
 import com.interact.listen.PersistenceService;
+import com.interact.listen.config.Configuration;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
@@ -272,10 +273,9 @@ public class ScheduledConference extends Resource implements Serializable
     public boolean sendEmails(PersistenceService persistenceService)
     {
         EmailerService emailService = new EmailerService(persistenceService);
-        Session session = persistenceService.getSession();
-
-        String phoneNumber = ListenSpotSubscriber.firstPhoneNumber(session);
-        String protocol = ListenSpotSubscriber.firstProtocol(session);
+        
+        String phoneNumber = Configuration.phoneNumber();
+        String protocol = Configuration.phoneNumberProtocol();
 
         if(phoneNumber.equals(""))
         {

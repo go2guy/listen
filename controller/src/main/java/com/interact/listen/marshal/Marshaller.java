@@ -32,7 +32,7 @@ public abstract class Marshaller
     /** Default Converters that should be used when marshalling/unmarshalling certain data types */
     private static final Map<Class<?>, Class<? extends Converter>> DEFAULT_CONVERTERS = new HashMap<Class<?>, Class<? extends Converter>>();
 
-    /** Converters that should override default conferters when marshalling/unmarshalling certain data types */
+    /** Converters that should override default converters when marshalling/unmarshalling certain data types */
     private Map<Class<?>, Class<? extends Converter>> converters = new HashMap<Class<?>, Class<? extends Converter>>();
 
     static

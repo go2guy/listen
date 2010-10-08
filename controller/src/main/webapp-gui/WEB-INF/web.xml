@@ -259,6 +259,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>RegisterSpotSystemServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.RegisterSpotSystemServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>SaveAttendantMenuServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.SaveAttendantMenuServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -267,6 +273,12 @@
     <servlet>
         <servlet-name>ScheduleConferenceServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.ScheduleConferenceServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SetPhoneNumberServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.SetPhoneNumberServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -327,6 +339,16 @@
     <servlet-mapping>
         <servlet-name>PingServlet</servlet-name>
         <url-pattern>/meta/ping</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RegisterSpotSystemServlet</servlet-name>
+        <url-pattern>/meta/registerSpotSystem</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SetPhoneNumberServlet</servlet-name>
+        <url-pattern>/meta/setPhoneNumber</url-pattern>
     </servlet-mapping>
 
     <!-- ajax -->
