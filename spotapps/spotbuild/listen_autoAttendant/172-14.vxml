@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
-<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml"> <!--  Set location of root document -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_autoAttendant/root.vxml"> <!--  Set location of root document -->
     <!-- Last Modified 10/20/2009
        *   @Name   decision.vxml
        *   @Desc   Allows a developer use logical operators
@@ -16,8 +16,8 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'y'+',120-67|else,175-6'"/>	<!-- List of expression to be evaluated -->
-    <var name="II_SB_operand1" expr="isTranscription"/>   			<!-- User defined value to be used as an operand in the expression -->
+    <var name="II_SB_expList" expr="'=,'+'1'+',172-73|lt,'+maxErr+',172-71|else,172-69'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_operand1" expr="errCnt"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
     <var name="II_SB_index" expr="0"/>							<!-- Index used to loop through expression list -->
@@ -27,8 +27,8 @@
 
 	<form id="beginDocument">
 		<block>
-    	    <log target="status">isTranscription</log>
-			<log>INFO: Entered decision.vxml [120-91]</log>
+    	    <log target="status">Chk Cnt</log>
+			<log>INFO: Entered decision.vxml [172-14]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>
 		</block>

@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_autoAttendant/root.vxml"> <!--  Set location of root document -->
+    <!-- Last Modified 10/21/2009
+       *   @Name   main.vxml
+       *   @Desc   Sets up call parameters -->
+
+    <!-- Passed in from CCXML -->
+    <var name="II_SB_local"/>
+    <var name="II_SB_remote"/>
+    <var name="II_SB_originator"/>
+    <var name="II_SB_protocol"/>
+    <var name="II_SB_connectionID"/>
+    <var name="II_SB_type"/>
+    <var name="II_SB_line"/>
+    <var name="II_SB_sessionID"/>
+    <var name="II_SB_CODE_DIR"/>
+    <var name="II_SB_NEXT_OPTION"/>
+    <var name="II_SB_transfer"/>
+    <var name="II_SB_projectSource"/>
+    <var name="II_SB_importedValue"/>
+	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_errCnt"/>
+	<var name="SB_UV_maxErr"/>
+	<var name="SB_UV_nxtPath"/>
+	<var name="SB_UV_helpCnt"/>
+	<var name="SB_UV_maxHelp"/>
+	<var name="SB_UV_params"/>
+	<var name="SB_UV_request"/>
+	<var name="SB_UV_id"/>
+	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_DNIS"/>
+	<var name="SB_UV_passValues"/>
+	<var name="SB_UV_HTTPcontroller"/>
+	<var name="SB_UV_STATcontroller"/>
+	<var name="SB_UV_source"/>
+	<var name="SB_UV_value"/>
+	<var name="SB_UV_operation"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_sipURL"/>
+	<var name="SB_UV_userInput"/>
+	<var name="SB_UV_menu"/>
+	<var name="SB_UV_FILE"/>
+	<var name="SB_UV_configurationLocation"/>
+	<var name="SB_UV_appOption"/>
+	<var name="SB_UV_appDirection"/>
+	<var name="SB_UV_appString"/>
+	<var name="SB_UV_sipServer"/>
+	<var name="SB_UV_sipPrefix"/>
+	<var name="SB_UV_application"/>
+	<var name="SB_UV_dtmfLength"/>
+	<var name="SB_UV_timeout"/>
+	<var name="SB_UV_sysAccessTime"/>
+	<var name="SB_UV_appStartTime"/>
+	<var name="SB_UV_appEndTime"/>
+	<var name="SB_UV_whichPathStat"/>
+	<var name="SB_UV_menuId"/>
+	<var name="SB_UV_keysPressed"/>
+
+    
+    <form id="beginDocument">
+        <block>
+	        
+            <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
+            <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
+            <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
+            <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
+            <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="DNIS" expr="II_SB_local" />
+			<assign name="ANI" expr="II_SB_remote" />
+			<assign name="passValues" expr="II_SB_importedValue" />
+
+			<if cond="SB_UV_ANI != undefined">
+				<assign name="ANI" expr="SB_UV_ANI" />
+			</if>
+			<if cond="SB_UV_errCnt != undefined">
+				<assign name="errCnt" expr="SB_UV_errCnt" />
+			</if>
+			<if cond="SB_UV_maxErr != undefined">
+				<assign name="maxErr" expr="SB_UV_maxErr" />
+			</if>
+			<if cond="SB_UV_nxtPath != undefined">
+				<assign name="nxtPath" expr="SB_UV_nxtPath" />
+			</if>
+			<if cond="SB_UV_helpCnt != undefined">
+				<assign name="helpCnt" expr="SB_UV_helpCnt" />
+			</if>
+			<if cond="SB_UV_maxHelp != undefined">
+				<assign name="maxHelp" expr="SB_UV_maxHelp" />
+			</if>
+			<if cond="SB_UV_params != undefined">
+				<assign name="params" expr="SB_UV_params" />
+			</if>
+			<if cond="SB_UV_request != undefined">
+				<assign name="request" expr="SB_UV_request" />
+			</if>
+			<if cond="SB_UV_id != undefined">
+				<assign name="id" expr="SB_UV_id" />
+			</if>
+			<if cond="SB_UV_cntrlURL != undefined">
+				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
+			</if>
+			<if cond="SB_UV_resource != undefined">
+				<assign name="resource" expr="SB_UV_resource" />
+			</if>
+			<if cond="SB_UV_status != undefined">
+				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_returnVal != undefined">
+				<assign name="returnVal" expr="SB_UV_returnVal" />
+			</if>
+			<if cond="SB_UV_returnStr != undefined">
+				<assign name="returnStr" expr="SB_UV_returnStr" />
+			</if>
+			<if cond="SB_UV_DNIS != undefined">
+				<assign name="DNIS" expr="SB_UV_DNIS" />
+			</if>
+			<if cond="SB_UV_passValues != undefined">
+				<assign name="passValues" expr="SB_UV_passValues" />
+			</if>
+			<if cond="SB_UV_HTTPcontroller != undefined">
+				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
+			</if>
+			<if cond="SB_UV_STATcontroller != undefined">
+				<assign name="STATcontroller" expr="SB_UV_STATcontroller" />
+			</if>
+			<if cond="SB_UV_source != undefined">
+				<assign name="source" expr="SB_UV_source" />
+			</if>
+			<if cond="SB_UV_value != undefined">
+				<assign name="value" expr="SB_UV_value" />
+			</if>
+			<if cond="SB_UV_operation != undefined">
+				<assign name="operation" expr="SB_UV_operation" />
+			</if>
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_sipURL != undefined">
+				<assign name="sipURL" expr="SB_UV_sipURL" />
+			</if>
+			<if cond="SB_UV_userInput != undefined">
+				<assign name="userInput" expr="SB_UV_userInput" />
+			</if>
+			<if cond="SB_UV_menu != undefined">
+				<assign name="menu" expr="SB_UV_menu" />
+			</if>
+			<if cond="SB_UV_FILE != undefined">
+				<assign name="FILE" expr="SB_UV_FILE" />
+			</if>
+			<if cond="SB_UV_configurationLocation != undefined">
+				<assign name="configurationLocation" expr="SB_UV_configurationLocation" />
+			</if>
+			<if cond="SB_UV_appOption != undefined">
+				<assign name="appOption" expr="SB_UV_appOption" />
+			</if>
+			<if cond="SB_UV_appDirection != undefined">
+				<assign name="appDirection" expr="SB_UV_appDirection" />
+			</if>
+			<if cond="SB_UV_appString != undefined">
+				<assign name="appString" expr="SB_UV_appString" />
+			</if>
+			<if cond="SB_UV_sipServer != undefined">
+				<assign name="sipServer" expr="SB_UV_sipServer" />
+			</if>
+			<if cond="SB_UV_sipPrefix != undefined">
+				<assign name="sipPrefix" expr="SB_UV_sipPrefix" />
+			</if>
+			<if cond="SB_UV_application != undefined">
+				<assign name="application" expr="SB_UV_application" />
+			</if>
+			<if cond="SB_UV_dtmfLength != undefined">
+				<assign name="dtmfLength" expr="SB_UV_dtmfLength" />
+			</if>
+			<if cond="SB_UV_timeout != undefined">
+				<assign name="timeout" expr="SB_UV_timeout" />
+			</if>
+			<if cond="SB_UV_sysAccessTime != undefined">
+				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
+			</if>
+			<if cond="SB_UV_appStartTime != undefined">
+				<assign name="appStartTime" expr="SB_UV_appStartTime" />
+			</if>
+			<if cond="SB_UV_appEndTime != undefined">
+				<assign name="appEndTime" expr="SB_UV_appEndTime" />
+			</if>
+			<if cond="SB_UV_whichPathStat != undefined">
+				<assign name="whichPathStat" expr="SB_UV_whichPathStat" />
+			</if>
+			<if cond="SB_UV_menuId != undefined">
+				<assign name="menuId" expr="SB_UV_menuId" />
+			</if>
+			<if cond="SB_UV_keysPressed != undefined">
+				<assign name="keysPressed" expr="SB_UV_keysPressed" />
+			</if>
+
+            <log>INFO: Completed global variable setup</log>
+			<if cond="II_SB_nextOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>
+				<goto expr="'file:'+II_SB_APP_PATH + II_SB_nextOpt +'.vxml'"/>
+			<else/> <!-- Exit to ccxml layer -->
+				<assign name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set. Exit to CCXML.</log>
+				<log>INFO: Exit Status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+        </block>
+    </form>
+</vxml>

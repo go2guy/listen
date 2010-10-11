@@ -1,24 +1,27 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
-<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml"> <!--  Set location of root document -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_autoAttendant/root.vxml"> <!--  Set location of root document -->
     <!-- Last Modified 05/17/2010
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'120-91'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'190-4'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Message Saved</log>
-            <log>INFO: Entered assign-variable.vxml [120-87]</log>
-            <log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LSTNAPP_0015'+''" />
+	    <log target="status">App Call Time</log>
+            <log>INFO: Entered assign-variable.vxml [180-60]</log>
+            <log>INFO: Current value [<value expr="value"/>]</log>
+<assign name="value" expr="returnVal+''" />
+<log>INFO: Updated value [<value expr="value"/>]</log>
+<log>INFO: Current value [<value expr="id"/>]</log>
+<assign name="id" expr="'LSTNAPP_0004'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
 <log>INFO: Current value [<value expr="operation"/>]</log>
 <assign name="operation" expr="'set'+''" />
 <log>INFO: Updated value [<value expr="operation"/>]</log>
 <log>INFO: Current value [<value expr="whichPathStat"/>]</log>
-<assign name="whichPathStat" expr="'postCDR'+''" />
+<assign name="whichPathStat" expr="'goToApp'+''" />
 <log>INFO: Updated value [<value expr="whichPathStat"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

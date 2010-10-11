@@ -136,6 +136,21 @@
                     <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
                 </property>
             </question>
+            <question level="not_in_backup" severity="take_default">
+                <text>Turn on Transcription</text>
+                <default>n</default>
+                <validateRegex>^(y|n)$</validateRegex>
+                <validateInfo>The value my only be y/n</validateInfo>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>isTranscription</name>
+                    <group>Transcription</group>
+                    <description>On or Off</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_voicemail/root.vxml</location>
+                </property>
+            </question>
         </inquiry>
     </install>
 

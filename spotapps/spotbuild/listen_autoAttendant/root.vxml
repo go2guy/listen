@@ -6,7 +6,7 @@
                    These variables are available to all files that reference this document -->
 
     <!-- Application constants. These are used to control the flow of the application -->
-    <var name="II_SB_APP_PATH" expr="'/interact/apps/spotbuild/listen_voicemail/'"/>                 	<!--  APP_PATH. Application directory under base directory. Contains all code -->
+    <var name="II_SB_APP_PATH" expr="'/interact/apps/spotbuild/listen_autoAttendant/'"/>                 	<!--  APP_PATH. Application directory under base directory. Contains all code -->
     <var name="II_SB_LIB_PATH" expr="'/interact/apps/spotbuild/lib/'"/>	<!-- LIB_PATH. Library directory. Contains all library functions -->
     <var name="II_SB_JS_LIB" expr="II_SB_LIB_PATH +'js/'"/>            	<!-- JS LIB_PATH. Java script directory -->
     <var name="II_SB_VXML_LIB" expr="II_SB_LIB_PATH +'vxml/'"/>        	<!-- VXML LIB_PATH. VXML script directory -->
@@ -30,44 +30,46 @@
 
     <!-- User Dertermined Globals -->
 	<var name="ANI" expr="'remote'" />
-	<var name="DNIS" expr="'local'" />
+	<var name="errCnt" expr="'0'" />
+	<var name="maxErr" expr="'3'" />
+	<var name="nxtPath" expr="''" />
+	<var name="helpCnt" expr="''" />
+	<var name="maxHelp" expr="'3'" />
+	<var name="params" expr="''" />
+	<var name="request" expr="''" />
+	<var name="id" expr="''" />
+	<var name="cntrlURL" expr="''" />
+	<var name="resource" expr="''" />
 	<var name="status" expr="''" />
-	<var name="fileLocation" expr="''" />
-	<var name="isNew" expr="'true'" />
-	<var name="subID" expr="'null'" />
 	<var name="returnVal" expr="''" />
 	<var name="returnStr" expr="''" />
-	<var name="FILE1" expr="''" />
-	<var name="OPERATION" expr="'stat'" />
-	<var name="request" expr="'get'" />
-	<var name="resource" expr="'accessNumbers'" />
-	<var name="params" expr="''" />
-	<var name="cntrlURL" expr="''" />
-	<var name="audioURL" expr="''" />
-	<var name="index" expr="'0'" />
-	<var name="hostName" expr="''" />
-	<var name="fileSize" expr="''" />
+	<var name="DNIS" expr="'local'" />
 	<var name="passValues" expr="'importedValue'" />
-	<var name="duration" expr="''" />
-	<var name="sysAccessTime" expr="''" />
-	<var name="toggleLight" expr="'ON'" />
-	<var name="accessNum" expr="''" />
-	<var name="accessID" expr="''" />
-	<var name="toExt" expr="''" />
 	<var name="HTTPcontroller" expr="''" />
 	<var name="STATcontroller" expr="''" />
-	<var name="id" expr="''" />
-	<var name="source" expr="'voicemail'" />
+	<var name="source" expr="'pbx'" />
 	<var name="value" expr="''" />
-	<var name="operation" expr="''" />
-	<var name="artifactsDIR" expr="''" />
-	<var name="msgDIR" expr="'/voicemail/message/'" />
-	<var name="isMsgSaved" expr="'false'" />
-	<var name="callerID" expr="''" />
+	<var name="operation" expr="'increment'" />
+	<var name="hostName" expr="''" />
+	<var name="sipURL" expr="''" />
+	<var name="userInput" expr="''" />
+	<var name="menu" expr="''" />
+	<var name="FILE" expr="''" />
+	<var name="configurationLocation" expr="'/interact/apps/spotbuild/listen_configurations/'" />
+	<var name="appOption" expr="''" />
+	<var name="appDirection" expr="''" />
+	<var name="appString" expr="''" />
+	<var name="sipServer" expr="'iipbx'" />
+	<var name="sipPrefix" expr="'ext'" />
+	<var name="application" expr="''" />
+	<var name="dtmfLength" expr="''" />
+	<var name="timeout" expr="''" />
+	<var name="sysAccessTime" expr="''" />
 	<var name="appStartTime" expr="''" />
 	<var name="appEndTime" expr="''" />
 	<var name="whichPathStat" expr="''" />
-	<var name="isTranscription" expr="'n'" /> <!-- Config Transcription On or Off -->
+	<var name="menuId" expr="''" />
+	<var name="keysPressed" expr="''" />
 
 
     <!-- Conference Variables -->

@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
-<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml"> <!-- Set location of root document -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_autoAttendant/root.vxml"> <!-- Set location of root document -->
     <!-- Last Modified 11/02/2009
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'120-87'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'170-6'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(duration)
+            function II_SB_JS_function(passValues)
             {
-	            duration = duration / 1000;return Math.round(duration);
+	            var result = eval("("+passValues+")");return result.hostName;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Recording Duration</log>
-            <log>INFO: Entered run-javascript.vxml [120-84]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(duration)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="value" expr="II_SB_userJava" />   
+            <log target="status">Get HostName</log>
+            <log>INFO: Entered run-javascript.vxml [170-4]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="hostName" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

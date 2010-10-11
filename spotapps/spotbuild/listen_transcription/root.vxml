@@ -6,7 +6,7 @@
                    These variables are available to all files that reference this document -->
 
     <!-- Application constants. These are used to control the flow of the application -->
-    <var name="II_SB_APP_PATH" expr="'/interact/apps/spotbuild/listen_voicemail/'"/>                 	<!--  APP_PATH. Application directory under base directory. Contains all code -->
+    <var name="II_SB_APP_PATH" expr="'/interact/apps/spotbuild/listen_transcription/'"/>                 	<!--  APP_PATH. Application directory under base directory. Contains all code -->
     <var name="II_SB_LIB_PATH" expr="'/interact/apps/spotbuild/lib/'"/>	<!-- LIB_PATH. Library directory. Contains all library functions -->
     <var name="II_SB_JS_LIB" expr="II_SB_LIB_PATH +'js/'"/>            	<!-- JS LIB_PATH. Java script directory -->
     <var name="II_SB_VXML_LIB" expr="II_SB_LIB_PATH +'vxml/'"/>        	<!-- VXML LIB_PATH. VXML script directory -->
@@ -29,45 +29,10 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
-	<var name="ANI" expr="'remote'" />
-	<var name="DNIS" expr="'local'" />
-	<var name="status" expr="''" />
-	<var name="fileLocation" expr="''" />
-	<var name="isNew" expr="'true'" />
-	<var name="subID" expr="'null'" />
-	<var name="returnVal" expr="''" />
-	<var name="returnStr" expr="''" />
-	<var name="FILE1" expr="''" />
-	<var name="OPERATION" expr="'stat'" />
-	<var name="request" expr="'get'" />
-	<var name="resource" expr="'accessNumbers'" />
-	<var name="params" expr="''" />
-	<var name="cntrlURL" expr="''" />
-	<var name="audioURL" expr="''" />
-	<var name="index" expr="'0'" />
-	<var name="hostName" expr="''" />
-	<var name="fileSize" expr="''" />
+	<var name="calledSession" expr="''" />
 	<var name="passValues" expr="'importedValue'" />
-	<var name="duration" expr="''" />
-	<var name="sysAccessTime" expr="''" />
-	<var name="toggleLight" expr="'ON'" />
-	<var name="accessNum" expr="''" />
-	<var name="accessID" expr="''" />
-	<var name="toExt" expr="''" />
-	<var name="HTTPcontroller" expr="''" />
-	<var name="STATcontroller" expr="''" />
-	<var name="id" expr="''" />
-	<var name="source" expr="'voicemail'" />
-	<var name="value" expr="''" />
-	<var name="operation" expr="''" />
-	<var name="artifactsDIR" expr="''" />
-	<var name="msgDIR" expr="'/voicemail/message/'" />
-	<var name="isMsgSaved" expr="'false'" />
-	<var name="callerID" expr="''" />
-	<var name="appStartTime" expr="''" />
-	<var name="appEndTime" expr="''" />
-	<var name="whichPathStat" expr="''" />
-	<var name="isTranscription" expr="'n'" /> <!-- Config Transcription On or Off -->
+	<var name="fileLocation" expr="''" />
+	<var name="fileNumber" expr="''" />
 
 
     <!-- Conference Variables -->
