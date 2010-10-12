@@ -16,6 +16,8 @@ public class SetPhoneNumberServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
+    private static final String DELIMITER = ";";
+    
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
@@ -29,9 +31,9 @@ public class SetPhoneNumberServlet extends HttpServlet
         validProtocols.add("PSTN");
         validProtocols.add("VOIP");
 
-        if(!number.contains(":") || number.split(":").length != 2 || validProtocols.contains(number.split(":")[0]))
+        if(!number.contains(DELIMITER) || number.split(DELIMITER).length != 2 || !validProtocols.contains(number.split(DELIMITER)[0]))
         {
-            throw new BadRequestServletException("Property [number] must be in the format 'PROTOCOL:NUMBER', "
+            throw new BadRequestServletException("Property [number] must be in the format 'PROTOCOL;NUMBER', "
                                                  + "where PROTOCOL = [PSTN|VOIP]");
         }
 

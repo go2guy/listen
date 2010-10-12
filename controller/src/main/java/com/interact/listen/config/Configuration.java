@@ -105,7 +105,7 @@ public final class Configuration
         {
             return "";
         }
-        return number.split(":")[1];
+        return number.split(";")[1];
     }
 
     public static String phoneNumberProtocol()
@@ -115,6 +115,6 @@ public final class Configuration
         {
             return "";
         }
-        return number.split(":")[0];
+        return number.split(";")[0];
     }
 }
