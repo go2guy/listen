@@ -1,40 +1,44 @@
 function getAppName(passValues) {
-    var result = '';
-    var tmpVal = new String(passValues).replace(/^\s*|\s*$|\s+/g,'');
-    if((tmpVal == '') || (typeof(passValues) == 'undefined'))
-        result = "DEFAULT"; 
+    var result;
+    if (typeof(passValues) == 'undefined')
+        result = "DEFAULT";
     else {
-        var tmpVal = eval("("+passValues+")");
-        switch (tmpVal.application) {
-            case "AUTO_DIAL":
-                result = "listen_autoDial";
-                break;
-            case "RECORD":
-                result = "listen_record";
-                break;
-            case "DEL_ARTIFACT":
-                result = "listen_artifacts";
-                break;
-            case "CONF_EVENT":
-                result = "listen_confEvents";
-                break;
-            case "MSG_LIGHT":
-                result = "msgLightCntrl";
-                break;
-            case "conferencing":
-                result = "listen_conference";
-                break;
-            case "mailbox":
-                result = "listen_mailbox";
-                break;
-            case "directVoicemail":
-                result = "listen_mailbox";
-                break;
-            case "voicemail":
-                result = "listen_voicemail";
-                break;
-            default:
-                result = tmpVal.application;
+        var tmpVal = new String(passValues).replace(/^\s*|\s*$|\s+/g,'');
+        if(tmpVal == '')
+            result = "DEFAULT";
+        else {
+            tmpVal = eval("("+passValues+")");
+            switch (tmpVal.application) {
+                case "AUTO_DIAL":
+                    result = "listen_autoDial";
+                    break;
+                case "RECORD":
+                    result = "listen_record";
+                    break;
+                case "DEL_ARTIFACT":
+                    result = "listen_artifacts";
+                    break;
+                case "CONF_EVENT":
+                    result = "listen_confEvents";
+                    break;
+                case "MSG_LIGHT":
+                    result = "msgLightCntrl";
+                    break;
+                case "conferencing":
+                    result = "listen_conference";
+                    break;
+                case "mailbox":
+                    result = "listen_mailbox";
+                    break;
+                case "directVoicemail":
+                    result = "listen_mailbox";
+                    break;
+                case "voicemail":
+                    result = "listen_voicemail";
+                    break;
+                default:
+                    result = tmpVal.application;
+            }
         }
     }
     return result;
