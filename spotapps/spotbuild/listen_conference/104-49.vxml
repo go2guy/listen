@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(helpCnt,maxHelp,getInput)
             {
-	            if ((getInput == 1) || (getInput == 2))return getInput;else if ((getInput == '*') && (helpCnt < maxHelp))return getInput;else{return "ERROR";}
+	            var validKeys = "1,2";return checkMenuKeyPress(helpCnt, maxHelp, getInput, validKeys)
             }
         ]]>
     </script>

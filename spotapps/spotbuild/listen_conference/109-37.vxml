@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            var result = eval("("+passValues+")");return result.destination;
+	            return getJsonVal(passValues, 'destination');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Phone</log>
+            <log target="status">Get Phone</log>
             <log>INFO: Entered run-javascript.vxml [109-37]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="phoneNumber" expr="II_SB_userJava" />   

@@ -11,17 +11,17 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+returnVal+")");if (result.isStarted){return "true";}else{return "false";}
+	            var flag = 'isStarted';return getInfo(returnVal, flag);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Status</log>
+            <log target="status">Get isStarted</log>
             <log>INFO: Entered run-javascript.vxml [86-17]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="confStatus" expr="II_SB_userJava" />   
+            <assign name="isStarted" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

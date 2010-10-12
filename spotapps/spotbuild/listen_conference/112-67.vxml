@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(getInput)
+            function II_SB_JS_function(argList)
             {
-	            var tmpVal = eval("("+getInput+")");return tmpVal.initiatingChannel;
+	            return getJsonVal(argList, 'initiatingChannel');
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Get lstnChannel</log>
             <log>INFO: Entered run-javascript.vxml [112-67]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(getInput)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(argList)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="lstnChannel" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

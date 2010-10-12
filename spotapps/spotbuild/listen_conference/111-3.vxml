@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(getInput,returnVal,index,isAdmin)
             {
-	            var result;var tmpVal = eval("("+returnVal+")");var isAdminStatus = tmpVal.results[index].isAdmin;var isPassiveStatus = tmpVal.results[index].isPassive;var options = new String("1,2,3");if(getInput == 4)result = "RESTART";else if (isAdmin == 'true'){if (isAdminStatus && (inString(getInput,options,',')))result = "INVALID_ADMIN";else if (isPassiveStatus && (inString(getInput,options,','))){if ((getInput == 1) || (getInput == 2))result ="INVALID_PASSIVE";else{result = "DROP";}}else if (inString(getInput,options,',')){if(getInput == 1)result = "MUTE";else if (getInput == 2)result = "UNMUTE";else{result = "DROP";}}else{result = "REJOIN";}}else{result = "REJOIN";}return result;
+	            return rollCallKeyPress(getInput, returnVal, index, isAdmin);
             }
         ]]>
     </script>

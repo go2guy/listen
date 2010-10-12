@@ -18,10 +18,10 @@
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Passvalues</log>
+            <log target="status">Set Initiating Info</log>
             <log>INFO: Entered run-javascript.vxml [111-70]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(subHref)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="getInput" expr="II_SB_userJava" />   
+            <assign name="initiatingObj" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

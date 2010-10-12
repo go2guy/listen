@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(helpCnt,maxHelp,getInput)
             {
-	            var opts = new String("1,2,3");if (opts.match(getInput)){return getInput;}else {if ((getInput == '*') && (helpCnt < maxHelp)){return getInput;}else{return "ERROR";}}
+	            var validKeys = "1,2,3";return checkMenuKeyPress(helpCnt, maxHelp, getInput, validKeys)
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Check Entry</log>
+            <log target="status">Start Menu Entry</log>
             <log>INFO: Entered run-javascript.vxml [115-46]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(helpCnt,maxHelp,getInput)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="getInput" expr="II_SB_userJava" />   

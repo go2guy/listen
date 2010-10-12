@@ -11,15 +11,15 @@
         <![CDATA[
             function II_SB_JS_function()
             {
-	            return (new Date().getTime());
+	            return new Date().getTime();
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Stop Time</log>
-            <log>INFO: Entered run-javascript.vxml [82-62]</log>
+            <log target="status">Get End Time</log>
+            <log>INFO: Entered run-javascript.vxml [82-75]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function()"/>   <!-- Call Javascript funtion and store result -->
             <assign name="appEndTime" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>

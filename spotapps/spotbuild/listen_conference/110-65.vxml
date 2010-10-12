@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal,index,audioURL,hostName)
             {
-	            var result = new String();var tmpVal = eval("("+returnVal+")");result = tmpVal.results[index].audioResource;var tmpArray = result.split(hostName);if ((result == null) || (tmpArray[1] == audioURL)){result = "";}return result;
+	            return getAudioURL(returnVal, index, audioURL, hostName);
             }
         ]]>
     </script>

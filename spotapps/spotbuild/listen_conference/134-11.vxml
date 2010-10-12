@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+returnVal+")");if (result.isRecording)return "true";else{return "false";}
+	            var flag = 'isRecording';return getInfo(returnVal, flag);
             }
         ]]>
     </script>

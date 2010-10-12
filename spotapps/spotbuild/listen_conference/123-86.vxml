@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var result = eval("("+returnVal+")");if ((result.recordingSessionId != 'null') && (result.recordingSessionId != ''))return result.recordingSessionId;else{return "ERROR";}
+	            return getJsonVal(returnVal, 'recordingSessionId');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get SID</log>
+            <log target="status">Get Record SID</log>
             <log>INFO: Entered run-javascript.vxml [123-86]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="recSID" expr="II_SB_userJava" />   

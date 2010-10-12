@@ -18,7 +18,7 @@
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Request</log>
+            <log target="status">Set Conf Search String</log>
             <log>INFO: Entered run-javascript.vxml [113-19]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(confID,reqMinCnt,reqMaxCnt)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   

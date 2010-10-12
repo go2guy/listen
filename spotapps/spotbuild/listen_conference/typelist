@@ -217,6 +217,7 @@ hang-up - hang-up
 94-110 - assign-variable
 105-37 - out-dial-end
 113-116 - audio-input
+113-117 - run-javascript
 113-109 - assign-variable
 94-106 - assign-variable
 125-34 - assign-variable
@@ -236,6 +237,7 @@ hang-up - hang-up
 91-52 - run-javascript
 91-50 - run-javascript
 105-59 - assign-variable
+82-75 - run-javascript
 125-52 - assign-variable
 104-61 - audio-input
 104-60 - audio-input
@@ -295,7 +297,6 @@ hang-up - hang-up
 111-57 - audio-input
 123-124 - decision
 110-31 - decision
-86-77 - decision
 121-83 - audio-input
 86-30 - decision
 112-71 - run-javascript
@@ -313,7 +314,6 @@ hang-up - hang-up
 123-131 - assign-variable
 86-48 - run-javascript
 111-68 - run-javascript
-86-46 - run-javascript
 111-66 - audio-input
 111-67 - audio-input
 114-5 - run-javascript

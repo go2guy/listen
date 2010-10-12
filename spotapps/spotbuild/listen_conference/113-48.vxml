@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(returnVal,index)
+            function II_SB_JS_function(returnVal,index,SID)
             {
-	            var result;var tmpVal = eval("("+returnVal+")");result = tmpVal.results[index].sessionID;if (result == null){result = "";}return result;
+	            return getSessionID (returnVal, index, SID);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Get SID</log>
             <log>INFO: Entered run-javascript.vxml [113-48]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal,index)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal,index,SID)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="tempSID" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

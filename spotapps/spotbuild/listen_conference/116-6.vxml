@@ -11,8 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(audioURL)
             {
-	            var tmp = "/interact/apps/spotbuild/listen_conference/audio/confIn.00.wav";
-return tmp + " " + audioURL;
+	            var tmp = "/interact/apps/spotbuild/listen_conference/audio/confIn.00.wav";return tmp + " " + audioURL;
             }
         ]]>
     </script>

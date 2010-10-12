@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(returnVal)
             {
-	            var tmpVal = eval("("+returnVal+")");var result = (tmpVal.conference.href).split('/');return result[2];
+	            var key = 'conference';return getHrefId(returnVal, key);
             }
         ]]>
     </script>

@@ -8,7 +8,7 @@
     <!-- Node Variables -->
     <var name="II_SB_confName" expr="returnStr"/>          	<!--  Conference Identifier -->
     <var name="II_SB_dtmfLength" expr="'1'"/>              <!--  Number of keys used for drop key -->
-    <var name="II_SB_interDgtTime" expr="'3s'"/>            <!--  Time between drop key presses -->
+    <var name="II_SB_interDgtTime" expr="'0s'"/>            <!--  Time between drop key presses -->
     <var name="II_SB_drpKeyEnabled" expr="'true'"/>       <!--  Whether drop keys are enabled -->
 	<var name="II_SB_RsrvdTalkers" expr="'10'"/>      	<!--  Number of half duplex members -->
 	<var name="II_SB_RsrvdListeners" expr="'10'"/>	<!--  Number of full duplex members -->
@@ -39,7 +39,7 @@
              conference has most likely being created and we either need to set some
              variables or go to the next vxml template. -->
         <block>
-            
+            <log target="status">Call In Progress</log>
             <log>INFO: Entered conference.vxml [185-5]</log>
             <if cond="II_SB_fromCCXML == 'setVars'">    <!-- Set VXML variables -->
 			

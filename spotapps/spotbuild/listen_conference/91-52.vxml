@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(phoneNumber,sipURL,ANI)
             {
-	            var str = new String(phoneNumber);var num = /^\d+$/;if ((num.test(str)) && (sipURL != 'null'))return ANI + "@" + sipURL;else{return ANI + "@iipbx";}
+	            return setCallerID (phoneNumber, sipURL, ANI);
             }
         ]]>
     </script>

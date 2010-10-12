@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(outDialStart,ANI,phoneNumber,subID,outDialStop)
+            function II_SB_JS_function(outDialStart,ANI,phoneNumber,subscriber,outDialStop)
             {
-	            var duration = outDialStop - iiStrToDate(outDialStart);return "{\"date\": \""+outDialStart+"\", \"subscriber\": "+subID+", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+phoneNumber+"\", \"direction\":\"OUTBOUND\"}";
+	            var duration = outDialStop - iiStrToDate(outDialStart);return "{\"date\": \""+outDialStart+"\", \"subscriber\": {\"href\":\"/subscribers/"+subscriber+"\"}, \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+phoneNumber+"\", \"direction\":\"OUTBOUND\"}";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Params</log>
             <log>INFO: Entered run-javascript.vxml [105-74]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(outDialStart,ANI,phoneNumber,subID,outDialStop)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(outDialStart,ANI,phoneNumber,subscriber,outDialStop)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

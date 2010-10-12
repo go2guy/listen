@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(InterruptVal)
             {
-	            var result = eval("("+InterruptVal+")");return result.SessionID;
+	            return getJsonVal (InterruptVal, 'SessionID');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">SessionID</log>
+            <log target="status">Get SessionID</log>
             <log>INFO: Entered run-javascript.vxml [185-30]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(InterruptVal)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="returnStr" expr="II_SB_userJava" />   

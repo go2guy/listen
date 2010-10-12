@@ -9,18 +9,18 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(returnVal,ANI,DNIS,subID,timeStamp)
+            function II_SB_JS_function(returnVal,ANI,DNIS,subscriber,timeStamp)
             {
-	            var duration = new Date().getTime() - timeStamp;return "{\"date\": \""+iiDateToISO(timeStamp)+"\", \"subscriber\": "+subID+", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\"INBOUND\"}";
+	            var duration = new Date().getTime() - timeStamp;return "{\"date\": \""+iiDateToISO(timeStamp)+"\", \"subscriber\": {\"href\":\"/subscribers/"+subscriber+"\"}, \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\"INBOUND\"}";
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
+            <log target="status">Set CDR Obj</log>
             <log>INFO: Entered run-javascript.vxml [117-87]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal,ANI,DNIS,subID,timeStamp)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal,ANI,DNIS,subscriber,timeStamp)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

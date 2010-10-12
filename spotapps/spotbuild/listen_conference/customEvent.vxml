@@ -28,7 +28,7 @@
 			</if>
 			<if cond="II_SB_eventReceived == 'MUTE'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112-4'"/>
-				<assign name="getInput" expr="II_SB_valueReceived"/>
+				<assign name="argList" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'Interrupt Admin'">
 				<assign name="II_SB_assign_NxtOpt" expr="'185-3'"/>
@@ -36,15 +36,15 @@
 			</if>
 			<if cond="II_SB_eventReceived == 'DROP'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112-67'"/>
-				<assign name="getInput" expr="II_SB_valueReceived"/>
+				<assign name="argList" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'END'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112-63'"/>
-				<assign name="getInput" expr="II_SB_valueReceived"/>
+				<assign name="argList" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'UNMUTE'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112-20'"/>
-				<assign name="getInput" expr="II_SB_valueReceived"/>
+				<assign name="argList" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'ERR_REC_START'">
 				<assign name="II_SB_assign_NxtOpt" expr="'121-81'"/>

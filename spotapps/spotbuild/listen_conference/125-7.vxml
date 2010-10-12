@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function(phoneNumber,maxHelp,helpCnt,isInteractiveCall,pstnLength)
             {
-	            var ipAddSect = 4;if ((phoneNumber == '*') && (helpCnt < maxHelp))return "HELP";else if (iiNumber(phoneNumber) && (phoneNumber.length >= pstnLength))return isInteractiveCall;else if (iiStrCnt(phoneNumber,'*') >= ipAddSect)return isInteractiveCall;else{return "ERROR";}
+	            return getDestination (phoneNumber, maxHelp, helpCnt, isInteractiveCall, pstnLength);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Chk Entry</log>
+            <log target="status">Eval Destination Entry</log>
             <log>INFO: Entered run-javascript.vxml [125-7]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function(phoneNumber,maxHelp,helpCnt,isInteractiveCall,pstnLength)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="status" expr="II_SB_userJava" />   

@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(userID,isInfoSaved)
             {
-	            if((userID.length !=0) && (isInfoSaved == 'true'))return "NEXT";else{return "END";}
+	            return hangUpStatus (userID, isInfoSaved);
             }
         ]]>
     </script>

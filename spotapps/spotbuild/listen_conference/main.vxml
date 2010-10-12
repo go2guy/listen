@@ -100,6 +100,8 @@
 	<var name="SB_UV_lstnChannel"/>
 	<var name="SB_UV_lstnSub"/>
 	<var name="SB_UV_subHref"/>
+	<var name="SB_UV_initiatingObj"/>
+	<var name="SB_UV_argList"/>
 
     
     <form id="beginDocument">
@@ -359,6 +361,12 @@
 			</if>
 			<if cond="SB_UV_subHref != undefined">
 				<assign name="subHref" expr="SB_UV_subHref" />
+			</if>
+			<if cond="SB_UV_initiatingObj != undefined">
+				<assign name="initiatingObj" expr="SB_UV_initiatingObj" />
+			</if>
+			<if cond="SB_UV_argList != undefined">
+				<assign name="argList" expr="SB_UV_argList" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

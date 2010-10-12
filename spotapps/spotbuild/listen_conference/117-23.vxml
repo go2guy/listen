@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(isAdmin,whichPath)
             {
-	            if((isAdmin == 'true') && ((whichPath == 'mainMenu') || (whichPath == 'endCall')))return "RESET";else{return "NEXT";}
+	            return checkAdminStatus (isAdmin, whichPath);
             }
         ]]>
     </script>

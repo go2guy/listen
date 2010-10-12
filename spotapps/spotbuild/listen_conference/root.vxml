@@ -110,6 +110,8 @@
 	<var name="lstnChannel" expr="''" />
 	<var name="lstnSub" expr="''" />
 	<var name="subHref" expr="''" />
+	<var name="initiatingObj" expr="''" />
+	<var name="argList" expr="''" />
 
 
     <!-- Conference Variables -->
@@ -120,6 +122,7 @@
     <!-- Call to java scripts -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	<!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_APP_PATH + 'listen_conference.js'"></script>	<!-- Location of java script file -->
 
     <!-- Catch hang up event. User must have hung up -->
     <catch event="connection.disconnect.hangup">

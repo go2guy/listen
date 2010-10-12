@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(getInput)
             {
-	            return "?_uniqueResult=true&number="+getInput;
+	            return '?_uniqueResult=true&number='+getInput;
             }
         ]]>
     </script>
