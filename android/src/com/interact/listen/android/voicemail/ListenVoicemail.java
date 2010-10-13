@@ -137,12 +137,7 @@ public class ListenVoicemail extends ListActivity
         // mark voicemail as old
         List<Voicemail> voicemails = adapter.getData();
         voicemails.get(position).setIsNew(false);
-        adapter.clear();
         adapter.setData(voicemails);
-        for(Voicemail v : voicemails)
-        {
-            adapter.add(v);
-        }
 
         startActivityForResult(intent, VIEW_DETAILS);
     }
@@ -209,16 +204,13 @@ public class ListenVoicemail extends ListActivity
                 int numNew = 0;
 
                 VoicemailListAdapter adapter = (VoicemailListAdapter)getListAdapter();
-                adapter.clear();
                 adapter.setData(voicemails);
-                for(Voicemail voicemail : (ArrayList<Voicemail>)voicemails)
+                for(Voicemail voicemail : (List<Voicemail>)voicemails)
                 {
                     if(voicemail.getIsNew())
                     {
                         numNew++;
                     }
-
-                    adapter.add(voicemail);
                 }
 
                 TextView inboxStatus = (TextView)findViewById(R.id.inboxStatus);
@@ -247,6 +239,11 @@ public class ListenVoicemail extends ListActivity
         {
             Log.v(TAG, "VoicemailListAdapter.setData()");
             mVoicemails = voicemails;
+            clear();
+            for(Voicemail voicemail : mVoicemails)
+            {
+                add(voicemail);
+            }
         }
 
         public List<Voicemail> getData()

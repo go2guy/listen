@@ -77,6 +77,12 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     }
 
     @Override
+    protected void onDestroy()
+    {
+        serviceBinder.unbind();
+    }
+
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
         if(key.equals(KEY_USERNAME_PREFERENCE))
