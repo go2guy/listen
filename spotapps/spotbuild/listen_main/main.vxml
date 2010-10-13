@@ -41,6 +41,7 @@
 	<var name="SB_UV_operation"/>
 	<var name="SB_UV_artifactsDIR"/>
 	<var name="SB_UV_FILE"/>
+	<var name="SB_UV_contentType"/>
 
     
     <form id="beginDocument">
@@ -121,6 +122,9 @@
 			</if>
 			<if cond="SB_UV_FILE != undefined">
 				<assign name="FILE" expr="SB_UV_FILE" />
+			</if>
+			<if cond="SB_UV_contentType != undefined">
+				<assign name="contentType" expr="SB_UV_contentType" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

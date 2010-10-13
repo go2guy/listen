@@ -13,6 +13,7 @@
     $rsrc       = @$_REQUEST['resource']    or exitresult ($objName,$status,$string,"'resource' argument missing from request");
     $data       = @$_REQUEST['params']      or exitresult ($objName,$status,$string,"'params' argument missing from request");
     $ID         = @$_REQUEST['id']          or $ID="";
+    $ContentType= @$_REQUEST['contentType'] or $ContentType="application/json";
     $destURL    = @$_REQUEST['cntrlURL']    or exitresult ($objName,$status,$string,"'cntrlURL' argument missing from request");
     $lstnChannel= @$_REQUEST['lstnChannel'] or $lstnChannel="";
     $lstnSub    = @$_REQUEST['lstnSub']     or $lstnSub="";
@@ -35,7 +36,7 @@
             break;
         case 'POST':
             $destURL .= "/".$rsrc;
-            $header = array("Content-Type: application/json");
+            $header = array("Content-Type: $ContentType");
             if ($lstnChannel != "") array_push($header, "X-Listen-Channel: ". $lstnChannel);
             if ($lstnSub != "") array_push($header, "X-Listen-Subscriber: ".  $lstnSub);
             $options = array(CURLOPT_URL => $destURL,
@@ -50,7 +51,7 @@
         case 'PUT':
         case 'DELETE':
             $destURL .= "/".$rsrc."/".(int)$ID;
-            $header = array("Content-Type: application/json", "Content-Length: ". strlen($data));
+            $header = array("Content-Type: $ContentType", "Content-Length: ". strlen($data));
             if ($lstnChannel != "") array_push($header, "X-Listen-Channel: ". $lstnChannel);
             if ($lstnSub != "") array_push($header, "X-Listen-Subscriber: ".  $lstnSub);
             $options = array(CURLOPT_URL => $destURL,

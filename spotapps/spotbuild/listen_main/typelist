@@ -27,4 +27,7 @@ begin - begin
 51-100 - run-javascript
 162-21 - switch-application
 51-95 - switch-application
+51-123 - assign-variable
+51-122 - run-javascript
+51-125 - data-query
 51-73 - run-javascript

@@ -56,8 +56,12 @@ function extendAppObject(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroll
     return iiStringify(result);
 }
 
-function createHostObject(hostName,DNIS,callType) {
-    return "{\"httpApi\": \"http://"+hostName+"/spot\", \"phoneNumber\":\""+DNIS+"\", \"phoneNumberProtocol\": \""+callType+"\" }";
+function createHostObject(hostName) {
+    return "system=http://"+hostName+"/spot";
+}
+
+function createPhoneNumberObject(DNIS,callType) {
+    return "number="+callType+";"+DNIS;
 }
 
 function setDnisSearchSting(DNIS) {

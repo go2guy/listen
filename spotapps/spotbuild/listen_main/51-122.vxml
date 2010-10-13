@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'51-114'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'51-125'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(hostName)
+            function II_SB_JS_function(DNIS,callType)
             {
-	            return createHostObject(hostName);
+	            return createPhoneNumberObject(DNIS,callType);
             }
         ]]>
     </script>
@@ -19,8 +19,8 @@
     <form id="beginDocument">
         <block>
             <log target="status">Create Host Obj</log>
-            <log>INFO: Entered run-javascript.vxml [51-113]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(hostName)"/>   <!-- Call Javascript funtion and store result -->
+            <log>INFO: Entered run-javascript.vxml [51-122]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(DNIS,callType)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

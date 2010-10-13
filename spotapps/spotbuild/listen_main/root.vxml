@@ -36,7 +36,7 @@
 	<var name="subID" expr="''" />
 	<var name="passValues" expr="'importedValue'" />
 	<var name="params" expr="''" />
-	<var name="resource" expr="'api/listenSpotSubscribers'" />
+	<var name="resource" expr="'meta/registerSpotSystem'" />
 	<var name="request" expr="'post'" />
 	<var name="status" expr="''" />
 	<var name="sipURL" expr="'null'" /> <!-- Config SIP Server Name -->
@@ -51,6 +51,7 @@
 	<var name="operation" expr="'increment'" />
 	<var name="artifactsDIR" expr="'/interact/listen/artifacts/'" />
 	<var name="FILE" expr="'defaultApp.cfg'" />
+	<var name="contentType" expr="'application/x-www-form-urlencoded'" />
 
 
     <!-- Conference Variables -->
