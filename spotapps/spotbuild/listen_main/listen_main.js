@@ -61,7 +61,7 @@ function createHostObject(hostName) {
 }
 
 function createPhoneNumberObject(DNIS,callType) {
-    return "number="+callType+";"+DNIS;
+    return "phoneNumber="+callType+";"+DNIS;
 }
 
 function setDnisSearchSting(DNIS) {
