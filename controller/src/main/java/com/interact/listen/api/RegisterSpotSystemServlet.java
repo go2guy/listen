@@ -2,6 +2,7 @@ package com.interact.listen.api;
 
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
+import com.interact.listen.exception.BadRequestServletException;
 
 import java.util.Set;
 
@@ -17,7 +18,12 @@ public class RegisterSpotSystemServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        addSystem(request.getParameter("system"));
+        String system = request.getParameter("system");
+        if(system == null)
+        {
+            throw new BadRequestServletException("Missing required parameter [system]");
+        }
+        addSystem(system);
     }
 
     public static void addSystem(String system)
