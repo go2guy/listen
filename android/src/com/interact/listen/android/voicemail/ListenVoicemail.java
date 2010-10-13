@@ -1,73 +1,44 @@
 package com.interact.listen.android.voicemail;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.ListActivity;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
-import android.preference.PreferenceManager;
+import android.os.*;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ListenVoicemail extends ListActivity
 {
-    private static final String TAG = "ListenVoicemailActivity";
-    
+    private static final String TAG = ListenVoicemail.class.getName();
+
     private static final int VIEW_DETAILS = 0;
     private static final int EDIT_SETTINGS = 1;
     private static final int LISTEN_NOTIFICATION = 45;
     private static final int MENU_SETTINGS_ID = Menu.FIRST;
-    
-    private IListenVoicemailService remoteService;
-    private boolean started = false;
-    private RemoteServiceConnection conn = null;
+
     private String UPDATE_ACTION_STRING = "com.interact.listen.android.voicemail.UPDATE_VOICEMAILS";
     private ArrayList<Voicemail> mVoicemails = new ArrayList<Voicemail>();
-    
-    private SharedPreferences sharedPreferences;
-    
-    private BroadcastReceiver receiver = new BroadcastReceiver(){
+
+    private ListenVoicemailServiceBinder serviceBinder = new ListenVoicemailServiceBinder(this);
+
+    private BroadcastReceiver receiver = new BroadcastReceiver()
+    {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "received broadcast");
-            
+        public void onReceive(Context context, Intent intent)
+        {
+            Log.v(TAG, "onRecieve()");
+
             abortBroadcast();
             try
             {
-                new VoicemailParser().onPostExecute((ArrayList<Voicemail>)remoteService.getVoicemails());
+                new VoicemailParser().onPostExecute(serviceBinder.getService().getVoicemails());
             }
             catch(RemoteException e)
             {
@@ -76,29 +47,31 @@ public class ListenVoicemail extends ListActivity
         }
     };
 
-    /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState)
+    public void onCreate(final Bundle savedInstanceState)
     {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        startService();
-        bindService();
-        startService(new Intent(this, ListenVoicemailService.class));
+        Log.v(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         VoicemailListAdapter adapter = new VoicemailListAdapter(new ArrayList<Voicemail>(0));
         setListAdapter(adapter);
-        
-        new VoicemailParser().execute("");
     }
-    
+
     @Override
     protected void onResume()
     {
+        Log.v(TAG, "onResume()");        
         super.onResume();
-        Log.v(TAG, "onResume()");
-        new VoicemailParser().execute("");
+
+        serviceBinder.bind(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                new VoicemailParser().execute("");
+            }
+        });
+        
         clearNotificationBar();
         IntentFilter filter = new IntentFilter();
         filter.addAction(UPDATE_ACTION_STRING);
@@ -106,83 +79,95 @@ public class ListenVoicemail extends ListActivity
 
         this.registerReceiver(this.receiver, filter);
     }
-    
+
     @Override
     protected void onPause()
     {
+        Log.v(TAG, "onPause()");
         super.onPause();
         this.unregisterReceiver(this.receiver);
-        Log.v(TAG, "onPause()");
     }
 
     @Override
     protected void onDestroy()
     {
+        Log.v(TAG, "onDestroy()");
         super.onDestroy();
-        releaseService();
-        Log.d(getClass().getSimpleName(), "onDestroy()");
+        serviceBinder.unbind();
     }
-    
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        Log.v(TAG, "onCreateOptionsMenu()");
         super.onCreateOptionsMenu(menu);
         menu.add(0, MENU_SETTINGS_ID, 0, R.string.menu_settings);
         return true;
     }
-    
+
     @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        switch(item.getItemId()) {
-        case MENU_SETTINGS_ID:
-            Intent i = new Intent(this, ApplicationSettings.class);
-            startActivityForResult(i, EDIT_SETTINGS);
-            return true;
+    public boolean onMenuItemSelected(int featureId, MenuItem item)
+    {
+        Log.v(TAG, "onMenuItemSelected()");
+        switch(item.getItemId())
+        {
+            case MENU_SETTINGS_ID:
+                Intent i = new Intent(this, ApplicationSettings.class);
+                startActivityForResult(i, EDIT_SETTINGS);
+                return true;
         }
-        
+
         return super.onMenuItemSelected(featureId, item);
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id)
+    protected void onListItemClick(ListView l, View view, int position, long id)
     {
-        super.onListItemClick(l, v, position, id);
-        Voicemail voicemail = (Voicemail)getListAdapter().getItem(position);
-        Intent i = new Intent(this, VoicemailDetails.class);
-        i.putExtra("id", voicemail.getId());
-        i.putExtra("leftBy", voicemail.getLeftBy());
-        i.putExtra("date", voicemail.getDateCreated());
-        i.putExtra("transcription", voicemail.getTranscription());
-        i.putExtra("position", position);
-        startActivityForResult(i, VIEW_DETAILS);
+        Log.v(TAG, "onListItemClick()");
+        super.onListItemClick(l, view, position, id);
+        VoicemailListAdapter adapter = (VoicemailListAdapter)getListAdapter();
+        Voicemail voicemail = (Voicemail)adapter.getItem(position);
+        Intent intent = new Intent(this, VoicemailDetails.class);
+        intent.putExtra("id", voicemail.getId());
+        intent.putExtra("leftBy", voicemail.getLeftBy());
+        intent.putExtra("date", voicemail.getDateCreated());
+        intent.putExtra("transcription", voicemail.getTranscription());
+        intent.putExtra("position", position);
+
+        // mark voicemail as old
+        List<Voicemail> voicemails = adapter.getData();
+        voicemails.get(position).setIsNew(false);
+        adapter.clear();
+        adapter.setData(voicemails);
+        for(Voicemail v : voicemails)
+        {
+            adapter.add(v);
+        }
+
+        startActivityForResult(intent, VIEW_DETAILS);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
+        Log.v(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, intent);
 
         switch(requestCode)
         {
             case VIEW_DETAILS:
             {
-                // intent will be null if the 'Back' button is pressed
-                if(intent != null)
+                // TODO basing logic here on the 'intent' value may cause weirdness in the future
+                // if there are more actions that can be done on the details screen
+                if(intent != null) // intent is not null, meaning they clicked "Delete"
                 {
+                    VoicemailListAdapter adapter = (VoicemailListAdapter)getListAdapter();
+                    List<Voicemail> voicemails = adapter.getData();
+
                     Bundle extras = intent.getExtras();
                     int position = extras.getInt("position");
-                    boolean deleted = extras.getBoolean("deleted");
-                    VoicemailListAdapter adapter = (VoicemailListAdapter)getListAdapter();
-                    ArrayList<Voicemail> voicemails = adapter.getData();
-                    Voicemail updatedVoicemail = voicemails.get(position);
-
-                    if(deleted)
-                    {
-                        voicemails.remove(position);
-                    }
-                    else
-                    {
-                        updatedVoicemail.setIsNew(false);
-                    }
+                    Log.v(TAG, "Removing voicemail at position [" + position + "]");
+                    voicemails.remove(position);
 
                     new VoicemailParser().onPostExecute(voicemails);
                 }
@@ -191,85 +176,36 @@ public class ListenVoicemail extends ListActivity
         }
     }
 
-    private class VoicemailParser extends AsyncTask<String, Integer, ArrayList<Voicemail>>
+    private class VoicemailParser extends AsyncTask<String, Integer, List<Voicemail>>
     {
-        public VoicemailParser()
-        {}
-
         @Override
-        protected ArrayList<Voicemail> doInBackground(String... strings)
+        protected List<Voicemail> doInBackground(String... strings)
         {
+            Log.v(TAG, "VoicemailParser.doInBackground()");
             try
             {
-                ResponseHandler<String> handler = new ResponseHandler<String>()
-                {
-                    public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException
-                    {
-                        HttpEntity entity = response.getEntity();
-                        if(entity != null)
-                        {
-                            return EntityUtils.toString(entity);
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-                };
-
-                HttpParams httpParams = new BasicHttpParams();
-                HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
-                HttpConnectionParams.setSoTimeout(httpParams, 3000);
-
-                HttpClient httpClient = new DefaultHttpClient(httpParams);
-                HttpGet httpGet = new HttpGet("http://" + sharedPreferences.getString(ApplicationSettings.KEY_HOST_PREFERENCE, "") +
-                                                  ":" + sharedPreferences.getString(ApplicationSettings.KEY_PORT_PREFERENCE, "") +
-                                                  "/api/voicemails?subscriber=/subscribers/" + 
-                                                  sharedPreferences.getInt(ApplicationSettings.KEY_SUBSCRIBER_ID_PREFERENCE, -1) +
-                                                  "&_fields=id,isNew,leftBy,description,dateCreated,duration,transcription,hasNotified" +
-                                                  "&_sortBy=dateCreated&_sortOrder=DESCENDING");
-                
-                httpGet.addHeader("Accept", "application/json");
-                Log.d(TAG, "Trying to get voicemails from " + httpGet.getURI().toString());
-                String response = httpClient.execute(httpGet, handler);
-
-                JSONObject jsonObj = new JSONObject(response);
-                int total = Integer.valueOf(jsonObj.getString("total"));
-
-                JSONArray voicemailArray = jsonObj.getJSONArray("results");
-
-                ArrayList<Voicemail> voicemails = new ArrayList<Voicemail>(total);
-                for(int i = 0; i < total; i++)
-                {
-                    JSONObject object = voicemailArray.getJSONObject(i);
-                    voicemails.add(new Voicemail(object.getString("id"), object.getString("isNew"),
-                                                 object.getString("leftBy"), object.getString("description"),
-                                                 object.getString("dateCreated"), object.getString("duration"),
-                                                 object.getString("transcription"),
-                                                 object.getString("hasNotified")));
-                }
-
-                return voicemails;
+                return serviceBinder.getService().getVoicemails();
             }
-            catch(Exception e)
+            catch(RemoteException e)
             {
-                Log.e(TAG, "Exception getting JSON data", e);
+                Log.e(TAG, "Error getting Voicemails from service", e);
                 return new ArrayList<Voicemail>();
             }
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Voicemail> voicemails)
+        protected void onPostExecute(List<Voicemail> voicemails)
         {
+            Log.v(TAG, "VoicemailParser.onPostExecute()");
             try
             {
                 long[] unnotifiedIds = filterUnnotifiedVoicemails(voicemails);
-                
+
                 if(unnotifiedIds.length > 0)
                 {
-                    remoteService.updateNotificationStatus(unnotifiedIds);
+                    serviceBinder.getService().markVoicemailsNotified(unnotifiedIds);
                 }
-                
+
                 int numNew = 0;
 
                 VoicemailListAdapter adapter = (VoicemailListAdapter)getListAdapter();
@@ -281,42 +217,48 @@ public class ListenVoicemail extends ListActivity
                     {
                         numNew++;
                     }
-                    
+
                     adapter.add(voicemail);
                 }
-                
+
                 TextView inboxStatus = (TextView)findViewById(R.id.inboxStatus);
-                inboxStatus.setText(ListenVoicemail.this.getString(R.string.current_status) + " (" + numNew + "/" + voicemails.size() + ")");
+                inboxStatus.setText(ListenVoicemail.this.getString(R.string.current_status) + " (" + numNew + "/" +
+                                    voicemails.size() + ")");
             }
-            catch(Exception e)
+            catch(RemoteException e)
             {
-                Log.e("TAG", "Error updating list view with latest info: " + e);
+                Log.e("TAG", "Error updating list view with latest info: ", e);
             }
         }
     }
 
     private class VoicemailListAdapter extends ArrayAdapter<Object>
     {
-        private ArrayList<Voicemail> mVoicemails = new ArrayList<Voicemail>();
+        private List<Voicemail> mVoicemails = new ArrayList<Voicemail>();
 
-        public VoicemailListAdapter(ArrayList<Voicemail> items)
+        public VoicemailListAdapter(List<Voicemail> items)
         {
             super(ListenVoicemail.this, R.layout.voicemail);
+            Log.v(TAG, "new VoicemailListAdapter()");
             mVoicemails = items;
         }
 
-        public void setData(ArrayList<Voicemail> voicemails)
+        public void setData(List<Voicemail> voicemails)
         {
+            Log.v(TAG, "VoicemailListAdapter.setData()");
             mVoicemails = voicemails;
         }
 
-        public ArrayList<Voicemail> getData()
+        public List<Voicemail> getData()
         {
+            Log.v(TAG, "VoicemailListAdapter.getData()");
             return mVoicemails;
         }
 
+        @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
+            Log.v(TAG, "VoicemailListAdapter.getView()");
             ViewHolder holder;
             LayoutInflater mInflater = getLayoutInflater();
 
@@ -388,16 +330,18 @@ public class ListenVoicemail extends ListActivity
 
     private void clearNotificationBar()
     {
+        Log.v(TAG, "clearNotificationBar()");
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager mNotificationManager = (NotificationManager)getSystemService(ns);
-        
+
         mNotificationManager.cancel(LISTEN_NOTIFICATION);
     }
-    
-    private long[] filterUnnotifiedVoicemails(ArrayList<Voicemail> voicemails)
+
+    private long[] filterUnnotifiedVoicemails(List<Voicemail> voicemails)
     {
-        ArrayList<Voicemail> tempVoicemails = new ArrayList<Voicemail>(mVoicemails);
-        
+        Log.v(TAG, "filterUnnotifiedVoicemails()");
+        List<Voicemail> tempVoicemails = new ArrayList<Voicemail>(mVoicemails);
+
         for(Voicemail voicemail : voicemails)
         {
             if(!voicemail.getHasNotified())
@@ -405,92 +349,14 @@ public class ListenVoicemail extends ListActivity
                 tempVoicemails.add(voicemail);
             }
         }
-        
+
         long[] returnArray = new long[tempVoicemails.size()];
-        
+
         for(int i = 0; i < tempVoicemails.size(); i++)
         {
             returnArray[i] = tempVoicemails.get(i).getId();
         }
-        
+
         return returnArray;
-    }
-
-    class RemoteServiceConnection implements ServiceConnection
-    {
-        public void onServiceConnected(ComponentName className, IBinder boundService)
-        {
-            remoteService = IListenVoicemailService.Stub.asInterface((IBinder)boundService);
-            Log.d(getClass().getSimpleName(), "onServiceConnected()");
-        }
-
-        public void onServiceDisconnected(ComponentName className)
-        {
-            remoteService = null;
-            Log.d(getClass().getSimpleName(), "onServiceDisconnected");
-        }
-    };
-    
-    private void startService()
-    {
-        if(started)
-        {
-            Log.i(TAG, "Service already started");
-        }
-        else
-        {
-            Intent i = new Intent();
-            i.setClassName("com.interact.listen.android.voicemail", "com.interact.listen.android.voicemail.ListenVoicemailService");
-            startService(i);
-            started = true;
-            Log.d(TAG, "startService()");
-        }
-
-    }
-
-    private void releaseService()
-    {
-        if(conn != null)
-        {
-            unbindService(conn);
-            conn = null;
-            Log.d(TAG, "releaseService()");
-        }
-        else
-        {
-            Log.i(TAG, "Cannot unbind - service not bound");
-        }
-    }
-    
-    private void stopService()
-    {
-        if(!started)
-        {
-            Log.i(TAG, "Service not yet started");
-        }
-        else
-        {
-            Intent i = new Intent();
-            i.setClassName("com.interact.listen.android.voicemail", "com.interact.listen.android.voicemail.ListenVoicemailService");
-            stopService(i);
-            started = false;
-            Log.d(getClass().getSimpleName(), "stopService()");
-        }
-    }
-
-    private void bindService()
-    {
-        if(conn == null)
-        {
-            conn = new RemoteServiceConnection();
-            Intent i = new Intent();
-            i.setClassName("com.interact.listen.android.voicemail", "com.interact.listen.android.voicemail.ListenVoicemailService");
-            bindService(i, conn, Context.BIND_AUTO_CREATE);
-            Log.d(getClass().getSimpleName(), "bindService()");
-        }
-        else
-        {
-            Log.i(TAG, "Cannot bind - service already bound");
-        }
     }
 }

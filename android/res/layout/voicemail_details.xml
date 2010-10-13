@@ -33,10 +33,6 @@
 		android:textColor="@color/black"
 		android:textSize="12dip"
 		android:layout_margin="10dip" />
-	<Button android:id="@+id/markRead" 
-	  	android:text="@string/mark_read"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
 	<Button android:id="@+id/delete" 
 	  	android:text="@string/delete"
 		android:layout_width="wrap_content"
