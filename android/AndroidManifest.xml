@@ -21,6 +21,6 @@
             </intent-filter>
         </receiver>
     </application>
-	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+	<uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 </manifest> 

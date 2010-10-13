@@ -34,7 +34,7 @@ public class DefaultController implements Controller
     private int socketTimeout = 3000;
 
     @Override
-    public List<Voicemail> retrieveVoicemails(String api, Long subscriberId) throws ControllerException
+    public List<Voicemail> retrieveVoicemails(String api, Long subscriberId) throws ControllerException, ConnectionException
     {
         Map<String, String> query = new HashMap<String, String>();
         query.put("subscriber", "/subscribers/" + subscriberId);
@@ -67,13 +67,9 @@ public class DefaultController implements Controller
             }
             Log.d(TAG, "Retrieved " + voicemails.size() + " voicemails from controller");
         }
-        catch(ClientProtocolException e)
-        {
-            throw new ControllerException(e);
-        }
         catch(IOException e)
         {
-            throw new ControllerException(e);
+            throw new ConnectionException(e, api);
         }
         catch(JSONException e)
         {
@@ -83,7 +79,7 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void markVoicemailsNotified(String api, long[] ids) throws ControllerException
+    public void markVoicemailsNotified(String api, long[] ids) throws ControllerException, ConnectionException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -108,13 +104,9 @@ public class DefaultController implements Controller
         {
             throw new ControllerException(e);
         }
-        catch(ClientProtocolException e)
-        {
-            throw new ControllerException(e);
-        }
         catch(IOException e)
         {
-            throw new ControllerException(e);
+            throw new ConnectionException(e, api);
         }
         catch(JSONException e)
         {
@@ -123,7 +115,7 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void markVoicemailsRead(String api, Long[] ids) throws ControllerException
+    public void markVoicemailsRead(String api, Long[] ids) throws ControllerException, ConnectionException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -148,13 +140,9 @@ public class DefaultController implements Controller
         {
             throw new ControllerException(e);
         }
-        catch(ClientProtocolException e)
-        {
-            throw new ControllerException(e);
-        }
         catch(IOException e)
         {
-            throw new ControllerException(e);
+            throw new ConnectionException(e, api);
         }
         catch(JSONException e)
         {
@@ -163,7 +151,7 @@ public class DefaultController implements Controller
     }
     
     @Override
-    public Long getSubscriberIdFromUsername(String api, String username) throws ControllerException
+    public Long getSubscriberIdFromUsername(String api, String username) throws ControllerException, ConnectionException, UserNotFoundException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -187,24 +175,20 @@ public class DefaultController implements Controller
                 return subscriber.getLong("id");
             }
         }
-        catch(ClientProtocolException e)
-        {
-            throw new ControllerException(e);
-        }
         catch(IOException e)
         {
-            throw new ControllerException(e);
+            throw new ConnectionException(e, api);
         }
         catch(JSONException e)
         {
             throw new ControllerException(e);
         }
 
-        throw new ControllerException("User not found with username '" + username + "'");
+        throw new UserNotFoundException(username);
     }
 
     @Override
-    public void deleteVoicemails(String api, Long[] ids) throws ControllerException
+    public void deleteVoicemails(String api, Long[] ids) throws ConnectionException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -219,13 +203,9 @@ public class DefaultController implements Controller
                 httpClient.execute(httpDelete);
             }
         }
-        catch(ClientProtocolException e)
-        {
-            throw new ControllerException(e);
-        }
         catch(IOException e)
         {
-            throw new ControllerException(e);
+            throw new ConnectionException(e, api);
         }
     }
 

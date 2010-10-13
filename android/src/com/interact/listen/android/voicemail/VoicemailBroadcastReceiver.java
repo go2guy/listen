@@ -9,14 +9,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.interact.listen.android.voicemail.ListenVoicemail;
-import com.interact.listen.android.voicemail.ListenVoicemailService;
-import com.interact.listen.android.voicemail.R;
 import com.interact.listen.android.voicemail.controller.ControllerAdapter;
 import com.interact.listen.android.voicemail.controller.DefaultController;
 
 public class VoicemailBroadcastReceiver extends BroadcastReceiver
 {
+    public static final String BROADCAST_ACTION_UPDATE = "com.interact.listen.android.voicemail.UPDATE_VOICEMAILS";
+
     private static final String TAG = VoicemailBroadcastReceiver.class.getName();
     private static final int LISTEN_NOTIFICATION = 45;
     private ControllerAdapter controller = new ControllerAdapter(new DefaultController());
@@ -29,7 +28,7 @@ public class VoicemailBroadcastReceiver extends BroadcastReceiver
         {
             ListenVoicemailService.start(context);
         }
-        else if(intent.getAction().equals("com.interact.listen.android.voicemail.UPDATE_VOICEMAILS"))
+        else if(intent.getAction().equals(BROADCAST_ACTION_UPDATE))
         {
             Bundle extras = intent.getExtras();
             long[] ids = extras.getLongArray("ids");

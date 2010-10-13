@@ -17,7 +17,6 @@ import java.util.List;
 public class ListenVoicemailService extends Service
 {
     private static final String TAG = "ListenVoicemailService";
-    private static final String UPDATE_ACTION_STRING = "com.interact.listen.android.voicemail.UPDATE_VOICEMAILS";
     private static final Long VOICEMAIL_POLL_INTERVAL = 30000L;
 
     private Handler serviceHandler = new Handler();
@@ -179,7 +178,7 @@ public class ListenVoicemailService extends Service
         Bundle bundle = new Bundle();
         bundle.putLongArray("ids", getIdsToUpdate());
 
-        Intent i = new Intent(UPDATE_ACTION_STRING);
+        Intent i = new Intent(VoicemailBroadcastReceiver.BROADCAST_ACTION_UPDATE);
         i.putExtras(bundle);
 
         sendOrderedBroadcast(i, null);
