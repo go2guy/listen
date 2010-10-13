@@ -21,10 +21,10 @@ public class SetPhoneNumberServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        String number = request.getParameter("number");
+        String number = request.getParameter("phoneNumber");
         if(number == null)
         {
-            throw new BadRequestServletException("Missing required parameter [number]");
+            throw new BadRequestServletException("Missing required parameter [phoneNumber]");
         }
 
         Set<String> validProtocols = new HashSet<String>();
@@ -33,7 +33,7 @@ public class SetPhoneNumberServlet extends HttpServlet
 
         if(!number.contains(DELIMITER) || number.split(DELIMITER).length != 2 || !validProtocols.contains(number.split(DELIMITER)[0]))
         {
-            throw new BadRequestServletException("Property [number] must be in the format 'PROTOCOL;NUMBER', "
+            throw new BadRequestServletException("Property [phoneNumber] must be in the format 'PROTOCOL;NUMBER', "
                                                  + "where PROTOCOL = [PSTN|VOIP]");
         }
 
