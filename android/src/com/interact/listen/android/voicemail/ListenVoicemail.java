@@ -25,7 +25,6 @@ public class ListenVoicemail extends ListActivity
 
     private String UPDATE_ACTION_STRING = "com.interact.listen.android.voicemail.UPDATE_VOICEMAILS";
     private ArrayList<Voicemail> mVoicemails = new ArrayList<Voicemail>();
-
     private ListenVoicemailServiceBinder serviceBinder = new ListenVoicemailServiceBinder(this);
 
     private BroadcastReceiver receiver = new BroadcastReceiver()
@@ -68,7 +67,15 @@ public class ListenVoicemail extends ListActivity
             @Override
             public void run()
             {
-                new VoicemailParser().execute("");
+                Log.v(TAG, "Running shit.");
+                try
+                {
+                    new VoicemailParser().onPostExecute(serviceBinder.getService().getVoicemails());
+                }
+                catch(RemoteException e)
+                {
+                    Log.e(TAG, "Error retreiving voicemails from the service: " + e);
+                }
             }
         });
         
@@ -170,7 +177,7 @@ public class ListenVoicemail extends ListActivity
             }
         }
     }
-
+    
     private class VoicemailParser extends AsyncTask<String, Integer, List<Voicemail>>
     {
         @Override

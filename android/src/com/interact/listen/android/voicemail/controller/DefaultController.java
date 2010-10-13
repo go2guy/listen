@@ -34,7 +34,7 @@ public class DefaultController implements Controller
     private int socketTimeout = 3000;
 
     @Override
-    public List<Voicemail> retrieveVoicemails(String api, Long subscriberId)
+    public List<Voicemail> retrieveVoicemails(String api, Long subscriberId) throws ControllerException
     {
         Map<String, String> query = new HashMap<String, String>();
         query.put("subscriber", "/subscribers/" + subscriberId);
@@ -69,21 +69,21 @@ public class DefaultController implements Controller
         }
         catch(ClientProtocolException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(IOException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(JSONException e)
         {
-            Log.e(TAG, "Error parsing voicemail list JSON response", e);
+            throw new ControllerException(e);
         }
         return voicemails;
     }
 
     @Override
-    public void markVoicemailsNotified(String api, long[] ids)
+    public void markVoicemailsNotified(String api, long[] ids) throws ControllerException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -106,24 +106,24 @@ public class DefaultController implements Controller
         }
         catch(UnsupportedEncodingException e)
         {
-            Log.e(TAG, "Error marking voicemail notified", e);
+            throw new ControllerException(e);
         }
         catch(ClientProtocolException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(IOException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(JSONException e)
         {
-            Log.e(TAG, "Error building JSON request object", e);
+            throw new ControllerException(e);
         }
     }
 
     @Override
-    public void markVoicemailsRead(String api, Long[] ids)
+    public void markVoicemailsRead(String api, Long[] ids) throws ControllerException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -146,24 +146,24 @@ public class DefaultController implements Controller
         }
         catch(UnsupportedEncodingException e)
         {
-            Log.e(TAG, "Error marking voicemail notified", e);
+            throw new ControllerException(e);
         }
         catch(ClientProtocolException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(IOException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(JSONException e)
         {
-            Log.e(TAG, "Error building JSON request object", e);
+            throw new ControllerException(e);
         }
     }
     
     @Override
-    public Long getSubscriberIdFromUsername(String api, String username)
+    public Long getSubscriberIdFromUsername(String api, String username) throws ControllerException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -189,22 +189,22 @@ public class DefaultController implements Controller
         }
         catch(ClientProtocolException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(IOException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(JSONException e)
         {
-            Log.e(TAG, "Error parsing voicemail list JSON response", e);
+            throw new ControllerException(e);
         }
 
-        return Long.valueOf(0); // FIXME maybe we should handle this differently? 0 is a valid id...
+        throw new ControllerException("User not found with username '" + username + "'");
     }
 
     @Override
-    public void deleteVoicemails(String api, Long[] ids)
+    public void deleteVoicemails(String api, Long[] ids) throws ControllerException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -219,17 +219,13 @@ public class DefaultController implements Controller
                 httpClient.execute(httpDelete);
             }
         }
-        catch(UnsupportedEncodingException e)
-        {
-            Log.e(TAG, "Error marking voicemail notified", e);
-        }
         catch(ClientProtocolException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
         catch(IOException e)
         {
-            Log.e(TAG, "Error retrieving voicemails", e);
+            throw new ControllerException(e);
         }
     }
 

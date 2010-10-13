@@ -49,11 +49,20 @@ public class ListenVoicemailServiceBinder
     public void bind(Runnable afterBind)
     {
         Log.v(TAG, "bind()");
-        Intent intent = new Intent();
-        intent.setClassName("com.interact.listen.android.voicemail",
-                            "com.interact.listen.android.voicemail.ListenVoicemailService");
-        this.afterBind = afterBind;
-        context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        if(service == null)
+        {
+            Log.v(TAG, "service is null, will bind");
+            Intent intent = new Intent();
+            intent.setClassName("com.interact.listen.android.voicemail",
+                                "com.interact.listen.android.voicemail.ListenVoicemailService");
+            this.afterBind = afterBind;
+            context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        }
+        else
+        {
+            Log.v(TAG, "not binding, service is already bound");
+            afterBind.run();
+        }
     }
 
     public void unbind()

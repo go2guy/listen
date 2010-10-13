@@ -1,5 +1,6 @@
 package com.interact.listen.android.voicemail;
 
+import com.interact.listen.android.voicemail.controller.ControllerAdapter;
 import com.interact.listen.android.voicemail.controller.DefaultController;
 
 import java.net.InetAddress;
@@ -31,7 +32,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private EditTextPreference mPortPreference;
 
     private SharedPreferences sharedPreferences;
-
+    private ControllerAdapter controller = new ControllerAdapter(new DefaultController());
     private ListenVoicemailServiceBinder serviceBinder = new ListenVoicemailServiceBinder(this);
 
     @Override
@@ -79,6 +80,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     @Override
     protected void onDestroy()
     {
+        super.onDestroy();
         serviceBinder.unbind();
     }
 
@@ -96,9 +98,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             {
                 serviceBinder.getService().stopPolling();
 
-                String api = getApi(this);
-                String username = getUsername(this);
-                Long subscriberId = new DefaultController().getSubscriberIdFromUsername(api, username);
+                Long subscriberId = controller.getSubscriberIdFromUsername(this);
                 ApplicationSettings.setSubscriberId(this, subscriberId);
 
                 serviceBinder.getService().startPolling();
@@ -111,10 +111,28 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         else if(key.equals(KEY_HOST_PREFERENCE))
         {
             mHostPreference.setSummary(sharedPreferences.getString(key, ""));
+            try
+            {
+                serviceBinder.getService().stopPolling();
+                serviceBinder.getService().startPolling();
+            }
+            catch(RemoteException e)
+            {
+                Log.e(TAG, "Unable to restart polling after host preference change");
+            }
         }
         else if(key.equals(KEY_PORT_PREFERENCE))
         {
             mPortPreference.setSummary(sharedPreferences.getString(key, ""));
+            try
+            {
+                serviceBinder.getService().stopPolling();
+                serviceBinder.getService().startPolling();
+            }
+            catch(RemoteException e)
+            {
+                Log.e(TAG, "Unable to restart polling after host preference change");
+            }
         }
     }
 
