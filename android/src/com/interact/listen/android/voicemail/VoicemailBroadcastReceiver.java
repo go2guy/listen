@@ -12,11 +12,14 @@ import android.util.Log;
 import com.interact.listen.android.voicemail.ListenVoicemail;
 import com.interact.listen.android.voicemail.ListenVoicemailService;
 import com.interact.listen.android.voicemail.R;
+import com.interact.listen.android.voicemail.controller.ControllerAdapter;
+import com.interact.listen.android.voicemail.controller.DefaultController;
 
 public class VoicemailBroadcastReceiver extends BroadcastReceiver
 {
     private static final String TAG = VoicemailBroadcastReceiver.class.getName();
     private static final int LISTEN_NOTIFICATION = 45;
+    private ControllerAdapter controller = new ControllerAdapter(new DefaultController());
 
     @Override
     public void onReceive(Context context, Intent intent)
@@ -29,9 +32,10 @@ public class VoicemailBroadcastReceiver extends BroadcastReceiver
         else if(intent.getAction().equals("com.interact.listen.android.voicemail.UPDATE_VOICEMAILS"))
         {
             Bundle extras = intent.getExtras();
-            int newMessageCount = extras.getInt("newMessageCount");
+            long[] ids = extras.getLongArray("ids");
 
-            updateNotifications(context, newMessageCount);
+            updateNotifications(context, ids);
+            updateNotificationStatus(context, ids);
         }
         else
         {
@@ -39,17 +43,18 @@ public class VoicemailBroadcastReceiver extends BroadcastReceiver
         }
     }
 
-    private void updateNotifications(Context context, int count)
+    private void updateNotifications(Context context, long[] ids)
     {
-        Log.v(TAG, "updateNotifications(), count = [" + count + "]");
+    	int newMessageCount = ids.length;
+        Log.v(TAG, "updateNotifications(), count = [" + newMessageCount + "]");
 
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(ns);
 
-        if(count > 0)
+        if(newMessageCount > 0)
         {
-            String title = "New Listen Voicemail" + (count != 1 ? "s" : "");
-            String content = count + " new Voicemail" + (count != 1 ? "s" : "");
+            String title = "New Listen Voicemail" + (newMessageCount != 1 ? "s" : "");
+            String content = newMessageCount + " new Voicemail" + (newMessageCount != 1 ? "s" : "");
 
             int icon = R.drawable.notification_bar_icon;
             long when = System.currentTimeMillis();
@@ -65,5 +70,10 @@ public class VoicemailBroadcastReceiver extends BroadcastReceiver
             // notification.number = idsLength > 1 ? idsLength : 0;
             notificationManager.notify(LISTEN_NOTIFICATION, notification);
         }
+    }
+    
+    private void updateNotificationStatus(Context context, long[] ids)
+    {
+    	controller.markVoicemailsNotified(context, ids);
     }
 }

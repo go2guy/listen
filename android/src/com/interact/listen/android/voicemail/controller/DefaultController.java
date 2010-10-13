@@ -93,9 +93,9 @@ public class DefaultController implements Controller
             voicemail.put("hasNotified", true);
 
             HttpEntity entity = new StringEntity(voicemail.toString(), "UTF-8");
-            for(long id : ids)
+            for(int i = 0; i < ids.length; i++)
             {
-                HttpPut httpPut = new HttpPut(api + "/voicemails/" + id);
+                HttpPut httpPut = new HttpPut(api + "/voicemails/" + ids[i]);
                 httpPut.setEntity(entity);
                 httpPut.setHeader("Accept", "application/json");
                 httpPut.setHeader("Content-Type", "application/json");

@@ -20,7 +20,7 @@ public class ListenVoicemailService extends Service
     private static final String UPDATE_ACTION_STRING = "com.interact.listen.android.voicemail.UPDATE_VOICEMAILS";
     private static final Long VOICEMAIL_POLL_INTERVAL = 30000L;
 
-    private Handler serviceHandler;
+    private Handler serviceHandler = new Handler();
     
     private List<Voicemail> mVoicemails = new ArrayList<Voicemail>(10);
     private ControllerAdapter controller = new ControllerAdapter(new DefaultController());
@@ -110,7 +110,6 @@ public class ListenVoicemailService extends Service
         super.onDestroy();
 
         stopPolling();
-        serviceHandler = null;
     }
 
     @Override
@@ -119,7 +118,6 @@ public class ListenVoicemailService extends Service
         Log.v(TAG, "onStart()");
         super.onStart(intent, startId);
 
-        serviceHandler = new Handler();
         startPolling();
     }
 
@@ -180,7 +178,6 @@ public class ListenVoicemailService extends Service
 
         Bundle bundle = new Bundle();
         bundle.putLongArray("ids", getIdsToUpdate());
-        bundle.putInt("newMessageCount", getNewMessageCount());
 
         Intent i = new Intent(UPDATE_ACTION_STRING);
         i.putExtras(bundle);
