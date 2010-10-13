@@ -472,4 +472,7 @@
     <changeSet author="development" id="47">
         <addUniqueConstraint tableName="ATTENDANT_MENU" columnNames="NAME" constraintName="ATTENDANT_MENU_NAME_UK_1"/>
     </changeSet>
+    <changeSet author="development" id="48">
+        <dropTable tableName="LISTEN_SPOT_SUBSCRIBER"/>
+    </changeSet>
 </databaseChangeLog>

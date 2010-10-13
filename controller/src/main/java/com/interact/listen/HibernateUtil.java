@@ -155,7 +155,6 @@ public final class HibernateUtil
             config.addAnnotatedClass(GoToMenuAction.class);
             config.addAnnotatedClass(History.class);
             config.addAnnotatedClass(LaunchApplicationAction.class);
-            config.addAnnotatedClass(ListenSpotSubscriber.class);
             config.addAnnotatedClass(Menu.class);
             config.addAnnotatedClass(Participant.class);
             config.addAnnotatedClass(Pin.class);

@@ -44,8 +44,6 @@ public abstract class Marshaller
         DEFAULT_CONVERTERS.put(Long.class, LongConverter.class);
         DEFAULT_CONVERTERS.put(Pin.PinType.class, PinTypeConverter.class);
         DEFAULT_CONVERTERS.put(String.class, StringConverter.class);
-        DEFAULT_CONVERTERS.put(ListenSpotSubscriber.PhoneNumberProtocolType.class,
-                               PhoneNumberProtocolTypeConverter.class);
         DEFAULT_CONVERTERS.put(Channel.class, HistoryChannelConverter.class);
         DEFAULT_CONVERTERS.put(CallDetailRecord.CallDirection.class, CallDirectionConverter.class);
         DEFAULT_CONVERTERS.put(Duration.class, JodaDurationConverter.class);
