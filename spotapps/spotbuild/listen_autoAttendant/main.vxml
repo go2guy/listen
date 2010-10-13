@@ -60,6 +60,7 @@
 	<var name="SB_UV_whichPathStat"/>
 	<var name="SB_UV_menuId"/>
 	<var name="SB_UV_keysPressed"/>
+	<var name="SB_UV_audioDIR"/>
 
     
     <form id="beginDocument">
@@ -196,6 +197,9 @@
 			</if>
 			<if cond="SB_UV_keysPressed != undefined">
 				<assign name="keysPressed" expr="SB_UV_keysPressed" />
+			</if>
+			<if cond="SB_UV_audioDIR != undefined">
+				<assign name="audioDIR" expr="SB_UV_audioDIR" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

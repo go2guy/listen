@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(returnVal)
+            function II_SB_JS_function(returnVal,audioDIR)
             {
-	            var result = eval("("+returnVal+")");return "/interact/apps/spotbuild/listen_autoAttendant/audio/" + result.args.audioFile;
+	            var result = getJsonVal(returnVal, 'args');return audioDIR + result.audioFile;
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Get Menu Audio</log>
             <log>INFO: Entered run-javascript.vxml [179-14]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(returnVal,audioDIR)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="menu" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

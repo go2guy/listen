@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(appEndTime)
+            function II_SB_JS_function(appStartTime)
             {
-	            var appEndTime = new Date().getTime();if (appStartTime.length > 0)return Math.round((appEndTime - appStartTime)/1000);else{return 1};
+	            var endTime = new Date().getTime();return getTimeDifference(appStartTime, endTime)
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Get End Time</log>
             <log>INFO: Entered run-javascript.vxml [189-9]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(appEndTime)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(appStartTime)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="returnVal" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

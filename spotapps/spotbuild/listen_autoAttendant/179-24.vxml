@@ -38,7 +38,7 @@
 
 	<!-- DTMF properties -->
 	<var name="II_SB_fldTimeout" expr="timeout"/>         <!--  Timeout. Controls how long to wait before throwing a noinput event -->
-	<var name="II_SB_dgtTimeOut" expr="'4s'"/>    <!--  DTMF Interdigit time out. Controls number of seconds between key presses at an input field -->
+	<var name="II_SB_dgtTimeOut" expr="'3s'"/>    <!--  DTMF Interdigit time out. Controls number of seconds between key presses at an input field -->
 	<var name="II_SB_fldTermChar" expr="'#'"/>    <!--  DTMF Terminating Character. Identifies the terminating character of a DTMF input -->
 
     <!-- Prompt properties -->

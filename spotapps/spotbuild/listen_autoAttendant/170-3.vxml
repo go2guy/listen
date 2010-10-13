@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function(passValues)
             {
-	            var result = eval("("+passValues+")");result = result.cntrlURL;toReturn = result.split("/api");return toReturn[0] + "/meta";
+	            return setControllerURL(passValues);
             }
         ]]>
     </script>

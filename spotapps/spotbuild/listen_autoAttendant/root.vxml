@@ -70,6 +70,7 @@
 	<var name="whichPathStat" expr="''" />
 	<var name="menuId" expr="''" />
 	<var name="keysPressed" expr="''" />
+	<var name="audioDIR" expr="'/interact/apps/spotbuild/listen_autoAttendant/audio/'" />
 
 
     <!-- Conference Variables -->
@@ -80,6 +81,7 @@
     <!-- Call to java scripts -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	<!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_APP_PATH + 'listen_autoAttendant.js'"></script>	<!-- Location of java script file -->
 
     <!-- Catch hang up event. User must have hung up -->
     <catch event="connection.disconnect.hangup">

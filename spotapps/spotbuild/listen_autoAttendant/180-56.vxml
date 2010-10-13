@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function(passValues,appDirection,application)
+            function II_SB_JS_function(passValues,appDirection)
             {
-	            var temp = passValues.split(application);temp = temp[0] + appDirection + temp[1];return temp;
+	            var key = 'application';return extendJsonObject(passValues, key, appDirection);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Modify passValues</log>
             <log>INFO: Entered run-javascript.vxml [180-56]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues,appDirection,application)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function(passValues,appDirection)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
