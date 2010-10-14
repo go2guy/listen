@@ -2,6 +2,7 @@ package com.interact.listen;
 
 import com.interact.listen.resource.Subscriber;
 
+import java.security.SecureRandom;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ public final class TestUtil
 
     public static Long randomNumeric(int maxlength)
     {
-        return Long.valueOf(String.valueOf(System.currentTimeMillis()).substring(0, maxlength));
+        SecureRandom random = new SecureRandom();
+        return Long.valueOf(random.nextInt(maxlength));
     }
 }

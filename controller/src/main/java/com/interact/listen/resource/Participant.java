@@ -377,12 +377,20 @@ public class Participant extends Resource implements Serializable
         return (Long)criteria.list().get(0);
     }
 
-    public static List<Participant> queryAdminsByConference(Session session, Conference conference)
+    /**
+     * Searches for admin participants in the provided conference and returns the sessionID of the first one found. If
+     * no admins are found, returns {@code null}.
+     * 
+     * @param session session
+     * @param conference conference to search
+     * @return first admin sessionID, or {@code null} if no admin found
+     */
+    public static String queryConferenceAdminSessionId(Session session, Conference conference)
     {
-        Criteria criteria = session.createCriteria(Participant.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.createAlias("conference", "conference_alias");
-        criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
-        return (List<Participant>)criteria.list();
+        org.hibernate.Query query = session.createQuery("select p.sessionID from Participant p where p.conference.id = :cid and p.isAdmin = true");
+        query.setParameter("cid", conference.getId());
+        List<String> result = (List<String>)query.list();
+
+        return result.size() == 0 ? null : result.get(0);
     }
 }

@@ -2,10 +2,13 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
+import com.interact.listen.ListenTest;
+import com.interact.listen.TestUtil;
+
 import org.junit.Before;
 import org.junit.Test;
 
-public class ParticipantTest
+public class ParticipantTest extends ListenTest
 {
     private Participant participant;
 
@@ -262,6 +265,51 @@ public class ParticipantTest
         obj.setAudioResource(String.valueOf(System.currentTimeMillis()));
 
         assertEquals(2666669, obj.hashCode());
+    }
+
+    @Test
+    public void test_queryConferenceAdminSessionId_withNoAdminParticipant_returnsNull()
+    {
+        Subscriber s = ListenTest.createSubscriber(session);
+        Conference c = ListenTest.createConference(session, s);
+        Participant p = ListenTest.createParticipant(session, c, false);
+        
+        String result = Participant.queryConferenceAdminSessionId(session, c);
+        assertNull(result);
+    }
+
+    @Test
+    public void test_queryConferenceAdminSessionId_withNoParticipants_returnsNull()
+    {
+        Subscriber s = ListenTest.createSubscriber(session);
+        Conference c = ListenTest.createConference(session, s);
+        Participant p = ListenTest.createParticipant(session, c, false);
+        
+        String result = Participant.queryConferenceAdminSessionId(session, c);
+        assertNull(result);
+    }
+
+    @Test
+    public void test_queryConferenceAdminSessionId_withOnlyAdminParticipant_returnsAdminSessionId()
+    {
+        Subscriber s = ListenTest.createSubscriber(session);
+        Conference c = ListenTest.createConference(session, s);
+        Participant p = ListenTest.createParticipant(session, c, true);
+
+        String result = Participant.queryConferenceAdminSessionId(session, c);
+        assertEquals(p.getSessionID(), result);
+    }
+
+    @Test
+    public void test_queryConferenceAdminSessionId_withNonAdminAndAdminParticipants_returnsAdminSessionId()
+    {
+        Subscriber s = ListenTest.createSubscriber(session);
+        Conference c = ListenTest.createConference(session, s);
+        Participant admin = ListenTest.createParticipant(session, c, true);
+        ListenTest.createParticipant(session, c, false);
+
+        String result = Participant.queryConferenceAdminSessionId(session, c);
+        assertEquals(admin.getSessionID(), result);
     }
 
     private Participant getPopulatedParticipant()

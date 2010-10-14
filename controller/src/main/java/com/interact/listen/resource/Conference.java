@@ -461,13 +461,13 @@ public class Conference extends Resource implements Serializable
 
     public String firstAdminSessionId(Session session)
     {
-        List<Participant> admins = Participant.queryAdminsByConference(session, this);
-        if(admins.size() == 0)
+        String adminSessionId = Participant.queryConferenceAdminSessionId(session, this);
+        if(adminSessionId == null)
         {
             // FIXME maybe use a checked exception here
             throw new IllegalStateException("Could not find Admin participant for Conference");
         }
-        return admins.get(0).getSessionID();
+        return adminSessionId;
     }
 
     public static Conference createNew(PersistenceService persistenceService, Subscriber forSubscriber)

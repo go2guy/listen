@@ -7,9 +7,7 @@ import static org.junit.Assert.fail;
 import com.interact.listen.attendant.*;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
-import com.interact.listen.resource.Conference;
-import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.Voicemail;
+import com.interact.listen.resource.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -106,6 +104,22 @@ public abstract class ListenTest
         return conference;
     }
 
+    public static Participant createParticipant(Session session, Conference forConference, Boolean isAdmin)
+    {
+        Participant participant = new Participant();
+        participant.setAudioResource(TestUtil.randomString());
+        participant.setConference(forConference);
+        participant.setId(TestUtil.randomNumeric(10));
+        participant.setIsAdmin(isAdmin);
+        participant.setIsAdminMuted(Boolean.FALSE);
+        participant.setIsMuted(Boolean.TRUE);
+        participant.setIsPassive(Boolean.FALSE);
+        participant.setNumber(String.valueOf(TestUtil.randomNumeric(10)));
+        participant.setSessionID(TestUtil.randomString());
+        session.save(participant);
+        return participant;
+    }
+    
     public static Menu createMenu(Session session)
     {
         Menu menu = new Menu();
