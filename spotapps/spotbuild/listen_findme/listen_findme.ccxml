@@ -1,16 +1,12 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
 
-    <!-- Last Modified 10/07/2009 -->
-
-    <!--
-      /**
+    <!-- Last Modified 06/15/2010
        *   @Name   SPOTbuild.ccxml
-       *   @desc   Default entry point for all SPOTbuild projects
-       */
-    -->
+       *   @desc   Default entry point for all SPOTbuild projects -->
 
-    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>     <!-- Location of java script file -->
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>         <!-- Location of java script file -->
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"></script>	<!-- Location of java script file -->
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_findme'"/>         <!-- Config: PROJECT_NAME. Project directory -->
@@ -42,9 +38,23 @@
 
         <!-- Received ccxml.loaded -->
         <transition state="idle" event="ccxml.loaded" name="loadEV">
-            <log>INFO: Entered listen_findme.ccxml [124-2]</log>
+            <log>INFO: Entered listen_findme.ccxml [124_2]</log>
             <log>INFO: transition event [<value expr="loadEV.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
+        </transition>
+
+        <transition event="CCXML_CREATEHTTP_MSG" name="httpEv">
+            <!-- Received CCXML_CREATEHTTP_MSG -->
+            <log>INFO: transition event [CCXML_CREATEHTTP_MSG] state [<value expr="II_SB_state"/>]</log>
+            <accept/>
+            <assign name="II_SB_state" expr="'alerted'"/>
+            <assign name="II_SB_local" expr="''"/>
+            <assign name="II_SB_remote" expr="''"/>
+            <assign name="II_SB_protocol" expr="''"/>
+            <assign name="II_SB_originator" expr="''"/>
+            <assign name="II_SB_connectionID" expr="''"/>
+            <assign name="II_SB_importedValue" expr="httpEv.II_SB_importedValue"/>
+            <fetch next="'file:' + II_SB_CODE_DIR + 'begin.ccxml'" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_VXML_LIB II_SB_projectSource II_SB_obcallid II_SB_importedValue"/> <!-- Fetch ccxml document -->
         </transition>
 
         <!-- Received VRU_AUTOSTART -->
@@ -58,6 +68,7 @@
             <assign name="II_SB_connectionID" expr="''"/>
             <assign name="II_SB_type" expr="alertEV.info.type"/>
             <assign name="II_SB_importedValue" expr="alertEV.importedValue"/>
+            <accept/>
             <fetch next="'file:' + II_SB_CODE_DIR + 'begin.ccxml'" namelist="II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_VXML_LIB II_SB_projectSource II_SB_obcallid II_SB_importedValue"/> <!-- Fetch ccxml document -->
         </transition>
 
@@ -103,8 +114,8 @@
             <exit/>
         </transition>
 
-	    <transition event="conection.disconnected" name="evt">
-            <log>INFO: transition event [conection.disconnected] state [<value expr="II_SB_state"/>]</log>
+	    <transition event="connection.disconnected" name="evt">
+            <log>INFO: transition event [connection.disconnected] state [<value expr="II_SB_state"/>]</log>
 			<assign name="II_SB_disconnect.id" expr="evt.connectionid"/>
 			<assign name="II_SB_disconnect.reason" expr="evt.reason"/>
 			<assign name="II_SB_disconnect.originator" expr="evt.connection.originator"/>

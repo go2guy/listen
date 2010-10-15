@@ -1,6 +1,6 @@
 <?xml version="1.0"?>                                    
 <vxml version="2.0">
-    <!-- Last Modified 03/22/2010
+    <!-- Last Modified 06/14/2010
        *   @Name   root.vxml
        *   @Desc   This file contains global variable declarations and initializations.
                    These variables are available to all files that reference this document -->
@@ -38,6 +38,7 @@
 
     <!-- Call to java scripts -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	<!-- Location of java script file -->
 
     <!-- Catch hang up event. User must have hung up -->
     <catch event="connection.disconnect.hangup">
