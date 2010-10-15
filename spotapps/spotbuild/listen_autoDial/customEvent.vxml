@@ -24,7 +24,7 @@
             <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
 
 			<if cond="II_SB_eventReceived == 'Interrupt Response'">
-				<assign name="II_SB_assign_NxtOpt" expr="'184-17'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'184_17'"/>
 				<assign name="returnVal" expr="II_SB_valueReceived"/>
 			</if>
 

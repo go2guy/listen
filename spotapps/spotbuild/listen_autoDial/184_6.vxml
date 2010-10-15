@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_autoDial/root.vxml">
+    <!-- Last Modified 06/02/2010
+       *   @Name   conference.vxml
+       *   @Desc   Starts the conference -->
+    
+    <!-- Node Variables -->
+    <var name="II_SB_confName" expr="ConfName"/>          	<!--  Conference Identifier -->
+    <var name="II_SB_dtmfLength" expr="'1'"/>              <!--  Number of keys used for drop key -->
+    <var name="II_SB_interDgtTime" expr="'3s'"/>            <!--  Time between drop key presses -->
+    <var name="II_SB_drpKeyEnabled" expr="'true'"/>       <!--  Whether drop keys are enabled -->
+	<var name="II_SB_RsrvdTalkers" expr="'10'"/>      	<!--  Number of half duplex members -->
+	<var name="II_SB_RsrvdListeners" expr="'10'"/>	<!--  Number of full duplex members -->
+	<var name="II_SB_entryAudio" expr="''"/>  	            <!--  Audio file(s) to play when entring conference -->
+
+    <!-- Edge Variables -->
+    <var name="II_SB_userHangup" expr="''"/>            <!--  Next option when user hangs up -->
+    <var name="II_SB_keyPressOption" expr="'184_6'"/>    <!--  Next option when drop key(s) is pressed -->
+
+    <!-- Global Variables -->
+    <var name="II_SB_NEXT_OPTION"/>                 <!-- ID of next vxml template -->
+    <var name="II_SB_userEntry"/>                   <!-- Value of drop key -->
+    <var name="II_SB_returnValues" expr="''"/>	    <!-- Values returned to CCXML layer -->
+    <var name="II_SB_nextOpt" expr="'184_6'"/>		<!-- ID of next CCXML template -->
+    <var name="II_SB_fromCCXML"/>                   <!-- Indicates if vxml template was called by the conference.ccxml template -->
+    <var name="II_SB_fileCnt" expr="0"/>            <!-- Count of audio files to be played -->
+    <var name="II_SB_tmpVal" expr="''"/>           <!-- Temporary variable -->
+
+    <!-- Passed in from conference ccxml -->
+    <var name="II_SB_memberCount"/>     <!-- Current number of conference participants -->
+    <var name="II_SB_conferenceID"/>    <!-- System generated conference ID -->
+
+
+    <form id="beginDocument">
+        <!-- Determine if template is being called from conference.ccxml or
+             from else where. If its not being called from conference.ccxml, we
+             can assume user is trying to create or join a conference. Otherwise
+             conference has most likely being created and we either need to set some
+             variables or go to the next vxml template. -->
+        <block>
+            
+            <log>INFO: Entered conference.vxml [184_6]</log>
+            <if cond="II_SB_fromCCXML == 'setVars'">    <!-- Set VXML variables -->
+			
+                <goto next="#exit"/>
+            <elseif cond="II_SB_fromCCXML == 'conf_184_6'"/>       <!-- Check if we have an id for the conference.ccxml template -->
+    			<log>INFO: Subsequent template call. Go to next VXML...</log>
+                <goto next="#gotoNext"/>
+            <else/>
+    			<log>INFO: Initial template call</log>
+                <if cond="((II_SB_confName.length == 0) || (II_SB_confName == undefined))">    <!-- Don't allow user to create a conference without specifying a name -->
+                    <log>ERROR: Conference ID is not specified</log>
+                    <assign name="II_SB_status" expr="'endCall'"/>
+                <else/>
+                    <log>INFO: Starting conference</log>
+                    <assign name="II_SB_status" expr="'conference'"/>
+                    <!-- Check entry audio format -->
+                    <log>INFO: Entry audio file(s) [<value expr="II_SB_entryAudio"/>]</log>
+                    <if cond="((II_SB_entryAudio.length &gt; 0) &amp;&amp; (II_SB_entryAudio != undefined))"> <!-- Entry audio file specified -->
+                        <goto next="#buildAudio"/>
+                    <else/>
+                        <assign name="II_SB_entryAudio" expr="''"/>
+                    </if>
+                </if>
+                <goto next="#exit"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="buildAudio">
+		<!-- Check if the supplied audio file(s) represent an absolute path. If not, use the default audio path information -->
+        <var name="II_SB_file" expr="''"/>
+        <block>
+            <assign name="II_SB_file" expr="getNextElement(II_SB_fileCnt, II_SB_entryAudio, ' ')"/>
+            <if cond="II_SB_file != -1">
+                <assign name="II_SB_fileCnt" expr="II_SB_fileCnt + 1"/>
+                <if cond="(inString('/',II_SB_file,''))">    <!-- Assume full path given -->
+                    <assign name="II_SB_tmpVal" expr="II_SB_tmpVal + II_SB_file + ' '"/>
+                <else/>
+                    <assign name="II_SB_tmpVal" expr="II_SB_AUDIO_PATH + II_SB_entryAudio + ' '"/>  <!-- Assume full path not given. Use project audio path -->
+                </if>
+                <goto next="#buildAudio"/>
+            <else/>
+                <assign name="II_SB_entryAudio" expr="II_SB_tmpVal"/>
+                <log>INFO: Updated audio file(s) [<value expr="II_SB_entryAudio"/>]</log>
+                <goto next="#exit"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="exit">
+	    <block>
+            <assign name="II_SB_returnValues" expr="II_SB_keyPressOption + '|' + II_SB_confUserStatus + '|' + II_SB_confName + '|' + II_SB_userHangup + '|' + II_SB_RsrvdListeners + '|' + II_SB_RsrvdTalkers + '|' + II_SB_dtmfLength + '|' + II_SB_interDgtTime + '|' + II_SB_drpKeyEnabled + '|' + II_SB_playEntryAudio + '|' + II_SB_entryAudio"/>
+            <log>INFO: Return values [<value expr="II_SB_returnValues"/>]</log>
+            <log>INFO: Return status [<value expr="II_SB_status"/>]</log>
+            <log>INFO: Next Option [<value expr="II_SB_nextOpt"/>]</log>
+            <log>INFO: Exit to CCXML</log>
+	        <exit namelist="II_SB_nextOpt II_SB_returnValues II_SB_status"/>
+    	</block>
+    </form>
+
+    <form id="gotoNext">
+		<!-- At this point, a conference has most likely been created.
+			 Update any user assigned variables and go to next vxml -->
+        <block>
+            <if cond="II_SB_userEntry != ''">
+				<log>INFO: Last Entry currently [<value expr="II_SB_lastEntry"/>]</log>
+                <assign name="II_SB_lastEntry" expr="II_SB_userEntry"/>
+				<log>INFO: Updated Last Entry to [<value expr="II_SB_lastEntry"/>]</log>
+            </if>
+			
+            <log>INFO: Next option [<value expr="II_SB_NEXT_OPTION"/>.vxml]</log>
+    		<goto expr="'file:' + II_SB_APP_PATH + II_SB_NEXT_OPTION + '.vxml'"/>
+        </block>
+    </form>
+</vxml>
