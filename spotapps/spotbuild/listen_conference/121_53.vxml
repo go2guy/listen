@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_conference/root.vxml"> <!--  Set location of root document -->
+    <!-- Last Modified 05/19/2010
+       *   @Name   create-session.vxml
+       *   @Desc   Calls the create session ccxml template -->
+
+    <!-- Node Variables -->
+    <var name="II_SB_whichID" expr="''"/>  <!-- Connection or conference ID used in new session -->
+
+    <!-- Edge Variables -->
+    <var name="II_SB_oldNxtOpt" expr="'121_82'"/>       <!-- Next option for original session -->
+    <var name="II_SB_newNxtOpt" expr="'121_80'"/>        <!-- Next option for new session -->
+    <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
+    <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
+
+    <!-- Global Variables -->
+    <var name="II_SB_nextOpt" expr="'121_53'"/> <!-- Next ccxml file that will be called -->
+    <var name="II_SB_returnValues" expr="''"/>  <!-- List of values returned to ccxml layer -->
+    <var name="II_SB_action"/>                  <!-- Identifies action to take -->
+    <var name="II_SB_whichOpt"/>                <!-- Identifies next option -->
+    <var name="II_SB_newSID"/>                  <!-- Contains session id from new ccxml session -->
+
+    <form id="beginDocument">
+        <block>
+	        <log target="status">Start Rec Session</log> 
+            <log>INFO: Entered create-session.vxml [121_53]</log>
+            <if cond="II_SB_action == 'assign'">
+                <log>INFO: Returning to ccxml with Variables</log>
+                <exit namelist="passValues"/>
+            <elseif cond="II_SB_action == 'nextOpt'"/>
+    	    
+                <log>INFO: Next option [<value expr="II_SB_whichOpt"/>.vxml]</log>
+    		    <goto expr="'file:' + II_SB_APP_PATH + II_SB_whichOpt + '.vxml'"/>
+            <else/>
+                <log>INFO: Returning to ccxml with returnValues</log>
+                <assign name="II_SB_status" expr="'connected'"/>
+	            <assign name="II_SB_returnValues" expr="II_SB_oldNxtOpt + '|' + II_SB_newNxtOpt + '|' + II_SB_errCreateOpt + '|' + II_SB_errMoveOpt + '|' + II_SB_whichID + '|'"/> <!-- Set up return values -->
+                <log>INFO: Return values [<value expr="II_SB_returnValues"/>]</log>
+                <log>INFO: Return status [<value expr="II_SB_status"/>]</log>
+                <log>INFO: Next Option [<value expr="II_SB_nextOpt"/>]</log>
+                <log>INFO: Exit to CCXML</log>
+    		    <exit namelist="II_SB_status II_SB_nextOpt II_SB_returnValues"/>
+            </if>
+        </block>
+    </form>
+</vxml>
