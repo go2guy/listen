@@ -533,7 +533,8 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                               <tr><td>Account Type</td><td id="subscriber-form-accountType">Local</td></tr>
                               <tr><td><label for="subscriber-form-password" class="required">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
                               <tr><td><label for="subscriber-form-confirmPassword" class="required">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
-                              <tr><td><label for="subscriber-form-realName">Real Name</label></td><td><input type="text" id="subscriber-form-realName" name="subscriber-form-realName"/></td></tr><%
+                              <tr><td><label for="subscriber-form-realName">Real Name</label></td><td><input type="text" id="subscriber-form-realName" name="subscriber-form-realName"/></td></tr>
+                              <tr><td><label for="subscriber-form-isAdmin">Administrator</label></td><td><input type="checkbox" id="subscriber-form-isAdmin" name="subscriber-form-isAdmin" value="enableAdmin"/></td></tr><%
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                               <tr><td><label for="subscriber-form-voicemailPin">Voicemail Passcode</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr><%
 } %>
@@ -569,7 +570,6 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                 </td>
                               </tr>
                               <tr><td><label for="subscriber-form-paging">Page on new voicemail</label></td><td><input type="checkbox" id="subscriber-form-paging" name="subscriber-form-paging" value="enablePaging"/></td></tr>
-                              <tr><td><label for="subscriber-form-isAdmin">Administrator</label></td><td><input type="checkbox" id="subscriber-form-isAdmin" name="subscriber-form-isAdmin" value="enableAdmin"/></td></tr>
                               <tr>
                                 <td><label for="subscriber-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
                                 <td>

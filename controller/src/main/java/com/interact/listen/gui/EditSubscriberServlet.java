@@ -132,15 +132,15 @@ public class EditSubscriberServlet extends HttpServlet
             subscriberToEdit.setSmsAddress(smsAddress);
             subscriberToEdit.setIsSubscribedToPaging(enablePaging);
             subscriberToEdit.setVoicemailPlaybackOrder(playbackOrder);
-
-            if(request.getParameter("enableAdmin") != null)
-            {
-                Boolean enableAdmin = Boolean.valueOf(request.getParameter("enableAdmin"));
-                subscriberToEdit.setIsAdministrator(enableAdmin);
-            }
         }
 
         subscriberToEdit.setRealName(request.getParameter("realName"));
+
+        if(request.getParameter("enableAdmin") != null)
+        {
+            Boolean enableAdmin = Boolean.valueOf(request.getParameter("enableAdmin"));
+            subscriberToEdit.setIsAdministrator(enableAdmin);
+        }
 
         ArrayList<Conference> conferenceList = new ArrayList<Conference>(subscriberToEdit.getConferences());
 
