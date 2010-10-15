@@ -58,6 +58,8 @@
 	<var name="SB_UV_appEndTime"/>
 	<var name="SB_UV_whichPathStat"/>
 	<var name="SB_UV_isTranscription"/>
+	<var name="SB_UV_isCDRsaved"/>
+	<var name="SB_UV_uri"/>
 
     
     <form id="beginDocument">
@@ -188,6 +190,12 @@
 			</if>
 			<if cond="SB_UV_isTranscription != undefined">
 				<assign name="isTranscription" expr="SB_UV_isTranscription" />
+			</if>
+			<if cond="SB_UV_isCDRsaved != undefined">
+				<assign name="isCDRsaved" expr="SB_UV_isCDRsaved" />
+			</if>
+			<if cond="SB_UV_uri != undefined">
+				<assign name="uri" expr="SB_UV_uri" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
