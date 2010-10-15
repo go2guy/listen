@@ -6,7 +6,7 @@
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_autoAttendant'"/> <!--  PROJECT_NAME. Project directory -->
-    <var name="II_SB_NEXT_OPTION" expr="'170-20'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
+    <var name="II_SB_NEXT_OPTION" expr="'170_20'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
     <var name="II_SB_MAIN_VXML" expr="'main.vxml'"/>    <!-- MAIN_VXML. Contains the file name of the document to start once ccxml is loaded -->
     <var name="II_SB_BASE_DIR" expr="'/interact/apps/spotbuild/'"/>                 <!-- BASE_DIR. Base directory -->
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
@@ -94,7 +94,7 @@
             <!-- This transition contains the first event encountered when this file is loaded.
                  In here we check the values of the transfer and status variables to determine the
                  next action. If both variables are undefined, we need to start main.vxml -->
-            <log>INFO: Entered begin.ccxml [170-2]</log>
+            <log>INFO: Entered begin.ccxml [170_2]</log>
     	    <log target="status"><value expr="II_SB_PROJECT_NAME"/></log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <if cond="II_SB_obcallid == undefined">

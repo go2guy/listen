@@ -38,7 +38,7 @@
 
         <!-- Received ccxml.loaded -->
         <transition state="idle" event="ccxml.loaded" name="loadEV">
-            <log>INFO: Entered listen_autoAttendant.ccxml [170-2]</log>
+            <log>INFO: Entered listen_autoAttendant.ccxml [170_2]</log>
             <log>INFO: transition event [<value expr="loadEV.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
         </transition>
