@@ -23,10 +23,6 @@
             <assign name="II_SB_valueReceived" expr="getNextElement(1,II_SB_passValues,'|')"/>
             <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
 
-			<if cond="II_SB_eventReceived == 'Interrupt Admin'">
-				<assign name="II_SB_assign_NxtOpt" expr="'185_3'"/>
-				<assign name="InterruptVal" expr="II_SB_valueReceived"/>
-			</if>
 			<if cond="II_SB_eventReceived == 'MUTE'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112_4'"/>
 				<assign name="argList" expr="II_SB_valueReceived"/>

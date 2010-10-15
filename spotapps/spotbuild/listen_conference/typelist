@@ -47,11 +47,7 @@ begin - begin
 125_32 - decision
 116_6 - run-javascript
 84_15 - audio-input
-185_9 - decision
-185_3 - run-javascript
-185_8 - send-custom-event
 112_4 - decision
-185_5 - conference
 125_45 - run-javascript
 134_5 - assign-variable
 125_47 - math
@@ -80,7 +76,6 @@ begin - begin
 111_72 - run-javascript
 86_20 - decision
 110_95 - math
-185_19 - assign-variable
 123_87 - decision
 117_109 - decision
 110_91 - decision
@@ -101,11 +96,8 @@ begin - begin
 121_83 - audio-input
 121_82 - audio-input
 121_81 - audio-input
-185_27 - run-javascript
 112_35 - decision
-185_22 - run-javascript
 94_20 - decision
-185_30 - run-javascript
 105_59 - assign-variable
 111_57 - audio-input
 111_59 - audio-input
@@ -113,7 +105,6 @@ begin - begin
 121_53 - create-session
 112_44 - assign-variable
 112_46 - assign-variable
-185_32 - send-custom-event
 112_42 - assign-variable
 94_13 - run-javascript
 112_59 - run-javascript
