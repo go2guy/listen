@@ -3,7 +3,7 @@ function getHrefId(jsonObj, key) {
     return getNextElement('L',returnObj.href ,'/');
 }
 
-function getInfo(conferenceObj, flag) {
+function getConfInfo(conferenceObj, flag) {
     var result = eval("("+conferenceObj+")");
     if ((result[flag]) && (result[flag] != null))
         result = 'true';

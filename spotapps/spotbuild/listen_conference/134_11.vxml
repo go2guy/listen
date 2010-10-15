@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_134_11(returnVal)
             {
-	            var flag = 'isRecording';return getInfo(returnVal, flag);
+	            var flag = 'isRecording';return getConfInfo(returnVal, flag);
             }
         ]]>
     </script>

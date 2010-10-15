@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_86_17(returnVal)
             {
-	            var flag = 'isStarted';return getInfo(returnVal, flag);
+	            var flag = 'isStarted';return getConfInfo(returnVal, flag);
             }
         ]]>
     </script>
