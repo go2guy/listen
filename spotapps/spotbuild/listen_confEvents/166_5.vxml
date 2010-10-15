@@ -13,9 +13,9 @@
     <var name="II_SB_valueToPass" expr="argList"/>   <!-- Config: Name of file confrence creates -->
     <var name="II_SB_eventToPass" expr="eventName"/>
     <var name="II_SB_sessionID" expr="sessionID"/>        <!-- Config: Session ID for the message to send -->
-    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'166-7'"/>
-    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'166-7'"/>
-    <var name="II_SB_nextOpt" expr="'166-5'"/>
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'166_7'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'166_7'"/>
+    <var name="II_SB_nextOpt" expr="'166_5'"/>
 
     <var name="II_SB_returnValues" expr="''"/>
     <var name="II_SB_userEntry"/>
@@ -23,7 +23,7 @@
     <form id="beginDocument">
         <block>
     	    <log target="status">Send Event</log>
-            <log>INFO: Entered send-custom-event.vxml [166-5]</log>
+            <log>INFO: Entered send-custom-event.vxml [166_5]</log>
             <log>INFO: Entered beginDocument</log>
             <var name="II_SB_returnValues" expr="II_SB_sessionID + '|' + II_SB_eventToPass + '|' + II_SB_valueToPass + '|' + II_SB_NEXT_OPTION_SUCCESS + '|' + II_SB_NEXT_OPTION_FAILURE"/>
             <var name="II_SB_status" expr="'conferenceEnd'"/>
