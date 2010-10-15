@@ -18,10 +18,10 @@
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Phone</log>
+            <log target="status">Set ANI</log>
             <log>INFO: Entered run-javascript.vxml [109_37]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_109_37(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="phoneNumber" expr="II_SB_userJava" />   
+            <assign name="ANI" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

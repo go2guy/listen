@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 10/11/2010
+    <!-- Last Modified 10/15/2010
        *   @Name   out-dial.ccxml
        *   @Desc   Creates an out dial -->
 
@@ -207,7 +207,7 @@
             </if>
         </transition>
 
-        <transition state="answered" event="conference.joined" name="evt" cond="((evt.id1 == II_SB_ibcallid) || (evt.id2 == II_SB_obcallid))">
+        <transition state="answered" event="conference.joined" name="evt" cond="((evt.id1 == II_SB_ibcallid) || (evt.id2 == II_SB_obcallid) || (evt.id1 == II_SB_obcallid))">
             <!-- Our join attempt was successful. We then decide if we need to monitor the call for key presses -->
             <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
             <send data="'dialog.user.chkMonitor'" target="II_SB_sessionID"/>

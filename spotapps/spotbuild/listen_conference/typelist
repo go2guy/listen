@@ -55,11 +55,15 @@ begin - begin
 125_45 - run-javascript
 134_5 - assign-variable
 125_47 - math
+105_147 - run-javascript
 110_3 - decision
 125_43 - assign-variable
 125_18 - assign-variable
 125_16 - math
 125_10 - decision
+105_157 - audio-input
+105_151 - run-javascript
+105_153 - run-javascript
 83_11 - run-javascript
 83_17 - decision
 83_15 - run-javascript
@@ -103,7 +107,6 @@ begin - begin
 94_20 - decision
 185_30 - run-javascript
 105_59 - assign-variable
-105_54 - run-javascript
 111_57 - audio-input
 111_59 - audio-input
 111_55 - audio-input
@@ -112,8 +115,6 @@ begin - begin
 112_46 - assign-variable
 185_32 - send-custom-event
 112_42 - assign-variable
-105_64 - assign-variable
-105_62 - assign-variable
 94_13 - run-javascript
 112_59 - run-javascript
 86_43 - assign-variable
@@ -233,6 +234,7 @@ begin - begin
 79_56 - assign-variable
 94_35 - run-javascript
 122_29 - end
+112_80 - assign-variable
 90_75 - decision
 84_7 - assign-variable
 79_60 - decision
@@ -243,7 +245,9 @@ begin - begin
 91_46 - decision
 115_29 - decision
 112_71 - run-javascript
+112_76 - run-javascript
 112_72 - run-javascript
+79_70 - assign-variable
 115_20 - decision
 94_54 - decision
 115_24 - run-javascript

@@ -10,7 +10,7 @@
     <form id="beginDocument">
         <block>
 	    <log target="status">Set Variables</log>
-            <log>INFO: Entered assign-variable.vxml [105_64]</log>
+            <log>INFO: Entered assign-variable.vxml [79_70]</log>
             <log>INFO: Current value [<value expr="isActive"/>]</log>
 <assign name="isActive" expr="'true'+''" />
 <log>INFO: Updated value [<value expr="isActive"/>]</log>

@@ -5,15 +5,24 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'105_104'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'125_74'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set User ID</log>
-            <log>INFO: Entered assign-variable.vxml [105_62]</log>
-            <log>INFO: Current value [<value expr="userID"/>]</log>
-<assign name="userID" expr="outBoundID+''" />
-<log>INFO: Updated value [<value expr="userID"/>]</log>
+	    <log target="status">Set variables</log>
+            <log>INFO: Entered assign-variable.vxml [112_80]</log>
+            <log>INFO: Current value [<value expr="prevPath"/>]</log>
+<assign name="prevPath" expr="'confCheck'+''" />
+<log>INFO: Updated value [<value expr="prevPath"/>]</log>
+<log>INFO: Current value [<value expr="tmpVal"/>]</log>
+<assign name="tmpVal" expr="'confCheck'+''" />
+<log>INFO: Updated value [<value expr="tmpVal"/>]</log>
+<log>INFO: Current value [<value expr="helpCnt"/>]</log>
+<assign name="helpCnt" expr="'0'+''" />
+<log>INFO: Updated value [<value expr="helpCnt"/>]</log>
+<log>INFO: Current value [<value expr="errCnt"/>]</log>
+<assign name="errCnt" expr="'0'+''" />
+<log>INFO: Updated value [<value expr="errCnt"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
