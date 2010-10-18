@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_mailbox/root.vxml"> <!-- Set location of root document -->
+    <!-- Last Modified 10/14/2010
+       *   @Name   runJavaScript.vxml
+       *   @Desc   Executes a user defined Javascript function -->
+
+    <var name="II_SB_nxtOpt" expr="'144_25'"/> <!-- The next vxml template -->
+
+    <script>    <!-- User's Javascript function will be written here -->
+        <![CDATA[
+            function II_SB_JS_function_144_23(returnVal)
+            {
+	            return getJsonVal(returnVal, 'count');
+            }
+        ]]>
+    </script>
+
+    <form id="beginDocument">
+        <block>
+            <log target="status">Get Count</log>
+            <log>INFO: Entered run-javascript.vxml [144_23]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_144_23(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="status" expr="II_SB_userJava" />   
+	        <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="exit">
+	    <block>
+		    <if cond="II_SB_nxtOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
+			    <goto expr="'file:' + II_SB_APP_PATH + II_SB_nxtOpt + '.vxml'"/>
+		    <else/> <!-- Exit to ccxml layer -->
+			    <assign name="II_SB_status" expr="'endCall'"/>
+			    <log>INFO: Next Node not set. Exit to CCXML</log>
+			    <log>INFO: Return status [<value expr="II_SB_status"/>]</log>
+			    <exit namelist="II_SB_status"/>
+		    </if>
+	    </block>
+    </form>
+</vxml>
