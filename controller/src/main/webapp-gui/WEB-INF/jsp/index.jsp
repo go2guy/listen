@@ -299,9 +299,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) {
                   <div class="form-error-message"></div>
                   <div class="form-success-message"></div>
 
-                  <div id="attendant-menu-builder-container-placeholder">
-                    <span style="font-weight: bold; font-size: 200%;">&nbsp;&laquo;&nbsp;</span>select a menu
-                  </div>
+                  <div id="attendant-menu-builder-container-placeholder"></div>
 
                   <div id="attendant-menu-builder-container">
                     <div id="attendant-menu-name"><label>Name:</label>&nbsp;<input type="text"/></div>

@@ -554,12 +554,6 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
     display: none;
 }
 
-#attendant-menu-builder-container-placeholder {
-    color: #AAAAAA;
-    font-size: 150%;
-    font-variant: small-caps;
-}
-
 table#attendant-menu-list {
     border-collapse: separate;
     border-spacing: 0px 5px;
