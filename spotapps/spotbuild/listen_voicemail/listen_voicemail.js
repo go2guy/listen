@@ -30,7 +30,7 @@ function createTranscriptionObj(returnVal, fileLocation, passValues) {
     var result = eval("("+passValues+")");
     result.fileLocation = fileLocation;
     result.fileNumber = number.id;
-    return "\""+iiStringify(result)+"\"";
+    return iiStringify(result);
 }
 
 function getTimeDifference(startTime, endTime) {

@@ -24,14 +24,15 @@ hang-up - hang-up
 175_6 - data-query
 53_77 - run-javascript
 54_51 - record-audio
+120_105 - create-session
 183_7 - data-query
 183_9 - decision
 173_48 - assign-variable
-120_101 - data-query
 183_3 - assign-variable
 173_42 - decision
 183_6 - run-javascript
 120_58 - data-query
+120_108 - switch-application
 53_126 - audio-input
 53_127 - run-javascript
 173_38 - decision
@@ -58,7 +59,6 @@ hang-up - hang-up
 186_3 - decision
 120_25 - decision
 142_21 - assign-variable
-120_99 - assign-variable
 146_30 - assign-variable
 146_32 - audio-input
 183_23 - assign-variable
