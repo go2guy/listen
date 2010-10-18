@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 07/09/2010
+    <!-- Last Modified 10/11/2010
        *   @Name   out-dial.ccxml
        *   @Desc   Creates an out dial -->
 
@@ -69,7 +69,7 @@
             <!-- This transition contains the first event encountered when this file is loaded.
                  If this is the first time we've loaded the file, we need to set up the parameters
                  for making a call. Otherwise there's no action required. -->
-            <log>INFO: Entered out-dial.ccxml [182-5]</log>
+            <log>INFO: Entered out-dial.ccxml [182_5]</log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <log>INFO: Values passed in [<value expr="II_SB_passValues"/>]</log>
@@ -150,7 +150,7 @@
         </transition>
 
         <transition state="endRing" event="dialog.started" name="evt">
-            <!-- This transition is there to stop the caller side 
+            <!-- This transition is there to stop the caller side
                  ring tone if a call attempt fails immediately -->
             <log>INFO: transition event [dialog.started] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_indialog" expr="'true'"/>
@@ -159,7 +159,7 @@
             <dialogterminate dialogid="II_SB_dialogID" immediate="true"/> <!-- Stop ringing tone -->
         </transition>
 
-        <transition state="reconnect" event="conference.joined">
+        <transition state="reconnect" event="conference.joined" name="evt" cond="evt.id1 == II_SB_ibcallid">
             <!-- Our reconnect attempt was successful. We then decide if we need to monitor the call for key presses -->
             <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
             <log>INFO: Call reconnected</log>
@@ -207,7 +207,7 @@
             </if>
         </transition>
 
-        <transition state="answered" event="conference.joined">
+        <transition state="answered" event="conference.joined" name="evt" cond="((evt.id1 == II_SB_ibcallid) || (evt.id2 == II_SB_obcallid))">
             <!-- Our join attempt was successful. We then decide if we need to monitor the call for key presses -->
             <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
             <send data="'dialog.user.chkMonitor'" target="II_SB_sessionID"/>
@@ -234,7 +234,7 @@
             </if>
         </transition>
 
-        <transition state="monitor" event="conference.joined">
+        <transition state="monitor" event="conference.joined" name="evt" cond="evt.id2 == II_SB_ibcallid">
             <!-- Our join attempt was successful. We then decide if we need to monitor the call for key presses -->
             <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
             <dialogstart src="'file:'+II_SB_VXML_LIB+'dropKey.vxml'" namelist="II_SB_drpKeyLength II_SB_drpKeyTime"/>
@@ -364,7 +364,7 @@
                     <dialogterminate dialogid="II_SB_dialogID"/>
                 <else/>
                     <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
-                </if>                
+                </if>
             </if>
         </transition>
 
@@ -421,7 +421,7 @@
                 <if cond="II_SB_ibcallid.length != 0">      <!-- If caller hung up, don't attempt to connect to vxml voice channel -->
                     <join id1="II_SB_ibcallid" id2="'VXML_CHANNEL'"/>    <!-- Join caller to vxml voice channel -->
                 </if>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_nxtOpt + '.vxml'"/>        
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_nxtOpt + '.vxml'"/>
             <elseif cond="(II_SB_nxtOpt != '') &amp;&amp; (II_SB_nxtOpt != undefined) &amp;&amp; II_SB_firstPass == 'yes'"/>
                 <log>INFO: Returning to out-dial.vxml to set values of variables</log>
                 <assign name="II_SB_firstPass" expr="'no'"/>
@@ -434,7 +434,7 @@
                         <join id1="II_SB_ibcallid" id2="'VXML_CHANNEL'"/>
                     </if>
                 </if>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + '182-5'+ '.vxml'" namelist="II_SB_firstPass II_SB_callerIdentity II_SB_outBoundID II_SB_userEntry II_SB_nxtOpt II_SB_connectTime II_SB_failTime II_SB_startTime"/>
+                <dialogstart src="'file:' + II_SB_CODE_DIR + '182_5'+ '.vxml'" namelist="II_SB_firstPass II_SB_callerIdentity II_SB_outBoundID II_SB_userEntry II_SB_nxtOpt II_SB_connectTime II_SB_failTime II_SB_startTime"/>
             <else/>
                 <if cond="II_SB_hangUp == 'y'">
                     <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
@@ -476,7 +476,7 @@
         </transition>
 
         <transition state="nextOptionRun endCall" event="dialog.exit" name="evt">
-            <!-- Handles return from vxml dialog. This transition is used when we need to 
+            <!-- Handles return from vxml dialog. This transition is used when we need to
                  end the call, transfer control to a new application or start a different
                  ccxml file. -->
             <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>

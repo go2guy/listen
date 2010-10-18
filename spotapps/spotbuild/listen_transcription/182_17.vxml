@@ -26,9 +26,9 @@
 	<property name="incompletetimeout" value="0s"/>     <!--  incompletetimeout. This is the length of silence after an incompletely recognized speech -->
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
-    <var name="II_SB_promptList" expr="'V'+'1'+'|V'+fileNumber+'|P'+fileLocation+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'182-15'"/>  <!--  PlayAudio Next Option. Name of next file -->
-	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
+    <var name="II_SB_promptList" expr="''"/>  <!--  List of audio files / speech to play -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'182_26'"/>  <!--  PlayAudio Next Option. Name of next file -->
+	<var name="II_SB_fldLength" expr="'1'"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
 	
 	<!-- Voice properties -->
 	<var name="II_SB_maxSpch" expr="'0s'"/>       <!--  maxspeechtimeout. This is the maximum time allowed for a speech -->
@@ -37,12 +37,12 @@
 	<var name="II_SB_cnfLevel" expr="'0.5'"/>       <!--  confidencelevel. This is the speech recognition confidence level -->
 
 	<!-- DTMF properties -->
-	<var name="II_SB_fldTimeout" expr="'0s'"/>         <!--  Timeout. Controls how long to wait before throwing a noinput event -->
+	<var name="II_SB_fldTimeout" expr="'100s'"/>         <!--  Timeout. Controls how long to wait before throwing a noinput event -->
 	<var name="II_SB_dgtTimeOut" expr="'0s'"/>    <!--  DTMF Interdigit time out. Controls number of seconds between key presses at an input field -->
 	<var name="II_SB_fldTermChar" expr="''"/>    <!--  DTMF Terminating Character. Identifies the terminating character of a DTMF input -->
 
     <!-- Prompt properties -->
-    <var name="II_SB_cutIn" expr="''"/>      <!--  Cut In. true / false - Controls if prompts are interruptable with a key press -->
+    <var name="II_SB_cutIn" expr="'true'"/>      <!--  Cut In. true / false - Controls if prompts are interruptable with a key press -->
     
     <!-- Misc Properties -->
     <var name="II_SB_mode" expr="'dtmf'"/>   <!--  Input Mode. This allows the system to detect either dtmf, voice or both voic and dtmf -->
@@ -91,8 +91,8 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    <log target="status">Play Voice Mail</log>
-            <log>INFO: Entered audio-input.vxml [182-13]</log>
+    	    <log target="status">Wait for Tone</log>
+            <log>INFO: Entered audio-input.vxml [182_17]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
 
             <assign name="II_SB_fldTimeout" expr="II_SB_JS_checkTime(II_SB_fldTimeout)"/>
