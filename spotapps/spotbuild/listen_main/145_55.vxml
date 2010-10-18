@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_145_55(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller,STATcontroller,artifactsDIR)
             {
-	            return createAppObject(appToAccess,sysAccessTime,sipURL,cntrlURL,hostName,HTTPcontroller,artifactsDIR,STATcontroller);
+	            return "{\"application\":\""+appToAccess+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
             }
         ]]>
     </script>

@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_51_100()
             {
-	            return getTimeStamp(3);
+	            return new Date().getTime();
             }
         ]]>
     </script>

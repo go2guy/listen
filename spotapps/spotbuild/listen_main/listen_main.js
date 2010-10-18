@@ -55,19 +55,3 @@ function extendAppObject(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroll
     result.artifactsDIR = artifactsDIR;
     return iiStringify(result);
 }
-
-function createHostObject(hostName) {
-    return "system=http://"+hostName+"/spot";
-}
-
-function createPhoneNumberObject(DNIS,callType) {
-    return "phoneNumber="+callType+";"+DNIS;
-}
-
-function setDnisSearchSting(DNIS) {
-    return "getDnis?number=" + getnum(DNIS);
-}
-
-function createAppObject(appToAccess,sysAccessTime,sipURL,cntrlURL,hostName,HTTPcontroller,artifactsDIR,STATcontroller) {
-    return "{\"application\":\""+appToAccess+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
-}

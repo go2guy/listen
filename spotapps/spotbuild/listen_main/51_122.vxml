@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_51_122(DNIS,callType)
             {
-	            return createPhoneNumberObject(DNIS,callType);
+	            return "phoneNumber="+callType+";"+DNIS;
             }
         ]]>
     </script>

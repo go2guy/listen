@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_51_113(hostName)
             {
-	            return createHostObject(hostName);
+	            return "system=http://"+hostName+"/spot";
             }
         ]]>
     </script>

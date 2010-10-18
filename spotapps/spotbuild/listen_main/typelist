@@ -8,6 +8,7 @@
 145_35 - audio-input
 51_73 - run-javascript
 162_29 - assign-variable
+51_133 - run-javascript
 51_65 - decision
 145_16 - end
 145_36 - data-query
@@ -22,8 +23,8 @@ begin - begin
 51_122 - run-javascript
 162_9 - run-javascript
 162_17 - switch-application
-51_123 - assign-variable
 162_18 - switch-application
+51_123 - assign-variable
 162_3 - decision
 51_113 - run-javascript
 51_114 - data-query
