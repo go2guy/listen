@@ -185,7 +185,7 @@ function Conference(id) {
     });
 
     var scheduledConferenceTable = new Listen.DynamicTable({
-        url: '/ajax/getScheduledConferenceList?id=' + conferenceId,
+        url: '/ajax/getScheduledConferenceList?historic=false&id=' + conferenceId,
         tableId: 'scheduled-conference-table',
         templateId: 'scheduled-conference-row-template',
         retrieveList: function(data) {
@@ -194,6 +194,57 @@ function Conference(id) {
         isList: true,
         reverse: true,
         paginationId: 'scheduled-conference-pagination',
+        initialMax: 5,
+        updateRowCallback: function(row, data, animate) {
+            if(data.isFuture === true) {
+                row.removeClass('past');
+                row.addClass('future');
+            } else {
+                row.removeClass('future');
+                row.addClass('past');
+            }
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-when'), data.startDate + ' until ' + data.endDate, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-topic'), data.topic, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-callers'), data.callers, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-notes'), 'Notes: ' + data.notes, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-activeCallers'), 'Active Callers: ' + data.activeCallers, animate);
+            Listen.setFieldContent(row.find('.scheduled-conference-cell-passiveCallers'), 'Passive Callers: ' + data.passiveCallers, animate);
+
+            var more = '<a href="#" onclick="toggleScheduledConferenceData(' + data.id + ', \'more\');return false;" title="More information">show&nbsp;&raquo;</a>';
+            var less = '<a href="#" onclick="toggleScheduledConferenceData(' + data.id + ', \'less\');return false;" title="Hide information">&laquo;&nbsp;hide</a>';
+            var contains = false;
+            for(var i = 0; i < displayingScheduledConferenceData.length; i++) {
+                if(displayingScheduledConferenceData[i] === data.id) {
+                    contains = true;
+                    break;
+                }
+            }
+            var field = row.find('.scheduled-conference-cell-view');
+            if(contains) {
+                Listen.setFieldContent(field, less, false, true);
+                row.find('.scheduled-conference-cell-notes').css('display', 'block');
+                row.find('.scheduled-conference-cell-activeCallers').css('display', 'block');
+                row.find('.scheduled-conference-cell-passiveCallers').css('display', 'block');
+            } else {
+                Listen.setFieldContent(field, more, false, true);
+                row.find('.scheduled-conference-cell-notes').css('display', 'none');
+                row.find('.scheduled-conference-cell-activeCallers').css('display', 'none');
+                row.find('.scheduled-conference-cell-passiveCallers').css('display', 'none');
+            }
+        }
+    });
+
+    var historicScheduledConferenceTable = new Listen.DynamicTable({
+        url: '/ajax/getScheduledConferenceList?historic=true&id=' + conferenceId,
+        tableId: 'historic-scheduled-conference-table',
+        templateId: 'scheduled-conference-row-template',
+        retrieveList: function(data) {
+            return data.results;
+        },
+        isList: true,
+        reverse: true,
+        paginationId: 'historic-scheduled-conference-pagination',
+        initialMax: 5,
         updateRowCallback: function(row, data, animate) {
             if(data.isFuture === true) {
                 row.removeClass('past');
@@ -240,8 +291,11 @@ function Conference(id) {
         recordingTable.setUrl('/ajax/getConferenceRecordingList?id=' + conferenceId);
         recordingTable.pollAndSet(animate);
 
-        scheduledConferenceTable.setUrl('/ajax/getScheduledConferenceList?id=' + conferenceId);
+        scheduledConferenceTable.setUrl('/ajax/getScheduledConferenceList?historic=false&id=' + conferenceId);
         scheduledConferenceTable.pollAndSet(animate);
+
+        historicScheduledConferenceTable.setUrl('/ajax/getScheduledConferenceList?historic=true&id=' + conferenceId);
+        historicScheduledConferenceTable.pollAndSet(animate);
 
         var start = Listen.timestamp();
         $.ajax({

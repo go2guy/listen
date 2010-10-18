@@ -239,8 +239,7 @@ public class ScheduledConference extends Resource implements Serializable
         return hash;
     }
 
-    public static List<ScheduledConference> queryByConferencePaged(Session session, Conference conference, int first,
-                                                                   int max)
+    public static List<ScheduledConference> queryByConferencePaged(Session session, Conference conference, int first, int max, boolean historic)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(ScheduledConference.class);
         subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -250,23 +249,39 @@ public class ScheduledConference extends Resource implements Serializable
 
         Criteria criteria = session.createCriteria(ScheduledConference.class);
         criteria.add(Subqueries.propertyIn("id", subquery));
+        if(historic)
+        {
+            criteria.add(Restrictions.lt("startDate", new Date()));
+        }
+        else
+        {
+            criteria.add(Restrictions.gt("startDate", new Date()));
+        }
 
         criteria.setFirstResult(first);
         criteria.setMaxResults(max);
-        criteria.addOrder(Order.desc("startDate"));
+        criteria.addOrder(historic ? Order.desc("startDate") : Order.asc("startDate"));
 
         criteria.setFetchMode("conference", FetchMode.SELECT);
         criteria.setFetchMode("scheduledBy", FetchMode.SELECT);
 
         return (List<ScheduledConference>)criteria.list();
     }
-
-    public static Long countByConference(Session session, Conference conference)
+    
+    public static Long countByConference(Session session, Conference conference, boolean historic)
     {
         Criteria criteria = session.createCriteria(ScheduledConference.class);
         criteria.setProjection(Projections.rowCount());
         criteria.createAlias("conference", "conference_alias");
         criteria.add(Restrictions.eq("conference_alias.id", conference.getId()));
+        if(historic)
+        {
+            criteria.add(Restrictions.lt("startDate", new Date()));
+        }
+        else
+        {
+            criteria.add(Restrictions.gt("startDate", new Date()));
+        }
         return (Long)criteria.list().get(0);
     }
 

@@ -352,7 +352,7 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
     background-color: #84B4E2;
     color: #FFFFFF;
 }
-
+/*
 #scheduled-conference-table .past {
     color: #CCCCCC;
 }
@@ -360,8 +360,9 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 #scheduled-conference-table .future {
     font-weight: bold;
 }
-
-#scheduled-conference-table li {
+*/
+#scheduled-conference-table li,
+#historic-scheduled-conference-table li {
     border-color: #E8EEF4;
     border-style: solid;
     border-width: 0 0 1px 0;
@@ -371,22 +372,33 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 #scheduled-conference-table div.scheduled-conference-cell-when,
 #scheduled-conference-table div.scheduled-conference-cell-topic,
 #scheduled-conference-table div.scheduled-conference-cell-callers,
-#scheduled-conference-table div.scheduled-conference-cell-view {
+#scheduled-conference-table div.scheduled-conference-cell-view,
+#historic-scheduled-conference-table div.scheduled-conference-cell-when,
+#historic-scheduled-conference-table div.scheduled-conference-cell-topic,
+#historic-scheduled-conference-table div.scheduled-conference-cell-callers,
+#historic-scheduled-conference-table div.scheduled-conference-cell-view {
     float: left;
     height: 2em;
 }
 #scheduled-conference-table div.scheduled-conference-cell-when,
 #scheduled-conference-table div.scheduled-conference-cell-topic,
-#scheduled-conference-table div.scheduled-conference-cell-callers {
+#scheduled-conference-table div.scheduled-conference-cell-callers,
+#historic-scheduled-conference-table div.scheduled-conference-cell-when,
+#historic-scheduled-conference-table div.scheduled-conference-cell-topic,
+#historic-scheduled-conference-table div.scheduled-conference-cell-callers {
     width: 30%
 }
-#scheduled-conference-table div.scheduled-conference-cell-view {
+#scheduled-conference-table div.scheduled-conference-cell-view,
+#historic-scheduled-conference-table div.scheduled-conference-cell-view {
     clear: right;
     width: 10%;
 }
 #scheduled-conference-table div.scheduled-conference-cell-notes,
 #scheduled-conference-table div.scheduled-conference-cell-activeCallers,
-#scheduled-conference-table div.scheduled-conference-cell-passiveCallers {
+#scheduled-conference-table div.scheduled-conference-cell-passiveCallers,
+#historic-scheduled-conference-table div.scheduled-conference-cell-notes,
+#historic-scheduled-conference-table div.scheduled-conference-cell-activeCallers,
+#historic-scheduled-conference-table div.scheduled-conference-cell-passiveCallers {
     display: none;
     float: left;
     font-weight: normal;

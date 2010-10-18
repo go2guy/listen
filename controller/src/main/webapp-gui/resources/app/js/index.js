@@ -163,7 +163,7 @@ $(document).ready(function() {
             DynamicTable: function(args) {
                 var args = args;
                 var currentFirst = 0;
-                var currentMax = 15;
+                var currentMax = (args.initialMax > 0 ? args.initialMax : 15);
 
                 this.setUrl = function(url) {
                     args.url = url;

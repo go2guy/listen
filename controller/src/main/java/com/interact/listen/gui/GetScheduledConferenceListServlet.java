@@ -59,8 +59,14 @@ public class GetScheduledConferenceListServlet extends HttpServlet
             throw new BadRequestServletException("Conference not found");
         }
 
+        boolean historic = false;
+        if(request.getParameter("historic") != null && Boolean.valueOf(request.getParameter("historic")))
+        {
+            historic = true;
+        }
+
         int first = 0;
-        int max = Resource.DEFAULT_PAGE_SIZE;
+        int max = 5;
         if(request.getParameter("first") != null)
         {
             first = Integer.parseInt(request.getParameter("first"));
@@ -70,8 +76,8 @@ public class GetScheduledConferenceListServlet extends HttpServlet
             max = Integer.parseInt(request.getParameter("max"));
         }
 
-        List<ScheduledConference> results = ScheduledConference.queryByConferencePaged(session, conference, first, max);
-        long total = results.size() > 0 ? ScheduledConference.countByConference(session, conference) : 0;
+        List<ScheduledConference> results = ScheduledConference.queryByConferencePaged(session, conference, first, max, historic);
+        long total = results.size() > 0 ? ScheduledConference.countByConference(session, conference, historic) : 0;
 
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);

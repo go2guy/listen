@@ -144,7 +144,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                     </div>
                     <div class="tab-content">
                       <div class="panel">
-                        <div class="panel-header"><div class="title">Scheduled Conferences</div></div>
+                        <div class="panel-header"><div class="title">Future Scheduled Conferences</div></div>
                         <div class="panel-content">
                           <ul id="scheduled-conference-table" class="data-table">
                             <li class="placeholder">No conferences have been scheduled.</li>
@@ -230,6 +230,19 @@ for(int i = 1; i <= 12; i++) { %>
                           </form>
                         </div>
                       </div>
+                      
+                      <div class="panel">
+                        <div class="panel-header"><div class="title">Past Scheduled Conferences</div></div>
+                        <div class="panel-content">
+                          <ul id="historic-scheduled-conference-table" class="data-table">
+                            <li class="placeholder">No past conferences.</li>
+                          </ul>
+                          <div class="pagination" id="historic-scheduled-conference-pagination">
+                            <button type="button" class="icon-pageleft"></button><span class="pagination-current">0-0</span>of<span class="pagination-total">0</span><button type="button" class="icon-pageright"></button>
+                          </div>
+                        </div>
+                      </div>
+                      
                     </div>
                     <div class="tab-content">
 
