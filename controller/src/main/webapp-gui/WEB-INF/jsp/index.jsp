@@ -878,9 +878,9 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
         </div>
         <div class="attendant-menu-action-actionSelect">
           <select>
-            <option value="GoToMenu">Go To A Menu</option>
             <option value="DialNumber">Dial A Number</option>
             <option value="DialPressedNumber">Dial What They Pressed</option>
+            <option value="GoToMenu">Go To A Menu</option>
             <option value="LaunchApplication">Launch An Application</option>
           </select>
         </div>
@@ -891,14 +891,14 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <input type="text" class="attendant-menu-number-input"/>
         </div>
         <div class="attendant-menu-action-launchApplicationSelect">
-          <select><%
+          <select><% /* ordered alphabetically */
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
             <option value="conferencing">Conferencing</option><%
 }
 if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
+            <option value="directVoicemail">Direct Voicemail</option>
             <option value="mailbox">Mailbox</option>
-            <option value="voicemail">Voicemail</option>
-            <option value="directVoicemail">Direct Voicemail</option><%
+            <option value="voicemail">Voicemail</option><%
 } %>
             <option value="custom">Custom</option>
           </select>

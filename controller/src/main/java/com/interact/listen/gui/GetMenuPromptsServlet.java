@@ -14,7 +14,7 @@ import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -84,22 +84,25 @@ public class GetMenuPromptsServlet extends HttpServlet
 
     private String buildResponse(JSONArray prompts)
     {
-        StringBuilder json = new StringBuilder("[");
+        JSONArray array = new JSONArray();
         for(JSONObject prompt : (List<JSONObject>)prompts)
         {
-            json.append("{");
             if(prompt.containsKey("fileName"))
             {
-                String file = (String)prompt.get("fileName");
-                json.append("\"file\":\"").append(file).append("\"");
+                JSONObject obj = new JSONObject();
+                obj.put("file", (String)prompt.get("fileName"));
+                array.add(obj);
             }
-            json.append("},");
         }
-        if(prompts.size() > 0)
-        {
-            json.deleteCharAt(json.length() - 1); // last ','
-        }
-        json.append("]");
-        return json.toString();
+
+        Collections.sort(array, new Comparator<JSONObject>() {
+            @Override
+            public int compare(JSONObject a, JSONObject b)
+            {
+                return ((String)a.get("file")).compareToIgnoreCase((String)b.get("file"));
+            }
+        });
+
+        return array.toJSONString();
     }
 }
