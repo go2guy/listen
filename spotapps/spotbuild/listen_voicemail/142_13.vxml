@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_142_13(passValues)
             {
-	            var result = eval("("+passValues+")");return result.sysAccessTime;
+	            return getJsonVal(passValues, 'sysAccessTime');
             }
         ]]>
     </script>

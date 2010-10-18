@@ -14,7 +14,7 @@
         <block>
     	    <log target="status">Start Transcription</log>
             <log>INFO: Entered data-query.vxml [120_101]</log>
-            <data name="apiObj" srcexpr="'http://localhost/spot/ccxml/createsession'" method="post" namelist="uri passValues " fetchtimeout="II_SB_dataTimeOut"/>
+            <data name="apiObj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/transcription_send.php'" method="post" namelist="uri passValues " fetchtimeout="II_SB_dataTimeOut"/>
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>

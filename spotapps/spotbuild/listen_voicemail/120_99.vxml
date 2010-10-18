@@ -12,7 +12,7 @@
 	    <log target="status">uri</log>
             <log>INFO: Entered assign-variable.vxml [120_99]</log>
             <log>INFO: Current value [<value expr="uri"/>]</log>
-<assign name="uri" expr="'/interact/apps/spotbuild/listen_main/begin.ccxml'+''" />
+<assign name="uri" expr="'/interact/apps/spotbuild/listen_transcription/listen_transcription.ccxml'+''" />
 <log>INFO: Updated value [<value expr="uri"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

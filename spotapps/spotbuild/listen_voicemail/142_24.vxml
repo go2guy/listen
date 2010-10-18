@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_142_24(passValues)
             {
-	            var result = eval("("+passValues+")");return result.HTTPcontroller;
+	            return getJsonVal(passValues, 'HTTPcontroller');
             }
         ]]>
     </script>

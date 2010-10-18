@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_173_4(returnVal)
             {
-	            var result;var tmpVal = eval("("+returnVal+")");result = tmpVal.greetingLocation;if (result == null) {result = "";}return result;
+	            return getJsonVal (returnVal, 'greetingLocation');
             }
         ]]>
     </script>

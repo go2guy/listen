@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_146_26(sysAccessTime,appEndTime)
             {
-	            var callLength = appEndTime - sysAccessTime;callLength = callLength / 1000;return Math.round(callLength);
+	            return getTimeDifference(sysAccessTime, appEndTime);
             }
         ]]>
     </script>

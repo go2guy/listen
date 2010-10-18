@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_183_14(returnVal,status)
             {
-	            var result = "NOT_FOUND";var tmpVal = eval("("+returnVal+")");if ((status == 'Success') && (tmpVal .count== 1)) {result = tmpVal.results[0].subscriber.href.split('/')[2];}return result;
+	            return getAccessNumSubID(returnVal, status);
             }
         ]]>
     </script>

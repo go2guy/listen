@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function_120_71(passValues,fileLocation,returnVal)
             {
-	            var number = eval("("+returnVal+")");var result = eval("("+passValues+")");result.fileLocation = fileLocation;result.fileNumber = number.id;result.application = "listen_transcription";return iiStringify(result);
+	            return createTranscriptionObj(returnVal, fileLocation, passValues);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">passValues</log>
+            <log target="status">Set TranscriptionObj</log>
             <log>INFO: Entered run-javascript.vxml [120_71]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_120_71(passValues,fileLocation,returnVal)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
