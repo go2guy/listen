@@ -65,8 +65,7 @@ function createPhoneNumberObject(DNIS,callType) {
 }
 
 function setDnisSearchSting(DNIS) {
-    var subID = getnum(DNIS);
-    return "getDnis?number=" + escape(subID);
+    return "getDnis?number=" + getnum(DNIS);
 }
 
 function createAppObject(appToAccess,sysAccessTime,sipURL,cntrlURL,hostName,HTTPcontroller,artifactsDIR,STATcontroller) {
