@@ -21,8 +21,8 @@
     <var name="II_SB_notAnsOpt" expr="''"/>  	<!--  Next option when call is not answered -->
     <var name="II_SB_failedOpt" expr="''"/>     <!--  Next option when connection attempt fails -->
     <var name="II_SB_maxTimeOpt" expr="''"/>      <!--  Next option when max time for call is reached -->
-    <var name="II_SB_inbDiscOpt" expr="'182_15'"/>  <!--  Next option when caller hangs up -->
-    <var name="II_SB_outbDiscOpt" expr="'182_9'"/> <!--  Next option when called party hangs up -->
+    <var name="II_SB_inbDiscOpt" expr="''"/>  <!--  Next option when caller hangs up -->
+    <var name="II_SB_outbDiscOpt" expr="''"/> <!--  Next option when called party hangs up -->
 
     <!-- Global variables -->
     <var name="II_SB_returnValues" expr="''"/>  <!-- Values to return -->
