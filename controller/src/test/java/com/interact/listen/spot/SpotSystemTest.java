@@ -202,7 +202,6 @@ public class SpotSystemTest extends ListenTest
         final Long conferenceId = TestUtil.randomNumeric(9);
         final String destination = TestUtil.randomString();
         final String sessionId = TestUtil.randomString();
-        final String interrupt = TestUtil.randomString();
 
         Map<String, String> expectedParameters = new TreeMap<String, String>();
         expectedParameters.put("action", "DIAL");
@@ -212,8 +211,7 @@ public class SpotSystemTest extends ListenTest
         expectedParameters.put("destination", destination);
         expectedParameters.put("initiatingChannel", "GUI");
         expectedParameters.put("sessionId", sessionId);
-        expectedParameters.put("interruptAdmin", interrupt);
-        SpotSystemInvocation invocation = getInvocationForOutdial(destination, sessionId, conferenceId, ani, interrupt);
+        SpotSystemInvocation invocation = getInvocationForOutdial(destination, sessionId, conferenceId, ani);
         testForExpectedPostArgumentsWhenSuccessful(invocation, expectedParameters);
     }
 
@@ -222,7 +220,7 @@ public class SpotSystemTest extends ListenTest
         throws IOException
     {
         SpotSystemInvocation invocation = getInvocationForOutdial(TestUtil.randomString(), TestUtil.randomString(),
-                                       TestUtil.randomNumeric(8), TestUtil.randomString(), TestUtil.randomString());
+                                       TestUtil.randomNumeric(8), TestUtil.randomString());
         testForSpotCommunicationExceptionWhenBadRequest(invocation);
     }
 
@@ -230,7 +228,7 @@ public class SpotSystemTest extends ListenTest
     public void test_outdial_whenSpotRespondsWith200_sendsStat() throws SpotCommunicationException, IOException
     {
         SpotSystemInvocation invocation = getInvocationForOutdial(TestUtil.randomString(), TestUtil.randomString(),
-                                       TestUtil.randomNumeric(8), TestUtil.randomString(), TestUtil.randomString());
+                                       TestUtil.randomNumeric(8), TestUtil.randomString());
         testForStatOnSuccessfulResponse(invocation);
     }
 
@@ -238,10 +236,57 @@ public class SpotSystemTest extends ListenTest
     public void test_outdial_whenSpotRespondsWith400_sendsStat() throws IOException
     {
         SpotSystemInvocation invocation = getInvocationForOutdial(TestUtil.randomString(), TestUtil.randomString(),
-                                       TestUtil.randomNumeric(8), TestUtil.randomString(), TestUtil.randomString());
+                                       TestUtil.randomNumeric(8), TestUtil.randomString());
         testForStatWhenSpotCommunicationException(invocation);
     }
 
+    @Test
+    public void test_interactiveOutdial_invokesPostWithParams() throws SpotCommunicationException, IOException
+    {
+        final String ani = TestUtil.randomString();
+        final String destination = TestUtil.randomString();
+        final String sessionId = TestUtil.randomString();
+
+        Map<String, String> expectedParameters = new TreeMap<String, String>();
+        expectedParameters.put("action", "INTERACTIVE_DIAL");
+        expectedParameters.put("ani", ani);
+        expectedParameters.put("application", "CONF_EVENT");
+        expectedParameters.put("destination", destination);
+        expectedParameters.put("initiatingChannel", "GUI");
+        expectedParameters.put("sessionId", sessionId);
+        SpotSystemInvocation invocation = getInvocationForInteractiveOutdial(destination, sessionId, ani);
+        testForExpectedPostArgumentsWhenSuccessful(invocation, expectedParameters);
+    }
+
+    @Test
+    public void test_interactiveOutdial_whenClientReturnsNon200Status_throwsSpotCommunicationExceptionWithMessage()
+        throws IOException
+    {
+        SpotSystemInvocation invocation = getInvocationForInteractiveOutdial(TestUtil.randomString(),
+                                                                             TestUtil.randomString(),
+                                                                             TestUtil.randomString());
+        testForSpotCommunicationExceptionWhenBadRequest(invocation);
+    }
+
+    @Test
+    public void test_interactiveOutdial_whenSpotRespondsWith200_sendsStat() throws SpotCommunicationException,
+        IOException
+    {
+        SpotSystemInvocation invocation = getInvocationForInteractiveOutdial(TestUtil.randomString(),
+                                                                             TestUtil.randomString(),
+                                                                             TestUtil.randomString());
+        testForStatOnSuccessfulResponse(invocation);
+    }
+
+    @Test
+    public void test_interactiveOutdial_whenSpotRespondsWith400_sendsStat() throws IOException
+    {
+        SpotSystemInvocation invocation = getInvocationForInteractiveOutdial(TestUtil.randomString(),
+                                                                             TestUtil.randomString(),
+                                                                             TestUtil.randomString());
+        testForStatWhenSpotCommunicationException(invocation);
+    }
+    
     @Test
     public void test_startRecording_invokesPostWithParams() throws SpotCommunicationException, IOException
     {
@@ -496,14 +541,27 @@ public class SpotSystemTest extends ListenTest
     }
 
     private SpotSystemInvocation getInvocationForOutdial(final String destination, final String sessionId,
-                                                         final Long conferenceId, final String ani, final String interrupt)
+                                                         final Long conferenceId, final String ani)
     {
         return new SpotSystemInvocation()
         {
             @Override
             public void invoke() throws SpotCommunicationException, IOException
             {
-                spotSystem.outdial(destination, sessionId, conferenceId, ani, interrupt);
+                spotSystem.outdial(destination, sessionId, conferenceId, ani);
+            }
+        };
+    }
+
+    private SpotSystemInvocation getInvocationForInteractiveOutdial(final String destination, final String sessionId,
+                                                                    final String ani)
+    {
+        return new SpotSystemInvocation()
+        {
+            @Override
+            public void invoke() throws SpotCommunicationException, IOException
+            {
+                spotSystem.interactiveOutdial(destination, sessionId, ani);
             }
         };
     }

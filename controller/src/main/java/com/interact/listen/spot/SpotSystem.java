@@ -102,10 +102,12 @@ public class SpotSystem
      * 
      * @param numbers phone number to call
      * @param adminSessionId session id of the {@code Conference} administrator
+     * @param conferenceId
+     * @param requestingNumber
      * @throws IOException if an HTTP error occurs
      * @throws SpotCommunicationException if an error occurs communicating with the SPOT system
      */
-    public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber, String interrupt)
+    public void outdial(String numbers, String adminSessionId, Long conferenceId, String requestingNumber)
         throws IOException, SpotCommunicationException
     {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
@@ -115,7 +117,21 @@ public class SpotSystem
         importedValue.put("conferenceId", String.valueOf(conferenceId));
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
-        importedValue.put("interruptAdmin", interrupt);
+        buildAndSendRequest(importedValue);
+    }
+
+    /**
+     * "Outdials" a caller into the {@code Conference} after first letting the outdialing caller to talk with the
+     * outdialed number.
+     */
+    public void interactiveOutdial(String numbers, String adminSessionId, String requestingNumber) throws IOException, SpotCommunicationException
+    {
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        importedValue.put("application", "CONF_EVENT");
+        importedValue.put("action", "INTERACTIVE_DIAL");
+        importedValue.put("sessionId", adminSessionId);
+        importedValue.put("destination", numbers);
+        importedValue.put("ani", requestingNumber);
         buildAndSendRequest(importedValue);
     }
 

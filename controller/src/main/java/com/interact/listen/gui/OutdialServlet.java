@@ -94,7 +94,14 @@ public class OutdialServlet extends HttpServlet
         try
         {
             String requestingNumber = Configuration.phoneNumber();
-            spotSystem.outdial(number, adminSessionId, conference.getId(), requestingNumber, interrupt);
+            if(Boolean.valueOf(interrupt))
+            {
+                spotSystem.interactiveOutdial(number, adminSessionId, requestingNumber);
+            }
+            else
+            {
+                spotSystem.outdial(number, adminSessionId, conference.getId(), requestingNumber);
+            }
         }
         catch(SpotCommunicationException e)
         {
