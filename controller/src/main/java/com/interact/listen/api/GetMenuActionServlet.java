@@ -80,13 +80,13 @@ public class GetMenuActionServlet extends HttpServlet
                     // No matching configured menu action, using the default
                     action = menu.getDefaultAction();
                 }
-                
-                if(action instanceof GoToMenuAction)
-                {
-                    GoToMenuAction goToMenuAction = (GoToMenuAction)action;
-                    action = Menu.queryById(session, goToMenuAction.getGoToMenu().getId());
-                }
             }
+        }
+        
+        if(action instanceof GoToMenuAction)
+        {
+            GoToMenuAction goToMenuAction = (GoToMenuAction)action;
+            action = Menu.queryById(session, goToMenuAction.getGoToMenu().getId());
         }
         
         response.setStatus(HttpServletResponse.SC_OK);
