@@ -475,4 +475,7 @@
     <changeSet author="development" id="48">
         <dropTable tableName="LISTEN_SPOT_SUBSCRIBER"/>
     </changeSet>
+    <changeSet author="development" id="49">
+      <addUniqueConstraint tableName="AUDIO" columnNames="URI" constraintName="AUDIO_UK_1"/>
+    </changeSet>
 </databaseChangeLog>

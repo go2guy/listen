@@ -23,7 +23,7 @@ public abstract class Audio extends Resource implements Serializable
     @Version
     private Integer version = Integer.valueOf(0);
 
-    @Column(name = "URI", nullable = false)
+    @Column(name = "URI", nullable = false, unique = true)
     private String uri;
 
     @Column(name = "DESCRIPTION", nullable = true)
