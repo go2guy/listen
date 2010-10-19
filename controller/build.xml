@@ -236,7 +236,6 @@
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
     </copy>
     
-    <!-- minify javascript and css -->
     <minify in="${war.staging.dir}/resources/app/js/app-attendant.js" out="${war.staging.dir}/resources/app/js/app-attendant-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-history.js" out="${war.staging.dir}/resources/app/js/app-history-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-conference-list.js" out="${war.staging.dir}/resources/app/js/app-conference-list-min.js"/>
@@ -252,25 +251,6 @@
     <minify in="${war.staging.dir}/resources/app/css/login.css" out="${war.staging.dir}/resources/app/css/login-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/index.css" out="${war.staging.dir}/resources/app/css/index-min.css"/>
     <minify in="${war.staging.dir}/resources/json.org/json2.js" out="${war.staging.dir}/resources/json.org/json2-min.js"/>
-
-    <!-- combine javascript and css into single files -->
-    <property name="combined-javascript-file" value="${war.staging.dir}/resources/app/app-min.js"/>
-    <delete file="${combined-javascript-file}" failonerror="false"/>
-
-    <!-- specifying some files individually, since order matters a bit here -->
-    <concat destfile="${combined-javascript-file}" append="true"><fileset file="${war.staging.dir}/resources/app/js/index-min.js"/></concat>
-    <concat destfile="${combined-javascript-file}" append="true"><fileset file="${war.staging.dir}/resources/app/js/server-min.js"/></concat>
-    <concat destfile="${combined-javascript-file}" append="true">
-      <fileset dir="${war.staging.dir}/resources/app/js" includes="*-min.js" excludes="index-min.js,server-min.js"/>
-    </concat>
-
-    <delete failonerror="false">
-      <fileset dir="${war.staging.dir}/resources/app/js" includes="*.js"/>
-    </delete>
-
-    <move file="${combined-javascript-file}" todir="${war.staging.dir}/resources/app/js"/>
-
-    <!-- extract libs necessary for jetty self-executing war -->
     <unjar dest="${war.staging.dir}">
       <patternset>
         <exclude name="META-INF/**/*"/>
