@@ -5,18 +5,15 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'120_48'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'194_10'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set CDR Variables</log>
-            <log>INFO: Entered assign-variable.vxml [120_47]</log>
-            <log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'CallDetailRecords'+''" />
-<log>INFO: Updated value [<value expr="resource"/>]</log>
-<log>INFO: Current value [<value expr="request"/>]</log>
-<assign name="request" expr="'post'+''" />
-<log>INFO: Updated value [<value expr="request"/>]</log>
+	    <log target="status">Set File URL</log>
+            <log>INFO: Entered assign-variable.vxml [194_7]</log>
+            <log>INFO: Current value [<value expr="FILE1"/>]</log>
+<assign name="FILE1" expr="fileLocation+''" />
+<log>INFO: Updated value [<value expr="FILE1"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

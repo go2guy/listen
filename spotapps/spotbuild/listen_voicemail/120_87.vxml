@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Message Saved</log>
+	    <log target="status">Set Variables</log>
             <log>INFO: Entered assign-variable.vxml [120_87]</log>
             <log>INFO: Current value [<value expr="id"/>]</log>
 <assign name="id" expr="'LSTNAPP_0015'+''" />
