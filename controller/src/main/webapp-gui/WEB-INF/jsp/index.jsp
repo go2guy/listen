@@ -869,8 +869,6 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
           <div class="voicemail-cell-play"></div>
           <div class="voicemail-cell-actions"></div>
           <div class="voicemail-cell-transcription"></div>
-          <div class="voicemail-cell-transcription-abbr"></div>
-          <div class="voicemail-cell-transcription-full"></div>
           <div class="cleaner">&nbsp;</div>
         </li>
         <li id="scheduled-conference-row-template">

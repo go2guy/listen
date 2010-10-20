@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    var displayingFullTranscription = [];
     Listen.Voicemail = function() {
         return {
             Application: function() {
@@ -39,27 +38,7 @@ $(document).ready(function() {
 
                         var transcriptionField = row.find('.voicemail-cell-transcription');
                         if(data.transcription != null && data.transcription.length > 0) {
-                            var more = '<a href="#" onclick="Listen.Voicemail.toggleTranscription(' + data.id + ', \'full\');return false;" title="Show the entire transcription.">show&nbsp;&raquo;</a>';
-                            var less = '<a href="#" onclick="Listen.Voicemail.toggleTranscription(' + data.id + ', \'abbr\');return false;" title="Hide the transcription.">&laquo;&nbsp;hide</a>';
-
-                            var abbrField = row.find('.voicemail-cell-transcription-abbr');
-                            var fullField = row.find('.voicemail-cell-transcription-full');
-                            Listen.setFieldContent(abbrField, data.transcription.substring(0, 75) + '...&nbsp;' + more, false, true);
-                            Listen.setFieldContent(fullField, data.transcription + '&nbsp;' + less, false, true);
-
-                            var contains = false;
-                            for(var i = 0; i < displayingFullTranscription.length; i++) {
-                                if(displayingFullTranscription[i] == data.id) {
-                                    contains = true;
-                                    break;
-                                }
-                            }
-
-                            if(contains) {
-                                Listen.setFieldContent(transcriptionField, fullField.html(), false, true);
-                            } else {
-                                Listen.setFieldContent(transcriptionField, abbrField.html(), false, true);
-                            }
+                            Listen.setFieldContent(transcriptionField, data.transcription, false, true);
                             transcriptionField.css('display', 'block');
                         } else {
                             transcriptionField.css('display', 'none');
@@ -96,27 +75,6 @@ $(document).ready(function() {
                     url: Listen.url('/ajax/deleteVoicemail'),
                     properties: { id: id }
                 });
-            },
-
-            toggleTranscription: function(id, action) {
-                Listen.trace('Listen.Voicemail.toggleTranscription');
-                var row = $('#voicemail-table-row-' + id);
-                var transcription = row.find('.voicemail-cell-transcription');
-                var abbr = row.find('.voicemail-cell-transcription-abbr');
-                var full = row.find('.voicemail-cell-transcription-full');
-                if(action == 'full') {
-                    displayingFullTranscription.push(id);
-                    Listen.setFieldContent(transcription, full.html(), false, true);
-                } else {
-                    var newArr = [];
-                    for(var i = 0; i < displayingFullTranscription.length; i++) {
-                        if(displayingFullTranscription[i] != id) {
-                            newArr.push(displayingFullTranscription[i]);
-                        }
-                    }
-                    displayingFullTranscription = newArr;
-                    Listen.setFieldContent(transcription, abbr.html(), false, true);
-                }
             }
         }
     }();
