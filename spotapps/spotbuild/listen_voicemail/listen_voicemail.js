@@ -1,12 +1,3 @@
-function getResultsKeyValue(jsonObj, index, key) {
-    var result;
-    var tmpVal = eval("("+jsonObj+")");
-    result = tmpVal.results[index][key];
-    if (result == null)
-        result = "";
-    return result;
-}
-
 function getAccessNumSubID(jsonObj, status) {
     var result = "NOT_FOUND";
     var tmpVal = eval("("+jsonObj+")");
@@ -31,12 +22,4 @@ function createTranscriptionObj(returnVal, fileLocation, passValues) {
     result.fileLocation = fileLocation;
     result.fileNumber = number.id;
     return iiStringify(result);
-}
-
-function getTimeDifference(startTime, endTime) {
-    var num = /^\d+$/;
-    if ((num.test(startTime)) && (num.test(endTime)))
-        return Math.round((endTime - startTime)/1000);
-    else
-        return 1;
 }
