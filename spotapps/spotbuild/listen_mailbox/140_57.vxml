@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_140_57(subscriberInfo,pin,pinFirst)
             {
-	            return updatePin (subscriberInfo, pin, pinFirst);
+	            var temp = subscriberInfo.split('voicemailPin":"'+oldPin);return temp[0] + 'voicemailPin":"' + newPin + temp[1];
             }
         ]]>
     </script>

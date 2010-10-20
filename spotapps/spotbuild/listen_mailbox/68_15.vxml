@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_68_15(grtngSelect,recDIR)
             {
-	            var fileExt = '-greeting.wav';return setFileName (recDIR,grtngSelect,fileExt);
+	            retrun recDIR + grtngSelect + '-greeting.wav';
             }
         ]]>
     </script>

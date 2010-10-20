@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_68_30(FILE2,subscriber,grtngSelect,hostName)
             {
-	            return createAccessNumberObj(FILE2, subscriber, grtngSelect, hostName);
+	            return "{\"subscriber\": {\"href\": \"/subscribers/" + subID +"\"},\"greetingLocation\": \"http://"+hostName+greetingLocation+"\","+ "\"number\": \""+accessID+"\"}";
             }
         ]]>
     </script>

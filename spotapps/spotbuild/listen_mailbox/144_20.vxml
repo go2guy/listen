@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_144_20(userInput)
             {
-	            var flag = 'GET_SUB';return accessNumSrchString(userInput, flag);
+	            return '?_fields=subscriber&number=' + userInput;
             }
         ]]>
     </script>

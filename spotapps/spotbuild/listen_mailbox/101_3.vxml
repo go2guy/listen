@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_101_3(subscriber,playbackOrder)
             {
-	            var isNew = 'true';return setVmRetrievalString(subscriber, playbackOrder, isNew);
+	            return "?subscriber=/subscriber/"+subscriber+"&isNew=true&_sortBy=dateCreated&_sortOrder="+playbackOrder;
             }
         ]]>
     </script>

@@ -1,39 +1,9 @@
-function accessNumSrchString(input, flag) {
-    var result;
-    if (flag == 'GET_SUB')
-        result = '?_fields=subscriber&number=' + input;
-    else if (flag = 'GET_ACCESS_NUMS')
-        result  = '?subscriber=' + getJsonVal(input, 'href');
-    else
-        result = '';
-    return result;
-}
-
-function getSubscriber(returnVal, flag) {
-    var result = eval("("+returnVal+")");
-    var subscriber = result.results[0].subscriber.href;
-    if (flag == 'id')
-        subscriber = getNextElement('L',subscriber,'/');
-
-    return subscriber;
-}
-
 function getPlayBackOrder (subscriberInfo) {
     var result = eval("("+subscriberInfo+")");
     if (result.voicemailPlaybackOrder == 'NEWEST_TO_OLDEST')
         return "DESCENDING";
     else
         return "ASCENDING";
-}
-
-function setVmRetrievalString(subscriber, playbackOrder, flag) {
-    return "?subscriber=/subscriber/"+subscriber+"&isNew="+flag+"&_sortBy=dateCreated&_sortOrder="+playbackOrder;
-}
-
-function getResourceID(jsonObj, index) {
-    var tmpVal = getJsonVal(jsonObj, 'results');
-    var result = tmpVal[index].href.split('/');
-    return result[result.length-1];
 }
 
 function getVmDateTime(result, flag) {
@@ -66,23 +36,6 @@ function getVmDateTime(result, flag) {
     return result
 }
 
-function updatePin (subscriberInfo, oldPin, newPin) {
-    var temp = subscriberInfo.split('voicemailPin":"'+oldPin);
-    return temp[0] + 'voicemailPin":"' + newPin + temp[1];
-}
-
-function setFileName (path, name, extension){
-    return path+name+extension;
-}
-
-function createAccessNumberObj(greetingLocation, subID, accessID, hostName) {
-    return "{\"subscriber\": {\"href\": \"/subscribers/" + subID +"\"},\"greetingLocation\": \"http://"+hostName+greetingLocation+"\","+ "\"number\": \""+accessID+"\"}";
-}
-
-function getTimeDifference(endTime, startTime) {
-    return Math.round ((endTime - startTime)/1000);
-}
-
 function setFwdFileName(FILE1, subscriber, subFwd) {
     var fileName = new String();
     var tmpVal = new String(FILE1).split('://');
@@ -102,9 +55,4 @@ function setFwdFileName(FILE1, subscriber, subFwd) {
 function createVoiceMailObj(result, subFwd, hostName, FILE2, subscriber) {
     var result = eval("("+result+")");
     return "{\"uri\": \"http://"+hostName+FILE2+"\",\"duration\":\""+result.duration+"\",\"fileSize\":\""+result.fileSize+"\",\"leftBy\":\""+result.leftBy+"\",\"subscriber\": { \"href\": \"/subscribers/"+subFwd+"\"},\"forwardedBy\": { \"href\": \"/subscribers/"+subscriber+"\"}}";
-}
-
-function updateVmState (vmObj) {
-    var strObj = vmObj.split('isNew":true');
-    return strObj[0] + 'isNew":false' + strObj[1];
 }

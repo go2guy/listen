@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_102_5(voicemailInfo,count)
             {
-	            return getResourceID(voicemailInfo, count);
+	            var key = 'href';var result = getResultsKeyValue(voicemailInfo, count, key);return getNextElement('L',result,'/');
             }
         ]]>
     </script>

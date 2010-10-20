@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function_103_91(result)
             {
-	            return updateVmState (result);
+	            var strObj = vmObj.split('isNew":true');return strObj[0] + 'isNew":false' + strObj[1];
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">set params</log>
+            <log target="status">Update VM State</log>
             <log>INFO: Entered run-javascript.vxml [103_91]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_103_91(result)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   

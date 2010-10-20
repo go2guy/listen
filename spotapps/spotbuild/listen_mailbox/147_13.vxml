@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_147_13(returnVal)
             {
-	            var result = eval("("+returnVal+")");return result.count;
+	            return getJsonVal(returnVal, 'count');
             }
         ]]>
     </script>
