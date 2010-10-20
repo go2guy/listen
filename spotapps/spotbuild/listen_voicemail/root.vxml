@@ -69,7 +69,6 @@
 	<var name="whichPathStat" expr="''" />
 	<var name="isTranscription" expr="'n'" /> <!-- Config Transcription On or Off -->
 	<var name="isCDRsaved" expr="'false'" />
-	<var name="uri" expr="''" />
 
 
     <!-- Conference Variables -->
