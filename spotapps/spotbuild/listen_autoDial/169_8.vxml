@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_169_8(returnVal)
             {
-	            return getSubscriber(returnVal);
+	            var key = 'subscriber';return getHrefId(returnVal, key);
             }
         ]]>
     </script>

@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_169_26(argList,index)
             {
-	            return getDestination(argList, index);
+	            return getNextDestination(argList, index);
             }
         ]]>
     </script>

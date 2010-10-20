@@ -1,15 +1,9 @@
-function getSubscriber(returnVal) {
-    var result = eval("("+returnVal+")");
-    result = result.subscriber.href;
-    return getNextElement('L',result,'/');
-}
-
 function setAudioURL(argList,audioURL) {
     var result = eval("("+argList+")");
     return audioURL + getNextElement(0,result.sessionId,'.') + ".wav";
 }
 
-function getDestination(argList, index) {
+function getNextDestination(argList, index) {
     var result = '';
     var tmpVal = eval("("+argList+")");
     var phoneNumber = getNextElement(index,tmpVal.destination,',');
@@ -38,8 +32,4 @@ function setCallingID(phoneNumber, argList) {
     else
         result = getnum(tmpVal.ani) + "@" + tmpVal.hostName;
     return result;
-}
-
-function createDialObj(ConfName, SessionID) {
-    return "{\"ConfName\":\"" + ConfName + "\",\"SessionID\":\"" + SessionID + "\"}";
 }
