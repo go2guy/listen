@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_94_66(returnVal,index,SID)
             {
-	            return getSessionID (returnVal, index, SID);
+	            return getNextSessionID (returnVal, index, SID);
             }
         ]]>
     </script>

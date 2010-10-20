@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_125_7(phoneNumber,maxHelp,helpCnt,isInteractiveCall,pstnLength)
             {
-	            return getDestination (phoneNumber, maxHelp, helpCnt, isInteractiveCall, pstnLength);
+	            return chkDestinationEntry(phoneNumber, maxHelp, helpCnt, isInteractiveCall, pstnLength);
             }
         ]]>
     </script>

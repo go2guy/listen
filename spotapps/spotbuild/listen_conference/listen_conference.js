@@ -1,8 +1,3 @@
-function getHrefId(jsonObj, key) {
-    var returnObj = getJsonVal(jsonObj, key);
-    return getNextElement('L',returnObj.href ,'/');
-}
-
 function getConfInfo(conferenceObj, flag) {
     var result = eval("("+conferenceObj+")");
     if ((result[flag]) && (result[flag] != null))
@@ -67,15 +62,6 @@ function getAudioURL(participantObj, index, audioURL, hostName) {
     return result;
 }
 
-function getResultsKeyValue(jsonObj, index, key) {
-    var result;
-    var tmpVal = eval("("+jsonObj+")");
-    result = tmpVal.results[index][key];
-    if (result == null)
-        result = "";
-    return result;
-}
-
 function rollCallKeyPress(keyPress, returnVal, index, isAdmin) {
     var result;
     var tmpVal = eval("("+returnVal+")");
@@ -109,7 +95,7 @@ function rollCallKeyPress(keyPress, returnVal, index, isAdmin) {
     return result;
 }
 
-function getDestination (phoneNumber, maxHelp, helpCnt, isInteractiveCall, pstnLength) {
+function chkDestinationEntry (phoneNumber, maxHelp, helpCnt, isInteractiveCall, pstnLength) {
     var ipAddSect = 4;
     var num = /^\d+$/;
     if ((phoneNumber == '*') && (helpCnt < maxHelp))
@@ -156,7 +142,7 @@ function getNextPath (whichPath) {
         return "END";
 }
 
-function getSessionID (returnVal, index, SID) {
+function getNextSessionID (returnVal, index, SID) {
     var result;
     var tmpVal = eval("("+returnVal+")");
     result =  tmpVal.results[index].sessionID;
@@ -209,12 +195,4 @@ function isConfRecording (isRecording, isAdmin) {
         return "true";
     else
         return "false";
-}
-
-function getTimeDifference(startTime, endTime) {
-    var num = /^\d+$/;
-    if ((num.test(startTime)) && (num.test(endTime)))
-        return Math.round((endTime - startTime)/1000);
-    else
-        return 1;
 }
