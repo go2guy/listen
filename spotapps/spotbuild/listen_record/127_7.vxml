@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_127_7(argList,recPath,id)
             {
-	            return setRecFileName(argList, recPath, id);
+	            return recPath + id + "-" + getJsonVal(argList,'startTime') + "-" + getTimeStamp(1) + ".wav";
             }
         ]]>
     </script>

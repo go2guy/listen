@@ -174,7 +174,7 @@
             <goto fetchid="evt.fetchid"/> <!-- Go to ccxml document -->
         </transition>
 
-        <transition state="alerted endCall" event="dialog.exit" name="evt">
+        <transition state="alerted endCall terminatingDialog" event="dialog.exit" name="evt">
             <!-- Handles return from vxml dialog. This transition is used when we need to 
                  end the call, transfer control to a new application or start a different
                  ccxml file. -->
@@ -182,9 +182,13 @@
             <assign name="II_SB_status" expr="evt.values.II_SB_status"/>
             <assign name="II_SB_indialog" expr="'false'"/>
             <assign name="II_SB_NEXT_OPTION" expr="evt.values.II_SB_nextOpt"/>
-            <if cond="(II_SB_status == 'endCall') || (II_SB_status == 'hangup') || (II_SB_state == 'endCall')">
+            <if cond="(II_SB_status == 'endCall') || (II_SB_state == 'endCall')">
                 <log>INFO: End call</log>
                 <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            <elseif cond="II_SB_status == 'hangup'"/>
+                <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+                <assign name="II_SB_indialog" expr="'false'"/>
+                <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
             <elseif cond="II_SB_status == 'outDialCheck'"/>
                 <log>INFO: Checking Out Dial status</log>
                 <var name="II_SB_fromCCXML" expr="'true'"/>
@@ -292,12 +296,6 @@
             <else/>
                 <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
             </if>
-        </transition>
-
-        <transition state="terminatingDialog" event="dialog.exit" name="evt">
-            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
-            <assign name="II_SB_indialog" expr="'false'"/>
-            <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
         </transition>
 
 		<transition event="dialog.user.hangup" name="evt">

@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_129_7(id,isRecording,isStarted,recSID,arcadeID,confDescription)
             {
-	            return createConfObject (id, isRecording, isStarted, recSID, arcadeID, confDescription);
+	            return "{\"href\": \"/conferences/"+id+"\", \"id\":"+id+", \"description\":\""+confDescription+"\", \"arcadeId\":\""+arcadeID+"\",\"recordingSessionId\":\""+recSID+"\", \"isRecording\":"+isRecording+", \"isStarted\": "+isStarted+"}";
             }
         ]]>
     </script>
