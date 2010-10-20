@@ -28,7 +28,7 @@ $(document).ready(function() {
                 this.load = function() {
                     Listen.trace('Loading profile');
                     $.ajax({
-                        url: '/ajax/getSubscriber',
+                        url: Listen.url('/ajax/getSubscriber'),
                         dataType: 'json',
                         cache: 'false',
                         success: function(data, textStatus, xhr) {
@@ -92,7 +92,7 @@ $(document).ready(function() {
                 Listen.trace('Listen.Profile.editSubscriber');
                 Listen.Profile.disableButtons();
                 Server.post({
-                    url: '/ajax/editSubscriber',
+                    url: Listen.url('/ajax/editSubscriber'),
                     properties: {
                         id: $('#profile-form-id').val(),
                         username: $('#profile-form-username').val(),
@@ -125,7 +125,7 @@ $(document).ready(function() {
                 
                 $('#pager-form button').attr('readonly', 'readonly');
                 Server.post({
-                    url: '/ajax/editPager',
+                    url: Listen.url('/ajax/editPager'),
                     properties: {
                         alternateNumber: $('#pager-form-alternate-number').val(),
                         alternateAddress: $('#pager-form-alternate-address').val(),
@@ -188,7 +188,7 @@ $(document).ready(function() {
             
             testAddress: function(type, address) {
                 Server.post({
-                    url: '/ajax/testNotificationSettings',
+                    url: Listen.url('/ajax/testNotificationSettings'),
                     properties: {
                         messageType: type,
                         address: address

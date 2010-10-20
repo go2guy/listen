@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -79,10 +80,11 @@ public final class ServletUtil
         request.getRequestDispatcher(to).forward(request, response);
     }
 
-    public static void redirect(String to, HttpServletResponse response) throws IOException
+    public static void redirect(String to, HttpServletRequest request, HttpServletResponse response) throws IOException
     {
-        LOG.debug("Redirecting to [" + to + "]");
-        response.sendRedirect(to);
+        String destination = request.getContextPath() + to;
+        LOG.debug("Redirecting to [" + destination + "]");
+        response.sendRedirect(destination);
     }
     
     public static URL encodeUri(String stringUri)

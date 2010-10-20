@@ -19,7 +19,7 @@
     </div>
     <div id="right">
       <div id="login">
-        <form id="loginForm" name="loginForm" method="post" action="/login">
+        <form id="loginForm" name="loginForm" method="post" action="<%= request.getContextPath() %>/login">
           <fieldset> 
 <%
 Map<String, String> errors = (Map<String, String>)request.getAttribute("errors");

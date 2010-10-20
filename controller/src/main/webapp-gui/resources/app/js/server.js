@@ -26,7 +26,7 @@ var Server = {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/dropParticipant',
+            url: Listen.url('/ajax/dropParticipant'),
             data: { id: id },
             success: function(data) {
                 //noticeSuccess('Participant dropped');
@@ -45,7 +45,7 @@ var Server = {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/markVoicemailReadStatus',
+            url: Listen.url('/ajax/markVoicemailReadStatus'),
             data: { id: id, readStatus: readStatus },
             success: function(data) { /* TODO anything? */ },
             error: function(req) { /* TODO anything? */ },
@@ -60,7 +60,7 @@ var Server = {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/muteParticipant',
+            url: Listen.url('/ajax/muteParticipant'),
             data: { id: id },
             success: function(data) {
                 //noticeSuccess('Participant muted');
@@ -83,7 +83,7 @@ var Server = {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/outdial',
+            url: Listen.url('/ajax/outdial'),
             data: { number: number,
                     conferenceId: conferenceId, 
                     interrupt: interrupt},
@@ -107,7 +107,7 @@ var Server = {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/startRecording',
+            url: Listen.url('/ajax/startRecording'),
             data: { id: id },
             success: function(data) {
                 //noticeSuccess('Started Recording');
@@ -126,7 +126,7 @@ var Server = {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/stopRecording',
+            url: Listen.url('/ajax/stopRecording'),
             data: { id: id },
             success: function(data) {
                 //noticeSuccess('Stopped Recording');
@@ -145,7 +145,7 @@ var Server = {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/unmuteParticipant',
+            url: Listen.url('/ajax/unmuteParticipant'),
             data: { id: id },
             success: function(data) {
                 //noticeSuccess('Participant unmuted');

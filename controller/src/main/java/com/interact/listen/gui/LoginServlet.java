@@ -149,11 +149,11 @@ public class LoginServlet extends HttpServlet
         if(errors.size() > 0)
         {
             httpSession.setAttribute("errors", errors);
-            ServletUtil.redirect("/login", response);
+            ServletUtil.redirect("/login", request, response);
         }
         else
         {
-            ServletUtil.redirect("/index", response);
+            ServletUtil.redirect("/index", request, response);
         }
     }
 

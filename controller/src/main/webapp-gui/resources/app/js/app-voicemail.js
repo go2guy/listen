@@ -6,7 +6,7 @@ $(document).ready(function() {
                 var interval;
 
                 var dynamicTable = new Listen.DynamicTable({
-                    url: '/ajax/getVoicemailList',
+                    url: Listen.url('/ajax/getVoicemailList'),
                     tableId: 'voicemail-table',
                     templateId: 'voicemail-row-template',
                     retrieveList: function(data) {
@@ -33,7 +33,7 @@ $(document).ready(function() {
                         Listen.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
                         Listen.setFieldContent(row.find('.voicemail-cell-play'), data.duration, animate);
 
-                        var downloadAction = '<a href="/ajax/downloadVoicemail?id=' + data.id + '">Download</a>';
+                        var downloadAction = '<a href="' + Listen.url('/ajax/downloadVoicemail?id=' + data.id) + '">Download</a>';
                         var deleteAction = '<a href="#" onclick="Listen.Voicemail.confirmDeleteVoicemail(' + data.id + ');return false;" title="Delete this voicemail">Delete</a>';
                         Listen.setFieldContent(row.find('.voicemail-cell-actions'), '<div>' + deleteAction + '</div><div>' + downloadAction + '</div>', false, true);
 
@@ -93,7 +93,7 @@ $(document).ready(function() {
             deleteVoicemail: function(id) {
                 Listen.trace('Listen.Voicemail.deleteVoicemail');
                 Server.post({
-                    url: '/ajax/deleteVoicemail',
+                    url: Listen.url('/ajax/deleteVoicemail'),
                     properties: { id: id }
                 });
             },

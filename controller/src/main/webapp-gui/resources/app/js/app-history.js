@@ -7,7 +7,7 @@ $(document).ready(function() {
                 var max = 25;
 
                 var historyList = new Listen.DynamicTable({
-                    url: '/ajax/getHistoryList',
+                    url: Listen.url('/ajax/getHistoryList'),
                     tableId: 'history-list',
                     isList: true,
                     templateId: function(dataRow) {

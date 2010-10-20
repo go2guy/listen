@@ -44,7 +44,7 @@ public class LogoutServlet extends HttpServlet
             session.removeAttribute("subscriber");
         }
 
-        ServletUtil.redirect("/login", response);
+        ServletUtil.redirect("/login", request, response);
     }
 
     private void writeLogoutHistory(Session session, Subscriber subscriber)

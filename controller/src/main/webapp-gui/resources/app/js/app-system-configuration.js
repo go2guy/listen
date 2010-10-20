@@ -8,7 +8,7 @@ $(document).ready(function() {
             Listen.trace('Loading system configuration');
             var start = Listen.timestamp();
             $.ajax({
-                url: '/ajax/getProperties',
+                url: Listen.url('/ajax/getProperties'),
                 dataType: 'json',
                 cache: false,
                 success: function(data, textStatus, xhr) {
@@ -88,7 +88,7 @@ $(document).ready(function() {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/setProperties',
+            url: Listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.mail.smtpHost': $('#smtp-server').val(),
                     'com.interact.listen.mail.smtpUsername': $('#smtp-username').val(),
                     'com.interact.listen.mail.smtpPassword': $('#smtp-password').val(),
@@ -145,7 +145,7 @@ $(document).ready(function() {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/setProperties',
+            url: Listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.dnisMapping': value },
             success: function(data) {
                 application.load();
@@ -172,7 +172,7 @@ $(document).ready(function() {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/setProperties',
+            url: Listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.conferencing.pinLength': $('#conferencing-configuration-pinLength').val() },
             success: function(data) {
                 application.load();
@@ -198,7 +198,7 @@ $(document).ready(function() {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/setProperties',
+            url: Listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.realizeUrl': $('#alerts-configuration-realizeUrl').val(),
                     'com.interact.listen.realizeAlertName': $('#alerts-configuration-realizeAlertName').val() },
             success: function(data) {
@@ -225,7 +225,7 @@ $(document).ready(function() {
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
-            url: '/ajax/setProperties',
+            url: Listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.activeDirectory.enabled': $('#sysconfig-authentication-activeDirectoryEnabled').attr('checked'),
                     'com.interact.listen.activeDirectory.server': $('#sysconfig-authentication-activeDirectoryServer').val(),
                     'com.interact.listen.activeDirectory.domain': $('#sysconfig-authentication-activeDirectoryDomain').val() },

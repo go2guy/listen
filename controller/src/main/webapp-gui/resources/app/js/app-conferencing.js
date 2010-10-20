@@ -46,7 +46,7 @@ function Conference(id) {
         conferenceId = id;
     } else {
         Listen.debug('Constructing conference without id; asking server');
-        $.getJSON('/ajax/getConferenceInfo', Listen.bind(this, function(data) {
+        $.getJSON(Listen.url('/ajax/getConferenceInfo'), Listen.bind(this, function(data) {
             conferenceId = data.info.id;
             Listen.debug('Got id [' + conferenceId + '] from server');
             // if conferencing is the first loaded application, the Listen object will try and load it;
@@ -66,7 +66,7 @@ function Conference(id) {
     var interval;
 
     var callerTable = new Listen.DynamicTable({
-        url: '/ajax/getConferenceParticipants?id=' + conferenceId,
+        url: Listen.url('/ajax/getConferenceParticipants?id=' + conferenceId),
         tableId: 'conference-caller-table',
         templateId: 'caller-row-template',
         retrieveList: function(data) {
@@ -161,7 +161,7 @@ function Conference(id) {
     });
 
     var recordingTable = new Listen.DynamicTable({
-        url: '/ajax/getConferenceRecordingList?id=' + conferenceId,
+        url: Listen.url('/ajax/getConferenceRecordingList?id=' + conferenceId),
         tableId: 'conference-recording-table',
         templateId: 'recording-row-template',
         retrieveList: function(data) {
@@ -180,12 +180,12 @@ function Conference(id) {
             }
 
             Listen.setFieldContent(row.find('.recording-cell-fileSize'), (Math.floor((parseInt(data.fileSize) / 1024) * 100) / 100) + "KB", animate);
-            Listen.setFieldContent(row.find('.recording-cell-download'), '<a href="/ajax/getConferenceRecording?id=' + data.id + '">Download</a>', false, true);
+            Listen.setFieldContent(row.find('.recording-cell-download'), '<a href="' + Listen.url('/ajax/getConferenceRecording?id=' + data.id) + '">Download</a>', false, true);
         }
     });
 
     var scheduledConferenceTable = new Listen.DynamicTable({
-        url: '/ajax/getScheduledConferenceList?historic=false&id=' + conferenceId,
+        url: Listen.url('/ajax/getScheduledConferenceList?historic=false&id=' + conferenceId),
         tableId: 'scheduled-conference-table',
         templateId: 'scheduled-conference-row-template',
         retrieveList: function(data) {
@@ -235,7 +235,7 @@ function Conference(id) {
     });
 
     var historicScheduledConferenceTable = new Listen.DynamicTable({
-        url: '/ajax/getScheduledConferenceList?historic=true&id=' + conferenceId,
+        url: Listen.url('/ajax/getScheduledConferenceList?historic=true&id=' + conferenceId),
         tableId: 'historic-scheduled-conference-table',
         templateId: 'scheduled-conference-row-template',
         retrieveList: function(data) {
@@ -285,21 +285,21 @@ function Conference(id) {
     });
 
     var pollAndSet = function(animate) {
-        callerTable.setUrl('/ajax/getConferenceParticipants?id=' + conferenceId);
+        callerTable.setUrl(Listen.url('/ajax/getConferenceParticipants?id=' + conferenceId));
         callerTable.pollAndSet(animate);
 
-        recordingTable.setUrl('/ajax/getConferenceRecordingList?id=' + conferenceId);
+        recordingTable.setUrl(Listen.url('/ajax/getConferenceRecordingList?id=' + conferenceId));
         recordingTable.pollAndSet(animate);
 
-        scheduledConferenceTable.setUrl('/ajax/getScheduledConferenceList?historic=false&id=' + conferenceId);
+        scheduledConferenceTable.setUrl(Listen.url('/ajax/getScheduledConferenceList?historic=false&id=' + conferenceId));
         scheduledConferenceTable.pollAndSet(animate);
 
-        historicScheduledConferenceTable.setUrl('/ajax/getScheduledConferenceList?historic=true&id=' + conferenceId);
+        historicScheduledConferenceTable.setUrl(Listen.url('/ajax/getScheduledConferenceList?historic=true&id=' + conferenceId));
         historicScheduledConferenceTable.pollAndSet(animate);
 
         var start = Listen.timestamp();
         $.ajax({
-            url: '/ajax/getConferenceInfo?id=' + conferenceId,
+            url: Listen.url('/ajax/getConferenceInfo?id=' + conferenceId),
             dataType: 'json',
             cache: false,
             success: function(data, textStatus, xhr) {
@@ -391,7 +391,7 @@ function scheduleConference(event) {
     var start = Listen.timestamp();
     $.ajax({
         type: 'POST',
-        url: '/ajax/scheduleConference',
+        url: Listen.url('/ajax/scheduleConference'),
         data: { date: scheduleConferenceDate.val(),
                 hour: scheduleConferenceTimeHour.val(),
                 minute: scheduleConferenceTimeMinute.val(),

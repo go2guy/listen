@@ -26,7 +26,7 @@ $(document).ready(function() {
             Application: function() {
                 var interval, promptInterval;
                 var dynamicTable = new Listen.DynamicTable({
-                    url: '/ajax/getAttendantMenuList',
+                    url: Listen.url('/ajax/getAttendantMenuList'),
                     tableId: 'attendant-menu-list',
                     templateId: 'attendant-menu-list-row-template',
                     retrieveList: function(data) {
@@ -78,7 +78,7 @@ $(document).ready(function() {
             loadMenu: function(id) {
                 var start = Listen.timestamp();
                     $.ajax({
-                        url: '/ajax/getAttendantMenuList',
+                        url: Listen.url('/ajax/getAttendantMenuList'),
                         dataType: 'json',
                         cache: false,
                         success: function(data, textStatus, xhr) {
@@ -317,7 +317,7 @@ $(document).ready(function() {
                 var menu = Listen.Attendant.buildMenuObject();
                 Listen.Attendant.clearError();
                 Server.post({
-                    url: '/ajax/saveAttendantMenu',
+                    url: Listen.url('/ajax/saveAttendantMenu'),
                     properties: {
                         menu: JSON.stringify(menu)
                     },
@@ -338,7 +338,7 @@ $(document).ready(function() {
                     Listen.Attendant.resetMenu();
                 }
                 Server.post({
-                    url: '/ajax/deleteAttendantMenu',
+                    url: Listen.url('/ajax/deleteAttendantMenu'),
                     properties: {
                         id: id
                     },
@@ -368,7 +368,7 @@ $(document).ready(function() {
             loadPrompts: function() {
                 Listen.trace('Listen.Attendant.loadPrompts');
                 $.ajax({
-                    url: '/ajax/getMenuPrompts',
+                    url: Listen.url('/ajax/getMenuPrompts'),
                     dataType: 'json',
                     cache: false,
                     success: function(data, textStatus, xhr) {

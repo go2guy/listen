@@ -3,7 +3,7 @@ $(document).ready(function() {
     $.ajaxSetup({
         error: function(xhr, textStatus, errorThrown) {
             if(xhr && xhr.status == 401) {
-                window.location = '/logout';
+                window.location = CONTEXT + '/logout';
             } else {
                 Listen.error('textStatus = [' + textStatus + '], xhrStatus = [' + xhr.status + ']');
             }
@@ -50,7 +50,7 @@ $(document).ready(function() {
     setInterval(function() {
         var start = Listen.timestamp();
         $.ajax({
-            url: '/meta/ping?auth=true',
+            url: CONTEXT + '/meta/ping?auth=true',
             cache: 'false',
             success: function(data, textStatus, xhr) {
                 if(!data || data != 'pong') {
@@ -436,6 +436,10 @@ $(document).ready(function() {
 
             timestamp: function() {
                 return (new Date()).getTime();
+            },
+
+            url: function(url) {
+                return CONTEXT + url;
             }
         };
 

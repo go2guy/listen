@@ -6,7 +6,7 @@ $(document).ready(function() {
                 Listen.trace('Listen.Conferences.Application [construct]');
                 var interval;
                 var dynamicTable = new Listen.DynamicTable({
-                    url: '/ajax/getConferenceList',
+                    url: Listen.url('/ajax/getConferenceList'),
                     tableId: 'conference-list-table',
                     templateId: 'conference-row-template',
                     retrieveList: function(data) {

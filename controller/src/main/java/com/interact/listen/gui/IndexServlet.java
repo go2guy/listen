@@ -18,7 +18,7 @@ public class IndexServlet extends HttpServlet
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
-            ServletUtil.redirect("/login", response);
+            ServletUtil.redirect("/login", request, response);
             return;
         }
         ServletUtil.forward("/WEB-INF/jsp/index.jsp", request, response);

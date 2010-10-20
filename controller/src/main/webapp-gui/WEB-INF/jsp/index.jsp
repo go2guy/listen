@@ -14,6 +14,9 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
     <link rel="stylesheet" type="text/css" href="./resources/jquery/skin/css/custom-theme/jquery-ui-1.8.2.custom.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/css/all-min.css">
     <link rel="stylesheet" type="text/css" href="./resources/app/css/index-min.css">
+    <script type="text/javascript">
+var CONTEXT = '<%= request.getContextPath() %>';
+    </script>
     <script type="text/javascript" src="./resources/jquery/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/jquery-ui-1.8rc3.custom.min.js"></script>
     <script type="text/javascript" src="./resources/jquery/plugins/jquery.simplemodal-1.3.5.min.js"></script>
@@ -45,7 +48,7 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
   <body>
     <div id="header">
       <div class="logo"><img src="resources/app/images/new/listen_logo_50x24.png" alt="Listen"/></div>
-      <div class="info"><b><%= subscriber.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="#" id="profile-button" name="profile-button" title="Settings">Settings</a>&nbsp;<a href="/logout" id="logoutButton" name="logoutButton">Logout</a></div>
+      <div class="info"><b><%= subscriber.getUsername() %></b>&nbsp;&bull;&nbsp;<a href="#" id="profile-button" name="profile-button" title="Settings">Settings</a>&nbsp;<a href="<%= request.getContextPath() %>/logout" id="logoutButton" name="logoutButton">Logout</a></div>
     </div>
     <div class="column-mask">
       <div class="two-column">

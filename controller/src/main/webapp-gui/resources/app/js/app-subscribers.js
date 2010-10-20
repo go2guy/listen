@@ -33,7 +33,7 @@ $(document).ready(function() {
                 Listen.trace('Listen.Subscribers.Application [construct]');
                 var interval;
                 var dynamicTable = new Listen.DynamicTable({
-                    url: '/ajax/getSubscriberList',
+                    url: Listen.url('/ajax/getSubscriberList'),
                     tableId: 'subscribers-table',
                     templateId: 'subscriber-row-template',
                     retrieveList: function(data) {
@@ -85,7 +85,7 @@ $(document).ready(function() {
                 Listen.Subscribers.resetForm();
                 var start = Listen.timestamp();
                 $.ajax({
-                    url: '/ajax/getSubscriber?id=' + id,
+                    url: Listen.url('/ajax/getSubscriber?id=' + id),
                     dataType: 'json',
                     cache: 'false',
                     success: function(data, textStatus, xhr) {
@@ -165,7 +165,7 @@ $(document).ready(function() {
                 Listen.trace('Listen.Subscribers.addSubscriber');
                 Listen.Subscribers.disableButtons();
                 Server.post({
-                    url: '/ajax/addSubscriber',
+                    url: Listen.url('/ajax/addSubscriber'),
                     properties: {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
@@ -196,7 +196,7 @@ $(document).ready(function() {
                 Listen.trace('Listen.Subscribers.editSubscriber');
                 Listen.Subscribers.disableButtons();
                 Server.post({
-                    url: '/ajax/editSubscriber',
+                    url: Listen.url('/ajax/editSubscriber'),
                     properties: {
                         id: $('#subscriber-form-id').val(),
                         username: $('#subscriber-form-username').val(),
@@ -234,7 +234,7 @@ $(document).ready(function() {
             deleteSubscriber: function(id) {
                 Listen.trace('Listen.Subscribers.deleteSubscriber');
                 Server.post({
-                    url: '/ajax/deleteSubscriber',
+                    url: Listen.url('/ajax/deleteSubscriber'),
                     properties: { id: id }
                 });
             },
@@ -281,7 +281,7 @@ $(document).ready(function() {
 
             testAddress: function(type, address) {
                 Server.post({
-                    url: '/ajax/testNotificationSettings',
+                    url: Listen.url('/ajax/testNotificationSettings'),
                     properties: {
                         messageType: type,
                         address: address
