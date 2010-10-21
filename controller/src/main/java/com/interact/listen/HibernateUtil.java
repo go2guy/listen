@@ -399,7 +399,7 @@ public final class HibernateUtil
             LOG.warn("Removed " + removed + " existing participants on startup");
         }
 
-        org.hibernate.Query updateConferences =session.createSQLQuery("UPDATE CONFERENCE SET IS_STARTED = FALSE, ARCADE_ID = NULL, RECORDING_SESSION_ID = NULL");
+        org.hibernate.Query updateConferences =session.createSQLQuery("UPDATE CONFERENCE SET IS_STARTED = FALSE, IS_RECORDING = FALSE, ARCADE_ID = NULL, RECORDING_SESSION_ID = NULL");
         int updated = updateConferences.executeUpdate();
         if(updated > 0)
         {
