@@ -392,15 +392,13 @@ public final class HibernateUtil
 
     private static void resetTransientData(Session session)
     {
-        org.hibernate.Query removeParticipants = session.createSQLQuery("DELETE FROM PARTICIPANTS");
-        int removed = removeParticipants.executeUpdate();
+        int removed = session.createQuery("delete Participant").executeUpdate();
         if(removed > 0)
         {
             LOG.warn("Removed " + removed + " existing participants on startup");
         }
 
-        org.hibernate.Query updateConferences =session.createSQLQuery("UPDATE CONFERENCE SET IS_STARTED = FALSE, IS_RECORDING = FALSE, ARCADE_ID = NULL, RECORDING_SESSION_ID = NULL");
-        int updated = updateConferences.executeUpdate();
+        int updated = session.createQuery("update Conference set isStarted = false, isRecording = false, arcadeId = null, recordingSessionId = NULL").executeUpdate();
         if(updated > 0)
         {
             LOG.warn("Updated " + updated + " existing conference statuses on startup");
