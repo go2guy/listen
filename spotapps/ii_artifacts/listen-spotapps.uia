@@ -136,7 +136,8 @@
                     <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
                 </property>
             </question>
-            <question level="not_in_backup" severity="take_default">
+
+            <question level="not_in_backup" severity="ask">
                 <text>Turn on Transcription</text>
                 <default>n</default>
                 <validateRegex>^(y|n)$</validateRegex>
