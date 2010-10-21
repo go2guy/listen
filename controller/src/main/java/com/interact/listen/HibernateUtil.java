@@ -172,6 +172,15 @@ public final class HibernateUtil
 
             PersistenceService persistenceService = new PersistenceService(session, null, Channel.GUI);
 
+            // at this point, we've been persisting every Resource, which means things like
+            // Participants and Conference status get saved. resetting these data on startup
+            // restores all conferences to a known state and removes the transient data.
+
+            // IMPORTANT if we ever implement an acive-active (and/or clustered) solution, this
+            // deletion needs to be moved or removed. if the transient data is distributed
+            // throughout the cluster, this would cause it to be removed everywhere if another
+            // node was started while the cluster was running
+            resetTransientData(session);
             createAdminSubscriberIfNotPresent(session, persistenceService);
             createDefaultAttendantMenuIfNotPresent(session);
 
@@ -379,5 +388,22 @@ public final class HibernateUtil
         CronTrigger cronTrigger = new CronTrigger("cronTrigger", "group2", "0 0/1 * * * ?");
         sched.scheduleJob(jobDetail, cronTrigger);
         sched.start();
+    }
+
+    private static void resetTransientData(Session session)
+    {
+        org.hibernate.Query removeParticipants = session.createSQLQuery("DELETE FROM PARTICIPANTS");
+        int removed = removeParticipants.executeUpdate();
+        if(removed > 0)
+        {
+            LOG.warn("Removed " + removed + " existing participants on startup");
+        }
+
+        org.hibernate.Query updateConferences =session.createSQLQuery("UPDATE CONFERENCE SET IS_STARTED = FALSE, ARCADE_ID = NULL, RECORDING_SESSION_ID = NULL");
+        int updated = updateConferences.executeUpdate();
+        if(updated > 0)
+        {
+            LOG.warn("Updated " + updated + " existing conference statuses on startup");
+        }
     }
 }
