@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -60,6 +61,10 @@ public class VoicemailBroadcastReceiver extends BroadcastReceiver
 
             Notification notification = new Notification(icon, title, when);
             notification.flags |= Notification.FLAG_AUTO_CANCEL;
+            notification.vibrate = new long[] {100, 1000};
+            //Comment out or change to existing fie on the emulator for dev.  There currently isn't a default
+            //notification sound for the emulator.
+            notification.defaults |= Notification.DEFAULT_SOUND;
 
             Intent notificationIntent = new Intent(context, ListenVoicemail.class);
             PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
