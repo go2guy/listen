@@ -4,10 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.interact.listen.InputStreamMockHttpServletRequest;
-import com.interact.listen.ListenTest;
-import com.interact.listen.TestUtil;
+import com.interact.listen.*;
 import com.interact.listen.exception.ListenServletException;
+import com.interact.listen.history.Channel;
 import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.Conference;
@@ -38,9 +37,11 @@ public class ApiServletTest extends ListenTest
     {
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
+
+        request.setAttribute(RequestInformationFilter.CHANNEL_KEY, Channel.TUI);
     }
 
-    // non-existant resource type
+    // nonexistent resource type
 
     // TODO re-enable this test once we get the Exception handling filter in place (to handle the
     // ClassNotFoundException thrown from ResourceLocatorFilter)
@@ -313,6 +314,7 @@ public class ApiServletTest extends ListenTest
         // now delete it
         request = new InputStreamMockHttpServletRequest();
         response = new MockHttpServletResponse();
+        request.setAttribute(RequestInformationFilter.CHANNEL_KEY, Channel.TUI);
 
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_CLASS_KEY, Subscriber.class);
         request.setAttribute(ApiResourceLocatorFilter.RESOURCE_ID_KEY, String.valueOf(id));

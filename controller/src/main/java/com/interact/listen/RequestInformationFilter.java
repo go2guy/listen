@@ -1,5 +1,7 @@
 package com.interact.listen;
 
+import com.interact.listen.history.Channel;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -17,6 +19,8 @@ import org.apache.log4j.Logger;
  */
 public class RequestInformationFilter implements Filter
 {
+    public static final String CHANNEL_KEY = "CHANNEL";
+
     private static final Logger LOG = Logger.getLogger(RequestInformationFilter.class);
 
     @Override
@@ -39,9 +43,11 @@ public class RequestInformationFilter implements Filter
         info.append("]");
 
         String headers = getHeaders((HttpServletRequest)request);
-        info.append(" [").append(headers ).append("]");
+        info.append(" [").append(headers).append("]");
 
         LOG.info("--> " + info);
+
+        setChannelAttribute(request);
 
         try
         {
@@ -56,13 +62,13 @@ public class RequestInformationFilter implements Filter
     @Override
     public void init(FilterConfig config)
     {
-    // not implemented
+        // not implemented
     }
 
     @Override
     public void destroy()
     {
-    // not implemented
+        // not implemented
     }
 
     private String getHeaders(HttpServletRequest request)
@@ -76,5 +82,25 @@ public class RequestInformationFilter implements Filter
             headers.add(name + ": " + value);
         }
         return StringUtils.join(headers, ", ");
+    }
+
+    private void setChannelAttribute(ServletRequest request)
+    {
+        Channel channel = Channel.TUI;
+        String channelHeader = ((HttpServletRequest)request).getHeader("X-Listen-Channel");
+        if(channelHeader != null)
+        {
+            try
+            {
+                channel = Channel.valueOf(channelHeader);
+            }
+            catch(IllegalArgumentException e)
+            {
+                LOG.warn("Unknown X-Listen-Channel HTTP header value [" + channelHeader +
+                         "] provided, defaulting to TUI");
+                channel = Channel.TUI;
+            }
+        }
+        request.setAttribute(CHANNEL_KEY, channel);
     }
 }

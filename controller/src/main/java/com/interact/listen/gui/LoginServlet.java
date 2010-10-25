@@ -3,14 +3,10 @@ package com.interact.listen.gui;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.ServletUtil;
-import com.interact.listen.config.Configuration;
-import com.interact.listen.config.Property;
-import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.history.HistoryService;
-import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.security.*;
+import com.interact.listen.security.AuthenticationService;
 import com.interact.listen.stats.Stat;
 
 import java.io.IOException;
@@ -64,84 +60,24 @@ public class LoginServlet extends HttpServlet
             errors.put("password", "Please provide a password");
         }
 
-        boolean adLogin = false;
         if(errors.size() == 0)
         {
-            Subscriber subscriber = Subscriber.queryByUsername(hibernateSession, username);
-            if(subscriber != null && !subscriber.getIsActiveDirectory())
+            AuthenticationService service = new AuthenticationService();
+            AuthenticationService.Result result = service.authenticate(hibernateSession, username, password);
+            
+            if(!result.wasSuccessful())
             {
-                if(!isValidPassword(subscriber, password))
-                {
-                    errors.put("username", "Sorry, those aren't valid credentials");
-                    LOG.warn("Local Auth: Invalid credentials for [" + username + "] (invalid local password)");
-                }
-                else
-                {
-                    LOG.debug("Login successful for local account [" + username + "]");
-                }
-            }
-            else if(!Boolean.valueOf(Configuration.get(Property.Key.ACTIVE_DIRECTORY_ENABLED)))
-            {
-                errors.put("username", "Sorry, those aren't valid credentials");
-                LOG.warn("Local Auth: Invalid credentials for [" + username + "] (subscriber = null, AD = disabled)");
-            }
-            else
-            {
-                adLogin = true;
-                String server = Configuration.get(Property.Key.ACTIVE_DIRECTORY_SERVER);
-                String domain = Configuration.get(Property.Key.ACTIVE_DIRECTORY_DOMAIN);
-                ActiveDirectoryAuthenticator auth = new ActiveDirectoryAuthenticator(server, domain);
-                try
-                {
-                    AuthenticationResult result = auth.authenticate(username, password);
-                    if(!result.isSuccessful())
-                    {
-                        errors.put("username", "Sorry, those aren't valid credentials");
-                        LOG.warn("AD Auth: Invalid credentials for [" + username + "], (invalid AD password)");
-                    }
-                    else
-                    {
-                        LOG.debug("Login successful for Active Directory account [" + username + "]");
-                        if(subscriber == null)
-                        {
-                            LOG.debug("Local Subscriber for AD user does not exist, creating");
-                            subscriber = new Subscriber();
-                            subscriber.setUsername(username);
-                            subscriber.setIsActiveDirectory(true);
-                            subscriber.setLastLogin(new Date());
-                            subscriber.setRealName(result.getDisplayName());
-
-                            PersistenceService ps = new PersistenceService(hibernateSession, subscriber, Channel.GUI);
-                            ps.save(subscriber);
-
-                            if(result.getTelephoneNumber() != null)
-                            {
-                                try
-                                {
-                                    subscriber.updateAccessNumbers(hibernateSession, ps, result.getTelephoneNumber() + ":true");
-                                }
-                                catch(NumberAlreadyInUseException e)
-                                {
-                                    LOG.warn("When adding new AD Subscriber [" + username + "], accessNumber [" +
-                                             e.getNumber() + "] was already in use by another Subscriber");
-                                }
-                            }
-
-                            Conference.createNew(ps, subscriber);
-                        }
-                    }
-                }
-                catch(AuthenticationException e)
-                {
-                    errors.put("username", "An error occurred logging in, please contact an Administrator");
-                    LOG.error(e);
-                }
+                errors.put("username", result.getCode().getMessage());
             }
 
-            if(subscriber != null && errors.size() == 0)
+            Subscriber subscriber = result.getSubscriber();
+            if(subscriber != null && result.wasSuccessful())
             {
                 updateLastLogin(hibernateSession, subscriber);
+
+                boolean adLogin = result.getRealm() == AuthenticationService.Realm.ACTIVE_DIRECTORY;
                 writeLoginHistory(hibernateSession, subscriber, adLogin);
+
                 httpSession.setAttribute("subscriber", subscriber);
             }
         }
@@ -163,11 +99,6 @@ public class LoginServlet extends HttpServlet
         Subscriber original = subscriber.copy(true);
         subscriber.setLastLogin(new Date());
         persistenceService.update(subscriber, original);
-    }
-
-    private boolean isValidPassword(Subscriber subscriber, String password)
-    {
-        return subscriber.getPassword().equals(SecurityUtil.hashPassword(password));
     }
 
     private void writeLoginHistory(Session session, Subscriber subscriber, boolean isActiveDirectory)

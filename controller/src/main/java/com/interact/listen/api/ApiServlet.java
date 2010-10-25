@@ -3,6 +3,8 @@ package com.interact.listen.api;
 import com.interact.listen.*;
 import com.interact.listen.ResourceListService.Builder;
 import com.interact.listen.ResourceListService.SortOrder;
+import com.interact.listen.api.security.AuthenticationFilter;
+import com.interact.listen.api.security.AuthenticationFilter.Authentication;
 import com.interact.listen.exception.*;
 import com.interact.listen.history.Channel;
 import com.interact.listen.marshal.MalformedContentException;
@@ -408,38 +410,35 @@ public class ApiServlet extends HttpServlet
 
     private static PersistenceService getPersistenceService(Session session, HttpServletRequest request)
     {
-        String subscriberHeader = request.getHeader("X-Listen-Subscriber");
-        String channelHeader = request.getHeader("X-Listen-Channel");
-
         Subscriber subscriber = null;
-        if(subscriberHeader != null)
-        {
-            Long id = Marshaller.getIdFromHref(subscriberHeader);
-            if(id != null)
-            {
-                subscriber = Subscriber.queryById(session, id);
-            }
 
-            if(subscriber == null || id == null)
+        Authentication auth = (Authentication)request.getAttribute(AuthenticationFilter.AUTHENTICATION_KEY);
+        if(auth != null)
+        {
+            if(auth.getType() == AuthenticationFilter.AuthenticationType.SUBSCRIBER && auth.getSubscriber() != null)
             {
-                LOG.warn("X-Listen-Subscriber HTTP header contained unknown subscriber href [" + subscriberHeader + "]");
+                subscriber = auth.getSubscriber();
+            }
+        }
+        else
+        {
+            String subscriberHeader = request.getHeader("X-Listen-Subscriber");
+            if(subscriberHeader != null)
+            {
+                Long id = Marshaller.getIdFromHref(subscriberHeader);
+                if(id != null)
+                {
+                    subscriber = Subscriber.queryById(session, id);
+                }
+    
+                if(subscriber == null || id == null)
+                {
+                    LOG.warn("X-Listen-Subscriber HTTP header contained unknown subscriber href [" + subscriberHeader + "]");
+                }
             }
         }
 
-        Channel channel = Channel.TUI;
-        if(channelHeader != null)
-        {
-            try
-            {
-                channel = Channel.valueOf(channelHeader);
-            }
-            catch(IllegalArgumentException e)
-            {
-                LOG.warn("Unknown X-Listen-Channel HTTP header value [" + channelHeader + "] provided, defaulting to TUI");
-                channel = Channel.TUI;
-            }
-        }
-
+        Channel channel = (Channel)request.getAttribute(RequestInformationFilter.CHANNEL_KEY);
         return new PersistenceService(session, subscriber, channel);
     }
 
