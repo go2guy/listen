@@ -24,7 +24,7 @@
     switch ($method) {
         case 'GET':
             $destURL .= "/".$rsrc.$data;
-            $header = array("Accept: application/json");
+            $header = array("Accept: application/json", "X-Listen-AuthenticationType: U1lTVEVN");
             if ($lstnChannel != "") array_push($header, "X-Listen-Channel: ". $lstnChannel);
             if ($lstnSub != "") array_push($header, "X-Listen-Subscriber: ".  $lstnSub);
             $options = array(CURLOPT_URL => $destURL,
@@ -36,7 +36,7 @@
             break;
         case 'POST':
             $destURL .= "/".$rsrc;
-            $header = array("Content-Type: $ContentType");
+            $header = array("Content-Type: $ContentType", "X-Listen-AuthenticationType: U1lTVEVN");
             if ($lstnChannel != "") array_push($header, "X-Listen-Channel: ". $lstnChannel);
             if ($lstnSub != "") array_push($header, "X-Listen-Subscriber: ".  $lstnSub);
             $options = array(CURLOPT_URL => $destURL,
@@ -51,7 +51,7 @@
         case 'PUT':
         case 'DELETE':
             $destURL .= "/".$rsrc."/".(int)$ID;
-            $header = array("Content-Type: $ContentType", "Content-Length: ". strlen($data));
+            $header = array("Content-Type: $ContentType", "Content-Length: ". strlen($data), "X-Listen-AuthenticationType: U1lTVEVN");
             if ($lstnChannel != "") array_push($header, "X-Listen-Channel: ". $lstnChannel);
             if ($lstnSub != "") array_push($header, "X-Listen-Subscriber: ".  $lstnSub);
             $options = array(CURLOPT_URL => $destURL,
