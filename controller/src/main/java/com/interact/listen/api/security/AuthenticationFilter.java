@@ -1,11 +1,18 @@
 package com.interact.listen.api.security;
 
 import com.interact.listen.HibernateUtil;
+import com.interact.listen.api.util.HttpDate;
+import com.interact.listen.api.util.Signature;
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
+import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.AuthenticationService;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.joda.time.LocalDateTime;
 
 public class AuthenticationFilter implements Filter
 {
@@ -24,6 +32,12 @@ public class AuthenticationFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
         throws ServletException, IOException
     {
+        if(!Boolean.valueOf(Configuration.get(Property.Key.AUTHENTICATE_API)))
+        {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String typeHeader = ((HttpServletRequest)request).getHeader("X-Listen-AuthenticationType");
         if(typeHeader != null)
         {
@@ -83,18 +97,44 @@ public class AuthenticationFilter implements Filter
 
             case SYSTEM:
 
-//                String authToken = ((HttpServletRequest)request).getHeader("X-Listen-AuthenticationToken");
-//                if(authToken == null)
-//                {
-//                    LOG.warn("Received API request for system authentication with null token");
-//                    throw new UnauthorizedServletException("Request is missing credentials in header");
-//                }
-//
-//                authToken = new String(Base64.decodeBase64(authToken));
+                String date = ((HttpServletRequest)request).getHeader("Date");
+                String signature = ((HttpServletRequest)request).getHeader("X-Listen-Signature");
 
-                // TODO validate the token
-                // TODO set request attribute
-                request.setAttribute(AUTHENTICATION_KEY, Authentication.systemAuthentication("API User")); // FIXME hard-coded
+                if(date == null)
+                {
+                    LOG.warn("Received request with missing 'Date' header");
+                    throw new UnauthorizedServletException("Missing authorization component(s)");
+                }
+
+                if(signature == null)
+                {
+                    LOG.warn("Received request with missing 'X-Listen-Signature' header");
+                    throw new UnauthorizedServletException("Missing authorization component(s)");
+                }
+
+                String expected = Signature.create(date);
+                if(!expected.equals(signature))
+                {
+                    throw new UnauthorizedServletException("Signature is invalid");
+                }
+
+                try
+                {
+                    Date messageDate = HttpDate.parse(date);
+                    LocalDateTime local = new LocalDateTime(messageDate.getTime());
+                    LocalDateTime now = new LocalDateTime();
+
+                    if(local.isBefore(now.minusMinutes(5)) || local.isAfter(now.plusMinutes(5)))
+                    {
+                        throw new UnauthorizedServletException("Unauthorized, request expired");
+                    }
+                }
+                catch(ParseException e)
+                {
+                    throw new BadRequestServletException("Date header is not properly formatted");
+                }
+
+                request.setAttribute(AUTHENTICATION_KEY, Authentication.systemAuthentication(request.getRemoteHost()));
                 break;
 
             default:

@@ -3,6 +3,8 @@ package com.interact.listen.api.security;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.api.ApiResourceLocatorFilter;
 import com.interact.listen.api.security.AuthenticationFilter.Authentication;
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Resource;
 import com.interact.listen.resource.Subscriber;
@@ -35,6 +37,12 @@ public class AuthorizationFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
         throws ServletException, IOException
     {
+        if(!Boolean.valueOf(Configuration.get(Property.Key.AUTHENTICATE_API)))
+        {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // if the client is not authenticated, they can't access anything  
         Authentication authentication = (Authentication)request.getAttribute(AuthenticationFilter.AUTHENTICATION_KEY);
         if(authentication == null)

@@ -1,0 +1,95 @@
+# create a private key
+
+[khaaannnn:/home/java/projects/listen-trunk/controller/keys]# openssl genrsa -des3 -out iivip.com-private.pem 2048
+
+passphrase: max4100!
+
+# create certificate signing request
+
+[khaaannnn:/home/java/projects/listen-trunk/controller/keys]# openssl req -new -key iivip.com-private.pem -out iivip.com.csr
+Enter pass phrase for iivip.com-private.pem:
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [GB]:US
+State or Province Name (full name) [Berkshire]:Nebraska
+Locality Name (eg, city) [Newbury]:Lincoln
+Organization Name (eg, company) [My Company Ltd]:Interact Incorporated
+Organizational Unit Name (eg, section) []:
+Common Name (eg, your name or your server's hostname) []:*.iivip.com
+Email Address []:yeswecan@iivip.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+# back up the primary key
+
+[khaaannnn:/home/java/projects/listen-trunk/controller/keys]# cp iivip.com-private.pem iivip.com-private-protected.pem
+
+# remove private key passphrase
+
+[khaaannnn:/home/java/projects/listen-trunk/controller/keys]# openssl rsa -in iivip.com-private-protected.pem -out iivip.com-private.pem
+
+# self-sign the request and create a certificate
+
+[khaaannnn:/home/java/projects/listen-trunk/controller/keys]# openssl x509 -req -days 1826 -in iivip.com.csr -signkey iivip.com-private.pem -out iivip.com.crt
+Signature ok
+subject=/C=US/ST=Nebraska/L=Lincoln/O=Interact Incorporated/CN=*.iivip.com/emailAddress=yeswecan@iivip.com
+Getting Private key
+
+# import key with keytool
+
+[khaaannnn:/home/java/projects/listen-trunk/controller/keys]# /usr/java/latest/bin/keytool -import -alias jetty -file iivip.com.crt -trustcacerts
+Enter keystore password:
+Re-enter new password:
+Owner: EMAILADDRESS=yeswecan@iivip.com, CN=*.iivip.com, O=Interact Incorporated, L=Lincoln, ST=Nebraska, C=US
+Issuer: EMAILADDRESS=yeswecan@iivip.com, CN=*.iivip.com, O=Interact Incorporated, L=Lincoln, ST=Nebraska, C=US
+Serial number: b822c1689e4ca6b0
+Valid from: Tue Oct 26 15:04:19 CDT 2010 until: Mon Oct 26 15:04:19 CDT 2015
+Certificate fingerprints:
+         MD5:  33:D8:1C:16:4E:72:5B:16:85:0D:10:C4:0C:29:B3:86
+         SHA1: 42:E9:09:96:E4:05:F8:ED:C8:D1:81:25:AD:DA:FC:D7:6D:A8:A3:55
+         Signature algorithm name: SHA1withRSA
+         Version: 1
+Trust this certificate? [no]:  yes
+Certificate was added to keystore
+
+<passphrase above was "max4100!">
+
+
+
+##------------------PKCS12
+
+[khaaannnn:/home/java/projects/listen-trunk/controller/keys]# openssl pkcs12 -inkey iivip.com-private.pem -in iivip.com.crt -export -out iivip.com.pkcs12             Enter Export Password:
+Verifying - Enter Export Password:
+
+<export password was "max4100!">
+
+[khaaannnn:/home/java/projects/listen-trunk/controller/keys]# /usr/java/latest/bin/keytool -importkeystore -srckeystore iivip.com.pkcs12 -srcstoretype PKCS12
+Enter destination keystore password:
+Enter source keystore password:
+Entry for alias 1 successfully imported.
+Import command completed:  1 entries successfully imported, 0 entries failed or cancelled
+
+
+---------------
+CACERT Info:
+
+PASSWORD: D3cK#p4RtY
+
+EMAIL: hruskar@iivip.com
+EMAIL: scribnerc@iivip.com
+
+ANSWERS TO QUESTIONS:
+Greg Gissler
+Flute
+La Rue
+The Alley
+vipsrv03
+---------------

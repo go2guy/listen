@@ -57,7 +57,10 @@ public class Property
         SPOT_SYSTEMS             ("com.interact.listen.spotSystems",             ""),
 
         /* Phone number that people dial from the outside world to reach the system, with protocol, e.g. "PSTN:4024768786" or "VOIP:127.0.0.1" */
-        PHONE_NUMBER             ("com.interact.listen.phoneNumber",             "");
+        PHONE_NUMBER             ("com.interact.listen.phoneNumber",             ""),
+
+        /* Whether or not API requests should be authenticated */
+        AUTHENTICATE_API         ("com.interact.listen.auth.authenticateApi",    Boolean.FALSE.toString());
 
         private final String key;
         private final String defaultValue;
