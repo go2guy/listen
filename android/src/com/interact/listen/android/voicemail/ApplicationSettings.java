@@ -108,12 +108,33 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
                 Log.e(TAG, "Unable to get subscriber id from username", e);
             }
         }
+        if(key.equals(KEY_PASSWORD_PREFERENCE))
+        {
+            try
+            {
+                serviceBinder.getService().stopPolling();
+
+                Long subscriberId = controller.getSubscriberIdFromUsername(this);
+                ApplicationSettings.setSubscriberId(this, subscriberId);
+
+                serviceBinder.getService().startPolling();
+            }
+            catch(RemoteException e)
+            {
+                Log.e(TAG, "Unable to get subscriber id from username", e);
+            }
+        }
         else if(key.equals(KEY_HOST_PREFERENCE))
         {
             mHostPreference.setSummary(sharedPreferences.getString(key, ""));
             try
             {
                 serviceBinder.getService().stopPolling();
+                
+                //subscriber id could be different on this new host
+                Long subscriberId = controller.getSubscriberIdFromUsername(this);
+                ApplicationSettings.setSubscriberId(this, subscriberId);
+                
                 serviceBinder.getService().startPolling();
             }
             catch(RemoteException e)
@@ -127,6 +148,11 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             try
             {
                 serviceBinder.getService().stopPolling();
+                
+                //subscriber id could be different on the instance running on this new port
+                Long subscriberId = controller.getSubscriberIdFromUsername(this);
+                ApplicationSettings.setSubscriberId(this, subscriberId);
+                
                 serviceBinder.getService().startPolling();
             }
             catch(RemoteException e)
@@ -195,5 +221,17 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(KEY_USERNAME_PREFERENCE, ""); // TODO better default
+    }
+    
+    /**
+     * Gets the currently configured password.
+     * 
+     * @param context
+     * @return current password
+     */
+    public static String getPassword(Context context)
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(KEY_PASSWORD_PREFERENCE, ""); // TODO better default
     }
 }

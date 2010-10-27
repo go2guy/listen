@@ -4,6 +4,9 @@ import android.app.ListActivity;
 import android.app.NotificationManager;
 import android.content.*;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.*;
 import android.util.Log;
 import android.view.*;
@@ -67,7 +70,6 @@ public class ListenVoicemail extends ListActivity
             @Override
             public void run()
             {
-                Log.v(TAG, "Running shit.");
                 try
                 {
                     new VoicemailParser().onPostExecute(serviceBinder.getService().getVoicemails());

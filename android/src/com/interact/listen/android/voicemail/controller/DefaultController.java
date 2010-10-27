@@ -1,21 +1,24 @@
 package com.interact.listen.android.voicemail.controller;
 
-import android.util.Log;
-
-import com.interact.listen.android.voicemail.Voicemail;
-
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
@@ -26,15 +29,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
+import com.interact.listen.android.voicemail.Voicemail;
+
 public class DefaultController implements Controller
 {
     private static final String TAG = DefaultController.class.getName();
+    private static final String BASE_64_SUBSCRIBER = "U1VCU0NSSUJFUg==";
+    private static final String AUTHENTICATION_TYPE_HEADER = "X-Listen-AuthenticationType";
+    private static final String USERNAME_HEADER = "X-Listen-AuthenticationUsername";
+    private static final String PASSWORD_HEADER = "X-Listen-AuthenticationPassword";
 
     private int connectionTimeout = 5000;
     private int socketTimeout = 3000;
 
     @Override
-    public List<Voicemail> retrieveVoicemails(String api, Long subscriberId) throws ControllerException, ConnectionException
+    public List<Voicemail> retrieveVoicemails(String api, Long subscriberId, String username, String password) throws ControllerException,
+    							ConnectionException, AuthorizationException
     {
         Map<String, String> query = new HashMap<String, String>();
         query.put("subscriber", "/subscribers/" + subscriberId);
@@ -44,13 +56,21 @@ public class DefaultController implements Controller
 
         HttpGet httpGet = new HttpGet(api + "/voicemails" + buildQueryString(query));
         httpGet.addHeader("Accept", "application/json");
+        addAuthorizationHeaders(httpGet, username, password);
 
         HttpClient httpClient = getHttpClient();
         List<Voicemail> voicemails = new ArrayList<Voicemail>();
         try
         {
             Log.d(TAG, "Sending GET request to " + httpGet.getURI().toString());
-            JSONObject json = httpClient.execute(httpGet, new JsonObjectResponseHandler());
+            ControllerResponse response = httpClient.execute(httpGet, new JsonObjectResponseHandler());
+            
+            if(response.statusCode == 401)
+            {
+            	throw new AuthorizationException(api);
+            }
+            
+            JSONObject json = response.jsonObject;
             JSONArray results = (JSONArray)json.get("results");
             for(int i = 0, total = json.getInt("total"); i < total; i++)
             {
@@ -79,7 +99,8 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void markVoicemailsNotified(String api, long[] ids) throws ControllerException, ConnectionException
+    public void markVoicemailsNotified(String api, long[] ids, String username, String password) throws ControllerException, ConnectionException,
+    				AuthorizationException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -95,9 +116,11 @@ public class DefaultController implements Controller
                 httpPut.setEntity(entity);
                 httpPut.setHeader("Accept", "application/json");
                 httpPut.setHeader("Content-Type", "application/json");
+                addAuthorizationHeaders(httpPut, username, password);
 
                 Log.d(TAG, "Sending PUT request to " + httpPut.getURI().toString());
-                httpClient.execute(httpPut);
+                HttpResponse response = httpClient.execute(httpPut);
+                checkResponse(response, api);
             }
         }
         catch(UnsupportedEncodingException e)
@@ -115,7 +138,8 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void markVoicemailsRead(String api, Long[] ids) throws ControllerException, ConnectionException
+    public void markVoicemailsRead(String api, Long[] ids, String username, String password) throws ControllerException, ConnectionException,
+    				AuthorizationException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -131,9 +155,11 @@ public class DefaultController implements Controller
                 httpPut.setEntity(entity);
                 httpPut.setHeader("Accept", "application/json");
                 httpPut.setHeader("Content-Type", "application/json");
+                addAuthorizationHeaders(httpPut, username, password);
 
                 Log.d(TAG, "Sending PUT request to " + httpPut.getURI().toString());
-                httpClient.execute(httpPut);
+                HttpResponse response = httpClient.execute(httpPut);
+                checkResponse(response, api);
             }
         }
         catch(UnsupportedEncodingException e)
@@ -151,7 +177,8 @@ public class DefaultController implements Controller
     }
     
     @Override
-    public Long getSubscriberIdFromUsername(String api, String username) throws ControllerException, ConnectionException, UserNotFoundException
+    public Long getSubscriberIdFromUsername(String api, String username) throws ControllerException, ConnectionException, UserNotFoundException,
+    				AuthorizationException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -165,7 +192,14 @@ public class DefaultController implements Controller
         Log.d(TAG, "Sending GET request to " + httpGet.getURI().toString());
         try
         {
-            JSONObject json = httpClient.execute(httpGet, new JsonObjectResponseHandler());
+        	ControllerResponse response = httpClient.execute(httpGet, new JsonObjectResponseHandler());
+            
+            if(response.statusCode == 401)
+            {
+            	throw new AuthorizationException(api);
+            }
+            
+            JSONObject json = response.jsonObject;
             int total = json.getInt("total");
 
             if(total == 1)
@@ -188,7 +222,7 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void deleteVoicemails(String api, Long[] ids) throws ConnectionException
+    public void deleteVoicemails(String api, Long[] ids, String username, String password) throws ConnectionException, AuthorizationException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -198,15 +232,80 @@ public class DefaultController implements Controller
             {
                 HttpDelete httpDelete = new HttpDelete(api + "/voicemails/" + id);
                 httpDelete.setHeader("Accept", "application/json");
+                addAuthorizationHeaders(httpDelete, username, password);
 
                 Log.d(TAG, "Sending DELETE request to " + httpDelete.getURI().toString());
-                httpClient.execute(httpDelete);
+                HttpResponse response = httpClient.execute(httpDelete);
+                checkResponse(response, api);
             }
         }
         catch(IOException e)
         {
             throw new ConnectionException(e, api);
         }
+    }
+    
+    @Override
+    public String downloadVoicemailToTempFile(String api, Long id, String username, String password) throws ConnectionException,
+    		AuthorizationException
+    {
+    	HttpClient httpClient = getHttpClient();
+    	// remove the /api from the passed in api since we are going to /meta/audio/file
+    	String modifiedApi = api.substring(0, api.lastIndexOf("/"));
+    	InputStream in = null;
+		FileOutputStream out = null;
+		HttpEntity entity = null;
+    	
+    	try
+    	{
+    		File recordingFile = File.createTempFile("voicemail" + String.valueOf(id), ".wav");
+    		out = new FileOutputStream(recordingFile);
+    		
+    		HttpGet httpGet = new HttpGet(modifiedApi + "/meta/audio/file/" + id);
+    		addAuthorizationHeaders(httpGet, username, password);
+    		
+    		HttpResponse response = httpClient.execute(httpGet);
+    		checkResponse(response, modifiedApi);
+    		
+    		entity = response.getEntity();
+    		in = entity.getContent();
+    		
+    		IOUtils.copy(in, out);
+    		
+    		return recordingFile.getAbsolutePath();
+    	}
+    	catch(IOException e)
+        {
+            throw new ConnectionException(e, modifiedApi);
+        }
+    	finally
+    	{
+    		try
+    		{
+    			if(out != null)
+    			{
+    				out.close();
+    			}
+    		}
+    		catch(IOException e)
+    		{
+    			Log.e(TAG, "Error closing file output stream. Setting to null: " + e);
+    			out = null;
+    		}
+    		
+    		try
+    		{
+    			if(in != null)
+    			{
+    				in.close();
+    			}
+    		}
+    		catch(IOException e)
+    		{
+    			Log.e(TAG, "Error closing input stream. Setting to null: " + e);
+    			in = null;
+    		}
+    	}
     }
 
     private HttpClient getHttpClient()
@@ -233,19 +332,38 @@ public class DefaultController implements Controller
         return builder.toString();
     }
     
+    private void addAuthorizationHeaders(HttpRequestBase requestObject, String username, String password)
+    {
+    	requestObject.addHeader(AUTHENTICATION_TYPE_HEADER, BASE_64_SUBSCRIBER);
+		requestObject.addHeader(USERNAME_HEADER, username);
+		requestObject.addHeader(PASSWORD_HEADER, password);
+    }
+    
+    private void checkResponse(HttpResponse response, String api) throws AuthorizationException
+    {
+    	int status = response.getStatusLine().getStatusCode();
+		
+		if(status < 200 || status > 299)
+		{
+			if(status == 401)
+			{
+				throw new AuthorizationException(api);
+			}
+		}
+    }
+    
     /**
      * Handles {@link HttpClient} responses, converting them to a {@link JSONObject}.
      */
-    private class JsonObjectResponseHandler implements ResponseHandler<JSONObject>
+    private class JsonObjectResponseHandler implements ResponseHandler<ControllerResponse>
     {
         @Override
-        public JSONObject handleResponse(HttpResponse response) throws IOException
+        public ControllerResponse handleResponse(HttpResponse response) throws IOException
         {
             int status = response.getStatusLine().getStatusCode();
             if(status < 200 || status > 299)
             {
-                // TODO log or throw
-                return null;
+            	return new ControllerResponse(status);
             }
 
             HttpEntity entity = response.getEntity();
@@ -257,12 +375,29 @@ public class DefaultController implements Controller
             String s = EntityUtils.toString(entity);
             try
             {
-                return new JSONObject(s);
+                return new ControllerResponse(status, new JSONObject(s));
             }
             catch(JSONException e)
             {
                 throw new RuntimeException(e);
             }
         }
+    }
+    
+    private static class ControllerResponse
+    {
+    	public ControllerResponse(int statusCode, JSONObject jsonObject)
+    	{
+    		this.statusCode = statusCode;
+    		this.jsonObject = jsonObject;
+    	}
+    	
+    	public ControllerResponse(int statusCode)
+    	{
+    		this.statusCode = statusCode;
+    	}
+    	
+    	private JSONObject jsonObject;
+    	private int statusCode;
     }
 }

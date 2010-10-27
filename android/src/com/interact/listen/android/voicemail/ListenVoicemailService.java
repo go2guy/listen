@@ -173,15 +173,19 @@ public class ListenVoicemailService extends Service
 
     private void retrieveVoicemails()
     {
-        mVoicemails = controller.retrieveVoicemails(ListenVoicemailService.this);
+    	//Don't want to poll if the configured sub is invalid
+    	if(ApplicationSettings.getSubscriberId(this) != -1)
+    	{
+    		mVoicemails = controller.retrieveVoicemails(ListenVoicemailService.this);
 
-        Bundle bundle = new Bundle();
-        bundle.putLongArray("ids", getIdsToUpdate());
+            Bundle bundle = new Bundle();
+            bundle.putLongArray("ids", getIdsToUpdate());
 
-        Intent i = new Intent(VoicemailBroadcastReceiver.BROADCAST_ACTION_UPDATE);
-        i.putExtras(bundle);
+            Intent i = new Intent(VoicemailBroadcastReceiver.BROADCAST_ACTION_UPDATE);
+            i.putExtras(bundle);
 
-        sendOrderedBroadcast(i, null);
+            sendOrderedBroadcast(i, null);
+    	}
     }
 
     /**

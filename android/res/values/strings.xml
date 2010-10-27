@@ -4,6 +4,7 @@
     <string name="current_status">Inbox:</string>
     <string name="received_on">Received: </string>
     <string name="delete">Delete</string>
+    <string name="play">Play</string>
     <string name="menu_settings">Settings</string>
     <string name="settings_username_label">Username</string>
     <string name="settings_password_label">Password</string>
