@@ -3,7 +3,11 @@ package com.interact.listen.server;
 import java.net.URL;
 import java.security.ProtectionDomain;
 
+import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.bio.SocketConnector;
+import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
@@ -18,9 +22,22 @@ public final class EmbeddedJettyServer
 
     public static void main(String[] args) throws Exception
     {
-        int port = Integer.parseInt(System.getProperty("port", "8080"));
+        // some server-specific properties
+        boolean ssl = Boolean.valueOf(System.getProperty("ssl"));
+        int port = Integer.parseInt(System.getProperty("port", ssl ? "8443" : "8080"));
         String ext = System.getProperty("ext", "");
-        Server server = new Server(port);
+
+        Connector connector = new SelectChannelConnector();
+        if(ssl)
+        {
+            connector = new SslSocketConnector();
+            ((SslSocketConnector)connector).setKeyPassword(System.getProperty("keyPassword"));
+        }
+
+        connector.setPort(port);
+
+        Server server = new Server();
+        server.addConnector(connector);
 
         ProtectionDomain domain = EmbeddedJettyServer.class.getProtectionDomain();
         URL location = domain.getCodeSource().getLocation();
