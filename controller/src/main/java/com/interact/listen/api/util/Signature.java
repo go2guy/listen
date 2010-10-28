@@ -130,7 +130,7 @@ public final class Signature
     {
         try
         {
-            SecretKeySpec key = new SecretKeySpec(K, "HmaxSHA1");
+            SecretKeySpec key = new SecretKeySpec(K, "HmacSHA1");
             Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(key);
 
