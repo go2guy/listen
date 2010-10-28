@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_133_5(id,hostName,recSize,recFile,recLength,recInfo)
             {
-	            return "{\"conference\": {\"href\": \"/conferences/"+id+"\"}, \"uri\":\"http://"+hostName+recFile+"\", \"description\":\""+recInfo+"\", \"duration\":\""+recLength+"\", \"fileSize\":\""+recSize+"\"}";}
+	            return "{\"conference\": {\"href\": \"/conferences/"+id+"\"}, \"uri\":\"http://"+hostName+recFile+"\", \"description\":\""+recInfo+"\", \"duration\":\""+recLength+"\", \"fileSize\":\""+recSize+"\"}";
             }
         ]]>
     </script>
