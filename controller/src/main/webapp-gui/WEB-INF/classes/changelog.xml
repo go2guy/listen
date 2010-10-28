@@ -478,4 +478,8 @@
     <changeSet author="development" id="49">
       <addUniqueConstraint tableName="AUDIO" columnNames="URI" constraintName="AUDIO_UK_1"/>
     </changeSet>
+    <changeSet author="development" id="50">
+        <!-- since voicemail may not be licensed -->
+        <dropNotNullConstraint tableName="SUBSCRIBER" columnName="VOICEMAIL_PIN"/>
+    </changeSet>
 </databaseChangeLog>
