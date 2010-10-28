@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_68_15(grtngSelect,recDIR)
             {
-	            retrun recDIR + grtngSelect + '-greeting.wav';
+	            return recDIR + grtngSelect + '-greeting.wav';
             }
         ]]>
     </script>
