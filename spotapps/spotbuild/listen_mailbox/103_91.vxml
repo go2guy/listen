@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_103_91(result)
             {
-	            var strObj = vmObj.split('isNew":true');return strObj[0] + 'isNew":false' + strObj[1];
+	            var strObj = result.split('isNew":true');return strObj[0] + 'isNew":false' + strObj[1];
             }
         ]]>
     </script>
