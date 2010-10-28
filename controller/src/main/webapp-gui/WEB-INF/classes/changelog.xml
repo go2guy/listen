@@ -480,6 +480,6 @@
     </changeSet>
     <changeSet author="development" id="50">
         <!-- since voicemail may not be licensed -->
-        <dropNotNullConstraint tableName="SUBSCRIBER" columnName="VOICEMAIL_PIN"/>
+        <dropNotNullConstraint tableName="SUBSCRIBER" columnName="VOICEMAIL_PIN" columnDataType="VARCHAR(10)"/>
     </changeSet>
 </databaseChangeLog>
