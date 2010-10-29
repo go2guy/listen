@@ -79,6 +79,16 @@ public class AuthorizationFilter implements Filter
                     break;
                 }
 
+                if(resourceClass.equals(Subscriber.class))
+                {
+                    String username = request.getParameter("username");
+                    
+                    if(username != null && subscriber.getUsername().equals(username))
+                    {
+                        authorized = true;
+                    }
+                }
+                
                 if(resourceClass.equals(Voicemail.class))
                 {
                     if(resourceId == null) // list
