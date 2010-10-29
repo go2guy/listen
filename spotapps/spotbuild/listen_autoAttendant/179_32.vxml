@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'179_32'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'179_30'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_179_22(returnVal)
+            function II_SB_JS_function_179_32(returnVal)
             {
-	            var result = eval("("+returnVal+")");return "4";
+	            return getMenuHotKeys(returnVal);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Menu Audio</log>
-            <log>INFO: Entered run-javascript.vxml [179_22]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_179_22(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="dtmfLength" expr="II_SB_userJava" />   
+            <log target="status">Get Menu Hot Keys</log>
+            <log>INFO: Entered run-javascript.vxml [179_32]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_179_32(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="hotKeys" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

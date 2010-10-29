@@ -71,6 +71,7 @@
 	<var name="menuId" expr="''" />
 	<var name="keysPressed" expr="''" />
 	<var name="audioDIR" expr="'/interact/apps/spotbuild/listen_autoAttendant/audio/'" />
+	<var name="hotKeys" expr="''" />
 
 
     <!-- Conference Variables -->
