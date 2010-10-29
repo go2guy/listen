@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_autoDial/root.vxml"> <!--  Set location of root document -->
-    <!-- Last Modified 05/05/2010
+    <!-- Last Modified 10/29/2010
        *   @Name	Audio-prompt.vxml
        *   @Desc	This script allows a developer play audio / speech
        			   	and collect user inputs. An MRCP server is needed for speech. -->
@@ -26,9 +26,10 @@
 	<property name="incompletetimeout" value="0s"/>     <!--  incompletetimeout. This is the length of silence after an incompletely recognized speech -->
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
-    <var name="II_SB_promptList" expr="'P'+'thankYouService'+'|P'+'goodbye'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'137_16'"/>  <!--  PlayAudio Next Option. Name of next file -->
-	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
+    <var name="II_SB_promptList" expr="'P'+'confRequest'+'|P'+audioURL+'|P'+'acceptRequest'+'|'"/>  <!--  List of audio files / speech to play -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'136_15'"/>  <!--  PlayAudio Next Option. Name of next file -->
+	<var name="II_SB_fldLength" expr="'1'"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
+    <var name="II_SB_hotKeyList" expr="''"/>    <!--  List of hot keys -->
 	
 	<!-- Voice properties -->
 	<var name="II_SB_maxSpch" expr="'0s'"/>       <!--  maxspeechtimeout. This is the maximum time allowed for a speech -->
@@ -37,7 +38,7 @@
 	<var name="II_SB_cnfLevel" expr="'0.5'"/>       <!--  confidencelevel. This is the speech recognition confidence level -->
 
 	<!-- DTMF properties -->
-	<var name="II_SB_fldTimeout" expr="'0s'"/>         <!--  Timeout. Controls how long to wait before throwing a noinput event -->
+	<var name="II_SB_fldTimeout" expr="'4s'"/>         <!--  Timeout. Controls how long to wait before throwing a noinput event -->
 	<var name="II_SB_dgtTimeOut" expr="'0s'"/>    <!--  DTMF Interdigit time out. Controls number of seconds between key presses at an input field -->
 	<var name="II_SB_fldTermChar" expr="''"/>    <!--  DTMF Terminating Character. Identifies the terminating character of a DTMF input -->
 
@@ -91,8 +92,8 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    <log target="status">Goodbye</log>
-            <log>INFO: Entered audio-input.vxml [136_49]</log>
+    	    <log target="status">Invite</log>
+            <log>INFO: Entered audio-input.vxml [136_85]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
 
             <assign name="II_SB_fldTimeout" expr="II_SB_JS_checkTime(II_SB_fldTimeout)"/>
@@ -453,6 +454,22 @@
             <param name="PropertyValue" expr="II_SB_dgtTimeOut"/>
             <param name="PropertyScope" value="Document"/>
         </object>
+        <block cond="II_SB_hotKeyList.length &gt; 0">
+            <!-- If there is any hotkey(s) defined, we'll check only on the first key press.
+                 A match will cause us to exit -->
+            <assign name="II_SB_userEntry" expr="application.lastresult$.utterance"/> <!-- Store the user's key press -->
+            <if cond="inString(II_SB_userEntry,II_SB_hotKeyList,',')">
+                <!-- Found a match on the first key press -->
+                <log>INFO: User pressed hot key [<value expr="II_SB_userEntry"/>]</log>
+                <goto next="#exit"/>
+            <else/>
+                <assign name="II_SB_plyAudio" expr="'n'"/>
+                <assign name="II_SB_plySpch" expr="'n'"/>
+                <assign name="II_SB_gotoForm" expr="''"/>
+                <assign name="II_SB_hotKeyList" expr="''"/>
+                <goto next="#getEntry"/>
+            </if>
+        </block>
         <block>
             <!-- Verify that the user did not press the terminating character
                  and we've not collected the max number of key presses -->
@@ -488,7 +505,7 @@
             <else/>
         		<log>INFO: Did not receive any input from user</log>
             </if>
-			
+			<assign name="getInput" expr="II_SB_userEntry" />
 			<if cond="II_SB_PlyAudio_nextOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_PlyAudio_nextOpt"/>.vxml]</log>
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_PlyAudio_nextOpt + '.vxml'"/>
