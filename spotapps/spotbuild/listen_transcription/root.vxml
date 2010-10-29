@@ -33,6 +33,17 @@
 	<var name="passValues" expr="'importedValue'" />
 	<var name="fileLocation" expr="''" />
 	<var name="fileNumber" expr="''" />
+	<var name="status" expr="''" />
+	<var name="result" expr="''" />
+	<var name="outDialNum" expr="'4022617211@nun'" />
+	<var name="count" expr="'0'" />
+	<var name="tries" expr="'1'" />
+	<var name="STATcontroller" expr="''" />
+	<var name="id" expr="''" />
+	<var name="source" expr="'transcription'" />
+	<var name="value" expr="''" />
+	<var name="operation" expr="''" />
+	<var name="nextPath" expr="''" />
 
 
     <!-- Conference Variables -->

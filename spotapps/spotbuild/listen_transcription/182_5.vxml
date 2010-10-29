@@ -6,7 +6,7 @@
        *   @Desc   Sets up the parameters for PSTN or VOIP calls -->
 
     <!-- Node Variables -->
-    <var name="II_SB_destination" expr="'4022617211@nun'"/>        <!--  Destination number to be called -->
+    <var name="II_SB_destination" expr="outDialNum"/>        <!--  Destination number to be called -->
     <var name="II_SB_callLength" expr="''"/>       <!--  Max length of the call -->
     <var name="II_SB_ringTime" expr="'25s'"/>               <!--  Max ring time -->
     <var name="II_SB_dialType" expr="'VOIP'"/>           <!--  VOIP/PSTN -->

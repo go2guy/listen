@@ -23,6 +23,17 @@
 	<var name="SB_UV_passValues"/>
 	<var name="SB_UV_fileLocation"/>
 	<var name="SB_UV_fileNumber"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_result"/>
+	<var name="SB_UV_outDialNum"/>
+	<var name="SB_UV_count"/>
+	<var name="SB_UV_tries"/>
+	<var name="SB_UV_STATcontroller"/>
+	<var name="SB_UV_id"/>
+	<var name="SB_UV_source"/>
+	<var name="SB_UV_value"/>
+	<var name="SB_UV_operation"/>
+	<var name="SB_UV_nextPath"/>
 
     
     <form id="beginDocument">
@@ -46,6 +57,39 @@
 			</if>
 			<if cond="SB_UV_fileNumber != undefined">
 				<assign name="fileNumber" expr="SB_UV_fileNumber" />
+			</if>
+			<if cond="SB_UV_status != undefined">
+				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_result != undefined">
+				<assign name="result" expr="SB_UV_result" />
+			</if>
+			<if cond="SB_UV_outDialNum != undefined">
+				<assign name="outDialNum" expr="SB_UV_outDialNum" />
+			</if>
+			<if cond="SB_UV_count != undefined">
+				<assign name="count" expr="SB_UV_count" />
+			</if>
+			<if cond="SB_UV_tries != undefined">
+				<assign name="tries" expr="SB_UV_tries" />
+			</if>
+			<if cond="SB_UV_STATcontroller != undefined">
+				<assign name="STATcontroller" expr="SB_UV_STATcontroller" />
+			</if>
+			<if cond="SB_UV_id != undefined">
+				<assign name="id" expr="SB_UV_id" />
+			</if>
+			<if cond="SB_UV_source != undefined">
+				<assign name="source" expr="SB_UV_source" />
+			</if>
+			<if cond="SB_UV_value != undefined">
+				<assign name="value" expr="SB_UV_value" />
+			</if>
+			<if cond="SB_UV_operation != undefined">
+				<assign name="operation" expr="SB_UV_operation" />
+			</if>
+			<if cond="SB_UV_nextPath != undefined">
+				<assign name="nextPath" expr="SB_UV_nextPath" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
