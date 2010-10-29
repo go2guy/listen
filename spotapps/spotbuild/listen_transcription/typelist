@@ -1,6 +1,8 @@
 182_61 - assign-variable
+182_66 - audio-input
+182_65 - audio-input
+182_64 - audio-input
 182_29 - data-query
-182_26 - audio-input
 182_5 - out-dial
 182_24 - run-javascript
 182_9 - end
@@ -9,12 +11,10 @@ begin - begin
 195_14 - assign-variable
 195_3 - data-query
 182_59 - run-javascript
-182_17 - audio-input
-182_37 - decision
 182_19 - run-javascript
+182_37 - decision
 182_34 - decision
 182_36 - math
 182_55 - decision
 182_11 - create-session
-182_13 - audio-input
 182_32 - run-javascript

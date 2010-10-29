@@ -27,7 +27,7 @@
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
     <var name="II_SB_promptList" expr="''"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'182_26'"/>  <!--  PlayAudio Next Option. Name of next file -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'182_65'"/>  <!--  PlayAudio Next Option. Name of next file -->
 	<var name="II_SB_fldLength" expr="'1'"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
     <var name="II_SB_hotKeyList" expr="''"/>    <!--  List of hot keys -->
 	
@@ -93,7 +93,7 @@
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
     	    <log target="status">Wait for Tone</log>
-            <log>INFO: Entered audio-input.vxml [182_17]</log>
+            <log>INFO: Entered audio-input.vxml [182_64]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
 
             <assign name="II_SB_fldTimeout" expr="II_SB_JS_checkTime(II_SB_fldTimeout)"/>
