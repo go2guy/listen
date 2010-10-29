@@ -29,6 +29,9 @@ public class ControllerAdapter
 
     public Long getSubscriberIdFromUsername(Context context)
     {
+    	String base64Username = getBase64EncodedString(ApplicationSettings.getUsername(context));
+    	String base64Password = getBase64EncodedString(ApplicationSettings.getPassword(context));
+    	
     	// special case of property verification.  We will do this query even if the sub id is -1 since 
     	// that is the property we are trying to update
     	if (!ApplicationSettings.getApi(context).startsWith("http://:") &&
@@ -37,7 +40,7 @@ public class ControllerAdapter
     		try
             {
                 return controller.getSubscriberIdFromUsername(ApplicationSettings.getApi(context),
-                                                              ApplicationSettings.getUsername(context));
+                                                              ApplicationSettings.getUsername(context), base64Username, base64Password);
             }
             catch(ControllerException e)
             {
@@ -171,6 +174,11 @@ public class ControllerAdapter
             {
                 controller.deleteVoicemails(ApplicationSettings.getApi(context), ids, base64Username, base64Password);
             }
+    		catch(ControllerException e)
+            {
+                notifyConnectionError(context, e);
+                Log.e(TAG, "Controller communication error", e);
+            }
             catch(ConnectionException e)
             {
                 notifyConnectionError(context, e.getApi());
@@ -193,6 +201,11 @@ public class ControllerAdapter
     	{
     		return controller.downloadVoicemailToTempFile(ApplicationSettings.getApi(context), id, base64Username, base64Password);
     	}
+    	catch(ControllerException e)
+        {
+            notifyConnectionError(context, e);
+            Log.e(TAG, "Controller communication error", e);
+        }
     	catch(ConnectionException e)
     	{
     		notifyConnectionError(context, e.getApi());

@@ -7,8 +7,8 @@ import java.util.List;
 public interface Controller
 {
 	// Subscriber interactions
-	public Long getSubscriberIdFromUsername(String api, String username) throws ControllerException, ConnectionException, UserNotFoundException, 
-					AuthorizationException;
+	public Long getSubscriberIdFromUsername(String api, String username, String encodedUsername, String password) throws ControllerException, 
+					ConnectionException, UserNotFoundException, AuthorizationException;
 
 	// Voicemail interactions
 	public List<Voicemail> retrieveVoicemails(String api, Long subscriberId, String username, String password) throws ControllerException,
@@ -17,7 +17,8 @@ public interface Controller
 			AuthorizationException;
 	public void markVoicemailsRead(String api, Long[] ids, String username, String password) throws ControllerException, ConnectionException,
 			AuthorizationException;
-	public void deleteVoicemails(String api, Long[] ids, String username, String password) throws ConnectionException, AuthorizationException;
-	public String downloadVoicemailToTempFile(String api, Long id, String username, String password) throws ConnectionException,
+	public void deleteVoicemails(String api, Long[] ids, String username, String password) throws ConnectionException, ControllerException, 
+			AuthorizationException;
+	public String downloadVoicemailToTempFile(String api, Long id, String username, String password) throws ConnectionException, ControllerException,
 			AuthorizationException;
 }

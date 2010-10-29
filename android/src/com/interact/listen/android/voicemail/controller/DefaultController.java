@@ -177,8 +177,8 @@ public class DefaultController implements Controller
     }
     
     @Override
-    public Long getSubscriberIdFromUsername(String api, String username) throws ControllerException, ConnectionException, UserNotFoundException,
-    				AuthorizationException
+    public Long getSubscriberIdFromUsername(String api, String username, String encodedUsername, String password) throws ControllerException, 
+    				ConnectionException, UserNotFoundException,	AuthorizationException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -188,6 +188,7 @@ public class DefaultController implements Controller
 
         HttpGet httpGet = new HttpGet(api + "/subscribers" + buildQueryString(query));
         httpGet.addHeader("Accept", "application/json");
+        addAuthorizationHeaders(httpGet, encodedUsername, password);
 
         Log.d(TAG, "Sending GET request to " + httpGet.getURI().toString());
         try
@@ -222,7 +223,8 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void deleteVoicemails(String api, Long[] ids, String username, String password) throws ConnectionException, AuthorizationException
+    public void deleteVoicemails(String api, Long[] ids, String username, String password) throws ConnectionException, ControllerException, 
+    				AuthorizationException
     {
         HttpClient httpClient = getHttpClient();
 
@@ -243,11 +245,15 @@ public class DefaultController implements Controller
         {
             throw new ConnectionException(e, api);
         }
+        catch(ControllerException e)
+        {
+        	throw e;
+        }
     }
     
     @Override
     public String downloadVoicemailToTempFile(String api, Long id, String username, String password) throws ConnectionException,
-    		AuthorizationException
+    		ControllerException, AuthorizationException
     {
     	HttpClient httpClient = getHttpClient();
     	// remove the /api from the passed in api since we are going to /meta/audio/file
@@ -268,6 +274,7 @@ public class DefaultController implements Controller
     		checkResponse(response, modifiedApi);
     		
     		entity = response.getEntity();
+    		
     		in = entity.getContent();
     		
     		IOUtils.copy(in, out);
@@ -277,6 +284,10 @@ public class DefaultController implements Controller
     	catch(IOException e)
         {
             throw new ConnectionException(e, modifiedApi);
+        }
+    	catch(ControllerException e)
+        {
+        	throw e;
         }
     	finally
     	{
@@ -339,16 +350,18 @@ public class DefaultController implements Controller
 		requestObject.addHeader(PASSWORD_HEADER, password);
     }
     
-    private void checkResponse(HttpResponse response, String api) throws AuthorizationException
+    private void checkResponse(HttpResponse response, String api) throws AuthorizationException, ControllerException
     {
     	int status = response.getStatusLine().getStatusCode();
-		
-		if(status < 200 || status > 299)
+    	
+    	if(status < 200 || status > 299)
 		{
 			if(status == 401)
 			{
 				throw new AuthorizationException(api);
 			}
+			
+			throw new ControllerException(api);
 		}
     }
     
