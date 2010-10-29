@@ -13,6 +13,7 @@ import com.interact.listen.resource.Voicemail;
 import java.io.IOException;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -62,8 +63,17 @@ public class AuthorizationFilter implements Filter
                 Subscriber subscriber = authentication.getSubscriber();
                 Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-                if(resourceClass == null)
+                if(resourceClass == null && ((HttpServletRequest)request).getRequestURI().startsWith("/meta/audio/file"))
                 {
+                    // Currently we only come here if the request went to /meta/audio/file
+                    Long id = Long.valueOf(((HttpServletRequest)request).getPathInfo().substring(1));
+                    Voicemail v = (Voicemail)session.get(Voicemail.class, id);
+                    
+                    if(v != null && v.getSubscriber().equals(subscriber))
+                    {
+                        authorized = true;
+                    }
+                    
                     break;
                 }
 

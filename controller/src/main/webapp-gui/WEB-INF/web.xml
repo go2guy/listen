@@ -73,6 +73,10 @@
         <filter-name>AuthenticationFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/meta/audio/file/*</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
@@ -81,6 +85,10 @@
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AuthorizationFilter</filter-name>
+        <url-pattern>/meta/audio/file/*</url-pattern>
     </filter-mapping>
 
     <!-- servlet definitions -->
@@ -142,6 +150,12 @@
     <servlet>
         <servlet-name>GetAttendantMenuListServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetAttendantMenuListServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>GetAudioFileServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.GetAudioFileServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -337,6 +351,11 @@
     <servlet-mapping>
         <servlet-name>ApiServlet</servlet-name>
         <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>GetAudioFileServlet</servlet-name>
+        <url-pattern>/meta/audio/file/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
