@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml"> <!--  Set location of root document -->
-    <!-- Last Modified 05/05/2010
+    <!-- Last Modified 10/29/2010
        *   @Name	Audio-prompt.vxml
        *   @Desc	This script allows a developer play audio / speech
        			   	and collect user inputs. An MRCP server is needed for speech. -->
@@ -26,9 +26,10 @@
 	<property name="incompletetimeout" value="0s"/>     <!--  incompletetimeout. This is the length of silence after an incompletely recognized speech -->
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
-    <var name="II_SB_promptList" expr="'P'+'noMailbox'+'|P'+'thankYou'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'146_38'"/>  <!--  PlayAudio Next Option. Name of next file -->
+    <var name="II_SB_promptList" expr="'P'+'mbxGrtng'+'|V'+accessNum+'|P'+'beginRec'+'|'"/>  <!--  List of audio files / speech to play -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'54_31'"/>  <!--  PlayAudio Next Option. Name of next file -->
 	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
+    <var name="II_SB_hotKeyList" expr="''"/>    <!--  List of hot keys -->
 	
 	<!-- Voice properties -->
 	<var name="II_SB_maxSpch" expr="'0s'"/>       <!--  maxspeechtimeout. This is the maximum time allowed for a speech -->
@@ -91,8 +92,8 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    <log target="status">Invalid Mailbox</log>
-            <log>INFO: Entered audio-input.vxml [53_126]</log>
+    	    <log target="status">Default Greeting</log>
+            <log>INFO: Entered audio-input.vxml [173_67]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
 
             <assign name="II_SB_fldTimeout" expr="II_SB_JS_checkTime(II_SB_fldTimeout)"/>
@@ -453,6 +454,22 @@
             <param name="PropertyValue" expr="II_SB_dgtTimeOut"/>
             <param name="PropertyScope" value="Document"/>
         </object>
+        <block cond="II_SB_hotKeyList.length &gt; 0">
+            <!-- If there is any hotkey(s) defined, we'll check only on the first key press.
+                 A match will cause us to exit -->
+            <assign name="II_SB_userEntry" expr="application.lastresult$.utterance"/> <!-- Store the user's key press -->
+            <if cond="inString(II_SB_userEntry,II_SB_hotKeyList,',')">
+                <!-- Found a match on the first key press -->
+                <log>INFO: User pressed hot key [<value expr="II_SB_userEntry"/>]</log>
+                <goto next="#exit"/>
+            <else/>
+                <assign name="II_SB_plyAudio" expr="'n'"/>
+                <assign name="II_SB_plySpch" expr="'n'"/>
+                <assign name="II_SB_gotoForm" expr="''"/>
+                <assign name="II_SB_hotKeyList" expr="''"/>
+                <goto next="#getEntry"/>
+            </if>
+        </block>
         <block>
             <!-- Verify that the user did not press the terminating character
                  and we've not collected the max number of key presses -->
