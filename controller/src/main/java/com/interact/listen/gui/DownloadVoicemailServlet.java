@@ -80,7 +80,10 @@ public class DownloadVoicemailServlet extends HttpServlet
 
             // output
             OutputStream output = response.getOutputStream();
-            response.setContentLength(Integer.parseInt(voicemail.getFileSize()));
+            if(voicemail.getFileSize() != null && voicemail.getFileSize().matches("^[0-9]+$"))
+            {
+                response.setContentLength(Integer.parseInt(voicemail.getFileSize()));
+            }
             response.setContentType(voicemail.detectContentType());
             response.setHeader("Content-disposition", "attachment; filename=" + getFileName(voicemail));
 
