@@ -63,15 +63,17 @@ public class AuthorizationFilter implements Filter
                 Subscriber subscriber = authentication.getSubscriber();
                 Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-                if(resourceClass == null && ((HttpServletRequest)request).getRequestURI().startsWith("/meta/audio/file"))
+                if(resourceClass == null)
                 {
-                    // Currently we only come here if the request went to /meta/audio/file
-                    Long id = Long.valueOf(((HttpServletRequest)request).getPathInfo().substring(1));
-                    Voicemail v = (Voicemail)session.get(Voicemail.class, id);
-                    
-                    if(v != null && v.getSubscriber().equals(subscriber))
+                    if(((HttpServletRequest)request).getRequestURI().startsWith("/meta/audio/file"))
                     {
-                        authorized = true;
+                        Long id = Long.valueOf(((HttpServletRequest)request).getPathInfo().substring(1));
+                        Voicemail v = (Voicemail)session.get(Voicemail.class, id);
+                        
+                        if(v != null && v.getSubscriber().equals(subscriber))
+                        {
+                            authorized = true;
+                        }
                     }
                     
                     break;
