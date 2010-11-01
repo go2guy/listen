@@ -58,8 +58,14 @@ public class GetVoicemailListServlet extends HttpServlet
             max = Integer.parseInt(request.getParameter("max"));
         }
 
+        boolean bubbleNew = false;
+        if(request.getParameter("bubbleNew") != null)
+        {
+            bubbleNew = Boolean.parseBoolean(request.getParameter("bubbleNew"));
+        }
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List<Voicemail> results = Voicemail.queryBySubscriberPaged(session, subscriber, first, max);
+        List<Voicemail> results = Voicemail.queryBySubscriberPaged(session, subscriber, first, max, bubbleNew);
         long total = results.size() > 0 ? Voicemail.countBySubscriber(session, subscriber) : 0;
 
         Marshaller marshaller = new JsonMarshaller();

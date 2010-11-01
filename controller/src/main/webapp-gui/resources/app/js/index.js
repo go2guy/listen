@@ -314,6 +314,14 @@ $(document).ready(function() {
                         Listen.error('Warning - DynamicTable.pollAndSet() invoked without args.url');
                     }
                 };
+
+                this.clear = function() {
+                    if(args.isList === true) {
+                        $('#' + args.tableId).find('li:not(.placeholder)').remove();
+                    } else {
+                        $('#' + args.tableId + ' tbody').find('tr:not(.placeholder)').remove();
+                    }
+                };
             },
 
             highlight: function(elem) {

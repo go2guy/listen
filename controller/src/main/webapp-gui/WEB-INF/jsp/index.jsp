@@ -281,6 +281,15 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
             <div id="voicemail-application" class="application">
               <div class="application-header"><div class="title">Voicemail (<span id="voicemail-new-count">0</span> New)</div></div>
               <div class="application-content">
+                <ul id="voicemail-header">
+                  <li>
+                    <div class="voicemail-cell-from">From</div>
+                    <div class="voicemail-cell-received"><a href="#">Received</a></div>
+                    <div class="voicemail-cell-play">Length</div>
+                    <div class="voicemail-cell-actions"><input type="checkbox" id="voicemail-bubble-new"> <label for="voicemail-bubble-new">New voicemails on top</label></div>
+                    <div class="cleaner">&nbsp;</div>
+                  </li>
+                </ul>
                 <ul id="voicemail-table">
                   <li class="placeholder">No voicemail</li>
                 </ul>

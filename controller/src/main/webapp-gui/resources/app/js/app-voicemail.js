@@ -1,10 +1,18 @@
 $(document).ready(function() {
+
+    $('#voicemail-bubble-new').click(function() {
+        Listen.Voicemail.updateBubbleNew();
+    });
+
+//    $('#voicemail-header .voicemail-cell-actions label').click(function() {
+//        Listen.Voicemail.updateBubbleNew();
+//    });
+
     Listen.Voicemail = function() {
+        var dynamicTable, interval;
         return {
             Application: function() {
-                var interval;
-
-                var dynamicTable = new Listen.DynamicTable({
+                dynamicTable = new Listen.DynamicTable({
                     url: Listen.url('/ajax/getVoicemailList'),
                     tableId: 'voicemail-table',
                     templateId: 'voicemail-row-template',
@@ -27,7 +35,7 @@ $(document).ready(function() {
                             row.addClass('voicemail-read');
                         }
 
-                        var statusButton = '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'Server.markVoicemailReadStatus(' + data.id + ', true);' : 'Server.markVoicemailReadStatus(' + data.id + ', false);return false;') + '" title="' + (data.isNew ? 'Mark as old' : 'Mark as new') + '"></button>';
+                        var statusButton = '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'Listen.Voicemail.markVoicemailNew(' + data.id + ');' : 'Listen.Voicemail.markVoicemailOld(' + data.id + ');return false;') + '" title="' + (data.isNew ? 'Mark as old' : 'Mark as new') + '"></button>';
                         Listen.setFieldContent(row.find('.voicemail-cell-from'), '<div>' + statusButton + '</div><div>' + data.leftBy + '</div>', false, true);
                         Listen.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
                         Listen.setFieldContent(row.find('.voicemail-cell-play'), data.duration, animate);
@@ -75,6 +83,46 @@ $(document).ready(function() {
                     url: Listen.url('/ajax/deleteVoicemail'),
                     properties: { id: id }
                 });
+            },
+
+            markVoicemailNew: function(id) {
+                Server.post({
+                    url: Listen.url('/ajax/markVoicemailReadStatus'),
+                    properties: { id: id, readStatus: true},
+                    successCallback: function() {
+                        Listen.Voicemail.updateBubbleNew();
+                    }
+                });
+            },
+            
+            markVoicemailOld: function(id) {
+                Server.post({
+                    url: Listen.url('/ajax/markVoicemailReadStatus'),
+                    properties: {id: id, readStatus: false },
+                    successCallback: function() {
+                        Listen.Voicemail.updateBubbleNew();
+                    }
+                });
+            },
+
+            updateBubbleNew: function() {
+                // stop polling (ugly)
+
+                if(interval) {
+                    clearInterval(interval);
+                }
+
+                dynamicTable.clear();
+
+                var bubble = $('#voicemail-bubble-new').is(':checked');
+                dynamicTable.setUrl('/ajax/getVoicemailList?bubbleNew=' + (bubble ? 'true' : 'false'));
+
+                // start polling (ugly)
+
+                dynamicTable.pollAndSet(false);
+                interval = setInterval(function() {
+                    dynamicTable.pollAndSet(true);
+                }, 1000);
             }
         }
     }();

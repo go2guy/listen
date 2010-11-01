@@ -209,7 +209,8 @@ public class Voicemail extends Audio implements Serializable
         return (Voicemail)session.get(Voicemail.class, id);
     }
 
-    public static List<Voicemail> queryBySubscriberPaged(Session session, Subscriber subscriber, int first, int max)
+    public static List<Voicemail> queryBySubscriberPaged(Session session, Subscriber subscriber, int first, int max,
+                                                         boolean bubbleNew)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(Voicemail.class);
         subquery.createAlias("subscriber", "subscriber_alias");
@@ -222,7 +223,15 @@ public class Voicemail extends Audio implements Serializable
 
         criteria.setFirstResult(first);
         criteria.setMaxResults(max);
-        criteria.addOrder(Order.desc("dateCreated"));
+
+        if(bubbleNew)
+        {
+            criteria.addOrder(Order.desc("isNew")).addOrder(Order.asc("dateCreated"));
+        }
+        else
+        {
+            criteria.addOrder(Order.desc("dateCreated"));
+        }
 
         criteria.setFetchMode("subscriber", FetchMode.SELECT);
         criteria.setFetchMode("forwardedBy", FetchMode.SELECT);

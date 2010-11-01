@@ -427,32 +427,52 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
     color: #FFFFFF;
 }
 
-#voicemail-table li {
+#voicemail-application #voicemail-header li {
+    background-color: #DDDDDD;
+    color: #666666;
+    height: 1.5em;
+}
+
+#voicemail-application #voicemail-header li a {
+    color: #666666;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#voicemail-application #voicemail-header li a:hover {
+    color: #999999;
+}
+
+#voicemail-application #voicemail-header div.voicemail-cell-actions {
+    text-align: right;
+}
+
+#voicemail-application li {
     border-color: #FFE472;
     border-style: solid;
     border-width: 0 0 1px 0;
     padding: 3px 0 0 3px;
 }
 
-#voicemail-table li div div {
+#voicemail-application li div div {
     float: left;
     margin-right: 1em;
 }
-#voicemail-table div.voicemail-cell-from,
-#voicemail-table div.voicemail-cell-received,
-#voicemail-table div.voicemail-cell-actions,
-#voicemail-table div.voicemail-cell-play {
+#voicemail-application div.voicemail-cell-from,
+#voicemail-application div.voicemail-cell-received,
+#voicemail-application div.voicemail-cell-actions,
+#voicemail-application div.voicemail-cell-play {
     float: left;
     height: 2em;
     width: 25%;
 }
-#voicemail-table div.voicemail-cell-actions {
+#voicemail-application div.voicemail-cell-actions {
     clear: right;
 }
-#voicemail-table div.voicemail-cell-actions div {
+#voicemail-application div.voicemail-cell-actions div {
     float: right;
 }
-#voicemail-table div.voicemail-cell-transcription {
+#voicemail-application div.voicemail-cell-transcription {
     display: none;
     float: left;
     font-weight: normal;
@@ -460,20 +480,26 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
     padding-left: 2.5em;
     width: 90%;
 }
-#voicemail-table div.voicemail-cell-transcription-abbr,
-#voicemail-table div.voicemail-cell-transcription-full {
+#voicemail-application div.voicemail-cell-transcription-abbr,
+#voicemail-application div.voicemail-cell-transcription-full {
     display: none;
 }
-#voicemail-table li.voicemail-unread {
+#voicemail-application li.voicemail-unread {
     background-color: #FFFFFF;
     color: #000000;
     font-weight: bold;
 }
-#voicemail-table li.voicemail-read {
+#voicemail-application li.voicemail-read {
     background-color: #FFFFBB;
     color: #AAAAAA;
     font-weight: normal;
 }
+#voicemail-application li.voicemail-read,
+#voicemail-application li.voicemail-unread,
+#voicemail-application li.placeholder {
+    clear: left;
+}
+
 
 /* application - attendant */
 
