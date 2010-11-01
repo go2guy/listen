@@ -210,8 +210,11 @@ public class Voicemail extends Audio implements Serializable
     }
 
     public static List<Voicemail> queryBySubscriberPaged(Session session, Subscriber subscriber, int first, int max,
-                                                         boolean bubbleNew)
+                                                         boolean bubbleNew, String sort, boolean ascending)
     {
+        LOG.debug("Querying voicemails, paged by subscriber [" + subscriber + "]; first = [" + first + "], max = [" +
+                  max + "], sort = [" + sort + "], ascending = [" + ascending + "], bubble = [" + bubbleNew + "]");
+
         DetachedCriteria subquery = DetachedCriteria.forClass(Voicemail.class);
         subquery.createAlias("subscriber", "subscriber_alias");
         subquery.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
@@ -226,12 +229,21 @@ public class Voicemail extends Audio implements Serializable
 
         if(bubbleNew)
         {
-            criteria.addOrder(Order.desc("isNew")).addOrder(Order.asc("dateCreated"));
+            criteria.addOrder(Order.desc("isNew")).addOrder(ascending ? Order.asc(sort) : Order.desc(sort));
         }
         else
         {
-            criteria.addOrder(Order.desc("dateCreated"));
+            criteria.addOrder(ascending ? Order.asc(sort) : Order.desc(sort));
         }
+//        
+//        if(bubbleNew)
+//        {
+//            criteria.addOrder(Order.desc("isNew")).addOrder(Order.asc("dateCreated"));
+//        }
+//        else
+//        {
+//            criteria.addOrder(Order.desc("dateCreated"));
+//        }
 
         criteria.setFetchMode("subscriber", FetchMode.SELECT);
         criteria.setFetchMode("forwardedBy", FetchMode.SELECT);

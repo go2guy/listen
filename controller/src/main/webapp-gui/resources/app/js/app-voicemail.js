@@ -4,9 +4,12 @@ $(document).ready(function() {
         Listen.Voicemail.updateBubbleNew();
     });
 
-//    $('#voicemail-header .voicemail-cell-actions label').click(function() {
-//        Listen.Voicemail.updateBubbleNew();
-//    });
+    $('#voicemail-header .voicemail-cell-received a').click(function() {
+        var indicator = $('#voicemail-header .voicemail-cell-received .sort-indicator');
+        var ascending = !indicator.text() || indicator.text() == '' || indicator.text() == '-';
+        indicator.text(ascending ? '+' : '-');
+        Listen.Voicemail.sort('received', ascending);
+    });
 
     Listen.Voicemail = function() {
         var dynamicTable, interval;
@@ -118,6 +121,23 @@ $(document).ready(function() {
                 dynamicTable.setUrl('/ajax/getVoicemailList?bubbleNew=' + (bubble ? 'true' : 'false'));
 
                 // start polling (ugly)
+
+                dynamicTable.pollAndSet(false);
+                interval = setInterval(function() {
+                    dynamicTable.pollAndSet(true);
+                }, 1000);
+            },
+            
+            sort: function(field, ascending) {
+                if(interval) {
+                    clearInterval(interval);
+                }
+                
+                dynamicTable.clear();
+                
+                dynamicTable.setQueryParameter('sort', field);
+                dynamicTable.setQueryParameter('order', ascending ? 'ascending' : 'descending');
+                dynamicTable.setReverse(!ascending);
 
                 dynamicTable.pollAndSet(false);
                 interval = setInterval(function() {

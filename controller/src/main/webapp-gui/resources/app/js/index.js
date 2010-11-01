@@ -164,10 +164,24 @@ $(document).ready(function() {
                 var args = args;
                 var currentFirst = 0;
                 var currentMax = (args.initialMax > 0 ? args.initialMax : 15);
+                var queryParameters = {};
+                var reverse = args.reverse === true;
 
                 this.setUrl = function(url) {
                     args.url = url;
                 };
+
+                this.setQueryParameter = function(key, value) {
+                    queryParameters[key] = value;
+                };
+
+                this.removeQueryParameter = function(key, value) {
+                    delete queryParameters[key];
+                };
+
+                this.setReverse = function(r) {
+                    reverse = r;
+                }
 
                 this.update = function(data, animate) {
                     var tableRows = [];
@@ -224,7 +238,7 @@ $(document).ready(function() {
                         }
                     }
 
-                    for(var i = (args.reverse ? serverList.length - 1 : 0); (args.reverse ? i >= 0 : i < serverList.length); (args.reverse ? i-- : i++)) {
+                    for(var i = (reverse ? serverList.length - 1 : 0); (reverse ? i >= 0 : i < serverList.length); (reverse ? i-- : i++)) {
                         var found = false;
                         var serverItem = serverList[i];
                         for(var j = 0; j < tableRows.length; j++) {
@@ -247,14 +261,14 @@ $(document).ready(function() {
                             args.updateRowCallback.call(this, clone, serverItem, animate);
                             clone.css('opacity', 0);
 //                            if(args.alternateRowColors) {
-//                                if(args.reverse) {
+//                                if(reverse) {
 //                                    clone.addClass((serverList.length - i) % 2 == 0 ? 'odd' : 'even');
 //                                } else {
 //                                    clone.addClass(i % 2 == 0 ? 'odd' : 'even');
 //                                }
 //                            }
                             var appendTo = (args.isList === true ? $('#' + args.tableId) : $('#' + args.tableId + ' tbody'));
-                            if(args.reverse) {
+                            if(reverse) {
                                 appendTo.prepend(clone);
                             } else {
                                 appendTo.append(clone);
@@ -297,6 +311,14 @@ $(document).ready(function() {
                             url += '&';
                         }
                         url += 'first=' + currentFirst + '&max=' + currentMax;
+
+                        // append any additional query parameters
+                        for(var parameter in queryParameters) {
+                            if(queryParameters.hasOwnProperty(parameter)) {
+                                url += '&' + parameter + '=' + queryParameters[parameter];
+                            }
+                        }
+
                         var start = Listen.timestamp();
                         $.ajax({
                             url: url,
