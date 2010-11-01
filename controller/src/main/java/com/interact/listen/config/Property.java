@@ -60,7 +60,7 @@ public class Property
         PHONE_NUMBER             ("com.interact.listen.phoneNumber",             ""),
 
         /* Whether or not API requests should be authenticated */
-        AUTHENTICATE_API         ("com.interact.listen.auth.authenticateApi",    Boolean.FALSE.toString());
+        AUTHENTICATE_API         ("com.interact.listen.auth.authenticateApi",    Boolean.TRUE.toString());
 
         private final String key;
         private final String defaultValue;
