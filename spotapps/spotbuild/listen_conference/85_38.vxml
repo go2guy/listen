@@ -11,7 +11,7 @@
     <var name="II_SB_dtmfTerm" expr="'true'"/>  <!--  Allow dtfm key press to terminate recording -->
 
     <!-- Edge Variables -->
-    <var name="II_SB_errorNxtOpt" expr="'85_63'"/>       <!-- Next option when record is terminated by an error -->
+    <var name="II_SB_errorNxtOpt" expr="'85_65'"/>       <!-- Next option when record is terminated by an error -->
     <var name="II_SB_dtmfNxtOpt" expr="'85_32'"/>      <!-- Next option when record is terminated by dtmf -->
     <var name="II_SB_hangUpNxtOpt" expr="''"/>     <!-- Next option when record is terminated by hang up -->
     <var name="II_SB_maxTimeNxtOpt" expr="'85_32'"/>    <!-- Next option when record is terminated by max time -->

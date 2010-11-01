@@ -13,8 +13,8 @@
     <var name="II_SB_valueToPass" expr="initiatingObj"/>   <!-- Config: Name of file confrence creates -->
     <var name="II_SB_eventToPass" expr="'DROP'"/>
     <var name="II_SB_sessionID" expr="tempSID"/>        <!-- Config: Session ID for the message to send -->
-    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'111_67'"/>
-    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'111_66'"/>
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'111_88'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'111_86'"/>
     <var name="II_SB_nextOpt" expr="'111_13'"/>
 
     <var name="II_SB_returnValues" expr="''"/>
