@@ -6,7 +6,7 @@
        *   @Desc   Makes http requests and checks for success or failure -->
 
     <var name="II_SB_succeed" expr="'144_41'"/>			<!-- Next file to go to if HttpRequest Works -->
-    <var name="II_SB_failed" expr="'144_113'"/>				<!-- Next file to go to if HttpRequest Fails -->
+    <var name="II_SB_failed" expr="'144_117'"/>				<!-- Next file to go to if HttpRequest Fails -->
     <var name="II_SB_dataTimeOut" expr="'5s'"/>	<!-- Specifies length of time to wait before throwing badfetch error -->
     <var name="II_SB_nxtOpt" expr="''"/>						<!-- Variable to hold next option -->
 	
