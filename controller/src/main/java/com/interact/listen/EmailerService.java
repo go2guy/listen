@@ -237,7 +237,7 @@ public class EmailerService
         {
             String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
             String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY,
-                                        AccessNumber.querySubscriberNameByAccessNumber(persistenceService.getSession(),voicemail.getLeftBy()), 
+                                        AccessNumber.querySubscriberNameByAccessNumber(persistenceService.getSession(), voicemail.getLeftBy()), 
                                         voicemail.getLeftBy(), voicemail.getTranscription(), directVoicemailAccessNumber);
             
             body = truncateSMSBody(body, directVoicemailAccessNumber);
