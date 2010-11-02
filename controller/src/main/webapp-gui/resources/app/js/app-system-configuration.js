@@ -33,6 +33,20 @@ $(document).ready(function() {
                     $('#sysconfig-authentication-activeDirectoryServer').val(data['com.interact.listen.activeDirectory.server']);
                     $('#sysconfig-authentication-activeDirectoryDomain').val(data['com.interact.listen.activeDirectory.domain']);
                     toggleActiveDirectoryFields();
+
+                    // SPOT systems
+                    var spotSystemTable = $('#sysconfig-spot-systems');
+                    $('tr', spotSystemTable).remove(); // delete all rows
+
+                    var spotSystems = data['com.interact.listen.spotSystems'].split(',');
+                    if(spotSystems.length > 0) {
+                        for(var i = 0; i < spotSystems.length; i++) {
+                          if(spotSystems[i] != '') {
+                            var row = $('<tr><td>' + spotSystems[i] + '</td><td><button type="button" class="icon-delete" title="Unregister this SPOT System" onclick="deleteSpotSystem(\'' + spotSystems[i] + '\');return false;">');
+                            $('tbody', spotSystemTable).append(row);
+                          }
+                        }
+                    }
                 },
                 complete: function(xhr, textStatus) {
                     var elapsed = Listen.timestamp() - start;
@@ -258,5 +272,31 @@ $(document).ready(function() {
             $('#sysconfig-authentication-activeDirectoryDomain').attr('readonly', true).addClass('disabled');
         }
     }
+
     $('#sysconfig-authentication-activeDirectoryEnabled').click(toggleActiveDirectoryFields);
 });
+
+// TODO remove this from the global scope. ideally, the system configuration app should be structured like the others
+function deleteSpotSystem(system) {
+    var rows = $('#sysconfig-spot-systems tbody tr');
+    var systems = '';
+
+    for(var i = 0; i < rows.length; i++) {
+        var s = $('td:first-child', rows[i]).text();
+        if(s === system) {
+            $(rows[i]).remove();
+            continue;
+        }
+        if(systems != '') {
+            systems += ',';
+        }
+        systems += s;
+    }
+
+    Server.post({
+        url: Listen.url('/ajax/setProperties'),
+        properties: {
+            'com.interact.listen.spotSystems': systems
+        }
+    });
+}

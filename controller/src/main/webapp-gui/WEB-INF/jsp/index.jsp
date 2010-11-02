@@ -382,6 +382,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
 } %>
                       <li>Alerts</li>
                       <li>Authentication</li>
+                      <li>SPOT Systems</li>
                     </ul>
                   </div>
                   <div class="tab-content-default">
@@ -487,6 +488,16 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                       </fieldset>
                     </form>
                   </div>
+
+                  <div class="tab-content">
+                    <fieldset>
+                      <legend>SPOT Systems</legend>
+                      <table id="sysconfig-spot-systems">
+                        <tbody></tbody>
+                      </table>
+                    </fieldset>
+                  </div>
+
                   <div class="cleaner">&nbsp;</div>
                 </div>
               </div>
