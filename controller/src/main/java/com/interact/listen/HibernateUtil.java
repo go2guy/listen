@@ -9,6 +9,9 @@ import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
+import com.interact.listen.stats.InsaStatSender;
+import com.interact.listen.stats.Stat;
+import com.interact.listen.stats.StatSender;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -105,6 +108,9 @@ public final class HibernateUtil
 
     static
     {
+        StatSender statSender = new InsaStatSender();
+        statSender.send(Stat.CONTROLLER_STARTUP);
+
         try
         {
             final String dbUrl = System.getProperty("com.interact.listen.db.url", ENVIRONMENT.getDbUrl());
