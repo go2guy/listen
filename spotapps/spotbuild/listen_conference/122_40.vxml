@@ -14,6 +14,9 @@
             <log>INFO: Current value [<value expr="tmpVal"/>]</log>
 <assign name="tmpVal" expr="'NEXT'+''" />
 <log>INFO: Updated value [<value expr="tmpVal"/>]</log>
+<log>INFO: Current value [<value expr="whichEvent"/>]</log>
+<assign name="whichEvent" expr="''+''" />
+<log>INFO: Updated value [<value expr="whichEvent"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
