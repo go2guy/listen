@@ -220,6 +220,23 @@ public class AccessNumber extends Resource implements Serializable
         criteria.add(Restrictions.eq("supportsMessageLight", Boolean.TRUE));
         return (List<AccessNumber>)criteria.list();
     }
+    
+    public static String querySubscriberNameByAccessNumber(Session session, String number)
+    {
+        AccessNumber accessNumber = queryByNumber(session, number);
+        
+        if(accessNumber != null)
+        {
+            String name = accessNumber.getSubscriber().getRealName();
+            
+            if(name != null && !name.equals(""))
+            {
+                return name;
+            }
+        }
+        
+        return number;
+    }
 
     private static Criteria buildCriteriaForSubscriberQuery(Session session, Subscriber subscriber)
     {

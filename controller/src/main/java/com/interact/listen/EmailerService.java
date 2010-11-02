@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 public class EmailerService
 {
     private static final Logger LOG = Logger.getLogger(EmailerService.class);
+    private static final int MAX_SMS_LENGTH = 160;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat(FriendlyIso8601DateConverter.ISO8601_FORMAT);
     
@@ -154,7 +155,6 @@ public class EmailerService
 
     public boolean sendTestNotificationSettingsMessage(String type, String toAddress)
     {
-        LOG.debug("TONY entered sendTestNotificationSettingsMessage");
         boolean result = true;
         InternetAddress[] toAddresses = getInternetAddresses(toAddress);
         
@@ -236,7 +236,11 @@ public class EmailerService
         if(toAddresses.length > 0)
         {
             String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
-            String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY, voicemail.getLeftBy(), directVoicemailAccessNumber);
+            String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY,
+                                        AccessNumber.querySubscriberNameByAccessNumber(persistenceService.getSession(),voicemail.getLeftBy()), 
+                                        voicemail.getLeftBy(), voicemail.getTranscription(), directVoicemailAccessNumber);
+            
+            body = truncateSMSBody(body, directVoicemailAccessNumber);
         
             sendEmail(toAddresses, body, "", body);
         }
@@ -376,5 +380,24 @@ public class EmailerService
         
         //Even if multiple ones are configured, all should be valid and we can just return the first one
         return directVoicemailAccessNumbers.size() > 0 ? directVoicemailAccessNumbers.get(0) : "N/A";
+    }
+    
+    private String truncateSMSBody(String body, String directVoicemailAccessNumber)
+    {
+        String returnBody = body;
+        
+        if(returnBody.length() > MAX_SMS_LENGTH)
+        {
+            String directVoicemailAccessNumberWithPrefix = EmailerUtil.DIRECT_VOICEMAIL_HEADER + directVoicemailAccessNumber;
+            returnBody = returnBody.substring(0, returnBody.length() - directVoicemailAccessNumberWithPrefix.length());
+        }
+        
+        if(returnBody.length() > MAX_SMS_LENGTH)
+        {
+            returnBody = returnBody.substring(0, MAX_SMS_LENGTH - 3);
+            returnBody = returnBody.concat("...");
+        }
+        
+        return returnBody;
     }
 }

@@ -29,6 +29,8 @@ public class Voicemail extends Audio implements Serializable
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOG = Logger.getLogger(Voicemail.class);
+    
+    private static final String TRANSCRIPTION_PENDING = "Transcription pending";
 
     @JoinColumn(name = "FORWARDED_BY_SUBSCRIBER_ID", nullable = true)
     @ManyToOne
@@ -147,6 +149,12 @@ public class Voicemail extends Audio implements Serializable
     public void afterSave(PersistenceService persistenceService)
     {
         HistoryService historyService = new HistoryService(persistenceService);
+        
+        if(!getTranscription().equals(TRANSCRIPTION_PENDING))
+        {
+            sendNotification(persistenceService);
+        }
+        
         if(getForwardedBy() == null)
         {
             historyService.writeLeftVoicemail(this);
@@ -154,22 +162,6 @@ public class Voicemail extends Audio implements Serializable
         else
         {
             historyService.writeForwardedVoicemail(this);
-        }
-
-        EmailerService emailService = new EmailerService(persistenceService);
-        StatSender statSender = StatSenderFactory.getStatSender();
-        Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
-
-        if(voicemailSubscriber.getIsEmailNotificationEnabled().booleanValue())
-        {
-            statSender.send(Stat.VOICEMAIL_EMAIL_NOTIFICATION);
-            emailService.sendEmailVoicmailNotification(this, voicemailSubscriber);
-        }
-        
-        if(voicemailSubscriber.getIsSmsNotificationEnabled().booleanValue())
-        {
-            statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
-            emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
         }
 
         toggleMessageLight(persistenceService, getSubscriber());
@@ -201,6 +193,16 @@ public class Voicemail extends Audio implements Serializable
     @Override
     public void afterUpdate(PersistenceService persistenceService, Resource original)
     {
+        Voicemail originalVoicemail = (Voicemail)original;
+        
+        //Only send a notification for a new message that had it's transcription updated from "Transcription pending" 
+        //to something that is not "Transcription pending"
+        if(getIsNew() && originalVoicemail.getTranscription().equals(TRANSCRIPTION_PENDING)
+           && !getTranscription().equals(TRANSCRIPTION_PENDING))
+        {
+            sendNotification(persistenceService);
+        }
+        
         toggleMessageLight(persistenceService, getSubscriber());
     }
 
@@ -323,6 +325,25 @@ public class Voicemail extends Audio implements Serializable
         for(AccessNumber accessNumber : numbers)
         {
             toggleMessageLight(persistenceService, accessNumber);
+        }
+    }
+    
+    private void sendNotification(PersistenceService persistenceService)
+    {
+        EmailerService emailService = new EmailerService(persistenceService);
+        StatSender statSender = StatSenderFactory.getStatSender();
+        Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
+
+        if(voicemailSubscriber.getIsEmailNotificationEnabled().booleanValue())
+        {
+            statSender.send(Stat.VOICEMAIL_EMAIL_NOTIFICATION);
+            emailService.sendEmailVoicmailNotification(this, voicemailSubscriber);
+        }
+        
+        if(voicemailSubscriber.getIsSmsNotificationEnabled().booleanValue())
+        {
+            statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
+            emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
         }
     }
 }
