@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 
 import com.interact.listen.ListenServletTest;
 import com.interact.listen.TestUtil;
+import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Subscriber;
@@ -125,6 +127,7 @@ public class DeleteVoicemailServletTest extends ListenServletTest
         IOException
     {
         TestUtil.setSessionSubscriber(request, false, session);
+        Configuration.set(Property.Key.SPOT_SYSTEMS, null);
         Subscriber subscriber = createSubscriber(session);
 
         try

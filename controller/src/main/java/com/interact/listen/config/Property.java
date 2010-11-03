@@ -131,6 +131,10 @@ public class Property
 
     public static Set<String> delimitedStringToSet(String string, String delimiter)
     {
+        if(string == null)
+        {
+            return new HashSet<String>();
+        }
         Set<String> result = new HashSet<String>();
         for(String s : string.split(delimiter))
         {

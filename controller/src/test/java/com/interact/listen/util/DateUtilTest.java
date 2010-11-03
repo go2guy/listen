@@ -1,10 +1,17 @@
 package com.interact.listen.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.interact.listen.ListenTest;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import org.joda.time.Duration;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 public class DateUtilTest extends ListenTest
@@ -64,5 +71,27 @@ public class DateUtilTest extends ListenTest
     private void testRoundUpToNearestSecond(long toRound, long expected)
     {
         assertEquals(new Duration(expected), DateUtil.roundUpToNearestSecond(new Duration(toRound)));
+    }
+    
+    @Test
+    public void test_toJoda_withEpoch_returnsCorrectLocalDateTime() throws ParseException
+    {
+        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2010-11-03 15:13:32.435");
+        LocalDateTime joda = DateUtil.toJoda(date);
+
+        assertEquals(new LocalDateTime(2010, 11, 3, 15, 13, 32, 435), joda);
+    }
+    
+    @Test
+    public void test_toJoda_withDateOneDayAgo_returnsDurationOfOneDay()
+    {
+        // NOTE: i'm using a whole day for this test since it's tough for us to get down to second precision
+        // if we could control what the system time is when the method is called, it'd be a different story...
+        Date oneDayAgo = new LocalDateTime().minusDays(1).toDateTime().toCalendar(Locale.getDefault()).getTime();
+        Duration duration = DateUtil.durationSinceDate(oneDayAgo);
+
+        // tests allow 500ms tolerance either way
+        assertTrue(duration.isLongerThan(new Duration((1000 * 60 * 60 * 24) - 500)));
+        assertTrue(duration.isShorterThan(new Duration((1000 * 60 * 60 * 24) + 500)));
     }
 }
