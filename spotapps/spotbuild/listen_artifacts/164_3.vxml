@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_164_3(argList,HTTP_dir)
+            function II_SB_JS_function_164_3(argList)
             {
-	            return getArtifact(argList, HTTP_dir);
+	            return getArtifact(argList);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Get artifact</log>
             <log>INFO: Entered run-javascript.vxml [164_3]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_164_3(argList,HTTP_dir)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_164_3(argList)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="FILE1" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

@@ -33,7 +33,6 @@
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'delete'" />
 	<var name="status" expr="''" />
-	<var name="HTTP_dir" expr="'/var/www/html'" />
 
 
     <!-- Conference Variables -->

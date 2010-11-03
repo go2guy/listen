@@ -23,7 +23,6 @@
 	<var name="SB_UV_FILE1"/>
 	<var name="SB_UV_OPERATION"/>
 	<var name="SB_UV_status"/>
-	<var name="SB_UV_HTTP_dir"/>
 
     
     <form id="beginDocument">
@@ -47,9 +46,6 @@
 			</if>
 			<if cond="SB_UV_status != undefined">
 				<assign name="status" expr="SB_UV_status" />
-			</if>
-			<if cond="SB_UV_HTTP_dir != undefined">
-				<assign name="HTTP_dir" expr="SB_UV_HTTP_dir" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

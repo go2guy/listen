@@ -1,4 +1,4 @@
-function getArtifact(argList, HTTP_dir) {
+function getArtifact(argList) {
     var result ='';
     var tmpVal = new String(argList).replace(/^\s*|\s*$/g,'');
     if((tmpVal == '') || (typeof(argList) == 'undefined'))
@@ -7,12 +7,10 @@ function getArtifact(argList, HTTP_dir) {
         tmpVal = eval("("+argList+")");
         switch (tmpVal.action) {
             case "FILE":
-                var host = tmpVal.hostName + "/";
-                var artifact = tmpVal.artifact;
-                result = HTTP_dir + tmpVal.artifactsDIR;
+                result = tmpVal.artifact.split(tmpVal.hostName)[1];
                 break;
             case "SUB":
-                result = HTTP_dir + tmpVal.artifactsDIR + tmpVal.artifact;
+                result = tmpVal.artifactsDIR + tmpVal.artifact;
                 break;
             default:
                 result = "ERROR";
