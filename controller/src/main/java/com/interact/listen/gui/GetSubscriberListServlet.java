@@ -41,7 +41,7 @@ public class GetSubscriberListServlet extends HttpServlet
 
         if(!subscriber.getIsAdministrator())
         {
-            throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
+            throw new UnauthorizedServletException("Insufficient permissions");
         }
 
         int first = 0;

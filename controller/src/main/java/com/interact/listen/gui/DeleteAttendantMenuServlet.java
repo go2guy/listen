@@ -46,8 +46,22 @@ public class DeleteAttendantMenuServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        Long id = Long.parseLong(request.getParameter("id"));
-        Menu menu = (Menu)session.get(Menu.class, id);
+        String id = request.getParameter("id");
+        if(id == null)
+        {
+            throw new BadRequestServletException("Missing required parameter [id]");
+        }
+
+        Menu menu;
+
+        try
+        {
+            menu = (Menu)session.get(Menu.class, Long.parseLong(id));
+        }
+        catch(NumberFormatException e)
+        {
+            throw new BadRequestServletException("Parameter [id] with value [" + id + "] is not a valid number");
+        }
 
         if(menu == null)
         {

@@ -99,12 +99,16 @@ public abstract class Action implements IvrCommand
     public static List<Action> queryByMenuWithoutDefaultAndTimeout(Session session, Menu menu)
     {
         Criteria criteria = session.createCriteria(Action.class);
-        criteria.add(Restrictions.ne("id", menu.getDefaultAction().getId()));
-        criteria.add(Restrictions.ne("id", menu.getTimeoutAction().getId()));
+        if(menu.getDefaultAction() != null)
+        {
+            criteria.add(Restrictions.ne("id", menu.getDefaultAction().getId()));
+        }
+        if(menu.getTimeoutAction() != null)
+        {
+            criteria.add(Restrictions.ne("id", menu.getTimeoutAction().getId()));
+        }
         criteria.add(Restrictions.eq("menu.id", menu.getId()));
-
         criteria.setFetchMode("menu", FetchMode.SELECT);
-
         return (List<Action>)criteria.list();
     }
 }

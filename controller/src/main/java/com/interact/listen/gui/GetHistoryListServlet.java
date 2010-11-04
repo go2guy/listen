@@ -38,7 +38,7 @@ public class GetHistoryListServlet extends HttpServlet
 
         if(!subscriber.getIsAdministrator())
         {
-            throw new UnauthorizedServletException("Insufficient privileges");
+            throw new UnauthorizedServletException("Insufficient permissions");
         }
 
         int first = 0;

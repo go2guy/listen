@@ -54,16 +54,11 @@ public class GetSubscriberServlet extends HttpServlet
         
         if(!subscriber.getIsAdministrator() && !String.valueOf(subscriber.getId()).equals(id))
         {
-            throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
+            throw new UnauthorizedServletException("Insufficient permissions");
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Subscriber s = (Subscriber)session.get(Subscriber.class, Long.parseLong(id));
-
-        if(!(subscriber.getIsAdministrator() || s.equals(subscriber)))
-        {
-            throw new UnauthorizedServletException("Unauthorized - Insufficient permissions");
-        }
         
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
