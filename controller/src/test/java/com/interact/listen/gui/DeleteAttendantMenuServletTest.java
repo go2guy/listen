@@ -59,7 +59,7 @@ public class DeleteAttendantMenuServletTest extends ListenServletTest
     public void test_doPost_withIdForNonexistentMenu_throwsBadRequest() throws ServletException, IOException
     {
         TestUtil.setSessionSubscriber(request, true, session);
-        Long id = TestUtil.randomNumeric(10);
+        Long id = System.currentTimeMillis();
 
         Menu menu = Menu.queryById(session, id);
         assert menu == null;
