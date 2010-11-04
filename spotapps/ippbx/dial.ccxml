@@ -42,7 +42,6 @@
     <var name="OUTSIDE_LINE" expr="'9'"/>
 
     <!-- Dial Errors -->
-    <var name="ERR_CODE" expr="''"/>            <!-- Dial error code -->
     <var name="ERR_BUSY" expr="'486,600'"/>     <!-- Dialed destination return a busy response -->
     <var name="ERR_NOT_FOUND" expr="'404'"/>    <!-- Dialed destination was not found -->
 
@@ -417,8 +416,7 @@
         <transition event="connection.failed" name="evt">
             <!-- The out dial attempt failed for some reason -->
             <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
-            <assign name="ERR_CODE" expr="errorCode(evt.reason)"/>
-            <log>ERROR: Call failed to connect. Reason [<value expr="ERR_CODE"/>]</log>
+            <log>ERROR: Call failed to connect. Reason [<value expr="errorCode(evt.reason)"/>]</log>
             <if cond="evt.reason == 'DIALTIMEOUT'"> <!-- Reached max ring time -->
                 <log target="status">Call not answered</log>
                 <assign name="state" expr="'noAns'"/>
@@ -436,6 +434,9 @@
                         <!-- Remove the caller's record in the db prior to exiting -->
                         <send data="'dialog.user.deleteRecord'" target="session.id"/>
                     </if>
+                <elseif cond="(inString(evt.reason,ERR_NOT_FOUND,',')) &amp;&amp; (callType == 'extension')"/>
+                     <!-- Destination not found. Maybe IP Phone is offline. Check if there's a voicemail account -->
+                    <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
                 <else/>
                     <!-- Call failed due to some other reason -->
                     <send data="'dialog.user.callFailed'" target="session.id"/>
