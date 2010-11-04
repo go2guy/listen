@@ -59,6 +59,7 @@
 	<var name="SB_UV_whichPathStat"/>
 	<var name="SB_UV_isTranscription"/>
 	<var name="SB_UV_isCDRsaved"/>
+	<var name="SB_UV_transcriptionTxt"/>
 
     
     <form id="beginDocument">
@@ -192,6 +193,9 @@
 			</if>
 			<if cond="SB_UV_isCDRsaved != undefined">
 				<assign name="isCDRsaved" expr="SB_UV_isCDRsaved" />
+			</if>
+			<if cond="SB_UV_transcriptionTxt != undefined">
+				<assign name="transcriptionTxt" expr="SB_UV_transcriptionTxt" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

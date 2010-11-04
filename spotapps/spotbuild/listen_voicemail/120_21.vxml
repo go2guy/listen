@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_120_21(DNIS,fileLocation,subID,duration,fileSize,callerID,hostName)
+            function II_SB_JS_function_120_21(DNIS,fileLocation,subID,duration,fileSize,ANI,hostName,transcriptionTxt)
             {
-	            return "{\"uri\": \"http://"+hostName+fileLocation +"\",\"duration\":\""+duration+"\",\"fileSize\":\""+fileSize+"\",\"leftBy\":\""+callerID+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
+	            return "{\"uri\": \"http://"+hostName+fileLocation +"\",\"transcription\":\""+transcriptionTxt+"\",\"duration\":\""+duration+"\",\"fileSize\":\""+fileSize+"\",\"leftBy\":\""+getnum(ANI)+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Params</log>
             <log>INFO: Entered run-javascript.vxml [120_21]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_120_21(DNIS,fileLocation,subID,duration,fileSize,callerID,hostName)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_120_21(DNIS,fileLocation,subID,duration,fileSize,ANI,hostName,transcriptionTxt)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
