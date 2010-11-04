@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/19/2010
+    <!-- Last Modified 11/04/2010
        *   @Name	getFwdInfo.vxml.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we get the mailbox/passcode information -->
@@ -50,10 +50,10 @@
     <form id="getPasscode">
         <!-- Set up parameters that are used by the play audio subdialog for get pass code -->
         <block>
-            <log>INFO: Entered getPrompt</log>
+            <log>INFO: Entered getPasscode</log>
             <log target="status">Get Pass Code</log>
             <assign name="status" expr="'passCode'"/>
-            <assign name="fieldLength" expr="passCodeLngth + '|*'"/>
+            <assign name="fieldLength" expr="passCodeLngth"/>
             <assign name="promptID" expr="'APgetPasscode'"/>
             <assign name="tmpVal" expr="'APgetPasscode'"/>
 			<goto next="#playAudio"/>
@@ -72,6 +72,7 @@
             <param name="fldTermchar" expr="fldTrmChar"/>
             <param name="fldTimeOut" expr="fieldTimeOut"/>
             <param name="interrupt" expr="cutIn"/>
+            <param name="hotKey" expr="'*'"/>
             <param name="file" expr="promptID"/>
         </subdialog>
         <block>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified: 07/13/2010
+    <!-- Last Modified: 11/04/2010
          @Name: getUserEntry.vxml
          @Desc: This script handles playing audio files
                 and receiving user input. -->
@@ -20,9 +20,9 @@
     <var name="FLD_TERMCHAR" expr="''"/>    <!-- Contains value used to set the termchar property -->
     <var name="FLD_INTERRUPT" expr="''"/>   <!-- Determines if an audio file is interruptible -->
     <var name="FLD_TIMEOUT" expr="''"/>     <!-- Contains value used to set the timeout property -->
-    <var name="match_key" expr="''"/>       <!-- Stores the value of a key -->
     <var name="audioIndex" expr="0"/>       <!-- Index used to loop through prompt list -->
     <var name="tmpFile" expr="''"/>         <!-- Stores name of audio file -->
+    <var name="HOT_KEY" expr="''"/>
 
 	<form id="beginDocument">
         <!-- Subdialog inputs -->
@@ -31,6 +31,7 @@
         <var name="fldTimeOut"/>
         <var name="fldTermchar"/>
         <var name="interrupt"/>
+        <var name="hotKey"/>
         <var name="file"/>
         <var name="fileCheck"/>
 		<block>
@@ -42,6 +43,7 @@
             <assign name="FLD_TERMCHAR" expr="fldTermchar"/>
             <assign name="FLD_INTERRUPT" expr="interrupt"/>
             <assign name="FLD_TIMEOUT" expr="fldTimeOut"/>
+            <assign name="HOT_KEY" expr="hotKey"/>
   			<goto next="#setBargein"/>
 		</block>
 	</form>
@@ -58,26 +60,6 @@
             <param name="PropertyScope" value="Document"/>
         </object>
         <block>
-			<goto next="#dgtMatch"/>
-        </block>
-    </form>
-
-    <form id="dgtMatch">
-        <!-- Here we decode the contents of the fieldLength variable. If we have a pipe ('|') separated
-        list, we'll assume we need to watch for either a specified length of digits or a particular
-        digit (on the fist key press). If there's no '|', we'll just watch for a specified length -->
-        <block>
-            <log>INFO: Entered dgtMatch</log>
-            <if cond="inString('|',fieldLength,'')">
-                <!-- We need to watch for a particular keypress on our first pass -->
-                <assign name="match_key" expr="getNextElement(1,fieldLength,'|')"/>
-                <assign name="match_key" expr="iiSubstr(fieldLength,1,-1)"/>
-                <assign name="fieldLength" expr="getNextElement(0,fieldLength,'|')"/>
-            <else/>
-                <!-- Nothing to do here, we'll just watch for the specified number of digits -->
-            </if>
-            <log>INFO: Field length [<value expr="fieldLength"/>]</log>
-            <log>INFO: Match key(s) [<value expr="match_key"/>]</log>
 			<goto next="#getPrompt"/>
         </block>
     </form>
@@ -192,16 +174,16 @@
             <param name="PropertyValue" expr="DGT_TIMEOUT"/>
             <param name="PropertyScope" value="Document"/>
         </object>
-        <block cond="match_key.length &gt; 0">
+        <block cond="HOT_KEY.length &gt; 0">
             <!-- If we've been given a particular key to match, we'll check for that only on the
             first key press. A match will cause us to exit -->
             <if cond="application.lastresult$.utterance != FLD_TERMCHAR">
-                <assign name="userEntry" expr="userEntry + application.lastresult$.utterance"/>
-                <if cond="inString(userEntry,match_key,'|')">
+                <assign name="userEntry" expr="application.lastresult$.utterance"/>
+                <if cond="inString(userEntry,HOT_KEY,',')">
                     <!-- Found a match on the first key press -->
                 <else/>
                     <assign name="playAudio" expr="'n'"/>
-                    <assign name="match_key" expr="''"/>
+                    <assign name="HOT_KEY" expr="''"/>
                     <assign name="gotoForm" expr="'#exit'"/>
                     <goto next="#getEntry"/>
                 </if>

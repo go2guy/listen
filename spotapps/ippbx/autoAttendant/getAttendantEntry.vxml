@@ -34,7 +34,7 @@
         <var name="interrupt"/>
         <var name="file"/>
 		<block>
-	        <log>INFO: Entered getUserEntry.vxml</log>
+	        <log>INFO: Entered beginDocument</log>
             <!-- Set input values to global variables -->
             <assign name="tmpFile" expr="file"/>    <!-- NOTE: Input file may be pipe ('|') separated list of prompts -->
             <assign name="fieldLength" expr="fldLength"/>   <!-- NOTE: Field length may be pipe ('|') separated list of values -->

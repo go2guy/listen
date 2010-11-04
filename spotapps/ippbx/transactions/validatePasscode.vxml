@@ -73,8 +73,8 @@
     <form id="getDestination">
         <!-- Set up parameters that are used by the play audio subdialog for get pass code -->
         <block>
-            <log>INFO: Entered getPrompt</log>
-            <log target="status">Get Pass Code</log>
+            <log>INFO: Entered getDestination</log>
+            <log target="status">Get Destination</log>
             <assign name="status" expr="'destination'"/>
             <assign name="fldTrmChar" expr="'#'"/>
             <assign name="digitTimeOut" expr="'3s'"/>

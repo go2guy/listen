@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 07/16/2010
+    <!-- Last Modified 11/04/2010
        *   @Name	afterHrsMain.vxml
        *   @Desc	This script is the entry point for customers requesting
                     support -->
@@ -32,6 +32,7 @@
             <param name="fldTermchar" expr="fldTrmChar"/>
             <param name="fldTimeOut" expr="fieldTimeOut"/>
             <param name="interrupt" expr="cutIn"/>
+            <param name="hotKey" expr="''"/>
             <param name="file" expr="promptID"/>
         </subdialog>
         <block>
