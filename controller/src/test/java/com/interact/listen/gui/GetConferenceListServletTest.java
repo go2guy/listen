@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.ListenServletTest;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.license.AlwaysTrueMockLicense;
 import com.interact.listen.license.License;
 
@@ -26,6 +27,8 @@ public class GetConferenceListServletTest extends ListenServletTest
     public void test_doGet_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized() throws IOException,
         ServletException
     {
+        assert ServletUtil.currentSubscriber(request) == null;
+
         request.setMethod("GET");
         testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - Not logged in");
     }

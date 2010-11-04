@@ -49,43 +49,43 @@ public class ScheduleConferenceServlet extends HttpServlet
         }
 
         String date = request.getParameter("date");
-        if(date == null || date.equals(""))
+        if(date == null || date.trim().equals(""))
         {
             throw new BadRequestServletException("Please provide a date");
         }
 
         String hour = request.getParameter("hour");
-        if(hour == null || hour.equals(""))
+        if(hour == null || hour.trim().equals(""))
         {
             throw new BadRequestServletException("Please provide an hour for the conference start time");
         }
 
         String minute = request.getParameter("minute");
-        if(minute == null || minute.equals(""))
+        if(minute == null || minute.trim().equals(""))
         {
             throw new BadRequestServletException("Please provide a minute for the conference start time");
         }
 
         String amPm = request.getParameter("amPm");
-        if(amPm == null || amPm.equals(""))
+        if(amPm == null || amPm.trim().equals(""))
         {
             throw new BadRequestServletException("Please provide an am/pm for the conference start time");
         }
 
         String endHour = request.getParameter("endHour");
-        if(endHour == null || endHour.equals(""))
+        if(endHour == null || endHour.trim().equals(""))
         {
             throw new BadRequestServletException("Please provide an hour for the conference end time");
         }
 
         String endMinute = request.getParameter("endMinute");
-        if(endMinute == null || endMinute.equals(""))
+        if(endMinute == null || endMinute.trim().equals(""))
         {
             throw new BadRequestServletException("Please provide a minute for the conference end time");
         }
 
         String endAmPm = request.getParameter("endAmPm");
-        if(endAmPm == null || endAmPm.equals(""))
+        if(endAmPm == null || endAmPm.trim().equals(""))
         {
             throw new BadRequestServletException("Please provide an am/pm for the conference end time");
         }
