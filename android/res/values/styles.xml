@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <style name="AudioButton">
+        <item name="android:background">@drawable/audio_button_background</item>
+        <item name="android:layout_width">71dip</item>
+        <item name="android:layout_height">52dip</item>
+    </style>
+
+    <style name="AudioButton.Play">
+        <item name="android:src">@drawable/ic_audio_play</item>
+    </style>
+
+    <style name="AudioButton.Ffwd">
+        <item name="android:src">@drawable/ic_audio_ff</item>
+    </style>
+
+    <style name="AudioButton.Rew">
+        <item name="android:src">@drawable/ic_audio_rew</item>
+    </style>
+
+    <style name="AudioButton.Pause">
+        <item name="android:src">@drawable/ic_audio_pause</item>
+    </style>
+</resources>
