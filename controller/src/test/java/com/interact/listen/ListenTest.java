@@ -114,7 +114,7 @@ public abstract class ListenTest
         participant.setIsAdminMuted(Boolean.FALSE);
         participant.setIsMuted(Boolean.TRUE);
         participant.setIsPassive(Boolean.FALSE);
-        participant.setNumber(String.valueOf(TestUtil.randomNumeric(10)));
+        participant.setNumber(String.valueOf(System.currentTimeMillis()) + String.valueOf(TestUtil.randomNumeric(10)));
         participant.setSessionID(TestUtil.randomString());
         session.save(participant);
         return participant;
