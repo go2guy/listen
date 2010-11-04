@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/02/2010
+    <!-- Last Modified 11/04/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -39,6 +39,7 @@
     <var name="LOCAL_CALL" expr="7"/>       <!-- Number of digits in a local call -->
     <var name="AREA_CODE" expr="'402'"/>    <!-- Local area code -->
     <var name="OUT_BOUND_ID" expr="'14024768786'"/>         <!-- Caller ID used for outbound calls -->
+    <var name="OUTSIDE_LINE" expr="'9'"/>
 
     <!-- Dial Errors -->
     <var name="ERR_CODE" expr="''"/>            <!-- Dial error code -->
@@ -153,14 +154,14 @@
             <!-- Attempt dial to destination number. Since this is voip, we'll generate
             ring tone to the caller. Once call gets picked up, we'll end it (the ring tone). -->
             <log>INFO: Entered [dialog.user.call] with state [<value expr="state"/>]</log>
-            <log target="status">Dialing [<value expr="tmpDNIS"/>]</log>
             <var name="TIME_OUT" expr="'25s'"/>
             <var name="OBCALL.noproxy" expr="'false'"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
                 <assign name="CALL_DNIS" expr="'sip:ext' + tmpDNIS + '@iipbx'"/>
             <else/> <!-- Call to an external number (outside PBX) -->
                 <assign name="TIME_OUT" expr="'60s'"/>
-                <if cond="iiNumber(tmpDNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
+                <if cond="(iiNumber(tmpDNIS)) &amp;&amp; (tmpDNIS[0] == OUTSIDE_LINE)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
+                    <assign name="tmpDNIS" expr="iiSubstr(tmpDNIS,1,-1)"/>  <!-- Strip off outside line prefix -->
                     <assign name="SIP_SERVER" expr="getJsonVal(importedValue, 'sipURL')"/>
                     <assign name="CALL_ANI" expr="'sip:' + OUT_BOUND_ID + '@' + SIP_SERVER"/>  <!-- Make caller ID office number -->
                     <if cond="tmpDNIS.length == LOCAL_CALL">
@@ -168,17 +169,24 @@
                     <else/>
                         <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS + '@' + SIP_SERVER"/>
                     </if>
-                <else/>
+                <elseif cond="(inString('*',tmpDNIS,'')) || (inString('.',tmpDNIS,''))"/>   <!-- Check if destination is an IP address -->
                     <assign name="OBCALL.noproxy" expr="'true'"/>
-                    <if cond="inString('*',tmpDNIS,'')">  <!-- Check if destination is an IP address -->
+                    <if cond="inString('*',tmpDNIS,'')">
                         <assign name="tmpDNIS" expr="iiReplace(tmpDNIS,'*','.')"/>  <!-- If so, replace '*' with '.' -->
                     </if>
                     <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS"/>
+                <else/> <!-- Invalid outdial attempt -->
+                    <assign name="CALL_DNIS" expr="''"/>
                 </if>
             </if>
-            <assign name="state" expr="'storeInfo'"/>
-            <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
-            <send data="'dialog.user.storeInfo'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
+            <if cond="CALL_DNIS.length &gt; 0">
+                <log target="status">Dialing [<value expr="tmpDNIS"/>]</log>
+                <assign name="state" expr="'storeInfo'"/>
+                <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
+                <send data="'dialog.user.storeInfo'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
+            <else/>
+                <send data="'dialog.user.deleteRecord'" target="session.id"/>                
+            </if>
         </transition>
 
 		<transition state="storeInfo" event="dialog.user.storeInfo" name="evt">
