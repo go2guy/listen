@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/02/2010
+    <!-- Last Modified 11/05/2010
        *   @Name	validatePasscode.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we validate the passcode associated with an extension -->
@@ -50,7 +50,7 @@
     </form>
 
     <form id="chkResult">
-        <!-- -->
+        <!-- Check Results -->
         <block cond="resource == 'accessNumbers'">
             <log>INFO: Entered chkResult</log>
             <var name="count" expr="getJsonVal(result, 'count')"/>
@@ -66,6 +66,8 @@
             <var name="pin" expr="getJsonVal(result, 'voicemailPin')"/>
             <if cond="pin == passcode">
                 <goto next="#getDestination"/>
+            <else/>
+                <goto expr="'file:'+APP_PATH+'forward/getFwdInfo.vxml#error'"/>
             </if>
         </block>
     </form>
