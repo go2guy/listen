@@ -361,7 +361,7 @@ public class DefaultController implements Controller
 				throw new AuthorizationException(api);
 			}
 			
-			throw new ControllerException(api);
+			throw new ControllerException(api+" code: "+status);
 		}
     }
     

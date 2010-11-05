@@ -13,8 +13,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.interact.listen.android.voicemail.R;
-
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -41,25 +39,21 @@ public class AudioController
         boolean seekTo(int pos);
 
         /**
-         * 
          * @return length of audio in milliseconds
          */
         int getDuration();
         
         /**
-         * 
          * @return current position in the audio in milliseconds
          */
         int getCurrentPosition();
         
         /**
-         * 
          * @return percentage of audio ready for playing, [0,100]
          */
         int getBufferPercentage();
 
         /**
-         * 
          * @return true if currently playing
          */
         boolean isPlaying();
@@ -81,119 +75,6 @@ public class AudioController
     
     private StringBuilder formatBuilder;
     private Formatter formatter;
-
-    private Handler handler = new Handler()
-    {
-        @Override
-        public void handleMessage(Message msg)
-        {
-            switch(msg.what)
-            {
-                case SHOW_PROGRESS:
-                    int pos = setProgress();
-                    if(!dragging && player != null && player.isPlaying())
-                    {
-                        Message m = obtainMessage(SHOW_PROGRESS);
-                        sendMessageDelayed(m, 1000 - (pos % 1000));
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
-    private View.OnKeyListener keyListener = new View.OnKeyListener()
-    {
-        @Override
-        public boolean onKey(View v, int keyCode, KeyEvent event)
-        {
-            if(event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_DOWN &&
-                (keyCode == KeyEvent.KEYCODE_HEADSETHOOK || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_SPACE))
-            {
-                doPauseResume();
-                if(pauseButton != null)
-                {
-                    pauseButton.requestFocus();
-                }
-                return true;
-            }
-            else if(keyCode == KeyEvent.KEYCODE_MEDIA_STOP)
-            {
-                if(player.isPlaying())
-                {
-                    player.pause();
-                    updatePausePlay();
-                }
-                return true;
-            }
-            //else if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)
-            //{
-            //}
-            return false;
-        }
-    };
-    
-    private OnSeekBarChangeListener seekListener = new OnSeekBarChangeListener()
-    {
-        public void onStartTrackingTouch(SeekBar bar)
-        {
-            dragging = true;
-            handler.removeMessages(SHOW_PROGRESS);
-        }
-
-        public void onProgressChanged(SeekBar bar, int progress, boolean fromUser)
-        {
-            long duration = player.getDuration();
-            int pos = (int)((long)(duration * progress) / 1000L);
-            if (player.seekTo(pos))
-            {
-                if(curTime != null)
-                {
-                    curTime.setText(stringForTime(pos));
-                }
-            }
-        }
-
-        public void onStopTrackingTouch(SeekBar bar)
-        {
-            dragging = false;
-            setProgress();
-            updatePausePlay();
-            handler.sendEmptyMessage(SHOW_PROGRESS);
-        }
-    };
-
-    private View.OnClickListener pauseListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            doPauseResume();
-        }
-    };
-
-    private View.OnClickListener rewindListener = new View.OnClickListener()
-    {
-        public void onClick(View v)
-        {
-            int pos = player.getCurrentPosition();
-            pos -= 5000; // 5 seconds
-            player.seekTo(pos);
-            setProgress();
-        }
-    };
-
-    private View.OnClickListener fastForwardListener = new View.OnClickListener()
-    {
-        public void onClick(View v)
-        {
-            int pos = player.getCurrentPosition();
-            pos += 15000; // 15 seconds
-            player.seekTo(pos);
-            setProgress();
-        }
-    };
 
     public AudioController()
     {
@@ -263,12 +144,17 @@ public class AudioController
         formatter = new Formatter(formatBuilder, Locale.getDefault());
         
         view.setOnKeyListener(keyListener);
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
 
         setProgress();
         updatePausePlay();
-        handler.sendEmptyMessage(SHOW_PROGRESS);
+        if(player != null && player.isPlaying())
+        {
+            handler.sendEmptyMessage(SHOW_PROGRESS);
+        }
     }
-    
+
     public void setEnabled(boolean enabled)
     {
         if(pauseButton != null)
@@ -289,6 +175,12 @@ public class AudioController
         }
     }
 
+    public void update()
+    {
+        setProgress();
+        updatePausePlay();
+    }
+    
     private String stringForTime(int timeMs)
     {
         int totalSeconds = timeMs / 1000;
@@ -317,7 +209,7 @@ public class AudioController
         int duration = player.getDuration();
         if(progressBar != null)
         {
-            if(duration > 0)
+            if(duration >= 0)
             {
                 long pos = 1000L * position / duration;
                 progressBar.setProgress((int)pos);
@@ -363,8 +255,131 @@ public class AudioController
         else
         {
             player.start();
+            handler.sendEmptyMessage(SHOW_PROGRESS);
         }
         updatePausePlay();
     }
+
+    private Handler handler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            if (player == null)
+            {
+                return;
+            }
+            switch(msg.what)
+            {
+                case SHOW_PROGRESS:
+                    int pos = setProgress();
+                    if(!dragging && player.isPlaying())
+                    {
+                        Message m = obtainMessage(SHOW_PROGRESS);
+                        sendMessageDelayed(m, 1000 - (pos % 1000));
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    private View.OnKeyListener keyListener = new View.OnKeyListener()
+    {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event)
+        {
+            if(event.getRepeatCount() == 0 && event.getAction() == KeyEvent.ACTION_DOWN &&
+                (keyCode == KeyEvent.KEYCODE_HEADSETHOOK || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_SPACE))
+            {
+                doPauseResume();
+                if(pauseButton != null)
+                {
+                    pauseButton.requestFocus();
+                }
+                return true;
+            }
+            else if(keyCode == KeyEvent.KEYCODE_MEDIA_STOP)
+            {
+                if(player.isPlaying())
+                {
+                    player.pause();
+                    updatePausePlay();
+                }
+                return true;
+            }
+            //else if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)
+            //{
+            //}
+            return false;
+        }
+    };
+    
+    private OnSeekBarChangeListener seekListener = new OnSeekBarChangeListener()
+    {
+        public void onStartTrackingTouch(SeekBar bar)
+        {
+            dragging = true;
+            handler.removeMessages(SHOW_PROGRESS);
+        }
+
+        public void onProgressChanged(SeekBar bar, int progress, boolean fromUser)
+        {
+            if(!fromUser)
+            {
+                return; // updates from me are already covered
+            }
+            long duration = player.getDuration();
+            int pos = (int)(duration * progress / 1000L);
+            if (player.seekTo(pos))
+            {
+                if(curTime != null)
+                {
+                    curTime.setText(stringForTime(pos));
+                }
+            }
+        }
+
+        public void onStopTrackingTouch(SeekBar bar)
+        {
+            dragging = false;
+            setProgress();
+            updatePausePlay();
+            handler.sendEmptyMessage(SHOW_PROGRESS);
+        }
+    };
+
+    private View.OnClickListener pauseListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            doPauseResume();
+        }
+    };
+
+    private View.OnClickListener rewindListener = new View.OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            int pos = player.getCurrentPosition() - 5000; // take off 5 seconds
+            player.seekTo(Math.max(0, pos));
+            setProgress();
+        }
+    };
+
+    private View.OnClickListener fastForwardListener = new View.OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            if(player.getDuration() > 0)
+            {
+                int pos = player.getCurrentPosition() + 5000; // add 5 seconds
+                player.seekTo(Math.min(player.getDuration(), pos));
+                setProgress();
+            }
+        }
+    };
 
 }

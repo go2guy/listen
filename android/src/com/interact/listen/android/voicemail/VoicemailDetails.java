@@ -16,15 +16,12 @@ import android.widget.Toast;
 import com.interact.listen.android.voicemail.controller.ControllerAdapter;
 import com.interact.listen.android.voicemail.controller.DefaultController;
 
-import java.io.IOException;
-
 public class VoicemailDetails extends Activity
 {
     private static final String TAG = "ListenVoicemailDetails";
     private TextView mLeftBy;
     private TextView mDate;
     private TextView mTranscription;
-    private AudioController audioController = new AudioController();
     private VoicemailPlayer voicemailPlayer = new VoicemailPlayer();
     private long mVoicemailId;
     private int mPosition;
@@ -96,18 +93,17 @@ public class VoicemailDetails extends Activity
             }
         });
         
+        AudioController audioController = new AudioController();
         audioController.initializeController(findViewById(R.id.audioController));
-        audioController.setEnabled(false);
-        audioController.setPlayer(voicemailPlayer);
-        
+        voicemailPlayer.setAudioController(audioController);
     }
 
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         serviceBinder.unbind();
-        voicemailPlayer.reset();
+        voicemailPlayer.stopPlayback();
+        super.onDestroy();
     }
 
     private void setOkResult(Boolean deleted)
@@ -146,16 +142,7 @@ public class VoicemailDetails extends Activity
             
             if(!pathToAudioFile.equals(""))
             {
-                try
-                {
-                    voicemailPlayer.prepare(pathToAudioFile);
-                    audioController.setEnabled(true);
-                }
-                catch(IOException e)
-                {
-                    Log.e(TAG, "Error preparing audio file.", e);
-                    Toast.makeText(VoicemailDetails.this, "Unable to play voicemail", Toast.LENGTH_SHORT).show();
-                }
+                voicemailPlayer.setAudioPath(pathToAudioFile);
             }
             else
             {

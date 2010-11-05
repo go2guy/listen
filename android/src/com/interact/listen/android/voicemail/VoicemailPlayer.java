@@ -1,99 +1,387 @@
 package com.interact.listen.android.voicemail;
 
+import android.content.Context;
+import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 
 public class VoicemailPlayer implements AudioController.Player
 {
+    private static final String TAG = "ListenVoicemailPlayer";
+    
     private MediaPlayer mediaPlayer;
-    private String audioPath;
+    private Uri uri;
+    private int durationMS;
+    private State currentState;
+    private State targetState;
+    private int currentBufferPercentage;
+    private int seekWhenPrepared;
+
+    private AudioController audioController;
+    
+    private MediaPlayer.OnPreparedListener onPreparedListener;
+    private MediaPlayer.OnCompletionListener onCompletionListener;
+    private MediaPlayer.OnErrorListener onErrorListener;
+
+    private Context context;
     
     public VoicemailPlayer()
     {
-        mediaPlayer = new MediaPlayer();
-        audioPath = null;
+        mediaPlayer = null;
+        uri = null;
+        durationMS = 0;
+        currentState = State.IDLE;
+        targetState = State.IDLE;
+        currentBufferPercentage = 0;
+        seekWhenPrepared = 0;
+        
+        audioController = null;
+        
+        onPreparedListener = null;
+        onCompletionListener = null;
+        onErrorListener = null;
+        
+        context = null;
     }
 
-    public void reset()
+    public void setOnPreparedListener(MediaPlayer.OnPreparedListener l)
     {
-        mediaPlayer.reset();
+        onPreparedListener = l;
     }
-    
-    public void prepare(String path) throws IOException {
-        reset();
-        audioPath = path;
-        try {
-            mediaPlayer.setDataSource(audioPath);
-            mediaPlayer.prepare();
-        }
-        catch (IOException e)
+    public void setOnCompletionListener(MediaPlayer.OnCompletionListener l)
+    {
+        onCompletionListener = l;
+    }
+    public void setOnErrorListener(MediaPlayer.OnErrorListener l)
+    {
+        onErrorListener = l;
+    }
+
+    public void setAudioController(AudioController controller)
+    {
+        audioController = controller;
+        attachAudioController();
+    }
+
+    /**
+     * Requires the AudioController be set with it's View
+     * @param path
+     */
+    public void setAudioPath(String path)
+    {
+        setAudioPath(null, path);
+    }
+
+    /**
+     * Requires the AudioController be set with it's View
+     * @param u
+     */
+    public void setAudioURI(Uri u)
+    {
+        setAudioURI(null, u);
+    }
+
+    public void setAudioPath(Context ctx, String path)
+    {
+        setAudioURI(ctx, Uri.parse(path));
+    }
+
+    public void setAudioURI(Context ctx, Uri u)
+    {
+        uri = u;
+        seekWhenPrepared = 0;
+        openAudio(ctx);
+    }
+
+    public void stopPlayback()
+    {
+        if(mediaPlayer != null)
         {
-            audioPath = null;
-            throw e;
+            try
+            {
+                mediaPlayer.stop();
+            }
+            catch (IllegalStateException e)
+            {
+                Log.i(TAG, "media player not in legal state to stop");
+            }
         }
+        release(true);
+    }
+
+    public AudioController getController()
+    {
+        return audioController;
     }
     
     @Override
     public void start()
     {
-        if (audioPath != null)
+        if(isInPlaybackState() && currentState != State.PLAYING)
         {
             mediaPlayer.start();
+            currentState = State.PLAYING;
         }
+        targetState = State.PLAYING;
     }
 
     @Override
     public boolean pause()
     {
-        if (audioPath != null)
+        if(isInPlaybackState())
         {
-            mediaPlayer.pause();
+            if(mediaPlayer.isPlaying())
+            {
+                mediaPlayer.pause();
+                currentState = State.PAUSED;
+            }
         }
+        targetState = State.PAUSED;
         return true;
-    }
-
-    @Override
-    public boolean seekTo(int pos)
-    {
-        if (audioPath != null)
-        {
-            mediaPlayer.seekTo(pos);
-            return true;
-        }
-        return false;
     }
 
     @Override
     public int getDuration()
     {
-        if (audioPath != null)
+        if(isInPlaybackState())
         {
-            return mediaPlayer.getDuration();
+            if(durationMS < 0)
+            {
+                durationMS = mediaPlayer.getDuration();
+                Log.i(TAG, "Caching duration " + durationMS);
+            }
+            return durationMS;
         }
+        durationMS = -1;
         return 0;
     }
 
     @Override
     public int getCurrentPosition()
     {
-        if (audioPath != null)
-        {
-            return mediaPlayer.getCurrentPosition();
-        }
-        return 0;
+        return isInPlaybackState() ? mediaPlayer.getCurrentPosition() : 0;
     }
 
     @Override
-    public int getBufferPercentage()
+    public boolean seekTo(int msec)
     {
-        return 100;
+        if(isInPlaybackState())
+        {
+            Log.i(TAG, "Seeking to " + msec);
+            mediaPlayer.seekTo(msec);
+            seekWhenPrepared = 0;
+        }
+        else
+        {
+            Log.i(TAG, "Will seek to " + msec);
+            seekWhenPrepared = msec;
+        }
+        return true;
     }
 
     @Override
     public boolean isPlaying()
     {
-        return mediaPlayer.isPlaying();
+        return isInPlaybackState() && mediaPlayer.isPlaying();
     }
+
+    @Override
+    public int getBufferPercentage()
+    {
+        return mediaPlayer != null ? currentBufferPercentage : 0;
+    }
+
+    private void openAudio(Context ctx)
+    {
+        context = ctx;
+        if (context == null && audioController != null && audioController.getView() != null)
+        {
+            context = audioController.getView().getContext();
+        }
+        
+        if(uri == null)
+        {
+            return;
+        }
+        Log.i(TAG, "Opening audio " + uri);
+
+        Intent i = new Intent("com.android.music.musicservicecommand");
+        i.putExtra("command", "pause");
+        context.sendBroadcast(i);
+
+        release(false);
+        
+        try
+        {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setOnPreparedListener(preparedListener);
+            durationMS = -1;
+            mediaPlayer.setOnCompletionListener(completionListener);
+            mediaPlayer.setOnErrorListener(errorListener);
+            mediaPlayer.setOnBufferingUpdateListener(bufferUpdateListener);
+            currentBufferPercentage = 0;
+            mediaPlayer.setDataSource(context, uri);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.prepareAsync();
+            currentState = State.PREPARING;
+            attachAudioController();
+        }
+        catch(IOException e)
+        {
+            Log.w(TAG, "Unable to open content: " + uri, e);
+            currentState = State.ERROR;
+            targetState = State.ERROR;
+            errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            return;
+        }
+        catch(IllegalArgumentException e)
+        {
+            Log.w(TAG, "Unable to open content: " + uri, e);
+            currentState = State.ERROR;
+            targetState = State.ERROR;
+            errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            return;
+        }
+    }
+
+    private void attachAudioController()
+    {
+        if(mediaPlayer != null && audioController != null)
+        {
+            audioController.setPlayer(this);
+            audioController.setEnabled(isInPlaybackState());
+        }
+    }
+
+    private void release(boolean resetTargetState)
+    {
+        if(mediaPlayer != null)
+        {
+            mediaPlayer.reset();
+            mediaPlayer.release();
+            mediaPlayer = null;
+            currentState = State.IDLE;
+            if(resetTargetState)
+            {
+                targetState = State.IDLE;
+                if(audioController != null)
+                {
+                    audioController.setEnabled(false);
+                }
+            }
+        }
+    }
+
+    private boolean isInPlaybackState()
+    {
+        return mediaPlayer != null && currentState.isPlayable();
+    }
+
+    private enum State
+    {
+        ERROR, IDLE, PREPARING, PREPARED, PLAYING, PAUSED, PLAYBACK_COMPLETED;
+        
+        public boolean isPlayable()
+        {
+            return this != ERROR && this != IDLE && this != PREPARING;
+        }
+    }
+
+    private MediaPlayer.OnPreparedListener preparedListener = new MediaPlayer.OnPreparedListener()
+    {
+        @Override
+        public void onPrepared(MediaPlayer mp)
+        {
+            Log.i(TAG, "Player prepared: " + uri);
+            currentState = State.PREPARED;
+
+            if(onPreparedListener != null)
+            {
+                onPreparedListener.onPrepared(mediaPlayer);
+            }
+
+            int seekToPosition = seekWhenPrepared;
+            if(seekToPosition != 0)
+            {
+                seekTo(seekToPosition);
+            }
+
+            if(targetState == State.PLAYING)
+            {
+                Log.i(TAG, "Player starting right up");
+                start();
+            }
+            if(audioController != null)
+            {
+                audioController.setEnabled(true);
+                audioController.update();
+            }
+        }
+    };
+
+    private MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener()
+    {
+        @Override
+        public void onCompletion(MediaPlayer mp)
+        {
+            Log.i(TAG, "Media player done playing audio at " + mediaPlayer.getDuration() + " of " + durationMS);
+            currentState = State.PLAYBACK_COMPLETED;
+            targetState = State.PLAYBACK_COMPLETED;
+
+            if(audioController != null)
+            {
+                audioController.update();
+            }
+            if(onCompletionListener != null)
+            {
+                onCompletionListener.onCompletion(mediaPlayer);
+            }
+        }
+    };
+
+    private MediaPlayer.OnErrorListener errorListener = new MediaPlayer.OnErrorListener()
+    {
+        @Override
+        public boolean onError(MediaPlayer mp, int frameworkErr, int implErr)
+        {
+            Log.e(TAG, "Error: " + frameworkErr + "," + implErr);
+            currentState = State.ERROR;
+            targetState = State.ERROR;
+            if(audioController != null)
+            {
+                audioController.setEnabled(false);
+            }
+
+            if(onErrorListener != null)
+            {
+                if(onErrorListener.onError(mediaPlayer, frameworkErr, implErr))
+                {
+                    return true;
+                }
+            }
+
+            Toast.makeText(context, "Unable to play voicemail", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    };
+
+    private MediaPlayer.OnBufferingUpdateListener bufferUpdateListener = new MediaPlayer.OnBufferingUpdateListener()
+    {
+        @Override
+        public void onBufferingUpdate(MediaPlayer mp, int percent)
+        {
+            Log.i(TAG, "Buffer update to " + percent);
+            currentBufferPercentage = percent;
+            if(audioController != null)
+            {
+                audioController.update();
+            }
+        }
+    };
 
 }
