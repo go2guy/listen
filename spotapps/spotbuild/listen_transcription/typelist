@@ -12,7 +12,6 @@
 196_5 - data-query
 182_71 - run-javascript
 hang-up - hang-up
-182_79 - log
 182_37 - decision
 182_34 - decision
 182_36 - math
@@ -20,6 +19,7 @@ hang-up - hang-up
 182_32 - run-javascript
 196_21 - run-javascript
 196_24 - run-javascript
+196_26 - assign-variable
 182_84 - assign-variable
 182_5 - out-dial
 182_9 - end

@@ -159,7 +159,7 @@
             <goto fetchid="evt.fetchid"/> <!-- Go to ccxml document -->
         </transition>
 
-        <transition state="alerted endCall terminatingDialog" event="dialog.exit" name="evt">
+        <transition state="alerted endCall terminatingDialog hangUpCont" event="dialog.exit" name="evt">
             <!-- Handles return from vxml dialog. This transition is used when we need to 
                  end the call, transfer control to a new application or start a different
                  ccxml file. -->
@@ -297,7 +297,7 @@
         <!-- Return from vxml dialog -->
         <transition state="hangUp" event="dialog.exit" name="evt">
             <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
-            <assign name="II_SB_state" expr="'endCall'"/>
+            <assign name="II_SB_state" expr="'hangUpCont'"/>
             <assign name="II_SB_indialog" expr="'false'"/>
             <if cond="evt.values.II_SB_status != 'Failure'">
                 <if cond="evt.values.II_SB_fileSize != ''">
