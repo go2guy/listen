@@ -5,27 +5,21 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'196_21'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'196_3'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Stats</log>
-            <log>INFO: Entered assign-variable.vxml [182_61]</log>
-            <log>INFO: Current value [<value expr="value"/>]</log>
-<assign name="value" expr="'1'+''" />
-<log>INFO: Updated value [<value expr="value"/>]</log>
+	    <log target="status">Set Variables</log>
+            <log>INFO: Entered assign-variable.vxml [196_19]</log>
+            <log>INFO: Current value [<value expr="resource"/>]</log>
+<assign name="resource" expr="'voicemails'+''" />
+<log>INFO: Updated value [<value expr="resource"/>]</log>
+<log>INFO: Current value [<value expr="request"/>]</log>
+<assign name="request" expr="'put'+''" />
+<log>INFO: Updated value [<value expr="request"/>]</log>
 <log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LSTNAPP_0021'+''" />
+<assign name="id" expr="fileNumber+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
-<log>INFO: Current value [<value expr="operation"/>]</log>
-<assign name="operation" expr="'increment'+''" />
-<log>INFO: Updated value [<value expr="operation"/>]</log>
-<log>INFO: Current value [<value expr="nextPath"/>]</log>
-<assign name="nextPath" expr="''+''" />
-<log>INFO: Updated value [<value expr="nextPath"/>]</log>
-<log>INFO: Current value [<value expr="transcriptionTxt"/>]</log>
-<assign name="transcriptionTxt" expr="'Transcription Unavailable'+''" />
-<log>INFO: Updated value [<value expr="transcriptionTxt"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

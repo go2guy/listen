@@ -9,22 +9,13 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Stats</log>
-            <log>INFO: Entered assign-variable.vxml [182_61]</log>
-            <log>INFO: Current value [<value expr="value"/>]</log>
-<assign name="value" expr="'1'+''" />
-<log>INFO: Updated value [<value expr="value"/>]</log>
-<log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LSTNAPP_0021'+''" />
-<log>INFO: Updated value [<value expr="id"/>]</log>
-<log>INFO: Current value [<value expr="operation"/>]</log>
-<assign name="operation" expr="'increment'+''" />
-<log>INFO: Updated value [<value expr="operation"/>]</log>
-<log>INFO: Current value [<value expr="nextPath"/>]</log>
-<assign name="nextPath" expr="''+''" />
+	    <log target="status">Set Variables</log>
+            <log>INFO: Entered assign-variable.vxml [182_84]</log>
+            <log>INFO: Current value [<value expr="nextPath"/>]</log>
+<assign name="nextPath" expr="'END'+''" />
 <log>INFO: Updated value [<value expr="nextPath"/>]</log>
 <log>INFO: Current value [<value expr="transcriptionTxt"/>]</log>
-<assign name="transcriptionTxt" expr="'Transcription Unavailable'+''" />
+<assign name="transcriptionTxt" expr="'Transcription Pending'+''" />
 <log>INFO: Updated value [<value expr="transcriptionTxt"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

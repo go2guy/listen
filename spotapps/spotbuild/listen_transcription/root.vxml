@@ -44,6 +44,12 @@
 	<var name="value" expr="''" />
 	<var name="operation" expr="''" />
 	<var name="nextPath" expr="''" />
+	<var name="resource" expr="''" />
+	<var name="params" expr="''" />
+	<var name="request" expr="''" />
+	<var name="cntrlURL" expr="''" />
+	<var name="HTTPcontroller" expr="''" />
+	<var name="transcriptionTxt" expr="''" />
 
 
     <!-- Conference Variables -->
