@@ -36,7 +36,7 @@ import org.quartz.impl.StdSchedulerFactory;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "REC_CATCH_EXCEPTION", justification = "For any Throwable we need to rethrow it as an ExceptionInInitializerError")
 public final class HibernateUtil
 {
-    public static final Environment ENVIRONMENT = Environment.valueOf(System.getProperty("com.interact.listen.env", "TEST"));
+    public static final Environment ENVIRONMENT = Environment.valueOf(System.getProperty("com.interact.listen.env", "PROD"));
 
     private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
     private static final SessionFactory SESSION_FACTORY;
