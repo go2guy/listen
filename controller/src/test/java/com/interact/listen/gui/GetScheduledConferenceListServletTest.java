@@ -1,15 +1,19 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.ListenServletTest;
-import com.interact.listen.ServletUtil;
-import com.interact.listen.TestUtil;
+import static org.junit.Assert.assertEquals;
+
+import com.interact.listen.*;
 import com.interact.listen.resource.Conference;
+import com.interact.listen.resource.ScheduledConference;
 import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.junit.Test;
 
 public class GetScheduledConferenceListServletTest extends ListenServletTest
@@ -58,5 +62,28 @@ public class GetScheduledConferenceListServletTest extends ListenServletTest
         request.setParameter("id", String.valueOf(id));
 
         testForListenServletException(servlet, 400, "Conference not found");
+    }
+    
+    @Test
+    public void test_doGet_withConferenceHavingOneScheduledConference_returnsJsonList() throws ServletException, IOException
+    {
+        Subscriber subscriber = TestUtil.setSessionSubscriber(request, false, session);
+        Conference conference = createConference(session, subscriber);
+        
+        ScheduledConference scheduled = createScheduledConference(session, conference, subscriber);
+        
+        request.setParameter("id", String.valueOf(conference.getId()));
+        request.setParameter("historic", "true");
+        servlet.doGet(request, response);
+
+        assertOutputBufferContentTypeEquals("application/json");
+
+        StringBuilder buffer = (StringBuilder)request.getAttribute(OutputBufferFilter.OUTPUT_BUFFER_KEY);
+        JSONObject output = (JSONObject)JSONValue.parse(buffer.toString());
+        assertEquals(1L, output.get("total"));
+
+        JSONArray results = (JSONArray)output.get("results");
+        JSONObject sc = (JSONObject)results.get(0);
+        assertEquals(scheduled.getId(), sc.get("id"));
     }
 }

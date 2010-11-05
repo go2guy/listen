@@ -1,13 +1,16 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.ListenServletTest;
-import com.interact.listen.ServletUtil;
-import com.interact.listen.TestUtil;
+import static org.junit.Assert.assertEquals;
+
+import com.interact.listen.*;
+import com.interact.listen.resource.History;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.junit.Test;
 
 public class GetHistoryListServletTest extends ListenServletTest
@@ -30,6 +33,20 @@ public class GetHistoryListServletTest extends ListenServletTest
 
         request.setMethod("GET");
         testForListenServletException(servlet, 401, "Unauthorized - Insufficient permissions");
+    }
+    
+    @Test
+    public void test_doGet_returnsJsonHistoryList() throws ServletException, IOException
+    {
+        TestUtil.setSessionSubscriber(request, true, session);
 
+        Long count = History.count(session);
+        servlet.doGet(request, response);
+
+        assertOutputBufferContentTypeEquals("application/json");
+
+        StringBuilder buffer = (StringBuilder)request.getAttribute(OutputBufferFilter.OUTPUT_BUFFER_KEY);
+        JSONObject output = (JSONObject)JSONValue.parse(buffer.toString());
+        assertEquals(count, output.get("total"));
     }
 }

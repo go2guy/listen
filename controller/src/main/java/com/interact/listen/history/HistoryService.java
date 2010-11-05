@@ -19,7 +19,7 @@ public class HistoryService
         @Override
         public String toString()
         {
-            return name().substring(0, 1).toUpperCase() + name().substring(1);
+            return name().substring(0, 1).toUpperCase() + name().substring(1).toLowerCase();
         }
     }
 
@@ -35,16 +35,17 @@ public class HistoryService
         persistenceService.save(history);
     }
 
-    public void writeChangedAlternatePagerNumber(String alternateNumber)
+    public History writeChangedAlternatePagerNumber(String alternateNumber)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Changed pager alternate number");
         history.setDescription("Changed pager alternate number to [" + alternateNumber + "]");
         history.setService(Service.CONFIGURATION.toString());
         write(history);
+        return history;
     }
 
-    public void writeChangedVoicemailPin(Subscriber onSubscriber, String oldPin, String newPin)
+    public History writeChangedVoicemailPin(Subscriber onSubscriber, String oldPin, String newPin)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Changed voicemail PIN");
@@ -53,9 +54,10 @@ public class HistoryService
         history.setOnSubscriber(onSubscriber);
         history.setService(Service.VOICEMAIL.toString());
         write(history);
+        return history;
     }
 
-    public void writeCreatedSubscriber(Subscriber subscriber)
+    public History writeCreatedSubscriber(Subscriber subscriber)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Created subscriber");
@@ -63,18 +65,20 @@ public class HistoryService
         history.setOnSubscriber(subscriber);
         history.setService(Service.CONFIGURATION.toString());
         write(history);
+        return history;
     }
 
-    public void writeDeletedSubscriber(Subscriber deletedSubscriber)
+    public History writeDeletedSubscriber(Subscriber deletedSubscriber)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Deleted subscriber");
         history.setDescription("Deleted subscriber [" + deletedSubscriber.getUsername() + "]");
         history.setService(Service.APPLICATION.toString());
         write(history);
+        return history;
     }
 
-    public void writeDeletedVoicemail(Voicemail voicemail)
+    public History writeDeletedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Deleted voicemail");
@@ -82,9 +86,10 @@ public class HistoryService
         history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
+        return history;
     }
 
-    public void writeDownloadedVoicemail(Voicemail voicemail)
+    public History writeDownloadedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Downloaded voicemail");
@@ -92,18 +97,20 @@ public class HistoryService
         history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
+        return history;
     }
 
-    public void writeDroppedConferenceCaller(String droppedCaller, String conferenceDescription)
+    public History writeDroppedConferenceCaller(String droppedCaller, String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Dropped conference caller");
         history.setDescription("Dropped caller [" + droppedCaller + "] from conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
         write(history);
+        return history;
     }
 
-    public void writeForwardedVoicemail(Voicemail voicemail)
+    public History writeForwardedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Forwarded voicemail");
@@ -111,9 +118,10 @@ public class HistoryService
         history.setService(Service.VOICEMAIL.toString());
         history.setOnSubscriber(voicemail.getSubscriber());
         write(history);
+        return history;
     }
 
-    public void writeLeftVoicemail(Voicemail voicemail)
+    public History writeLeftVoicemail(Voicemail voicemail)
     {
         Long subscriberId = voicemail.getSubscriber().getId();
         Subscriber subscriber = Subscriber.queryById(persistenceService.getSession(), subscriberId);
@@ -124,10 +132,11 @@ public class HistoryService
         history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
+        return history;
     }
 
     // TODO not yet written anywhere
-    public void writeListenedToVoicemail(Voicemail voicemail)
+    public History writeListenedToVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Listened to voicemail");
@@ -135,9 +144,10 @@ public class HistoryService
         history.setOnSubscriber(voicemail.getSubscriber());
         history.setService(Service.VOICEMAIL.toString());
         write(history);
+        return history;
     }
 
-    public void writeLoggedIn(Subscriber subscriber, boolean isActiveDirectory)
+    public History writeLoggedIn(Subscriber subscriber, boolean isActiveDirectory)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Logged in");
@@ -145,9 +155,10 @@ public class HistoryService
         history.setOnSubscriber(subscriber);
         history.setService(Service.APPLICATION.toString());
         write(history);
+        return history;
     }
 
-    public void writeLoggedOut(Subscriber subscriber)
+    public History writeLoggedOut(Subscriber subscriber)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Logged out");
@@ -155,18 +166,20 @@ public class HistoryService
         history.setOnSubscriber(subscriber);
         history.setService(Service.APPLICATION.toString());
         write(history);
+        return history;
     }
 
-    public void writeMutedConferenceCaller(String mutedCaller, String conferenceDescription)
+    public History writeMutedConferenceCaller(String mutedCaller, String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Muted conference caller");
         history.setDescription("Muted caller [" + mutedCaller + "] in conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
         write(history);
+        return history;
     }
     
-    public void writeSentVoicemailAlternatePage(Voicemail voicemail)
+    public History writeSentVoicemailAlternatePage(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Sent voicemail alternate number page");
@@ -174,9 +187,10 @@ public class HistoryService
                                + getFriendlyVoicemailIdentifier(voicemail));
         history.setService(Service.VOICEMAIL.toString());
         write(history);
+        return history;
     }
     
-    public void writeSentVoicemailPage(Voicemail voicemail)
+    public History writeSentVoicemailPage(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Sent voicemail page");
@@ -184,51 +198,57 @@ public class HistoryService
                                + getFriendlyVoicemailIdentifier(voicemail));
         history.setService(Service.VOICEMAIL.toString());
         write(history);
+        return history;
     }
 
-    public void writeStartedConference(String conferenceDescription)
+    public History writeStartedConference(String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Started conference");
         history.setDescription("Started conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
         write(history);
+        return history;
     }
 
-    public void writeStartedRecordingConference(String conferenceDescription)
+    public History writeStartedRecordingConference(String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Started recording conference");
         history.setDescription("Started recording conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
         write(history);
+        return history;
     }
 
-    public void writeStoppedConference(String conferenceDescription)
+    public History writeStoppedConference(String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Stopped conference");
         history.setDescription("Stopped conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
         write(history);
+        return history;
     }
 
-    public void writeStoppedRecordingConference(String conferenceDescription)
+    public History writeStoppedRecordingConference(String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Stopped recording conference");
         history.setDescription("Stopped recording conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
         write(history);
+        return history;
     }
 
-    public void writeUnmutedConferenceCaller(String unmutedCaller, String conferenceDescription)
+    public History writeUnmutedConferenceCaller(String unmutedCaller, String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
         history.setAction("Unmuted conference caller");
         history.setDescription("Unmuted caller [" + unmutedCaller + "] in conference [" + conferenceDescription + "]");
         history.setService(Service.CONFERENCING.toString());
         write(history);
+        return history;
     }
 
     private static String getFormattedDate(Date date)

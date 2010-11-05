@@ -12,6 +12,8 @@ import com.interact.listen.resource.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -157,5 +159,23 @@ public abstract class ListenTest
         session.save(action);
         
         return action;
+    }
+
+    public static ScheduledConference createScheduledConference(Session session, Conference forConference, Subscriber scheduledBy)
+    {
+        ScheduledConference sc = new ScheduledConference();
+        sc.setStartDate(new Date());
+        sc.setEndDate(new Date());
+        sc.setTopic(TestUtil.randomString());
+        sc.setNotes(TestUtil.randomString());
+        sc.setScheduledBy(scheduledBy);
+        sc.setConference(forConference);
+
+        Set<String> active = new HashSet<String>();
+        active.add(TestUtil.randomString());
+        sc.setActiveCallers(active);
+
+        session.save(sc);
+        return sc;
     }
 }
