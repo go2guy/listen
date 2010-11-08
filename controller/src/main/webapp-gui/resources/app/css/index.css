@@ -1123,3 +1123,24 @@ div#pinglatency {
 div#latency {
     left: 2px;
 }
+
+#voicemail-header .voicemail-cell-received a {
+    float: left;
+}
+
+#voicemail-header .voicemail-cell-received span {
+    display: block;
+    float: left;
+    height: 6px;
+    margin-left: 5px;
+    margin-top: 5px;
+    width: 11px;
+}
+
+.sort-ascending {
+    background: #DDDDDD url(../images/new/arrow_up_11x6.png) top left no-repeat;
+}
+
+.sort-descending {
+    background: #DDDDDD url(../images/new/arrow_down_11x6.png) top left no-repeat;
+}

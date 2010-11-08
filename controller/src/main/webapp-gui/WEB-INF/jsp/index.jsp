@@ -284,7 +284,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                 <ul id="voicemail-header">
                   <li>
                     <div class="voicemail-cell-from">From</div>
-                    <div class="voicemail-cell-received"><a href="#">Received</a> <span class="sort-indicator"></span></div>
+                    <div class="voicemail-cell-received"><a href="#">Received</a> <span></span></div>
                     <div class="voicemail-cell-play">Length</div>
                     <div class="voicemail-cell-actions"><label for="voicemail-bubble-new">New voicemails on top</label> <input type="checkbox" id="voicemail-bubble-new"></div>
                     <div class="cleaner">&nbsp;</div>

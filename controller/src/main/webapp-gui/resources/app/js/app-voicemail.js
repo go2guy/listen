@@ -5,9 +5,12 @@ $(document).ready(function() {
     });
 
     $('#voicemail-header .voicemail-cell-received a').click(function() {
-        var indicator = $('#voicemail-header .voicemail-cell-received .sort-indicator');
-        var ascending = !indicator.text() || indicator.text() == '' || indicator.text() == '-';
-        indicator.text(ascending ? '+' : '-');
+        var indicator = $('#voicemail-header .voicemail-cell-received span');
+        var ascending = !indicator.hasClass('sort-descending');
+
+        indicator.removeClass(ascending ? 'sort-ascending' : 'sort-descending');
+        indicator.addClass(ascending ? 'sort-descending' : 'sort-ascending');
+
         Listen.Voicemail.sort('received', ascending);
     });
 
