@@ -202,7 +202,7 @@ Requires: spotbuild-vip
 
     if [ ! -e /var/lib/mysql/ip_pbx ]
     then
-        mysql -u root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql
+        echo "No ip_pbx database found. Run [ mysql -u root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql ] to initialize one."
     fi
 
 #######################################################################
