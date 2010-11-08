@@ -126,7 +126,7 @@ public class AuthenticationFilter implements Filter
 
                     if(local.isBefore(now.minusMinutes(5)) || local.isAfter(now.plusMinutes(5)))
                     {
-                        throw new UnauthorizedServletException("Unauthorized, request expired");
+                        throw new UnauthorizedServletException("Request expired");
                     }
                 }
                 catch(ParseException e)

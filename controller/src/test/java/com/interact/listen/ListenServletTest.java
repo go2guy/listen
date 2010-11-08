@@ -7,7 +7,7 @@ import com.interact.listen.exception.ListenServletException;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
 
 import org.junit.Before;
@@ -42,6 +42,22 @@ public abstract class ListenServletTest extends ListenTest
         {
             servlet.service(request, response);
             fail("Expected ListenServletException");
+        }
+        catch(ListenServletException e)
+        {
+            assertEquals(expectedStatus, e.getStatus());
+            assertEquals(expectedContent, e.getContent());
+            assertEquals("text/plain", e.getContentType());
+        }
+    }
+
+    protected void testForListenServletException(Filter filter, ServletRequest request, ServletResponse response,
+                                                 FilterChain chain, int expectedStatus, String expectedContent)
+        throws IOException, ServletException
+    {
+        try
+        {
+            filter.doFilter(request, response, chain);
         }
         catch(ListenServletException e)
         {

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.interact.listen.ListenServletTest;
+import com.interact.listen.api.security.AuthenticationFilter.Authentication;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.UnauthorizedServletException;
@@ -68,5 +69,15 @@ public class AuthorizationFilterTest extends ListenServletTest
             assertEquals("Unauthorized - Not authenticated", e.getContent());
             assertEquals("text/plain", e.getContentType());
         }
+    }
+
+    @Test
+    public void test_doFilter_withSystemAuthenticationType_invokesDoFilter() throws ServletException, IOException
+    {
+        Authentication auth = Authentication.systemAuthentication("remote");
+        request.setAttribute(AuthenticationFilter.AUTHENTICATION_KEY, auth);
+
+        filter.doFilter(request, response, mockFilterChain);
+        verify(mockFilterChain).doFilter(request, response);
     }
 }
