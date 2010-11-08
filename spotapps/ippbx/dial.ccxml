@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/04/2010
+    <!-- Last Modified 11/08/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -32,6 +32,9 @@
     <var name="record" expr="''"/>
     <var name="officeOptr" expr="'101'"/>   <!-- Operator's extension -->
     <var name="moveRequestSID" expr="''"/>  <!-- Session ID involved in an attended transfer -->
+    <var name="xferConnID" expr="''"/>
+    <var name="xferSID" expr="''"/>
+    <var name="URI" expr="''"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -463,6 +466,36 @@
                 <!-- Remove the caller's record in the db prior to exiting -->
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
             </if>
+        </transition>
+
+		<transition event="attendedtransferrequest" name="evt">
+            <!-- Attended Transfer request. If we get this event in here, most likely the originator of a 3-way conference
+            call wants to drop out of the call but keep the other parties joined. First we need to get information about the
+            call legs that need to be joined. -->
+            <log>INFO: Entered [attendedtransferrequest] with state [<value expr="state"/>]</log>
+            <log target="status">Attended Transfer Request</log>
+            <assign name="state" expr="'gotXferReq'"/>
+            <assign name="xferConnID" expr="evt.connectionid"/>
+            <assign name="xferSID" expr="evt.newsessionid"/>
+            <assign name="URI" expr="evt.uri"/>
+            <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
+                <send data="'dialog.user.terminate'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.transfer'" target="session.id"/>
+            </if>
+		</transition>
+
+        <transition state="gotXferReq" event="dialog.exit" name="evt">
+            <!-- We're back from terminating the vxml dialog.  -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.transfer'" target="session.id"/>
+        </transition>
+
+        <transition state="gotXferReq" event="dialog.user.transfer" name="evt">
+            <!-- Here, we call the attended transfer ccxml script that handles joining the call legs -->
+            <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
+            <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID"/>
         </transition>
 
         <transition event="dialog.user.listenVoiceMail" name="evt">
