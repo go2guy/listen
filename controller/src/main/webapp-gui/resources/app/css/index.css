@@ -1124,11 +1124,13 @@ div#latency {
     left: 2px;
 }
 
-#voicemail-header .voicemail-cell-received a {
+#voicemail-header .voicemail-cell-received a,
+#voicemail-header .voicemail-cell-from a {
     float: left;
 }
 
-#voicemail-header .voicemail-cell-received span {
+#voicemail-header .voicemail-cell-received span,
+#voicemail-header .voicemail-cell-from span {
     display: block;
     float: left;
     height: 6px;

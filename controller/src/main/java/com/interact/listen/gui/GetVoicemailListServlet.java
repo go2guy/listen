@@ -69,6 +69,10 @@ public class GetVoicemailListServlet extends HttpServlet
         {
             sort = "dateCreated";
         }
+        else if(request.getParameter("sort") != null && request.getParameter("sort").equals("from"))
+        {
+            sort = "leftBy";
+        }
         boolean ascending = "ascending".equals(request.getParameter("order"));
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

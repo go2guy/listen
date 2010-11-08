@@ -11,7 +11,21 @@ $(document).ready(function() {
         indicator.removeClass(ascending ? 'sort-ascending' : 'sort-descending');
         indicator.addClass(ascending ? 'sort-descending' : 'sort-ascending');
 
+        $('#voicemail-header .voicemail-cell-from span').removeClass('sort-ascending').removeClass('sort-descending');
+
         Listen.Voicemail.sort('received', ascending);
+    });
+
+    $('#voicemail-header .voicemail-cell-from a').click(function() {
+        var indicator = $('#voicemail-header .voicemail-cell-from span');
+        var ascending = !indicator.hasClass('sort-descending');
+
+        indicator.removeClass(ascending ? 'sort-ascending' : 'sort-descending');
+        indicator.addClass(ascending ? 'sort-descending' : 'sort-ascending');
+
+        $('#voicemail-header .voicemail-cell-received span').removeClass('sort-ascending').removeClass('sort-descending');
+
+        Listen.Voicemail.sort('from', ascending);
     });
 
     Listen.Voicemail = function() {
