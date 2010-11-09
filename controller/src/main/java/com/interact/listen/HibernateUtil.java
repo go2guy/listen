@@ -176,7 +176,7 @@ public final class HibernateUtil
             Session session = getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
 
-            PersistenceService persistenceService = new PersistenceService(session, null, Channel.GUI);
+            PersistenceService persistenceService = new DefaultPersistenceService(session, null, Channel.GUI);
 
             // at this point, we've been persisting every Resource, which means things like
             // Participants and Conference status get saved. resetting these data on startup

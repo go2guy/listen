@@ -8,6 +8,7 @@ import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.gui.DownloadVoicemailServlet;
 import com.interact.listen.history.Channel;
+import com.interact.listen.history.DefaultHistoryService;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
@@ -64,7 +65,7 @@ public class GetAudioFileServlet extends HttpServlet
         }
         
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.TUI);
+        PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.TUI);
 
         Voicemail voicemail = (Voicemail)session.get(Voicemail.class, Long.valueOf(id));
 
@@ -85,7 +86,7 @@ public class GetAudioFileServlet extends HttpServlet
             response.setContentType(voicemail.detectContentType());
             response.setHeader("Content-disposition", "attachment; filename=" + getFileName(voicemail));
 
-            HistoryService historyService = new HistoryService(persistenceService);
+            HistoryService historyService = new DefaultHistoryService(persistenceService);
             historyService.writeDownloadedVoicemail(voicemail);
 
             request.setAttribute(OutputBufferFilter.OUTPUT_SUPPRESS_KEY, Boolean.TRUE);

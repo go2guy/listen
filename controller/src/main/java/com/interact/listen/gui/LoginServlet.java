@@ -1,9 +1,8 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.PersistenceService;
-import com.interact.listen.ServletUtil;
+import com.interact.listen.*;
 import com.interact.listen.history.Channel;
+import com.interact.listen.history.DefaultHistoryService;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.AuthenticationService;
@@ -95,7 +94,7 @@ public class LoginServlet extends HttpServlet
 
     private void updateLastLogin(Session session, Subscriber subscriber)
     {
-        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
+        PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
         Subscriber original = subscriber.copy(true);
         subscriber.setLastLogin(new Date());
         persistenceService.update(subscriber, original);
@@ -103,8 +102,8 @@ public class LoginServlet extends HttpServlet
 
     private void writeLoginHistory(Session session, Subscriber subscriber, boolean isActiveDirectory)
     {
-        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
-        HistoryService historyService = new HistoryService(persistenceService);
+        PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
+        HistoryService historyService = new DefaultHistoryService(persistenceService);
         historyService.writeLoggedIn(subscriber, isActiveDirectory);
     }
 }

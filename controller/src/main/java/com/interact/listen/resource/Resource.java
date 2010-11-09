@@ -1,6 +1,7 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.history.HistoryService;
 
 import java.util.ArrayList;
 
@@ -47,8 +48,9 @@ public abstract class Resource
      * Callback to be executed before this {@code Resource} is saved.
      * 
      * @param persistenceService PersistenceService triggering callback
+     * @param historyService HistoryService to use when writing histories
      */
-    public void beforeSave(PersistenceService persistenceService)
+    public void beforeSave(PersistenceService persistenceService, HistoryService historyService)
     {
         // default implementation is no-op
     }
@@ -57,9 +59,10 @@ public abstract class Resource
      * Callback to be executed before this {@code Resource} is updated.
      * 
      * @param persistenceService PersistenceService triggering callback
+     * @param historyService HistoryService to use when writing histories
      * @param original {@code Resource} before properties were updated
      */
-    public void beforeUpdate(PersistenceService persistenceService, Resource original)
+    public void beforeUpdate(PersistenceService persistenceService, HistoryService historyService, Resource original)
     {
         // default implementation is no-op
     }
@@ -68,8 +71,9 @@ public abstract class Resource
      * Callback to be executed before this {@code Resource} is deleted.
      * 
      * @param persistenceService PersistenceService triggering callback
+     * @param historyService HistoryService to use when writing histories
      */
-    public void beforeDelete(PersistenceService persistenceService)
+    public void beforeDelete(PersistenceService persistenceService, HistoryService historyService)
     {
         // default implementation is no-op
     }
@@ -78,8 +82,9 @@ public abstract class Resource
      * Callback to be executed after this {@code Resource} is saved.
      * 
      * @param persistenceService PersistenceService triggering callback
+     * @param historyService HistoryService to use when writing histories
      */
-    public void afterSave(PersistenceService persistenceService)
+    public void afterSave(PersistenceService persistenceService, HistoryService historyService)
     {
         // default implementation is no-op
     }
@@ -88,9 +93,10 @@ public abstract class Resource
      * Callback to be executed after this {@code Resource} is updated.
      * 
      * @param persistenceService PersistenceService triggering callback
+     * @param historyService HistoryService to use when writing histories
      * @param original {@code Resource} before properties were updated
      */
-    public void afterUpdate(PersistenceService persistenceService, Resource original)
+    public void afterUpdate(PersistenceService persistenceService, HistoryService historyService, Resource original)
     {
         // default implementation is no-op
     }
@@ -99,8 +105,9 @@ public abstract class Resource
      * Callback to be executed after this {@code Resource} is deleted.
      * 
      * @param persistenceService PersistenceService triggering callback
+     * @param historyService HistoryService to use when writing histories
      */
-    public void afterDelete(PersistenceService persistenceService)
+    public void afterDelete(PersistenceService persistenceService, HistoryService historyService)
     {
         // default implementation is no-op
     }

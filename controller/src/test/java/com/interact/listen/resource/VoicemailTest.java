@@ -1,15 +1,21 @@
 package com.interact.listen.resource;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.junit.Assert.*;
 
+import com.interact.listen.ListenTest;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.TestUtil;
+import com.interact.listen.history.HistoryService;
+import com.interact.listen.spot.MessageLightToggler;
 
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class VoicemailTest
+public class VoicemailTest extends ListenTest
 {
     private Voicemail voicemail;
 
@@ -235,6 +241,58 @@ public class VoicemailTest
         assertEquals(-1082258653, obj.hashCode());
     }
 
+    @Test
+    public void test_afterSave_withForwardedByNull_writesLeftVoicemailHistoryAndInvokesMessageLightToggle()
+    {
+        Subscriber s = createSubscriber(session);
+        Voicemail v = createVoicemail(session, s);
+        
+        MessageLightToggler mlt = mock(MessageLightToggler.class);
+        PersistenceService ps = mock(PersistenceService.class);
+        HistoryService hs = mock(HistoryService.class);
+
+        v.setForwardedBy(null);
+        v.useMessageLightToggler(mlt);
+
+        v.afterSave(ps, hs);
+        verify(hs).writeLeftVoicemail(v);
+        verify(mlt).toggleMessageLight(ps, s);
+    }
+    
+    @Test
+    public void test_afterSave_withForwardedBySet_writesForwardedVoicemailHistoryAndInvokesMessageLightToggle()
+    {
+        Subscriber s = createSubscriber(session);
+        Voicemail v = createVoicemail(session, s);
+        
+        MessageLightToggler mlt = mock(MessageLightToggler.class);
+        PersistenceService ps = mock(PersistenceService.class);
+        HistoryService hs = mock(HistoryService.class);
+
+        v.setForwardedBy(createSubscriber(session));
+        v.useMessageLightToggler(mlt);
+
+        v.afterSave(ps, hs);
+        verify(hs).writeForwardedVoicemail(v);
+        verify(mlt).toggleMessageLight(ps, s);
+    }
+    
+    @Test
+    public void test_afterUpdate_invokesMessageLightToggle()
+    {
+        Subscriber s = createSubscriber(session);
+        Voicemail v = createVoicemail(session, s);
+
+        MessageLightToggler mlt = mock(MessageLightToggler.class);
+        PersistenceService ps = mock(PersistenceService.class);
+        HistoryService hs = mock(HistoryService.class);
+
+        v.useMessageLightToggler(mlt);
+
+        v.afterUpdate(ps, hs, v.copy(true));
+        verify(mlt).toggleMessageLight(ps, s);
+    }
+    
     private Voicemail getPopulatedVoicemail()
     {
         Subscriber s = new Subscriber();

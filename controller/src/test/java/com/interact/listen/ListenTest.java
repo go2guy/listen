@@ -122,6 +122,17 @@ public abstract class ListenTest
         return participant;
     }
     
+    public static AccessNumber createAccessNumber(Session session, Subscriber forSubscriber)
+    {
+        AccessNumber accessNumber = new AccessNumber();
+        accessNumber.setGreetingLocation(TestUtil.randomString());
+        accessNumber.setNumber(TestUtil.randomString());
+        accessNumber.setSubscriber(forSubscriber);
+        accessNumber.setSupportsMessageLight(false);
+        session.save(accessNumber);
+        return accessNumber;
+    }
+
     public static Menu createMenu(Session session)
     {
         Menu menu = new Menu();

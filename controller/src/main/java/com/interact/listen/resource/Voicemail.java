@@ -3,8 +3,7 @@ package com.interact.listen.resource;
 import com.interact.listen.EmailerService;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.history.HistoryService;
-import com.interact.listen.spot.SpotCommunicationException;
-import com.interact.listen.spot.SpotSystem;
+import com.interact.listen.spot.*;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
 import com.interact.listen.stats.StatSenderFactory;
@@ -48,6 +47,9 @@ public class Voicemail extends Audio implements Serializable
     
     @Column(name = "HAS_NOTIFIED", nullable = true)
     private Boolean hasNotified = Boolean.FALSE;
+
+    @Transient
+    private MessageLightToggler messageLightToggler = new SpotSystemMessageLightToggler();
 
     public enum MessageLightState
     {
@@ -104,6 +106,11 @@ public class Voicemail extends Audio implements Serializable
         this.hasNotified = hasNotified;
     }
 
+    public void useMessageLightToggler(MessageLightToggler toggler)
+    {
+        this.messageLightToggler = toggler;
+    }
+
     @Override
     public boolean validate()
     {
@@ -146,10 +153,8 @@ public class Voicemail extends Audio implements Serializable
     }
     
     @Override
-    public void afterSave(PersistenceService persistenceService)
+    public void afterSave(PersistenceService persistenceService, HistoryService historyService)
     {
-        HistoryService historyService = new HistoryService(persistenceService);
-        
         if(!getTranscription().equals(TRANSCRIPTION_PENDING))
         {
             sendNotification(persistenceService);
@@ -164,13 +169,12 @@ public class Voicemail extends Audio implements Serializable
             historyService.writeForwardedVoicemail(this);
         }
 
-        toggleMessageLight(persistenceService, getSubscriber());
+        messageLightToggler.toggleMessageLight(persistenceService, getSubscriber());
     }
 
     @Override
-    public void afterDelete(PersistenceService persistenceService)
+    public void afterDelete(PersistenceService persistenceService, HistoryService historyService)
     {
-        HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeDeletedVoicemail(this);
 
         SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());
@@ -187,11 +191,11 @@ public class Voicemail extends Audio implements Serializable
             LOG.error(e);
         }
 
-        toggleMessageLight(persistenceService, getSubscriber());
+        messageLightToggler.toggleMessageLight(persistenceService, getSubscriber());
     }
 
     @Override
-    public void afterUpdate(PersistenceService persistenceService, Resource original)
+    public void afterUpdate(PersistenceService persistenceService, HistoryService historyService, Resource original)
     {
         Voicemail originalVoicemail = (Voicemail)original;
         
@@ -202,8 +206,8 @@ public class Voicemail extends Audio implements Serializable
         {
             sendNotification(persistenceService);
         }
-        
-        toggleMessageLight(persistenceService, getSubscriber());
+
+        messageLightToggler.toggleMessageLight(persistenceService, getSubscriber());
     }
 
     public static Voicemail queryById(Session session, Long id)
@@ -287,63 +291,63 @@ public class Voicemail extends Audio implements Serializable
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (ArrayList<Voicemail>)criteria.list();
     }
-
-    public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber, MessageLightState state)
-    {
-        SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());
-        try
-        {
-            if(state == MessageLightState.ON)
-            {
-                spotSystem.turnMessageLightOn(accessNumber);
-            }
-            else
-            {
-                spotSystem.turnMessageLightOff(accessNumber);
-            }
-        }
-        catch(SpotCommunicationException e)
-        {
-            LOG.error(e);
-        }
-        catch(IOException e)
-        {
-            LOG.error(e);
-        }
-    }
-
-    public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber)
-    {
-        boolean hasNew = countNewBySubscriber(persistenceService.getSession(), accessNumber.getSubscriber()) > 0;
-        toggleMessageLight(persistenceService, accessNumber, hasNew ? MessageLightState.ON : MessageLightState.OFF);
-    }
-
-    public static void toggleMessageLight(PersistenceService persistenceService, Subscriber subscriber)
-    {
-        Session session = persistenceService.getSession();
-        List<AccessNumber> numbers = AccessNumber.queryBySubscriberWhereSupportsMessageLightTrue(session, subscriber);
-        for(AccessNumber accessNumber : numbers)
-        {
-            toggleMessageLight(persistenceService, accessNumber);
-        }
-    }
+//
+//    public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber, MessageLightState state)
+//    {
+//        SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());
+//        try
+//        {
+//            if(state == MessageLightState.ON)
+//            {
+//                spotSystem.turnMessageLightOn(accessNumber);
+//            }
+//            else
+//            {
+//                spotSystem.turnMessageLightOff(accessNumber);
+//            }
+//        }
+//        catch(SpotCommunicationException e)
+//        {
+//            LOG.error(e);
+//        }
+//        catch(IOException e)
+//        {
+//            LOG.error(e);
+//        }
+//    }
+//
+//    public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber)
+//    {
+//        boolean hasNew = countNewBySubscriber(persistenceService.getSession(), accessNumber.getSubscriber()) > 0;
+//        toggleMessageLight(persistenceService, accessNumber, hasNew ? MessageLightState.ON : MessageLightState.OFF);
+//    }
+//
+//    public static void toggleMessageLight(PersistenceService persistenceService, Subscriber subscriber)
+//    {
+//        Session session = persistenceService.getSession();
+//        List<AccessNumber> numbers = AccessNumber.queryBySubscriberWhereSupportsMessageLightTrue(session, subscriber);
+//        for(AccessNumber accessNumber : numbers)
+//        {
+//            toggleMessageLight(persistenceService, accessNumber);
+//        }
+//    }
     
     private void sendNotification(PersistenceService persistenceService)
     {
         EmailerService emailService = new EmailerService(persistenceService);
         StatSender statSender = StatSenderFactory.getStatSender();
-        Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
+//        Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
 
-        if(voicemailSubscriber.getIsEmailNotificationEnabled().booleanValue())
+        if(subscriber.getIsEmailNotificationEnabled().booleanValue())
         {
             statSender.send(Stat.VOICEMAIL_EMAIL_NOTIFICATION);
-            emailService.sendEmailVoicmailNotification(this, voicemailSubscriber);
+            emailService.sendEmailVoicmailNotification(this, subscriber);
         }
         
-        if(voicemailSubscriber.getIsSmsNotificationEnabled().booleanValue())
+        if(subscriber.getIsSmsNotificationEnabled().booleanValue())
         {
             statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
-            emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
+            emailService.sendSmsVoicemailNotification(this, subscriber);
         }
     }
 }

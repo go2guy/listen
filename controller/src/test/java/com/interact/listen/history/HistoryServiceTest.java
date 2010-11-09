@@ -2,9 +2,7 @@ package com.interact.listen.history;
 
 import static org.junit.Assert.assertEquals;
 
-import com.interact.listen.ListenTest;
-import com.interact.listen.PersistenceService;
-import com.interact.listen.TestUtil;
+import com.interact.listen.*;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.resource.ActionHistory;
@@ -28,8 +26,8 @@ public class HistoryServiceTest extends ListenTest
     public void setUp()
     {
         subscriber = createSubscriber(session);
-        PersistenceService ps = new PersistenceService(session, subscriber, CHANNEL);
-        service = new HistoryService(ps);
+        PersistenceService ps = new DefaultPersistenceService(session, subscriber, CHANNEL);
+        service = new DefaultHistoryService(ps);
     }
 
     @Test

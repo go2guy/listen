@@ -421,27 +421,24 @@ public class Subscriber extends Resource implements Serializable
     }
 
     @Override
-    public void afterSave(PersistenceService persistenceService)
+    public void afterSave(PersistenceService persistenceService, HistoryService historyService)
     {
-        HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeCreatedSubscriber(this);
     }
 
     @Override
-    public void afterUpdate(PersistenceService persistenceService, Resource original)
+    public void afterUpdate(PersistenceService persistenceService, HistoryService historyService, Resource original)
     {
         Subscriber subscriber = (Subscriber)original;
         if(!ComparisonUtil.isEqual(subscriber.getVoicemailPin(), getVoicemailPin()))
         {
-            HistoryService historyService = new HistoryService(persistenceService);
             historyService.writeChangedVoicemailPin(this, subscriber.getVoicemailPin(), getVoicemailPin());
         }
     }
 
     @Override
-    public void afterDelete(PersistenceService persistenceService)
+    public void afterDelete(PersistenceService persistenceService, HistoryService historyService)
     {
-        HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeDeletedSubscriber(this);
 
         SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());

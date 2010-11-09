@@ -3,9 +3,15 @@ package com.interact.listen.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import com.interact.listen.ListenTest;
+import com.interact.listen.PersistenceService;
 import com.interact.listen.TestUtil;
+import com.interact.listen.resource.Voicemail.MessageLightState;
+import com.interact.listen.spot.MessageLightToggler;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -93,5 +99,52 @@ public class AccessNumberTest extends ListenTest
         accessNumber.setSubscriber(null);
         assertFalse(accessNumber.validate());
         assertTrue(accessNumber.errors().contains("subscriber cannot be null"));
+    }
+    
+    @Test
+    public void test_afterSave_whenAccessNumberSupportsMessageLight_invokesMessageLightToggle()
+    {
+        Subscriber subscriber = createSubscriber(session);
+        AccessNumber accessNumber = createAccessNumber(session, subscriber);
+        
+        MessageLightToggler mlt = mock(MessageLightToggler.class);
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        accessNumber.setSupportsMessageLight(true);
+        accessNumber.useMessageLightToggler(mlt);
+        
+        accessNumber.afterSave(ps, null);
+        verify(mlt).toggleMessageLight(ps, accessNumber);
+    }
+    
+    @Test
+    public void test_afterSave_whenAccessNumberDoesntSupportMessageLight_doesntInvokesMessageLightToggle()
+    {
+        Subscriber subscriber = createSubscriber(session);
+        AccessNumber accessNumber = createAccessNumber(session, subscriber);
+        
+        MessageLightToggler mlt = mock(MessageLightToggler.class);
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        accessNumber.setSupportsMessageLight(false);
+        accessNumber.useMessageLightToggler(mlt);
+        
+        accessNumber.afterSave(ps, null);
+        verifyZeroInteractions(mlt);
+    }
+    
+    @Test
+    public void test_afterDelete_invokesMessageLightToggleOff()
+    {
+        Subscriber subscriber = createSubscriber(session);
+        AccessNumber accessNumber = createAccessNumber(session, subscriber);
+        
+        MessageLightToggler mlt = mock(MessageLightToggler.class);
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        accessNumber.useMessageLightToggler(mlt);
+        
+        accessNumber.afterDelete(ps, null);
+        verify(mlt).toggleMessageLight(ps, accessNumber, MessageLightState.OFF);
     }
 }

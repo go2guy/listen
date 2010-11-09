@@ -233,7 +233,7 @@ public class Participant extends Resource implements Serializable
     }
 
     @Override
-    public void afterSave(PersistenceService persistenceService)
+    public void afterSave(PersistenceService persistenceService, HistoryService historyService)
     {
         StatSender statSender = StatSenderFactory.getStatSender();
         ConferenceHistory history = new ConferenceHistory();
@@ -260,7 +260,7 @@ public class Participant extends Resource implements Serializable
     }
 
     @Override
-    public void afterUpdate(PersistenceService persistenceService, Resource original)
+    public void afterUpdate(PersistenceService persistenceService, HistoryService historyService, Resource original)
     {
         Participant originalParticipant = (Participant)original;
 
@@ -283,7 +283,6 @@ public class Participant extends Resource implements Serializable
             }
             persistenceService.save(history);
 
-            HistoryService historyService = new HistoryService(persistenceService);
             if(isAdminMuted)
             {
                 historyService.writeMutedConferenceCaller(getNumber(), getConference().getDescription());
@@ -296,7 +295,7 @@ public class Participant extends Resource implements Serializable
     }
 
     @Override
-    public void afterDelete(PersistenceService persistenceService)
+    public void afterDelete(PersistenceService persistenceService, HistoryService historyService)
     {
         ConferenceHistory history = new ConferenceHistory();
         history.setConference(conference);
@@ -307,7 +306,6 @@ public class Participant extends Resource implements Serializable
         history.setDescription(number + " was dropped");
         persistenceService.save(history);
 
-        HistoryService historyService = new HistoryService(persistenceService);
         historyService.writeDroppedConferenceCaller(getNumber(), getConference().getDescription());
     }
 

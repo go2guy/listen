@@ -5,6 +5,7 @@ import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
+import com.interact.listen.history.DefaultHistoryService;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
@@ -59,7 +60,7 @@ public class DownloadVoicemailServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
+        PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
 
         Voicemail voicemail = (Voicemail)session.get(Voicemail.class, Long.valueOf(id));
         if(!(subscriber.getIsAdministrator() || subscriber.equals(voicemail.getSubscriber())))
@@ -91,7 +92,7 @@ public class DownloadVoicemailServlet extends HttpServlet
             voicemail.setIsNew(false);
             persistenceService.update(voicemail, original);
 
-            HistoryService historyService = new HistoryService(persistenceService);
+            HistoryService historyService = new DefaultHistoryService(persistenceService);
             historyService.writeDownloadedVoicemail(voicemail);
 
             request.setAttribute(OutputBufferFilter.OUTPUT_SUPPRESS_KEY, Boolean.TRUE);

@@ -48,7 +48,7 @@ public class GetConferenceInfoServlet extends HttpServlet
 
         Subscriber currentSubscriber = ServletUtil.currentSubscriber(request);
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, currentSubscriber, Channel.GUI);
+        PersistenceService persistenceService = new DefaultPersistenceService(session, currentSubscriber, Channel.GUI);
 
         String id = request.getParameter("id");
 

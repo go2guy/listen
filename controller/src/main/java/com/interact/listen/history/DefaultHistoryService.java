@@ -8,7 +8,7 @@ import com.interact.listen.resource.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class HistoryService
+public class DefaultHistoryService implements HistoryService
 {
     private PersistenceService persistenceService;
 
@@ -23,7 +23,7 @@ public class HistoryService
         }
     }
 
-    public HistoryService(PersistenceService persistenceService)
+    public DefaultHistoryService(PersistenceService persistenceService)
     {
         this.persistenceService = persistenceService;
     }
@@ -35,6 +35,7 @@ public class HistoryService
         persistenceService.save(history);
     }
 
+    @Override
     public History writeChangedAlternatePagerNumber(String alternateNumber)
     {
         ActionHistory history = new ActionHistory();
@@ -45,6 +46,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeChangedVoicemailPin(Subscriber onSubscriber, String oldPin, String newPin)
     {
         ActionHistory history = new ActionHistory();
@@ -57,6 +59,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeCreatedSubscriber(Subscriber subscriber)
     {
         ActionHistory history = new ActionHistory();
@@ -68,6 +71,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeDeletedSubscriber(Subscriber deletedSubscriber)
     {
         ActionHistory history = new ActionHistory();
@@ -78,6 +82,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeDeletedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
@@ -89,6 +94,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeDownloadedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
@@ -100,6 +106,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeDroppedConferenceCaller(String droppedCaller, String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
@@ -110,6 +117,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeForwardedVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
@@ -121,6 +129,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeLeftVoicemail(Voicemail voicemail)
     {
         Long subscriberId = voicemail.getSubscriber().getId();
@@ -136,6 +145,7 @@ public class HistoryService
     }
 
     // TODO not yet written anywhere
+    @Override
     public History writeListenedToVoicemail(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
@@ -147,6 +157,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeLoggedIn(Subscriber subscriber, boolean isActiveDirectory)
     {
         ActionHistory history = new ActionHistory();
@@ -158,6 +169,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeLoggedOut(Subscriber subscriber)
     {
         ActionHistory history = new ActionHistory();
@@ -169,6 +181,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeMutedConferenceCaller(String mutedCaller, String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
@@ -178,7 +191,8 @@ public class HistoryService
         write(history);
         return history;
     }
-    
+
+    @Override
     public History writeSentVoicemailAlternatePage(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
@@ -189,7 +203,8 @@ public class HistoryService
         write(history);
         return history;
     }
-    
+
+    @Override
     public History writeSentVoicemailPage(Voicemail voicemail)
     {
         ActionHistory history = new ActionHistory();
@@ -201,6 +216,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeStartedConference(String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
@@ -211,6 +227,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeStartedRecordingConference(String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
@@ -221,6 +238,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeStoppedConference(String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
@@ -231,6 +249,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeStoppedRecordingConference(String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();
@@ -241,6 +260,7 @@ public class HistoryService
         return history;
     }
 
+    @Override
     public History writeUnmutedConferenceCaller(String unmutedCaller, String conferenceDescription)
     {
         ActionHistory history = new ActionHistory();

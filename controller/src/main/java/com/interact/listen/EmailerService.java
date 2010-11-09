@@ -4,6 +4,7 @@ import com.interact.listen.HibernateUtil.Environment;
 import com.interact.listen.api.GetDnisServlet;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
+import com.interact.listen.history.DefaultHistoryService;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.resource.*;
@@ -248,7 +249,7 @@ public class EmailerService
 
     public void sendAlternateNumberSmsVoicemailNotification(Voicemail voicemail)
     {
-        HistoryService historyService = new HistoryService(persistenceService);
+        HistoryService historyService = new DefaultHistoryService(persistenceService);
         String alternateNumber = Configuration.get(Property.Key.ALTERNATE_NUMBER);
         
         if(alternateNumber != null && !alternateNumber.trim().equals(""))

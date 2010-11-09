@@ -284,7 +284,7 @@ public class Conference extends Resource implements Serializable
     }
 
     @Override
-    public void afterSave(PersistenceService persistenceService)
+    public void afterSave(PersistenceService persistenceService, HistoryService historyService)
     {
         StatSender statSender = StatSenderFactory.getStatSender();
         ConferenceHistory history = new ConferenceHistory();
@@ -321,10 +321,8 @@ public class Conference extends Resource implements Serializable
     }
 
     @Override
-    public void afterUpdate(PersistenceService persistenceService, Resource original)
+    public void afterUpdate(PersistenceService persistenceService, HistoryService historyService, Resource original)
     {
-        HistoryService historyService = new HistoryService(persistenceService);
-
         StatSender statSender = StatSenderFactory.getStatSender();
         Conference originalConference = (Conference)original;
         if(isStarted.booleanValue() != originalConference.getIsStarted().booleanValue())

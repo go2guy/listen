@@ -1,5 +1,6 @@
 package com.interact.listen.security;
 
+import com.interact.listen.DefaultPersistenceService;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
@@ -126,7 +127,7 @@ public class AuthenticationService
                         subscriber.setLastLogin(new Date());
                         subscriber.setRealName(result.getDisplayName());
 
-                        PersistenceService ps = new PersistenceService(session, subscriber, Channel.GUI);
+                        PersistenceService ps = new DefaultPersistenceService(session, subscriber, Channel.GUI);
                         ps.save(subscriber);
 
                         if(result.getTelephoneNumber() != null)

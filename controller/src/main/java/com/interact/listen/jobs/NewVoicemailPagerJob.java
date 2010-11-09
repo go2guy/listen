@@ -1,11 +1,10 @@
 package com.interact.listen.jobs;
 
-import com.interact.listen.EmailerService;
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.PersistenceService;
+import com.interact.listen.*;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.history.Channel;
+import com.interact.listen.history.DefaultHistoryService;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Subscriber;
@@ -33,11 +32,11 @@ public class NewVoicemailPagerJob implements Job
     public void execute(JobExecutionContext arg0) throws JobExecutionException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = new PersistenceService(session, null, Channel.AUTO);
+        PersistenceService persistenceService = new DefaultPersistenceService(session, null, Channel.AUTO);
         EmailerService emailerService = new EmailerService(persistenceService);
         
         Transaction tx = session.beginTransaction();
-        HistoryService historyService = new HistoryService(persistenceService);
+        HistoryService historyService = new DefaultHistoryService(persistenceService);
         
         // We need the 'pagerSubscriber' so we know when to send pages to the alternate number, null if one doesn't exist
         String pagerNumber = Configuration.get(Property.Key.PAGER_NUMBER);

@@ -1,9 +1,8 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.PersistenceService;
-import com.interact.listen.ServletUtil;
+import com.interact.listen.*;
 import com.interact.listen.history.Channel;
+import com.interact.listen.history.DefaultHistoryService;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
@@ -49,8 +48,8 @@ public class LogoutServlet extends HttpServlet
 
     private void writeLogoutHistory(Session session, Subscriber subscriber)
     {
-        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
-        HistoryService historyService = new HistoryService(persistenceService);
+        PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
+        HistoryService historyService = new DefaultHistoryService(persistenceService);
         historyService.writeLoggedOut(subscriber);
     }
 }

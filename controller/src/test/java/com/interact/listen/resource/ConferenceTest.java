@@ -1,13 +1,21 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import com.interact.listen.ListenTest;
+import com.interact.listen.PersistenceService;
+import com.interact.listen.history.DefaultHistoryService;
 
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class ConferenceTest
+public class ConferenceTest extends ListenTest
 {
     private Conference conference;
 
@@ -238,6 +246,115 @@ public class ConferenceTest
         assertEquals(1925950052, obj.hashCode());
     }
 
+    @Test
+    public void test_afterSave_withConferenceRecordingTrue_writesTwoConferenceHistories()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference conference = createConference(session, subscriber);
+        
+        conference.setIsRecording(true);
+        conference.afterSave(ps, new DefaultHistoryService(ps));
+
+        verify(ps, times(2)).save(isA(ConferenceHistory.class));
+    }
+
+    @Test
+    public void test_afterSave_withConferenceRecordingFalse_writesOneConferenceHistory()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference conference = createConference(session, subscriber);
+        
+        conference.setIsRecording(false);
+        conference.afterSave(ps, new DefaultHistoryService(ps));
+
+        verify(ps).save(isA(ConferenceHistory.class));
+    }
+    
+    @Test
+    public void test_afterUpdate_whenConferenceStartedStatusChangesToStarted_writesOneConferenceHistory()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference original = createConference(session, subscriber);
+        Conference updated = original.copy(true);
+        
+        original.setIsStarted(false);
+        updated.setIsStarted(true);
+
+        original.setIsRecording(false); // keep recording the same, we don't want to write the recording history
+        updated.setIsRecording(false);
+        
+        updated.afterUpdate(ps, new DefaultHistoryService(ps), original);
+        
+        verify(ps).save(isA(ConferenceHistory.class));
+    }
+    
+    @Test
+    public void test_afterUpdate_whenConferenceStartedStatusChangesToStopped_writesOneConferenceHistory()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference original = createConference(session, subscriber);
+        original.setStartTime(new Date());
+        Conference updated = original.copy(true);
+        
+        original.setIsStarted(true);
+        updated.setIsStarted(false);
+
+        original.setIsRecording(false); // keep recording the same, we don't want to write the recording history
+        updated.setIsRecording(false);
+        
+        updated.afterUpdate(ps, new DefaultHistoryService(ps), original);
+        
+        verify(ps).save(isA(ConferenceHistory.class));
+    }
+    
+    @Test
+    public void test_afterUpdate_whenConferenceRecordingStatusChangesToTrue_writesOneConferenceHistory()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference original = createConference(session, subscriber);
+        Conference updated = original.copy(true);
+
+        original.setIsRecording(false);
+        updated.setIsRecording(true);
+        
+        original.setIsStarted(true); // keep status the same, we don't want to write the started history
+        updated.setIsStarted(true);
+
+        updated.afterUpdate(ps, new DefaultHistoryService(ps), original);
+
+        verify(ps).save(isA(ConferenceHistory.class));
+    }
+    
+    @Test
+    public void test_afterUpdate_whenConferenceRecordingStatusChangesToFalse_writesOneConferenceHistory()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference original = createConference(session, subscriber);
+        Conference updated = original.copy(true);
+
+        original.setIsRecording(true);
+        updated.setIsRecording(false);
+        
+        original.setIsStarted(true); // keep status the same, we don't want to write the started history
+        updated.setIsStarted(true);
+
+        updated.afterUpdate(ps, new DefaultHistoryService(ps), original);
+
+        verify(ps).save(isA(ConferenceHistory.class));
+    }
+    
     private Conference getPopulatedConference()
     {
         Conference c = new Conference();

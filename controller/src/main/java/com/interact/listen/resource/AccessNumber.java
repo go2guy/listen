@@ -1,7 +1,10 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.Voicemail.MessageLightState;
+import com.interact.listen.spot.MessageLightToggler;
+import com.interact.listen.spot.SpotSystemMessageLightToggler;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
@@ -40,7 +43,10 @@ public class AccessNumber extends Resource implements Serializable
 
     @Column(name = "SUPPORTS_MESSAGE_LIGHT", nullable = false)
     private Boolean supportsMessageLight = Boolean.FALSE;
-    
+
+    @Transient
+    private MessageLightToggler messageLightToggler = new SpotSystemMessageLightToggler();
+
     public Long getId()
     {
         return id;
@@ -101,6 +107,11 @@ public class AccessNumber extends Resource implements Serializable
         this.supportsMessageLight = supportsMessageLight;
     }
 
+    public void useMessageLightToggler(MessageLightToggler toggler)
+    {
+        this.messageLightToggler = toggler;
+    }
+    
     @Override
     public boolean validate()
     {
@@ -171,33 +182,33 @@ public class AccessNumber extends Resource implements Serializable
     }
 
     @Override
-    public void afterSave(PersistenceService persistenceService)
+    public void afterSave(PersistenceService persistenceService, HistoryService historyService)
     {
         if(supportsMessageLight)
         {
-            Voicemail.toggleMessageLight(persistenceService, this);
+            messageLightToggler.toggleMessageLight(persistenceService, this);
         }
     }
 
     @Override
-    public void afterUpdate(PersistenceService persistenceService, Resource originalResource)
+    public void afterUpdate(PersistenceService persistenceService, HistoryService historyService, Resource originalResource)
     {
         AccessNumber original = (AccessNumber)originalResource;
         if(supportsMessageLight && (!original.getNumber().equals(number) || !original.getSupportsMessageLight()))
         {
-            Voicemail.toggleMessageLight(persistenceService, original, MessageLightState.OFF);
-            Voicemail.toggleMessageLight(persistenceService, this);
+            messageLightToggler.toggleMessageLight(persistenceService, original, MessageLightState.OFF);
+            messageLightToggler.toggleMessageLight(persistenceService, this);
         }
         else if(original.getSupportsMessageLight() && !supportsMessageLight)
         {
-            Voicemail.toggleMessageLight(persistenceService, original, MessageLightState.OFF);
+            messageLightToggler.toggleMessageLight(persistenceService, original, MessageLightState.OFF);
         }
     }
 
     @Override
-    public void afterDelete(PersistenceService persistenceService)
+    public void afterDelete(PersistenceService persistenceService, HistoryService historyService)
     {
-        Voicemail.toggleMessageLight(persistenceService, this, MessageLightState.OFF);
+        messageLightToggler.toggleMessageLight(persistenceService, this, MessageLightState.OFF);
     }
 
     public static AccessNumber queryByNumber(Session session, String number)

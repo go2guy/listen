@@ -1,8 +1,6 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.PersistenceService;
-import com.interact.listen.ServletUtil;
+import com.interact.listen.*;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
@@ -51,7 +49,7 @@ public class DeleteVoicemailServlet extends HttpServlet
             throw new UnauthorizedServletException("Subscriber does not own Voicemail");
         }
 
-        PersistenceService persistenceService = new PersistenceService(session, subscriber, Channel.GUI);
+        PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
         persistenceService.delete(voicemail);
     }
 }

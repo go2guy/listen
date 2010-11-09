@@ -1,9 +1,13 @@
 package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import com.interact.listen.ListenTest;
-import com.interact.listen.TestUtil;
+import com.interact.listen.PersistenceService;
+import com.interact.listen.history.HistoryService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -312,6 +316,56 @@ public class ParticipantTest extends ListenTest
         assertEquals(admin.getSessionID(), result);
     }
 
+    @Test
+    public void test_afterSave_writesOneConferenceHistory()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference conference = createConference(session, subscriber);
+        Participant participant = createParticipant(session, conference, false);
+
+        participant.afterSave(ps, null);
+
+        verify(ps).save(isA(ConferenceHistory.class));
+    }
+    
+    @Test
+    public void test_afterUpdate_whenParticipantAdminMutedStatusChangedToTrue_writesMutedHistory()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        HistoryService hs = mock(HistoryService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference conference = createConference(session, subscriber);
+
+        Participant participant = createParticipant(session, conference, false);
+        Participant original = participant.copy(true);
+
+        original.setIsAdminMuted(false);
+        participant.setIsAdminMuted(true);
+        
+        participant.afterUpdate(ps, hs, original);
+
+        verify(hs).writeMutedConferenceCaller(participant.getNumber(), conference.getDescription());
+    }
+    
+    @Test
+    public void test_afterDelete_writesDroppedConferenceCallerHistory()
+    {
+        PersistenceService ps = mock(PersistenceService.class);
+        HistoryService hs = mock(HistoryService.class);
+        
+        Subscriber subscriber = createSubscriber(session);
+        Conference conference = createConference(session, subscriber);
+
+        Participant participant = createParticipant(session, conference, false);
+        
+        participant.afterDelete(ps, hs);
+        
+        verify(hs).writeDroppedConferenceCaller(participant.getNumber(), conference.getDescription());
+    }
+    
     private Participant getPopulatedParticipant()
     {
         Conference c = new Conference();

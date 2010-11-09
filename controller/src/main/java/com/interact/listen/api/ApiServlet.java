@@ -439,7 +439,7 @@ public class ApiServlet extends HttpServlet
         }
 
         Channel channel = (Channel)request.getAttribute(RequestInformationFilter.CHANNEL_KEY);
-        return new PersistenceService(session, subscriber, channel);
+        return new DefaultPersistenceService(session, subscriber, channel);
     }
 
     private static class UriResourceAttributes
