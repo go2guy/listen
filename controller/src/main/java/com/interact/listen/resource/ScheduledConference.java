@@ -177,6 +177,7 @@ public class ScheduledConference extends Resource implements Serializable
         copy.setStartDate(getStartDate());
         copy.setTopic(getTopic());
         copy.setNotes(getNotes());
+        copy.setScheduledBy(getScheduledBy());
         return copy;
     }
 
