@@ -100,7 +100,7 @@
     </javac>
 
     <cobertura-instrument todir="${build.dir}/cobertura">
-      <fileset dir="${build.dir}/main" includes="**/*.class" excludes="com/interact/listen/jmeter/**/*"/>
+      <fileset dir="${build.dir}/main" includes="**/*.class" excludes="com/interact/listen/jmeter/**/*,com/interact/listen/server/EmbeddedJettyServer.class"/>
     </cobertura-instrument>
 
     <junit printsummary="on"
