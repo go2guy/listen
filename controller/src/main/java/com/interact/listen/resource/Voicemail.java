@@ -291,63 +291,25 @@ public class Voicemail extends Audio implements Serializable
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (ArrayList<Voicemail>)criteria.list();
     }
-//
-//    public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber, MessageLightState state)
-//    {
-//        SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());
-//        try
-//        {
-//            if(state == MessageLightState.ON)
-//            {
-//                spotSystem.turnMessageLightOn(accessNumber);
-//            }
-//            else
-//            {
-//                spotSystem.turnMessageLightOff(accessNumber);
-//            }
-//        }
-//        catch(SpotCommunicationException e)
-//        {
-//            LOG.error(e);
-//        }
-//        catch(IOException e)
-//        {
-//            LOG.error(e);
-//        }
-//    }
-//
-//    public static void toggleMessageLight(PersistenceService persistenceService, AccessNumber accessNumber)
-//    {
-//        boolean hasNew = countNewBySubscriber(persistenceService.getSession(), accessNumber.getSubscriber()) > 0;
-//        toggleMessageLight(persistenceService, accessNumber, hasNew ? MessageLightState.ON : MessageLightState.OFF);
-//    }
-//
-//    public static void toggleMessageLight(PersistenceService persistenceService, Subscriber subscriber)
-//    {
-//        Session session = persistenceService.getSession();
-//        List<AccessNumber> numbers = AccessNumber.queryBySubscriberWhereSupportsMessageLightTrue(session, subscriber);
-//        for(AccessNumber accessNumber : numbers)
-//        {
-//            toggleMessageLight(persistenceService, accessNumber);
-//        }
-//    }
     
     private void sendNotification(PersistenceService persistenceService)
     {
         EmailerService emailService = new EmailerService(persistenceService);
         StatSender statSender = StatSenderFactory.getStatSender();
-//        Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
+        Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
 
-        if(subscriber.getIsEmailNotificationEnabled().booleanValue())
+        if(voicemailSubscriber.getIsEmailNotificationEnabled().booleanValue())
         {
+            LOG.debug("Sending email notification for [" + getId() + "] to subscriber [" + voicemailSubscriber.getEmailAddress() + "]");
             statSender.send(Stat.VOICEMAIL_EMAIL_NOTIFICATION);
-            emailService.sendEmailVoicmailNotification(this, subscriber);
+            emailService.sendEmailVoicmailNotification(this, voicemailSubscriber);
         }
-        
-        if(subscriber.getIsSmsNotificationEnabled().booleanValue())
+
+        if(voicemailSubscriber.getIsSmsNotificationEnabled().booleanValue())
         {
+            LOG.debug("Sending SMS notification for [" + getId() + "] to subscriber [" + voicemailSubscriber.getSmsAddress() + "]");
             statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
-            emailService.sendSmsVoicemailNotification(this, subscriber);
+            emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
         }
     }
 }
