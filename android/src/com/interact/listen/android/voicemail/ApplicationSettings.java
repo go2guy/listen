@@ -1,237 +1,184 @@
 package com.interact.listen.android.voicemail;
 
-import com.interact.listen.android.voicemail.controller.ControllerAdapter;
-import com.interact.listen.android.voicemail.controller.DefaultController;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import android.content.Context;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.preference.EditTextPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.interact.listen.android.voicemail.provider.VoicemailHelper;
+import com.interact.listen.android.voicemail.provider.VoicemailProvider;
+import com.interact.listen.android.voicemail.sync.SyncSchedule;
+import com.interact.listen.android.voicemail.widget.NumberPicker;
+import com.interact.listen.android.voicemail.widget.NumberPickerDialog;
+
 public class ApplicationSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-    public static final String KEY_HOST_PREFERENCE = "voicemail_host";
-    public static final String KEY_PASSWORD_PREFERENCE = "voicemail_password";
-    public static final String KEY_PORT_PREFERENCE = "voicemail_port";
-    public static final String KEY_SUBSCRIBER_ID_PREFERENCE = "subscriber_id";
-    public static final String KEY_USERNAME_PREFERENCE = "voicemail_username";
+   
+    private static final String TAG = Constants.TAG + "AppSettings";
 
-    private static final String TAG = ApplicationSettings.class.getName();
-
-    private EditTextPreference mUsernamePreference;
-    private EditTextPreference mPasswordPreference;
-    private EditTextPreference mHostPreference;
-    private EditTextPreference mPortPreference;
-
+    private static final String CLEAR_CACHE = "clear_cache_pref";
+    private static final String SYNC_INTERVAL = "sync_interval_pref";
+    
     private SharedPreferences sharedPreferences;
-    private ControllerAdapter controller = new ControllerAdapter(new DefaultController());
-    private ListenVoicemailServiceBinder serviceBinder = new ListenVoicemailServiceBinder(this);
-
+    private Preference clearCachePref;
+    private Preference syncIntervalPref;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        Log.v(TAG, "creating application settings");
         super.onCreate(savedInstanceState);
 
-        // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.application_settings);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // Get a reference to the preferences
-        mUsernamePreference = (EditTextPreference)getPreferenceScreen().findPreference(KEY_USERNAME_PREFERENCE);
-        mPasswordPreference = (EditTextPreference)getPreferenceScreen().findPreference(KEY_PASSWORD_PREFERENCE);
-        mHostPreference = (EditTextPreference)getPreferenceScreen().findPreference(KEY_HOST_PREFERENCE);
-        mPortPreference = (EditTextPreference)getPreferenceScreen().findPreference(KEY_PORT_PREFERENCE);
+        OnPreferenceClickListener clickListener = new PreferenceClicked();
+        
+        clearCachePref = findPreference(CLEAR_CACHE);
+        clearCachePref.setOnPreferenceClickListener(clickListener);
+        
+        syncIntervalPref = findPreference(SYNC_INTERVAL);
+        syncIntervalPref.setOnPreferenceClickListener(clickListener);
 
-        serviceBinder.bind();
+        updateSyncIntevalSummary();
+    }
+
+    private int updateSyncIntevalSummary()
+    {
+        int interval = SyncSchedule.getSyncIntervalMinutes(this);
+        Log.v(TAG, "syn interval is " + interval);
+        
+        int id = interval == 1 ? R.string.pref_sync_interval_detail_ns : R.string.pref_sync_interval_detail_ws;
+        syncIntervalPref.setSummary(getString(id, interval));
+
+        return interval;
+    }
+
+    private class PreferenceClicked implements OnPreferenceClickListener
+    {
+        @Override
+        public boolean onPreferenceClick(Preference pref)
+        {
+            Dialog d = null;
+            if(pref == clearCachePref)
+            {
+                d = createClearCacheDialog();
+            }
+            else if(pref == syncIntervalPref)
+            {
+                d = createUpdateSyncIntervalDialog();
+            }
+            if(d != null && !d.isShowing())
+            {
+                d.show();
+            }
+            return d != null;
+        }
+    }
+    
+    private Dialog createUpdateSyncIntervalDialog()
+    {
+        NumberPickerDialog.Builder builder = new NumberPickerDialog.Builder(this);
+        
+        builder.setCallBack(new NumberPickerDialog.OnNumberSetListener()
+        {
+            @Override
+            public void onNumberSet(NumberPicker view, int value)
+            {
+                Log.i(TAG, "new pool interval reported back from dialog: " + value);
+                if(value > 0)
+                {
+                    Editor editor = sharedPreferences.edit();
+                    editor.putInt(SyncSchedule.PREFERENCES_INT_SYNC_INTERVAL_MINUTES, value);
+                    editor.commit();
+                }
+            }
+        });
+
+        builder.setInitialValue(updateSyncIntevalSummary());
+        builder.setRange(1, 999);
+        builder.setButtons(R.string.dialog_sync_interval_confirm, R.string.dialog_sync_interval_cancel);
+        builder.setDetails(R.string.dialog_sync_interval_details);
+        builder.setTitleResIDs(R.string.pref_sync_interval_detail_ns, R.string.pref_sync_interval_detail_ws);
+
+        return builder.create();
+    }
+    
+    private Dialog createClearCacheDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setCancelable(true);
+        builder.setTitle(R.string.dialog_clear_cache_title);
+        builder.setMessage(R.string.dialog_clear_cache_details);
+        builder.setNegativeButton(R.string.dialog_clear_cache_cancel, null);
+        
+        builder.setPositiveButton(R.string.dialog_clear_cache_confirm, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                Log.i(TAG, "request to clear cache");
+                VoicemailHelper.refreshCache(getContentResolver());
+                Bundle rSyncBundle = new Bundle();
+                AccountManager am = AccountManager.get(ApplicationSettings.this);
+                Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+                for (Account account : accounts)
+                {
+                    Log.i(TAG, "requesting sync on " + account.name);
+                    ContentResolver.requestSync(account, VoicemailProvider.AUTHORITY, rSyncBundle);
+                }
+            }
+            
+        });
+        
+        return builder.create();
+    }
+    
+    @Override
+    protected void onPause()
+    {
+        Log.v(TAG, "pausing application settings");
+        super.onPause();
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onResume()
     {
+        Log.v(TAG, "resuming application settings");
         super.onResume();
-
-        // Setup the initial values
-        mUsernamePreference.setSummary(sharedPreferences.getString(KEY_USERNAME_PREFERENCE, ""));
-        mHostPreference.setSummary(sharedPreferences.getString(KEY_HOST_PREFERENCE, ""));
-        mPortPreference.setSummary(sharedPreferences.getString(KEY_PORT_PREFERENCE, ""));
-
-        // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-
-        // Unregister the listener whenever a key changes
-        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onDestroy()
     {
+        Log.v(TAG, "destroying application settings");
         super.onDestroy();
-        serviceBinder.unbind();
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
     {
-        if(key.equals(KEY_USERNAME_PREFERENCE))
+        Log.v(TAG, "shared preference changed: " + key);
+        
+        if(SyncSchedule.PREFERENCES_INT_SYNC_INTERVAL_MINUTES.equals(key))
         {
-            // if username changes, we need to retrieve the subscriber id for the username
-            // we'll stop the service polling and update the id so that the service doesn't
-            // retrieve new voicemails before the new subscriber id is set
-            mUsernamePreference.setSummary(sharedPreferences.getString(key, ""));
-
-            try
-            {
-                serviceBinder.getService().stopPolling();
-
-                Long subscriberId = controller.getSubscriberIdFromUsername(this);
-                ApplicationSettings.setSubscriberId(this, subscriberId);
-
-                serviceBinder.getService().startPolling();
-            }
-            catch(RemoteException e)
-            {
-                Log.e(TAG, "Unable to get subscriber id from username", e);
-            }
-        }
-        if(key.equals(KEY_PASSWORD_PREFERENCE))
-        {
-            try
-            {
-                serviceBinder.getService().stopPolling();
-
-                Long subscriberId = controller.getSubscriberIdFromUsername(this);
-                ApplicationSettings.setSubscriberId(this, subscriberId);
-
-                serviceBinder.getService().startPolling();
-            }
-            catch(RemoteException e)
-            {
-                Log.e(TAG, "Unable to get subscriber id from username", e);
-            }
-        }
-        else if(key.equals(KEY_HOST_PREFERENCE))
-        {
-            mHostPreference.setSummary(sharedPreferences.getString(key, ""));
-            try
-            {
-                serviceBinder.getService().stopPolling();
-                
-                //subscriber id could be different on this new host
-                Long subscriberId = controller.getSubscriberIdFromUsername(this);
-                ApplicationSettings.setSubscriberId(this, subscriberId);
-                
-                serviceBinder.getService().startPolling();
-            }
-            catch(RemoteException e)
-            {
-                Log.e(TAG, "Unable to restart polling after host preference change");
-            }
-        }
-        else if(key.equals(KEY_PORT_PREFERENCE))
-        {
-            mPortPreference.setSummary(sharedPreferences.getString(key, ""));
-            try
-            {
-                serviceBinder.getService().stopPolling();
-                
-                //subscriber id could be different on the instance running on this new port
-                Long subscriberId = controller.getSubscriberIdFromUsername(this);
-                ApplicationSettings.setSubscriberId(this, subscriberId);
-                
-                serviceBinder.getService().startPolling();
-            }
-            catch(RemoteException e)
-            {
-                Log.e(TAG, "Unable to restart polling after host preference change");
-            }
+            SyncSchedule.updatePeriodicSync(this);
+            updateSyncIntevalSummary();
         }
     }
 
-    /**
-     * Gets the base location of the controller API.
-     * 
-     * @param context
-     * @return API base location, e.g. {@code http://127.0.0.1:9091/api}
-     */
-    public static String getApi(Context context)
-    {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String hostname = prefs.getString(KEY_HOST_PREFERENCE, "");
-        String host = hostname;
-
-        // get IP for host
-        try
-        {
-            InetAddress address = InetAddress.getByName(hostname);
-            host = address.getHostAddress();
-        }
-        catch(UnknownHostException e)
-        {
-            Log.e(TAG, "Couldn't determine IP for host [" + hostname + "]", e);
-        }
-
-        String port = prefs.getString(KEY_PORT_PREFERENCE, "");
-        return "http://" + host + ":" + port + "/api";
-    }
-
-    public static void setSubscriberId(Context context, Long subscriberId)
-    {
-        Log.d(TAG, "Set subscriber id to [" + subscriberId + "]");
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putLong(KEY_SUBSCRIBER_ID_PREFERENCE, subscriberId);
-        editor.commit();
-    }
-
-    /**
-     * Gets the subscriber id for the currently configured username.
-     * 
-     * @param context
-     * @return current subscriber id
-     */
-    public static Long getSubscriberId(Context context)
-    {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getLong(KEY_SUBSCRIBER_ID_PREFERENCE, Long.valueOf(-1));
-    }
-
-    /**
-     * Gets the currently configured username.
-     * 
-     * @param context
-     * @return current username
-     */
-    public static String getUsername(Context context)
-    {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(KEY_USERNAME_PREFERENCE, ""); // TODO better default
-    }
-    
-    /**
-     * Gets the currently configured password.
-     * 
-     * @param context
-     * @return current password
-     */
-    public static String getPassword(Context context)
-    {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(KEY_PASSWORD_PREFERENCE, ""); // TODO better default
-    }
 }

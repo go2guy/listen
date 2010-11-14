@@ -1,5 +1,6 @@
 package com.interact.listen.android.voicemail;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -8,11 +9,12 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 
 public class VoicemailPlayer implements AudioController.Player
 {
-    private static final String TAG = "ListenVoicemailPlayer";
+    private static final String TAG = Constants.TAG + "Player";
     
     private MediaPlayer mediaPlayer;
     private Uri uri;
@@ -21,7 +23,7 @@ public class VoicemailPlayer implements AudioController.Player
     private State targetState;
     private int currentBufferPercentage;
     private int seekWhenPrepared;
-
+    
     private AudioController audioController;
     
     private MediaPlayer.OnPreparedListener onPreparedListener;
@@ -68,27 +70,35 @@ public class VoicemailPlayer implements AudioController.Player
         attachAudioController();
     }
 
-    /**
-     * Requires the AudioController be set with it's View
-     * @param path
-     */
-    public void setAudioPath(String path)
+    public void updateBufferPercentage(int percent)
     {
-        setAudioPath(null, path);
+        Log.v(TAG, "manual buffer update to " + percent);
+        currentBufferPercentage = percent;
+        if(audioController != null)
+        {
+            audioController.update();
+        }
     }
 
-    /**
-     * Requires the AudioController be set with it's View
-     * @param u
-     */
-    public void setAudioURI(Uri u)
+    public void setLoading()
     {
-        setAudioURI(null, u);
+        if(audioController != null)
+        {
+            audioController.setLoading();
+        }
     }
-
-    public void setAudioPath(Context ctx, String path)
+    
+    public void setControllerEnabled(boolean enabled)
     {
-        setAudioURI(ctx, Uri.parse(path));
+        if(audioController != null)
+        {
+            audioController.setEnabled(enabled);
+        }
+    }
+    
+    public void setAudioFile(Context ctx, File file)
+    {
+        setAudioURI(ctx, Uri.fromFile(file));
     }
 
     public void setAudioURI(Context ctx, Uri u)
@@ -96,6 +106,11 @@ public class VoicemailPlayer implements AudioController.Player
         uri = u;
         seekWhenPrepared = 0;
         openAudio(ctx);
+    }
+    
+    public boolean isAudioSet()
+    {
+        return uri != null && mediaPlayer != null;
     }
 
     public void stopPlayback()
@@ -218,6 +233,8 @@ public class VoicemailPlayer implements AudioController.Player
         
         try
         {
+            Log.v(TAG, "creating new media player");
+            
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setOnPreparedListener(preparedListener);
             durationMS = -1;
@@ -225,8 +242,20 @@ public class VoicemailPlayer implements AudioController.Player
             mediaPlayer.setOnErrorListener(errorListener);
             mediaPlayer.setOnBufferingUpdateListener(bufferUpdateListener);
             currentBufferPercentage = 0;
-            mediaPlayer.setDataSource(context, uri);
+            
+            if(ContentResolver.SCHEME_FILE.equals(uri.getScheme()))
+            {
+                Log.v(TAG, "setting file content source " + uri.getPath());
+                mediaPlayer.setDataSource(uri.getPath());
+            }
+            else
+            {
+                Log.v(TAG, "setting data source " + uri);
+                mediaPlayer.setDataSource(context, uri);
+            }
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+            Log.v(TAG, "preparing media " + uri);
             mediaPlayer.prepareAsync();
             currentState = State.PREPARING;
             attachAudioController();
@@ -234,6 +263,7 @@ public class VoicemailPlayer implements AudioController.Player
         catch(IOException e)
         {
             Log.w(TAG, "Unable to open content: " + uri, e);
+            
             currentState = State.ERROR;
             targetState = State.ERROR;
             errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
@@ -248,7 +278,7 @@ public class VoicemailPlayer implements AudioController.Player
             return;
         }
     }
-
+    
     private void attachAudioController()
     {
         if(mediaPlayer != null && audioController != null)
@@ -262,6 +292,7 @@ public class VoicemailPlayer implements AudioController.Player
     {
         if(mediaPlayer != null)
         {
+            Log.v(TAG, "reseting media player");
             mediaPlayer.reset();
             mediaPlayer.release();
             mediaPlayer = null;

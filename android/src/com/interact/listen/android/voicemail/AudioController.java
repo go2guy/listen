@@ -100,7 +100,7 @@ public class AudioController
     public static View makeView(ViewGroup root)
     {
         LayoutInflater inflate = (LayoutInflater)root.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        return inflate.inflate(R.layout.audio_controller, root);
+        return inflate.inflate(R.layout.audio_player, root);
     }
 
     public void initializeController(View v)
@@ -175,6 +175,27 @@ public class AudioController
         }
     }
 
+    public void setLoading()
+    {
+        if(pauseButton != null)
+        {
+            pauseButton.setEnabled(false);
+        }
+        if(fastForwardButton != null)
+        {
+            fastForwardButton.setEnabled(false);
+        }
+        if(rewindButton != null)
+        {
+            rewindButton.setEnabled(false);
+        }
+        if(progressBar != null)
+        {
+            progressBar.setEnabled(true);
+        }
+        // TODO: rotating progress in the play button
+    }
+    
     public void update()
     {
         setProgress();
@@ -248,14 +269,17 @@ public class AudioController
 
     private void doPauseResume()
     {
-        if(player.isPlaying())
+        if(player != null)
         {
-            player.pause();
-        }
-        else
-        {
-            player.start();
-            handler.sendEmptyMessage(SHOW_PROGRESS);
+            if(player.isPlaying())
+            {
+                player.pause();
+            }
+            else
+            {
+                player.start();
+                handler.sendEmptyMessage(SHOW_PROGRESS);
+            }
         }
         updatePausePlay();
     }
@@ -326,7 +350,7 @@ public class AudioController
 
         public void onProgressChanged(SeekBar bar, int progress, boolean fromUser)
         {
-            if(!fromUser)
+            if(!fromUser || player == null)
             {
                 return; // updates from me are already covered
             }
@@ -363,9 +387,12 @@ public class AudioController
     {
         public void onClick(View v)
         {
-            int pos = player.getCurrentPosition() - 5000; // take off 5 seconds
-            player.seekTo(Math.max(0, pos));
-            setProgress();
+            if(player != null)
+            {
+                int pos = player.getCurrentPosition() - 5000; // take off 5 seconds
+                player.seekTo(Math.max(0, pos));
+                setProgress();
+            }
         }
     };
 
@@ -373,7 +400,7 @@ public class AudioController
     {
         public void onClick(View v)
         {
-            if(player.getDuration() > 0)
+            if(player != null && player.getDuration() > 0)
             {
                 int pos = player.getCurrentPosition() + 5000; // add 5 seconds
                 player.seekTo(Math.min(player.getDuration(), pos));

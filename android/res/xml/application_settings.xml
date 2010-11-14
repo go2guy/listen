@@ -1,32 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Account Information">
-        <EditTextPreference
-        		android:key="voicemail_username"
-                android:title="Username"
-                android:summary=""
-                android:dialogTitle="Enter your username" />
-		<EditTextPreference
-        		android:key="voicemail_password"
-                android:title="Password"
-                android:dialogTitle="Enter your password"
-                android:inputType="textPassword" />                
-	</PreferenceCategory>
-	
-	<PreferenceCategory android:title="Host Information">
-        <EditTextPreference
-        		android:key="voicemail_host"
-                android:title="Host"
-                android:summary=""
-                android:dialogTitle="Enter host name" />
-		<EditTextPreference
-        		android:key="voicemail_port"
-                android:title="Port"
-                android:summary=""
-                android:dialogTitle="Enter host port"
-                android:inputType="number" />                
-	</PreferenceCategory>
+<PreferenceCategory android:title="@string/pref_sync_category">
+
+	<Preference android:title="@string/pref_sync_clear_title" android:summary="@string/pref_sync_clear_detail"
+		        android:selectable="true" android:key="clear_cache_pref"/>
+		        
+	<Preference android:key="sync_interval_pref" android:enabled="true" android:title="@string/pref_sync_interval_title"
+		android:selectable="true" android:defaultValue="5"></Preference>
+
+</PreferenceCategory>
+
 </PreferenceScreen>

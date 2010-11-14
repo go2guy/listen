@@ -1,15 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Listen</string>
-    <string name="current_status">Inbox:</string>
-    <string name="received_on">Received: </string>
-    <string name="delete">Delete</string>
-    <string name="play">Play</string>
+
+    <string name="list_view_label">Inbox</string>
+    <string name="list_view_label_with_info">Inbox: (%d/%d)</string>
+    <string name="received_on_label">Received: </string>
+	
+	<string name="voicemailListEmpty">No items in this view</string>
+	<string name="leftByUnknown">Unavailable</string>
+	<string name="transcriptionUnknown">Transcript not available</string>
+	<string name="dateCreatedUnknown"></string>
+	<string name="voicemail_not_found">Voicemail not found</string>
+	<string name="toast_download_error">Unable to retrieve voicemail</string>
+
     <string name="menu_settings">Settings</string>
-    <string name="settings_username_label">Username</string>
-    <string name="settings_password_label">Password</string>
-    <string name="settings_host_label">Host</string>
-    <string name="settings_port_label">Port</string>
-    <string name="settings_save_button_label">Save</string>
-    <string name="settings_cancel_button_label">Cancel</string>
+    <string name="menu_delete">Delete</string>
+	
+	<string name="pref_sync_category">Sync Settings</string>
+	<string name="pref_sync_clear_title">Clear Cache</string>
+	<string name="pref_sync_clear_detail">Remove stored voicemails from the local cache</string>
+	<string name="pref_sync_interval_title">Poll Interval</string>
+	<string name="pref_sync_interval_detail_ns">%d minute</string>
+	<string name="pref_sync_interval_detail_ws">%d minutes</string>
+
+	
+	<string name="dialog_clear_cache_title">Clear Listen Voicemails</string>
+	<string name="dialog_clear_cache_details">Clear the voicemails stored on this device.</string>
+	<string name="dialog_clear_cache_confirm">Clear</string>
+	<string name="dialog_clear_cache_cancel">Cancel</string>
+
+	<string name="dialog_sync_interval_title">Listen Poll Interval</string>
+	<string name="dialog_sync_interval_details">Set the minutes between checking for new voicemails.</string>
+	<string name="dialog_sync_interval_confirm">Set</string>
+	<string name="dialog_sync_interval_cancel">Cancel</string>
+
+	
+    <string name="syncLabel">Listen Voicemail</string>
+    <string name="authLabel">Listen Voicemail</string>
+    
+    <string name="ui_authenticate_title">Sign-in</string>
+    <string name="ui_authenticating">Authenticating\u2026</string>
+    <string name="login_activity_username_label">Username</string>
+    <string name="login_activity_password_label">Password</string>
+    <string name="login_activity_host_label">Host</string>
+    <string name="login_activity_ok_button">Sign in</string>
+    
+    <string name="login_activity_newaccount_text">Sign in to your Listen account. </string>
+    <string name="login_activity_loginfail_text_all">The username, password, or host isn\'t valid. A Listen account is required. Please try again.</string>
+    <string name="login_activity_loginfail_text_pwmissing">Type the password for this account.</string>
+    <string name="login_activity_loginfail_text_host">The host provided isn\'t valid.</string>
+    <string name="login_activity_loginfail_text_password">You entered the wrong password or your account has changed. Please re-enter your password.</string>
+    <string name="login_activity_loginfail_text_network">The provided Listen server is currently unavailable.</string>
+
+    <string name="sign_in_button_label">Sign in</string>
+    <string name="back_button_label">Back</string>
+    <string name="cancel_button_label">Cancel</string>
+    
+    <string name="connection_error_notification_title">Listen connection error</string>
+    <string name="new_listen_voicemail">New Listen Voicemail</string>
+    <string name="new_listen_voicemails">New Listen Voicemails</string>
+    <string name="count_listen_voicemail">%d new Listen Voicemail</string>
+    <string name="count_listen_voicemails">%d new Listen Voicemails</string>
+
+	<string name="generic_confirm">OK</string>
+	<string name="generic_cancel">Cancel</string>
+
 </resources>
