@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/16/2010
+    <!-- Last Modified 11/15/2010
        *   @Name	autoAttendantPrompt.vxml
        *   @Desc	Retrieves auto attendant prompt list from database -->
 
@@ -28,11 +28,7 @@
         <block>
             <log>INFO: Entered Verify</log>
             <if cond="prompt == '0'">   <!-- No prompts found for current time in db -->
-                <var name="AM_OPEN" expr="800"/> <!-- Office start time -->
-                <var name="PM_CLOSE" expr="1700"/> <!-- Office close time -->
-                <var name="currTime" expr="getTimeStamp(1)"/>  <!-- Format is yyyymmddhhMMss -->
-                <assign name="currTime" expr="iiSubstr(currTime, 8, 12)"/>
-                <if cond="((parseFloat(currTime) &gt; PM_CLOSE) || (parseFloat(currTime) &lt; AM_OPEN))">  <!-- Check if office is closed -->
+                <if cond="afterOfficeHrs()">  <!-- Check if office is closed -->
                     <assign name="isClosed" expr="'y'"/>
                     <assign name="prompt" expr="'AP1700|AP1650'"/>   <!-- Return office closed prompt -->
                 <else/>
@@ -58,5 +54,27 @@
         <assign name="prompt" expr="'0'"/>
         <goto next="#verify"/>
     </catch>
+
+    <script>
+        <![CDATA[
+            function afterOfficeHrs() {
+                var result = true;
+                var SATURDAY = 6;
+                var SUNDAY = 0;
+                var AM_OPEN = 800;
+                var PM_CLOSE = 1700;
+                var currDay = new Date().getDay();
+                var currTime = iiSubstr(getTimeStamp(1), 8, 12);
+                if ((parseFloat(currTime) > PM_CLOSE) || (parseFloat(currTime) < AM_OPEN)) {
+                }
+                else if ((currDay == SATURDAY) || (currDay == SUNDAY)) {
+                }
+                else {
+                    result = false;
+                }
+                return result;
+            }
+        ]]>
+    </script>
 
 </vxml>

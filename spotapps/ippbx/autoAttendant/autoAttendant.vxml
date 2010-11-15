@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/16/2010
+    <!-- Last Modified 11/15/2010
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -43,7 +43,7 @@
             <log>INFO: Entered setUp</log>
             <assign name="fldTrmChar" expr="''"/>
             <assign name="digitTimeOut" expr="'3s'"/>
-            <assign name="fieldLength" expr="(parseInt(EXT_LENGTH) - 1) + '|*|' + CUSTOMER_SERVICE"/>
+            <assign name="fieldLength" expr="(parseInt(EXT_LENGTH) - 1) + '|*|0|' + CUSTOMER_SERVICE"/>
             <assign name="fieldTimeOut" expr="'4s'"/>
             <assign name="cutIn" expr="'true'"/>
             <assign name="gotoForm" expr="'#userKeyPress'"/>
@@ -94,9 +94,7 @@
                 <!-- This logic is here to check how to route the call to customer service.
                     If the office is closed, then go to after hrs functionality. Otherwise,
                     call the extension designated as customer service. -->
-                <var name="currTime" expr="getTimeStamp(1)"/>  <!-- Format is yyyymmddhhMMss -->
-                <assign name="currTime" expr="iiSubstr(currTime, 8, 12)"/>
-                <if cond="((isClosed == 'y') || (parseFloat(currTime) &gt; PM_CLOSE) || (parseFloat(currTime) &lt; AM_OPEN))">
+                <if cond="isClosed == 'y'">
                     <log>INFO: Send caller to pager service</log>
                     <goto expr="'file:'+SUP_PATH+'afterHrsMain.vxml'"/>
                 <else/>
@@ -110,8 +108,9 @@
                     <assign name="gotoForm" expr="'#exit'"/>
                     <goto next="#playAudio"/>
                 </if>
-            <elseif cond="userEntry.length == 0"/>
-                <!-- Caller did not press any keys. Let's check what prompt to play -->
+            <elseif cond="((userEntry == 0) || (userEntry.length == 0))"/>
+                <!-- Caller wants to talk to operator or did not press any keys. 
+                Let's check what prompt to play -->
                 <goto next="#chkOffice"/>
             <else/>
                 <!-- Caller entered some keys. Check the dnis mapping for associated app -->
@@ -126,7 +125,7 @@
             <log>INFO: Entered chkOffice</log>
             <if cond="isClosed == 'y'">
                 <!-- Office is closed. Let's end the call. -->
-                <if cond="userEntry.length != 0">
+                <if cond="((userEntry.length != 0) &amp;&amp; (userEntry != 0))">
                     <assign name="promptID" expr="'AP1851|AP1595'"/>
                 <else/>
                     <assign name="promptID" expr="'AP1595'"/>
@@ -137,7 +136,7 @@
                 <log target="status">End Call</log>
             <else/>
                 <!-- Otherwise, send caller to operator -->
-                <if cond="userEntry.length != 0">
+                <if cond="((userEntry.length != 0) &amp;&amp; (userEntry != 0))">
                     <assign name="promptID" expr="'AP1850'"/>
                 <else/>
                     <assign name="promptID" expr="'AP1605'"/>
