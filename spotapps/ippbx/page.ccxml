@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/11/2010
+    <!-- Last Modified 11/15/2010
        *   @Name	page.ccxml
        *   @Desc	This script handles the group paging logic -->
 
@@ -28,6 +28,7 @@
     <var name="pageMaxID" expr="''"/>   <!-- Page Max ID. ID of delayed event that terminates a group page connection -->
     <var name="PAGE_MAX_TIME" expr="'30s'"/>    <!-- Max number of seconds allowed for a page -->
     <var name="II_SB_promptID" expr="''"/>      <!-- ID/URL of audio to be played -->
+    <var name="phoneType" expr="''"/>
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
 
@@ -41,59 +42,7 @@
             <assign name="state" expr="'loaded'"/>
             <log>INFO: APP Path [<value expr="APP_PATH"/>]</log>
             <log>INFO: Origination [<value expr="ANI"/>]</log>
-            <send data="'dialog.user.getActiveClients'" target="session.id"/>
-        </transition>
-
-        <transition event="dialog.user.getActiveClients" name="evt">
-            <!-- Group paging works by placing every phone in the pbx system on auto answer; regardless of
-            if they are idle or in use. Since we have a record of all active extensions, let's get that list
-            from the db. These extensions will  NOT be paged. -->
-            <log>INFO: Entered [dialog.user.getActiveClients] with state [<value expr="state"/>]</log>
-            <assign name="state" expr="'getActiveList'"/>
-            <var name="flag" expr="'getList'"/>
-            <var name="record" expr="ibconnid + '|' + tmpANI"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
-        </transition>
-
-        <transition state="getActiveList" event="dialog.exit" name="evt">
-            <!-- We should either have a '|' delimited list or a value of 0 in the result field -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <if cond="evt.values.result == 'Failure'">
-                <!-- hmmmm.... Something bad happened! -->
-                <assign name="state" expr="'failed'"/>
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceError.00.wav '+AUDIO_PATH+'serviceError2.00.wav '+AUDIO_PATH+'tryAgainLater.00.wav '+AUDIO_PATH+'thankYou.00.wav '+AUDIO_PATH+'goodbye.00.wav'"/>
-            <else/>
-                <assign name="state" expr="'onHold'"/>
-                <assign name="activeList" expr="activeList + evt.values.result"/>
-                <assign name="II_SB_promptID" expr="'rtsp://live.cumulusstreaming.com/KDEZ-FM?com.iivip.volume=-3'"/> 
-            </if>
-            <send data="'dialog.user.playAudio'" target="session.id"/>    <!-- Put caller on hold while we set up for paging -->
-        </transition>
-
-        <transition event="dialog.user.playAudio" name="evt">
-            <!-- This transition is used to play audio to the caller -->
-            <log>INFO: Entered [dialog.user.playAudio] with state [<value expr="state"/>]</log>
-            <var name="II_SB_repeat" expr="'n'"/>
-            <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
-            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
-        </transition>
-
-        <transition event="dialog.started" name="evt">
-            <!-- Here, we save off the ID of the last VXML dialog that was started. One unique thing we do here
-            is send a request to the iisip process for all the registered sip clients. -->
-            <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'y'"/>
-            <assign name="dialogID" expr="evt.dialogid"/>
-            <if cond="state == 'onHold'">
-                <log target="status">Get all clients</log>
-                <!-- Fire off event to get list/count of registered sip clients.
-                TODO: What happens if we don't get a response from iisip? Maybe, have a max wait time
-                and end the page if there's no response? -->
-                <send data="'listclients'" targettype="'x-iievent'" target="'iisip'"/>
-            <else/>
-                <!-- Nothing here -->
-            </if>
+            <send data="'listclients'" targettype="'x-iievent'" target="'iisip'"/>
         </transition>
 
         <transition event="sipclientlist" name="evt">
@@ -116,15 +65,20 @@
             <log>INFO: Entered [dialog.user.call] with state [<value expr="state"/>]</log>
             <if cond="clientIndex &lt; clientCnt">  <!-- Found a client to call -->
                 <var name="dest" expr="getNextElement(clientIndex,clientList,',')"/>
-                <var name="ext" expr="iiSubstr(dest,3,-1)"/>
-                <if cond="!(inString(ext,activeList,'|'))"> <!-- Verify that client is NOT included in the active list -->
-                    <createcall dest="'sip:aa.spa941.' + dest + '@iipbx'" callerid="'sip:'+tmpANI+'@iipbx'" timeout="'1s'"/>
+                <if cond="((dest == 'ext372') || (dest == 'ext323'))">
+                    <assign name="phoneType" expr="'poly501.'"/>
+                <else/>
+                    <assign name="phoneType" expr="'spa941.'"/>
                 </if>
+                <createcall dest="'sip:aa.' + phoneType + dest + '@iipbx'" callerid="'sip:'+tmpANI+'@iipbx'" timeout="'1s'"/>
                 <assign name="clientIndex" expr="clientIndex + 1"/>
                 <send data="'dialog.user.call'" target="session.id"/>
             <else/> <!-- No more clients to call -->
-                <assign name="state" expr="'signal'"/>
-                <dialogterminate dialogid="dialogID" immediate="true"/> <!-- We're doing this to get caller off the hold music -->
+                <var name="II_SB_repeat" expr="'n'"/>
+                <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
+                <assign name="state" expr="'paging'"/>
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'pageBeep.00.wav'"/> <!-- Play beep to caller -->
+                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
             </if>
         </transition>
 
@@ -136,15 +90,6 @@
 	    <transition state="paging" event="connection.failed">
             <!-- Looks like one of the clients we called was unable to connect. We'll ignore this -->
             <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
-        </transition>
-
-        <transition state="signal" event="dialog.exit" name="evt">
-            <!-- In here, the caller is almost ready to page. Let's play a brief beep first -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <assign name="state" expr="'paging'"/>
-            <assign name="II_SB_promptID" expr="AUDIO_PATH+'pageBeep.00.wav'"/> 
-            <send data="'dialog.user.playAudio'" target="session.id"/>    <!-- Put caller on hold while we set up for paging -->
         </transition>
 
         <transition state="paging" event="dialog.exit" name="evt">
