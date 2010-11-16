@@ -35,7 +35,7 @@ switch ($t_flag) {
         $t_update = "UPDATE active_clients SET session_id=\"$t_sid\" WHERE connection_id=\"$t_id\" AND client=\"$t_ext\"";
         break;
     case "select":
-        $t_update = "SELECT session_id FROM active_clients WHERE client=\"$t_ext\"";
+        $t_update = "SELECT session_id FROM active_clients WHERE client=\"$t_ext\" order by time_stamp desc limit 1";
         break;
     case "getList":
         $t_update = "SELECT client FROM active_clients WHERE ($t_currTime - time_stamp) < $t_maxTime";
