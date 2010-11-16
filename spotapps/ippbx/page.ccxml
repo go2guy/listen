@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/15/2010
+    <!-- Last Modified 11/16/2010
        *   @Name	page.ccxml
        *   @Desc	This script handles the group paging logic -->
 
@@ -67,10 +67,12 @@
                 <var name="dest" expr="getNextElement(clientIndex,clientList,',')"/>
                 <if cond="((dest == 'ext372') || (dest == 'ext323'))">
                     <assign name="phoneType" expr="'poly501.'"/>
+                    <!-- NOTE: These extensions map to the conference room phones. We don't want to page them.
+                    For now, the application will skip these. -->
                 <else/>
                     <assign name="phoneType" expr="'spa941.'"/>
+                    <createcall dest="'sip:aa.' + phoneType + dest + '@iipbx'" callerid="'sip:'+tmpANI+'@iipbx'" timeout="'1s'"/>
                 </if>
-                <createcall dest="'sip:aa.' + phoneType + dest + '@iipbx'" callerid="'sip:'+tmpANI+'@iipbx'" timeout="'1s'"/>
                 <assign name="clientIndex" expr="clientIndex + 1"/>
                 <send data="'dialog.user.call'" target="session.id"/>
             <else/> <!-- No more clients to call -->
