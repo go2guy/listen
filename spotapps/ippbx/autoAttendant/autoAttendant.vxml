@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 11/15/2010
+    <!-- Last Modified 11/17/2010
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -14,6 +14,7 @@
     <var name="officeOptr" expr="'101'"/>       <!-- Operator's extension -->
     <var name="CUSTOMER_SERVICE" expr="5"/>     <!-- This number represents the menu option for customer service -->
     <var name="customerService" expr="'181'"/>  <!-- Customer Service extension -->
+    <var name="dtmfHotKey" expr="''"/>
 
 	<form id="beginDocument">
 		<block>
@@ -43,10 +44,11 @@
             <log>INFO: Entered setUp</log>
             <assign name="fldTrmChar" expr="''"/>
             <assign name="digitTimeOut" expr="'3s'"/>
-            <assign name="fieldLength" expr="(parseInt(EXT_LENGTH) - 1) + '|*|0|' + CUSTOMER_SERVICE"/>
+            <assign name="fieldLength" expr="parseInt(EXT_LENGTH) - 1"/>
             <assign name="fieldTimeOut" expr="'4s'"/>
             <assign name="cutIn" expr="'true'"/>
             <assign name="gotoForm" expr="'#userKeyPress'"/>
+            <assign name="dtmfHotKey" expr="'*,0,' + CUSTOMER_SERVICE"/>
 			<goto next="#playAudio"/>
 		</block>
 	</form>
@@ -63,6 +65,7 @@
             <param name="fldTermchar" expr="fldTrmChar"/>
             <param name="fldTimeOut" expr="fieldTimeOut"/>
             <param name="interrupt" expr="cutIn"/>
+            <param name="hotKey" expr="dtmfHotKey"/>
             <param name="file" expr="promptID"/>
         </subdialog>
         <block>
@@ -86,7 +89,7 @@
                 <assign name="status" expr="'forward'"/>
                 <log>INFO: Send caller to forward app</log>
                 <goto next="#exit"/>
-            <elseif cond="userEntry == '*'"/>
+            <elseif cond="userEntry[0] == '*'"/>
                 <log>INFO: Caller trying to access mailbox</log>
                 <assign name="status" expr="'mailbox'"/>
                 <goto next="#exit"/>
@@ -106,6 +109,7 @@
                     <assign name="extension" expr="customerService"/>
                     <assign name="status" expr="'callExt'"/>
                     <assign name="gotoForm" expr="'#exit'"/>
+                    <assign name="dtmfHotKey" expr="''"/>
                     <goto next="#playAudio"/>
                 </if>
             <elseif cond="((userEntry == 0) || (userEntry.length == 0))"/>
@@ -149,6 +153,7 @@
                 <log>INFO: Send caller to operator</log>
                 <log target="status">Call operator</log>
             </if>
+            <assign name="dtmfHotKey" expr="''"/>
             <goto next="#playAudio"/>
         </block>
     </form>
@@ -188,6 +193,7 @@
             <assign name="cutIn" expr="'false'"/>
             <assign name="status" expr="'callExt'"/>
             <assign name="gotoForm" expr="'#exit'"/>
+            <assign name="dtmfHotKey" expr="''"/>
             <goto next="#playAudio"/>
         </block>
     </form>

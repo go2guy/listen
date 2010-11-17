@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified: 08/17/2010
+    <!-- Last Modified: 11/17/2010
          @Name: getAttendantEntry.vxml
          @Desc: This script handles playing audio files
                 and receiving user input for the auto attendant. -->
@@ -24,6 +24,7 @@
     <var name="match_key" expr="''"/>       <!-- Stores the value of a key -->
     <var name="audioIndex" expr="0"/>       <!-- Index used to loop through prompt list -->
     <var name="tmpFile" expr="''"/>         <!-- Stores name of audio file -->
+    <var name="HOT_KEY" expr="''"/>
 
 	<form id="beginDocument">
         <!-- Subdialog inputs -->
@@ -32,38 +33,21 @@
         <var name="fldTimeOut"/>
         <var name="fldTermchar"/>
         <var name="interrupt"/>
+        <var name="hotKey"/>
         <var name="file"/>
 		<block>
 	        <log>INFO: Entered beginDocument</log>
             <!-- Set input values to global variables -->
             <assign name="tmpFile" expr="file"/>    <!-- NOTE: Input file may be pipe ('|') separated list of prompts -->
-            <assign name="fieldLength" expr="fldLength"/>   <!-- NOTE: Field length may be pipe ('|') separated list of values -->
+            <assign name="fieldLength" expr="fldLength"/>
             <assign name="DGT_TIMEOUT" expr="dgtTimeOut"/>
             <assign name="FLD_TERMCHAR" expr="fldTermchar"/>
             <assign name="FLD_INTERRUPT" expr="interrupt"/>
             <assign name="FLD_TIMEOUT" expr="fldTimeOut"/>
-  			<goto next="#dgtMatch"/>
+            <assign name="HOT_KEY" expr="hotKey"/>
+  			<goto next="#getPrompt"/>
 		</block>
 	</form>
-
-    <form id="dgtMatch">
-        <!-- Here we decode the contents of the fieldLength variable. If we have a pipe ('|') separated
-        list, we'll assume we need to watch for either a specified length of digits or a particular
-        digit (on the fist key press). If there's no '|', we'll just watch for a specified length -->
-        <block>
-            <log>INFO: Entered dgtMatch</log>
-            <if cond="inString('|',fieldLength,'')">
-                <!-- We need to watch for a particular keypress on our first pass -->
-                <assign name="match_key" expr="iiSubstr(fieldLength,1,-1)"/>
-                <assign name="fieldLength" expr="getNextElement(0,fieldLength,'|')"/>
-            <else/>
-                <!-- Nothing to do here, we'll just watch for the specified number of digits -->
-            </if>
-            <log>INFO: Field length [<value expr="fieldLength"/>]</log>
-            <log>INFO: Match key(s) [<value expr="match_key"/>]</log>
-			<goto next="#getPrompt"/>
-        </block>
-    </form>
 
     <form id="getPrompt">
         <!-- Here, we check the format of the audio file that was passed into the subdialog. A pipe
@@ -163,8 +147,21 @@
         <!-- This form allows us to check a user's key press. We're intrested to see if the user has
         reached a termination rule - either a specified termination key or we matched a particular digit
         or the user entered the max number of allowed digits -->
-        <block>
+        <block cond="HOT_KEY.length &gt; 0">
             <log>INFO: Entered checkEntry</log>
+            <!-- If we've been given a particular key to match, we'll check for that only on the
+            first key press. If the first key press is a '*', we'll assume the user could enter
+            some more digits. Any other hot key match will cause us to exit this script. -->
+            <assign name="userEntry" expr="userEntry + application.lastresult$.utterance"/>
+            <if cond="inString(userEntry,HOT_KEY,',')">
+                <!-- Found a match on the first key press -->
+                <if cond="userEntry == '*'">    <!-- Hot key is a '*', we'll wait half second for more keys -->
+                    <assign name="fieldLength" expr="fieldLength + 1"/>
+                    <goto next="#resetTimeOut"/>
+                <else/>
+                    <goto next="#exit"/>
+                </if>
+            </if>
         </block>
         <!-- We use the object below to set the 'timeout' property whenever we come into this
         form. This creates the effect of having a consistent inter digit timeout. We only need
@@ -175,20 +172,6 @@
             <param name="PropertyValue" expr="DGT_TIMEOUT"/>
             <param name="PropertyScope" value="Document"/>
         </object>
-        <block cond="match_key.length &gt; 0">
-            <!-- If we've been given a particular key to match, we'll check for that only on the
-            first key press. A match will cause us to exit -->
-            <assign name="userEntry" expr="userEntry + application.lastresult$.utterance"/>
-            <if cond="inString(userEntry,match_key,'|')">
-                <!-- Found a match on the first key press -->
-                <goto next="#exit"/>
-            <else/>
-                <assign name="playAudio" expr="'n'"/>
-                <assign name="match_key" expr="''"/>
-                <assign name="gotoForm" expr="'#exit'"/>
-                <goto next="#getEntry"/>
-            </if>
-        </block>
         <block>
             <!-- Check user's key press -->
             <assign name="userEntry" expr="userEntry + application.lastresult$.utterance"/>
@@ -202,6 +185,21 @@
                 <!-- Get another entry -->
             </if>
             <assign name="playAudio" expr="'n'"/>
+            <assign name="gotoForm" expr="'#exit'"/>
+            <goto next="#getEntry"/>
+        </block>
+    </form>
+
+    <form id="resetTimeOut">
+	    <object name="Dgt3" classid="com.iivip.setproperty">
+            <param name="PropertyName" value="timeout"/>
+            <param name="PropertyValue" expr="'750ms'"/>
+            <param name="PropertyScope" value="Document"/>
+        </object>
+        <block>
+            <log>INFO: Entered resetTimeOut</log>
+            <assign name="playAudio" expr="'n'"/>
+            <assign name="HOT_KEY" expr="''"/>
             <assign name="gotoForm" expr="'#exit'"/>
             <goto next="#getEntry"/>
         </block>
