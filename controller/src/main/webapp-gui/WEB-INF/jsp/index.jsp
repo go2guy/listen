@@ -305,7 +305,47 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
             <div id="findme-application" class="application">
               <div class="application-header"><div class="title">FindMe</div></div>
               <div class="application-content">
-                FindMe Stuff
+                <div id="findme-options">
+                  <input type="checkbox" name="findme-enable" id="findme-enable"/> Enable Find Me / Follow Me
+                </div>
+                
+                <div class="findme-text-when-somebody-calls">When somebody calls me,</div>
+                
+                <div class="findme-simultaneous-numbers">
+                  <div class="findme-text-dial">Dial...</div>
+                  
+                  <div class="findme-dialed-number">
+                    <input type="text"/><button type="button" class="icon-delete" title="Remove this number"/><button type="button" class="icon-cancel" title="Temporarily disable this number"/>
+                  </div>
+                  
+                  <div class="findme-text-and-between-numbers">and</div>
+                  
+                  <div class="findme-dialed-number">
+                    <input type="text"/><button type="button" class="icon-delete" title="Remove this number"/><button type="button" class="icon-cancel" title="Temporarily disable this number"/>
+                  </div>
+                  
+                  <div class="findme-text-and-between-numbers-disabled">and</div>
+                  
+                  <div class="findme-dialed-number-disabled">
+                    <input type="text"/><button type="button" class="icon-delete" title="Remove this number"/><button type="button" class="icon-save" title="Re-enable this number"/>
+                  </div>
+                  
+                  <div class="findme-text-at-the-same-time">...at the same time</div>
+                </div>
+                
+                <div class="findme-text-if-i-dont-answer"><span>If I don't answer,</span></div>
+                
+                <div class="findme-simultaneous-numbers">
+                  <div class="findme-text-dial">Dial...</div>
+                  
+                  <div class="findme-dialed-number">
+                    <input type="text"/><button type="button" class="icon-delete" title="Remove this number"/><button type="button" class="icon-cancel" title="Temporarily disable this number"/>
+                  </div>
+                </div>
+                
+                <div class="findme-text-if-i-dont-answer">
+                    <span>If I don't answer,</span><select><option>Go to my voicemail</option><option>Dial...</option></select>
+                </div>
               </div>
             </div><%
 }

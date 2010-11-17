@@ -698,6 +698,54 @@ table#attendant-menu-list tbody tr.selected td {
     color: #FFFFFF;
 }
 
+#findme-application > .application-content {
+    font-size: 115%;
+}
+
+#findme-application > .application-content > div.simultaneous-numbers {
+    clear: both;
+    float: left;
+}
+
+#findme-options {
+    margin: 10px 10px 0 10px;
+}
+
+.findme-simultaneous-numbers {
+    background-color: #EDD5D8;
+    margin: 0 10px;
+    padding: 10px;
+}
+
+.findme-text-dial,
+.findme-text-at-the-same-time,
+.findme-text-and-between-numbers,
+.findme-text-and-between-numbers-disabled {
+    font-style: italic;
+    margin: 5px 0;
+}
+
+.findme-text-and-between-numbers-disabled {
+    color: #666666;
+}
+
+.findme-text-when-somebody-calls,
+.findme-text-if-i-dont-answer {
+    font-weight: bold;
+    margin: 10px;
+}
+
+#findme-application .findme-dialed-number > button,
+#findme-application .findme-dialed-number-disabled > button {
+    margin-left: 5px;
+}
+
+.findme-dialed-number-disabled input {
+    background-color: #DDDDDD;
+    border: 2px solid #BBBBBB;
+    color: #666666;
+}
+
 /* application - subscribers */
 
 #subscribers-application fieldset {
