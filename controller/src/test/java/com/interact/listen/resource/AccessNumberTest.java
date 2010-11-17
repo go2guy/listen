@@ -27,6 +27,30 @@ public class AccessNumberTest extends ListenTest
     }
 
     @Test
+    public void test_isCreatedByUser_defaultsToTrue()
+    {
+        assertTrue(accessNumber.getIsCreatedByUser());
+    }
+
+    @Test
+    public void test_isFindMeNumber_defaultsToFalse()
+    {
+        assertFalse(accessNumber.getIsFindMeNumber());
+    }
+
+    @Test
+    public void test_findMePriority_defaultsToZero()
+    {
+        assertEquals(Integer.valueOf(0), accessNumber.getFindMePriority());
+    }
+
+    @Test
+    public void test_findMeDuration_defaultsToZero()
+    {
+        assertEquals(Integer.valueOf(0), accessNumber.getFindMeDuration());
+    }
+
+    @Test
     public void test_setId_setsId()
     {
         final Long id = System.currentTimeMillis();
@@ -72,6 +96,38 @@ public class AccessNumberTest extends ListenTest
         final Boolean light = Boolean.TRUE;
         accessNumber.setSupportsMessageLight(light);
         assertEquals(light, accessNumber.getSupportsMessageLight());
+    }
+
+    @Test
+    public void test_setIsCreatedByUser_setsIsCreatedByUser()
+    {
+        final Boolean is = Boolean.FALSE;
+        accessNumber.setIsCreatedByUser(is);
+        assertEquals(is, accessNumber.getIsCreatedByUser());
+    }
+
+    @Test
+    public void test_setIsFindMeNumber_setsIsFindMeNumber()
+    {
+        final Boolean is = Boolean.FALSE;
+        accessNumber.setIsFindMeNumber(is);
+        assertEquals(is, accessNumber.getIsFindMeNumber());
+    }
+
+    @Test
+    public void test_setFindMePriority_setsFindMePriority()
+    {
+        final Integer priority = TestUtil.randomInteger();
+        accessNumber.setFindMePriority(priority);
+        assertEquals(priority, accessNumber.getFindMePriority());
+    }
+
+    @Test
+    public void test_setFindMeDuration_setsFindMePriority()
+    {
+        final Integer priority = TestUtil.randomInteger();
+        accessNumber.setFindMeDuration(priority);
+        assertEquals(priority, accessNumber.getFindMeDuration());
     }
 
     @Test

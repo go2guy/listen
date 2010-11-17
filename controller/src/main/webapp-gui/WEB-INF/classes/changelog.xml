@@ -482,4 +482,18 @@
         <!-- since voicemail may not be licensed -->
         <dropNotNullConstraint tableName="SUBSCRIBER" columnName="VOICEMAIL_PIN" columnDataType="VARCHAR(10)"/>
     </changeSet>
+    <changeSet author="development" id="51">
+        <addColumn tableName="ACCESS_NUMBER">
+            <column name="IS_CREATED_BY_USER" type="BOOLEAN" defaultValueBoolean="true"/>
+        </addColumn>
+        <addColumn tableName="ACCESS_NUMBER">
+            <column name="IS_FIND_ME_NUMBER" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <addColumn tableName="ACCESS_NUMBER">
+            <column name="FIND_ME_PRIORITY" type="INT" defaultValueNumeric="0"/>
+        </addColumn>
+        <addColumn tableName="ACCESS_NUMBER">
+            <column name="FIND_ME_DURATION" type="INT" defaultValueNumeric="0"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

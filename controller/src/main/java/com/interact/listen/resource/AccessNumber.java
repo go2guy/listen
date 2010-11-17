@@ -44,6 +44,18 @@ public class AccessNumber extends Resource implements Serializable
     @Column(name = "SUPPORTS_MESSAGE_LIGHT", nullable = false)
     private Boolean supportsMessageLight = Boolean.FALSE;
 
+    @Column(name = "IS_CREATED_BY_USER", nullable = false)
+    private Boolean isCreatedByUser = Boolean.TRUE;
+
+    @Column(name = "IS_FIND_ME_NUMBER", nullable = false)
+    private Boolean isFindMeNumber = Boolean.FALSE;
+
+    @Column(name = "FIND_ME_PRIORITY", nullable = false)
+    private Integer findMePriority = 0;
+
+    @Column(name = "FIND_ME_DURATION", nullable = false)
+    private Integer findMeDuration = 0;
+
     @Transient
     private MessageLightToggler messageLightToggler = new SpotSystemMessageLightToggler();
 
@@ -105,6 +117,46 @@ public class AccessNumber extends Resource implements Serializable
     public void setSupportsMessageLight(Boolean supportsMessageLight)
     {
         this.supportsMessageLight = supportsMessageLight;
+    }
+
+    public Boolean getIsCreatedByUser()
+    {
+        return isCreatedByUser;
+    }
+
+    public void setIsCreatedByUser(Boolean isCreatedByUser)
+    {
+        this.isCreatedByUser = isCreatedByUser;
+    }
+
+    public Boolean getIsFindMeNumber()
+    {
+        return isFindMeNumber;
+    }
+
+    public void setIsFindMeNumber(Boolean isFindMeNumber)
+    {
+        this.isFindMeNumber = isFindMeNumber;
+    }
+
+    public Integer getFindMePriority()
+    {
+        return findMePriority;
+    }
+
+    public void setFindMePriority(Integer findMePriority)
+    {
+        this.findMePriority = findMePriority;
+    }
+
+    public Integer getFindMeDuration()
+    {
+        return findMeDuration;
+    }
+
+    public void setFindMeDuration(Integer findMeDuration)
+    {
+        this.findMeDuration = findMeDuration;
     }
 
     public void useMessageLightToggler(MessageLightToggler toggler)
