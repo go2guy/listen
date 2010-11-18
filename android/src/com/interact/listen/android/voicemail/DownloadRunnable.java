@@ -72,6 +72,16 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         this.progressListener = listener;
     }
 
+    private static class DownloadingNow extends Exception
+    {
+        private static final long serialVersionUID = 1L;
+
+        public DownloadingNow()
+        {
+            super("downloading now");
+        }
+    }
+    
     @Override
     public void run()
     {
@@ -93,6 +103,11 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         try
         {
             downloaded = download();
+        }
+        catch(DownloadingNow e)
+        {
+            Log.i(TAG, "currently downloading");
+            return;
         }
         catch(OperationCanceledException e)
         {
@@ -153,21 +168,26 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         }
     }
 
-    protected   boolean isInterrupted()
+    protected boolean isInterrupted()
     {
         return Thread.currentThread().isInterrupted();
     }
     
     private long download(InputStream in, OutputStream out, long downloadSize) throws IOException
     {
-        return WavConversion.copyToLinear(in, out, downloadSize, new WavConversion.OnProgressUpdate()
+        WavConversion.OnProgressUpdate listener = null;
+        if(progressListener != null)
         {
-            @Override
-            public void onProgressUpdate(int percent)
+            listener = new WavConversion.OnProgressUpdate()
             {
-                progressUpdate(percent);
-            }
-        });
+                @Override
+                public void onProgressUpdate(int percent)
+                {
+                    progressUpdate(percent);
+                }
+            };
+        }
+        return WavConversion.copyToLinear(in, out, downloadSize, listener);
         
         /*
         byte[] buffer = new byte[(int)Math.min(downloadSize, 1024L)];
@@ -194,7 +214,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
     }
     
     private long download() throws AuthenticatorException, AuthorizationException, OperationCanceledException,
-                                   IOException, RemoteException
+         IOException, RemoteException, DownloadingNow
     {
         if(authToken == null)
         {
@@ -249,11 +269,13 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
                 pfd = VoicemailHelper.getDownloadStream(resolver, voicemail);
             }
             
-            if(pfd != null)
+            if(pfd == null)
             {
-                out = new FileOutputStream(pfd.getFileDescriptor());
-                downloaded = download(in, out, downloadSize);
+                throw new DownloadingNow();
             }
+
+            out = new FileOutputStream(pfd.getFileDescriptor());
+            downloaded = download(in, out, downloadSize);
         }
         finally
         {
@@ -291,7 +313,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
                 }
             }
         }
-        Log.i(TAG, "done downloading: " + downloaded);
+        Log.i(TAG, "downloading result: " + downloaded);
         return downloaded;
     }
     
@@ -317,9 +339,19 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
     @Override
     public int compareTo(DownloadRunnable dr)
     {
-        int id1 = voicemail == null ? 0 : voicemail.getId();
-        int id2 = dr.voicemail == null ? 0 : dr.voicemail.getId();
-        return id1 - id2;
+        int id1 = 0, id2 = 0;
+        int dt1 = 0, dt2 = 0;
+        if(voicemail != null)
+        {
+            id1 = voicemail.getId();
+            dt1 = (int)(voicemail.getDateCreatedMS() / 1000);
+        }
+        if(dr.voicemail != null)
+        {
+            id2 = dr.voicemail.getId();
+            dt2 = (int)(dr.voicemail.getDateCreatedMS() / 1000);
+        }
+        return dt1 != dt2 ? dt1 - dt2 : id1 - id2;
     }
 
 }

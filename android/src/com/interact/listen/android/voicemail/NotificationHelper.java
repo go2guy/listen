@@ -55,6 +55,7 @@ public final class NotificationHelper
         NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(LISTEN_COMMUNICATION_ERROR_NOTIFICATION);
         manager.cancel(VOICEMAIL_NOTIFICATION);
+        // test showed that this also caused the deleteIntent to get executed to mark all voicemails notified
     }
     
     public static void updateNotifications(Context context, int[] ids)
@@ -97,11 +98,9 @@ public final class NotificationHelper
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 
-        Intent deleteIntent = new Intent(Constants.ACTION_MARK_NOTIFIED);
-
         Notification notification = new Notification(icon, title, when);
 
-        notification.deleteIntent = PendingIntent.getService(context, 0, deleteIntent, 0);
+        notification.deleteIntent = PendingIntent.getService(context, 0, new Intent(Constants.ACTION_MARK_NOTIFIED), 0);
 
         notification.tickerText = context.getString(newCount == 1 ? R.string.new_voicemail_ticker : R.string.new_voicemails_ticker);
         //notification.number = newCount == 1  || newCount > 9 ? 0 : newCount;

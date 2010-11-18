@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.interact.listen.android.voicemail.provider.VoicemailHelper;
-
 import java.util.List;
 
 public class VoicemailNotifyReceiver extends BroadcastReceiver

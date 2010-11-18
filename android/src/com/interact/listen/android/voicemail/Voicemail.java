@@ -529,7 +529,6 @@ public final class Voicemail implements Parcelable
         else
         {
             dateCreated = SDF.parse(dateString).getTime();
-            Log.v(TAG, "date created: '" + dateString + "' = " + dateCreated);
         }
     }
 

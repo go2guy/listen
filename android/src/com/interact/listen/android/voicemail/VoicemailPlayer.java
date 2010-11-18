@@ -79,7 +79,7 @@ public class VoicemailPlayer implements AudioController.Player
         currentBufferPercentage = percent;
         if(audioController != null)
         {
-            audioController.update();
+            audioController.updateSecondaryProgress(currentBufferPercentage);
         }
     }
 

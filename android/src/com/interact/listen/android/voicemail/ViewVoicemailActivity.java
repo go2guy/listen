@@ -235,14 +235,7 @@ public class ViewVoicemailActivity extends Activity
             }
             mDate.setText(mVoicemail.getDateCreatedString(getString(R.string.dateCreatedUnknown)));
             
-            if(mVoicemail.isDownloading())
-            {
-                if(mDownloadTask == null)
-                {
-                    mVoicemailPlayer.getController().setEnabled(false);
-                }
-            }
-            else if(mVoicemail.isDownloadError())
+            if(mVoicemail.isDownloadError())
             {
                 Toast.makeText(ViewVoicemailActivity.this, R.string.toast_download_error, Toast.LENGTH_SHORT).show();
                 mVoicemailPlayer.getController().setEnabled(false);

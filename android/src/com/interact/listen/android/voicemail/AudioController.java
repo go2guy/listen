@@ -258,6 +258,14 @@ public class AudioController
         }
     }
 
+    public void updateSecondaryProgress(int percent)
+    {
+        if(progressBar != null)
+        {
+            progressBar.setSecondaryProgress(percent * 10);
+        }
+    }
+    
     private int setProgress()
     {
         if(player == null || dragging)

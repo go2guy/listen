@@ -8,7 +8,10 @@
 		        android:selectable="true" android:key="clear_cache_pref"/>
 		        
 	<Preference android:key="sync_interval_pref" android:enabled="true" android:title="@string/pref_sync_interval_title"
-		android:selectable="true" android:defaultValue="5"></Preference>
+		android:selectable="true" android:defaultValue="5"/>
+
+	<CheckBoxPreference android:summaryOn="@string/pref_sync_audio_on" android:summaryOff="@string/pref_sync_audio_off"
+		android:key="sync_audio" android:defaultValue="true" android:title="@string/pref_sync_audio"/>
 
 </PreferenceCategory>
 

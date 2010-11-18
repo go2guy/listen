@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -29,7 +30,8 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
 
     private static final String CLEAR_CACHE = "clear_cache_pref";
     private static final String SYNC_INTERVAL = "sync_interval_pref";
-    
+    private static final String SYNC_AUDIO = "sync_audio";
+
     private SharedPreferences sharedPreferences;
     private Preference clearCachePref;
     private Preference syncIntervalPref;
@@ -179,6 +181,12 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             SyncSchedule.updatePeriodicSync(this);
             updateSyncIntevalSummary();
         }
+    }
+    
+    public static boolean isSyncAudio(Context context)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(SYNC_AUDIO, true);
     }
 
 }

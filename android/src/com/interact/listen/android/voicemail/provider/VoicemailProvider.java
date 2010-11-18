@@ -376,6 +376,11 @@ public class VoicemailProvider extends ContentProvider
                     Log.i(TAG, "continuing download of " + uri);
                     audioFile = new File(audioPath);
                 }
+                else if(Voicemail.isDownloadingState(audioState))
+                {
+                    Log.i(TAG, "already downloading");
+                    throw new FileNotFoundException("already downloading");
+                }
                 else
                 {
                     Log.i(TAG, "starting new download " + uri);
@@ -384,8 +389,9 @@ public class VoicemailProvider extends ContentProvider
             }
             else if(isForWrite) // marked that it's downloaded, but we are updating
             {
-                Log.i(TAG, "re-downloading " + uri);
-                audioFile = setAudioForDownload(uri, db, id, true);
+                Log.i(TAG, "already downloaded " + uri);
+                //audioFile = setAudioForDownload(uri, db, id, true);
+                throw new FileNotFoundException("already downloaded");
             }
             else // just reading
             {

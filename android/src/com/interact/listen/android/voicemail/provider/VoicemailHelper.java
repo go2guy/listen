@@ -78,7 +78,7 @@ public final class VoicemailHelper
         return v;
     }
 
-    private static final Uri getVoicemailUri(int id)
+    public static final Uri getVoicemailUri(int id)
     {
         return ContentUris.withAppendedId(Voicemails.CONTENT_URI, id);
     }
@@ -305,7 +305,7 @@ public final class VoicemailHelper
         }
         catch(FileNotFoundException e)
         {
-            Log.i(TAG, "went to get download stream, seems like it's being downloaded now " + voicemail.getId(), e);
+            Log.i(TAG, "resolver - went to get download stream, seems like it's being downloaded now " + voicemail.getId(), e);
             return null;
         }
     }
@@ -319,7 +319,7 @@ public final class VoicemailHelper
         }
         catch(FileNotFoundException e)
         {
-            Log.i(TAG, "went to get download stream, seems like it's being downloaded now " + voicemail.getId(), e);
+            Log.i(TAG, "client - went to get download stream, seems like it's being downloaded now " + voicemail.getId(), e);
             return null;
         }
     }

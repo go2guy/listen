@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.DownloadRunnable;
 import com.interact.listen.android.voicemail.Voicemail;
@@ -258,6 +259,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
     private void downloadAudio(Uri host, String authToken, Account account, ContentProviderClient provider,
                                SyncResult syncResult, List<Voicemail> voicemails)
     {
+        if(voicemails == null || voicemails.isEmpty() || !ApplicationSettings.isSyncAudio(getContext()))
+        {
+            return;
+        }
         ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 5, 10, TimeUnit.SECONDS,
                                                              new PriorityBlockingQueue<Runnable>(5));
 
@@ -269,16 +274,24 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             executor.execute(downloadTask);
         }
 
-        while(true)
+        executor.shutdown();
+        boolean killed = false;
+        
+        while(!executor.isTerminated())
         {
-            if(isInterrupted())
+            if(isInterrupted() && !killed)
             {
                 executor.shutdownNow();
+                killed = true;
             }
             try
             {
                 executor.awaitTermination(5, TimeUnit.SECONDS);
-                break;
+                if(executor.isTerminated())
+                {
+                    Log.v(TAG, "executors done downloading: " + voicemails.size());
+                    break;
+                }
             }
             catch(InterruptedException e)
             {

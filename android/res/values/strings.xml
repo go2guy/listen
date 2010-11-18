@@ -3,7 +3,7 @@
     <string name="app_name">Listen</string>
 
     <string name="list_view_label">Inbox</string>
-    <string name="list_view_label_with_info">Inbox: (%d/%d)</string>
+    <string name="list_view_label_with_info">Inbox (%d/%d)</string>
     <string name="received_on_label">Received: </string>
 	
 	<string name="voicemailListEmpty">No items in this view</string>
@@ -24,11 +24,13 @@
 	
 	<string name="pref_sync_category">Sync Settings</string>
 	<string name="pref_sync_clear_title">Clear Cache</string>
-	<string name="pref_sync_clear_detail">Remove stored voicemails from the local cache</string>
+	<string name="pref_sync_clear_detail">Remove voicemails from the local cache</string>
 	<string name="pref_sync_interval_title">Poll Interval</string>
 	<string name="pref_sync_interval_detail_ns">%d minute</string>
 	<string name="pref_sync_interval_detail_ws">%d minutes</string>
-
+	<string name="pref_sync_audio">Sync Audio</string>
+	<string name="pref_sync_audio_on">Audio downloaded automatically</string>	
+	<string name="pref_sync_audio_off">Audio downloaded on demand</string>
 	
 	<string name="dialog_clear_cache_title">Clear Listen Voicemails</string>
 	<string name="dialog_clear_cache_details">Clear the voicemails stored on this device.</string>
