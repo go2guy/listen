@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/02/2010
+    <!-- Last Modified 11/18/2010
        *   @Name	hold.ccxml
        *   @Desc	This script handles the logic for placing a call on hold -->
 
@@ -99,10 +99,7 @@
             <!-- Got the voice channel. Play steaming music to on hold party -->
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <log target="status">Call On Hold</log>
-            <var name="II_SB_promptID" expr="'rtsp://live.cumulusstreaming.com/KDEZ-FM?com.iivip.volume=-3'"/>
-            <var name="II_SB_repeat" expr="'n'"/>
-            <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
-            <dialogstart src="'file:'+LIB_PATH+'vxml/audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+            <dialogstart src="'file:'+APP_PATH+'onHoldMusic.vxml'"/>
 		</transition>
 
 		<transition state="hold" event="connection.signal" name="evt">
