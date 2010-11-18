@@ -11,6 +11,7 @@
 				<action android:name="com.interact.listen.voicemail.LIST"/>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+				<category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
@@ -44,6 +45,13 @@
             </intent-filter>
         </receiver>
         
+        <service android:name=".MarkVoicemailsService">
+            <intent-filter>
+                <action android:name="com.interact.listen.voicemail.MARK_NOTIFIED"/>
+    			<action android:name="com.interact.listen.voicemail.MARK_READ"/>
+            </intent-filter>
+        </service>
+
         <service android:name=".authenticator.AuthenticationService" android:exported="true">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />

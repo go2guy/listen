@@ -1,6 +1,7 @@
 package com.interact.listen.android.voicemail;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
@@ -20,6 +21,13 @@ public class AudioController
 {
     public interface Player
     {
+
+        /**
+         * Set the audio stream.  Can be called at any time.
+         * @param audioStream
+         */
+        void setAudioStream(int audioStream);
+        
         /**
          * Start the audio.
          */
@@ -70,16 +78,20 @@ public class AudioController
     private ImageButton pauseButton;
     private ImageButton fastForwardButton;
     private ImageButton rewindButton;
+    private ImageButton speakerButton;
 
     private boolean dragging;
     
     private StringBuilder formatBuilder;
     private Formatter formatter;
 
+    private int audioStream;
+    
     public AudioController()
     {
         player = null;
         view = null;
+        audioStream = AudioManager.STREAM_VOICE_CALL;
     }
 
     public Player getPlayer()
@@ -94,6 +106,10 @@ public class AudioController
     public void setPlayer(Player p)
     {
         player = p;
+        if(player != null)
+        {
+            p.setAudioStream(audioStream);
+        }
         updatePausePlay();
     }
     
@@ -136,6 +152,12 @@ public class AudioController
             }
             progressBar.setMax(1000);
         }
+        
+        speakerButton = (ImageButton)v.findViewById(R.id.speaker);
+        if(speakerButton != null)
+        {
+            speakerButton.setOnClickListener(speakerListener);
+        }
 
         endTime = (TextView)v.findViewById(R.id.time);
         curTime = (TextView)v.findViewById(R.id.time_current);
@@ -157,19 +179,19 @@ public class AudioController
 
     public void setEnabled(boolean enabled)
     {
-        if(pauseButton != null)
+        if(pauseButton != null && pauseButton.isEnabled() != enabled)
         {
             pauseButton.setEnabled(enabled);
         }
-        if(fastForwardButton != null)
+        if(fastForwardButton != null && fastForwardButton.isEnabled() != enabled)
         {
             fastForwardButton.setEnabled(enabled);
         }
-        if(rewindButton != null)
+        if(rewindButton != null && rewindButton.isEnabled() != enabled)
         {
             rewindButton.setEnabled(enabled);
         }
-        if(progressBar != null)
+        if(progressBar != null && progressBar.isEnabled() != enabled)
         {
             progressBar.setEnabled(enabled);
         }
@@ -177,19 +199,19 @@ public class AudioController
 
     public void setLoading()
     {
-        if(pauseButton != null)
+        if(pauseButton != null && pauseButton.isEnabled())
         {
             pauseButton.setEnabled(false);
         }
-        if(fastForwardButton != null)
+        if(fastForwardButton != null && fastForwardButton.isEnabled())
         {
             fastForwardButton.setEnabled(false);
         }
-        if(rewindButton != null)
+        if(rewindButton != null && rewindButton.isEnabled())
         {
             rewindButton.setEnabled(false);
         }
-        if(progressBar != null)
+        if(progressBar != null && !progressBar.isEnabled())
         {
             progressBar.setEnabled(true);
         }
@@ -201,10 +223,26 @@ public class AudioController
         setProgress();
         updatePausePlay();
     }
-    
+
+    public void triggerPause()
+    {
+        if(player != null && player.isPlaying())
+        {
+            doPauseResume();
+        }
+    }
+
     private String stringForTime(int timeMs)
     {
-        int totalSeconds = timeMs / 1000;
+        int rMs = timeMs;
+
+        int r = timeMs % 1000;
+        if(r != 0)
+        {
+            rMs += 1000 - r;
+        }
+        
+        int totalSeconds = rMs / 1000;
         int seconds = totalSeconds % 60;
         int minutes = (totalSeconds / 60) % 60;
         int hours = totalSeconds / 3600;
@@ -230,7 +268,7 @@ public class AudioController
         int duration = player.getDuration();
         if(progressBar != null)
         {
-            if(duration >= 0)
+            if(duration > 0)
             {
                 long pos = 1000L * position / duration;
                 progressBar.setProgress((int)pos);
@@ -282,6 +320,24 @@ public class AudioController
             }
         }
         updatePausePlay();
+    }
+    
+    private void doSpeakerToggle()
+    {
+        if(audioStream == AudioManager.STREAM_VOICE_CALL)
+        {
+            speakerButton.setImageResource(R.drawable.ic_speaker_off);
+            audioStream = AudioManager.STREAM_MUSIC;
+        }
+        else
+        {
+            speakerButton.setImageResource(R.drawable.ic_speaker_on);
+            audioStream = AudioManager.STREAM_VOICE_CALL;
+        }
+        if(player != null)
+        {
+            player.setAudioStream(audioStream);
+        }
     }
 
     private Handler handler = new Handler()
@@ -371,6 +427,15 @@ public class AudioController
             setProgress();
             updatePausePlay();
             handler.sendEmptyMessage(SHOW_PROGRESS);
+        }
+    };
+
+    private View.OnClickListener speakerListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            doSpeakerToggle();
         }
     };
 

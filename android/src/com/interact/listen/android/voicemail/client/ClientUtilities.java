@@ -2,6 +2,7 @@ package com.interact.listen.android.voicemail.client;
 
 import android.accounts.AccountManager;
 import android.net.Uri;
+import android.net.http.AndroidHttpClient;
 import android.os.Handler;
 import android.util.Log;
 
@@ -9,7 +10,6 @@ import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.Voicemail;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -24,11 +24,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +38,6 @@ public final class ClientUtilities
     private static final String AUTHENTICATION_TYPE_HEADER = "X-Listen-AuthenticationType";
     private static final String USERNAME_HEADER = "X-Listen-AuthenticationUsername";
     private static final String PASSWORD_HEADER = "X-Listen-AuthenticationPassword";
-    private static final int REGISTRATION_TIMEOUT = 20 * 1000; // ms
 
     private static final String SUBSCRIBER_PATH = "api/subscribers";
     private static final String VOICEMAIL_PATH = "api/voicemails";
@@ -463,11 +458,7 @@ public final class ClientUtilities
     {
         if(mHttpClient == null)
         {
-            mHttpClient = new DefaultHttpClient();
-            final HttpParams params = mHttpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, REGISTRATION_TIMEOUT);
-            HttpConnectionParams.setSoTimeout(params, REGISTRATION_TIMEOUT);
-            ConnManagerParams.setTimeout(params, REGISTRATION_TIMEOUT);
+            mHttpClient = AndroidHttpClient.newInstance("listen/1.0");
         }
     }
 

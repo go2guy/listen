@@ -153,13 +153,23 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         }
     }
 
-    protected boolean isInterrupted()
+    protected   boolean isInterrupted()
     {
         return Thread.currentThread().isInterrupted();
     }
     
     private long download(InputStream in, OutputStream out, long downloadSize) throws IOException
     {
+        return WavConversion.copyToLinear(in, out, downloadSize, new WavConversion.OnProgressUpdate()
+        {
+            @Override
+            public void onProgressUpdate(int percent)
+            {
+                progressUpdate(percent);
+            }
+        });
+        
+        /*
         byte[] buffer = new byte[(int)Math.min(downloadSize, 1024L)];
         long total = 0;
         int read = 0;
@@ -180,6 +190,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
             }
         }
         return total;
+        */
     }
     
     private long download() throws AuthenticatorException, AuthorizationException, OperationCanceledException,
@@ -241,10 +252,8 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
             if(pfd != null)
             {
                 out = new FileOutputStream(pfd.getFileDescriptor());
+                downloaded = download(in, out, downloadSize);
             }
-            
-            downloaded = download(in, out, downloadSize);
-
         }
         finally
         {

@@ -72,14 +72,14 @@ public final class SyncSchedule
         }
     }
     
-    public static void syncFull(Context context)
+    public static void syncFull(Context context, boolean force)
     {
         long nowMS = System.currentTimeMillis();
         long intervalMS = getSyncIntervalMinutes(context) * 60000L;
 
         synchronized(syncObject)
         {
-            if(lastFullSyncMS + intervalMS > nowMS)
+            if(!force && lastFullSyncMS + intervalMS > nowMS)
             {
                 return; // only request a full sync as often as the periodic check for new voicemails
             }
@@ -96,7 +96,6 @@ public final class SyncSchedule
             Log.v(Constants.TAG, "requesting full sync for " + account.name);
             ContentResolver.requestSync(account, VoicemailProvider.AUTHORITY, bundle);
         }
-
     }
     
     public static int getSyncType(Bundle extras)

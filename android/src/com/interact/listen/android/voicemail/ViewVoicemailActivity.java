@@ -1,10 +1,11 @@
 package com.interact.listen.android.voicemail;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -16,9 +17,6 @@ import android.widget.Toast;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class ViewVoicemailActivity extends Activity
 {
@@ -32,7 +30,6 @@ public class ViewVoicemailActivity extends Activity
     private VoicemailPlayer mVoicemailPlayer = new VoicemailPlayer();
     private VoicemailContentObserver mContentObserver = null;
     private DownloadTask mDownloadTask = null;
-    private MarkRead mReadTask = null;
     
     private int mVoicemailId;
     private Cursor mCursor;
@@ -77,37 +74,29 @@ public class ViewVoicemailActivity extends Activity
             mCursor.registerContentObserver(mContentObserver);
         }
 
+        if(mVoicemailId > 0)
+        {
+            Intent intent = new Intent(Constants.ACTION_MARK_READ);
+            intent.putExtra(Constants.EXTRA_ID, mVoicemailId);
+            intent.putExtra(Constants.EXTRA_IS_READ, true);
+            startService(intent);
+        }
     }
     
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        Log.v(TAG, "pausing view activity");
+        mVoicemailPlayer.triggerPause();
+    }
+
     @Override
     public void onResume()
     {
         super.onResume();
+        Log.v(TAG, "resuming view activity");
         updateView(false);
-    }
-    
-    private class MarkRead extends AsyncTask<Voicemail, Integer, Integer>
-    {
-        protected Integer doInBackground(Voicemail... voicemails)
-        {
-            int i = 0;
-            String userName = null;
-            for(Voicemail v : voicemails)
-            {
-                if(v != null && v.getIsNew())
-                {
-                    VoicemailHelper.markVoicemailRead(getContentResolver(), v, true);
-                    ++i;
-                    userName = v.getUserName();
-                }
-            }
-            if(userName != null)
-            {
-                SyncSchedule.syncUpdate(ViewVoicemailActivity.this, userName);
-            }
-            return i;
-        }
-        
     }
     
     @Override
@@ -118,7 +107,7 @@ public class ViewVoicemailActivity extends Activity
         mDelete = menu.findItem(R.id.voicemail_view_delete);
         return true;
     }
-
+    
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item)
     {
@@ -128,13 +117,27 @@ public class ViewVoicemailActivity extends Activity
             case R.id.voicemail_view_delete:
                 if(mVoicemail != null)
                 {
-                    mVoicemailPlayer.stopPlayback();
-                    VoicemailHelper.moveVoicemailToTrash(getContentResolver(), mVoicemailId);
-                    vmUpdated = true;
-                    SyncSchedule.syncUpdate(this, mVoicemail.getUserName());
-                }                    
-                setOkResult();
-                finish();
+                    mVoicemailPlayer.triggerPause();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle(R.string.dialog_delete_title);
+                    builder.setMessage(R.string.dialog_delete_summary);
+                    builder.setPositiveButton(R.string.dialog_delete_confirm, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            VoicemailHelper.moveVoicemailToTrash(getContentResolver(), mVoicemailId);
+                            vmUpdated = true;
+                            SyncSchedule.syncUpdate(ViewVoicemailActivity.this, mVoicemail.getUserName());
+                            setOkResult();
+                            finish();
+                        }
+                    });
+                    builder.setNegativeButton(R.string.dialog_delete_cancel, null);
+                    builder.setCancelable(true);
+                    AlertDialog d = builder.create();
+                    d.show();
+                }
                 return true;
             default:
                 return super.onMenuItemSelected(featureId, item);
@@ -232,12 +235,6 @@ public class ViewVoicemailActivity extends Activity
             }
             mDate.setText(mVoicemail.getDateCreatedString(getString(R.string.dateCreatedUnknown)));
             
-            if(mVoicemail.getIsNew() && mReadTask == null)
-            {
-                mReadTask = new MarkRead();
-                mReadTask.execute(mVoicemail);
-            }
-
             if(mVoicemail.isDownloading())
             {
                 if(mDownloadTask == null)
@@ -260,29 +257,8 @@ public class ViewVoicemailActivity extends Activity
             }
             else if(mDownloadTask == null)
             {
-                if(mReadTask != null)
-                {
-                    try
-                    {
-                        mReadTask.get(0, TimeUnit.MILLISECONDS);
-                        mReadTask = null;
-                    }
-                    catch(TimeoutException e)
-                    {
-                        Log.v(TAG, "not done marking download read");
-                    }
-                    catch(Exception e)
-                    {
-                        Log.e(TAG, "error checking if mark read is done", e);
-                        mReadTask.cancel(false);
-                        mReadTask = null;
-                    }
-                }
-                if(mReadTask == null)
-                {
-                    mDownloadTask = new DownloadTask(this, mVoicemailPlayer, mVoicemail);
-                    mDownloadTask.execute(); // TODO: multiple connection issue if still in syncing?
-                }
+                mDownloadTask = new DownloadTask(this, mVoicemailPlayer, mVoicemail);
+                mDownloadTask.execute();
             }
         }
     }

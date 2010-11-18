@@ -34,6 +34,15 @@
 		android:textSize="12dip"
 		android:layout_margin="10dip" />
 
-	<include android:id="@+id/audioController" layout="@layout/audio_player"/>
+	<RelativeLayout android:layout_width="match_parent" 
+	                android:layout_height="wrap_content"
+	                >
+	                
+		<include android:id="@+id/audioController" layout="@layout/voicemail_player"
+				 android:layout_width="match_parent" 
+	             android:layout_height="wrap_content"
+	             android:layout_alignParentBottom="true"/>
 
+	</RelativeLayout>
+	
 </LinearLayout>

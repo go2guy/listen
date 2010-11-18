@@ -1,6 +1,5 @@
 package com.interact.listen.android.voicemail;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -23,6 +22,8 @@ public class VoicemailPlayer implements AudioController.Player
     private State targetState;
     private int currentBufferPercentage;
     private int seekWhenPrepared;
+    private int audioStream;
+    private int targetAudioStream;
     
     private AudioController audioController;
     
@@ -41,6 +42,8 @@ public class VoicemailPlayer implements AudioController.Player
         targetState = State.IDLE;
         currentBufferPercentage = 0;
         seekWhenPrepared = 0;
+        audioStream = AudioManager.STREAM_VOICE_CALL;
+        targetAudioStream = AudioManager.STREAM_VOICE_CALL;
         
         audioController = null;
         
@@ -145,6 +148,14 @@ public class VoicemailPlayer implements AudioController.Player
         targetState = State.PLAYING;
     }
 
+    public void triggerPause()
+    {
+        if(audioController != null)
+        {
+            audioController.triggerPause();
+        }
+    }
+    
     @Override
     public boolean pause()
     {
@@ -179,7 +190,22 @@ public class VoicemailPlayer implements AudioController.Player
     @Override
     public int getCurrentPosition()
     {
-        return isInPlaybackState() ? mediaPlayer.getCurrentPosition() : 0;
+        int cp = seekWhenPrepared;
+        if(isInPlaybackState())
+        {
+            cp = mediaPlayer.getCurrentPosition();
+            Log.v(TAG, "getCurrentPosition() = " + cp);
+        }
+        else
+        {
+            Log.v(TAG, "getCurrentPosition() = seek when prepared: " + cp);
+        }
+        if(durationMS >= 0 && cp > durationMS)
+        {
+            Log.v(TAG, "playback position is over duration " + durationMS);
+            cp = durationMS;
+        }
+        return cp;
     }
 
     @Override
@@ -209,6 +235,84 @@ public class VoicemailPlayer implements AudioController.Player
     public int getBufferPercentage()
     {
         return mediaPlayer != null ? currentBufferPercentage : 0;
+    }
+
+    @Override
+    public void setAudioStream(int stream)
+    {
+        targetAudioStream = stream;
+        updateAudioStream();
+    }
+    
+    private boolean updateAudioStream()
+    {
+        if(targetAudioStream == audioStream)
+        {
+            return false;
+        }
+        
+        switch(currentState)
+        {
+            case PREPARING:
+                return false;
+            case ERROR:
+            case IDLE:
+                audioStream = targetAudioStream;
+                return false;
+            case PREPARED:
+            case PLAYING:
+            case PAUSED:
+            case PLAYBACK_COMPLETED:
+                break;
+            default:
+                return false;
+        }
+        
+        if(mediaPlayer == null)
+        {
+            return false;
+        }
+        
+        seekWhenPrepared = getCurrentPosition();
+        //if(seekWhenPrepared > 1000)
+        //{
+        //    Log.v(TAG, "reducing seek position by a second to avoid missing audio");
+        //    seekWhenPrepared -= 1000;
+        //}
+        
+        currentState = State.REPREPARING;
+
+        mediaPlayer.reset();
+
+        Log.v(TAG, "re-preparing data source " + uri + " stream " + targetAudioStream);
+        try
+        {
+            mediaPlayer.setDataSource(context, uri);
+        }
+        catch(IllegalArgumentException e)
+        {
+            Log.w(TAG, "Unable to open content: " + uri, e);
+            currentState = State.ERROR;
+            targetState = State.ERROR;
+            errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            return false;
+        }
+        catch(IOException e)
+        {
+            Log.w(TAG, "Unable to open content: " + uri, e);
+            currentState = State.ERROR;
+            targetState = State.ERROR;
+            errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            return false;
+        }
+        
+        audioStream = targetAudioStream;
+        mediaPlayer.setAudioStreamType(audioStream);
+
+        currentState = State.PREPARING;
+        mediaPlayer.prepareAsync();
+
+        return true;
     }
 
     private void openAudio(Context ctx)
@@ -243,17 +347,11 @@ public class VoicemailPlayer implements AudioController.Player
             mediaPlayer.setOnBufferingUpdateListener(bufferUpdateListener);
             currentBufferPercentage = 0;
             
-            if(ContentResolver.SCHEME_FILE.equals(uri.getScheme()))
-            {
-                Log.v(TAG, "setting file content source " + uri.getPath());
-                mediaPlayer.setDataSource(uri.getPath());
-            }
-            else
-            {
-                Log.v(TAG, "setting data source " + uri);
-                mediaPlayer.setDataSource(context, uri);
-            }
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            Log.v(TAG, "setting data source " + uri + " stream " + targetAudioStream);
+            mediaPlayer.setDataSource(context, uri);
+
+            audioStream = targetAudioStream;
+            mediaPlayer.setAudioStreamType(audioStream);
 
             Log.v(TAG, "preparing media " + uri);
             mediaPlayer.prepareAsync();
@@ -315,11 +413,11 @@ public class VoicemailPlayer implements AudioController.Player
 
     private enum State
     {
-        ERROR, IDLE, PREPARING, PREPARED, PLAYING, PAUSED, PLAYBACK_COMPLETED;
+        ERROR, IDLE, PREPARING, REPREPARING, PREPARED, PLAYING, PAUSED, PLAYBACK_COMPLETED;
         
         public boolean isPlayable()
         {
-            return this != ERROR && this != IDLE && this != PREPARING;
+            return this != ERROR && this != IDLE && this != PREPARING && this != REPREPARING;
         }
     }
 
@@ -331,12 +429,18 @@ public class VoicemailPlayer implements AudioController.Player
             Log.i(TAG, "Player prepared: " + uri);
             currentState = State.PREPARED;
 
+            if(updateAudioStream())
+            {
+                return;
+            }
+            
             if(onPreparedListener != null)
             {
                 onPreparedListener.onPrepared(mediaPlayer);
             }
 
             int seekToPosition = seekWhenPrepared;
+            seekWhenPrepared = 0;
             if(seekToPosition != 0)
             {
                 seekTo(seekToPosition);
@@ -360,7 +464,14 @@ public class VoicemailPlayer implements AudioController.Player
         @Override
         public void onCompletion(MediaPlayer mp)
         {
-            Log.i(TAG, "Media player done playing audio at " + mediaPlayer.getDuration() + " of " + durationMS);
+            if (currentState == State.REPREPARING)
+            {
+                Log.v(TAG, "completed in re-preparing state");
+                return;
+            }
+            Log.i(TAG, "Media player done playing audio at " + mediaPlayer.getDuration() + " (" + durationMS +
+                  ") / " + mediaPlayer.getCurrentPosition());
+            
             currentState = State.PLAYBACK_COMPLETED;
             targetState = State.PLAYBACK_COMPLETED;
 
@@ -406,6 +517,12 @@ public class VoicemailPlayer implements AudioController.Player
         @Override
         public void onBufferingUpdate(MediaPlayer mp, int percent)
         {
+            if (currentState == State.REPREPARING)
+            {
+                Log.v(TAG, "buffer update in re-preparing state");
+                return;
+            }
+
             Log.i(TAG, "Buffer update to " + percent);
             currentBufferPercentage = percent;
             if(audioController != null)

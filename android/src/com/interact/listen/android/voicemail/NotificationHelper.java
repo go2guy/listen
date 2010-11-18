@@ -1,13 +1,15 @@
 package com.interact.listen.android.voicemail;
 
-import com.interact.listen.android.voicemail.provider.VoicemailHelper;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.provider.Settings;
 import android.util.Log;
+
+import com.interact.listen.android.voicemail.provider.VoicemailProvider;
 
 public final class NotificationHelper
 {
@@ -37,10 +39,9 @@ public final class NotificationHelper
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
 
-        // TODO: go to account settings
-        Intent intent = new Intent(Constants.ACTION_LISTALL_VOICEMAIL);
-        //Intent intent = new Intent(Constants.AUTHORIZE_SETTINGS_ACTION);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+        intent.putExtra(Settings.EXTRA_AUTHORITIES, VoicemailProvider.AUTHORITY);
+
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
         notification.setLatestEventInfo(context, title, message, pIntent);
 
@@ -82,19 +83,10 @@ public final class NotificationHelper
         int icon = R.drawable.notification_bar_icon;
         long when = System.currentTimeMillis();
 
-        Notification notification = new Notification(icon, title, when);
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        //notification.number = newCount == 1  || newCount > 9 ? 0 : newCount;
-        
-        // TODO: configure vibrate
-        notification.vibrate = new long[] {100, 1000};
-
-        // TODO: configure ringtone
-        notification.defaults |= Notification.DEFAULT_SOUND;
-
         Intent notificationIntent = null;
         if(newCount == 1)
         {
+            // this breaks down with multiple accounts, but probably isn't an issue
             notificationIntent = new Intent(Constants.ACTION_VIEW_VOICEMAIL);
             notificationIntent.putExtra(Constants.EXTRA_ID, ids[0]);
         }
@@ -104,8 +96,31 @@ public final class NotificationHelper
         }
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(context, title, content, contentIntent);
 
+        Intent deleteIntent = new Intent(Constants.ACTION_MARK_NOTIFIED);
+
+        Notification notification = new Notification(icon, title, when);
+
+        notification.deleteIntent = PendingIntent.getService(context, 0, deleteIntent, 0);
+
+        notification.tickerText = context.getString(newCount == 1 ? R.string.new_voicemail_ticker : R.string.new_voicemails_ticker);
+        //notification.number = newCount == 1  || newCount > 9 ? 0 : newCount;
+
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
+        notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+        
+        notification.defaults |= Notification.DEFAULT_LIGHTS;
+        
+        // TODO: configure vibrate
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
+
+        // TODO: configure ringtone
+        notification.audioStreamType = AudioManager.STREAM_NOTIFICATION; //Notification.STREAM_DEFAULT;
+        notification.defaults |= Notification.DEFAULT_SOUND;
+
+        notification.setLatestEventInfo(context, title, content, contentIntent);
+        
         nManager.notify(VOICEMAIL_NOTIFICATION, notification);
     }
     

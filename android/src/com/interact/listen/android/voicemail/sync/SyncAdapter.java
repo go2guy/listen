@@ -164,6 +164,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                     }
                 }
             }
+            else if(iter.isMatched() && iter.getLocal().needsNotification())
+            {
+                notifyIDs.add(iter.getLocal().getId());
+            }
+            
         }
 
         VoicemailNotifyReceiver.broadcastVoicemailNotifications(getContext(), provider, account.name, notifyIDs);
@@ -277,6 +282,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             }
             catch(InterruptedException e)
             {
+                continue;
             }
         }
         

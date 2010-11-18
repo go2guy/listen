@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#CC666666"
+    android:orientation="vertical">
+
+    <ImageView
+    	android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@android:drawable/divider_horizontal_dark" />
+
+	<RelativeLayout android:layout_width="match_parent" 
+	                android:layout_height="wrap_content"
+	                android:padding="4dip"
+	                >
+
+        <ImageButton android:id="@+id/pause" style="@style/VoicemailButton.Play"
+        			 android:layout_width="wrap_content"
+        			 android:layout_height="wrap_content"
+        			 android:layout_alignParentLeft="true"
+        			 android:layout_alignParentTop="true"
+        			 />
+
+        <ImageButton android:id="@+id/speaker" style="@style/VoicemailButton.SpeakerOn"
+        			 android:layout_width="wrap_content"
+        			 android:layout_height="wrap_content"
+	 			     android:layout_alignParentRight="true"
+        			 android:layout_alignParentTop="true"
+					 />
+            
+        <SeekBar
+            android:id="@+id/audiocontroller_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="30dip"
+            android:layout_toRightOf="@+id/pause"
+            android:layout_toLeftOf="@+id/speaker"
+            android:layout_below="@+id/time_current"
+            />
+
+
+        <TextView android:id="@+id/time_current"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/audiocontroller_progress"
+            android:layout_alignParentTop="true"
+            android:text="00:00"/>
+
+        <TextView android:id="@+id/time"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/audiocontroller_progress"
+            android:layout_alignParentTop="true"
+            android:text="00:00"/>
+
+    </RelativeLayout>
+	    
+</LinearLayout>

@@ -115,7 +115,7 @@ public class VoicemailProvider extends ContentProvider
         int count = 0;
         try
         {
-            deleteFiles(db, where, whereArgs);
+            deleteFiles(db, myWhere, whereArgs);
             count = db.delete(VOICEMAIL_TABLE, myWhere, whereArgs);
             db.setTransactionSuccessful();
         }

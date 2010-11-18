@@ -5,8 +5,10 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +20,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
+import com.interact.listen.android.voicemail.provider.VoicemailProvider;
 import com.interact.listen.android.voicemail.provider.Voicemails;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
@@ -55,9 +58,22 @@ public class ListVoicemailActivity extends ListActivity
         mAdapter.setViewBinder(mViewBinder);
         
         setListAdapter(mAdapter);
+
+        mAdapter.registerDataSetObserver(new DataSetObserver()
+        {
+            @Override
+            public void onChanged()
+            {
+                updateView();
+            }
+            @Override
+            public void onInvalidated()
+            {
+                updateView();
+            }
+        });
         
         updateView();
-        
     }
 
     @Override
@@ -68,7 +84,12 @@ public class ListVoicemailActivity extends ListActivity
         AccountManager am =  AccountManager.get(this);
         if(am.getAccountsByType(Constants.ACCOUNT_TYPE).length == 0)
         {
-            am.addAccount(Constants.ACCOUNT_TYPE, null, null, null, this, null, null);
+            Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
+            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            
+            //am.addAccount(Constants.ACCOUNT_TYPE, null, null, null, this, null, null);
         }
 
     }
@@ -88,7 +109,7 @@ public class ListVoicemailActivity extends ListActivity
 
         NotificationHelper.clearNotificationBar(this);
         
-        SyncSchedule.syncFull(this);
+        SyncSchedule.syncFull(this, false);
     }
 
     @Override
@@ -115,6 +136,9 @@ public class ListVoicemailActivity extends ListActivity
             case R.id.voicemail_list_settings:
                 Intent i = new Intent(this, ApplicationSettings.class);
                 startActivityForResult(i, EDITED_SETTINGS);
+                return true;
+            case R.id.voicemail_list_refresh:
+                SyncSchedule.syncFull(this, true);
                 return true;
             default:
                 return super.onMenuItemSelected(featureId, item);
@@ -151,6 +175,18 @@ public class ListVoicemailActivity extends ListActivity
         {
             case VIEWED_DETAILS:
             {
+                if(intent == null || intent.getExtras() == null)
+                {
+                    Log.i(TAG, "on activity result from details viewed has null intent or extras");
+                }
+                else
+                {
+                    boolean updated = intent.getBooleanExtra(Constants.EXTRA_VOICEMAIL_UPDATED, false);
+                    if(updated)
+                    {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
                 break;
             }
             default:
@@ -177,7 +213,7 @@ public class ListVoicemailActivity extends ListActivity
         {
             Cursor c = mAdapter.getCursor();
             c.moveToPosition(-1);
-            int numNew = 0;
+            int numNew = 0, notNotified = 0;
             int total = 0;
             while(c.moveToNext())
             {
@@ -185,11 +221,23 @@ public class ListVoicemailActivity extends ListActivity
                 {
                     numNew++;
                 }
+                if(c.getInt(VoicemailHelper.VOICEMAIL_LIST_PROJECT_NOTIFIED) == 0)
+                {
+                    notNotified++;
+                }
                 total++;
             }
             c.moveToPosition(-1);
             String text = getString(R.string.list_view_label_with_info, numNew, total);
             inboxStatus.setText(text);
+
+            if(notNotified > 0)
+            {
+                Log.i(TAG, "starting mark voicemail service for un-notified voicemails: " + notNotified);
+                // just go through all of them at the sqlite level, probably more efficient anyway
+                Intent intent = new Intent(Constants.ACTION_MARK_NOTIFIED);
+                startService(intent);
+            }
         }
         else
         {

@@ -67,6 +67,10 @@ public final class VoicemailHelper
         Cursor c = getVoicemailDetailsCursor(resolver, id);
         if(c == null || !c.moveToFirst())
         {
+            if(c != null)
+            {
+                c.close();
+            }
             return null;
         }
         Voicemail v = getVoicemailDetailsFromCursor(c);
@@ -204,8 +208,8 @@ public final class VoicemailHelper
         ContentValues values = voicemail.clearMarkedRead();
         resolver.update(voicemail.getUri(), values, null, null);
     }
-    
-    public static void setVoicemailsNotified(ContentProviderClient resolver, int[] ids) throws RemoteException
+
+    public static void setVoicemailsNotified(ContentResolver resolver, int[] ids)
     {
         ContentValues values = new ContentValues();
         values.put(Voicemails.HAS_NOTIFIED, true);
@@ -213,6 +217,13 @@ public final class VoicemailHelper
         {
             resolver.update(getVoicemailUri(id), values, null, null);
         }
+    }
+
+    public static void setVoicemailsNotified(ContentResolver resolver)
+    {
+        ContentValues values = new ContentValues();
+        values.put(Voicemails.HAS_NOTIFIED, true);
+        resolver.update(Voicemails.CONTENT_URI, values, Voicemails.HAS_NOTIFIED + "==0", null);
     }
 
     public static boolean updateVoicemail(ContentProviderClient resolver, Voicemail dest, Voicemail source) throws RemoteException

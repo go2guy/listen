@@ -23,7 +23,7 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
 
         Bundle extras = intent.getExtras();
 
-        if(intent.getAction().equals(Constants.ACTION_NOTIFY_NEW_VOICEMAILS))
+        if(Constants.ACTION_NOTIFY_NEW_VOICEMAILS.equals(intent.getAction()))
         {
             int[] ids = extras.getIntArray(Constants.EXTRA_IDS);
             if(ids == null && extras.containsKey(Constants.EXTRA_ID))
@@ -36,7 +36,7 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
             }
             NotificationHelper.updateNotifications(context, ids);
         }
-        else if(intent.getAction().equals(Constants.ACTION_NOTIFY_ERROR))
+        else if(Constants.ACTION_NOTIFY_ERROR.equals(intent.getAction()))
         {
             String errorMessage = extras.getString(Constants.EXTRA_NOTIFY_ERROR);
             NotificationHelper.notifyConnectionError(context, errorMessage);
@@ -67,11 +67,6 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
         context.sendBroadcast(intent);
 
         Log.v(TAG, "broadcasted " + intIDs.length + " new voicemails");
-        
-        if(provider != null)
-        {
-            VoicemailHelper.setVoicemailsNotified(provider, intIDs);
-        }
     }
 
     public static void broadcastConnectionError(Context context, String userName, Throwable e)

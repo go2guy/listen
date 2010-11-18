@@ -21,4 +21,23 @@
     <style name="AudioButton.Pause">
         <item name="android:src">@drawable/ic_audio_pause</item>
     </style>
+
+    <style name="VoicemailButton">
+        <item name="android:background">@drawable/audio_button_background</item>
+        <item name="android:layout_width">50dip</item>
+        <item name="android:layout_height">50dip</item>
+    </style>
+
+    <style name="VoicemailButton.Play">
+        <item name="android:src">@drawable/ic_audio_play</item>
+    </style>
+
+    <style name="VoicemailButton.SpeakerOn">
+        <item name="android:src">@drawable/ic_speaker_on</item>
+    </style>
+
+    <style name="VoicemailButton.SpeakerOff">
+        <item name="android:src">@drawable/ic_speaker_off</item>
+    </style>
+
 </resources>
