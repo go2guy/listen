@@ -5,15 +5,15 @@
        *   @Name   data-query.vxml
        *   @Desc   Makes http requests and checks for success or failure -->
 
-    <var name="II_SB_succeed" expr="'79_36'"/>			<!-- Next file to go to if HttpRequest Works -->
-    <var name="II_SB_failed" expr="'79_56'"/>				<!-- Next file to go to if HttpRequest Fails -->
+    <var name="II_SB_succeed" expr="'197_2'"/>			<!-- Next file to go to if HttpRequest Works -->
+    <var name="II_SB_failed" expr="'197_18'"/>				<!-- Next file to go to if HttpRequest Fails -->
     <var name="II_SB_dataTimeOut" expr="'5s'"/>	<!-- Specifies length of time to wait before throwing badfetch error -->
     <var name="II_SB_nxtOpt" expr="''"/>						<!-- Variable to hold next option -->
 	
     <form id="beginDocument">
         <block>
     	    <log target="status">Load Access Info</log>
-            <log>INFO: Entered data-query.vxml [79_45]</log>
+            <log>INFO: Entered data-query.vxml [197_10]</log>
             <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="apiObj.Status" />
 			<assign name="returnVal" expr="apiObj.Result" />
