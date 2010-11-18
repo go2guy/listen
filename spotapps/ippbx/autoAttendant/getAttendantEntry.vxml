@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified: 11/17/2010
+    <!-- Last Modified: 11/18/2010
          @Name: getAttendantEntry.vxml
          @Desc: This script handles playing audio files
                 and receiving user input for the auto attendant. -->
@@ -152,8 +152,8 @@
             <!-- If we've been given a particular key to match, we'll check for that only on the
             first key press. If the first key press is a '*', we'll assume the user could enter
             some more digits. Any other hot key match will cause us to exit this script. -->
-            <assign name="userEntry" expr="userEntry + application.lastresult$.utterance"/>
-            <if cond="inString(userEntry,HOT_KEY,',')">
+            <if cond="inString(application.lastresult$.utterance,HOT_KEY,',')">
+                <assign name="userEntry" expr="userEntry + application.lastresult$.utterance"/>
                 <!-- Found a match on the first key press -->
                 <if cond="userEntry == '*'">    <!-- Hot key is a '*', we'll wait half second for more keys -->
                     <assign name="fieldLength" expr="fieldLength + 1"/>
@@ -162,6 +162,7 @@
                     <goto next="#exit"/>
                 </if>
             </if>
+            <assign name="HOT_KEY" expr="''"/>
         </block>
         <!-- We use the object below to set the 'timeout' property whenever we come into this
         form. This creates the effect of having a consistent inter digit timeout. We only need
