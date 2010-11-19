@@ -1,20 +1,28 @@
 package com.interact.listen.android.voicemail;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ListActivity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -28,8 +36,7 @@ public class ListVoicemailActivity extends ListActivity
 {
     private static final String TAG = Constants.TAG + "ListVoicemails";
 
-    private static final int EDITED_SETTINGS = 1;
-    private static final int VIEWED_DETAILS  = 2;
+    private static final int VIEWED_DETAILS = 2;
     
     private Cursor mCursor;
     private ListVoicemailViewBinder mViewBinder;
@@ -46,7 +53,10 @@ public class ListVoicemailActivity extends ListActivity
     {
         Log.v(TAG, "create list voicemail activity");
         super.onCreate(savedInstanceState);
-        
+
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setProgressBarIndeterminate(true);
+
         setContentView(R.layout.voicemail_list);
         
         mCursor = VoicemailHelper.getVoicemailListInfoCursor(getContentResolver());
@@ -73,6 +83,8 @@ public class ListVoicemailActivity extends ListActivity
             }
         });
         
+        registerForContextMenu(getListView());
+        
         updateView();
     }
 
@@ -84,12 +96,12 @@ public class ListVoicemailActivity extends ListActivity
         AccountManager am =  AccountManager.get(this);
         if(am.getAccountsByType(Constants.ACCOUNT_TYPE).length == 0)
         {
-            Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
-            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
+            //Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
+            //intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
+            //intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            //startActivity(intent);
             
-            //am.addAccount(Constants.ACCOUNT_TYPE, null, null, null, this, null, null);
+            am.addAccount(Constants.ACCOUNT_TYPE, null, null, null, this, null, null);
         }
 
     }
@@ -99,6 +111,12 @@ public class ListVoicemailActivity extends ListActivity
     {
         Log.v(TAG, "pause list voicemail activity");
         super.onPause();
+
+        if(mSyncStatusPoll != null)
+        {
+            mSyncStatusPoll.cancel(true);
+            mSyncStatusPoll = null;
+        }
     }
 
     @Override
@@ -110,13 +128,214 @@ public class ListVoicemailActivity extends ListActivity
         NotificationHelper.clearNotificationBar(this);
         
         SyncSchedule.syncFull(this, false);
-    }
 
+        if(mSyncStatusPoll == null)
+        {
+            mSyncStatusPoll = new SyncStatusPoll();
+            mSyncStatusPoll.execute((Void[])null);
+        }
+    }
+    
+    private SyncStatusPoll mSyncStatusPoll = null;
+    
+    // addStatusChangeListener doesn't seem to work, so poll for a changed status (yeah, it sucks, but couldn't get it to work without it)
+    private class SyncStatusPoll extends AsyncTask<Void, Boolean, Void> implements SyncStatusObserver
+    {
+        private boolean isActive = false;
+        private Object mSyncStatusHandle = null;
+        private Object syncObject = new Object();
+        
+        private int getUpdateStatus()
+        {
+            synchronized(syncObject)
+            {
+                boolean active = false;
+                Account[] accounts = AccountManager.get(ListVoicemailActivity.this).getAccountsByType(Constants.ACCOUNT_TYPE);
+                for(Account account : accounts)
+                {
+                    if(ContentResolver.isSyncActive(account, VoicemailProvider.AUTHORITY))
+                    {
+                        active = true;
+                        break;
+                    }
+                }
+                if(isActive == active)
+                {
+                    return 0;
+                }
+                isActive = active;
+                return active ? 1 : -1;
+            }
+        }
+
+        private boolean isAccurate(boolean active)
+        {
+            synchronized(syncObject)
+            {
+                return active == isActive;
+            }
+        }
+        
+        @Override
+        protected void onPreExecute()
+        {
+            if(mSyncStatusHandle != null)
+            {
+                mSyncStatusHandle = ContentResolver.addStatusChangeListener(0xffffffff, this);
+            }
+            onStatusChanged(0xffffffff);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params)
+        {
+            while (!Thread.currentThread().isInterrupted())
+            {
+                int updateStatus = getUpdateStatus();
+                if(updateStatus != 0)
+                {
+                    publishProgress(updateStatus > 0);
+                }
+                synchronized (this)
+                {
+                    try
+                    {
+                        wait(1000);
+                    }
+                    catch(InterruptedException e)
+                    {
+                        continue;
+                    }
+                }
+            }
+            return null;
+        }
+        
+        @Override
+        protected void onProgressUpdate(Boolean... values)
+        {
+            if(values != null && values.length > 0)
+            {
+                boolean active = values[values.length - 1];
+                if(isAccurate(active))
+                {
+                    setProgressBarIndeterminateVisibility(active);
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Void result)
+        {
+            if(mSyncStatusHandle != null)
+            {
+                ContentResolver.removeStatusChangeListener(mSyncStatusHandle);
+                mSyncStatusHandle = null;
+            }
+        }
+        
+        @Override
+        public void onStatusChanged(int which)
+        {
+            int updateStatus = getUpdateStatus();
+            if(updateStatus != 0)
+            {
+                setProgressBarIndeterminateVisibility(updateStatus > 0);
+            }
+        }
+    }
+    
     @Override
     protected void onDestroy()
     {
         Log.v(TAG, "destroy list voicemail activity");
         super.onDestroy();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo)
+    {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.list_context_menu, menu);
+        
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+
+        Cursor cursor = (Cursor)mAdapter.getItem(info.position);
+        if(cursor == null)
+        {
+            Log.e(TAG, "no item at position " + info.position);
+            return;
+        }
+
+        MenuItem turnOff = null;
+        if(cursor.getInt(VoicemailHelper.VOICEMAIL_LIST_PROJECT_IS_NEW) != 0)
+        {
+            turnOff = menu.findItem(R.id.voicemail_mark_unread);
+        }
+        else
+        {
+            turnOff = menu.findItem(R.id.voicemail_mark_read);
+        }
+        if(turnOff != null)
+        {
+            turnOff.setEnabled(false);
+            turnOff.setVisible(false);
+        }
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item)
+    {
+        boolean read = false;
+        boolean delete = false;
+        boolean view = false;
+        
+        switch(item.getItemId())
+        {
+            case R.id.voicemail_context_view:
+                view = true;
+                break;
+            case R.id.voicemail_context_delete:
+                delete = true;
+                break;
+            case R.id.voicemail_mark_read:
+                read = true;
+                break;
+            case R.id.voicemail_mark_unread:
+                read = false;
+                break;
+            default:
+                return super.onContextItemSelected(item);
+        }
+        
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+        Cursor cursor = (Cursor)mAdapter.getItem(info.position);
+        if(cursor == null)
+        {
+            Log.e(TAG, "no item at position " + info.position);
+            return super.onContextItemSelected(item);
+        }
+
+        int id = cursor.getInt(0);
+        
+        if(delete)
+        {
+            NotificationHelper.alertDelete(this, id, null);
+        }
+        else if(view)
+        {
+            triggerView(id);
+        }
+        else
+        {
+            Intent intent = new Intent(Constants.ACTION_MARK_READ);
+            intent.putExtra(Constants.EXTRA_ID, id);
+            intent.putExtra(Constants.EXTRA_IS_READ, read);
+            startService(intent);
+        }
+        
+        return true;
     }
 
     @Override
@@ -135,7 +354,7 @@ public class ListVoicemailActivity extends ListActivity
         {
             case R.id.voicemail_list_settings:
                 Intent i = new Intent(this, ApplicationSettings.class);
-                startActivityForResult(i, EDITED_SETTINGS);
+                startActivity(i);
                 return true;
             case R.id.voicemail_list_refresh:
                 SyncSchedule.syncFull(this, true);
@@ -159,12 +378,19 @@ public class ListVoicemailActivity extends ListActivity
             return;
         }
         
-        Intent intent = new Intent(this, ViewVoicemailActivity.class);
-        intent.putExtra(Constants.EXTRA_ID, cursor.getInt(0));
-
-        startActivityForResult(intent, VIEWED_DETAILS);
+        triggerView(cursor.getInt(0));
     }
 
+    private void triggerView(int id)
+    {
+        Intent intent = new Intent(this, ViewVoicemailActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra(Constants.EXTRA_ID, id);
+
+        //startActivityForResult(intent, VIEWED_DETAILS);
+        startActivity(intent);
+    }
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
     {

@@ -15,4 +15,21 @@
 
 </PreferenceCategory>
 
+<PreferenceCategory android:title="@string/pref_notif_category">
+
+<CheckBoxPreference android:key="notif_enabled" android:defaultValue="true" android:title="@string/pref_notif_inbox_title"
+	android:summaryOn="@string/pref_notif_inbox_summary_on" android:summaryOff="@string/pref_notif_inbox_summary_off"/>
+
+<RingtonePreference android:ringtoneType="notification" android:showSilent="true" android:showDefault="true"
+	android:key="notif_ringtone" android:title="@string/pref_notif_ringtone" android:defaultValue="content://settings/system/notification_sound"/>
+	
+<CheckBoxPreference android:key="notif_vibrate" android:defaultValue="true" android:title="@string/pref_notif_vibrate_title"
+	android:summaryOn="@string/pref_notif_vibrate_summary" android:summaryOff="@string/pref_notif_vibrate_summary"/>
+
+<CheckBoxPreference android:key="notif_light" android:title="@string/pref_notif_light_title"
+	android:summaryOn="@string/pref_notif_light_summary" android:summaryOff="@string/pref_notif_light_summary"
+	android:defaultValue="true"/>
+
+</PreferenceCategory>
+
 </PreferenceScreen>

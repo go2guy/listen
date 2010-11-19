@@ -23,7 +23,7 @@ public final class VoicemailHelper
 
     public static final long OLD_VOICEMAIL  = 7 * 24 * 3600000; // week ago
     public static final long STALE_DOWNLOAD =      4 * 3600000; // 4 hours
-    public static final long RETRY_DOWNLOAD =      1 * 3600000; // 1 hour
+    public static final long RETRY_DOWNLOAD =            60000; // 1 minute
     public static final long OLD_DOWNLOAD   = 1 * 24 * 3600000; // day old
 
     private static final String[] VOICEMAIL_LIST_PROJECTION =

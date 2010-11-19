@@ -1,8 +1,6 @@
 package com.interact.listen.android.voicemail;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -13,10 +11,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
-import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
 public class ViewVoicemailActivity extends Activity
 {
@@ -40,6 +36,8 @@ public class ViewVoicemailActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.v(TAG, "creating view activity");
+
         setContentView(R.layout.voicemail_view);
 
         mVoicemail = null;
@@ -89,6 +87,10 @@ public class ViewVoicemailActivity extends Activity
         super.onPause();
         Log.v(TAG, "pausing view activity");
         mVoicemailPlayer.triggerPause();
+        if (mVoicemailPlayer.getController() != null)
+        {
+            mVoicemailPlayer.getController().onFocus(false);
+        }
     }
 
     @Override
@@ -96,6 +98,10 @@ public class ViewVoicemailActivity extends Activity
     {
         super.onResume();
         Log.v(TAG, "resuming view activity");
+        if (mVoicemailPlayer.getController() != null)
+        {
+            mVoicemailPlayer.getController().onFocus(true);
+        }
         updateView(false);
     }
     
@@ -118,26 +124,22 @@ public class ViewVoicemailActivity extends Activity
                 if(mVoicemail != null)
                 {
                     mVoicemailPlayer.triggerPause();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle(R.string.dialog_delete_title);
-                    builder.setMessage(R.string.dialog_delete_summary);
-                    builder.setPositiveButton(R.string.dialog_delete_confirm, new DialogInterface.OnClickListener()
+                    NotificationHelper.alertDelete(this, mVoicemailId, new NotificationHelper.OnConfirm()
                     {
                         @Override
-                        public void onClick(DialogInterface dialog, int which)
+                        public void onConfirmed(Voicemail voicemail)
                         {
-                            VoicemailHelper.moveVoicemailToTrash(getContentResolver(), mVoicemailId);
                             vmUpdated = true;
-                            SyncSchedule.syncUpdate(ViewVoicemailActivity.this, mVoicemail.getUserName());
                             setOkResult();
                             finish();
                         }
                     });
-                    builder.setNegativeButton(R.string.dialog_delete_cancel, null);
-                    builder.setCancelable(true);
-                    AlertDialog d = builder.create();
-                    d.show();
                 }
+                return true;
+            case R.id.voicemail_view_inbox:
+                Intent intent = new Intent(Constants.ACTION_LISTALL_VOICEMAIL);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
                 return true;
             default:
                 return super.onMenuItemSelected(featureId, item);
@@ -235,23 +237,20 @@ public class ViewVoicemailActivity extends Activity
             }
             mDate.setText(mVoicemail.getDateCreatedString(getString(R.string.dateCreatedUnknown)));
             
-            if(mVoicemail.isDownloadError())
+            if(mDownloadTask == null)
             {
-                Toast.makeText(ViewVoicemailActivity.this, R.string.toast_download_error, Toast.LENGTH_SHORT).show();
-                mVoicemailPlayer.getController().setEnabled(false);
-            }
-            else if(mVoicemail.isDownloaded())
-            {
-                mVoicemailPlayer.getController().setEnabled(true);
-                if(!mVoicemailPlayer.isAudioSet())
+                if(mVoicemail.isDownloaded())
                 {
-                    mVoicemailPlayer.setAudioURI(this, mVoicemail.getUri());
+                    if(!mVoicemailPlayer.isAudioSet())
+                    {
+                        mVoicemailPlayer.setAudioURI(this, mVoicemail.getUri());
+                    }
                 }
-            }
-            else if(mDownloadTask == null)
-            {
-                mDownloadTask = new DownloadTask(this, mVoicemailPlayer, mVoicemail);
-                mDownloadTask.execute();
+                else if(mDownloadTask == null)
+                {
+                    mDownloadTask = new DownloadTask(this, mVoicemailPlayer, mVoicemail);
+                    mDownloadTask.execute();
+                }
             }
         }
     }

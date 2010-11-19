@@ -1,18 +1,22 @@
 package com.interact.listen.android.voicemail;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -67,6 +71,8 @@ public class AudioController
         boolean isPlaying();
     }
 
+    private static final String TAG = Constants.TAG + "AudioControl";
+    
     private static final int SHOW_PROGRESS = 1;
 
     private Player player;
@@ -177,7 +183,7 @@ public class AudioController
         }
     }
 
-    public void setEnabled(boolean enabled)
+    private void setEnabled(boolean enabled)
     {
         if(pauseButton != null && pauseButton.isEnabled() != enabled)
         {
@@ -197,25 +203,97 @@ public class AudioController
         }
     }
 
+    private void clearAnimation(boolean update)
+    {
+        Log.v(TAG, "stopping animations: " + update);
+        if(pauseButton != null)
+        {
+            Animation anim = pauseButton.getAnimation();
+            if(anim != null)
+            {
+                anim.cancel();
+                pauseButton.clearAnimation();
+                if(update)
+                {
+                    updatePausePlay();
+                }
+            }
+            else if(pauseButton.getDrawable() instanceof AnimationDrawable)
+            {
+                AnimationDrawable drawable = (AnimationDrawable)pauseButton.getDrawable();
+                drawable.stop();
+            }
+        }
+    }
+
+    public void setErrored()
+    {
+        setEnabled(false);
+        if(view != null)
+        {
+            Toast.makeText(view.getContext(), R.string.toast_download_error, Toast.LENGTH_SHORT).show();
+        }
+        if(pauseButton != null)
+        {
+            clearAnimation(false);
+            pauseButton.setImageResource(R.drawable.ic_audio_error);
+        }
+    }
+
     public void setLoading()
     {
-        if(pauseButton != null && pauseButton.isEnabled())
+        setEnabled(false);
+        if(pauseButton != null)
         {
-            pauseButton.setEnabled(false);
+            pauseButton.setImageResource(R.drawable.ic_loading);
         }
-        if(fastForwardButton != null && fastForwardButton.isEnabled())
+    }
+    
+    public void setPreparing()
+    {
+        if(pauseButton != null)
         {
-            fastForwardButton.setEnabled(false);
+            pauseButton.setImageResource(R.drawable.ic_loading);
         }
-        if(rewindButton != null && rewindButton.isEnabled())
+    }
+
+    public void onFocus(boolean focus)
+    {
+        Log.v(TAG, "Audio Controller focus: " + focus);
+        if(pauseButton != null)
         {
-            rewindButton.setEnabled(false);
+            if(focus)
+            {
+                Animation anim = pauseButton.getAnimation();
+                if(anim != null)
+                {
+                    Log.v(TAG, "starting animation");
+                    anim.startNow();
+                }
+                else if(pauseButton.getDrawable() instanceof AnimationDrawable)
+                {
+                    Log.v(TAG, "starting drawable animation");
+                    AnimationDrawable drawable = (AnimationDrawable)pauseButton.getDrawable();
+                    drawable.start();
+                }
+            }
+            else
+            {
+                clearAnimation(false);
+            }
         }
-        if(progressBar != null && !progressBar.isEnabled())
-        {
-            progressBar.setEnabled(true);
-        }
-        // TODO: rotating progress in the play button
+    }
+    
+    public void setReady()
+    {
+        setEnabled(true);
+        clearAnimation(true);
+    }
+    
+    public void setDisabled()
+    {
+        setEnabled(false);
+        //clearAnimation(false);
     }
     
     public void update()

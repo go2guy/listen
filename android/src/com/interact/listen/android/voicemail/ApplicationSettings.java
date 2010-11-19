@@ -29,9 +29,14 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private static final String TAG = Constants.TAG + "AppSettings";
 
     private static final String CLEAR_CACHE = "clear_cache_pref";
+    private static final String SYNC_INTERVAL_MINUTES = "sync_interval_minutes";
     private static final String SYNC_INTERVAL = "sync_interval_pref";
     private static final String SYNC_AUDIO = "sync_audio";
-
+    private static final String NOTIFY_ENABLED = "notif_enabled";
+    private static final String NOTIFY_VIBRATE = "notif_vibrate";
+    private static final String NOTIFY_LIGHT = "notif_light";
+    private static final String NOTIFY_RINGTONE = "notif_ringtone";
+    
     private SharedPreferences sharedPreferences;
     private Preference clearCachePref;
     private Preference syncIntervalPref;
@@ -53,13 +58,13 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         
         syncIntervalPref = findPreference(SYNC_INTERVAL);
         syncIntervalPref.setOnPreferenceClickListener(clickListener);
-
+        
         updateSyncIntevalSummary();
     }
 
     private int updateSyncIntevalSummary()
     {
-        int interval = SyncSchedule.getSyncIntervalMinutes(this);
+        int interval = getSyncIntervalMinutes(this);
         Log.v(TAG, "syn interval is " + interval);
         
         int id = interval == 1 ? R.string.pref_sync_interval_detail_ns : R.string.pref_sync_interval_detail_ws;
@@ -103,7 +108,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
                 if(value > 0)
                 {
                     Editor editor = sharedPreferences.edit();
-                    editor.putInt(SyncSchedule.PREFERENCES_INT_SYNC_INTERVAL_MINUTES, value);
+                    editor.putInt(SYNC_INTERVAL_MINUTES, value);
                     editor.commit();
                 }
             }
@@ -176,17 +181,47 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     {
         Log.v(TAG, "shared preference changed: " + key);
         
-        if(SyncSchedule.PREFERENCES_INT_SYNC_INTERVAL_MINUTES.equals(key))
+        if(SYNC_INTERVAL_MINUTES.equals(key))
         {
             SyncSchedule.updatePeriodicSync(this);
             updateSyncIntevalSummary();
         }
     }
     
+    public static int getSyncIntervalMinutes(Context context)
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getInt(SYNC_INTERVAL_MINUTES, 5);
+    }
+    
     public static boolean isSyncAudio(Context context)
     {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(SYNC_AUDIO, true);
+    }
+
+    public static boolean isNotificationEnabled(Context context)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(NOTIFY_ENABLED, true);
+    }
+    
+    public static boolean isVibrateEnabled(Context context)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(NOTIFY_VIBRATE, true);
+    }
+
+    public static boolean isLightEnabled(Context context)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(NOTIFY_LIGHT, true);
+    }
+    
+    public static String getNotificationRing(Context context)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString(NOTIFY_RINGTONE, null);
     }
 
 }

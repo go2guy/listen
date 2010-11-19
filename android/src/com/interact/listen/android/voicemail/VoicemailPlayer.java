@@ -91,11 +91,11 @@ public class VoicemailPlayer implements AudioController.Player
         }
     }
     
-    public void setControllerEnabled(boolean enabled)
+    public void setErrored()
     {
         if(audioController != null)
         {
-            audioController.setEnabled(enabled);
+            audioController.setErrored();
         }
     }
     
@@ -280,6 +280,11 @@ public class VoicemailPlayer implements AudioController.Player
         //    seekWhenPrepared -= 1000;
         //}
         
+        if(audioController != null)
+        {
+            audioController.setPreparing();
+        }
+        
         currentState = State.REPREPARING;
 
         mediaPlayer.reset();
@@ -361,7 +366,10 @@ public class VoicemailPlayer implements AudioController.Player
         catch(IOException e)
         {
             Log.w(TAG, "Unable to open content: " + uri, e);
-            
+            if(audioController != null)
+            {
+                audioController.setErrored();
+            }
             currentState = State.ERROR;
             targetState = State.ERROR;
             errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
@@ -370,6 +378,10 @@ public class VoicemailPlayer implements AudioController.Player
         catch(IllegalArgumentException e)
         {
             Log.w(TAG, "Unable to open content: " + uri, e);
+            if(audioController != null)
+            {
+                audioController.setErrored();
+            }
             currentState = State.ERROR;
             targetState = State.ERROR;
             errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
@@ -379,10 +391,21 @@ public class VoicemailPlayer implements AudioController.Player
     
     private void attachAudioController()
     {
-        if(mediaPlayer != null && audioController != null)
+        if(audioController != null)
         {
             audioController.setPlayer(this);
-            audioController.setEnabled(isInPlaybackState());
+            if(isInPlaybackState())
+            {
+                audioController.setReady();
+            }
+            else if(currentState == State.PREPARING || currentState == State.REPREPARING)
+            {
+                audioController.setPreparing();
+            }
+            else
+            {
+                audioController.setDisabled();
+            }
         }
     }
 
@@ -400,7 +423,7 @@ public class VoicemailPlayer implements AudioController.Player
                 targetState = State.IDLE;
                 if(audioController != null)
                 {
-                    audioController.setEnabled(false);
+                    audioController.setDisabled();
                 }
             }
         }
@@ -453,7 +476,7 @@ public class VoicemailPlayer implements AudioController.Player
             }
             if(audioController != null)
             {
-                audioController.setEnabled(true);
+                audioController.setReady();
                 audioController.update();
             }
         }
@@ -494,9 +517,10 @@ public class VoicemailPlayer implements AudioController.Player
             Log.e(TAG, "Error: " + frameworkErr + "," + implErr);
             currentState = State.ERROR;
             targetState = State.ERROR;
+
             if(audioController != null)
             {
-                audioController.setEnabled(false);
+                audioController.setErrored();
             }
 
             if(onErrorListener != null)

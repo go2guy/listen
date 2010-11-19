@@ -69,7 +69,7 @@ public class MarkVoicemailsService extends IntentService
                     if(v != null && v.getIsNew() != !isRead)
                     {
                         Log.i(TAG, "marking voicmeail read: " + v.getId());
-                        VoicemailHelper.markVoicemailRead(resolver, v, true);
+                        VoicemailHelper.markVoicemailRead(resolver, v, isRead);
                         userNames.add(v.getUserName());
                     }
                 }

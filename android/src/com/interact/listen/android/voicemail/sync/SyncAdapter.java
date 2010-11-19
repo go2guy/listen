@@ -145,6 +145,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
     private List<Voicemail> insertNewVoicemails(Account account, ContentProviderClient provider, SyncResult syncResult,
                                                SyncIter iter) throws RemoteException
     {
+        boolean notifyEnabled = ApplicationSettings.isNotificationEnabled(getContext());
+        
         List<Voicemail> newVoicemails = new ArrayList<Voicemail>();
 
         List<Integer> notifyIDs = new ArrayList<Integer>();
@@ -154,6 +156,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             if(iter.isMissingFromLocal())
             {
                 Voicemail v = iter.getServer();
+                if(!notifyEnabled)
+                {
+                    v.setNotified(true);
+                }
                 Log.i(TAG, "voicemail added on server: " + v.getVoicemailId());
                 if (VoicemailHelper.insertVoicemail(provider, v) != null)
                 {
@@ -357,8 +363,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
             if(syncType == SyncSchedule.SYNC_TYPE_SEND_UPDATES)
             {
+                Log.v(TAG, "doing update sync");
                 List<Voicemail> localVoicemails = VoicemailHelper.getUpdatedVoicemails(provider, account.name, 0);
-                Log.i(TAG, "go updated voicemails for sync: " + localVoicemails);
+                Log.i(TAG, "got updated voicemails for sync: " + localVoicemails);
                 pushVoicemailUpdates(host, authToken, account, provider, syncResult, localVoicemails);
                 Log.i(TAG, "update push completed");
                 return;

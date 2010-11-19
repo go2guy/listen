@@ -44,10 +44,28 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
     }
     
     @Override
+    protected void onPreExecute()
+    {
+        if(voicemail == null)
+        {
+            player.setErrored();
+        }
+        else if(!voicemail.isDownloaded())
+        {
+            player.setLoading();
+        }
+    }
+    
+    @Override
     protected Boolean doInBackground(Void... v)
     {
         runnable.run();
 
+        if(voicemail == null)
+        {
+            return false;
+        }
+        
         if(!voicemail.isDownloaded())
         {
             // must re-check in case the sync adapter beat us to it, but not till after we originally got it
@@ -58,7 +76,7 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
             }
         }
         
-        if(!voicemail.isDownloading())
+        if(!voicemail.isDownloading() && !voicemail.isDownloadError())
         {
             return voicemail.isDownloaded();
         }
@@ -67,7 +85,7 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
         LooperThread looper = new LooperThread(context, voicemail);
         looper.start();
 
-        while(!Thread.currentThread().isInterrupted() && looper.isDownloading())
+        while(!Thread.currentThread().isInterrupted())
         {
             try
             {
@@ -80,6 +98,10 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
                 }
             }
             catch(InterruptedException e)
+            {
+                break;
+            }
+            if(!looper.isDownloading())
             {
                 break;
             }
@@ -207,26 +229,15 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
         
         if(result == null || !result.booleanValue())
         {
-            player.setControllerEnabled(false);
+            player.setErrored();
         }
         else
         {
-            player.setControllerEnabled(true);
             if(!player.isAudioSet() && voicemail != null)
             {
                 player.setAudioURI(context, voicemail.getUri());
             }
         }
-    }
-    
-    @Override
-    protected void onPreExecute()
-    {
-        if(player != null)
-        {
-            player.setLoading();
-        }
-        
     }
     
     @Override

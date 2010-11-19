@@ -414,6 +414,11 @@ public final class Voicemail implements Parcelable
         return (state & MARKED_DELETED) != 0;
     }
     
+    public void setNotified(boolean b)
+    {
+        hasNotified = true;
+    }
+
     public ContentValues updateValues(Voicemail source)
     {
         ContentValues values = new ContentValues();
@@ -584,5 +589,5 @@ public final class Voicemail implements Parcelable
     {
         return c.isNull(idx) ? null : c.getString(idx);
     }
-
+    
 }

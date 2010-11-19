@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+<item android:title="@string/menu_inbox" android:id="@+id/voicemail_view_inbox"
+	android:icon="@drawable/ic_menu_archive"/>
+
 <item android:title="@string/menu_delete" android:id="@+id/voicemail_view_delete"
 	android:icon="@drawable/ic_menu_delete"/>
 

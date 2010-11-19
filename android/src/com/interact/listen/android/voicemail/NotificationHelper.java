@@ -1,15 +1,20 @@
 package com.interact.listen.android.voicemail;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.interact.listen.android.voicemail.provider.VoicemailHelper;
 import com.interact.listen.android.voicemail.provider.VoicemailProvider;
+import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
 public final class NotificationHelper
 {
@@ -107,20 +112,72 @@ public final class NotificationHelper
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
-        notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-        
-        notification.defaults |= Notification.DEFAULT_LIGHTS;
-        
-        // TODO: configure vibrate
-        notification.defaults |= Notification.DEFAULT_VIBRATE;
 
-        // TODO: configure ringtone
-        notification.audioStreamType = AudioManager.STREAM_NOTIFICATION; //Notification.STREAM_DEFAULT;
-        notification.defaults |= Notification.DEFAULT_SOUND;
-
+        if(ApplicationSettings.isLightEnabled(context))
+        {
+            //notification.defaults |= Notification.DEFAULT_LIGHTS;
+            notification.ledARGB = 0xff0000ff;
+            notification.ledOnMS = 300;
+            notification.ledOffMS = 1000;
+            notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+        }
+        
+        if(ApplicationSettings.isVibrateEnabled(context))
+        {
+            notification.defaults |= Notification.DEFAULT_VIBRATE;
+        }
+        
+        String ring = ApplicationSettings.getNotificationRing(context);
+        if(ring == null)
+        {
+            notification.audioStreamType = AudioManager.STREAM_NOTIFICATION;
+            notification.defaults |= Notification.DEFAULT_SOUND;
+        }
+        else if(ring.length() > 0)
+        {
+            notification.audioStreamType = AudioManager.STREAM_NOTIFICATION;
+            notification.sound = Uri.parse(ring);
+        }
+        
         notification.setLatestEventInfo(context, title, content, contentIntent);
         
         nManager.notify(VOICEMAIL_NOTIFICATION, notification);
+    }
+    
+    public interface OnConfirm
+    {
+        void onConfirmed(Voicemail voicemail);
+    }
+    
+    public static void alertDelete(final Context context, final int id, final OnConfirm listener)
+    {
+        final Voicemail voicemail = VoicemailHelper.getVoicemail(context.getContentResolver(), id);
+        if(voicemail == null)
+        {
+            return;
+        }
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(R.string.dialog_delete_title);
+        builder.setMessage(R.string.dialog_delete_summary);
+        builder.setPositiveButton(R.string.dialog_delete_confirm, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                VoicemailHelper.moveVoicemailToTrash(context.getContentResolver(), voicemail.getId());
+                SyncSchedule.syncUpdate(context, voicemail.getUserName());
+                if(listener != null)
+                {
+                    listener.onConfirmed(voicemail);
+                }
+            }
+        });
+        
+        builder.setNegativeButton(R.string.dialog_delete_cancel, null);
+        builder.setCancelable(true);
+        AlertDialog d = builder.create();
+        d.show();
     }
     
 }
