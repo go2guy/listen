@@ -58,6 +58,13 @@ Requires: spotbuild-vip
         echo -e "\nPassed all Javascript tests\n"
     fi
     cd -
+    cd ../wavconvert
+    make
+    if [ $? -ne 0 ]
+    then
+    	echo -e "\nFailed to create logtolinwav\n"
+    fi
+    cd -
 
 #######################################################################
 # The install section is used to install the code into directories
@@ -70,6 +77,7 @@ Requires: spotbuild-vip
     mkdir -p %{buildroot}/interact/apps/
     mkdir -p %{buildroot}/var/www/html/ippbx/
     mkdir -p %{buildroot}/interact/listen/artifacts/
+    mkdir -p %{buildroot}/interact/listen/bin/
     mkdir -p %{buildroot}/interact/listen/artifacts/afterHrs/
     mkdir -p %{buildroot}/var/www/html/interact/listen/
 
@@ -78,6 +86,7 @@ Requires: spotbuild-vip
     mv %{buildroot}/interact/apps/spotbuild/ippbx/defaultApp.cfg %{buildroot}/interact/listen/artifacts/
     cp -r %{STARTDIR}/msgLightCntrl %{buildroot}/interact/apps/spotbuild
     cp -r %{STARTDIR}/ippbx/php/* %{buildroot}/var/www/html/ippbx/
+    cp -r %{STARTDIR}/wavconvert/logtolinwav %{buildroot}/interact/listen/bin/
 
     # Remove extras
     rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
@@ -124,6 +133,7 @@ Requires: spotbuild-vip
     /interact/apps/spotbuild/after_hours*
     /interact/apps/spotbuild/lib/cgi-bin/listen
     /interact/listen/artifacts
+    /interact/listen/bin/logtolinwav
     /var/www/html/interact/listen
     /var/www/html/ippbx
 
@@ -146,6 +156,9 @@ Requires: spotbuild-vip
     then
         rm -rf %{_topdir}/RPMS %{_topdir}/SRPMS %{_topdir}/BUILD/ %{_topdir}/SOURCES
     fi
+    cd %{STARTDIR}/wavconvert
+    make clean
+
 
 #######################################################################
 # This is a log of what changes occurred when the package is updated.
