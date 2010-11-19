@@ -70,6 +70,10 @@
 	<var name="isTranscription" expr="'n'" /> <!-- Config Transcription On or Off -->
 	<var name="isCDRsaved" expr="'false'" />
 	<var name="transcriptionTxt" expr="''" />
+	<var name="userTranscription" expr="'false'" />
+	<var name="lameLocation" expr="'/interact/listen/bin/lame'" />
+	<var name="pcmStatus" expr="''" />
+	<var name="mp3Status" expr="''" />
 
 
     <!-- Conference Variables -->

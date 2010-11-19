@@ -60,6 +60,10 @@
 	<var name="SB_UV_isTranscription"/>
 	<var name="SB_UV_isCDRsaved"/>
 	<var name="SB_UV_transcriptionTxt"/>
+	<var name="SB_UV_userTranscription"/>
+	<var name="SB_UV_lameLocation"/>
+	<var name="SB_UV_pcmStatus"/>
+	<var name="SB_UV_mp3Status"/>
 
     
     <form id="beginDocument">
@@ -196,6 +200,18 @@
 			</if>
 			<if cond="SB_UV_transcriptionTxt != undefined">
 				<assign name="transcriptionTxt" expr="SB_UV_transcriptionTxt" />
+			</if>
+			<if cond="SB_UV_userTranscription != undefined">
+				<assign name="userTranscription" expr="SB_UV_userTranscription" />
+			</if>
+			<if cond="SB_UV_lameLocation != undefined">
+				<assign name="lameLocation" expr="SB_UV_lameLocation" />
+			</if>
+			<if cond="SB_UV_pcmStatus != undefined">
+				<assign name="pcmStatus" expr="SB_UV_pcmStatus" />
+			</if>
+			<if cond="SB_UV_mp3Status != undefined">
+				<assign name="mp3Status" expr="SB_UV_mp3Status" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
