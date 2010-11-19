@@ -5,7 +5,7 @@
 all: logtolinwav
 
 logtolinwav:
-	gcc logtolinwav.c -o logtolinwav
+	gcc -m32 logtolinwav.c -o logtolinwav
 
 clean:
 	rm -f logtolinwav
