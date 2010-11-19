@@ -604,6 +604,7 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
                                 </td>
                               </tr>
                               <tr><td><label for="subscriber-form-paging">Page on new voicemail</label></td><td><input type="checkbox" id="subscriber-form-paging" name="subscriber-form-paging" value="enablePaging"/></td></tr>
+                              <tr><td><label for="subscriber-form-transcription">Transcribe new voicemail</label></td><td><input type="checkbox" id="subscriber-form-transcription" name="subscriber-form-transcription" value="enableTranscription"/></td></tr>
                               <tr>
                                 <td><label for="subscriber-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
                                 <td>
@@ -694,6 +695,7 @@ if(subscriber != null) { %>
                             </tr>
                             <tr><td><label for="profile-form-paging">Send SMS notification for voicemails until read</label></td><td><input type="checkbox" id="profile-form-paging" name="profile-form-paging" value="enablePaging"/></td></tr>
                             <tr>
+                            <tr><td><label for="profile-form-transcription">Transcribe new voicemail</label></td><td><input type="checkbox" id="profile-form-transcription" name="profile-form-transcription" value="enableTranscription"/></td></tr>
                               <td><label for="profile-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
                               <td>
                                 <select name="profile-form-voicemailPlaybackOrder" id="profile-form-voicemailPlaybackOrder">

@@ -61,6 +61,9 @@ $(document).ready(function() {
                             if(data.enablePaging) {                        
                                 $('#profile-form-paging').attr('checked', true);
                             }
+                            if(data.enableTranscription) {                        
+                                $('#profile-form-transcription').attr('checked', true);
+                            }
                             $('#profile-form-voicemailPlaybackOrder').val(data.voicemailPlaybackOrder);
                             $('#profile-form-edit-button').show();
 
@@ -105,6 +108,7 @@ $(document).ready(function() {
                         emailAddress: $('#profile-form-emailAddress').val(),
                         smsAddress: $('#profile-form-smsAddress').val(),
                         enablePaging: $('#profile-form-paging').is(":checked"),
+                        enableTranscription: $('#profile-form-transcription').is(":checked"),
                         voicemailPlaybackOrder: $('#profile-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {

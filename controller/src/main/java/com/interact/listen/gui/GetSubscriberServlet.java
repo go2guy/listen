@@ -114,6 +114,7 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"smsAddress\":\"").append(subscriber.getSmsAddress()).append("\",");
         json.append("\"voicemailPlaybackOrder\":\"").append(subscriber.getVoicemailPlaybackOrder().toString()).append("\",");
         json.append("\"enablePaging\":").append(subscriber.getIsSubscribedToPaging()).append(",");
+        json.append("\"enableTranscription\":").append(subscriber.getIsSubscribedToTranscription()).append(",");
         json.append("\"enableAdmin\":").append(subscriber.getIsAdministrator()).append(",");
 
         //temporary until after-hours pager is moved to it's final location

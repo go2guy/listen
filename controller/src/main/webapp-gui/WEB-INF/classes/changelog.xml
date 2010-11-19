@@ -482,4 +482,11 @@
         <!-- since voicemail may not be licensed -->
         <dropNotNullConstraint tableName="SUBSCRIBER" columnName="VOICEMAIL_PIN" columnDataType="VARCHAR(10)"/>
     </changeSet>
+    <changeSet author="development" id="51">
+        <addColumn tableName="SUBSCRIBER">
+            <column name="IS_SUBSCRIBED_TO_TRANSCRIPTION" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -78,6 +78,9 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "IS_SUBSCRIBED_TO_PAGING", nullable = false)
     private Boolean isSubscribedToPaging = Boolean.FALSE;
 
+    @Column(name = "IS_SUBSCRIBED_TO_TRANSCRIPTION", nullable = false)
+    private Boolean isSubscribedToTranscription = Boolean.FALSE;
+
     @Column(name = "VOICEMAIL_PLAYBACK_ORDER", nullable = false)
     @Enumerated(EnumType.STRING)
     private PlaybackOrder voicemailPlaybackOrder = PlaybackOrder.OLDEST_TO_NEWEST;
@@ -308,6 +311,16 @@ public class Subscriber extends Resource implements Serializable
         this.isSubscribedToPaging = isSubscribedToPaging;
     }
 
+    public Boolean getIsSubscribedToTranscription()
+    {
+        return isSubscribedToTranscription;
+    }
+
+    public void setIsSubscribedToTranscription(Boolean isSubscribedToTranscription)
+    {
+        this.isSubscribedToTranscription = isSubscribedToTranscription;
+    }
+
     public Boolean getIsActiveDirectory()
     {
         return isActiveDirectory;
@@ -334,6 +347,11 @@ public class Subscriber extends Resource implements Serializable
         if(isAdministrator == null)
         {
             addToErrors("Please provide a value for isAdministrator");
+        }
+
+        if(isSubscribedToTranscription == null)
+        {
+            addToErrors("Please provide a value for isSubscribedToTranscription");
         }
 
         if(voicemailPin != null && !voicemailPin.matches("^[0-9]{0,10}$"))
