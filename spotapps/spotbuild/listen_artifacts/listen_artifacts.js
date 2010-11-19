@@ -19,3 +19,12 @@ function getArtifact(argList) {
     }
     return result;
 }
+
+function findMP3(argList) {
+    var result = 'exit';
+    var tmpVal = eval("("+argList+")");
+    if ((tmpVal.action == 'FILE') && (inString('voicemail',tmpVal.artifact,'/'))) {
+        result = tmpVal.artifact.split(tmpVal.hostName)[1].split('.wav')[0] + '.mp3';
+    }
+    return result
+}
