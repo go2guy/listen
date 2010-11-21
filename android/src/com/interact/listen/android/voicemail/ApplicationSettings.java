@@ -36,6 +36,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private static final String NOTIFY_VIBRATE = "notif_vibrate";
     private static final String NOTIFY_LIGHT = "notif_light";
     private static final String NOTIFY_RINGTONE = "notif_ringtone";
+    private static final String DIAL_PREFIX = "dial_prefix";
     
     private SharedPreferences sharedPreferences;
     private Preference clearCachePref;
@@ -59,6 +60,9 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         syncIntervalPref = findPreference(SYNC_INTERVAL);
         syncIntervalPref.setOnPreferenceClickListener(clickListener);
         
+        Preference dialPrefix = findPreference(DIAL_PREFIX);
+        dialPrefix.setSummary(sharedPreferences.getString(DIAL_PREFIX, getString(R.string.pref_dial_prefix_summary)));
+
         updateSyncIntevalSummary();
     }
 
@@ -186,6 +190,11 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             SyncSchedule.updatePeriodicSync(this);
             updateSyncIntevalSummary();
         }
+        else if(DIAL_PREFIX.equals(key))
+        {
+            Preference pref = findPreference(key);
+            pref.setSummary(preferences.getString(key, getString(R.string.pref_dial_prefix_summary)));
+        }
     }
     
     public static int getSyncIntervalMinutes(Context context)
@@ -224,4 +233,9 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         return sharedPreferences.getString(NOTIFY_RINGTONE, null);
     }
 
+    public static String getDialPrefix(Context context)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString(DIAL_PREFIX, "");
+    }
 }

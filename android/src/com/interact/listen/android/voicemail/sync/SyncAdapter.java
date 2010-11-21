@@ -317,6 +317,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         }
     }
     
+    public static boolean isNewSyncSupported()
+    {
+        return false;
+    }
+    
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
                               SyncResult syncResult)
@@ -324,12 +329,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         Log.i(TAG, "on perform sync " + account.name);
         
         int syncType = SyncSchedule.getSyncType(extras);
-        
-        if(syncType == SyncSchedule.SYNC_TYPE_NEW)
-        {
-            Log.w(TAG, "NEW sync type not supported till we can only get new voicemails from server");
-            syncType = SyncSchedule.SYNC_TYPE_FULL;
-        }
         
         String authToken = null;
         try

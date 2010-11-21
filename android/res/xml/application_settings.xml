@@ -32,4 +32,13 @@
 
 </PreferenceCategory>
 
+<PreferenceCategory android:title="@string/pref_dial_category">
+
+<EditTextPreference android:title="@string/pref_dial_prefix_title"
+	android:dialogMessage="@string/pref_dial_prefix_dialog_detail" android:key="dial_prefix"
+	android:dialogTitle="@string/pref_dial_prefix_title" android:summary="@string/pref_dial_prefix_summary"
+	android:inputType="phone"
+	/>
+
+</PreferenceCategory>
 </PreferenceScreen>

@@ -20,7 +20,8 @@
 	<string name="menu_mark_read">Mark read</string>
 	<string name="menu_mark_unread">Mark unread</string>
 	<string name="menu_view">View</string>
-
+	<string name="menu_call">Call</string>
+	
 	<string name="dialog_delete_title">Delete Voicemail</string>
 	<string name="dialog_delete_summary">Delete this voicemail from your account?</string>
 	<string name="dialog_delete_confirm">Delete</string>
@@ -46,6 +47,11 @@
 	<string name="pref_notif_light_title">Light</string>
 	<string name="pref_notif_light_summary">Blink status light when new items arrive</string>
 	
+	<string name="pref_dial_category">Dialing</string>
+	<string name="pref_dial_prefix_title">Office Number</string>
+	<string name="pref_dial_prefix_dialog_detail">Number to prefix to extensions</string>	
+	<string name="pref_dial_prefix_summary">Prefix to office extensions</string>
+
 	<string name="dialog_clear_cache_title">Clear Listen Voicemails</string>
 	<string name="dialog_clear_cache_details">Clear the voicemails stored on this device.</string>
 	<string name="dialog_clear_cache_confirm">Clear</string>
@@ -56,7 +62,6 @@
 	<string name="dialog_sync_interval_confirm">Set</string>
 	<string name="dialog_sync_interval_cancel">Cancel</string>
 
-	
     <string name="syncLabel">Listen Voicemail</string>
     <string name="authLabel">Listen Voicemail</string>
     

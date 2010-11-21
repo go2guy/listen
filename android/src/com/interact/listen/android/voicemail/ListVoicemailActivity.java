@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
 import com.interact.listen.android.voicemail.provider.VoicemailProvider;
 import com.interact.listen.android.voicemail.provider.Voicemails;
+import com.interact.listen.android.voicemail.sync.SyncAdapter;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
 public class ListVoicemailActivity extends ListActivity
@@ -110,26 +111,30 @@ public class ListVoicemailActivity extends ListActivity
     protected void onPause()
     {
         Log.v(TAG, "pause list voicemail activity");
-        super.onPause();
 
         if(mSyncStatusPoll != null)
         {
             mSyncStatusPoll.cancel(true);
-            mSyncStatusPoll = null;
         }
+        
+        super.onPause();
     }
 
     @Override
     protected void onResume()
     {
-        Log.v(TAG, "resume list voicemail activity");
         super.onResume();
 
-        NotificationHelper.clearNotificationBar(this);
-        
-        SyncSchedule.syncFull(this, false);
+        Log.v(TAG, "resume list voicemail activity");
 
-        if(mSyncStatusPoll == null)
+        NotificationHelper.clearNotificationBar(this);
+
+        if(SyncAdapter.isNewSyncSupported())
+        {
+            SyncSchedule.syncFull(this, false);
+        }
+        
+        if(mSyncStatusPoll == null || mSyncStatusPoll.isCancelled())
         {
             mSyncStatusPoll = new SyncStatusPoll();
             mSyncStatusPoll.execute((Void[])null);
@@ -138,7 +143,7 @@ public class ListVoicemailActivity extends ListActivity
     
     private SyncStatusPoll mSyncStatusPoll = null;
     
-    // addStatusChangeListener doesn't seem to work, so poll for a changed status (yeah, it sucks, but couldn't get it to work without it)
+    // addStatusChangeListener doesn't seem to work, so poll for a changed status
     private class SyncStatusPoll extends AsyncTask<Void, Boolean, Void> implements SyncStatusObserver
     {
         private boolean isActive = false;
@@ -179,9 +184,10 @@ public class ListVoicemailActivity extends ListActivity
         @Override
         protected void onPreExecute()
         {
+            Log.v(TAG, "SyncStatusPoll onPreExecute()");
             if(mSyncStatusHandle != null)
             {
-                mSyncStatusHandle = ContentResolver.addStatusChangeListener(0xffffffff, this);
+                mSyncStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
             }
             onStatusChanged(0xffffffff);
         }
@@ -189,23 +195,22 @@ public class ListVoicemailActivity extends ListActivity
         @Override
         protected Void doInBackground(Void... params)
         {
-            while (!Thread.currentThread().isInterrupted())
+            Log.v(TAG, "SyncStatusPoll doInBackground()");
+            while (!Thread.interrupted())
             {
                 int updateStatus = getUpdateStatus();
                 if(updateStatus != 0)
                 {
+                    Log.v(TAG, "updating status: " + updateStatus);
                     publishProgress(updateStatus > 0);
                 }
-                synchronized (this)
+                try
                 {
-                    try
-                    {
-                        wait(1000);
-                    }
-                    catch(InterruptedException e)
-                    {
-                        continue;
-                    }
+                    Thread.sleep(1000);
+                }
+                catch(InterruptedException e)
+                {
+                    break;
                 }
             }
             return null;
@@ -225,18 +230,34 @@ public class ListVoicemailActivity extends ListActivity
         }
 
         @Override
+        protected void onCancelled()
+        {
+            Log.v(TAG, "SyncStatusPoll onCancelled()");
+            onEnd();
+        }
+        
+        @Override
         protected void onPostExecute(Void result)
+        {
+            Log.v(TAG, "SyncStatusPoll onPostExecute()");
+            onEnd();
+        }
+        
+        private void onEnd()
         {
             if(mSyncStatusHandle != null)
             {
                 ContentResolver.removeStatusChangeListener(mSyncStatusHandle);
                 mSyncStatusHandle = null;
             }
+            isActive = false;
+            setProgressBarIndeterminateVisibility(false);
         }
         
         @Override
         public void onStatusChanged(int which)
         {
+            Log.v(TAG, "SyncStatusPoll onStatusChanged()");
             int updateStatus = getUpdateStatus();
             if(updateStatus != 0)
             {
@@ -287,18 +308,29 @@ public class ListVoicemailActivity extends ListActivity
     @Override
     public boolean onContextItemSelected(MenuItem item)
     {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+        Cursor cursor = (Cursor)mAdapter.getItem(info.position);
+        if(cursor == null)
+        {
+            Log.e(TAG, "no item at position " + info.position);
+            return super.onContextItemSelected(item);
+        }
+
+        int id = cursor.getInt(0);
+
         boolean read = false;
-        boolean delete = false;
-        boolean view = false;
         
         switch(item.getItemId())
         {
             case R.id.voicemail_context_view:
-                view = true;
-                break;
+                triggerView(id);
+                return true;
+            case R.id.voicemail_context_call:
+                NotificationHelper.dial(this, cursor.getString(1));
+                return true;
             case R.id.voicemail_context_delete:
-                delete = true;
-                break;
+                NotificationHelper.alertDelete(this, id, null);
+                return true;
             case R.id.voicemail_mark_read:
                 read = true;
                 break;
@@ -309,32 +341,11 @@ public class ListVoicemailActivity extends ListActivity
                 return super.onContextItemSelected(item);
         }
         
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-        Cursor cursor = (Cursor)mAdapter.getItem(info.position);
-        if(cursor == null)
-        {
-            Log.e(TAG, "no item at position " + info.position);
-            return super.onContextItemSelected(item);
-        }
+        Intent intent = new Intent(Constants.ACTION_MARK_READ);
+        intent.putExtra(Constants.EXTRA_ID, id);
+        intent.putExtra(Constants.EXTRA_IS_READ, read);
+        startService(intent);
 
-        int id = cursor.getInt(0);
-        
-        if(delete)
-        {
-            NotificationHelper.alertDelete(this, id, null);
-        }
-        else if(view)
-        {
-            triggerView(id);
-        }
-        else
-        {
-            Intent intent = new Intent(Constants.ACTION_MARK_READ);
-            intent.putExtra(Constants.EXTRA_ID, id);
-            intent.putExtra(Constants.EXTRA_IS_READ, read);
-            startService(intent);
-        }
-        
         return true;
     }
 

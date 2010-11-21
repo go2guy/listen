@@ -274,12 +274,7 @@ public class VoicemailPlayer implements AudioController.Player
         }
         
         seekWhenPrepared = getCurrentPosition();
-        //if(seekWhenPrepared > 1000)
-        //{
-        //    Log.v(TAG, "reducing seek position by a second to avoid missing audio");
-        //    seekWhenPrepared -= 1000;
-        //}
-        
+
         if(audioController != null)
         {
             audioController.setPreparing();

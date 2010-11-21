@@ -22,6 +22,7 @@ public class ViewVoicemailActivity extends Activity
     private TextView mDate = null;
     private TextView mTranscription = null;
     private MenuItem mDelete = null;
+    private MenuItem mCall = null;
 
     private VoicemailPlayer mVoicemailPlayer = new VoicemailPlayer();
     private VoicemailContentObserver mContentObserver = null;
@@ -111,6 +112,7 @@ public class ViewVoicemailActivity extends Activity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_voicemail_view, menu);
         mDelete = menu.findItem(R.id.voicemail_view_delete);
+        mCall = menu.findItem(R.id.voicemail_view_call);
         return true;
     }
     
@@ -137,9 +139,15 @@ public class ViewVoicemailActivity extends Activity
                 }
                 return true;
             case R.id.voicemail_view_inbox:
-                Intent intent = new Intent(Constants.ACTION_LISTALL_VOICEMAIL);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(intent);
+                Intent inbox = new Intent(Constants.ACTION_LISTALL_VOICEMAIL);
+                inbox.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(inbox);
+                return true;
+            case R.id.voicemail_view_call:
+                if(mVoicemail != null)
+                {
+                    NotificationHelper.dial(this, mVoicemail.getLeftBy());
+                }
                 return true;
             default:
                 return super.onMenuItemSelected(featureId, item);
@@ -206,6 +214,10 @@ public class ViewVoicemailActivity extends Activity
             {
                 mDelete.setEnabled(false);
             }
+            if(mCall != null)
+            {
+                mCall.setEnabled(false);
+            }
             
             if(mDownloadTask != null)
             {
@@ -241,16 +253,22 @@ public class ViewVoicemailActivity extends Activity
             {
                 if(mVoicemail.isDownloaded())
                 {
+                    Log.v(TAG, "audio downloaded");
                     if(!mVoicemailPlayer.isAudioSet())
                     {
                         mVoicemailPlayer.setAudioURI(this, mVoicemail.getUri());
                     }
                 }
-                else if(mDownloadTask == null)
+                else
                 {
+                    Log.v(TAG, "creating download task");
                     mDownloadTask = new DownloadTask(this, mVoicemailPlayer, mVoicemail);
-                    mDownloadTask.execute();
+                    mDownloadTask.execute((Void[])null);
                 }
+            }
+            else if(!mVoicemail.isDownloaded())
+            {
+                Log.v(TAG, "download task: " + mDownloadTask.getStatus());
             }
         }
     }

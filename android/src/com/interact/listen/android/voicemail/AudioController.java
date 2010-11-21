@@ -228,6 +228,7 @@ public class AudioController
 
     public void setErrored()
     {
+        Log.v(TAG, "setting player errored");
         setEnabled(false);
         if(view != null)
         {
@@ -242,6 +243,7 @@ public class AudioController
 
     public void setLoading()
     {
+        Log.v(TAG, "setting player loading");
         setEnabled(false);
         if(pauseButton != null)
         {
@@ -251,6 +253,7 @@ public class AudioController
     
     public void setPreparing()
     {
+        Log.v(TAG, "setting player preparing");
         if(pauseButton != null)
         {
             pauseButton.setImageResource(R.drawable.ic_loading);

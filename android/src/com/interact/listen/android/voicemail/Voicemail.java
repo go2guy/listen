@@ -200,6 +200,28 @@ public final class Voicemail implements Parcelable
         return SDF_TIME.format(new java.util.Date(ms));
     }
 
+    public Voicemail copy()
+    {
+        Voicemail vm = new Voicemail();
+        
+        vm.id = id;
+        vm.userName = userName;
+        vm.dateCreated = dateCreated;
+        vm.voicemailID = voicemailID;
+        vm.isNew = isNew;
+        vm.hasNotified = hasNotified;
+        vm.leftBy = leftBy;
+        vm.description = description;
+        vm.duration = duration;
+        vm.transcription = transcription;
+        vm.label = label;
+        vm.state = state;
+        vm.audioState = audioState;
+        vm.audioDate = audioDate;
+
+        return vm;
+    }
+
     public Uri getUri()
     {
         return ContentUris.withAppendedId(Voicemails.CONTENT_URI, id);

@@ -21,8 +21,14 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
     private Context context;
     private Voicemail voicemail;
     
-    public DownloadTask(Context context, VoicemailPlayer player, Voicemail voicemail)
+    public DownloadTask(Context context, VoicemailPlayer player, Voicemail vm)
     {
+        super();
+        
+        this.player = player;
+        this.context = context;
+        this.voicemail = vm == null ? null : vm.copy();
+
         runnable = new DownloadRunnable(context, voicemail);
         runnable.setProgressListener(new DownloadRunnable.OnProgressUpdate()
         {
@@ -32,10 +38,6 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
                 publishProgress(new Integer[]{percent});
             }
         });
-
-        this.player = player;
-        this.context = context;
-        this.voicemail = voicemail;
     }
 
     public void setAccount(Account account, String authToken)
@@ -59,10 +61,12 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
     @Override
     protected Boolean doInBackground(Void... v)
     {
+        Log.v(TAG, "running download runnable");
         runnable.run();
 
         if(voicemail == null)
         {
+            Log.e(TAG, "voicemail not set");
             return false;
         }
         
@@ -70,11 +74,14 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
         {
             // must re-check in case the sync adapter beat us to it, but not till after we originally got it
             voicemail = VoicemailHelper.getVoicemail(context.getContentResolver(), voicemail.getId());
+            Log.v(TAG, "re-queryed: " + voicemail);
             if(voicemail == null)
             {
                 return false;
             }
         }
+
+        Log.v(TAG, "background after runnable: " + voicemail);
         
         if(!voicemail.isDownloading() && !voicemail.isDownloadError())
         {
@@ -217,11 +224,13 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
     @Override
     protected void onCancelled()
     {
+        Log.v(TAG, "download task cancelled");
     }
     
     @Override
     protected void onPostExecute(Boolean result)
     {
+        Log.v(TAG, "on post execute: " + result);
         if(player == null)
         {
             return;
@@ -245,6 +254,7 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
     {
         if(values == null || values.length == 0 || player == null)
         {
+            Log.v(TAG, "on progress update with no value");
             return;
         }
         player.updateBufferPercentage(values[0]);

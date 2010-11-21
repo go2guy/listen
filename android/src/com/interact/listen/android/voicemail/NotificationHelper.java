@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.provider.Settings;
+import android.telephony.PhoneNumberUtils;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
@@ -180,4 +182,40 @@ public final class NotificationHelper
         d.show();
     }
     
+    public static void dial(Context context, String leftBy)
+    {
+        if(TextUtils.isEmpty(leftBy))
+        {
+            return;
+        }
+        Intent call = new Intent(Intent.ACTION_CALL);
+        call.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("tel:");
+
+        if(leftBy.length() <= 3)
+        {
+            String dp = ApplicationSettings.getDialPrefix(context);
+            if(!TextUtils.isEmpty(dp))
+            {
+                sb.append(dp);
+                
+                if(dp.charAt(dp.length() - 1) != PhoneNumberUtils.PAUSE &&
+                    dp.charAt(dp.length() - 1) != PhoneNumberUtils.WAIT)
+                {
+                    sb.append(PhoneNumberUtils.WAIT);
+                }
+
+            }
+        }
+
+        sb.append(leftBy);
+        
+        String dialString = sb.toString();
+        Log.i(TAG, "dialing: " + sb.toString());
+        
+        call.setData(Uri.parse(dialString));
+        context.startActivity(call);
+    }
 }
