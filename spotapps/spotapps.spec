@@ -218,6 +218,18 @@ Requires: spotbuild-vip
         echo "No ip_pbx database found. Run [ mysql -u root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql ] to initialize one."
     fi
 
+    if [ ! -f /usr/local/bin/lame ]
+    then
+       echo "lame is not installed under [/usr/local/bin/]"
+    else
+       echo "lame is installed under [/usr/local/bin/]"
+       if [ ! -L /interact/listen/bin/lame ]
+       then
+         echo -e "creating link soft link [/interact/listen/bin/lame -> /usr/local/bin/lame]"
+         ln -s /usr/local/bin/lame /interact/listen/bin/lame >> ${debug} 2>> ${error}
+       fi
+    fi
+
 #######################################################################
 # The preun section lists actions to be performed before
 # un-installation
@@ -278,9 +290,15 @@ Requires: spotbuild-vip
             ln -s /interact/apps/iidefault.ccxml /interact/apps/iistart.ccxml
         else
             echo "Can't relink iistart because iidefault does not exist."  >> ${debug}
+        fi
 
         # Remove artifacts link
         rm -f /var/www/html/interact/listen/artifacts
+
+        # Remove lame link
+        if [ -L /interact/listen/bin/lame ]
+        then
+            rm -f /interact/listen/bin/lame
         fi
     fi
 

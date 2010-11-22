@@ -23,3 +23,11 @@ function createTranscriptionObj(returnVal, fileLocation, passValues) {
     result.fileNumber = number.id;
     return iiStringify(result);
 }
+
+function wavToMp3Status (pcmStatus, mp3Status) {
+    var result = 'Failure';
+    if (pcmStatus && mp3Status)
+        result = 'Success';
+
+    return result;
+}
