@@ -102,6 +102,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity implemen
         }
         mUsernameEdit.setText(mUsername);
         mMessage.setText(getMessage());
+        
+        if(!mRequestNewAccount)
+        {
+            mUsernameEdit.setEnabled(false);
+            mHostEdit.setEnabled(false);
+            mPasswordEdit.requestFocus();
+        }
     }
 
     @Override

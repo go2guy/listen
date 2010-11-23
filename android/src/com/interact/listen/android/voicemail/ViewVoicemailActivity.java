@@ -6,6 +6,8 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.PhoneNumberUtils;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,17 +15,21 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
+import com.interact.listen.android.voicemail.widget.ContactBadge;
+import com.interact.listen.android.voicemail.widget.ContactBadge.Data;
 
 public class ViewVoicemailActivity extends Activity
 {
     private static final String TAG = Constants.TAG + "ViewVoicemail";
 
+    private TextView mName = null;
     private TextView mLeftBy = null;
     private TextView mDate = null;
     private TextView mTranscription = null;
     private MenuItem mDelete = null;
     private MenuItem mCall = null;
-
+    private ContactBadge.Data mBadge = null;
+    
     private VoicemailPlayer mVoicemailPlayer = new VoicemailPlayer();
     private VoicemailContentObserver mContentObserver = null;
     private DownloadTask mDownloadTask = null;
@@ -47,9 +53,10 @@ public class ViewVoicemailActivity extends Activity
         Bundle extras = getIntent().getExtras();
         mVoicemailId = extras.getInt(Constants.EXTRA_ID);
 
-        mLeftBy = (TextView)findViewById(R.id.detailLeftBy);
-        mDate = (TextView)findViewById(R.id.detailDate);
-        mTranscription = (TextView)findViewById(R.id.detailTranscription);
+        mName = (TextView)findViewById(R.id.voicemail_view_name);
+        mLeftBy = (TextView)findViewById(R.id.voicemail_view_leftby);
+        mDate = (TextView)findViewById(R.id.voicemail_view_received);
+        mTranscription = (TextView)findViewById(R.id.voicemail_view_transcript);
         
         AudioController audioController = new AudioController();
         audioController.initializeController(findViewById(R.id.audioController));
@@ -205,8 +212,15 @@ public class ViewVoicemailActivity extends Activity
                 mCursor = null;
             }
             mVoicemailPlayer.stopPlayback();
+            mName.setText(R.string.leftByUnknown);
             mLeftBy.setText("");
             mDate.setText("");
+            
+            ContactBadge badge = (ContactBadge)findViewById(R.id.voicemail_view_badge);
+            if(badge != null)
+            {
+                badge.clearInfo();
+            }
             
             mTranscription.setText(R.string.voicemail_not_found);
             
@@ -233,11 +247,21 @@ public class ViewVoicemailActivity extends Activity
             
             if(mVoicemail.getLeftBy() == null)
             {
-                mLeftBy.setText(R.string.leftByUnknown);
+                mLeftBy.setText("");
+                mName.setText(R.string.leftByUnknown);
             }
             else
             {
-                mLeftBy.setText(mVoicemail.getLeftBy());
+                if(mBadge != null && !TextUtils.isEmpty(mBadge.getContactName()))
+                {
+                    mName.setText(mBadge.getContactName());
+                }
+                else
+                {
+                    String leftBy = NotificationHelper.getDialString(this, mVoicemail.getLeftBy(), false);
+                    mName.setText(PhoneNumberUtils.formatNumber(leftBy));
+                }
+                mLeftBy.setText(PhoneNumberUtils.formatNumber(mVoicemail.getLeftBy()));
             }
             if(mVoicemail.getTranscription() == null)
             {
@@ -247,7 +271,35 @@ public class ViewVoicemailActivity extends Activity
             {
                 mTranscription.setText(mVoicemail.getTranscription());
             }
-            mDate.setText(mVoicemail.getDateCreatedString(getString(R.string.dateCreatedUnknown)));
+            String dateString = mVoicemail.getDateCreatedString(this, false, getString(R.string.dateCreatedUnknown));
+            String durString = mVoicemail.getDurationString();
+            mDate.setText(getString(R.string.received_on_label, dateString, durString));
+            
+            ContactBadge badge = (ContactBadge)findViewById(R.id.voicemail_view_badge);
+            if(badge != null)
+            {
+                if(mBadge == null)
+                {
+                    String leftBy = NotificationHelper.getDialString(this, mVoicemail.getLeftBy(), false);
+                    badge.setOnCompleteListener(new ContactBadge.OnComplete()
+                    {
+                        @Override
+                        public void onComplete(Data info)
+                        {
+                            mBadge = info;
+                            if(mName != null && !TextUtils.isEmpty(mBadge.getContactName()))
+                            {
+                                mName.setText(mBadge.getContactName());
+                            }
+                        }
+                    });
+                    badge.assignContactFromPhone(leftBy, false);
+                }
+                else
+                {
+                    badge.assignFromInfo(mBadge);
+                }
+            }
             
             if(mDownloadTask == null)
             {

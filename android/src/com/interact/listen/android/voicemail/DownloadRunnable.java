@@ -96,7 +96,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
             account = findAccount(accountManager.getAccountsByType(Constants.ACCOUNT_TYPE), voicemail.getUserName());
             if(account == null)
             {
-                Log.v(TAG, "account not found: "+ voicemail.getUserName());
+                Log.v(TAG, "account not found: " + voicemail.getUserName());
                 return;
             }
         }

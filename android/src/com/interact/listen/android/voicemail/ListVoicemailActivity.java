@@ -32,6 +32,12 @@ import com.interact.listen.android.voicemail.provider.VoicemailProvider;
 import com.interact.listen.android.voicemail.provider.Voicemails;
 import com.interact.listen.android.voicemail.sync.SyncAdapter;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
+import com.interact.listen.android.voicemail.widget.ContactBadge;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class ListVoicemailActivity extends ListActivity
 {
@@ -44,10 +50,10 @@ public class ListVoicemailActivity extends ListActivity
     private SimpleCursorAdapter mAdapter;
     
     private static final String[] VOICEMAIL_INFO_COLUMNS =
-        new String[]{Voicemails.LEFT_BY, Voicemails.DATE_CREATED, Voicemails.TRANSCRIPT};
+        new String[]{Voicemails.LEFT_BY, Voicemails.LEFT_BY, Voicemails.DATE_CREATED, Voicemails.TRANSCRIPT};
     
     private static final int[] VOICEMAIL_INFO_VIEWS =
-        new int[]{R.id.leftBy, R.id.date, R.id.transcription};
+        new int[]{R.id.list_badge, R.id.list_leftby, R.id.list_date, R.id.list_transcription};
     
     @Override
     public void onCreate(final Bundle savedInstanceState)
@@ -65,7 +71,7 @@ public class ListVoicemailActivity extends ListActivity
 
         mViewBinder = new ListVoicemailViewBinder(this);
 
-        mAdapter = new SimpleCursorAdapter(this, R.layout.voicemail_list_item, mCursor, VOICEMAIL_INFO_COLUMNS, VOICEMAIL_INFO_VIEWS);
+        mAdapter = new ListVoicemailCursorAdapter(this, R.layout.voicemail_list_item, mCursor, VOICEMAIL_INFO_COLUMNS, VOICEMAIL_INFO_VIEWS);
         mAdapter.setViewBinder(mViewBinder);
         
         setListAdapter(mAdapter);
@@ -104,7 +110,6 @@ public class ListVoicemailActivity extends ListActivity
             
             am.addAccount(Constants.ACCOUNT_TYPE, null, null, null, this, null, null);
         }
-
     }
     
     @Override
@@ -482,19 +487,193 @@ public class ListVoicemailActivity extends ListActivity
         }
         
     }
+
+    private static final class BadgeHandler implements ContactBadge.OnComplete
+    {
+        private Set<TextView> views;
+        private Set<ContactBadge> badges;
+        private ContactBadge master;
+        private ContactBadge.Data info;
+        
+        public BadgeHandler()
+        {
+            views = new HashSet<TextView>();
+            badges = new HashSet<ContactBadge>();
+            master = null;
+            info = null;
+        }
+        
+        public boolean isMaster(ContactBadge badge)
+        {
+            return master == badge;
+        }
+
+        public String addView(String leftBy, TextView view)
+        {
+            if(info != null)
+            {
+                return !TextUtils.isEmpty(info.getContactName()) ? info.getContactName() : leftBy;
+            }
+            
+            views.add(view);
+            return leftBy;
+        }
+        
+        public void addBadge(String phoneNumber, ContactBadge badge)
+        {
+            if(info != null)
+            {
+                badge.assignFromInfo(info);
+            }
+            else if(master == null)
+            {
+                master = badge;
+                badge.assignContactFromPhone(phoneNumber, false);
+                badge.setOnCompleteListener(this);
+            }
+            else if(master != badge)
+            {
+                if(badges.add(badge))
+                {
+                    badge.assignContactFromPhone(phoneNumber, true);
+                }
+            }
+        }
+        
+        @Override
+        public void onComplete(ContactBadge.Data data)
+        {
+            info = data;
+            if(!TextUtils.isEmpty(info.getContactName()))
+            {
+                for(TextView view : views)
+                {
+                    view.setText(info.getContactName());
+                }
+            }
+            for(ContactBadge badge : badges)
+            {
+                badge.assignFromInfo(info);
+            }
+            views.clear();
+            badges.clear();
+            master = null;
+        }
+
+        public void remove(TextView view, ContactBadge badge)
+        {
+            views.remove(view);
+            badges.remove(badge);
+            if(master == badge)
+            {
+                master = null;
+            }
+        }
+    }
+
+    private class ListVoicemailCursorAdapter extends SimpleCursorAdapter
+    {
+        private Context mContext;
+        private int[] mColors;
+        
+        public ListVoicemailCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to)
+        {
+            super(context, layout, c, from, to);
+            mContext = context;
+            
+            mColors = new int[2];
+            mColors[0] = context.getResources().getColor(R.color.list_item_background1);
+            mColors[1] = context.getResources().getColor(R.color.list_item_background2);
+
+            if(mColors[0] == mColors[1])
+            {
+                mColors = null;
+            }
+        }
+        
+        @Override
+        public View getView(int position, View convertView, android.view.ViewGroup parent)
+        {
+            Cursor cursor = getCursor();
+            if (!cursor.moveToPosition(position))
+            {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+            
+            View v;
+            if (mViewBinder.isReUsable(cursor, convertView))
+            {
+                v = convertView;
+            }
+            else
+            {
+                v = newView(mContext, cursor, parent);
+            }
+
+            bindView(v, mContext, cursor);
+
+            if(mColors != null)
+            {
+                v.setBackgroundColor(mColors[position % mColors.length]);
+            }
+            
+            return v;
+        }
+
+    }
     
     private class ListVoicemailViewBinder implements SimpleCursorAdapter.ViewBinder
     {
         private Context context;
+        private Map<String, BadgeHandler> leftByNames;
         
         public ListVoicemailViewBinder(Context c)
         {
             context = c;
+            leftByNames = new TreeMap<String, BadgeHandler>();
         }
-        
+
         private String getCursorString(Cursor c, int cIdx, int defId)
         {
             return c.isNull(cIdx) ? context.getString(defId) : c.getString(cIdx);
+        }
+        private String getCursorString(Cursor c, int cIdx, String defStr)
+        {
+            return c.isNull(cIdx) ? defStr : c.getString(cIdx);
+        }
+        
+        public boolean isReUsable(Cursor cursor, View view)
+        {
+            if(view == null)
+            {
+                return false;
+            }
+            
+            ContactBadge badge = (ContactBadge)view.findViewById(R.id.list_badge);
+            TextView leftBy = (TextView)view.findViewById(R.id.list_leftby);
+
+            if(badge == null || leftBy == null)
+            {
+                return true;
+            }
+
+            String text = getCursorString(cursor, 1, ""); // left by must be first in list (after id)
+
+            for(Map.Entry<String, BadgeHandler> entry : leftByNames.entrySet())
+            {
+                if(entry.getValue().isMaster(badge))
+                {
+                    Log.v(TAG, "isReUsable - badge is part of master " + text + " - " + entry.getKey());
+                    return text.equals(entry.getKey());
+                }
+                if(!text.equals(entry.getKey()))
+                {
+                    entry.getValue().remove(leftBy, badge);
+                }
+            }
+            
+            //Log.v(TAG, "isReUsable - reusable " + text + " - " + leftBy.getText());
+            return true;
         }
         
         @Override
@@ -503,21 +682,54 @@ public class ListVoicemailActivity extends ListActivity
             String text = null;
             switch(view.getId())
             {
-                case R.id.leftBy:
-                    text = getCursorString(cursor, columnIndex, R.string.leftByUnknown);
+                case R.id.list_badge:
+                    text = getCursorString(cursor, columnIndex, "");
+                    ContactBadge badge = (ContactBadge)view;
+                    if(text.length() > 0)
+                    {
+                        BadgeHandler handler = leftByNames.get(text);
+                        if(handler == null)
+                        {
+                            handler = new BadgeHandler();
+                            leftByNames.put(text, handler);
+                        }
+                        String number = NotificationHelper.getDialString(ListVoicemailActivity.this, text, false);
+                        handler.addBadge(number, badge);
+                    }
+                    else
+                    {
+                        badge.clearInfo();
+                    }
+                    return true;
+                case R.id.list_leftby:
+                    text = getCursorString(cursor, columnIndex, "");
+                    if(text.length() > 0)
+                    {
+                        BadgeHandler handler = leftByNames.get(text);
+                        if(handler == null)
+                        {
+                            handler = new BadgeHandler();
+                            leftByNames.put(text, handler);
+                        }
+                        text = handler.addView(text, (TextView)view);
+                    }
+                    else
+                    {
+                        text = context.getString(R.string.leftByUnknown);
+                    }
                     break;
-                case R.id.transcription:
+                case R.id.list_transcription:
                     text = getCursorString(cursor, columnIndex, R.string.transcriptionUnknown);
                     text = getTruncatedTranscription(text);
                     break;
-                case R.id.date:
+                case R.id.list_date:
                     if(cursor.isNull(columnIndex))
                     {
                         text = context.getString(R.string.dateCreatedUnknown);
                     }
                     else
                     {
-                        text = Voicemail.getDateCreatedFromString(cursor.getLong(columnIndex));
+                        text = Voicemail.getDateCreatedFromMS(context, cursor.getLong(columnIndex), true);
                     }
                     break;
                 default:
@@ -544,6 +756,8 @@ public class ListVoicemailActivity extends ListActivity
             return true;
         }
 
+        private static final int TRANS_LENGTH = 70;
+        
         private String getTruncatedTranscription(String fullTranscription)
         {
             StringBuilder returnString = new StringBuilder("");
@@ -551,10 +765,10 @@ public class ListVoicemailActivity extends ListActivity
             {
                 // add the transcription to what we will return
                 returnString.append(fullTranscription);
-                if(fullTranscription.length() > 45)
+                if(fullTranscription.length() > TRANS_LENGTH)
                 {
-                    // Add ... and only show the first 45 characters
-                    return returnString.insert(42, "...").substring(0, 45);
+                    // add ... and only show the first 45 characters
+                    return returnString.insert(TRANS_LENGTH - 3, "...").substring(0, TRANS_LENGTH);
                 }
             }
 

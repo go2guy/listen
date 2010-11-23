@@ -14,7 +14,10 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_weight="1"
-        android:cacheColorHint="@color/background"/>
+        android:cacheColorHint="@color/list_item_background1"
+        android:scrollingCache="true"
+        android:smoothScrollbar="true"
+    />
     <TextView android:id="@id/android:empty"
            android:layout_width="match_parent"
            android:layout_height="match_parent"

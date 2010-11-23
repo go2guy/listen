@@ -4,7 +4,7 @@
 
     <string name="list_view_label">Inbox</string>
     <string name="list_view_label_with_info">Inbox (%d/%d)</string>
-    <string name="received_on_label">Received: </string>
+    <string name="received_on_label">Received: %s (%s)</string>
 	
 	<string name="voicemailListEmpty">No items in this view</string>
 	<string name="leftByUnknown">Unavailable</string>
@@ -51,6 +51,11 @@
 	<string name="pref_dial_prefix_title">Office Number</string>
 	<string name="pref_dial_prefix_dialog_detail">Number to prefix to extensions</string>	
 	<string name="pref_dial_prefix_summary">Prefix to office extensions</string>
+
+	<string name="pref_accounts_settings_title">Account &#x26; Sync Settings</string>
+	<string name="pref_accounts_settings_summary">Android account and sync settings</string>
+	<string name="pref_accounts_reset_password_title">Set Password</string>
+	<string name="pref_accounts_reset_password_summary">Change the Listen password stored on the phone</string>
 
 	<string name="dialog_clear_cache_title">Clear Listen Voicemails</string>
 	<string name="dialog_clear_cache_details">Clear the voicemails stored on this device.</string>

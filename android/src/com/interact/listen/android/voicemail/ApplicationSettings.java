@@ -7,14 +7,18 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.util.Log;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
@@ -37,10 +41,14 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private static final String NOTIFY_LIGHT = "notif_light";
     private static final String NOTIFY_RINGTONE = "notif_ringtone";
     private static final String DIAL_PREFIX = "dial_prefix";
+    private static final String SYNC_SETTINGS = "accounts_sync_settings_key";
+    private static final String RESET_PASSWORD = "pref_reset_password_key";
     
     private SharedPreferences sharedPreferences;
     private Preference clearCachePref;
     private Preference syncIntervalPref;
+    private Preference syncSettingsPref;
+    private Preference resetPasswordPref;
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,9 +68,16 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         syncIntervalPref = findPreference(SYNC_INTERVAL);
         syncIntervalPref.setOnPreferenceClickListener(clickListener);
         
-        Preference dialPrefix = findPreference(DIAL_PREFIX);
+        syncSettingsPref = findPreference(SYNC_SETTINGS);
+        syncSettingsPref.setOnPreferenceClickListener(clickListener);
+        
+        resetPasswordPref = findPreference(RESET_PASSWORD);
+        resetPasswordPref.setOnPreferenceClickListener(clickListener);
+        
+        EditTextPreference dialPrefix = (EditTextPreference)findPreference(DIAL_PREFIX);
         dialPrefix.setSummary(sharedPreferences.getString(DIAL_PREFIX, getString(R.string.pref_dial_prefix_summary)));
-
+        dialPrefix.getEditText().addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        
         updateSyncIntevalSummary();
     }
 
@@ -91,6 +106,24 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             {
                 d = createUpdateSyncIntervalDialog();
             }
+            else if(pref == syncSettingsPref)
+            {
+                Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+                intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                return true;
+            }
+            else if(pref == resetPasswordPref)
+            {
+                AccountManager am = AccountManager.get(ApplicationSettings.this);
+                Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+                for(Account account : accounts)
+                {
+                    am.updateCredentials(account, Constants.AUTHTOKEN_TYPE, null, ApplicationSettings.this, null, null);
+                }
+            }
+            
             if(d != null && !d.isShowing())
             {
                 d.show();
@@ -200,7 +233,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     public static int getSyncIntervalMinutes(Context context)
     {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getInt(SYNC_INTERVAL_MINUTES, 5);
+        return prefs.getInt(SYNC_INTERVAL_MINUTES, 15);
     }
     
     public static boolean isSyncAudio(Context context)

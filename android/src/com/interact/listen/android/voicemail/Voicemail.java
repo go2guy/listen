@@ -2,15 +2,18 @@ package com.interact.listen.android.voicemail;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.interact.listen.android.voicemail.provider.Voicemails;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import org.json.JSONException;
@@ -54,7 +57,6 @@ public final class Voicemail implements Parcelable
     private static final String TAG = Constants.TAG + "Voicemail";
     
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    private static final SimpleDateFormat SDF_TIME = new SimpleDateFormat("HH:mm yyyy-MM-dd");
 
     private int id;
     private String userName;
@@ -195,9 +197,18 @@ public final class Voicemail implements Parcelable
         return vm;
     }
     
-    public static String getDateCreatedFromString(long ms)
+    public static String getDateCreatedFromMS(Context context, long ms, boolean dayCheck)
     {
-        return SDF_TIME.format(new java.util.Date(ms));
+        if(dayCheck)
+        {
+            return DateUtils.formatSameDayTime(ms, System.currentTimeMillis(), DateFormat.SHORT, DateFormat.SHORT).toString();
+        }
+        else
+        {
+            return DateUtils.formatDateTime(context, ms,
+                                            DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
+                                            DateUtils.FORMAT_NUMERIC_DATE);
+        }
     }
 
     public Voicemail copy()
@@ -255,9 +266,9 @@ public final class Voicemail implements Parcelable
     {
         return description;
     }
-    public String getDateCreatedString(String unknownString)
+    public String getDateCreatedString(Context context, boolean dayCheck, String unknownString)
     {
-        return dateCreated == 0 ? unknownString : SDF_TIME.format(new java.util.Date(dateCreated));
+        return dateCreated == 0 ? unknownString : getDateCreatedFromMS(context, dateCreated, dayCheck);
     }
     public long getDateCreatedMS()
     {
@@ -277,6 +288,7 @@ public final class Voicemail implements Parcelable
     }
     public String getDurationString()
     {
+        
         int s = duration / 1000;
         int h = s / 3600;
         s -= h * 3600;
@@ -284,8 +296,53 @@ public final class Voicemail implements Parcelable
         s -= m * 60;
 
         StringBuilder sb = new StringBuilder();
-        java.util.Formatter formatter = new java.util.Formatter(sb);
-        formatter.format("%02d.%02d.%02d", h, m, s);
+        if(h > 0)
+        {
+            // this won't happen has they can only record 2 minutes
+            java.util.Formatter formatter = new java.util.Formatter(sb);
+            formatter.format("%02d.%02d.%02d", h, m, s);
+        }
+        else if(m == 0)
+        {
+            if(s == 1)
+            {
+                sb.append("1 sec");
+            }
+            else
+            {
+                sb.append(s).append(" secs");
+            }
+        }
+        else if(m == 1)
+        {
+            if(s == 0)
+            {
+                sb.append("1 min");
+            }
+            else if(s == 1)
+            {
+                sb.append("1 min 1 sec");
+            }
+            else
+            {
+                sb.append("1 min ").append(s).append(" secs");
+            }
+        }
+        else
+        {
+            if(s == 0)
+            {
+                sb.append(m).append(" mins");
+            }
+            else if(s == 1)
+            {
+                sb.append(m).append(" mins 1 sec");
+            }
+            else
+            {
+                sb.append(m).append(" mins ").append(s).append(" secs");
+            }
+        }
         return sb.toString();
     }
     public String getTranscription()

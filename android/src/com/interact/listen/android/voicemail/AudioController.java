@@ -318,7 +318,7 @@ public class AudioController
         int rMs = timeMs;
 
         int r = timeMs % 1000;
-        if(r != 0)
+        if(r >= 500)
         {
             rMs += 1000 - r;
         }

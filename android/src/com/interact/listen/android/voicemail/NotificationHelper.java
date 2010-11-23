@@ -182,27 +182,26 @@ public final class NotificationHelper
         d.show();
     }
     
-    public static void dial(Context context, String leftBy)
+    public static String getDialString(Context context, String leftBy, boolean asUri)
     {
-        if(TextUtils.isEmpty(leftBy))
+        if(TextUtils.isEmpty(leftBy) || (!asUri && leftBy.length() >= 7))
         {
-            return;
+            return leftBy;
         }
-        Intent call = new Intent(Intent.ACTION_CALL);
-        call.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("tel:");
 
-        if(leftBy.length() <= 3)
+        StringBuilder sb = new StringBuilder();
+        if(asUri)
+        {
+            sb.append("tel:");
+        }
+        
+        if(leftBy.length() < 7)
         {
             String dp = ApplicationSettings.getDialPrefix(context);
             if(!TextUtils.isEmpty(dp))
             {
                 sb.append(dp);
-                
-                if(dp.charAt(dp.length() - 1) != PhoneNumberUtils.PAUSE &&
-                    dp.charAt(dp.length() - 1) != PhoneNumberUtils.WAIT)
+                if (PhoneNumberUtils.extractPostDialPortion(dp).length() == 0)
                 {
                     sb.append(PhoneNumberUtils.WAIT);
                 }
@@ -212,8 +211,20 @@ public final class NotificationHelper
 
         sb.append(leftBy);
         
-        String dialString = sb.toString();
-        Log.i(TAG, "dialing: " + sb.toString());
+        return sb.toString();
+    }
+    
+    public static void dial(Context context, String leftBy)
+    {
+        if(TextUtils.isEmpty(leftBy))
+        {
+            return;
+        }
+        Intent call = new Intent(Intent.ACTION_CALL);
+        call.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        
+        String dialString = getDialString(context, leftBy, true);
+        Log.i(TAG, "dialing: " + dialString);
         
         call.setData(Uri.parse(dialString));
         context.startActivity(call);

@@ -29,7 +29,7 @@ public class OutgoingCallReceiver extends BroadcastReceiver
                 {
                     String trimmed = PhoneNumberUtils.stripSeparators(pre);
                     StringBuilder sb = new StringBuilder(trimmed);
-                    if(needsBreak(trimmed))
+                    if(!PhoneNumberUtils.isStartsPostDial(trimmed.charAt(trimmed.length() - 1)))
                     {
                         sb.append(PhoneNumberUtils.WAIT);
                     }
@@ -40,12 +40,6 @@ public class OutgoingCallReceiver extends BroadcastReceiver
         }
     }
 
-    private boolean needsBreak(String pre)
-    {
-        char c = pre.charAt(pre.length() - 1);
-        return c != PhoneNumberUtils.PAUSE && c != PhoneNumberUtils.WAIT && c != PhoneNumberUtils.WILD;
-    }
-    
     private boolean isExtension(String number, int extensionLength)
     {
         if(number == null || number.length() != extensionLength)
