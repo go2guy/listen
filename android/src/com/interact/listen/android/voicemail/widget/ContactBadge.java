@@ -144,7 +144,8 @@ public class ContactBadge extends QuickContactBadge
 
     public void assignFromInfo(Data cbi)
     {
-        if(info.mContactUri == cbi.mContactUri && info.mContactPhoto == cbi.mContactPhoto && info.mPhotoData == cbi.mPhotoData)
+        if(info.mContactUri == cbi.mContactUri && info.mContactPhoto == cbi.mContactPhoto &&
+            info.mPhotoData == cbi.mPhotoData && TextUtils.equals(info.mContactPhone, cbi.mContactPhone))
         {
             return;
         }

@@ -15,7 +15,7 @@
             </intent-filter>
         </activity>
 
-		<activity android:name=".ViewVoicemailActivity">
+		<activity android:name=".ViewVoicemailActivity" android:configChanges="keyboardHidden|orientation">
 			<intent-filter>
 				<action android:name="com.interact.listen.voicemail.VIEW"/>
 				<category android:name="android.intent.category.DEFAULT"/>

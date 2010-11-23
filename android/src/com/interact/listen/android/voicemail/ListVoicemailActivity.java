@@ -657,7 +657,7 @@ public class ListVoicemailActivity extends ListActivity
                 return true;
             }
 
-            String text = getCursorString(cursor, 1, ""); // left by must be first in list (after id)
+            String text = getCursorString(cursor, 1, ""); // 'left by' must be first in list after id
 
             for(Map.Entry<String, BadgeHandler> entry : leftByNames.entrySet())
             {

@@ -4,7 +4,7 @@
 	<color name="black">#000000</color>
 	<color name="gray">#C0C0C0</color>
 
-	<color name="list_item_background1">#AAFFFFFF</color>
-	<color name="list_item_background2">#AAF3F3F3</color>
+	<color name="list_item_background1">#EEFFFFFF</color>
+	<color name="list_item_background2">#EEFCFCFC</color>
 
 </resources>

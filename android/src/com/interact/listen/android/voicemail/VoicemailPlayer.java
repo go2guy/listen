@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,7 +38,7 @@ public class VoicemailPlayer implements AudioController.Player
     {
         mediaPlayer = null;
         uri = null;
-        durationMS = 0;
+        durationMS = -1;
         currentState = State.IDLE;
         targetState = State.IDLE;
         currentBufferPercentage = 0;
@@ -54,6 +55,57 @@ public class VoicemailPlayer implements AudioController.Player
         context = null;
     }
 
+    private static final String SAVED_AUDIO_STREAM = "listen_player_audio_stream";
+    private static final String SAVED_POSITION     = "listen_player_position";
+    private static final String SAVED_STATE        = "listen_player_state";
+    
+    public void saveState(Bundle bundle)
+    {
+        int position = getCurrentPosition();
+        Log.v(TAG, "saving player state stream=" + targetAudioStream + " position=" + position);
+        bundle.putInt(SAVED_AUDIO_STREAM, targetAudioStream);
+        bundle.putInt(SAVED_POSITION, position);
+        bundle.putString(SAVED_STATE, targetState.name());
+    }
+    
+    public void restoreState(Bundle bundle)
+    {
+        if(bundle == null)
+        {
+            return;
+        }
+
+        seekWhenPrepared = bundle.getInt(SAVED_POSITION);
+        Log.v(TAG, "restored seek when prepared: " + seekWhenPrepared);
+
+        int stream = bundle.getInt(SAVED_AUDIO_STREAM);
+        if(audioController == null)
+        {
+            setAudioStream(stream);
+        }
+        else
+        {
+            audioController.updateStream(stream);
+        }
+        
+        Log.v(TAG, "restored audio stream: " + targetAudioStream);
+
+        String stateStr = bundle.getString(SAVED_STATE);
+        if(stateStr != null)
+        {
+            State state = State.valueOf(stateStr);
+            if(state == State.PLAYING)
+            {
+                targetState = state;
+            }
+        }
+
+        if(audioController != null)
+        {
+            audioController.update();
+        }
+    }
+    
     public void setOnPreparedListener(MediaPlayer.OnPreparedListener l)
     {
         onPreparedListener = l;
@@ -107,7 +159,6 @@ public class VoicemailPlayer implements AudioController.Player
     public void setAudioURI(Context ctx, Uri u)
     {
         uri = u;
-        seekWhenPrepared = 0;
         openAudio(ctx);
     }
     
@@ -464,16 +515,23 @@ public class VoicemailPlayer implements AudioController.Player
                 seekTo(seekToPosition);
             }
 
-            if(targetState == State.PLAYING)
-            {
-                Log.i(TAG, "Player starting right up");
-                start();
-            }
             if(audioController != null)
             {
                 audioController.setReady();
                 audioController.update();
+                
+                if(targetState == State.PLAYING)
+                {
+                    Log.i(TAG, "triggering controller to start");
+                    audioController.triggerStart();
+                }
             }
+            else if(targetState == State.PLAYING)
+            {
+                Log.i(TAG, "starting right up");
+                start();
+            }
+
         }
     };
 

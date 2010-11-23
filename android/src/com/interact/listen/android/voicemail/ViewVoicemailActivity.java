@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
+import com.interact.listen.android.voicemail.provider.Voicemails;
 import com.interact.listen.android.voicemail.widget.ContactBadge;
 import com.interact.listen.android.voicemail.widget.ContactBadge.Data;
 
@@ -80,12 +81,31 @@ public class ViewVoicemailActivity extends Activity
             mCursor.registerContentObserver(mContentObserver);
         }
 
-        if(mVoicemailId > 0)
+        if(mVoicemailId > 0 && mCursor != null && mCursor.getInt(mCursor.getColumnIndex(Voicemails.IS_NEW)) != 0)
         {
             Intent intent = new Intent(Constants.ACTION_MARK_READ);
             intent.putExtra(Constants.EXTRA_ID, mVoicemailId);
             intent.putExtra(Constants.EXTRA_IS_READ, true);
             startService(intent);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle)
+    {
+        super.onSaveInstanceState(bundle);
+        if(mVoicemailPlayer != null)
+        {
+            mVoicemailPlayer.saveState(bundle);
+        }
+    }
+    
+    @Override
+    protected void onRestoreInstanceState (Bundle bundle)
+    {
+        if(mVoicemailPlayer != null)
+        {
+            mVoicemailPlayer.restoreState(bundle);
         }
     }
     

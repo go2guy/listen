@@ -119,6 +119,15 @@ public class AudioController
         updatePausePlay();
     }
     
+    public void updateStream(int stream)
+    {
+        // we just support the two
+        if(audioStream != stream)
+        {
+            doSpeakerToggle();
+        }
+    }
+    
     public static View makeView(ViewGroup root)
     {
         LayoutInflater inflate = (LayoutInflater)root.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -313,6 +322,14 @@ public class AudioController
         }
     }
 
+    public void triggerStart()
+    {
+        if(player != null && !player.isPlaying())
+        {
+            doPauseResume();
+        }
+    }
+    
     private String stringForTime(int timeMs)
     {
         int rMs = timeMs;
