@@ -460,10 +460,13 @@ td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
 }
 #voicemail-application div.voicemail-cell-from,
 #voicemail-application div.voicemail-cell-received,
-#voicemail-application div.voicemail-cell-actions,
-#voicemail-application div.voicemail-cell-play {
+#voicemail-application div.voicemail-cell-actions {
     float: left;
     height: 2em;
+    width: 25%;
+}
+#voicemail-application div.voicemail-cell-play {
+	float: left;
     width: 25%;
 }
 #voicemail-application div.voicemail-cell-actions {

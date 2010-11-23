@@ -127,6 +127,21 @@ public abstract class Audio extends Resource implements Serializable
     {
         return transcription != null && transcription.trim().length() > 0;
     }
+    
+    public String mp3FileUri()
+    {
+        if(uri.endsWith(".wav"))
+        {
+            return uri.replace(".wav", ".mp3");
+        }
+        
+        if(!uri.endsWith(".mp3"))
+        {
+            return uri.concat(".mp3");
+        }
+        
+        return uri;
+    }
 
     @Override
     public boolean validate()

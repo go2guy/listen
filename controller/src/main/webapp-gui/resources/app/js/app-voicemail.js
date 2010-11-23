@@ -58,7 +58,14 @@ $(document).ready(function() {
                         var statusButton = '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'Listen.Voicemail.markVoicemailNew(' + data.id + ');' : 'Listen.Voicemail.markVoicemailOld(' + data.id + ');return false;') + '" title="' + (data.isNew ? 'Mark as old' : 'Mark as new') + '"></button>';
                         Listen.setFieldContent(row.find('.voicemail-cell-from'), '<div>' + statusButton + '</div><div>' + data.leftBy + '</div>', false, true);
                         Listen.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
-                        Listen.setFieldContent(row.find('.voicemail-cell-play'), data.duration, animate);
+                        
+                        var playAction = '<a href="#" onclick="Listen.Voicemail.playVoicemail(' + data.id + ', \'' + data.uri + '\');return false;">Play</a>';
+                        var playerCell = $('#voicemail-table-row-' + data.id + ' .voicemail-cell-play');
+                        
+                        if(playerCell.html() == null)
+                        {
+                        	Listen.setFieldContent(row.find('.voicemail-cell-play'), '<div>' + data.duration + '</div><div class="playLink" id="playLink' + data.id + '">' + playAction + '</div>', false, true);
+                        }
 
                         var downloadAction = '<a href="' + Listen.url('/ajax/downloadVoicemail?id=' + data.id) + '">Download</a>';
                         var deleteAction = '<a href="#" onclick="Listen.Voicemail.confirmDeleteVoicemail(' + data.id + ');return false;" title="Delete this voicemail">Delete</a>';
@@ -124,6 +131,15 @@ $(document).ready(function() {
                     }
                 });
             },
+            
+            playVoicemail: function(id, uri) {
+            	Listen.trace('Listen.Voicemail.playVoicemail');
+            	$('.playerDiv').remove();
+            	$('.playLink').show();
+            	var playerHtml = '<div class="playerDiv"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="165" height="37" id="player' + id + '" align=""><param name=movie value="./resources/audio/niftyplayer.swf?file=' + uri + '&as=1"><param name=quality value=high><param name=bgcolor value=#FFFFFF><embed src="./resources/audio/niftyplayer.swf?file=' + uri + '&as=1" quality=high bgcolor=#FFFFFF width="165" height="37" id="player' + id + '" name="player' + id + '" align="" type="application/x-shockwave-flash" swLiveConnect="true" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed></object></div>';
+            	$('#voicemail-table-row-' + id + ' .voicemail-cell-play').append(playerHtml);
+            	$('#playLink' + id).hide()
+			},
 
             updateBubbleNew: function() {
                 // stop polling (ugly)

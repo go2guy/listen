@@ -118,6 +118,8 @@ public class GetVoicemailListServlet extends HttpServlet
 
         Duration duration = new Duration(Long.parseLong(voicemail.getDuration()));
         json.append("\"duration\":\"").append(DateUtil.printDuration(duration)).append("\",");
+        
+        json.append("\"uri\":\"").append(voicemail.mp3FileUri()).append("\",");
 
         json.append("\"transcription\":");
         if(voicemail.getTranscription() == null || voicemail.getTranscription().trim().equals(""))
