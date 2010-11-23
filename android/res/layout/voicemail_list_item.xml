@@ -16,45 +16,36 @@
 		android:src="@drawable/ic_contact_picture"
 	/>
 	
-    <LinearLayout
-    	android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="match_parent"
     	android:layout_height="wrap_content"
 	    android:paddingLeft="4dip"
     >
 	
-		<RelativeLayout
-	        android:layout_width="match_parent"
-	    	android:layout_height="wrap_content"
-		>
-		
-	   		<TextView
-	   			android:id="@+id/list_leftby"
-	   	 		android:layout_width="wrap_content"
-	       		android:layout_height="match_parent"
-	       		android:textColor="@color/black"
-	       		android:textSize="18dip"
-	       		android:lines="1"
-	       		android:scrollHorizontally="true"
-		       	android:ellipsize="marquee"
-		       	android:layout_alignParentLeft="true"
-		       	android:layout_alignParentBottom="true"
-		       	android:layout_toLeftOf="@+id/list_date"
-		       	android:layout_alignTop="@+id/list_date"
-	        />
-	        		
-	       	<TextView
-	       		android:id="@+id/list_date"
-	 			android:layout_width="wrap_content"
-	       		android:layout_height="match_parent"
-	       		android:textColor="@color/black"
-	       		android:textSize="16dip"
-	       		android:maxLines="1"
-		       	android:layout_alignParentTop="true"
-		       	android:layout_alignParentRight="true"
-	       	/>
-
-		</RelativeLayout>
+   		<TextView
+   			android:id="@+id/list_leftby"
+   	 		android:layout_width="wrap_content"
+       		android:layout_height="match_parent"
+       		android:textColor="@color/black"
+       		android:textSize="18dip"
+       		android:lines="1"
+       		android:scrollHorizontally="true"
+	       	android:ellipsize="marquee"
+	       	android:layout_alignParentLeft="true"
+	       	android:layout_toLeftOf="@+id/list_date"
+	       	android:layout_alignTop="@+id/list_date"
+        />
+        		
+       	<TextView
+       		android:id="@+id/list_date"
+ 			android:layout_width="wrap_content"
+       		android:layout_height="match_parent"
+       		android:textColor="@color/black"
+       		android:textSize="16dip"
+       		android:maxLines="1"
+	       	android:layout_alignParentTop="true"
+	       	android:layout_alignParentRight="true"
+       	/>
 
 	    <TextView android:id="@+id/list_transcription"
 	 		android:layout_width="match_parent"
@@ -63,8 +54,12 @@
 	       	android:textSize="14dip"
 	       	android:paddingTop="6dip"
 	       	android:minHeight="45dip"
+	       	android:layout_below="@+id/list_leftby"
+	       	android:layout_alignParentBottom="true"
+	       	android:layout_alignParentLeft="true"
+	       	android:layout_alignParentRight="true"
 	    />
 	     
-	</LinearLayout>
+	</RelativeLayout>
 
 </LinearLayout>
