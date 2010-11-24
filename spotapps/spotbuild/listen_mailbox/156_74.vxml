@@ -26,8 +26,8 @@
 	<property name="incompletetimeout" value="0s"/>     <!--  incompletetimeout. This is the length of silence after an incompletely recognized speech -->
 	<property name="confidencelevel" value="1"/>        <!--  confidencelevel. This is the speech recognition confidence level -->
 
-    <var name="II_SB_promptList" expr="'P'+newMsgPrompt+'|N'+oldCount+'|P'+'vmOldMsgs'+'|'"/>  <!--  List of audio files / speech to play -->
-    <var name="II_SB_PlyAudio_nextOpt" expr="'102_42'"/>  <!--  PlayAudio Next Option. Name of next file -->
+    <var name="II_SB_promptList" expr="'P'+'youHave'+'|N'+newCount+'|P'+'vmNewMsgs'+'|P'+'vmNoOldMsgs'+'|'"/>  <!--  List of audio files / speech to play -->
+    <var name="II_SB_PlyAudio_nextOpt" expr="'156_73'"/>  <!--  PlayAudio Next Option. Name of next file -->
 	<var name="II_SB_fldLength" expr="''"/>     <!--  DTMF Length. Defines how many digits/characters are allowed for a particular DTMF input -->
     <var name="II_SB_hotKeyList" expr="''"/>    <!--  List of hot keys -->
 	
@@ -92,8 +92,8 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    <log target="status">Old VMs</log>
-            <log>INFO: Entered audio-input.vxml [156_59]</log>
+    	    <log target="status">No Old VM</log>
+            <log>INFO: Entered audio-input.vxml [156_74]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
 
             <assign name="II_SB_fldTimeout" expr="II_SB_JS_checkTime(II_SB_fldTimeout)"/>

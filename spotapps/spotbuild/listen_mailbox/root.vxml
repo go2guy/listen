@@ -94,6 +94,7 @@
 	<var name="whichPathStat" expr="''" />
 	<var name="lstnChannel" expr="'TUI'" />
 	<var name="lstnSub" expr="''" />
+	<var name="newMsgPrompt" expr="''" />
 
 
     <!-- Conference Variables -->

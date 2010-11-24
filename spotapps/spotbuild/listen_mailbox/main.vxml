@@ -84,6 +84,7 @@
 	<var name="SB_UV_whichPathStat"/>
 	<var name="SB_UV_lstnChannel"/>
 	<var name="SB_UV_lstnSub"/>
+	<var name="SB_UV_newMsgPrompt"/>
 
     
     <form id="beginDocument">
@@ -292,6 +293,9 @@
 			</if>
 			<if cond="SB_UV_lstnSub != undefined">
 				<assign name="lstnSub" expr="SB_UV_lstnSub" />
+			</if>
+			<if cond="SB_UV_newMsgPrompt != undefined">
+				<assign name="newMsgPrompt" expr="SB_UV_newMsgPrompt" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
