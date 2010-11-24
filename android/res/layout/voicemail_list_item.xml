@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="5dip"
-    android:paddingRight="5dip"
+    android:paddingLeft="6dip"
+    android:paddingRight="6dip"
     android:paddingTop="5dip"
     android:paddingBottom="5dip"
 >
@@ -14,52 +13,49 @@
 		style="?android:attr/quickContactBadgeStyleWindowSmall"
 		android:id="@+id/list_badge"
 		android:src="@drawable/ic_contact_picture"
+       	android:layout_alignParentLeft="true"
+       	android:layout_alignParentTop="true"
 	/>
 	
-    <RelativeLayout
-        android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-	    android:paddingLeft="4dip"
-    >
-	
-   		<TextView
-   			android:id="@+id/list_leftby"
-   	 		android:layout_width="wrap_content"
-       		android:layout_height="match_parent"
-       		android:textColor="@color/black"
-       		android:textSize="18dip"
-       		android:lines="1"
-       		android:scrollHorizontally="true"
-	       	android:ellipsize="marquee"
-	       	android:layout_alignParentLeft="true"
-	       	android:layout_toLeftOf="@+id/list_date"
-	       	android:layout_alignTop="@+id/list_date"
-        />
-        		
-       	<TextView
-       		android:id="@+id/list_date"
- 			android:layout_width="wrap_content"
-       		android:layout_height="match_parent"
-       		android:textColor="@color/black"
-       		android:textSize="16dip"
-       		android:maxLines="1"
-	       	android:layout_alignParentTop="true"
-	       	android:layout_alignParentRight="true"
-       	/>
+	<TextView
+		android:id="@+id/list_leftby"
+ 		android:layout_width="wrap_content"
+   		android:layout_height="match_parent"
+   		android:paddingLeft="6dip"
+   		android:textColor="@color/black"
+   		android:textSize="18dip"
+   		android:lines="1"
+   		android:scrollHorizontally="true"
+       	android:ellipsize="marquee"
+       	android:layout_alignParentTop="true"
+       	android:layout_toLeftOf="@+id/list_date"
+       	android:layout_toRightOf="@id/list_badge"
+    />
 
-	    <TextView android:id="@+id/list_transcription"
-	 		android:layout_width="match_parent"
-	       	android:layout_height="wrap_content"
-	       	android:textColor="@color/black"
-	       	android:textSize="14dip"
-	       	android:paddingTop="6dip"
-	       	android:minHeight="45dip"
-	       	android:layout_below="@+id/list_leftby"
-	       	android:layout_alignParentBottom="true"
-	       	android:layout_alignParentLeft="true"
-	       	android:layout_alignParentRight="true"
-	    />
-	     
-	</RelativeLayout>
+   	<TextView
+   		android:id="@+id/list_date"
+		android:layout_width="wrap_content"
+   		android:layout_height="match_parent"
+   		android:paddingLeft="4dip"
+   		android:textColor="@color/black"
+   		android:textSize="16dip"
+   		android:maxLines="1"
+       	android:layout_alignParentTop="true"
+       	android:layout_alignParentRight="true"
+   	/>
 
-</LinearLayout>
+    <TextView android:id="@+id/list_transcription"
+ 		android:layout_width="match_parent"
+       	android:layout_height="wrap_content"
+       	android:textColor="@color/black"
+       	android:textSize="14dip"
+   		android:paddingLeft="6dip"
+       	android:paddingTop="6dip"
+       	android:minHeight="45dip"
+       	android:layout_alignParentBottom="true"
+       	android:layout_alignParentRight="true"
+       	android:layout_alignLeft="@+id/list_leftby"
+       	android:layout_below="@+id/list_leftby"
+    />
+
+</RelativeLayout>

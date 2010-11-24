@@ -4,74 +4,70 @@
 	android:layout_height="wrap_content"
 	android:background="@color/background"
 >
-	
-	<LinearLayout
-		android:id="@+id/voicemail_view_header"
-	    android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
+
+	<com.interact.listen.android.voicemail.widget.ContactBadge
+ 		android:id="@+id/voicemail_view_badge"
+        android:src="@drawable/ic_contact_picture"
+        style="?android:attr/quickContactBadgeStyleWindowMedium"
 		android:layout_marginTop="8dip"
-		android:layout_marginBottom="4dip"
-		android:layout_marginLeft="8dip"
-		android:layout_marginRight="8dip"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentRight="true"
+		android:layout_marginLeft="6dip"
 		android:layout_alignParentTop="true"
-	>
-	
-		<com.interact.listen.android.voicemail.widget.ContactBadge
-	 		android:id="@+id/voicemail_view_badge"
-	        android:src="@drawable/ic_contact_picture"
-	        style="?android:attr/quickContactBadgeStyleWindowMedium"
-		/>
-	
-		<LinearLayout
-		    android:orientation="vertical"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="8dip"
-			android:gravity="fill_horizontal"
-		>
+		android:layout_alignParentLeft="true"
+	/>
 
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content" 
-				android:id="@+id/voicemail_view_name"
-				android:textColor="@color/black"
-				android:textSize="18dip"
-				android:textStyle="bold"
-			/>
-			
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content" 
-				android:id="@+id/voicemail_view_leftby"
-				android:textColor="@color/black"
-				android:textSize="14dip"
-			/>
-		
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content" 
-				android:id="@+id/voicemail_view_received"
-				android:textColor="@color/black"
-				android:textSize="11dip"
-			/>
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:id="@+id/voicemail_view_name"
+		android:textColor="@color/black"
+		android:textSize="18dip"
+		android:textStyle="bold"
+		android:paddingTop="6dip"
+		android:paddingLeft="6dip"
+		android:paddingRight="2dip"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentRight="true"
+		android:layout_toRightOf="@id/voicemail_view_badge"
+	/>
+	
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:id="@+id/voicemail_view_leftby"
+		android:textColor="@color/black"
+		android:textSize="14dip"
+		android:paddingLeft="6dip"
+		android:paddingRight="2dip"
+		android:layout_below="@id/voicemail_view_name"
+		android:layout_alignLeft="@id/voicemail_view_name"
+		android:layout_alignParentRight="true"
+	/>
 
-		</LinearLayout>
-	</LinearLayout>
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:id="@+id/voicemail_view_received"
+		android:textColor="@color/black"
+		android:textSize="11dip"
+		android:paddingBottom="4dip"
+		android:paddingLeft="6dip"
+		android:paddingRight="2dip"
+		android:layout_below="@id/voicemail_view_leftby"
+		android:layout_alignLeft="@id/voicemail_view_leftby"
+		android:layout_alignParentRight="true"
+	/>
 
 	<ScrollView
 		android:id="@+id/voicemail_view_scroll"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content" 
-		android:layout_marginTop="6dip"
-		android:layout_marginBottom="6dip"
+		android:paddingTop="2dip"
+		android:paddingBottom="2dip"
 		android:fillViewport="true"
-		android:layout_alignLeft="@id/voicemail_view_header"
-		android:layout_alignRight="@id/voicemail_view_header"
-		android:layout_below="@id/voicemail_view_header"
-		android:layout_above="@+id/voicemail_view_player_container"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_below="@id/voicemail_view_received"
+		android:layout_above="@+id/audioController"
 	>
 		<TextView
 			android:layout_width="match_parent"
@@ -79,22 +75,13 @@
 			android:id="@+id/voicemail_view_transcript"
 			android:textColor="@color/black"
 			android:textSize="14dip"
-			android:layout_margin="2dip"
+			android:paddingTop="2dip"
+			android:paddingBottom="2dip"
+			android:paddingLeft="6dip"
+			android:paddingRight="6dip"
 		/>
 	</ScrollView>
-	
-	<LinearLayout
-		android:id="@+id/voicemail_view_player_container"
-		android:layout_width="match_parent" 
-	    android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentRight="true"
-		android:layout_alignParentBottom="true"
-		android:gravity="bottom"
-    >
 
-		<include android:id="@+id/audioController" layout="@layout/voicemail_player"/>
-
-    </LinearLayout>
+	<include android:id="@+id/audioController" layout="@layout/voicemail_player"/>
 
 </RelativeLayout>

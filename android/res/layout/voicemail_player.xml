@@ -3,7 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#CC666666"
-    android:orientation="vertical">
+    android:orientation="vertical"
+	android:layout_alignParentLeft="true"
+	android:layout_alignParentRight="true"
+	android:layout_alignParentBottom="true"
+	android:gravity="bottom"
+>
 
     <ImageView
     	android:layout_width="match_parent"
