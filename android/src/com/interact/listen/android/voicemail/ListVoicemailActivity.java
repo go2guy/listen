@@ -1,16 +1,12 @@
 package com.interact.listen.android.voicemail;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ListActivity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,7 +24,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
-import com.interact.listen.android.voicemail.provider.VoicemailProvider;
 import com.interact.listen.android.voicemail.provider.Voicemails;
 import com.interact.listen.android.voicemail.sync.SyncAdapter;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
@@ -45,9 +40,10 @@ public class ListVoicemailActivity extends ListActivity
 
     private static final int VIEWED_DETAILS = 2;
     
-    private Cursor mCursor;
-    private ListVoicemailViewBinder mViewBinder;
-    private SimpleCursorAdapter mAdapter;
+    private Cursor mCursor = null;
+    private ListVoicemailViewBinder mViewBinder = null;
+    private ListVoicemailCursorAdapter mAdapter = null;
+    private SyncStatusPoll mSyncStatusPoll = null;
     
     private static final String[] VOICEMAIL_INFO_COLUMNS =
         new String[]{Voicemails.LEFT_BY, Voicemails.LEFT_BY, Voicemails.DATE_CREATED, Voicemails.TRANSCRIPT};
@@ -76,25 +72,27 @@ public class ListVoicemailActivity extends ListActivity
         
         setListAdapter(mAdapter);
 
-        mAdapter.registerDataSetObserver(new DataSetObserver()
-        {
-            @Override
-            public void onChanged()
-            {
-                updateView();
-            }
-            @Override
-            public void onInvalidated()
-            {
-                updateView();
-            }
-        });
+        mAdapter.registerDataSetObserver(mDataSetObserver);
         
         registerForContextMenu(getListView());
         
         updateView();
     }
 
+    private DataSetObserver mDataSetObserver = new DataSetObserver()
+    {
+        @Override
+        public void onChanged()
+        {
+            updateView();
+        }
+        @Override
+        public void onInvalidated()
+        {
+            updateView();
+        }
+    };
+    
     @Override
     public void onStart()
     {
@@ -141,133 +139,8 @@ public class ListVoicemailActivity extends ListActivity
         
         if(mSyncStatusPoll == null || mSyncStatusPoll.isCancelled())
         {
-            mSyncStatusPoll = new SyncStatusPoll();
+            mSyncStatusPoll = new SyncStatusPoll(this);
             mSyncStatusPoll.execute((Void[])null);
-        }
-    }
-    
-    private SyncStatusPoll mSyncStatusPoll = null;
-    
-    // addStatusChangeListener doesn't seem to work, so poll for a changed status
-    private class SyncStatusPoll extends AsyncTask<Void, Boolean, Void> implements SyncStatusObserver
-    {
-        private boolean isActive = false;
-        private Object mSyncStatusHandle = null;
-        private Object syncObject = new Object();
-        
-        private int getUpdateStatus()
-        {
-            synchronized(syncObject)
-            {
-                boolean active = false;
-                Account[] accounts = AccountManager.get(ListVoicemailActivity.this).getAccountsByType(Constants.ACCOUNT_TYPE);
-                for(Account account : accounts)
-                {
-                    if(ContentResolver.isSyncActive(account, VoicemailProvider.AUTHORITY))
-                    {
-                        active = true;
-                        break;
-                    }
-                }
-                if(isActive == active)
-                {
-                    return 0;
-                }
-                isActive = active;
-                return active ? 1 : -1;
-            }
-        }
-
-        private boolean isAccurate(boolean active)
-        {
-            synchronized(syncObject)
-            {
-                return active == isActive;
-            }
-        }
-        
-        @Override
-        protected void onPreExecute()
-        {
-            Log.v(TAG, "SyncStatusPoll onPreExecute()");
-            if(mSyncStatusHandle != null)
-            {
-                mSyncStatusHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, this);
-            }
-            onStatusChanged(0xffffffff);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params)
-        {
-            Log.v(TAG, "SyncStatusPoll doInBackground()");
-            while (!Thread.interrupted())
-            {
-                int updateStatus = getUpdateStatus();
-                if(updateStatus != 0)
-                {
-                    Log.v(TAG, "updating status: " + updateStatus);
-                    publishProgress(updateStatus > 0);
-                }
-                try
-                {
-                    Thread.sleep(1000);
-                }
-                catch(InterruptedException e)
-                {
-                    break;
-                }
-            }
-            return null;
-        }
-        
-        @Override
-        protected void onProgressUpdate(Boolean... values)
-        {
-            if(values != null && values.length > 0)
-            {
-                boolean active = values[values.length - 1];
-                if(isAccurate(active))
-                {
-                    setProgressBarIndeterminateVisibility(active);
-                }
-            }
-        }
-
-        @Override
-        protected void onCancelled()
-        {
-            Log.v(TAG, "SyncStatusPoll onCancelled()");
-            onEnd();
-        }
-        
-        @Override
-        protected void onPostExecute(Void result)
-        {
-            Log.v(TAG, "SyncStatusPoll onPostExecute()");
-            onEnd();
-        }
-        
-        private void onEnd()
-        {
-            if(mSyncStatusHandle != null)
-            {
-                ContentResolver.removeStatusChangeListener(mSyncStatusHandle);
-                mSyncStatusHandle = null;
-            }
-            isActive = false;
-            setProgressBarIndeterminateVisibility(false);
-        }
-        
-        @Override
-        public void onStatusChanged(int which)
-        {
-            Log.v(TAG, "SyncStatusPoll onStatusChanged()");
-            int updateStatus = getUpdateStatus();
-            if(updateStatus != 0)
-            {
-                setProgressBarIndeterminateVisibility(updateStatus > 0);
-            }
         }
     }
     
@@ -275,6 +148,18 @@ public class ListVoicemailActivity extends ListActivity
     protected void onDestroy()
     {
         Log.v(TAG, "destroy list voicemail activity");
+
+        this.mAdapter.unregisterDataSetObserver(mDataSetObserver);
+        this.mAdapter.onDestroy();
+        
+        this.mViewBinder.onDestroy();
+        
+        this.mAdapter = null;
+        this.mSyncStatusPoll = null;
+        this.mCursor = null;
+        this.mDataSetObserver = null;
+        this.mAdapter = null;
+        
         super.onDestroy();
     }
 
@@ -569,9 +454,17 @@ public class ListVoicemailActivity extends ListActivity
                 master = null;
             }
         }
+        
+        public void clearAll()
+        {
+            views.clear();
+            badges.clear();
+            master = null;
+            info = null;
+        }
     }
 
-    private class ListVoicemailCursorAdapter extends SimpleCursorAdapter
+    private static final class ListVoicemailCursorAdapter extends SimpleCursorAdapter
     {
         private Context mContext;
         private int[] mColors;
@@ -590,18 +483,29 @@ public class ListVoicemailActivity extends ListActivity
                 mColors = null;
             }
         }
+
+        public void onDestroy()
+        {
+            this.setViewBinder(null);
+            mContext = null;
+        }
         
         @Override
         public View getView(int position, View convertView, android.view.ViewGroup parent)
         {
+            ListVoicemailViewBinder binder = (ListVoicemailViewBinder)getViewBinder();
             Cursor cursor = getCursor();
+            if (cursor == null || binder == null || mContext == null)
+            {
+                throw new IllegalStateException("cursor adapter looks to be destroyed");
+            }
             if (!cursor.moveToPosition(position))
             {
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
             
             View v;
-            if (mViewBinder.isReUsable(cursor, convertView))
+            if (binder != null && binder.isReUsable(cursor, convertView))
             {
                 v = convertView;
             }
@@ -622,7 +526,7 @@ public class ListVoicemailActivity extends ListActivity
 
     }
     
-    private class ListVoicemailViewBinder implements SimpleCursorAdapter.ViewBinder
+    private static final class ListVoicemailViewBinder implements SimpleCursorAdapter.ViewBinder
     {
         private Context context;
         private Map<String, BadgeHandler> leftByNames;
@@ -631,6 +535,16 @@ public class ListVoicemailActivity extends ListActivity
         {
             context = c;
             leftByNames = new TreeMap<String, BadgeHandler>();
+        }
+
+        public void onDestroy()
+        {
+            for(Map.Entry<String, BadgeHandler> entry : leftByNames.entrySet())
+            {
+                entry.getValue().clearAll();
+            }
+            context = null;
+            leftByNames.clear();
         }
 
         private String getCursorString(Cursor c, int cIdx)
@@ -689,7 +603,7 @@ public class ListVoicemailActivity extends ListActivity
                             handler = new BadgeHandler();
                             leftByNames.put(text, handler);
                         }
-                        String number = NotificationHelper.getDialString(ListVoicemailActivity.this, text, false);
+                        String number = NotificationHelper.getDialString(context, text, false);
                         handler.addBadge(number, badge);
                     }
                     else

@@ -28,10 +28,6 @@ public class VoicemailPlayer implements AudioController.Player
     
     private AudioController audioController;
     
-    private MediaPlayer.OnPreparedListener onPreparedListener;
-    private MediaPlayer.OnCompletionListener onCompletionListener;
-    private MediaPlayer.OnErrorListener onErrorListener;
-
     private Context context;
     
     public VoicemailPlayer()
@@ -47,10 +43,6 @@ public class VoicemailPlayer implements AudioController.Player
         targetAudioStream = AudioManager.STREAM_VOICE_CALL;
         
         audioController = null;
-        
-        onPreparedListener = null;
-        onCompletionListener = null;
-        onErrorListener = null;
         
         context = null;
     }
@@ -106,19 +98,6 @@ public class VoicemailPlayer implements AudioController.Player
         }
     }
     
-    public void setOnPreparedListener(MediaPlayer.OnPreparedListener l)
-    {
-        onPreparedListener = l;
-    }
-    public void setOnCompletionListener(MediaPlayer.OnCompletionListener l)
-    {
-        onCompletionListener = l;
-    }
-    public void setOnErrorListener(MediaPlayer.OnErrorListener l)
-    {
-        onErrorListener = l;
-    }
-
     public void setAudioController(AudioController controller)
     {
         audioController = controller;
@@ -181,6 +160,17 @@ public class VoicemailPlayer implements AudioController.Player
             }
         }
         release(true);
+    }
+    
+    public void onDestroy()
+    {
+        stopPlayback();
+        if(audioController != null)
+        {
+            audioController.onDestroy();
+            audioController = null;
+        }
+        this.context = null;
     }
 
     public AudioController getController()
@@ -503,11 +493,6 @@ public class VoicemailPlayer implements AudioController.Player
                 return;
             }
             
-            if(onPreparedListener != null)
-            {
-                onPreparedListener.onPrepared(mediaPlayer);
-            }
-
             int seekToPosition = seekWhenPrepared;
             seekWhenPrepared = 0;
             if(seekToPosition != 0)
@@ -555,10 +540,6 @@ public class VoicemailPlayer implements AudioController.Player
             {
                 audioController.update();
             }
-            if(onCompletionListener != null)
-            {
-                onCompletionListener.onCompletion(mediaPlayer);
-            }
         }
     };
 
@@ -574,14 +555,6 @@ public class VoicemailPlayer implements AudioController.Player
             if(audioController != null)
             {
                 audioController.setErrored();
-            }
-
-            if(onErrorListener != null)
-            {
-                if(onErrorListener.onError(mediaPlayer, frameworkErr, implErr))
-                {
-                    return true;
-                }
             }
 
             Toast.makeText(context, "Unable to play voicemail", Toast.LENGTH_SHORT).show();

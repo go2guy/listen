@@ -196,20 +196,30 @@ public class ViewVoicemailActivity extends Activity
         {
             mDownloadTask.cancel(true);
         }
-        mVoicemailPlayer.stopPlayback();
+        
+        if(mCursor != null && mContentObserver != null)
+        {
+            mCursor.unregisterContentObserver(mContentObserver);
+        }
+
+        if(mVoicemailPlayer != null)
+        {
+            mVoicemailPlayer.onDestroy();
+        }
+
+        this.mBadge = null;
+        this.mCall = null;
+        this.mCursor = null;
+        this.mDate = null;
+        this.mDelete = null;
+        this.mDownloadTask = null;
+        this.mLeftBy = null;
+        this.mName = null;
+        this.mTranscription = null;
+        
         super.onDestroy();
     }
 
-    @Override
-    public void onContentChanged()
-    {
-        super.onContentChanged();
-        //if(mCursor != null)
-        //{
-        //    updateView(true);
-        //}
-    }
-    
     private void updateView(boolean reQuery)
     {
         if(reQuery && mCursor != null)

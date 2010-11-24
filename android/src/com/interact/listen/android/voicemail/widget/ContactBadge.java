@@ -137,6 +137,13 @@ public class ContactBadge extends QuickContactBadge
         info = new Data();
     }
 
+    public void onDestroy()
+    {
+        mQueryHandler.cancelOperation(TOKEN_LOOKUP);
+        mQueryHandler.cancelOperation(TOKEN_ICON);
+        updateListener = null;
+    }
+    
     public void setOnCompleteListener(OnComplete listener)
     {
         updateListener = listener;

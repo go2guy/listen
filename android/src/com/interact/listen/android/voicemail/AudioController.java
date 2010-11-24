@@ -119,6 +119,20 @@ public class AudioController
         updatePausePlay();
     }
     
+    public void onDestroy()
+    {
+        player = null;
+        view = null;
+
+        progressBar = null;
+        endTime = null;
+        curTime = null;
+        pauseButton = null;
+        fastForwardButton = null;
+        rewindButton = null;
+        speakerButton = null;
+    }
+
     public void updateStream(int stream)
     {
         // we just support the two
