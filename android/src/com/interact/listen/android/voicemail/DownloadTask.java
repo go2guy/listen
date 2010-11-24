@@ -50,6 +50,7 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
     {
         if(voicemail == null)
         {
+            Log.v(TAG, "onPreExecute() voicemail is null");
             player.setErrored();
         }
         else if(!voicemail.isDownloaded())
@@ -70,6 +71,12 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
             return false;
         }
         
+        if(Thread.currentThread().isInterrupted())
+        {
+            Log.i(TAG, "DownloadTask Interrupted");
+            return voicemail.isDownloaded();
+        }
+        
         if(!voicemail.isDownloaded())
         {
             // must re-check in case the sync adapter beat us to it, but not till after we originally got it
@@ -80,8 +87,6 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
                 return false;
             }
         }
-
-        Log.v(TAG, "background after runnable: " + voicemail);
         
         if(!voicemail.isDownloading() && !voicemail.isDownloadError())
         {
@@ -114,7 +119,25 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
             }
         }
         looper.interrupt();
-        return looper.isDownloaded();
+        
+        if(Thread.currentThread().isInterrupted() || looper.isDownloadAttempt())
+        {
+            return looper.isDownloaded();
+        }
+        
+        Log.v(TAG, "Appears that cancelled download completed, give it another shot");
+        voicemail = looper.getVoicemailCopy();
+
+        runnable.reset(voicemail);
+        runnable.run();
+        
+        if(!voicemail.isDownloaded())
+        {
+            voicemail = VoicemailHelper.getVoicemail(context.getContentResolver(), voicemail.getId());
+            Log.v(TAG, "re-queryed after second attempt: " + voicemail);
+        }
+
+        return voicemail != null && voicemail.isDownloaded();
     }
     
     private static class LooperThread extends Thread
@@ -149,6 +172,22 @@ public class DownloadTask extends AsyncTask<Void, Integer, Boolean>
             }
         }
 
+        public boolean isDownloadAttempt()
+        {
+            synchronized(syncObject)
+            {
+                return voicemail != null && (voicemail.isDownloaded() || voicemail.isDownloadError() || voicemail.isDownloading());
+            }
+        }
+
+        public Voicemail getVoicemailCopy()
+        {
+            synchronized(syncObject)
+            {
+                return voicemail == null ? null : voicemail.copy();
+            }
+        }
+        
         public void check()
         {
             if(observer != null)

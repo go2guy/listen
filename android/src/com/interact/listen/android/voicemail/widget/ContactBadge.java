@@ -111,16 +111,16 @@ public class ContactBadge extends QuickContactBadge
     
     private static final String[] ICON_PROJECTION = new String[] {ContactsContract.CommonDataKinds.Photo.PHOTO};
 
-    private QueryHandler mQueryHandler = null;
-    private Data info = null;
-
-    private OnComplete updateListener = null;
+    private QueryHandler mQueryHandler;
+    private Data info;
+    private OnComplete updateListener;
     
     public ContactBadge(Context context)
     {
         super(context);
         mQueryHandler = new QueryHandler(context.getContentResolver());
         info = new Data();
+        updateListener = null;
     }
 
     public ContactBadge(Context context, AttributeSet attrs)
@@ -260,6 +260,7 @@ public class ContactBadge extends QuickContactBadge
                             if(updateListener != null)
                             {
                                 updateListener.onComplete(new Data(info));
+                                updateListener = null;
                             }
                             return;
                         }
@@ -279,6 +280,7 @@ public class ContactBadge extends QuickContactBadge
                         if(updateListener != null)
                         {
                             updateListener.onComplete(new Data(info));
+                            updateListener = null;
                         }
                         return;
                     default:

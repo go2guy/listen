@@ -11,7 +11,6 @@
 	<string name="transcriptionUnknown">Transcript not available</string>
 	<string name="dateCreatedUnknown"></string>
 	<string name="voicemail_not_found">Voicemail not found</string>
-	<string name="toast_download_error">Unable to retrieve voicemail</string>
 
     <string name="menu_refresh">Refresh</string>
     <string name="menu_settings">Settings</string>
@@ -36,6 +35,8 @@
 	<string name="pref_sync_audio">Sync Audio</string>
 	<string name="pref_sync_audio_on">Audio downloaded automatically</string>	
 	<string name="pref_sync_audio_off">Audio downloaded on demand</string>
+	<string name="pref_sync_to_external_title">External Storage</string>
+	<string name="pref_sync_to_external_summary">Save audio on external storage</string>
 	
 	<string name="pref_notif_category">Notifications</string>
 	<string name="pref_notif_inbox_title">Inbox Notifications</string>

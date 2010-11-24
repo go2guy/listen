@@ -11,9 +11,10 @@
 		android:selectable="true" android:defaultValue="15"/>
 
 	<CheckBoxPreference android:summaryOn="@string/pref_sync_audio_on" android:summaryOff="@string/pref_sync_audio_off"
-		android:key="sync_audio" android:defaultValue="true" android:title="@string/pref_sync_audio"/>
+		android:key="sync_audio" android:title="@string/pref_sync_audio" android:defaultValue="false"/>
 
 <Preference android:title="@string/pref_accounts_settings_title" android:persistent="false" android:key="accounts_sync_settings_key" android:summary="@string/pref_accounts_settings_summary"/><Preference android:key="pref_reset_password_key" android:title="@string/pref_accounts_reset_password_title" android:persistent="false" android:summary="@string/pref_accounts_reset_password_summary"></Preference>
+<CheckBoxPreference android:summary="@string/pref_sync_to_external_summary" android:title="@string/pref_sync_to_external_title" android:key="external_storage" android:defaultValue="false"></CheckBoxPreference>
 </PreferenceCategory>
 
 <PreferenceCategory android:title="@string/pref_notif_category">

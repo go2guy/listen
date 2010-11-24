@@ -7,7 +7,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -333,16 +332,12 @@ public class VoicemailPlayer implements AudioController.Player
         catch(IllegalArgumentException e)
         {
             Log.w(TAG, "Unable to open content: " + uri, e);
-            currentState = State.ERROR;
-            targetState = State.ERROR;
             errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
             return false;
         }
         catch(IOException e)
         {
             Log.w(TAG, "Unable to open content: " + uri, e);
-            currentState = State.ERROR;
-            targetState = State.ERROR;
             errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
             return false;
         }
@@ -406,8 +401,6 @@ public class VoicemailPlayer implements AudioController.Player
             {
                 audioController.setErrored();
             }
-            currentState = State.ERROR;
-            targetState = State.ERROR;
             errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
             return;
         }
@@ -418,8 +411,6 @@ public class VoicemailPlayer implements AudioController.Player
             {
                 audioController.setErrored();
             }
-            currentState = State.ERROR;
-            targetState = State.ERROR;
             errorListener.onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
             return;
         }
@@ -551,13 +542,13 @@ public class VoicemailPlayer implements AudioController.Player
             Log.e(TAG, "Error: " + frameworkErr + "," + implErr);
             currentState = State.ERROR;
             targetState = State.ERROR;
+            uri = null;
 
             if(audioController != null)
             {
                 audioController.setErrored();
             }
 
-            Toast.makeText(context, "Unable to play voicemail", Toast.LENGTH_SHORT).show();
             return true;
         }
     };

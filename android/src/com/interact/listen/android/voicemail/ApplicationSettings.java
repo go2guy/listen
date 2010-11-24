@@ -32,6 +32,8 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
    
     private static final String TAG = Constants.TAG + "AppSettings";
 
+    public static final String SYNC_EXTERNAL = "external_storage";
+
     private static final String CLEAR_CACHE = "clear_cache_pref";
     private static final String SYNC_INTERVAL_MINUTES = "sync_interval_minutes";
     private static final String SYNC_INTERVAL = "sync_interval_pref";
@@ -43,7 +45,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private static final String DIAL_PREFIX = "dial_prefix";
     private static final String SYNC_SETTINGS = "accounts_sync_settings_key";
     private static final String RESET_PASSWORD = "pref_reset_password_key";
-    
+
     private SharedPreferences sharedPreferences;
     private Preference clearCachePref;
     private Preference syncIntervalPref;
@@ -239,7 +241,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     public static boolean isSyncAudio(Context context)
     {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean(SYNC_AUDIO, true);
+        return sharedPreferences.getBoolean(SYNC_AUDIO, false);
     }
 
     public static boolean isNotificationEnabled(Context context)
@@ -271,4 +273,23 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(DIAL_PREFIX, "");
     }
+    
+    public static boolean isExternalStorageEnabled(Context context)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(SYNC_EXTERNAL, false);
+    }
+    
+    public static void registerListener(Context context, OnSharedPreferenceChangeListener listener)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    public static void unregisterListener(Context context, OnSharedPreferenceChangeListener listener)
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener);
+    }
+
 }

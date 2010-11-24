@@ -81,11 +81,16 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
             super("downloading now");
         }
     }
-    
+
+    public void reset(Voicemail vm)
+    {
+        voicemail = vm;
+    }
+
     @Override
     public void run()
     {
-        if(!VoicemailHelper.shouldAttemptDownload(voicemail))
+        if(!VoicemailHelper.shouldAttemptDownload(voicemail, true))
         {
             Log.i(TAG, "voicemail downloaded or downloading now: " + voicemail);
             return;
@@ -258,6 +263,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         ParcelFileDescriptor pfd = null;
         OutputStream out = null;
         long downloaded = -1;
+        boolean didOpen = false;
         
         try
         {
@@ -274,7 +280,8 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
             {
                 throw new DownloadingNow();
             }
-
+            didOpen = true;
+            
             out = new FileOutputStream(pfd.getFileDescriptor());
             downloaded = download(in, out, downloadSize);
         }
@@ -315,6 +322,13 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
             }
         }
         Log.i(TAG, "downloading result: " + downloaded);
+        
+        if(downloaded < 0 && didOpen && voicemail != null)
+        {
+            Log.v(TAG, "need to clean up");
+            VoicemailHelper.setDownloadCancelled(resolver, voicemail.getId());
+        }
+        
         return downloaded;
     }
     

@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -253,10 +252,7 @@ public class AudioController
     {
         Log.v(TAG, "setting player errored");
         setEnabled(false);
-        if(view != null)
-        {
-            Toast.makeText(view.getContext(), R.string.toast_download_error, Toast.LENGTH_SHORT).show();
-        }
+
         if(pauseButton != null)
         {
             clearAnimation(false);
@@ -312,6 +308,7 @@ public class AudioController
     
     public void setReady()
     {
+        Log.v(TAG, "setting ready");
         setEnabled(true);
         clearAnimation(true);
     }

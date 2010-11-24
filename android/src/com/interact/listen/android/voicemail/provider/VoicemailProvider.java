@@ -11,16 +11,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.Voicemail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 
 public class VoicemailProvider extends ContentProvider
@@ -30,14 +31,13 @@ public class VoicemailProvider extends ContentProvider
     private static final String TAG = Constants.TAG + "Provider";
 
     private static final String DATABASE_NAME = "com.interact.listen.voicemail.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String VOICEMAIL_TABLE = "voicemails";
     private static final String VOICEMAIL_INDEX = "vmviewidx";
     
     private static final UriMatcher URI_MATCHER;
     private static final int VOICEMAIL_MATCH = 1;
     private static final int SPECIFIC_VOICEMAIL_MATCH = 2;
-    private static final String AUDIO_DIR = "audio";
     private static final String AUDIO_FILE_PREFIX = "voicemail_audio-";
     
     private static final String ID_WHERE = Voicemails._ID + "=?";
@@ -100,6 +100,10 @@ public class VoicemailProvider extends ContentProvider
                 catch(SecurityException e)
                 {
                     Log.e(TAG, "security exception deleting audio file", e);
+                }
+                catch(Exception e)
+                {
+                    Log.e(TAG, "deleteFiles() exception", e);
                 }
             }
         }
@@ -288,7 +292,16 @@ public class VoicemailProvider extends ContentProvider
 
     private File getAudioFile(int id)
     {
-        File cdir = getContext().getDir(AUDIO_DIR, Context.MODE_WORLD_READABLE);
+        File cdir = null;
+        if(ApplicationSettings.isExternalStorageEnabled(getContext()) &&
+            TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED))
+        {
+            cdir = getContext().getExternalCacheDir();
+        }
+        if(cdir == null)
+        {
+            cdir = getContext().getCacheDir();
+        }
         File file = new File(cdir, AUDIO_FILE_PREFIX + id);
         return file;
     }
@@ -390,7 +403,6 @@ public class VoicemailProvider extends ContentProvider
             else if(isForWrite) // marked that it's downloaded, but we are updating
             {
                 Log.i(TAG, "already downloaded " + uri);
-                //audioFile = setAudioForDownload(uri, db, id, true);
                 throw new FileNotFoundException("already downloaded");
             }
             else // just reading
@@ -481,9 +493,6 @@ public class VoicemailProvider extends ContentProvider
 
             Log.i(TAG, "creating index");
             db.execSQL(sb.toString());
-            
-            File cdir = context.getDir(AUDIO_DIR, Context.MODE_WORLD_READABLE);
-            createNoMediaFile(cdir);
         }
 
         @Override
@@ -503,26 +512,38 @@ public class VoicemailProvider extends ContentProvider
     {
         try
         {
-            File cdir = context.getCacheDir();
-            java.io.FilenameFilter filter = new java.io.FilenameFilter()
+            AudioFileFilter filter = new AudioFileFilter();
+            deleteFiles(context.getCacheDir(), filter);
+            if(TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED))
             {
-                @Override
-                public boolean accept(File dir, String filename)
-                {
-                    return filename != null && filename.startsWith(AUDIO_FILE_PREFIX);
-                }
-            };
-            
-            File[] files = cdir.listFiles(filter);
-            for (File file : files)
-            {
-                Log.i(TAG, "deleting all voicemails: " + file);
-                file.delete();
+                deleteFiles(context.getExternalCacheDir(), filter);
             }
         }
         catch(Exception e)
         {
             Log.e(TAG, "error removing all voicemail files", e);
+        }
+    }
+
+    private static final class AudioFileFilter implements java.io.FilenameFilter
+    {
+        @Override
+        public boolean accept(File dir, String filename)
+        {
+            return filename != null && filename.startsWith(AUDIO_FILE_PREFIX);
+        }
+    }
+    
+    private static void deleteFiles(File dir, java.io.FilenameFilter filter)
+    {
+        if(dir != null)
+        {
+            File[] files = dir.listFiles(filter);
+            for (File file : files)
+            {
+                Log.i(TAG, "deleting files: " + file);
+                file.delete();
+            }
         }
     }
     
@@ -562,23 +583,6 @@ public class VoicemailProvider extends ContentProvider
             throw new FileNotFoundException("Invalid mode for " + uri + ": " + mode);
         }
         return modeBits;
-    }
-    
-    private static void createNoMediaFile(File cdir)
-    {
-        File noMedia = new File(cdir, ".nomedia");
-        if(!noMedia.exists())
-        {
-            try
-            {
-                noMedia.createNewFile();
-            }
-            catch(IOException e)
-            {
-                Log.e(TAG, "error creating " + noMedia);
-            }
-        }
-        
     }
 
 }

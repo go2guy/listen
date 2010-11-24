@@ -239,6 +239,13 @@ public final class VoicemailHelper
         return resolver.update(dest.getUri(), values, null, null) > 0;
     }
     
+    public static void setDownloadCancelled(ContentResolver resolver, int id)
+    {
+        ContentValues values = Voicemail.getClearedDownloadValues();
+        values.putNull(Voicemails.DATA);
+        resolver.update(getVoicemailUri(id), values, null, null);
+    }
+
     public static void refreshCache(ContentResolver contentResolver)
     {
         int rows = contentResolver.delete(Voicemails.CONTENT_URI, null, null);
@@ -291,10 +298,10 @@ public final class VoicemailHelper
         return updates;
     }
 
-    public static boolean shouldAttemptDownload(Voicemail v)
+    public static boolean shouldAttemptDownload(Voicemail v, boolean force)
     {
         long now = System.currentTimeMillis();
-        return v.needsDownload(now, RETRY_DOWNLOAD, STALE_DOWNLOAD) && !v.isOlderThan(now - OLD_VOICEMAIL);
+        return v.needsDownload(now, RETRY_DOWNLOAD, STALE_DOWNLOAD) && (force || !v.isOlderThan(now - OLD_VOICEMAIL));
     }
     
     public static ParcelFileDescriptor getDownloadStream(ContentResolver resolver, Voicemail voicemail)

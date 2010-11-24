@@ -82,7 +82,7 @@ public final class Voicemail implements Parcelable
     }
     public static int getAudioDownloadingState()
     {
-        return AUDIO_DOWNLOADED;
+        return AUDIO_DOWNLOADING;
     }
     public static boolean isDownloadedState(int audioState)
     {
@@ -588,9 +588,9 @@ public final class Voicemail implements Parcelable
         sb.append("[Voicemail ").append(id).append(' ').append(userName).append('-').append(voicemailID);
         sb.append(" new=").append(isNew).append(" notified=").append(hasNotified).append(" leftBy=").append(leftBy);
         sb.append(" description='").append(description).append("' created=").append(dateCreated);
-        sb.append(" duration=").append(duration).append(" transcription='").append(transcription);
-        sb.append("' label=").append(label.name()).append(" state=").append(state);
-        sb.append(" audioState=").append(audioState).append(" audioDate=").append(audioDate).append(']');
+        sb.append(" label=").append(label.name()).append(" state=").append(state);
+        sb.append(" audioState=").append(audioState).append(" audioDate=").append(audioDate);
+        sb.append(" duration=").append(duration).append(" transcription='").append(transcription).append("']");
         return sb.toString();
     }
 

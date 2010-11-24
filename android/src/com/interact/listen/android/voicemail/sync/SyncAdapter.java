@@ -254,7 +254,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             {
                 syncResult.stats.numUpdates++;
             }
-            if(VoicemailHelper.shouldAttemptDownload(iter.getLocal()))
+            if(VoicemailHelper.shouldAttemptDownload(iter.getLocal(), false))
             {
                 needAudio.add(iter.getLocal());
             }

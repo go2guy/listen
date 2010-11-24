@@ -4,6 +4,8 @@ import android.accounts.AccountManager;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
@@ -74,10 +76,24 @@ public class ListVoicemailActivity extends ListActivity
 
         mAdapter.registerDataSetObserver(mDataSetObserver);
         
-        registerForContextMenu(getListView());
+        ApplicationSettings.registerListener(this, mPrefListener);
         
+        registerForContextMenu(getListView());
+
         updateView();
     }
+
+    private OnSharedPreferenceChangeListener mPrefListener = new OnSharedPreferenceChangeListener()
+    {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+        {
+            if(mViewBinder != null && TextUtils.equals(key, ApplicationSettings.SYNC_EXTERNAL))
+            {
+                mViewBinder.clearCache();
+            }
+        }
+    };
 
     private DataSetObserver mDataSetObserver = new DataSetObserver()
     {
@@ -126,13 +142,18 @@ public class ListVoicemailActivity extends ListActivity
     @Override
     protected void onResume()
     {
-        super.onResume();
-
         Log.v(TAG, "resume list voicemail activity");
+
+        if(mViewBinder != null)
+        {
+            mViewBinder.clearCache();
+        }
+
+        super.onResume();
 
         NotificationHelper.clearNotificationBar(this);
 
-        if(SyncAdapter.isNewSyncSupported())
+        if(SyncAdapter.isNewSyncSupported() || (mCursor != null && mCursor.getCount() == 0))
         {
             SyncSchedule.syncFull(this, false);
         }
@@ -149,16 +170,27 @@ public class ListVoicemailActivity extends ListActivity
     {
         Log.v(TAG, "destroy list voicemail activity");
 
-        this.mAdapter.unregisterDataSetObserver(mDataSetObserver);
-        this.mAdapter.onDestroy();
+        if(mPrefListener != null)
+        {
+            ApplicationSettings.unregisterListener(this, mPrefListener);
+        }
         
-        this.mViewBinder.onDestroy();
+        if(mAdapter != null)
+        {
+            mAdapter.unregisterDataSetObserver(mDataSetObserver);
+            mAdapter.onDestroy();
+        }
+        if(mViewBinder != null)
+        {
+            mViewBinder.onDestroy();
+        }
         
-        this.mAdapter = null;
-        this.mSyncStatusPoll = null;
-        this.mCursor = null;
-        this.mDataSetObserver = null;
-        this.mAdapter = null;
+        mAdapter = null;
+        mSyncStatusPoll = null;
+        mCursor = null;
+        mDataSetObserver = null;
+        mPrefListener = null;
+        mAdapter = null;
         
         super.onDestroy();
     }
@@ -455,6 +487,11 @@ public class ListVoicemailActivity extends ListActivity
             }
         }
         
+        public void clearInfo()
+        {
+            info = null;
+        }
+        
         public void clearAll()
         {
             views.clear();
@@ -535,6 +572,14 @@ public class ListVoicemailActivity extends ListActivity
         {
             context = c;
             leftByNames = new TreeMap<String, BadgeHandler>();
+        }
+
+        public void clearCache()
+        {
+            for(Map.Entry<String, BadgeHandler> entry : leftByNames.entrySet())
+            {
+                entry.getValue().clearInfo();
+            }
         }
 
         public void onDestroy()
