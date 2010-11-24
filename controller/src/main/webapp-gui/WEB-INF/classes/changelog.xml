@@ -489,4 +489,9 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="52">
+        <addColumn tableName="AUDIO">
+            <column name="LEFT_BY_NAME" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

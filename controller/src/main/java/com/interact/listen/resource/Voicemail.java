@@ -47,6 +47,9 @@ public class Voicemail extends Audio implements Serializable
     
     @Column(name = "HAS_NOTIFIED", nullable = true)
     private Boolean hasNotified = Boolean.FALSE;
+    
+    @Column(name = "LEFT_BY_NAME", nullable = true)
+    private String leftByName = "(Unknown)";
 
     @Transient
     private MessageLightToggler messageLightToggler = new SpotSystemMessageLightToggler();
@@ -110,6 +113,21 @@ public class Voicemail extends Audio implements Serializable
     {
         this.messageLightToggler = toggler;
     }
+    
+    public String getLeftByName()
+    {
+        return leftByName;
+    }
+
+    public void setLeftByName(String leftByName)
+    {
+        this.leftByName = leftByName;
+    }
+    
+    public String nameAndNumber()
+    {
+        return this.leftByName + " " + this.leftBy; 
+    }
 
     @Override
     public boolean validate()
@@ -149,7 +167,14 @@ public class Voicemail extends Audio implements Serializable
         copy.setSubscriber(subscriber);
         copy.setTranscription(getTranscription());
         copy.setUri(getUri());
+        copy.setLeftByName(leftByName);
         return copy;
+    }
+    
+    @Override
+    public void beforeSave(PersistenceService persistenceService, HistoryService historyService)
+    {
+        updateLeftByName(persistenceService);
     }
     
     @Override
@@ -192,6 +217,17 @@ public class Voicemail extends Audio implements Serializable
         }
 
         messageLightToggler.toggleMessageLight(persistenceService, getSubscriber());
+    }
+    
+    @Override
+    public void beforeUpdate(PersistenceService persistenceService, HistoryService historyService, Resource original)
+    {
+        Voicemail originalVoicemail = (Voicemail)original;
+        
+        if(!this.leftBy.equals(originalVoicemail.getLeftBy()))
+        {
+            updateLeftByName(persistenceService);
+        }
     }
 
     @Override
@@ -310,6 +346,16 @@ public class Voicemail extends Audio implements Serializable
             LOG.debug("Sending SMS notification for [" + getId() + "] to subscriber [" + voicemailSubscriber.getSmsAddress() + "]");
             statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
             emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
+        }
+    }
+    
+    private void updateLeftByName(PersistenceService persistenceService)
+    {
+        String potentialRealName = AccessNumber.querySubscriberNameByAccessNumber(persistenceService.getSession(), this.leftBy);
+        
+        if(!potentialRealName.equals(""))
+        {
+            this.leftByName = potentialRealName;
         }
     }
 }

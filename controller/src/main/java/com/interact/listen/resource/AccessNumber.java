@@ -240,13 +240,13 @@ public class AccessNumber extends Resource implements Serializable
         {
             String name = accessNumber.getSubscriber().getRealName();
             
-            if(name != null && !name.equals(""))
+            if(name != null)
             {
                 return name;
             }
         }
         
-        return number;
+        return "";
     }
 
     private static Criteria buildCriteriaForSubscriberQuery(Session session, Subscriber subscriber)

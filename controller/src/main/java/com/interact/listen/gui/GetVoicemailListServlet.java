@@ -113,7 +113,7 @@ public class GetVoicemailListServlet extends HttpServlet
         String date = marshaller.convertAndEscape(Date.class, voicemail.getDateCreated());
         json.append("\"dateCreated\":\"").append(date).append("\",");
 
-        String leftBy = marshaller.convertAndEscape(String.class, voicemail.getLeftBy());
+        String leftBy = marshaller.convertAndEscape(String.class, voicemail.nameAndNumber());
         json.append("\"leftBy\":\"").append(leftBy).append("\",");
 
         Duration duration = new Duration(Long.parseLong(voicemail.getDuration()));
