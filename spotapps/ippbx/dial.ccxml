@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/08/2010
+    <!-- Last Modified 11/24/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -503,6 +503,7 @@
             <log>INFO: Entered [dialog.user.listenVoiceMail] with state [<value expr="state"/>]</log>
             <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
                 <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
+                <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', 'ippbx')"/>
                 <var name="II_SB_status" expr="''"/>
                 <var name="II_SB_local" expr="DNIS"/>
                 <var name="II_SB_remote" expr="ANI"/>

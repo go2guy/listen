@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 11/17/2010
+    <!-- Last Modified 11/24/2010
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -20,6 +20,26 @@
 		<block>
 	        <log>INFO: Entered beginDocument</log>
             <assign name="listenArgs" expr="importedValue"/>    <!-- Save off controller information -->
+            <if cond="listenArgs.length &gt; 0"> <!-- Check if application was started from voicemail -->
+                <var name="application" expr="getJsonVal(listenArgs, 'application')"/>
+                <var name="action" expr="getJsonVal(listenArgs, 'action')"/>
+                <if cond="application == 'voicemail'">
+                    <if cond="action == 'operator'">
+                        <assign name="promptID" expr="'AP1605'"/>
+                        <assign name="fieldTimeOut" expr="''"/>
+                        <assign name="cutIn" expr="'false'"/>
+                        <assign name="status" expr="'callExt'"/>
+                        <assign name="extension" expr="officeOptr"/>
+                        <assign name="gotoForm" expr="'#exit'"/>
+                        <log>INFO: Send caller to operator</log>
+                        <log target="status">Call operator</log>
+            			<goto next="#playAudio"/>
+                    <else/>
+                        <assign name="promptID" expr="'AP1601'"/>
+                        <goto next="#setUp"/>
+                    </if>
+                </if>
+            </if>
             <goto next="#getPrompt"/>
         </block>
     </form>

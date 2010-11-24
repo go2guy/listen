@@ -22,6 +22,7 @@
     <var name="II_SB_CODE_DIR"/>        <!-- CODE_DIR. Application directory under base directory. Contains all code -->
     <var name="II_SB_line"/>            <!-- Line number processing call -->
     <var name="II_SB_importedValue"/>   <!-- imported values-->
+    <var name="projectSource" expr="''"/>
 
     <!-- Global variables -->
     <var name="state" expr="'idle'"/>     <!-- state. This variable holds the CCXML dialog state -->
@@ -35,11 +36,16 @@
                  In here we the appropriate variables for ippbx and transition to that application -->
             <log>INFO: Entered begin.ccxml</log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="state"/>]</log>
-            <var name="projectSource" expr="'LISTEN'"/>
             <var name="local" expr="II_SB_local"/>
             <var name="remote" expr="II_SB_remote"/>
             <var name="connectionid" expr="II_SB_ibcallid"/>
             <var name="importedValue" expr="II_SB_importedValue"/>
+            <var name="application" expr="getJsonVal(importedValue, 'application')"/>
+            <if cond="application == 'voicemail'">
+                <assign name="projectSource" expr="'VOICEMAIL'"/>
+            <else/>
+                <assign name="projectSource" expr="'LISTEN'"/>
+            </if>
             <log>INFO: projectSource [<value expr="projectSource"/>]</log>
             <log>INFO: dnis [<value expr="local"/>]</log>
             <log>INFO: ani [<value expr="remote"/>]</log>

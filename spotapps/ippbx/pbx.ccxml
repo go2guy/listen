@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/17/2010
+    <!-- Last Modified 11/24/2010
        *   @Name	pbx.ccxml
        *   @Desc	This script handles all the control logic for the PBX application -->
 
@@ -122,10 +122,11 @@
                 <send data="'dialog.user.updateClientRecord'" target="session.id"/>
             <elseif cond="inString(status,listenApps,',')"/>
                 <var name="appName" expr="''"/>
-                <assign name="importedValue" expr="setApp(importedValue, status)"/>
+                <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', status)"/>
                 <if cond="status == 'conferencing'">
                     <assign name="appName" expr="'listen_conference'"/>
                 <elseif cond="status == 'voicemail'"/>
+                    <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', 'ippbx')"/>
                     <assign name="appName" expr="'listen_voicemail'"/>
                 <elseif cond="status == 'directVoicemail'"/>
                     <assign name="appName" expr="'listen_mailbox'"/>
@@ -175,13 +176,4 @@
         </transition>
 
 	</eventprocessor>
-    <script>
-        <![CDATA[
-            function setApp(jsonObj, appName) {
-                var result = eval("("+jsonObj+")");
-                result.application = appName;
-                return iiStringify(result);
-            }
-        ]]>
-    </script>
 </ccxml>
