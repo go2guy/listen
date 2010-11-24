@@ -229,7 +229,7 @@ public final class ClientUtilities
             Uri.Builder builder = host.buildUpon();
             builder.appendEncodedPath(VOICEMAIL_PATH);
             builder.appendQueryParameter("subscriber", "/subscribers/" + subscriberID);
-            builder.appendQueryParameter("_fields", "id,isNew,leftBy,description,dateCreated,duration,transcription,hasNotified");
+            builder.appendQueryParameter("_fields", "id,isNew,leftBy,leftByName,description,dateCreated,duration,transcription,hasNotified");
             if(forView)
             {
                 builder.appendQueryParameter("_sortBy", "dateCreated");

@@ -15,6 +15,7 @@ public final class Voicemails implements BaseColumns
     public static final String IS_NEW = "is_new";
     public static final String HAS_NOTIFIED = "has_notified";
     public static final String LEFT_BY = "left_by";
+    public static final String LEFT_BY_NAME = "left_by_name";
     public static final String DESCRIPTION = "description";
     public static final String DURATION = "duration";
     public static final String TRANSCRIPT = "transcript";

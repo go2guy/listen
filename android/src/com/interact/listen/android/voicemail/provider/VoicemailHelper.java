@@ -26,12 +26,13 @@ public final class VoicemailHelper
     public static final long RETRY_DOWNLOAD =            60000; // 1 minute
     public static final long OLD_DOWNLOAD   = 1 * 24 * 3600000; // day old
 
+    // don't move _ID or LEFT_BY in list
     private static final String[] VOICEMAIL_LIST_PROJECTION =
-        new String[]{Voicemails._ID, Voicemails.LEFT_BY, Voicemails.DATE_CREATED, Voicemails.TRANSCRIPT,
+        new String[]{Voicemails._ID, Voicemails.LEFT_BY, Voicemails.LEFT_BY_NAME, Voicemails.DATE_CREATED, Voicemails.TRANSCRIPT,
                      Voicemails.IS_NEW, Voicemails.HAS_NOTIFIED};
 
-    public static final int VOICEMAIL_LIST_PROJECT_IS_NEW = 4;
-    public static final int VOICEMAIL_LIST_PROJECT_NOTIFIED = 5;
+    public static final int VOICEMAIL_LIST_PROJECT_IS_NEW = 5;
+    public static final int VOICEMAIL_LIST_PROJECT_NOTIFIED = 6;
     
     private static final String LIST_VOICEMAILS_VIEW_ORDER;
     private static final String LIST_VOICEMAILS_CONTROL_ORDER;

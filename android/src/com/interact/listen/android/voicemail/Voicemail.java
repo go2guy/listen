@@ -42,7 +42,8 @@ public final class Voicemail implements Parcelable
     public static final String[] ALL_PROJECTION = new String[] {Voicemails._ID, Voicemails.USER_NAME,
                                                                 Voicemails.DATE_CREATED, Voicemails.VOICEMAIL_ID,
                                                                 Voicemails.IS_NEW, Voicemails.HAS_NOTIFIED,
-                                                                Voicemails.LEFT_BY, Voicemails.DESCRIPTION,
+                                                                Voicemails.LEFT_BY, Voicemails.LEFT_BY_NAME,
+                                                                Voicemails.DESCRIPTION,
                                                                 Voicemails.DURATION, Voicemails.TRANSCRIPT,
                                                                 Voicemails.LABEL, Voicemails.STATE,
                                                                 Voicemails.AUDIO_STATE, Voicemails.AUDIO_DATE };
@@ -65,6 +66,7 @@ public final class Voicemail implements Parcelable
     private boolean isNew;
     private boolean hasNotified;
     private String leftBy;
+    private String leftByName;
     private String description;
     private long dateCreated;
     private int duration;
@@ -114,6 +116,7 @@ public final class Voicemail implements Parcelable
             vm.isNew = cursor.getInt(idx++) != 0;
             vm.hasNotified = cursor.getInt(idx++) != 0;
             vm.leftBy = getStringFromCursor(cursor, idx++);
+            vm.leftByName = getStringFromCursor(cursor, idx++);
             vm.description = getStringFromCursor(cursor, idx++);
             vm.duration = (int)cursor.getLong(idx++);
             vm.transcription = getStringFromCursor(cursor, idx++);
@@ -157,6 +160,7 @@ public final class Voicemail implements Parcelable
         values.put(Voicemails.IS_NEW,       isNew);
         values.put(Voicemails.HAS_NOTIFIED, hasNotified);
         values.put(Voicemails.LEFT_BY,      leftBy);
+        values.put(Voicemails.LEFT_BY_NAME, leftByName);
         values.put(Voicemails.DESCRIPTION,  description);
         values.put(Voicemails.DURATION,     duration);
         values.put(Voicemails.TRANSCRIPT,   transcription);
@@ -184,7 +188,8 @@ public final class Voicemail implements Parcelable
         vm.hasNotified = !vm.isNew;
         
         vm.leftBy = json.has("leftBy") ? json.getString("leftBy") : null;
-        vm.description = json.has("leftBy") ? json.getString("description") : null;
+        vm.leftByName = json.has("leftByName") ? json.getString("leftByName") : null;
+        vm.description = json.has("description") ? json.getString("description") : null;
         vm.setDateCreated(json.has("dateCreated") ? json.getString("dateCreated") : null);
         vm.setDurationFromString(json.has("duration") ? json.getString("duration") : null);
         vm.transcription = json.has("transcription") ? json.getString("transcription") : null;
@@ -193,6 +198,11 @@ public final class Voicemail implements Parcelable
         vm.audioState = 0;
         vm.audioDate = 0;
         vm.label = Label.INBOX;
+        
+        if(TextUtils.equals(vm.leftByName, "(Unknown)"))
+        {
+            vm.leftByName = null;
+        }
         
         return vm;
     }
@@ -222,6 +232,7 @@ public final class Voicemail implements Parcelable
         vm.isNew = isNew;
         vm.hasNotified = hasNotified;
         vm.leftBy = leftBy;
+        vm.leftByName = leftByName;
         vm.description = description;
         vm.duration = duration;
         vm.transcription = transcription;
@@ -261,6 +272,10 @@ public final class Voicemail implements Parcelable
     public String getLeftBy()
     {
         return leftBy;
+    }
+    public String getLeftByName()
+    {
+        return leftByName;
     }
     public String getDescription()
     {
@@ -526,6 +541,11 @@ public final class Voicemail implements Parcelable
             leftBy = source.leftBy;
             values.put(Voicemails.LEFT_BY, source.leftBy);
         }
+        if(!TextUtils.equals(leftByName, source.leftByName))
+        {
+            leftByName = source.leftByName;
+            values.put(Voicemails.LEFT_BY_NAME, source.leftByName);
+        }
         if(dateCreated != source.dateCreated)
         {
             dateCreated = source.dateCreated;
@@ -553,6 +573,7 @@ public final class Voicemail implements Parcelable
         out.writeByte(isNew ? (byte)1 : (byte)0);
         out.writeByte(hasNotified ? (byte)1 : (byte)0);
         out.writeString(leftBy);
+        out.writeString(leftByName);
         out.writeString(description);
         out.writeLong(dateCreated);
         out.writeInt(duration);
@@ -571,6 +592,7 @@ public final class Voicemail implements Parcelable
         isNew = in.readByte() != 0;
         hasNotified = in.readByte() != 0;
         leftBy = in.readString();
+        leftByName = in.readString();
         description = in.readString();
         dateCreated = in.readLong();
         duration = in.readInt();
@@ -587,7 +609,7 @@ public final class Voicemail implements Parcelable
         StringBuffer sb = new StringBuffer();
         sb.append("[Voicemail ").append(id).append(' ').append(userName).append('-').append(voicemailID);
         sb.append(" new=").append(isNew).append(" notified=").append(hasNotified).append(" leftBy=").append(leftBy);
-        sb.append(" description='").append(description).append("' created=").append(dateCreated);
+        sb.append(" leftByName='").append(leftByName).append("' created=").append(dateCreated);
         sb.append(" label=").append(label.name()).append(" state=").append(state);
         sb.append(" audioState=").append(audioState).append(" audioDate=").append(audioDate);
         sb.append(" duration=").append(duration).append(" transcription='").append(transcription).append("']");

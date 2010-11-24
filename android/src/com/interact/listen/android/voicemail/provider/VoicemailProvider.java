@@ -31,7 +31,7 @@ public class VoicemailProvider extends ContentProvider
     private static final String TAG = Constants.TAG + "Provider";
 
     private static final String DATABASE_NAME = "com.interact.listen.voicemail.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String VOICEMAIL_TABLE = "voicemails";
     private static final String VOICEMAIL_INDEX = "vmviewidx";
     
@@ -440,6 +440,7 @@ public class VoicemailProvider extends ContentProvider
         voicemailProjectionMap.put(Voicemails.IS_NEW, Voicemails.IS_NEW);
         voicemailProjectionMap.put(Voicemails.HAS_NOTIFIED, Voicemails.HAS_NOTIFIED);
         voicemailProjectionMap.put(Voicemails.LEFT_BY, Voicemails.LEFT_BY);
+        voicemailProjectionMap.put(Voicemails.LEFT_BY_NAME, Voicemails.LEFT_BY_NAME);
         voicemailProjectionMap.put(Voicemails.DESCRIPTION, Voicemails.DESCRIPTION);
         voicemailProjectionMap.put(Voicemails.DURATION, Voicemails.DURATION);
         voicemailProjectionMap.put(Voicemails.TRANSCRIPT, Voicemails.TRANSCRIPT);
@@ -471,7 +472,8 @@ public class VoicemailProvider extends ContentProvider
             sb.append(Voicemails.VOICEMAIL_ID).append(" INTEGER,");
             sb.append(Voicemails.IS_NEW).append(" BOOLEAN,");
             sb.append(Voicemails.HAS_NOTIFIED).append(" BOOLEAN,");
-            sb.append(Voicemails.LEFT_BY).append(" VARCHAR(255),");
+            sb.append(Voicemails.LEFT_BY).append(" VARCHAR(50),");
+            sb.append(Voicemails.LEFT_BY_NAME).append(" VARCHAR(255),");
             sb.append(Voicemails.DESCRIPTION).append(" TEXT,");
             sb.append(Voicemails.DURATION).append(" INTEGER,");
             sb.append(Voicemails.TRANSCRIPT).append(" TEXT,");

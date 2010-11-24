@@ -48,7 +48,7 @@ public class ListVoicemailActivity extends ListActivity
     private SyncStatusPoll mSyncStatusPoll = null;
     
     private static final String[] VOICEMAIL_INFO_COLUMNS =
-        new String[]{Voicemails.LEFT_BY, Voicemails.LEFT_BY, Voicemails.DATE_CREATED, Voicemails.TRANSCRIPT};
+        new String[]{Voicemails.LEFT_BY, Voicemails.LEFT_BY_NAME, Voicemails.DATE_CREATED, Voicemails.TRANSCRIPT};
     
     private static final int[] VOICEMAIL_INFO_VIEWS =
         new int[]{R.id.list_badge, R.id.list_leftby, R.id.list_date, R.id.list_transcription};
@@ -657,20 +657,24 @@ public class ListVoicemailActivity extends ListActivity
                     }
                     return true;
                 case R.id.list_leftby:
-                    text = getCursorString(cursor, columnIndex);
-                    if(text.length() > 0)
+                    text = getCursorString(cursor, columnIndex); // left by name
+                    if(TextUtils.isEmpty(text)) // not set so go with what we find in contacts
                     {
-                        BadgeHandler handler = leftByNames.get(text);
-                        if(handler == null)
+                        text = getCursorString(cursor, 1); // 'left by' must be column 1
+                        if(!TextUtils.isEmpty(text))
                         {
-                            handler = new BadgeHandler();
-                            leftByNames.put(text, handler);
+                            BadgeHandler handler = leftByNames.get(text);
+                            if(handler == null)
+                            {
+                                handler = new BadgeHandler();
+                                leftByNames.put(text, handler);
+                            }
+                            text = handler.addView(text, (TextView)view);
                         }
-                        text = handler.addView(text, (TextView)view);
-                    }
-                    else
-                    {
-                        text = context.getString(R.string.leftByUnknown);
+                        else
+                        {
+                            text = context.getString(R.string.leftByUnknown);
+                        }
                     }
                     break;
                 case R.id.list_transcription:
