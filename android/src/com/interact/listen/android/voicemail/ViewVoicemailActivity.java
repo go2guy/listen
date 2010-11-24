@@ -80,14 +80,6 @@ public class ViewVoicemailActivity extends Activity
             mContentObserver = new VoicemailContentObserver(new Handler());
             mCursor.registerContentObserver(mContentObserver);
         }
-
-        if(mVoicemailId > 0 && mCursor != null && mCursor.getInt(mCursor.getColumnIndex(Voicemails.IS_NEW)) != 0)
-        {
-            Intent intent = new Intent(Constants.ACTION_MARK_READ);
-            intent.putExtra(Constants.EXTRA_ID, mVoicemailId);
-            intent.putExtra(Constants.EXTRA_IS_READ, true);
-            startService(intent);
-        }
     }
 
     @Override
@@ -110,7 +102,22 @@ public class ViewVoicemailActivity extends Activity
     }
     
     @Override
-    public void onPause()
+    protected void onStart()
+    {
+        super.onStart();
+        
+        if(mVoicemailId > 0 && mCursor != null && mCursor.getPosition() == 0 &&
+            mCursor.getInt(mCursor.getColumnIndex(Voicemails.IS_NEW)) != 0)
+        {
+            Intent intent = new Intent(Constants.ACTION_MARK_READ);
+            intent.putExtra(Constants.EXTRA_ID, mVoicemailId);
+            intent.putExtra(Constants.EXTRA_IS_READ, true);
+            startService(intent);
+        }
+    }
+    
+    @Override
+    protected void onPause()
     {
         super.onPause();
         Log.v(TAG, "pausing view activity");
@@ -122,7 +129,7 @@ public class ViewVoicemailActivity extends Activity
     }
 
     @Override
-    public void onResume()
+    protected void onResume()
     {
         super.onResume();
         Log.v(TAG, "resuming view activity");
@@ -283,7 +290,7 @@ public class ViewVoicemailActivity extends Activity
                 }
                 mLeftBy.setText(PhoneNumberUtils.formatNumber(mVoicemail.getLeftBy()));
             }
-            if(mVoicemail.getTranscription() == null)
+            if(TextUtils.isEmpty(mVoicemail.getTranscription()))
             {
                 mTranscription.setText(R.string.transcriptionUnknown);
             }

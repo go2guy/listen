@@ -633,13 +633,9 @@ public class ListVoicemailActivity extends ListActivity
             leftByNames = new TreeMap<String, BadgeHandler>();
         }
 
-        private String getCursorString(Cursor c, int cIdx, int defId)
+        private String getCursorString(Cursor c, int cIdx)
         {
-            return c.isNull(cIdx) ? context.getString(defId) : c.getString(cIdx);
-        }
-        private String getCursorString(Cursor c, int cIdx, String defStr)
-        {
-            return c.isNull(cIdx) ? defStr : c.getString(cIdx);
+            return c.isNull(cIdx) ? "" : c.getString(cIdx);
         }
         
         public boolean isReUsable(Cursor cursor, View view)
@@ -657,7 +653,7 @@ public class ListVoicemailActivity extends ListActivity
                 return true;
             }
 
-            String text = getCursorString(cursor, 1, ""); // 'left by' must be first in list after id
+            String text = getCursorString(cursor, 1); // 'left by' must be first in list after id
 
             for(Map.Entry<String, BadgeHandler> entry : leftByNames.entrySet())
             {
@@ -683,7 +679,7 @@ public class ListVoicemailActivity extends ListActivity
             switch(view.getId())
             {
                 case R.id.list_badge:
-                    text = getCursorString(cursor, columnIndex, "");
+                    text = getCursorString(cursor, columnIndex);
                     ContactBadge badge = (ContactBadge)view;
                     if(text.length() > 0)
                     {
@@ -702,7 +698,7 @@ public class ListVoicemailActivity extends ListActivity
                     }
                     return true;
                 case R.id.list_leftby:
-                    text = getCursorString(cursor, columnIndex, "");
+                    text = getCursorString(cursor, columnIndex);
                     if(text.length() > 0)
                     {
                         BadgeHandler handler = leftByNames.get(text);
@@ -719,8 +715,15 @@ public class ListVoicemailActivity extends ListActivity
                     }
                     break;
                 case R.id.list_transcription:
-                    text = getCursorString(cursor, columnIndex, R.string.transcriptionUnknown);
-                    text = getTruncatedTranscription(text);
+                    text = getCursorString(cursor, columnIndex);
+                    if(TextUtils.isEmpty(text))
+                    {
+                        text = context.getString(R.string.transcriptionUnknown);
+                    }
+                    else
+                    {
+                        text = getTruncatedTranscription(text);
+                    }
                     break;
                 case R.id.list_date:
                     if(cursor.isNull(columnIndex))

@@ -57,31 +57,36 @@
 		android:layout_alignParentRight="true"
 	/>
 
-	<ScrollView
-		android:id="@+id/voicemail_view_scroll"
+	<LinearLayout
+		android:orientation="vertical"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" 
-		android:paddingTop="2dip"
-		android:paddingBottom="2dip"
-		android:fillViewport="true"
+		android:layout_height="wrap_content"
 		android:layout_alignParentLeft="true"
 		android:layout_alignParentRight="true"
 		android:layout_below="@id/voicemail_view_received"
 		android:layout_above="@+id/audioController"
 	>
-		<TextView
+	
+		<ScrollView
+			android:id="@+id/voicemail_view_scroll"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content" 
-			android:id="@+id/voicemail_view_transcript"
-			android:textColor="@color/black"
-			android:textSize="14dip"
-			android:paddingTop="2dip"
-			android:paddingBottom="2dip"
-			android:paddingLeft="6dip"
-			android:paddingRight="6dip"
-		/>
-	</ScrollView>
+			android:layout_margin="8dip"
+			android:fillViewport="true"
+			android:fadingEdge="none"
+		>
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" 
+				android:id="@+id/voicemail_view_transcript"
+				android:textColor="@color/black"
+				android:textSize="14dip"
+				android:background="@drawable/transcript_border"
+			/>
+		</ScrollView>
 
+	</LinearLayout>
+	
 	<include android:id="@+id/audioController" layout="@layout/voicemail_player"/>
 
 </RelativeLayout>
