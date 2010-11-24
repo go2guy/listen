@@ -64,6 +64,9 @@
 	<var name="SB_UV_lameLocation"/>
 	<var name="SB_UV_pcmStatus"/>
 	<var name="SB_UV_mp3Status"/>
+	<var name="SB_UV_errCnt"/>
+	<var name="SB_UV_recDtmf"/>
+	<var name="SB_UV_recAction"/>
 
     
     <form id="beginDocument">
@@ -212,6 +215,15 @@
 			</if>
 			<if cond="SB_UV_mp3Status != undefined">
 				<assign name="mp3Status" expr="SB_UV_mp3Status" />
+			</if>
+			<if cond="SB_UV_errCnt != undefined">
+				<assign name="errCnt" expr="SB_UV_errCnt" />
+			</if>
+			<if cond="SB_UV_recDtmf != undefined">
+				<assign name="recDtmf" expr="SB_UV_recDtmf" />
+			</if>
+			<if cond="SB_UV_recAction != undefined">
+				<assign name="recAction" expr="SB_UV_recAction" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

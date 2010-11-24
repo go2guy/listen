@@ -5,18 +5,17 @@
        *   @Name   data-query.vxml
        *   @Desc   Makes http requests and checks for success or failure -->
 
-    <var name="II_SB_succeed" expr="'198_17'"/>			<!-- Next file to go to if HttpRequest Works -->
-    <var name="II_SB_failed" expr="'146_43'"/>				<!-- Next file to go to if HttpRequest Fails -->
+    <var name="II_SB_succeed" expr="'201_10'"/>			<!-- Next file to go to if HttpRequest Works -->
+    <var name="II_SB_failed" expr="'175_16'"/>				<!-- Next file to go to if HttpRequest Fails -->
     <var name="II_SB_dataTimeOut" expr="'3s'"/>	<!-- Specifies length of time to wait before throwing badfetch error -->
     <var name="II_SB_nxtOpt" expr="''"/>						<!-- Variable to hold next option -->
 	
     <form id="beginDocument">
         <block>
-    	    <log target="status">Wav To MP3</log>
-            <log>INFO: Entered data-query.vxml [198_3]</log>
-            <data name="appObj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/wavToMP3.php'" method="get" namelist="fileLocation " fetchtimeout="II_SB_dataTimeOut"/>
-			<assign name="pcmStatus" expr="appObj.pcm" />
-			<assign name="mp3Status" expr="appObj.mp3" />
+    	    <log target="status">Delete File</log>
+            <log>INFO: Entered data-query.vxml [201_3]</log>
+            <data name="fileOBJ" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="get" namelist="FILE1 OPERATION " fetchtimeout="II_SB_dataTimeOut"/>
+			<assign name="status" expr="fileOBJ.Result" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>

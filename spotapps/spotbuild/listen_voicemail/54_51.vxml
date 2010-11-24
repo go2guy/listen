@@ -12,7 +12,7 @@
 
     <!-- Edge Variables -->
     <var name="II_SB_errorNxtOpt" expr="'54_78'"/>       <!-- Next option when record is terminated by an error -->
-    <var name="II_SB_dtmfNxtOpt" expr="'194_7'"/>      <!-- Next option when record is terminated by dtmf -->
+    <var name="II_SB_dtmfNxtOpt" expr="'54_95'"/>      <!-- Next option when record is terminated by dtmf -->
     <var name="II_SB_hangUpNxtOpt" expr="'194_7'"/>     <!-- Next option when record is terminated by hang up -->
     <var name="II_SB_maxTimeNxtOpt" expr="'194_7'"/>    <!-- Next option when record is terminated by max time -->
     <var name="II_SB_silenceNxtOpt" expr="'194_7'"/>   <!-- Next option when record is terminated by silence -->
@@ -100,6 +100,7 @@
 			<log>INFO: Term Key [<value expr="II_SB_rec_termChar"/>]</log>
 			<assign name="duration" expr="II_SB_rec_duration" />
 <assign name="fileSize" expr="II_SB_rec_size" />
+<assign name="recDtmf" expr="II_SB_rec_termChar" />
 
     		<if cond="II_SB_nextOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nextOpt"/>.vxml]</log>

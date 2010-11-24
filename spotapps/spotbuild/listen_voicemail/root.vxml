@@ -74,6 +74,9 @@
 	<var name="lameLocation" expr="'/interact/listen/bin/lame'" />
 	<var name="pcmStatus" expr="''" />
 	<var name="mp3Status" expr="''" />
+	<var name="errCnt" expr="'0'" />
+	<var name="recDtmf" expr="''" />
+	<var name="recAction" expr="''" />
 
 
     <!-- Conference Variables -->
