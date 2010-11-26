@@ -31,3 +31,20 @@ function wavToMp3Status (pcmStatus, mp3Status) {
 
     return result;
 }
+
+function recordOptions(recDtmf) {
+    if ((recDtmf == '*') || (recDtmf == '#'))
+       return 'true';
+    else
+       return 'false';
+}
+
+function extendAppObj(jsonObj, recDtmf) {
+    jsonObj = extendJsonObject(jsonObj, 'application', 'voicemail');
+    if (recDtmf == 0)
+       jsonObj = extendJsonObject(jsonObj, 'action', 'operator');
+    else
+       jsonObj = extendJsonObject(jsonObj, 'action', 'autoAttendant');
+
+    return jsonObj;
+}
