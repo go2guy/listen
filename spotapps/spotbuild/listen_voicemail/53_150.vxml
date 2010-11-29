@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'173_7'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'183_6'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_183_31(returnVal,status,ANI)
+            function II_SB_JS_function_53_150(returnVal)
             {
-	            return setCallerName (returnVal, status, ANI);
+	            return getJsonVal(returnVal, 'isSubscribedToTranscription');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set CallerID</log>
-            <log>INFO: Entered run-javascript.vxml [183_31]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_183_31(returnVal,status,ANI)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="callerID" expr="II_SB_userJava" />   
+            <log target="status">Get Transcription</log>
+            <log>INFO: Entered run-javascript.vxml [53_150]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_53_150(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="userTranscription" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
