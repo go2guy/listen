@@ -1,7 +1,10 @@
 package com.interact.listen.server;
 
+import java.io.File;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
@@ -52,6 +55,7 @@ public final class EmbeddedJettyServer
         }
         webapp.setServer(server);
         webapp.setWar(location.toExternalForm());
+        webapp.setTempDirectory(new File("/var/lib/com.interact.listen/webapp-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
 
         server.setHandler(webapp);
         server.start();
