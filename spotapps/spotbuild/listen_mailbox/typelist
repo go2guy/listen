@@ -120,10 +120,14 @@ begin - begin
 156_15 - decision
 68_57 - data-query
 68_50 - assign-variable
+66_76 - run-javascript
 158_33 - run-javascript
+66_74 - switch-application
 144_99 - data-query
 158_37 - audio-input
+66_73 - decision
 158_35 - audio-input
+66_71 - run-javascript
 68_60 - data-query
 68_63 - data-query
 66_68 - audio-input

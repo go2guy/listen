@@ -16,8 +16,8 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'1'+',101_70|=,'+'2'+',60_47|=,'+'#'+',66_71|=,'+''+',65_54|else,65_54'"/>	<!-- List of expression to be evaluated -->
-    <var name="II_SB_operand1" expr="userInput"/>   			<!-- User defined value to be used as an operand in the expression -->
+    <var name="II_SB_expList" expr="'=,'+'ippbx'+',66_76|else,65_54'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_operand1" expr="status"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
     <var name="II_SB_index" expr="0"/>							<!-- Index used to loop through expression list -->
@@ -27,8 +27,8 @@
 
 	<form id="beginDocument">
 		<block>
-    	    <log target="status">Chk Entry</log>
-			<log>INFO: Entered decision.vxml [66_16]</log>
+    	    <log target="status">From IPPBX</log>
+			<log>INFO: Entered decision.vxml [66_73]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>
 		</block>
