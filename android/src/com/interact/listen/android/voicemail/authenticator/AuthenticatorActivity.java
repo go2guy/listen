@@ -56,7 +56,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity implemen
     private boolean mRequestNewAccount = false;
 
     private final Handler mHandler = new Handler();
-
+    
+    private boolean dialogShown = false;
+    
     @Override
     public void onCreate(Bundle bundle)
     {
@@ -109,6 +111,14 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity implemen
             mHostEdit.setEnabled(false);
             mPasswordEdit.requestFocus();
         }
+    }
+    
+    @Override
+    protected void onDestroy()
+    {
+        Log.v(TAG, "destroying authenticator activity");
+        hideProgress();
+        super.onDestroy();
     }
 
     @Override
@@ -275,7 +285,22 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity implemen
 
     protected void hideProgress()
     {
-        dismissDialog(0);
+        if(!dialogShown)
+        {
+            Log.v(TAG, "progress dialog isn't shown");
+        }
+        else
+        {
+            dialogShown = false;
+            try
+            {
+                dismissDialog(0);
+            }
+            catch(IllegalArgumentException e)
+            {
+                Log.w(TAG, "appears progress dialog was never shown", e);
+            }
+        }
     }
 
     /**
@@ -331,6 +356,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity implemen
 
     protected void showProgress()
     {
+        dialogShown = true;
         showDialog(0);
     }
 }
