@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/24/2010
+    <!-- Last Modified 11/29/2010
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -48,7 +48,7 @@
             <assign name="tmpANI" expr="getnum(ANI)"/>
             <if cond="projectSource == 'LISTEN'">
                 <send data="'dialog.user.chk_ANI'" target="session.id"/>
-            <elseif cond="projectSource == 'VOICEMAIL'"/>
+            <elseif cond="((projectSource == 'VOICEMAIL') || (projectSource == 'MAILBOX'))"/>
                 <assign name="route" expr="'dialog.user.autoAttendant'"/>   <!-- Set route to auto attendant -->
                 <send data="'dialog.user.pbx'" target="session.id"/>
             <elseif cond="fwdInfo != undefined"/>

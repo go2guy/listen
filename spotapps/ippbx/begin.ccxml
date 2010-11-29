@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 06/21/2010
+    <!-- Last Modified 11/29/2010
        *   @Name   begin.ccxml
        *   @Desc   This ccxml script acts as a transition between the Listen project and
                    the ippbx project. Here, we collect values exported from Listen
@@ -43,6 +43,8 @@
             <var name="application" expr="getJsonVal(importedValue, 'application')"/>
             <if cond="application == 'voicemail'">
                 <assign name="projectSource" expr="'VOICEMAIL'"/>
+            <elseif cond="application == 'mailbox'"/>
+                <assign name="projectSource" expr="'MAILBOX'"/>
             <else/>
                 <assign name="projectSource" expr="'LISTEN'"/>
             </if>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 11/24/2010
+    <!-- Last Modified 11/29/2010
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -23,7 +23,7 @@
             <if cond="listenArgs.length &gt; 0"> <!-- Check if application was started from voicemail -->
                 <var name="application" expr="getJsonVal(listenArgs, 'application')"/>
                 <var name="action" expr="getJsonVal(listenArgs, 'action')"/>
-                <if cond="application == 'voicemail'">
+                <if cond="((application == 'voicemail') || (application == 'mailbox'))">
                     <if cond="action == 'operator'">
                         <assign name="promptID" expr="'AP1605'"/>
                         <assign name="fieldTimeOut" expr="''"/>
