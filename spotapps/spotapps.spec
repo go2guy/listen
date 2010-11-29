@@ -49,7 +49,7 @@ Requires: spotbuild-vip
 # The build section is used to compile the code.
 #######################################################################
 %build
-#    cd ../spotbuild/rhinounit/
+    cd ../spotbuild/rhinounit/
 #    /usr/local/ant/bin/ant
 #    if [ $? -ne 0 ]
 #    then
