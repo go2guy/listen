@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/24/2010
+    <!-- Last Modified 11/26/2010
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -511,7 +511,7 @@
                 <var name="II_SB_protocol" expr="'VOIP'"/>
                 <var name="II_SB_connectionID" expr="ibconnid"/>
                 <var name="II_SB_type" expr="''"/>
-                <var name="II_SB_ibcallid" expr="ibconn id"/>
+                <var name="II_SB_ibcallid" expr="ibconnid"/>
                 <var name="II_SB_transfer" expr="'yes'"/>
                 <var name="II_SB_projectSource" expr="'ippbx'"/>
                 <var name="II_SB_obcallid" expr="''"/>

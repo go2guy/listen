@@ -24,11 +24,11 @@
     exitresult($objName,$PCM,$MP3);
     
     #Exit php
-    function exitresult ($objname, $PCM, $MP3) {
+    function exitresult ($objName, $PCM, $MP3) {
         echo "<?xml version=\"1.0\"?>\n";
-        echo "<{$objname}>\n";
+        echo "<{$objName}>\n";
         echo "  <pcm>{$PCM}</pcm>\n";
         echo "  <mp3>{$MP3}</mp3>\n";
-        echo "</{$objname}>\n";
+        echo "</{$objName}>\n";
         exit;
     }
