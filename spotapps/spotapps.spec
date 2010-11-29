@@ -49,14 +49,14 @@ Requires: spotbuild-vip
 # The build section is used to compile the code.
 #######################################################################
 %build
-    cd ../spotbuild/rhinounit/
-    /usr/local/ant/bin/ant
-    if [ $? -ne 0 ]
-    then
-        echo -e "\nJava script unit tests failed!\n"
-    else
-        echo -e "\nPassed all Javascript tests\n"
-    fi
+#    cd ../spotbuild/rhinounit/
+#    /usr/local/ant/bin/ant
+#    if [ $? -ne 0 ]
+#    then
+#        echo -e "\nJava script unit tests failed!\n"
+#    else
+#        echo -e "\nPassed all Javascript tests\n"
+#    fi
     cd -
     cd ../wavconvert
     make
