@@ -161,7 +161,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                     v.setNotified(true);
                 }
                 Log.i(TAG, "voicemail added on server: " + v.getVoicemailId());
-                if (VoicemailHelper.insertVoicemail(provider, v) != null)
+                if(VoicemailHelper.insertVoicemail(provider, v) != null)
                 {
                     syncResult.stats.numInserts++;
                     newVoicemails.add(v);

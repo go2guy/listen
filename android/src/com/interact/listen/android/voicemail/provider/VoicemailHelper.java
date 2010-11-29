@@ -45,7 +45,7 @@ public final class VoicemailHelper
         viewSB.append(',').append(Voicemails.VOICEMAIL_ID);
         LIST_VOICEMAILS_VIEW_ORDER = viewSB.toString();
         
-        StringBuffer syncSB = new StringBuffer().append(Voicemails.USER_NAME).append(',').append(Voicemails.DATE_CREATED);
+        StringBuffer syncSB = new StringBuffer().append(Voicemails.USER_NAME).append(',').append(Voicemails.VOICEMAIL_ID);
         LIST_VOICEMAILS_CONTROL_ORDER = syncSB.toString();
     }
 

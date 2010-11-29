@@ -31,7 +31,7 @@ public class VoicemailProvider extends ContentProvider
     private static final String TAG = Constants.TAG + "Provider";
 
     private static final String DATABASE_NAME = "com.interact.listen.voicemail.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static final String VOICEMAIL_TABLE = "voicemails";
     private static final String VOICEMAIL_INDEX = "vmviewidx";
     
@@ -164,6 +164,14 @@ public class VoicemailProvider extends ContentProvider
 
         SQLiteDatabase db = helper.getWritableDatabase();
         long rowId = db.insert(VOICEMAIL_TABLE, Voicemails.TRANSCRIPT, values);
+
+        if(rowId == 0)
+        {
+            Log.w(TAG, "row ID of zero?!?!");
+            db.delete(VOICEMAIL_TABLE, Voicemails._ID + "=0", null);
+            rowId = db.insert(VOICEMAIL_TABLE, Voicemails.TRANSCRIPT, values);
+        }
+        
         if(rowId > 0)
         {
             Uri voicemailUri = ContentUris.withAppendedId(Voicemails.CONTENT_URI, rowId);
@@ -171,7 +179,7 @@ public class VoicemailProvider extends ContentProvider
             return voicemailUri;
         }
 
-        throw new SQLException("Failed to insert row into " + uri);
+        throw new SQLException("Failed to insert row into '" + uri + "' " + rowId);
     }
     
     @Override
@@ -468,8 +476,8 @@ public class VoicemailProvider extends ContentProvider
             sb.append("CREATE TABLE ").append(VOICEMAIL_TABLE).append(" (");
             sb.append(Voicemails._ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT,");
             sb.append(Voicemails.USER_NAME).append(" VARCHAR(50),");
-            sb.append(Voicemails.DATE_CREATED).append(" INTEGER,");
             sb.append(Voicemails.VOICEMAIL_ID).append(" INTEGER,");
+            sb.append(Voicemails.DATE_CREATED).append(" INTEGER,");
             sb.append(Voicemails.IS_NEW).append(" BOOLEAN,");
             sb.append(Voicemails.HAS_NOTIFIED).append(" BOOLEAN,");
             sb.append(Voicemails.LEFT_BY).append(" VARCHAR(50),");
@@ -490,7 +498,7 @@ public class VoicemailProvider extends ContentProvider
             
             sb = new StringBuffer();
             sb.append("CREATE UNIQUE INDEX ").append(VOICEMAIL_INDEX).append(" ON ").append(VOICEMAIL_TABLE);
-            sb.append(" (").append(Voicemails.USER_NAME).append(',').append(Voicemails.DATE_CREATED);
+            sb.append(" (").append(Voicemails.USER_NAME).append(',').append(Voicemails.DATE_CREATED).append(" DESC");
             sb.append(',').append(Voicemails.VOICEMAIL_ID).append(");");
 
             Log.i(TAG, "creating index");
