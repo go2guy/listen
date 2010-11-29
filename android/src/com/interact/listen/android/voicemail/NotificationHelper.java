@@ -47,7 +47,7 @@ public final class NotificationHelper
         notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
 
         Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-        intent.putExtra(Settings.EXTRA_AUTHORITIES, VoicemailProvider.AUTHORITY);
+        intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
 
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
         notification.setLatestEventInfo(context, title, message, pIntent);
