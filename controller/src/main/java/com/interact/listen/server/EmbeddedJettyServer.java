@@ -55,7 +55,7 @@ public final class EmbeddedJettyServer
         }
         webapp.setServer(server);
         webapp.setWar(location.toExternalForm());
-        webapp.setTempDirectory(new File("/var/lib/com.interact.listen/webapp-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
+        webapp.setTempDirectory(new File("/interact/listen/.webapp-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
 
         server.setHandler(webapp);
         server.start();
