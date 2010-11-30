@@ -58,6 +58,7 @@
 
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"/>    <!-- Location of Java script file -->
 
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
 
