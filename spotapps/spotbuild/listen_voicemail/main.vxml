@@ -67,6 +67,7 @@
 	<var name="SB_UV_errCnt"/>
 	<var name="SB_UV_recDtmf"/>
 	<var name="SB_UV_recAction"/>
+	<var name="SB_UV_callerHungup"/>
 
     
     <form id="beginDocument">
@@ -224,6 +225,9 @@
 			</if>
 			<if cond="SB_UV_recAction != undefined">
 				<assign name="recAction" expr="SB_UV_recAction" />
+			</if>
+			<if cond="SB_UV_callerHungup != undefined">
+				<assign name="callerHungup" expr="SB_UV_callerHungup" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
