@@ -293,6 +293,10 @@ public class ViewVoicemailActivity extends Activity
                 {
                     mName.setText(mBadge.getContactName());
                 }
+                else if(!TextUtils.isEmpty(mVoicemail.getLeftByName()))
+                {
+                    mName.setText(mVoicemail.getLeftByName());
+                }
                 else
                 {
                     String leftBy = NotificationHelper.getDialString(this, mVoicemail.getLeftBy(), false);

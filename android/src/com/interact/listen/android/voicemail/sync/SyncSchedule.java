@@ -85,9 +85,16 @@ public final class SyncSchedule
         }
         
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putInt(EXTRA_INT_SYNC_TYPE, SYNC_TYPE_FULL);
+        
+        if(force)
+        {
+            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        }
+        else
+        {
+            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        }
         
         AccountManager am = AccountManager.get(context);
         Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);

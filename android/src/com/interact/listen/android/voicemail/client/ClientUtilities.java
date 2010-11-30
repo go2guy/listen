@@ -438,6 +438,8 @@ public final class ClientUtilities
         HttpGet httpGet = new HttpGet(apiUri.toString());
         addAuthorizationHeaders(httpGet, username, authToken);
 
+        httpGet.setHeader("Accept", "audio/mpeg");
+
         HttpResponse response = mHttpClient.execute(httpGet);
 
         int status = response.getStatusLine().getStatusCode();
