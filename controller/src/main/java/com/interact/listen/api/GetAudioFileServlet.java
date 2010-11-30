@@ -39,6 +39,8 @@ public class GetAudioFileServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOG = Logger.getLogger(DownloadVoicemailServlet.class);
+    private static final String MP3_FILE_TYPE = "audio/mpeg";
+    private static final String WAV_FILE_TYPE = "audio/x-wav";
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -64,6 +66,8 @@ public class GetAudioFileServlet extends HttpServlet
             throw new BadRequestServletException("Please provide an id");
         }
         
+        String acceptType = request.getHeader("Accept");
+        
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.TUI);
 
@@ -74,7 +78,16 @@ public class GetAudioFileServlet extends HttpServlet
         try
         {
             // input
-            URL url = ServletUtil.encodeUri(voicemail.getUri());
+            URL url = null;
+            if(acceptType.equals(MP3_FILE_TYPE))
+            {
+                url = ServletUtil.encodeUri(voicemail.mp3FileUri());
+            }
+            else
+            {
+                url = ServletUtil.encodeUri(voicemail.getUri());
+            }
+            
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
@@ -83,7 +96,16 @@ public class GetAudioFileServlet extends HttpServlet
             // output
             OutputStream output = response.getOutputStream();
             response.setContentLength(Integer.parseInt(voicemail.getFileSize()));
-            response.setContentType(voicemail.detectContentType());
+            
+            if(acceptType.equals(MP3_FILE_TYPE))
+            {
+                response.setContentType(MP3_FILE_TYPE);
+            }
+            else
+            {
+                response.setContentType(WAV_FILE_TYPE);
+            }
+            
             response.setHeader("Content-disposition", "attachment; filename=" + getFileName(voicemail));
 
             HistoryService historyService = new DefaultHistoryService(persistenceService);
