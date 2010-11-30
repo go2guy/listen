@@ -17,7 +17,7 @@ public final class DateUtil
     {
         Duration d = roundUpToNearestSecond(duration);
         double s = Math.floor(d.getMillis() / 1000.0);
-        return String.format("%01.0f:%02.0f", s < 60 ? 0 : s / 60, s % 60);
+        return String.format("%01.0f:%02.0f", s < 60 ? 0 : Math.floor(s / 60), s % 60);
     }
 
     public static Duration roundUpToNearestSecond(Duration duration)

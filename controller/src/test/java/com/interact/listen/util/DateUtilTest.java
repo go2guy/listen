@@ -45,6 +45,27 @@ public class DateUtilTest extends ListenTest
     }
 
     @Test
+    public void test_printDuration_with146000_returnsTwoMinutesTwentySixSeconds()
+    {
+        Duration duration = new Duration(1000 * 146);
+        assertEquals("2:26", DateUtil.printDuration(duration));
+    }
+    
+    @Test
+    public void test_printDuration_with156000_returnsTwoMinutesThirtySixSeconds()
+    {
+        Duration duration = new Duration(1000 * 156);
+        assertEquals("2:36", DateUtil.printDuration(duration));
+    }
+    
+    @Test
+    public void test_printDuration_with730000_returnsTwelveMinutesTenSeconds()
+    {
+        Duration duration = new Duration(1000 * 730);
+        assertEquals("12:10", DateUtil.printDuration(duration));
+    }
+    
+    @Test
     public void test_roundUpToNearestSecond_withX499ms_roundsUp()
     {
         testRoundUpToNearestSecond(1499, 2000);
