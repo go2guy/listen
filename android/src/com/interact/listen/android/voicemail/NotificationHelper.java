@@ -67,7 +67,7 @@ public final class NotificationHelper
     
     public static void updateNotifications(Context context, int[] ids)
     {
-        int newCount = ids.length;
+        int newCount = ids == null ? Integer.MAX_VALUE : ids.length;
         Log.v(TAG, "updateNotifications: " + newCount);
 
         if(newCount <= 0)
@@ -84,7 +84,10 @@ public final class NotificationHelper
             titleID = R.string.new_listen_voicemail;
             contentFormatID = R.string.count_listen_voicemail;
         }
-
+        else if(newCount == Integer.MAX_VALUE)
+        {
+            contentFormatID = R.string.lots_listen_voicemail;
+        }
         String title = context.getString(titleID);
         String content = context.getString(contentFormatID, newCount);
         

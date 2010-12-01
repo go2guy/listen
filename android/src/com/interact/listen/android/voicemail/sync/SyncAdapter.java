@@ -165,7 +165,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                 if(VoicemailHelper.insertVoicemail(provider, v) != null)
                 {
                     syncResult.stats.numInserts++;
-                    newVoicemails.add(v);
+                    if(VoicemailHelper.shouldAttemptDownload(v, false))
+                    {
+                        newVoicemails.add(v);
+                    }
                     if(v.needsNotification())
                     {
                         notifyIDs.add(v.getId());

@@ -96,6 +96,7 @@
     <string name="new_listen_voicemails">New Listen Voicemails</string>
     <string name="count_listen_voicemail">%d new Listen Voicemail</string>
     <string name="count_listen_voicemails">%d new Listen Voicemails</string>
+	<string name="lots_listen_voicemail">New Listen Voicemails</string>
 
 	<string name="generic_confirm">OK</string>
 	<string name="generic_cancel">Cancel</string>

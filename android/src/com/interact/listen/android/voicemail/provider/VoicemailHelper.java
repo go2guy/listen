@@ -281,8 +281,8 @@ public final class VoicemailHelper
             ContentValues values = Voicemail.getClearedDownloadValues();
 
             StringBuffer sb = new StringBuffer();
-            sb.append(Voicemails.AUDIO_STATE).append(" = ").append(Voicemail.getAudioDownloadedState()).append(" AND ");
-            sb.append(Voicemails.IS_NEW).append(" = 0");
+            sb.append(Voicemails.AUDIO_STATE).append(" = ").append(Voicemail.getAudioDownloadedState());
+            //sb.append(" AND ").append(Voicemails.IS_NEW).append(" = 0");
             sb.append(" AND ").append(Voicemails.DATE_CREATED).append(" < ").append(oldVoicemail);
             sb.append(" AND ").append(Voicemails.AUDIO_DATE).append(" < ").append(oldDownload);
 

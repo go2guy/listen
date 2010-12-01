@@ -28,10 +28,6 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
             {
                 ids = new int[]{extras.getInt(Constants.EXTRA_ID)};
             }
-            if(ids == null)
-            {
-                Log.e(TAG, "notified new voicemails but none sent in broadcast");
-            }
             NotificationHelper.updateNotifications(context, ids);
         }
         else if(Constants.ACTION_NOTIFY_ERROR.equals(intent.getAction()))
@@ -52,19 +48,27 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
         {
             return;
         }
-        int[] intIDs = new int[ids.size()];
-        int idx = 0;
-        for(Integer id : ids)
+        
+        int[] intIDs = null;
+        if(ids.size() <= 10)
         {
-            intIDs[idx++] = id;
+            intIDs = new int[ids.size()];
+            int idx = 0;
+            for(Integer id : ids)
+            {
+                intIDs[idx++] = id;
+            }
+            Log.v(TAG, "broadcasted " + intIDs.length + " new voicemails");
+        }
+        else
+        {
+            Log.v(TAG, "broadcasted lots of voicemails: " + ids.size());
         }
 
         Intent intent = new Intent(Constants.ACTION_NOTIFY_NEW_VOICEMAILS);
         intent.putExtra(Constants.EXTRA_IDS, intIDs);
         intent.putExtra(Constants.EXTRA_ACCOUNT_NAME, userName);
         context.sendBroadcast(intent);
-
-        Log.v(TAG, "broadcasted " + intIDs.length + " new voicemails");
     }
 
     public static void broadcastConnectionError(Context context, String userName, Throwable e)
