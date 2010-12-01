@@ -4,6 +4,7 @@ import android.accounts.AccountManager;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.interact.listen.android.voicemail.Constants;
@@ -41,6 +42,7 @@ public final class ClientUtilities
 
     private static final String SUBSCRIBER_PATH = "api/subscribers";
     private static final String VOICEMAIL_PATH = "api/voicemails";
+    private static final String NEXT_PREPEND_PATH = "api";
     private static final String AUDIO_PATH = "meta/audio/file";
     
     private static HttpClient mHttpClient;
@@ -220,33 +222,44 @@ public final class ClientUtilities
         requestObject.addHeader(PASSWORD_HEADER, authToken);
     }
 
-    public static List<Voicemail> retrieveVoicemails(Uri host, long subscriberID, String username, String authToken,
-                                                     boolean forView) throws IOException, AuthorizationException
+    private static final int MAX_VM_GET = 100;
+
+    public static Uri getPagedVoicemails(Uri host, long subscriberID, String username, String authToken,
+                                         boolean forView, Uri nextRef,
+                                         List<Voicemail> voicemails) throws IOException, AuthorizationException
     {
         Uri apiUri = null;
-        try
+        if(nextRef == null)
         {
-            Uri.Builder builder = host.buildUpon();
-            builder.appendEncodedPath(VOICEMAIL_PATH);
-            builder.appendQueryParameter("subscriber", "/subscribers/" + subscriberID);
-            builder.appendQueryParameter("_max", Integer.toString(Integer.MAX_VALUE));
-            builder.appendQueryParameter("_fields", "id,isNew,leftBy,leftByName,description,dateCreated,duration,transcription,hasNotified");
-            if(forView)
+            try
             {
-                builder.appendQueryParameter("_sortBy", "dateCreated");
-                builder.appendQueryParameter("_sortOrder", "DESCENDING");
+                Uri.Builder builder = host.buildUpon();
+                builder.appendEncodedPath(VOICEMAIL_PATH);
+                builder.appendQueryParameter("subscriber", "/subscribers/" + subscriberID);
+                builder.appendQueryParameter("_first", Integer.toString(0));
+                builder.appendQueryParameter("_max", Integer.toString(MAX_VM_GET));
+                builder.appendQueryParameter("_fields", "id,isNew,leftBy,leftByName,description,dateCreated,duration,transcription,hasNotified");
+                if(forView)
+                {
+                    builder.appendQueryParameter("_sortBy", "dateCreated");
+                    builder.appendQueryParameter("_sortOrder", "DESCENDING");
+                }
+                else
+                {
+                    builder.appendQueryParameter("_sortBy", "id");
+                    builder.appendQueryParameter("_sortOrder", "ASCENDING");
+                }
+                apiUri = builder.build();
             }
-            else
+            catch(Exception e)
             {
-                builder.appendQueryParameter("_sortBy", "id");
-                builder.appendQueryParameter("_sortOrder", "ASCENDING");
+                Log.i(TAG, "error creating URI", e);
+                return null;
             }
-            apiUri = builder.build();
         }
-        catch(Exception e)
+        else
         {
-            Log.i(TAG, "error creating URI", e);
-            return null;
+            apiUri = nextRef;
         }
         
         HttpGet httpGet = new HttpGet(apiUri.toString());
@@ -256,17 +269,25 @@ public final class ClientUtilities
         Log.i(TAG, "Retrieving voicemails " + httpGet.getURI().toString());
         maybeCreateHttpClient();
 
-        List<Voicemail> voicemails = new ArrayList<Voicemail>();
+        String next = null;
+        
         try
         {
             ControllerResponse response = mHttpClient.execute(httpGet, new JsonObjectResponseHandler());
             response.throwExceptions();
             
             JSONObject json = response.jsonObject;
+            if(json == null)
+            {
+                throw new JSONException("JSON object not set");
+            }
+            
             JSONArray results = (JSONArray)json.get("results");
             int total = json.getInt("total");
-            Log.i(TAG, "Results array total: " + total);
-            for(int i = 0; i < total; i++)
+            next = json.has("next") ? json.getString("next") : null;
+            Log.i(TAG, "Results array total: " + total + " array: " + results.length() + " next: " + next);
+            
+            for(int i = 0; i < results.length(); i++)
             {
                 JSONObject result = results.getJSONObject(i);
                 try
@@ -290,6 +311,55 @@ public final class ClientUtilities
             Log.e(TAG, "JSONException overall", e);
             return null;
         }
+        
+        Uri nextUri = null;
+        
+        if(TextUtils.isEmpty(next))
+        {
+            nextUri = Uri.EMPTY;
+        }
+        else
+        {
+            try
+            {
+                Uri.Builder builder = host.buildUpon();
+                builder.appendEncodedPath(NEXT_PREPEND_PATH);
+                if(next.charAt(0) == '/')
+                {
+                    next = next.substring(1);
+                }
+                builder.appendEncodedPath(next);
+                nextUri = builder.build();
+            }
+            catch(Exception e)
+            {
+                Log.i(TAG, "error creating next URI", e);
+                return null;
+            }
+
+        }
+        
+        return nextUri;
+    }
+    
+    public static List<Voicemail> retrieveVoicemails(Uri host, long subscriberID, String username, String authToken,
+                                                     boolean forView) throws IOException, AuthorizationException
+    {
+        List<Voicemail> voicemails = new ArrayList<Voicemail>();
+
+        Uri next = null;
+        do
+        {
+            next = getPagedVoicemails(host, subscriberID, username, authToken, forView, next, voicemails);
+            if(next == null)
+            {
+                Log.e(TAG, "error getting voicemails");
+                return null;
+            }
+            Log.i(TAG, "got first page: " + next);
+        }
+        while(next != Uri.EMPTY);
+        
         return voicemails;
     }
 
