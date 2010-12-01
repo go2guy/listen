@@ -208,6 +208,10 @@ public final class WavConversion
                 {
                     return -1;
                 }
+                if(total > downloadSize)
+                {
+                    downloadSize = total;
+                }
                 updateProgress();
             }
             return total;

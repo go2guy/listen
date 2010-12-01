@@ -155,7 +155,7 @@ public class ListVoicemailActivity extends ListActivity
 
         if(SyncAdapter.isNewSyncSupported() || (mCursor != null && mCursor.getCount() == 0))
         {
-            SyncSchedule.syncFull(this, false);
+            SyncSchedule.syncFull(this, false, null);
         }
         
         if(mSyncStatusPoll == null || mSyncStatusPoll.isCancelled())
@@ -290,7 +290,7 @@ public class ListVoicemailActivity extends ListActivity
                 startActivity(i);
                 return true;
             case R.id.voicemail_list_refresh:
-                SyncSchedule.syncFull(this, true);
+                SyncSchedule.syncFull(this, true, null);
                 return true;
             default:
                 return super.onMenuItemSelected(featureId, item);
@@ -425,7 +425,7 @@ public class ListVoicemailActivity extends ListActivity
             return master == badge;
         }
 
-        public String addView(String leftBy, TextView view)
+        public String addView(String leftBy, TextView view, String leftByName)
         {
             if(info != null)
             {
@@ -433,7 +433,7 @@ public class ListVoicemailActivity extends ListActivity
             }
             
             views.add(view);
-            return leftBy;
+            return TextUtils.isEmpty(leftByName) ? leftBy : leftByName;
         }
         
         public void addBadge(String phoneNumber, ContactBadge badge)
@@ -657,26 +657,30 @@ public class ListVoicemailActivity extends ListActivity
                     }
                     return true;
                 case R.id.list_leftby:
-                    text = getCursorString(cursor, columnIndex); // left by name
-                    if(TextUtils.isEmpty(text)) // not set so go with what we find in contacts
+                {
+                    String leftByName = getCursorString(cursor, columnIndex);
+                    String leftByNumber = getCursorString(cursor, 1); // 'left by' must be column 1
+
+                    if(!TextUtils.isEmpty(leftByNumber))
                     {
-                        text = getCursorString(cursor, 1); // 'left by' must be column 1
-                        if(!TextUtils.isEmpty(text))
+                        BadgeHandler handler = leftByNames.get(leftByNumber);
+                        if(handler == null)
                         {
-                            BadgeHandler handler = leftByNames.get(text);
-                            if(handler == null)
-                            {
-                                handler = new BadgeHandler();
-                                leftByNames.put(text, handler);
-                            }
-                            text = handler.addView(text, (TextView)view);
+                            handler = new BadgeHandler();
+                            leftByNames.put(leftByNumber, handler);
                         }
-                        else
-                        {
-                            text = context.getString(R.string.leftByUnknown);
-                        }
+                        text = handler.addView(leftByNumber, (TextView)view, leftByName);
+                    }
+                    else if(!TextUtils.isEmpty(leftByName))
+                    {
+                        text = leftByName;
+                    }
+                    else
+                    {
+                        text = context.getString(R.string.leftByUnknown);
                     }
                     break;
+                }
                 case R.id.list_transcription:
                     text = getCursorString(cursor, columnIndex);
                     if(TextUtils.isEmpty(text))

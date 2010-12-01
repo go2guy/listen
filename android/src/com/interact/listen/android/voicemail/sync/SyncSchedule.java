@@ -70,7 +70,7 @@ public final class SyncSchedule
         }
     }
     
-    public static void syncFull(Context context, boolean force)
+    public static void syncFull(Context context, boolean force, String accountName)
     {
         long nowMS = System.currentTimeMillis();
         long intervalMS = ApplicationSettings.getSyncIntervalMinutes(context) * 60000L;
@@ -100,8 +100,11 @@ public final class SyncSchedule
         Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
         for(Account account : accounts)
         {
-            Log.v(Constants.TAG, "requesting full sync for " + account.name);
-            ContentResolver.requestSync(account, VoicemailProvider.AUTHORITY, bundle);
+            if(accountName == null || accountName.equals(account.name))
+            {
+                Log.v(Constants.TAG, "requesting full sync for " + account.name);
+                ContentResolver.requestSync(account, VoicemailProvider.AUTHORITY, bundle);
+            }
         }
     }
     

@@ -14,6 +14,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.interact.listen.android.voicemail.ApplicationSettings;
+import com.interact.listen.android.voicemail.C2DMReceiver;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.DownloadRunnable;
 import com.interact.listen.android.voicemail.Voicemail;
@@ -329,7 +330,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         Log.i(TAG, "on perform sync " + account.name);
         
         int syncType = SyncSchedule.getSyncType(extras);
-        
+/*
+        if(syncType != SyncSchedule.SYNC_TYPE_SEND_UPDATES)
+        {
+            C2DMReceiver.refreshAppC2DMRegistrationState(getContext());
+        }
+*/
         String authToken = null;
         try
         {
@@ -371,6 +377,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             }
             
             List<Voicemail> serverVoicemails = ClientUtilities.retrieveVoicemails(host, userID, account.name, authToken, false);
+            if(serverVoicemails == null)
+            {
+                Log.e(TAG, "got back null for list of server voicemails");
+                syncResult.stats.numIoExceptions++;
+                return;
+            }
             Log.i(TAG, "Found voicemails on server: " + serverVoicemails.size());
             if(isInterrupted())
             {

@@ -125,6 +125,11 @@ public final class Voicemail implements Parcelable
             vm.audioState = cursor.getInt(idx++);
             vm.audioDate = cursor.getLong(idx++);
             
+            if(TextUtils.equals(vm.leftByName, "null"))
+            {
+                vm.leftByName = null;
+            }
+
             return vm;
         }
         throw new IllegalArgumentException("just supporting from the all projection right now");
@@ -199,7 +204,7 @@ public final class Voicemail implements Parcelable
         vm.audioDate = 0;
         vm.label = Label.INBOX;
         
-        if(TextUtils.equals(vm.leftByName, "(Unknown)"))
+        if(TextUtils.equals(vm.leftByName, "(Unknown)") || TextUtils.equals(vm.leftByName, "null"))
         {
             vm.leftByName = null;
         }

@@ -229,6 +229,7 @@ public final class ClientUtilities
             Uri.Builder builder = host.buildUpon();
             builder.appendEncodedPath(VOICEMAIL_PATH);
             builder.appendQueryParameter("subscriber", "/subscribers/" + subscriberID);
+            builder.appendQueryParameter("_max", Integer.toString(Integer.MAX_VALUE));
             builder.appendQueryParameter("_fields", "id,isNew,leftBy,leftByName,description,dateCreated,duration,transcription,hasNotified");
             if(forView)
             {
@@ -263,7 +264,9 @@ public final class ClientUtilities
             
             JSONObject json = response.jsonObject;
             JSONArray results = (JSONArray)json.get("results");
-            for(int i = 0, total = json.getInt("total"); i < total; i++)
+            int total = json.getInt("total");
+            Log.i(TAG, "Results array total: " + total);
+            for(int i = 0; i < total; i++)
             {
                 JSONObject result = results.getJSONObject(i);
                 try
@@ -449,7 +452,7 @@ public final class ClientUtilities
             {
                 throw new AuthorizationException(apiUri + " [" + username + "]");
             }
-            Log.e(TAG, "error getting audio " + voicemailID);
+            Log.e(TAG, "error getting audio for " + voicemailID + ": " + status);
             return null;
         }
 
