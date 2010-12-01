@@ -79,7 +79,7 @@ public class GetAudioFileServlet extends HttpServlet
         {
             // input
             URL url = null;
-            if(acceptType.equals(MP3_FILE_TYPE))
+            if(acceptType != null && acceptType.equals(MP3_FILE_TYPE))
             {
                 url = ServletUtil.encodeUri(voicemail.mp3FileUri());
             }
@@ -97,7 +97,7 @@ public class GetAudioFileServlet extends HttpServlet
             OutputStream output = response.getOutputStream();
             response.setContentLength(Integer.parseInt(voicemail.getFileSize()));
             
-            if(acceptType.equals(MP3_FILE_TYPE))
+            if(acceptType != null && acceptType.equals(MP3_FILE_TYPE))
             {
                 response.setContentType(MP3_FILE_TYPE);
             }
