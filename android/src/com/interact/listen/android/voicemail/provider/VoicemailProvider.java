@@ -127,7 +127,10 @@ public class VoicemailProvider extends ContentProvider
         {
             db.endTransaction();
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        if(count > 0)
+        {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return count;
     }
 
@@ -273,7 +276,10 @@ public class VoicemailProvider extends ContentProvider
             db.endTransaction();
         }
         
-        getContext().getContentResolver().notifyChange(uri, null);
+        if(count > 0)
+        {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return count;
     }
     
@@ -358,7 +364,10 @@ public class VoicemailProvider extends ContentProvider
         
         String[] whereArgs = new String[] {Integer.toString(id)};
         int updated = db.update(VOICEMAIL_TABLE, values, ID_WHERE, whereArgs);
-        getContext().getContentResolver().notifyChange(uri, null);
+        if(updated > 0)
+        {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return updated > 0;
     }
     

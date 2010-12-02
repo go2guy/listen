@@ -62,7 +62,8 @@
 	<string name="dialog_clear_cache_details">Clear the voicemails stored on this device.</string>
 	<string name="dialog_clear_cache_confirm">Clear</string>
 	<string name="dialog_clear_cache_cancel">Cancel</string>
-
+	<string name="clearing_cache_progress">Clearing cache</string>
+	
 	<string name="dialog_sync_interval_title">Listen Poll Interval</string>
 	<string name="dialog_sync_interval_details">Set the minutes between checking for new voicemails.</string>
 	<string name="dialog_sync_interval_confirm">Set</string>

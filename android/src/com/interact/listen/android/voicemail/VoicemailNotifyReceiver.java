@@ -50,7 +50,7 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
         }
         
         int[] intIDs = null;
-        if(ids.size() <= 10)
+        if(ids.size() < 20)
         {
             intIDs = new int[ids.size()];
             int idx = 0;
@@ -73,6 +73,7 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
 
     public static void broadcastConnectionError(Context context, String userName, Throwable e)
     {
+        /*
         Intent intent = new Intent(Constants.ACTION_NOTIFY_ERROR);
         if(e != null)
         {
@@ -80,5 +81,6 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
         }
         intent.putExtra(Constants.EXTRA_ACCOUNT_NAME, userName);
         context.sendBroadcast(intent);
+        */
     }
 }

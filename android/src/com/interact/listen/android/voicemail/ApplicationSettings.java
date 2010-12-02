@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
@@ -52,12 +54,16 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private Preference syncSettingsPref;
     private Preference resetPasswordPref;
     
+    private ClearCacheTask clearCacheTask;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         Log.v(TAG, "creating application settings");
         super.onCreate(savedInstanceState);
 
+        clearCacheTask = null;
+        
         addPreferencesFromResource(R.xml.application_settings);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -83,6 +89,18 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         updateSyncIntevalSummary();
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        Log.v(TAG, "destroying application settings");
+        if(clearCacheTask != null)
+        {
+            clearCacheTask.cancel(true);
+            clearCacheTask = null;
+        }
+        super.onDestroy();
+    }
+    
     private int updateSyncIntevalSummary()
     {
         int interval = getSyncIntervalMinutes(this);
@@ -176,9 +194,94 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             public void onClick(DialogInterface dialog, int which)
             {
                 Log.i(TAG, "request to clear cache");
-                VoicemailHelper.refreshCache(getContentResolver());
+                if(clearCacheTask != null)
+                {
+                    Log.w(TAG, "currently a clear cache task");
+                }
+                clearCacheTask = new ClearCacheTask(ApplicationSettings.this);
+                clearCacheTask.execute((Void[])null);
+            }
+            
+        });
+        
+        return builder.create();
+    }
+    
+    private static final class ClearCacheTask extends AsyncTask<Void, Void, Integer>
+    {
+        private Context mContext;
+        private ProgressDialog progressDialog;
+        private Object syncObject;
+        
+        public ClearCacheTask(Context context)
+        {
+            super();
+            mContext = context;
+            progressDialog = null;
+            syncObject = new Object();
+        }
+
+        private Context getContext()
+        {
+            synchronized(syncObject)
+            {
+                return mContext;
+            }
+        }
+        private Context clearContext()
+        {
+            Context c = null;
+            synchronized(syncObject)
+            {
+                c = mContext;
+                mContext = null;
+            }
+            return c;
+        }
+        
+        @Override
+        protected void onPreExecute()
+        {
+            Context c = getContext();
+            if(c != null)
+            {
+                progressDialog = ProgressDialog.show(c, "", c.getString(R.string.clearing_cache_progress));
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            onEnd();
+        }
+
+        @Override
+        protected void onCancelled()
+        {
+            onEnd();
+        }
+
+        private void onEnd()
+        {
+            clearContext();
+            if(progressDialog != null)
+            {
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
+        }
+        
+        @Override
+        protected Integer doInBackground(Void... params)
+        {
+            Log.i(TAG, "clearing cache task starting");
+            Context context = clearContext();
+            if(context != null)
+            {
+                VoicemailHelper.refreshCache(context.getContentResolver());
+
                 Bundle rSyncBundle = new Bundle();
-                AccountManager am = AccountManager.get(ApplicationSettings.this);
+                AccountManager am = AccountManager.get(context);
                 Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
                 for (Account account : accounts)
                 {
@@ -186,10 +289,9 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
                     ContentResolver.requestSync(account, VoicemailProvider.AUTHORITY, rSyncBundle);
                 }
             }
-            
-        });
-        
-        return builder.create();
+            Log.i(TAG, "clearing cache task done");
+            return 0;
+        }
     }
     
     @Override
@@ -206,13 +308,6 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         Log.v(TAG, "resuming application settings");
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        Log.v(TAG, "destroying application settings");
-        super.onDestroy();
     }
 
     @Override

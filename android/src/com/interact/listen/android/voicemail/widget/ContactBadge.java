@@ -160,6 +160,7 @@ public class ContactBadge extends QuickContactBadge
 
         if(info.mContactUri == null)
         {
+            info.mContactName = null;
             super.assignContactFromPhone(info.mContactPhone, true);
         }
         else
@@ -167,26 +168,25 @@ public class ContactBadge extends QuickContactBadge
             super.assignContactUri(info.mContactUri);
         }
 
+        setPhoto(info.mPhotoData);
         if(info.mPhotoData == null && info.mContactPhoto != null)
         {
             mQueryHandler.startQuery(TOKEN_ICON, null, info.mContactPhoto, ICON_PROJECTION, null, null, null);
-        }
-        else
-        {
-            setPhoto(info.mPhotoData);
         }
     }
     
     @Override
     public void assignContactFromPhone(String phoneNumber, boolean lazyLookup)
     {
-        Log.v(TAG, "Assign Phone('" + phoneNumber + "', " + lazyLookup + ") current=" + info.mContactPhone);
+        Log.v(TAG, "Assign Phone('" + phoneNumber + "', " + lazyLookup + ") current=" + info.mContactPhone + " name=" + info.mContactName);
         
         if(!TextUtils.equals(phoneNumber, info.mContactPhone))
         {
             super.assignContactFromPhone(phoneNumber, true);
         }
+        info.clear();
         info.mContactPhone = phoneNumber;
+        setPhoto(null);
         if(!lazyLookup)
         {
             mQueryHandler.startQuery(TOKEN_LOOKUP, null, Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, info.mContactPhone),
@@ -257,6 +257,7 @@ public class ContactBadge extends QuickContactBadge
                         else
                         {
                             info.mContactUri = null;
+                            info.mContactName = null;
                             if(updateListener != null)
                             {
                                 updateListener.onComplete(new Data(info));

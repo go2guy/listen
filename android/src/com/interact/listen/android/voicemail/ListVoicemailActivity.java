@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class ListVoicemailActivity extends ListActivity
 {
@@ -46,6 +47,8 @@ public class ListVoicemailActivity extends ListActivity
     private ListVoicemailViewBinder mViewBinder = null;
     private ListVoicemailCursorAdapter mAdapter = null;
     private SyncStatusPoll mSyncStatusPoll = null;
+    
+    private Set<Integer> hasNotifiedIds = new TreeSet<Integer>();
     
     private static final String[] VOICEMAIL_INFO_COLUMNS =
         new String[]{Voicemails.LEFT_BY, Voicemails.LEFT_BY_NAME, Voicemails.DATE_CREATED, Voicemails.TRANSCRIPT};
@@ -148,6 +151,7 @@ public class ListVoicemailActivity extends ListActivity
         {
             mViewBinder.clearCache();
         }
+        hasNotifiedIds.clear();
 
         super.onResume();
 
@@ -169,7 +173,8 @@ public class ListVoicemailActivity extends ListActivity
     protected void onDestroy()
     {
         Log.v(TAG, "destroy list voicemail activity");
-
+        hasNotifiedIds.clear();
+        
         if(mPrefListener != null)
         {
             ApplicationSettings.unregisterListener(this, mPrefListener);
@@ -372,8 +377,9 @@ public class ListVoicemailActivity extends ListActivity
         {
             Cursor c = mAdapter.getCursor();
             c.moveToPosition(-1);
-            int numNew = 0, notNotified = 0;
+            int numNew = 0;
             int total = 0;
+            int notNotified = 0;
             while(c.moveToNext())
             {
                 if(c.getInt(VoicemailHelper.VOICEMAIL_LIST_PROJECT_IS_NEW) != 0)
@@ -382,7 +388,11 @@ public class ListVoicemailActivity extends ListActivity
                 }
                 if(c.getInt(VoicemailHelper.VOICEMAIL_LIST_PROJECT_NOTIFIED) == 0)
                 {
-                    notNotified++;
+                    Integer id = c.getInt(0);
+                    if(hasNotifiedIds.add(id))
+                    {
+                        ++notNotified;
+                    }
                 }
                 total++;
             }
@@ -393,8 +403,8 @@ public class ListVoicemailActivity extends ListActivity
             if(notNotified > 0)
             {
                 Log.i(TAG, "starting mark voicemail service for un-notified voicemails: " + notNotified);
-                // just go through all of them at the sqlite level, probably more efficient anyway
-                Intent intent = new Intent(Constants.ACTION_MARK_NOTIFIED);
+                Intent intent = new Intent(this, MarkVoicemailsService.class);
+                intent.setAction(Constants.ACTION_MARK_NOTIFIED);
                 startService(intent);
             }
         }
@@ -429,10 +439,15 @@ public class ListVoicemailActivity extends ListActivity
         {
             if(info != null)
             {
-                return !TextUtils.isEmpty(info.getContactName()) ? info.getContactName() : leftBy;
+                if(!TextUtils.isEmpty(info.getContactName()))
+                {
+                    return info.getContactName();
+                }
             }
-            
-            views.add(view);
+            else
+            {
+                views.add(view);
+            }
             return TextUtils.isEmpty(leftByName) ? leftBy : leftByName;
         }
         

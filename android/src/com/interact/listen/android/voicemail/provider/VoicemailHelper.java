@@ -21,10 +21,11 @@ public final class VoicemailHelper
 {
     private static final String TAG = Constants.TAG + "Helper";
 
-    public static final long OLD_VOICEMAIL  = 7 * 24 * 3600000; // week ago
-    public static final long STALE_DOWNLOAD =      4 * 3600000; // 4 hours
-    public static final long RETRY_DOWNLOAD =            60000; // 1 minute
-    public static final long OLD_DOWNLOAD   = 1 * 24 * 3600000; // day old
+    public static final long OLD_VOICEMAIL        = 7 * 24 * 3600000; // week ago
+    public static final long STALE_DOWNLOAD       =      4 * 3600000; // 4 hours
+    public static final long FORCE_RETRY_DOWNLOAD =            60000; // 1 minute
+    public static final long SYNC_RETRY_DOWNLOAD  = 1 * 24 * 3600000; // once a day
+    public static final long OLD_DOWNLOAD         = 1 * 24 * 3600000; // day old
 
     // don't move _ID or LEFT_BY in list
     private static final String[] VOICEMAIL_LIST_PROJECTION =
@@ -302,7 +303,11 @@ public final class VoicemailHelper
     public static boolean shouldAttemptDownload(Voicemail v, boolean force)
     {
         long now = System.currentTimeMillis();
-        return v.needsDownload(now, RETRY_DOWNLOAD, STALE_DOWNLOAD) && (force || !v.isOlderThan(now - OLD_VOICEMAIL));
+        if(force)
+        {
+            return v.needsDownload(now, FORCE_RETRY_DOWNLOAD, STALE_DOWNLOAD);
+        }
+        return v.needsDownload(now, SYNC_RETRY_DOWNLOAD, STALE_DOWNLOAD) && !v.isOlderThan(now - OLD_VOICEMAIL);
     }
     
     public static ParcelFileDescriptor getDownloadStream(ContentResolver resolver, Voicemail voicemail)

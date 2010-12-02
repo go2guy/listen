@@ -526,6 +526,7 @@ public final class ClientUtilities
             return null;
         }
 
+        Log.i(TAG, "Voicemail Audio Input Stream: " + status);
         return response.getEntity();
     }
     
