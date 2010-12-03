@@ -234,7 +234,15 @@ public class VoicemailPlayer implements AudioController.Player
         if(isInPlaybackState())
         {
             cp = mediaPlayer.getCurrentPosition();
-            Log.v(TAG, "getCurrentPosition() = " + cp);
+            if(currentState == State.PLAYBACK_COMPLETED && durationMS >= 0 && seekWhenPrepared == 0)
+            {
+                cp = durationMS;
+                Log.v(TAG, "getCurrentPosition() PLAYBACK COMPLETED = " + cp);
+            }
+            else
+            {
+                Log.v(TAG, "getCurrentPosition() = " + cp);
+            }
         }
         else
         {
@@ -256,6 +264,10 @@ public class VoicemailPlayer implements AudioController.Player
             Log.i(TAG, "Seeking to " + msec);
             mediaPlayer.seekTo(msec);
             seekWhenPrepared = 0;
+            if(currentState == State.PLAYBACK_COMPLETED)
+            {
+                currentState = State.PREPARED;
+            }
         }
         else
         {

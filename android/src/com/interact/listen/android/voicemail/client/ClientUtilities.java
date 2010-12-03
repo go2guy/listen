@@ -282,12 +282,14 @@ public final class ClientUtilities
                 throw new JSONException("JSON object not set");
             }
             
-            JSONArray results = (JSONArray)json.get("results");
-            int total = json.getInt("total");
             next = json.has("next") ? json.getString("next") : null;
-            Log.i(TAG, "Results array total: " + total + " array: " + results.length() + " next: " + next);
+            int total = json.getInt("total");
+            int count = json.getInt("count");
+            JSONArray results = (JSONArray)json.get("results");
             
-            for(int i = 0; i < results.length(); i++)
+            Log.i(TAG, "Results array total: " + total + " array: " + results.length() + " next: " + next + " count: " + count);
+            
+            for(int i = 0; i < count; i++)
             {
                 JSONObject result = results.getJSONObject(i);
                 try

@@ -8,6 +8,9 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
+/**
+ * Modeled after IntentService with some more hooks to give the implementation more power.
+ */
 public abstract class BackgroundService extends Service
 {
     private volatile Looper mServiceLooper;

@@ -145,7 +145,7 @@ public final class WavConversion
 
         private void updateProgress()
         {
-            if(listener != null)
+            if(listener != null && downloadSize > 0)
             {
                 int percent = (int)(total * 100L / downloadSize);
                 if(percent > lastPercent)
