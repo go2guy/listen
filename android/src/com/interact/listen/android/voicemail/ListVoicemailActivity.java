@@ -84,6 +84,17 @@ public class ListVoicemailActivity extends ListActivity
         registerForContextMenu(getListView());
 
         updateView();
+        
+        AccountManager am =  AccountManager.get(this);
+        if(am.getAccountsByType(Constants.ACCOUNT_TYPE).length == 0)
+        {
+            //Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
+            //intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
+            //intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            //startActivity(intent);
+            
+            am.addAccount(Constants.ACCOUNT_TYPE, null, null, null, this, null, null);
+        }
     }
 
     private OnSharedPreferenceChangeListener mPrefListener = new OnSharedPreferenceChangeListener()
@@ -117,16 +128,6 @@ public class ListVoicemailActivity extends ListActivity
     {
         super.onStart();
 
-        AccountManager am =  AccountManager.get(this);
-        if(am.getAccountsByType(Constants.ACCOUNT_TYPE).length == 0)
-        {
-            //Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
-            //intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
-            //intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            //startActivity(intent);
-            
-            am.addAccount(Constants.ACCOUNT_TYPE, null, null, null, this, null, null);
-        }
     }
     
     @Override
