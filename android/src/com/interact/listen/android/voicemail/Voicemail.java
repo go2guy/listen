@@ -496,14 +496,6 @@ public final class Voicemail implements Parcelable
         state = 0;
     }
     
-    public static ContentValues getDeletedValues()
-    {
-        ContentValues values = new ContentValues();
-        values.put(Voicemails.LABEL, Label.TRASH.name());
-        values.put(Voicemails.STATE, MARKED_DELETED);
-        return values;
-    }
-
     public boolean isMarkedRead()
     {
         return (state & MARKED_READ) != 0;

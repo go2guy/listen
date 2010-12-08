@@ -5,7 +5,6 @@ import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,8 +22,10 @@ import android.provider.Settings;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.util.Log;
 
+import com.google.android.c2dm.C2DMessaging;
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
 import com.interact.listen.android.voicemail.provider.VoicemailProvider;
+import com.interact.listen.android.voicemail.sync.SyncAdapter;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 import com.interact.listen.android.voicemail.widget.NumberPicker;
 import com.interact.listen.android.voicemail.widget.NumberPickerDialog;
@@ -55,6 +56,8 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private Preference resetPasswordPref;
     
     private ClearCacheTask clearCacheTask;
+    
+    private OnSharedPreferenceChangeListener c2dmListener = null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -87,8 +90,26 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         dialPrefix.getEditText().addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         
         updateSyncIntevalSummary();
+        
+        c2dmListener = new C2DMEnabledListner();
     }
-
+    
+    private class C2DMEnabledListner implements OnSharedPreferenceChangeListener, Runnable
+    {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences pref, String key)
+        {
+            runOnUiThread(this);
+        }
+        
+        @Override
+        public void run()
+        {
+            updateSyncIntevalSummary();
+        }
+    }
+    
+    
     @Override
     protected void onDestroy()
     {
@@ -98,17 +119,33 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             clearCacheTask.cancel(true);
             clearCacheTask = null;
         }
+        if(c2dmListener != null)
+        {
+            C2DMessaging.unregisterEnabledListener(this, c2dmListener);
+            c2dmListener = null;
+        }
         super.onDestroy();
     }
     
     private int updateSyncIntevalSummary()
     {
-        int interval = getSyncIntervalMinutes(this);
-        Log.v(TAG, "syn interval is " + interval);
+        int interval = 0;
         
-        int id = interval == 1 ? R.string.pref_sync_interval_detail_ns : R.string.pref_sync_interval_detail_ws;
-        syncIntervalPref.setSummary(getString(id, interval));
+        if(C2DMessaging.isEnabled(getApplicationContext()))
+        {
+            syncIntervalPref.setSummary(R.string.pref_sync_c2dm_enabled);
+            syncIntervalPref.setEnabled(false);
+        }
+        else
+        {
+            interval = getSyncIntervalMinutes(this);
+            Log.v(TAG, "syn interval is " + interval);
 
+            syncIntervalPref.setEnabled(true);
+            int id = interval == 1 ? R.string.pref_sync_interval_detail_ns : R.string.pref_sync_interval_detail_ws;
+            syncIntervalPref.setSummary(getString(id, interval));
+        }
+        
         return interval;
     }
 
@@ -278,16 +315,16 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             Context context = clearContext();
             if(context != null)
             {
-                VoicemailHelper.refreshCache(context.getContentResolver());
-
-                Bundle rSyncBundle = new Bundle();
-                AccountManager am = AccountManager.get(context);
-                Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
-                for (Account account : accounts)
+                VoicemailHelper.deleteVoicemails(context.getContentResolver(), null);
+                try
                 {
-                    Log.i(TAG, "requesting sync on " + account.name);
-                    ContentResolver.requestSync(account, VoicemailProvider.AUTHORITY, rSyncBundle);
+                    SyncAdapter.removeAccountInfo(context, null);
                 }
+                catch(Exception e)
+                {
+                    Log.e(TAG, "problem clearing account information", e);
+                }
+                SyncSchedule.syncRegular(context, null, true);
             }
             Log.i(TAG, "clearing cache task done");
             return 0;
@@ -300,6 +337,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         Log.v(TAG, "pausing application settings");
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        C2DMessaging.unregisterEnabledListener(this, c2dmListener);
     }
 
     @Override
@@ -308,6 +346,8 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         Log.v(TAG, "resuming application settings");
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        C2DMessaging.registerEnabledListener(this, c2dmListener);
+        updateSyncIntevalSummary();
     }
 
     @Override

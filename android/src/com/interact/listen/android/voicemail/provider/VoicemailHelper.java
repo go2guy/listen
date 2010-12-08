@@ -52,7 +52,9 @@ public final class VoicemailHelper
 
     public static Cursor getVoicemailListInfoCursor(ContentResolver resolver)
     {
-        return resolver.query(Voicemails.CONTENT_URI, VOICEMAIL_LIST_PROJECTION, null, null, LIST_VOICEMAILS_VIEW_ORDER);
+        String selection = Voicemails.LABEL + "!=?";
+        String[] args = new String[]{Voicemail.Label.TRASH.name()};
+        return resolver.query(Voicemails.CONTENT_URI, VOICEMAIL_LIST_PROJECTION, selection, args, LIST_VOICEMAILS_VIEW_ORDER);
     }
     
     public static Cursor getVoicemailDetailsCursor(ContentResolver resolver, int id)
@@ -137,17 +139,19 @@ public final class VoicemailHelper
     {
         List<String> selectionList = new ArrayList<String>();
         String selection = listVoicemailsSelection(userName, afterMS, includeDeleted, selectionList);
+        
         String[] selectionArgs = selection == null ? null : selectionList.toArray(new String[selectionList.size()]);
+        
         Cursor cursor = resolver.query(Voicemails.CONTENT_URI, Voicemail.ALL_PROJECTION,
                                        selection, selectionArgs, LIST_VOICEMAILS_CONTROL_ORDER);
         return getVoicemailList(cursor);
     }
 
-    public static List<Voicemail> getUpdatedVoicemails(ContentProviderClient resolver, String userName, long afterMS)
+    public static List<Voicemail> getUpdatedVoicemails(ContentProviderClient resolver, String userName)
         throws RemoteException
     {
         List<String> selectionList = new ArrayList<String>();
-        String selection = listVoicemailsSelection(userName, afterMS, true, selectionList);
+        String selection = listVoicemailsSelection(userName, 0, true, selectionList);
         selection += " AND " + Voicemails.STATE + " != 0";
 
         String[] selectionArgs = selection == null ? null : selectionList.toArray(new String[selectionList.size()]);
@@ -157,28 +161,19 @@ public final class VoicemailHelper
         return getVoicemailList(cursor);
     }
 
-    public static Uri insertVoicemail(ContentProviderClient resolver, Voicemail voicemail) throws RemoteException
+    public static int insertVoicemails(ContentProviderClient resolver, List<Voicemail> voicemails) throws RemoteException
     {
-        ContentValues values = voicemail.getInsertValues();
-        Uri uri = resolver.insert(Voicemails.CONTENT_URI, values);
-        if(uri != null)
+        if(voicemails == null || voicemails.size() == 0)
         {
-            int id = Integer.parseInt(uri.getLastPathSegment());
-            Log.i(TAG, "inserted voicemail: " + id);
-            voicemail.setIdFromInsert(id);
+            return 0;
         }
-        return uri;
-    }
-
-    public static void insertVoicemails(ContentProviderClient resolver, List<Voicemail> voicemails) throws RemoteException
-    {
         ContentValues[] values = new ContentValues[voicemails.size()];
         int i = 0;
         for (Voicemail vm : voicemails)
         {
             values[i++] = vm.getInsertValues();
         }
-        resolver.bulkInsert(Voicemails.CONTENT_URI, values);
+        return resolver.bulkInsert(Voicemails.CONTENT_URI, values);
     }
 
     public static void deleteVoicemail(ContentProviderClient resolver, Voicemail voicemail) throws RemoteException
@@ -190,13 +185,7 @@ public final class VoicemailHelper
     public static void moveVoicemailToTrash(ContentResolver resolver, Voicemail voicemail)
     {
         ContentValues values = voicemail.markDeleted();
-        moveVoicemailToTrash(resolver, voicemail.getId());
         resolver.update(voicemail.getUri(), values, null, null);
-    }
-
-    public static void moveVoicemailToTrash(ContentResolver resolver, int id)
-    {
-        resolver.update(getVoicemailUri(id), Voicemail.getDeletedValues(), null, null);
     }
 
     public static void markVoicemailRead(ContentResolver resolver, Voicemail voicemail, boolean isRead)
@@ -211,21 +200,23 @@ public final class VoicemailHelper
         resolver.update(voicemail.getUri(), values, null, null);
     }
 
-    public static void setVoicemailsNotified(ContentResolver resolver, int[] ids)
+    public static int setVoicemailsNotified(ContentResolver resolver, int[] ids)
     {
+        int updates = 0;
         ContentValues values = new ContentValues();
         values.put(Voicemails.HAS_NOTIFIED, true);
-        for (int id : ids)
+        if(ids == null)
         {
-            resolver.update(getVoicemailUri(id), values, null, null);
+            updates = resolver.update(Voicemails.CONTENT_URI, values, Voicemails.HAS_NOTIFIED + "=0", null);
         }
-    }
-
-    public static void setVoicemailsNotified(ContentResolver resolver)
-    {
-        ContentValues values = new ContentValues();
-        values.put(Voicemails.HAS_NOTIFIED, true);
-        resolver.update(Voicemails.CONTENT_URI, values, Voicemails.HAS_NOTIFIED + "==0", null);
+        else
+        {
+            for (int id : ids)
+            {
+                updates += resolver.update(getVoicemailUri(id), values, null, null);
+            }
+        }
+        return updates;
     }
 
     public static boolean updateVoicemail(ContentProviderClient resolver, Voicemail dest, Voicemail source) throws RemoteException
@@ -248,54 +239,62 @@ public final class VoicemailHelper
         resolver.update(getVoicemailUri(id), values, null, null);
     }
 
-    public static void refreshCache(ContentResolver contentResolver)
+    public static int deleteVoicemails(ContentResolver resolver, String userName)
     {
-        int rows = contentResolver.delete(Voicemails.CONTENT_URI, null, null);
-        Log.i(TAG, "cleared out voicemails in database: " + rows);
-    }
-    
-    public static int deleteOldAudio(ContentProviderClient resolver, List<Voicemail> voicemails) throws RemoteException
-    {
-        long now = System.currentTimeMillis();
-        long oldVoicemail = now - VoicemailHelper.OLD_VOICEMAIL;
-        long oldDownload = now - VoicemailHelper.OLD_DOWNLOAD;
-
         int updates = 0;
-        
-        if(voicemails != null)
+        if(userName == null)
         {
-            // clear downloaded based on the provided list of voicemails
-            for(Voicemail vm : voicemails)
-            {
-                if(vm.isDownloaded() && !vm.getIsNew() && vm.isOlderThan(oldVoicemail) && vm.isAudioOlderThan(oldDownload))
-                {
-                    Log.i(TAG, "removing voicemail audio for " + vm.getId());
-                    ContentValues values = vm.clearDownloaded();
-                    values.putNull(Voicemails.DATA);
-                    updates += resolver.update(vm.getUri(), values, null, null);
-                }
-            }
+            updates = resolver.delete(Voicemails.CONTENT_URI, null, null);
+            Log.i(TAG, "cleared out voicemails in database: " + updates);
         }
         else
         {
-            // clear downloaded based on what's in the database
-            ContentValues values = Voicemail.getClearedDownloadValues();
-
-            StringBuffer sb = new StringBuffer();
-            sb.append(Voicemails.AUDIO_STATE).append(" = ").append(Voicemail.getAudioDownloadedState());
-            //sb.append(" AND ").append(Voicemails.IS_NEW).append(" = 0");
-            sb.append(" AND ").append(Voicemails.DATE_CREATED).append(" < ").append(oldVoicemail);
-            sb.append(" AND ").append(Voicemails.AUDIO_DATE).append(" < ").append(oldDownload);
-
-            updates += resolver.update(Voicemails.CONTENT_URI, values, sb.toString(), null);
-            
-            // clear old stuff that may be stuck in downloading
-            long staleDownload = System.currentTimeMillis() - OLD_DOWNLOAD;
-            sb = new StringBuffer();
-            sb.append(Voicemails.AUDIO_STATE).append(" = ").append(Voicemail.getAudioDownloadingState());
-            sb.append(" AND ").append(Voicemails.AUDIO_DATE).append(" < ").append(staleDownload);
-            updates += resolver.update(Voicemails.CONTENT_URI, values, sb.toString(), null);
+            updates = resolver.delete(Voicemails.CONTENT_URI, Voicemails.USER_NAME + "=?", new String[]{userName});
+            Log.i(TAG, "cleared out voicemails for " + userName + ": " + updates);
         }
+        return updates;
+    }
+    
+    public static int deleteOldAudio(ContentProviderClient resolver, String userName) throws RemoteException
+    {
+        final long now = System.currentTimeMillis();
+        final long oldVoicemail  = now - OLD_VOICEMAIL;
+        final long oldDownload   = now - OLD_DOWNLOAD;
+        final long staleDownload = now - STALE_DOWNLOAD;
+
+        // clear old downloads from old voicemails and stuff that appears stuck in downloading
+
+        ContentValues values = Voicemail.getClearedDownloadValues();
+        
+        List<String> selectionArgs = new ArrayList<String>();
+        StringBuffer sb = new StringBuffer();
+
+        if(userName != null)
+        {
+            sb.append(Voicemails.USER_NAME).append("=? AND (");
+            selectionArgs.add(userName);
+        }
+
+        sb.append('(');
+        sb.append(Voicemails.AUDIO_STATE).append("=? AND ");
+        sb.append(Voicemails.DATE_CREATED).append("<? AND ");
+        sb.append(Voicemails.AUDIO_DATE).append("<?) OR (");
+        sb.append(Voicemails.AUDIO_STATE).append("=? AND ");
+        sb.append(Voicemails.AUDIO_DATE).append("<?)");
+
+        if(userName != null)
+        {
+            sb.append(')');
+        }
+        
+        selectionArgs.add(Integer.toString(Voicemail.getAudioDownloadedState()));
+        selectionArgs.add(Long.toString(oldVoicemail));
+        selectionArgs.add(Long.toString(oldDownload));
+        selectionArgs.add(Integer.toString(Voicemail.getAudioDownloadingState()));
+        selectionArgs.add(Long.toString(staleDownload));
+
+        int updates = resolver.update(Voicemails.CONTENT_URI, values, sb.toString(), selectionArgs.toArray(new String[0]));
+        Log.d(TAG, "Audio clean updates: " + updates);
         
         return updates;
     }
@@ -335,11 +334,6 @@ public final class VoicemailHelper
             Log.i(TAG, "client - went to get download stream, seems like it's being downloaded now " + voicemail.getId(), e);
             return null;
         }
-    }
-    
-    public static void deleteUserAccount(ContentResolver resolver, String username)
-    {
-        resolver.delete(Voicemails.CONTENT_URI, Voicemails.USER_NAME + "=?", new String[]{username});
     }
     
     private VoicemailHelper()

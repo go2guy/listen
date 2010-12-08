@@ -31,19 +31,15 @@ import java.io.IOException;
  */
 public abstract class C2DMBaseReceiver extends IntentService
 {
-    private static final String C2DM_RETRY = "com.google.android.c2dm.intent.RETRY";
+    protected static final String TAG = "C2DM";
 
     public static final String REGISTRATION_CALLBACK_INTENT = "com.google.android.c2dm.intent.REGISTRATION";
+    
+    private static final String C2DM_RETRY = "com.google.android.c2dm.intent.RETRY";
     private static final String C2DM_INTENT = "com.google.android.c2dm.intent.RECEIVE";
 
-    // Logging tag
-    private static final String TAG = "C2DM";
-
-    // Extras in the registration callback intents.
     public static final String EXTRA_UNREGISTERED = "unregistered";
-
     public static final String EXTRA_ERROR = "error";
-
     public static final String EXTRA_REGISTRATION_ID = "registration_id";
 
     public static final String ERR_SERVICE_NOT_AVAILABLE = "SERVICE_NOT_AVAILABLE";
@@ -54,20 +50,16 @@ public abstract class C2DMBaseReceiver extends IntentService
     public static final String ERR_INVALID_SENDER = "INVALID_SENDER";
     public static final String ERR_PHONE_REGISTRATION_ERROR = "PHONE_REGISTRATION_ERROR";
 
-    // wakelock
     private static final String WAKELOCK_KEY = "C2DM_LIB";
 
     private static PowerManager.WakeLock mWakeLock;
-    private final String senderId;
 
     /**
-     * The C2DMReceiver class must create a no-arg constructor and pass the sender id to be used for registration.
+     * The C2DMReceiver class must create a no-arg constructor
      */
-    public C2DMBaseReceiver(String senderId)
+    public C2DMBaseReceiver(String name)
     {
-        // senderId is used as base name for threads, etc.
-        super(senderId);
-        this.senderId = senderId;
+        super(name);
     }
 
     /**
@@ -86,7 +78,7 @@ public abstract class C2DMBaseReceiver extends IntentService
      */
     public void onRegistrered(Context context, String registrationId) throws IOException
     {
-        // registrationId will also be saved
+        // registrationId will be saved after this
     }
 
     /**
@@ -112,7 +104,7 @@ public abstract class C2DMBaseReceiver extends IntentService
             }
             else if(intent.getAction().equals(C2DM_RETRY))
             {
-                C2DMessaging.register(context, senderId);
+                C2DMessaging.register(context);
             }
         }
         finally
@@ -150,32 +142,38 @@ public abstract class C2DMBaseReceiver extends IntentService
 
     }
 
+    public static void cancelRetries(Context context)
+    {
+        PendingIntent retryPIntent = PendingIntent.getBroadcast(context, 0, new Intent(C2DM_RETRY), 0);
+
+        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        am.cancel(retryPIntent);
+    }
+    
     private void handleRegistration(final Context context, Intent intent)
     {
         final String registrationId = intent.getStringExtra(EXTRA_REGISTRATION_ID);
         String error = intent.getStringExtra(EXTRA_ERROR);
         String removed = intent.getStringExtra(EXTRA_UNREGISTERED);
 
-        if(Log.isLoggable(TAG, Log.DEBUG))
-        {
-            Log.d(TAG, "dmControl: registrationId = " + registrationId + ", error = " + error + ", removed = " + removed);
-        }
+        Log.d(TAG, "control: registrationId = " + registrationId + ", error = " + error + ", removed = " + removed);
 
         if(removed != null)
         {
-            // Remember we are unregistered
+            // remember we are unregistered
             C2DMessaging.clearRegistrationId(context);
             onUnregistered(context);
-            return;
         }
         else if(error != null)
         {
             // we are not registered, can try again
             C2DMessaging.clearRegistrationId(context);
-            // Registration failed
+            
+            // registration failed
             Log.e(TAG, "Registration error " + error);
             onError(context, error);
-            if("SERVICE_NOT_AVAILABLE".equals(error))
+
+            if(ERR_SERVICE_NOT_AVAILABLE.equals(error))
             {
                 long backoffTimeMs = C2DMessaging.getBackoff(context);
 
@@ -186,8 +184,8 @@ public abstract class C2DMBaseReceiver extends IntentService
                 AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
                 am.set(AlarmManager.ELAPSED_REALTIME, backoffTimeMs, retryPIntent);
 
-                // Next retry should wait longer.
-                backoffTimeMs *= 2;
+                // next retry should wait longer.
+                backoffTimeMs = Math.min(backoffTimeMs * 2, 86400000L);
                 C2DMessaging.setBackoff(context, backoffTimeMs);
             }
         }

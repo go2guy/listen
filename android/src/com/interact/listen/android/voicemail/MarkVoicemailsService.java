@@ -67,6 +67,12 @@ public class MarkVoicemailsService extends BackgroundService
     @Override
     protected void onHandleIntent(Intent intent)
     {
+        // TODO: have caller acquire wake lock and release after processIntent
+        processIntent(intent);
+    }
+    
+    private void processIntent(Intent intent)
+    {
         Bundle extras = intent.getExtras();
 
         int[] ids = null;
@@ -84,16 +90,8 @@ public class MarkVoicemailsService extends BackgroundService
         
         if(Constants.ACTION_MARK_NOTIFIED.equals(intent.getAction()))
         {
-            if(ids == null)
-            {
-                Log.i(TAG, "marking all voicemails notified");
-                VoicemailHelper.setVoicemailsNotified(getContentResolver());
-            }
-            else
-            {
-                Log.i(TAG, "marking voicemails notified: " + ids.length);
-                VoicemailHelper.setVoicemailsNotified(getContentResolver(), ids);
-            }
+            int count = VoicemailHelper.setVoicemailsNotified(getContentResolver(), ids);
+            Log.i(TAG, "marking voicemails notified [" + ids + "]: " + count);
         }
         else if(Constants.ACTION_MARK_READ.equals(intent.getAction()))
         {
@@ -121,7 +119,7 @@ public class MarkVoicemailsService extends BackgroundService
                 {
                     if(name != null)
                     {
-                        SyncSchedule.syncUpdate(this, name);
+                        SyncSchedule.syncUpdates(this, name);
                     }
                 }
             }

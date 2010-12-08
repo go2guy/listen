@@ -43,8 +43,11 @@ public final class ClientUtilities
     private static final String SUBSCRIBER_PATH = "api/subscribers";
     private static final String VOICEMAIL_PATH = "api/voicemails";
     private static final String NEXT_PREPEND_PATH = "api";
+    private static final String REGISTER_PATH = "meta/registerDevice";
     private static final String AUDIO_PATH = "meta/audio/file";
-    
+
+    private static final String DEVICE_TYPE = "ANDROID";
+
     private static HttpClient mHttpClient;
 
     private ClientUtilities()
@@ -225,8 +228,8 @@ public final class ClientUtilities
     private static final int MAX_VM_GET = 100;
 
     public static Uri getPagedVoicemails(Uri host, long subscriberID, String username, String authToken,
-                                         boolean forView, Uri nextRef,
-                                         List<Voicemail> voicemails) throws IOException, AuthorizationException
+                                         boolean forView, Uri nextRef, List<Voicemail> voicemails, Long[] syncTime)
+        throws IOException, AuthorizationException
     {
         Uri apiUri = null;
         if(nextRef == null)
@@ -239,6 +242,12 @@ public final class ClientUtilities
                 builder.appendQueryParameter("_first", Integer.toString(0));
                 builder.appendQueryParameter("_max", Integer.toString(MAX_VM_GET));
                 builder.appendQueryParameter("_fields", "id,isNew,leftBy,leftByName,description,dateCreated,duration,transcription,hasNotified");
+                
+                if(syncTime != null && syncTime[0] > 0)
+                {
+                    builder.appendQueryParameter("_after", Long.toString(syncTime[0]));
+                }
+                
                 if(forView)
                 {
                     builder.appendQueryParameter("_sortBy", "dateCreated");
@@ -296,6 +305,10 @@ public final class ClientUtilities
                 {
                     Voicemail v = Voicemail.parse(username, result);
                     voicemails.add(v);
+                    if(syncTime != null)
+                    {
+                        syncTime[1] = Math.max(syncTime[1], v.getDateCreatedMS());
+                    }
                 }
                 catch(JSONException je)
                 {
@@ -345,14 +358,20 @@ public final class ClientUtilities
     }
     
     public static List<Voicemail> retrieveVoicemails(Uri host, long subscriberID, String username, String authToken,
-                                                     boolean forView) throws IOException, AuthorizationException
+                                                     Long[] syncTime) throws IOException, AuthorizationException
     {
         List<Voicemail> voicemails = new ArrayList<Voicemail>();
 
         Uri next = null;
         do
         {
-            next = getPagedVoicemails(host, subscriberID, username, authToken, forView, next, voicemails);
+            if(Thread.currentThread().isInterrupted())
+            {
+                Log.i(TAG, "interrupted retrieval of voicemails");
+                return null;
+            }
+
+            next = getPagedVoicemails(host, subscriberID, username, authToken, false, next, voicemails, syncTime);
             if(next == null)
             {
                 Log.e(TAG, "error getting voicemails");
@@ -365,7 +384,7 @@ public final class ClientUtilities
         return voicemails;
     }
 
-    private static boolean putUpdate(Uri host, long voicemailID, String username, String authToken, JSONObject json)
+    private static boolean putUpdate(String deviceId, Uri host, long voicemailID, String username, String authToken, JSONObject json)
         throws IOException, AuthorizationException
     {
         Uri apiUri = null;
@@ -374,6 +393,7 @@ public final class ClientUtilities
             Uri.Builder builder = host.buildUpon();
             builder.appendEncodedPath(VOICEMAIL_PATH);
             builder.appendEncodedPath(Long.toString(voicemailID));
+            builder.appendQueryParameter("deviceId", deviceId);
             apiUri = builder.build();
         }
         catch(Exception e)
@@ -384,30 +404,8 @@ public final class ClientUtilities
     
         try
         {
-            HttpEntity entity = new StringEntity(json.toString(), "UTF-8");
-    
-            HttpPut httpPut = new HttpPut(apiUri.toString());
-            httpPut.setEntity(entity);
-            httpPut.setHeader("Accept", "application/json");
-            httpPut.setHeader("Content-Type", "application/json");
-            addAuthorizationHeaders(httpPut, username, authToken);
-    
-            Log.d(TAG, "Sending PUT request " + httpPut.getURI().toString());
-            maybeCreateHttpClient();
-    
-            HttpResponse response = mHttpClient.execute(httpPut);
-
-            int status = response.getStatusLine().getStatusCode();
-            if(status < 200 || status > 299)
-            {
-                if(status == 401)
-                {
-                    throw new AuthorizationException();
-                }
-                Log.e(TAG, "error sending voicemail update to server " + voicemailID);
-                return false;
-            }
-            return true;
+            HttpResponse response = sendJsonPut(apiUri, username, authToken, json);
+            return checkStatus("voicemail update", response);
         }
         catch(UnsupportedEncodingException e)
         {
@@ -416,7 +414,8 @@ public final class ClientUtilities
         }
     }
 
-    public static boolean markVoicemailNotified(Uri host, long voicemailID, String username, String authToken, boolean isNotified)
+    /*
+    public static boolean markVoicemailNotified(String deviceId, Uri host, long voicemailID, String username, String authToken, boolean isNotified)
         throws IOException, AuthorizationException
     {
         try
@@ -424,7 +423,7 @@ public final class ClientUtilities
             JSONObject json = new JSONObject();
             json.put("hasNotified", isNotified);
             
-            return putUpdate(host, voicemailID, username, authToken, json);
+            return putUpdate(deviceId, host, voicemailID, username, authToken, json);
         }
         catch(JSONException e)
         {
@@ -432,8 +431,9 @@ public final class ClientUtilities
             return false;
         }
     }
-
-    public static boolean markVoicemailRead(Uri host, long voicemailID, String username, String authToken, boolean isRead)
+    */
+    
+    public static boolean markVoicemailRead(String deviceId, Uri host, long voicemailID, String username, String authToken, boolean isRead)
         throws IOException, AuthorizationException
     {
         try
@@ -441,7 +441,7 @@ public final class ClientUtilities
             JSONObject json = new JSONObject();
             json.put("isNew", !isRead);
             
-            return putUpdate(host, voicemailID, username, authToken, json);
+            return putUpdate(deviceId, host, voicemailID, username, authToken, json);
         }
         catch(JSONException e)
         {
@@ -450,7 +450,7 @@ public final class ClientUtilities
         }
     }
 
-    public static boolean deleteVoicemail(Uri host, long voicemailID, String username, String authToken)
+    public static boolean deleteVoicemail(String deviceId, Uri host, long voicemailID, String username, String authToken)
         throws IOException, AuthorizationException
     {
         Uri apiUri = null;
@@ -459,6 +459,7 @@ public final class ClientUtilities
             Uri.Builder builder = host.buildUpon();
             builder.appendEncodedPath(VOICEMAIL_PATH);
             builder.appendEncodedPath(Long.toString(voicemailID));
+            builder.appendQueryParameter("deviceId", deviceId);
             apiUri = builder.build();
         }
         catch(Exception e)
@@ -476,18 +477,7 @@ public final class ClientUtilities
         Log.d(TAG, "Sending DELETE request to " + httpDelete.getURI().toString());
         
         HttpResponse response = mHttpClient.execute(httpDelete);
-        
-        int status = response.getStatusLine().getStatusCode();
-        if(status < 200 || status > 299)
-        {
-            if(status == 401)
-            {
-                throw new AuthorizationException();
-            }
-            Log.e(TAG, "error sending voicemail delete to server " + voicemailID);
-            return false;
-        }
-        return true;
+        return checkStatus("deleting voicemail", response);
     }
 
     public static HttpEntity getVoicemailInput(Uri host, long voicemailID, String username, String authToken)
@@ -517,19 +507,136 @@ public final class ClientUtilities
 
         HttpResponse response = mHttpClient.execute(httpGet);
 
+        return checkStatus("getting audio", response) ? response.getEntity() : null;
+    }
+
+    public static ServerRegistrationInfo getServerRegistrationInfo(Uri host, String name, String authToken, String deviceId)
+        throws AuthorizationException
+    {
+        Uri apiUri = null;
+        try
+        {
+            Uri.Builder builder = host.buildUpon();
+            builder.appendEncodedPath(REGISTER_PATH);
+            builder.appendQueryParameter("deviceType", DEVICE_TYPE);
+            builder.appendQueryParameter("deviceId", deviceId);
+            apiUri = builder.build();
+        }
+        catch(Exception e)
+        {
+            Log.i(TAG, "error creating URI", e);
+            return null;
+        }
+
+        HttpGet httpGet = new HttpGet(apiUri.toString());
+        httpGet.addHeader("Accept", "application/json");
+        addAuthorizationHeaders(httpGet, name, authToken);
+
+        Log.i(TAG, "Retrieving server registration info " + httpGet.getURI().toString());
+        maybeCreateHttpClient();
+
+        try
+        {
+            ControllerResponse response = mHttpClient.execute(httpGet, new JsonObjectResponseHandler());
+            response.throwExceptions();
+            
+            ServerRegistrationInfo info = new ServerRegistrationInfo(response.jsonObject);
+
+            Log.d(TAG, "Retrieved " + info);
+            
+            return info;
+        }
+        catch(JSONException e)
+        {
+            Log.e(TAG, "JSONException overall", e);
+            return null;
+        }
+        catch(IOException e)
+        {
+            Log.e(TAG, "unable to get registration info", e);
+            return null;
+        }
+    }
+
+    /**
+     * Register/Unregister a device with the Listen server.
+     * 
+     * @param host
+     * @param username
+     * @param authToken
+     * @param registrationId null or "" to unregister, otherwise registration ID to register
+     * @param clientDeviceId
+     * @return
+     * @throws IOException
+     * @throws AuthorizationException
+     */
+    public static boolean registerDevice(Uri host, String username, String authToken, String registrationId,
+                                         String clientDeviceId) throws IOException, AuthorizationException
+    {
+        Uri apiUri = null;
+        try
+        {
+            Uri.Builder builder = host.buildUpon();
+            builder.appendEncodedPath(REGISTER_PATH);
+            apiUri = builder.build();
+        }
+        catch(Exception e)
+        {
+            Log.i(TAG, "error creating URI", e);
+            return false;
+        }
+
+        JSONObject json = new JSONObject();
+        try
+        {
+            json.put("deviceId", clientDeviceId);
+            json.put("deviceType", DEVICE_TYPE);
+            json.put("registrationToken", registrationId == null ? "" : registrationId);
+        }
+        catch(JSONException e)
+        {
+            Log.e(TAG, "error creating registration object", e);
+            return false;
+        }
+   
+        HttpResponse response = sendJsonPut(apiUri, username, authToken, json);
+        return checkStatus("device registration", response);
+    }
+
+    private static HttpResponse sendJsonPut(Uri apiUri, String username, String authToken, JSONObject json) throws IOException
+    {
+        maybeCreateHttpClient();
+
+        HttpEntity entity = new StringEntity(json.toString(), "UTF-8");
+        
+        HttpPut httpPut = new HttpPut(apiUri.toString());
+        
+        httpPut.setEntity(entity);
+        
+        httpPut.setHeader("Accept", "application/json");
+        httpPut.setHeader("Content-Type", "application/json");
+        
+        addAuthorizationHeaders(httpPut, username, authToken);
+   
+        Log.d(TAG, "Sending PUT request " + httpPut.getURI().toString());
+
+        return mHttpClient.execute(httpPut);
+    }
+    
+    private static boolean checkStatus(String description, HttpResponse response) throws AuthorizationException
+    {
         int status = response.getStatusLine().getStatusCode();
         if(status < 200 || status > 299)
         {
             if(status == 401)
             {
-                throw new AuthorizationException(apiUri + " [" + username + "]");
+                throw new AuthorizationException();
             }
-            Log.e(TAG, "error getting audio for " + voicemailID + ": " + status);
-            return null;
+            Log.e(TAG, description + ": " + status);
+            return false;
         }
-
-        Log.i(TAG, "Voicemail Audio Input Stream: " + status);
-        return response.getEntity();
+        Log.i(TAG, description + ": " + status);
+        return true;
     }
     
     private static void maybeCreateHttpClient()

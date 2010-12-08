@@ -32,6 +32,8 @@
 	<string name="pref_sync_interval_title">Poll Interval</string>
 	<string name="pref_sync_interval_detail_ns">%d minute</string>
 	<string name="pref_sync_interval_detail_ws">%d minutes</string>
+	<string name="pref_sync_c2dm_enabled">Automatic sync enabled</string>
+	
 	<string name="pref_sync_audio">Sync Audio</string>
 	<string name="pref_sync_audio_on">Audio downloaded automatically</string>	
 	<string name="pref_sync_audio_off">Audio downloaded on demand</string>

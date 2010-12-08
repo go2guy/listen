@@ -27,7 +27,6 @@ import android.widget.TextView;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
 import com.interact.listen.android.voicemail.provider.Voicemails;
-import com.interact.listen.android.voicemail.sync.SyncAdapter;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 import com.interact.listen.android.voicemail.widget.ContactBadge;
 
@@ -158,11 +157,6 @@ public class ListVoicemailActivity extends ListActivity
 
         NotificationHelper.clearNotificationBar(this);
 
-        if(SyncAdapter.isNewSyncSupported() || (mCursor != null && mCursor.getCount() == 0))
-        {
-            SyncSchedule.syncFull(this, false, null);
-        }
-        
         if(mSyncStatusPoll == null || mSyncStatusPoll.isCancelled())
         {
             mSyncStatusPoll = new SyncStatusPoll(this);
@@ -296,7 +290,7 @@ public class ListVoicemailActivity extends ListActivity
                 startActivity(i);
                 return true;
             case R.id.voicemail_list_refresh:
-                SyncSchedule.syncFull(this, true, null);
+                SyncSchedule.syncRegular(this, null, true);
                 return true;
             default:
                 return super.onMenuItemSelected(featureId, item);

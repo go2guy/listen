@@ -78,36 +78,52 @@ public class VoicemailProvider extends ContentProvider
         return myWhere;
     }
     
-    private void deleteFiles(SQLiteDatabase db, String where, String[] whereArgs)
+    private int deleteFiles(SQLiteDatabase db, String where, String[] whereArgs)
     {
-        Log.i(TAG, "deleting files '" + where + "'");
-        
-        String[] cols = new String[] {Voicemails.DATA};
-        Cursor cursor = db.query(VOICEMAIL_TABLE, cols, where, whereArgs, null, null, null);
-        while (cursor != null && cursor.moveToNext())
+        int updates = 0;
+        if(TextUtils.isEmpty(where))
         {
-            if(!cursor.isNull(0))
+            updates = deleteAllVoicemailFiles(getContext());
+        }
+        else
+        {
+            String[] cols = new String[] {Voicemails.DATA};
+            Cursor cursor = db.query(VOICEMAIL_TABLE, cols, where, whereArgs, null, null, null);
+            while (cursor != null && cursor.moveToNext())
             {
-                File file = new File(cursor.getString(0));
-                try
+                if(!cursor.isNull(0))
                 {
-                    Log.i(TAG, "deleting voicemail: " + file);
-                    if(!file.delete())
+                    File file = new File(cursor.getString(0));
+                    try
                     {
-                        Log.e(TAG, "unable to delete audio file " + file);
+                        if(file.exists())
+                        {
+                            Log.i(TAG, "deleting voicemail: " + file);
+                            if(file.delete())
+                            {
+                                ++updates;
+                            }
+                            else
+                            {
+                                Log.e(TAG, "unable to delete audio file " + file);
+                            }
+                        }
+                    }
+                    catch(SecurityException e)
+                    {
+                        Log.e(TAG, "security exception deleting audio file", e);
+                    }
+                    catch(Exception e)
+                    {
+                        Log.e(TAG, "deleteFiles() exception", e);
                     }
                 }
-                catch(SecurityException e)
-                {
-                    Log.e(TAG, "security exception deleting audio file", e);
-                }
-                catch(Exception e)
-                {
-                    Log.e(TAG, "deleteFiles() exception", e);
-                }
             }
+            cursor.close();
         }
-        cursor.close();
+        
+        Log.i(TAG, "deleting files '" + where + "': " + updates);
+        return updates;
     }
 
     @Override
@@ -203,7 +219,7 @@ public class VoicemailProvider extends ContentProvider
             {
                 if(value != null)
                 {
-                    long rowId = db.insert(VOICEMAIL_TABLE, Voicemails.TRANSCRIPT, value);
+                    long rowId = db.insertWithOnConflict(VOICEMAIL_TABLE, Voicemails.TRANSCRIPT, value, SQLiteDatabase.CONFLICT_REPLACE);
                     if(rowId > 0)
                     {
                         ++inserts;
@@ -221,6 +237,11 @@ public class VoicemailProvider extends ContentProvider
             db.endTransaction();
         }
 
+        if(inserts > 0)
+        {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        
         return inserts;
     }
 
@@ -527,21 +548,23 @@ public class VoicemailProvider extends ContentProvider
         }
     }
 
-    private static void deleteAllVoicemailFiles(Context context)
+    private static int deleteAllVoicemailFiles(Context context)
     {
+        int deletes = 0;
         try
         {
             AudioFileFilter filter = new AudioFileFilter();
-            deleteFiles(context.getCacheDir(), filter);
+            deletes += deleteFiles(context.getCacheDir(), filter);
             if(TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED))
             {
-                deleteFiles(context.getExternalCacheDir(), filter);
+                deletes += deleteFiles(context.getExternalCacheDir(), filter);
             }
         }
         catch(Exception e)
         {
             Log.e(TAG, "error removing all voicemail files", e);
         }
+        return deletes;
     }
 
     private static final class AudioFileFilter implements java.io.FilenameFilter
@@ -553,17 +576,38 @@ public class VoicemailProvider extends ContentProvider
         }
     }
     
-    private static void deleteFiles(File dir, java.io.FilenameFilter filter)
+    private static int deleteFiles(File dir, java.io.FilenameFilter filter)
     {
+        int deletes = 0;
         if(dir != null)
         {
-            File[] files = dir.listFiles(filter);
+            File[] files = null;
+            try
+            {
+                files = dir.listFiles(filter);
+            }
+            catch(SecurityException e)
+            {
+                Log.e(TAG, "denied access to " + dir, e);
+                return 0;
+            }
             for (File file : files)
             {
                 Log.i(TAG, "deleting files: " + file);
-                file.delete();
+                try
+                {
+                    if(file.delete())
+                    {
+                        ++deletes;
+                    }
+                }
+                catch(Exception e)
+                {
+                    Log.e(TAG, "error deleting file " + file, e);
+                }
             }
         }
+        return deletes;
     }
     
     private static int audioModeBits(Uri uri, String mode) throws FileNotFoundException

@@ -6,27 +6,33 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.google.android.c2dm.C2DMessaging;
 import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.C2DMReceiver;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.DownloadRunnable;
+import com.interact.listen.android.voicemail.NotificationHelper;
 import com.interact.listen.android.voicemail.Voicemail;
 import com.interact.listen.android.voicemail.VoicemailNotifyReceiver;
 import com.interact.listen.android.voicemail.authenticator.Authenticator;
 import com.interact.listen.android.voicemail.client.AuthorizationException;
 import com.interact.listen.android.voicemail.client.ClientUtilities;
+import com.interact.listen.android.voicemail.client.ServerRegistrationInfo;
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
+import com.interact.listen.android.voicemail.provider.VoicemailProvider;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -37,9 +43,11 @@ import org.apache.http.ParseException;
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
     private static final String TAG = Constants.TAG + "SyncAdapter";
-    private static final long CLEAN_INTERVAL = 12 * 3600000; // twice a day
+    private static final long CLEAN_INTERVAL = 24 * 3600000; // once a day
 
-    private static long lastAudioClean = 0;
+    public static final String LAST_CLEAN = "last_audio_clean";
+    public static final String SERVER_LAST_SYNC = "server_last_sync";
+    public static final String REGISTERED_SYNC = "sync_registered";
 
     private final AccountManager mAccountManager;
     
@@ -47,110 +55,35 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
     {
         super(context, autoInitialize);
         mAccountManager = AccountManager.get(context);
-        if(lastAudioClean == 0)
-        {
-            lastAudioClean = System.currentTimeMillis() - CLEAN_INTERVAL;
-        }
     }
     
     private static boolean isInterrupted()
     {
         return Thread.currentThread().isInterrupted();
     }
-
-    private static final class SyncIter
+    
+    private static int insertFromList(ContentProviderClient provider, List<Voicemail> insertList) throws RemoteException
     {
-        private List<Voicemail> localVoicemails,  serverVoicemails;
-        
-        private Iterator<Voicemail> lIter, sIter;
-        private Voicemail lVoicemail, sVoicemail;
-
-        // assumes both lists are sorted by voicemail id
-        private SyncIter(List<Voicemail> localVoicemails, List<Voicemail> serverVoicemails)
+        int inserts = VoicemailHelper.insertVoicemails(provider, insertList);
+        if(inserts != insertList.size())
         {
-            this.localVoicemails = localVoicemails;
-            this.serverVoicemails = serverVoicemails;
-
-            reset();
+            Log.e(TAG, "inserted " + inserts + " when expecting " + insertList.size());
         }
-        
-        public void reset()
-        {
-            lIter = localVoicemails.iterator();
-            sIter = serverVoicemails.iterator();
-            lVoicemail = null;
-            sVoicemail = null;
-        }
-        
-        public boolean next()
-        {
-            if(isMissingFromLocal())
-            {
-                sVoicemail = nextIter(sIter);
-            }
-            else if(isMissingFromServer())
-            {
-                lVoicemail = nextIter(lIter);
-            }
-            else // isMatched() or both null
-            {
-                sVoicemail = nextIter(sIter);
-                lVoicemail = nextIter(lIter);
-            }
-            
-            return lVoicemail != null || sVoicemail != null;
-        }
-        
-        public boolean nextMatch()
-        {
-            while(next() && lVoicemail != null && sVoicemail != null)
-            {
-                if(isMatched())
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public Voicemail getLocal()
-        {
-            return lVoicemail;
-        }
-        public Voicemail getServer()
-        {
-            return sVoicemail;
-        }
-        
-        public boolean isMissingFromLocal()
-        {
-            return sVoicemail != null && (lVoicemail == null || lVoicemail.getVoicemailId() > sVoicemail.getVoicemailId());
-        }
-        
-        public boolean isMissingFromServer()
-        {
-            return lVoicemail != null && (sVoicemail == null || sVoicemail.getVoicemailId() > lVoicemail.getVoicemailId());
-        }
-
-        public boolean isMatched()
-        {   // isMatched() == (!isMissingFromLocal() && !isMissingFromServer())
-            return lVoicemail == null || sVoicemail == null ? false : lVoicemail.getVoicemailId() == sVoicemail.getVoicemailId();
-        }
-        
-        private Voicemail nextIter(Iterator<Voicemail> iter)
-        {
-            return iter.hasNext() ? iter.next() : null;
-        }
+        insertList.clear();
+        return inserts;
     }
     
     private List<Voicemail> insertNewVoicemails(Account account, ContentProviderClient provider, SyncResult syncResult,
-                                               SyncIter iter) throws RemoteException
+                                               SyncIter iter, boolean fullList) throws RemoteException
     {
         boolean notifyEnabled = ApplicationSettings.isNotificationEnabled(getContext());
         
-        List<Voicemail> newVoicemails = new ArrayList<Voicemail>();
-
+        List<Voicemail> needAudio = new ArrayList<Voicemail>();
         List<Integer> notifyIDs = new ArrayList<Integer>();
+        List<Voicemail> insertList = new ArrayList<Voicemail>();
+
+        boolean keepNotification = false;
+        
         iter.reset();
         while(iter.next())
         {
@@ -162,29 +95,47 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                     v.setNotified(true);
                 }
                 Log.i(TAG, "voicemail added on server: " + v.getVoicemailId());
-                if(VoicemailHelper.insertVoicemail(provider, v) != null)
+                insertList.add(v);
+
+                if(VoicemailHelper.shouldAttemptDownload(v, false))
                 {
-                    syncResult.stats.numInserts++;
-                    if(VoicemailHelper.shouldAttemptDownload(v, false))
-                    {
-                        newVoicemails.add(v);
-                    }
-                    if(v.needsNotification())
-                    {
-                        notifyIDs.add(v.getId());
-                    }
+                    needAudio.add(v);
+                }
+                if(v.needsNotification())
+                {
+                    notifyIDs.add(v.getId());
+                }
+                if(insertList.size() >= 50)
+                {
+                    syncResult.stats.numInserts += insertFromList(provider, insertList);
                 }
             }
-            else if(iter.isMatched() && iter.getLocal().needsNotification())
+            else if(iter.isMatched())
             {
-                notifyIDs.add(iter.getLocal().getId());
+                if(iter.getServer().needsNotification() && iter.getLocal().needsNotification())
+                {
+                    notifyIDs.add(iter.getLocal().getId());
+                }
             }
-            
+            else if(!fullList && iter.getLocal().needsNotification())
+            {
+                // to be on the safe side (e.g., periodic update)
+                keepNotification = true;
+            }
         }
 
-        VoicemailNotifyReceiver.broadcastVoicemailNotifications(getContext(), provider, account.name, notifyIDs);
+        syncResult.stats.numInserts += insertFromList(provider, insertList);
         
-        return newVoicemails;
+        if(notifyIDs.isEmpty() && !keepNotification)
+        {
+            NotificationHelper.clearVoicemailNotifications(getContext());
+        }
+        else
+        {
+            VoicemailNotifyReceiver.broadcastVoicemailNotifications(getContext(), provider, account.name, notifyIDs);
+        }
+        
+        return needAudio;
     }
     
     private void deleteMissingVoicemails(ContentProviderClient provider, SyncResult syncResult, SyncIter iter)
@@ -204,7 +155,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
     }
     
     private boolean pushVoicemailUpdates(Uri host, String authToken, Account account, ContentProviderClient provider,
-                                         SyncResult syncResult, List<Voicemail> voicemails)
+                                         SyncResult syncResult, List<Voicemail> voicemails, String deviceId)
         throws IOException, AuthorizationException, RemoteException
     {
         for(Voicemail voicemail : voicemails)
@@ -218,7 +169,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             if(voicemail.isMarkedTrash())
             {
                 Log.i(TAG, "pushing delete to server " + voicemail.getVoicemailId());
-                if(ClientUtilities.deleteVoicemail(host, voicemail.getVoicemailId(), account.name, authToken))
+                if(ClientUtilities.deleteVoicemail(deviceId, host, voicemail.getVoicemailId(), account.name, authToken))
                 {
                     Log.i(TAG, "removing local voicemail after sync " + voicemail.getVoicemailId());
                     VoicemailHelper.deleteVoicemail(provider, voicemail);
@@ -228,7 +179,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             else if(voicemail.isMarkedRead())
             {
                 Log.i(TAG, "pushing read voicemail to server: " + voicemail.getVoicemailId());
-                boolean succ = ClientUtilities.markVoicemailRead(host, voicemail.getVoicemailId(), account.name,
+                boolean succ = ClientUtilities.markVoicemailRead(deviceId, host, voicemail.getVoicemailId(), account.name,
                                                                  authToken, !voicemail.getIsNew());
                 if(succ)
                 {
@@ -311,34 +262,145 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         
     }
     
-    private void cleanAudio(ContentProviderClient provider) throws RemoteException
+    private static SharedPreferences getSyncMeta(Context context, Account account)
     {
-        if(!isInterrupted() && System.currentTimeMillis() >= lastAudioClean + CLEAN_INTERVAL)
+        return context.getSharedPreferences("sync:" + account.name, 0);
+    }
+    
+    private SharedPreferences getSyncMeta(Account account)
+    {
+        return getSyncMeta(getContext(), account);
+    }
+    
+    private void cleanAudio(SharedPreferences syncMeta, ContentProviderClient provider, Account account) throws RemoteException
+    {
+        long lastAudioClean = syncMeta.getLong(LAST_CLEAN, 0);
+        long now = System.currentTimeMillis();
+        
+        if(!isInterrupted() && now >= lastAudioClean + CLEAN_INTERVAL)
         {
-            Log.i(TAG, "cleaning old voicemails");
-            VoicemailHelper.deleteOldAudio(provider, null);
-            lastAudioClean = System.currentTimeMillis();
+            syncMeta.edit().putLong(LAST_CLEAN, now).commit();
+            if(lastAudioClean > 0) // no reason to clean on first us
+            {
+                Log.i(TAG, "cleaning old voicemails [" + now + " >= " + lastAudioClean + "]");
+                VoicemailHelper.deleteOldAudio(provider, account.name);
+            }
         }
     }
     
-    public static boolean isNewSyncSupported()
+    public static void removeAccountInfo(Context context, Account account) throws IOException, OperationCanceledException
     {
-        return false;
+        AccountManager am = AccountManager.get(context);
+        
+        boolean clearRegistration = false;
+        
+        if(account != null)
+        {
+            unregisterClient(context, account, false);
+            getSyncMeta(context, account).edit().clear().commit();
+            clearRegistration = am.getAccountsByType(Constants.ACCOUNT_TYPE).length <= 1;
+        }
+        else
+        {
+            Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+            for(Account acc : accounts)
+            {
+                try
+                {
+                    unregisterClient(context, acc, false);
+                    getSyncMeta(context, acc).edit().clear().commit();
+                }
+                catch(Exception e)
+                {
+                    Log.e(TAG, "exception cleaning out account " + acc.name, e);
+                }
+            }
+            clearRegistration = true;
+        }
+        
+        if(clearRegistration)
+        {
+            C2DMReceiver.forceUnregister(context);
+        }
+    }
+
+    private static void unregisterClient(Context context, Account account, boolean force) throws IOException, OperationCanceledException
+    {
+        final SharedPreferences syncMeta = getSyncMeta(context, account);
+        final AccountManager accountManager = AccountManager.get(context);
+        final boolean syncRegistered = syncMeta.getBoolean(REGISTERED_SYNC, false);
+
+        if(!syncRegistered && !force)
+        {
+            Log.i(TAG, "client not registered on server: " + account.name);
+            return;
+        }
+        
+        Log.i(TAG, "unregistring client on server: " + account.name);
+
+        try
+        {
+            String authToken = accountManager.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, true);
+            if(authToken == null)
+            {
+                Log.e(TAG, "unable to authorize " + account.name);
+                return;
+            }
+    
+            String uId = accountManager.getUserData(account, Authenticator.ID_DATA);
+            String hStr = accountManager.getUserData(account, Authenticator.HOST_DATA);
+            if (hStr == null || uId == null)
+            {
+                Log.e(TAG, "authorization properties not set for " + account.name);
+                return;
+            }
+            Log.i(TAG, "authorized " + hStr + " user ID " + uId);
+    
+            Uri host = Uri.parse(hStr);
+    
+            TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+            String clientDeviceId = tm.getDeviceId();
+    
+            ClientUtilities.registerDevice(host, account.name, authToken, "", clientDeviceId);
+        }
+        catch(AuthorizationException e)
+        {
+            Log.e(TAG, "authorization exception", e);
+        }
+        catch(AuthenticatorException e)
+        {
+            Log.e(TAG, "authenticator exception", e);
+        }
     }
     
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
                               SyncResult syncResult)
     {
-        Log.i(TAG, "on perform sync " + account.name);
-        
-        int syncType = SyncSchedule.getSyncType(extras);
-/*
-        if(syncType != SyncSchedule.SYNC_TYPE_SEND_UPDATES)
+        SyncType syncType = SyncSchedule.getSyncType(extras);
+        Log.i(TAG, "on perform sync " + account.name + ": " + syncType);
+
+        if(syncType == SyncType.INITIALIZE)
         {
-            C2DMReceiver.refreshAppC2DMRegistrationState(getContext());
+            if(ContentResolver.getIsSyncable(account, VoicemailProvider.AUTHORITY) <= 0)
+            {
+                // ensure we are set to be syncable
+                ContentResolver.setIsSyncable(account, VoicemailProvider.AUTHORITY, 1);
+            }
+            if(!C2DMessaging.isEnabled(getContext()))
+            {
+                SyncSchedule.updatePeriodicSync(getContext());
+            }
         }
-*/
+        
+        final SharedPreferences syncMeta = getSyncMeta(account);
+        
+        long lastServerSyncTime = syncMeta.getLong(SERVER_LAST_SYNC, 0);
+
+        final boolean syncDesired = ContentResolver.getMasterSyncAutomatically() &&
+                                    ContentResolver.getSyncAutomatically(account, VoicemailProvider.AUTHORITY);
+        final boolean serverReg = syncMeta.getBoolean(REGISTERED_SYNC, false);
+        
         String authToken = null;
         try
         {
@@ -369,17 +431,74 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                 return;
             }
 
-            if(syncType == SyncSchedule.SYNC_TYPE_SEND_UPDATES)
+            TelephonyManager tm = (TelephonyManager)getContext().getSystemService(Context.TELEPHONY_SERVICE);
+            final String deviceId = tm.getDeviceId();
+
+            final boolean forceRefresh = syncType == SyncType.INITIALIZE || syncType == SyncType.USER_SYNC;
+
+            // could take out !serverReg, but would require manual refresh when going from
+            // no sender ID to a sender ID to get cloud sync enabled
+            final boolean checkInfo = forceRefresh || syncType == SyncType.CONFIG_SYNC || !serverReg;
+            
+            if(checkInfo)
+            {
+                ServerRegistrationInfo info = ClientUtilities.getServerRegistrationInfo(host, account.name, authToken, deviceId);
+                
+                if(isInterrupted())
+                {
+                    Log.i(TAG, "sync interrupted after getting C2DM registration information");
+                    return;
+                }
+                
+                final String reg = C2DMReceiver.refreshAppC2DMRegistrationState(getContext(), info, syncDesired, forceRefresh);
+                if(reg != null)
+                {
+                    if(ClientUtilities.registerDevice(host, account.name, authToken, reg, deviceId))
+                    {
+                        syncMeta.edit().putBoolean(REGISTERED_SYNC, reg.length() > 0).commit();
+                        Log.i(TAG, "updated account registration state: '" + reg + "'");
+                    }
+                    else
+                    {
+                        Log.e(TAG, "failed account registration update: '" + reg + "'");
+                    }
+                }
+            }
+
+            if(isInterrupted())
+            {
+                Log.i(TAG, "sync interrupted after registration update");
+                return;
+            }
+
+            if(syncType == SyncType.UPLOAD_ONLY)
             {
                 Log.v(TAG, "doing update sync");
-                List<Voicemail> localVoicemails = VoicemailHelper.getUpdatedVoicemails(provider, account.name, 0);
+                List<Voicemail> localVoicemails = VoicemailHelper.getUpdatedVoicemails(provider, account.name);
                 Log.i(TAG, "got updated voicemails for sync: " + localVoicemails);
-                pushVoicemailUpdates(host, authToken, account, provider, syncResult, localVoicemails);
+                pushVoicemailUpdates(host, authToken, account, provider, syncResult, localVoicemails, deviceId);
                 Log.i(TAG, "update push completed");
                 return;
             }
             
-            List<Voicemail> serverVoicemails = ClientUtilities.retrieveVoicemails(host, userID, account.name, authToken, false);
+            if(syncType == SyncType.PERIODIC) //&& !C2DMessaging.isEnabled(getContext()))
+            {
+                Log.i(TAG, "treating periodic sync as cloud sync");
+                syncType = SyncType.CLOUD_SYNC;
+            }
+
+            Long[] syncTime = new Long[] {0L, lastServerSyncTime};
+            if(syncType == SyncType.PERIODIC)
+            {
+                syncTime[0] = lastServerSyncTime;
+            }
+            
+            List<Voicemail> serverVoicemails = ClientUtilities.retrieveVoicemails(host, userID, account.name, authToken, syncTime);
+            if(isInterrupted())
+            {
+                Log.i(TAG, "sync interrupted retrieving voicemails from server");
+                return;
+            }
             if(serverVoicemails == null)
             {
                 Log.e(TAG, "got back null for list of server voicemails");
@@ -387,11 +506,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                 return;
             }
             Log.i(TAG, "Found voicemails on server: " + serverVoicemails.size());
-            if(isInterrupted())
-            {
-                Log.i(TAG, "sync interrupted after retrieving voicemails from server");
-                return;
-            }
 
             List<Voicemail> providerVoicemails = VoicemailHelper.getVoicemails(provider, account.name, 0, true);
             Log.i(TAG, "Got voicemails from provider: " + providerVoicemails.size());
@@ -400,11 +514,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             
             SyncIter iter = new SyncIter(providerVoicemails, serverVoicemails);
             
-            List<Voicemail> needAudio = insertNewVoicemails(account, provider, syncResult, iter);
-            deleteMissingVoicemails(provider, syncResult, iter);
-            pushVoicemailUpdates(host, authToken, account, provider, syncResult, providerVoicemails);
+            List<Voicemail> needAudio = insertNewVoicemails(account, provider, syncResult, iter, syncType != SyncType.PERIODIC);
+            if(syncType != SyncType.PERIODIC)
+            {
+                deleteMissingVoicemails(provider, syncResult, iter);
+            }
+            pushVoicemailUpdates(host, authToken, account, provider, syncResult, providerVoicemails, deviceId);
             updateLocalVoicemails(provider, syncResult, iter, needAudio);
             
+            syncMeta.edit().putLong(SERVER_LAST_SYNC, syncTime[1]).commit();
+
             if(isInterrupted())
             {
                 Log.i(TAG, "sync interrupted");
@@ -412,7 +531,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             }
             
             downloadAudio(host, authToken, account, provider, syncResult, needAudio);
-            cleanAudio(provider);
+            cleanAudio(syncMeta, provider, account);
 
             Log.i(TAG, "synced voicemails");
         }
@@ -447,4 +566,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             Log.e(TAG, "RemoteException", e);
         }
     }
+
 }

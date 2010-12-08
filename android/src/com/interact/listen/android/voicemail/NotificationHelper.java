@@ -56,6 +56,13 @@ public final class NotificationHelper
         manager.notify(LISTEN_COMMUNICATION_ERROR_NOTIFICATION, notification);
     }
     
+    public static void clearVoicemailNotifications(Context context)
+    {
+        Log.v(TAG, "clearVoicemailNotifications");
+        NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(VOICEMAIL_NOTIFICATION);
+    }
+    
     public static void clearNotificationBar(Context context)
     {
         Log.v(TAG, "clearNotificationBar");
@@ -170,8 +177,8 @@ public final class NotificationHelper
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
-                VoicemailHelper.moveVoicemailToTrash(context.getContentResolver(), voicemail.getId());
-                SyncSchedule.syncUpdate(context, voicemail.getUserName());
+                VoicemailHelper.moveVoicemailToTrash(context.getContentResolver(), voicemail);
+                SyncSchedule.syncUpdates(context, voicemail.getUserName());
                 if(listener != null)
                 {
                     listener.onConfirmed(voicemail);

@@ -97,6 +97,22 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity implemen
         if(mHost == null)
         {
             mHostEdit.setText("http://");
+
+            Account[] accounts = mAccountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
+            for(Account account : accounts)
+            {
+                final String cHost = mAccountManager.getUserData(account, Authenticator.HOST_DATA);
+                if(!TextUtils.isEmpty(cHost))
+                {
+                    mHostEdit.setText(cHost);
+                    if(mRequestNewAccount)
+                    {
+                        mHostEdit.setEnabled(false);
+                        mUsernameEdit.requestFocus();
+                    }
+                    break;
+                }
+            }
         }
         else
         {

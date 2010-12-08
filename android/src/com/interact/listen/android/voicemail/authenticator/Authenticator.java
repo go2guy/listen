@@ -16,6 +16,7 @@ import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.R;
 import com.interact.listen.android.voicemail.client.ClientUtilities;
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
+import com.interact.listen.android.voicemail.sync.SyncAdapter;
 
 public class Authenticator extends AbstractAccountAuthenticator
 {
@@ -183,7 +184,16 @@ public class Authenticator extends AbstractAccountAuthenticator
     public Bundle getAccountRemovalAllowed(AccountAuthenticatorResponse response, Account account) throws NetworkErrorException
     {
         Log.v(TAG, "removing account " + account.name);
-        VoicemailHelper.deleteUserAccount(mContext.getContentResolver(), account.name);
+        VoicemailHelper.deleteVoicemails(mContext.getContentResolver(), account.name);
+        try
+        {
+            SyncAdapter.removeAccountInfo(mContext, account);
+        }
+        catch(Exception e)
+        {
+            Log.e(TAG, "exception removing account info", e);
+            throw new NetworkErrorException("clearing account information", e);
+        }
         return super.getAccountRemovalAllowed(response, account);
     }
 }
