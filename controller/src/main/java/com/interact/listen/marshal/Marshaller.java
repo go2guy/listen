@@ -5,6 +5,7 @@ import com.interact.listen.marshal.converter.*;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.*;
+import com.interact.listen.resource.DeviceRegistration.DeviceType;
 import com.interact.listen.resource.Subscriber.PlaybackOrder;
 
 import java.io.InputStream;
@@ -48,6 +49,7 @@ public abstract class Marshaller
         DEFAULT_CONVERTERS.put(CallDetailRecord.CallDirection.class, CallDirectionConverter.class);
         DEFAULT_CONVERTERS.put(Duration.class, JodaDurationConverter.class);
         DEFAULT_CONVERTERS.put(PlaybackOrder.class, PlaybackOrderConverter.class);
+        DEFAULT_CONVERTERS.put(DeviceType.class, DeviceTypeConverter.class);
     }
 
     /**

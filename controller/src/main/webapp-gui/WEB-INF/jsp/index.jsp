@@ -383,6 +383,7 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                       <li>Alerts</li>
                       <li>Authentication</li>
                       <li>SPOT Systems</li>
+                      <li>Cloud to Device</li>
                     </ul>
                   </div>
                   <div class="tab-content-default">
@@ -496,6 +497,31 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                         <tbody></tbody>
                       </table>
                     </fieldset>
+                  </div>
+
+                  <div class="tab-content">
+                    <form id="sysconfig-google-form">
+                      <fieldset>
+                        <legend>Cloud to Device</legend>
+                        <div class="form-error-message"></div>
+                        <div class="form-success-message"></div>
+                        <div class="help">The Google account with either the corresponding password or authorization token are required to enable Android cloud to device messaging.</div>
+                        <table>
+                          <tbody>
+                            <tr>
+                              <td colspan="2">
+                                <input type="checkbox" name="sysconfig-c2dm-enabled" id="sysconfig-c2dm-enabled"/>
+                                <label for="sysconfig-c2dm-enabled">Use Android Cloud to Device Messaging?</label>
+                              </td>
+                            </tr>
+                            <tr><td><label for="sysconfig-google-account">Google Account</label></td><td><input type="text" id="sysconfig-google-account" name="sysconfig-google-account"/></td></tr>
+                            <tr><td><label for="sysconfig-google-password">Password</label></td><td><input type="password" id="sysconfig-google-password" name="sysconfig-google-password"/></td></tr>
+                            <tr><td><label for="sysconfig-google-authtoken">Authorization Token</label></td><td><input type="text" id="sysconfig-google-authtoken" name="sysconfig-google-authtoken"/></td></tr>
+                            <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save Google account settings">Save</button></td></tr>
+                          </tbody>
+                        </table>
+                      </fieldset>
+                    </form>
                   </div>
 
                   <div class="cleaner">&nbsp;</div>

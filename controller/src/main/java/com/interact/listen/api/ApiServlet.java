@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
@@ -422,24 +423,40 @@ public class ApiServlet extends HttpServlet
         }
         else
         {
-            String subscriberHeader = request.getHeader("X-Listen-Subscriber");
-            if(subscriberHeader != null)
+            String subHeader = request.getHeader("X-Listen-Subscriber");
+            if(subHeader == null)
             {
-                Long id = Marshaller.getIdFromHref(subscriberHeader);
+                subHeader = request.getHeader("X-Listen-AuthenticationUsername");
+                if(subHeader != null)
+                {
+                    subHeader = new String(Base64.decodeBase64(subHeader));
+                    subscriber = Subscriber.queryByUsername(session, subHeader);
+                }
+                if(subscriber == null)
+                {
+                    LOG.warn("X-Listen-AuthenticationUsername HTTP header contained unknown subscriber href [" + subHeader + "]");
+                }
+            }
+            else
+            {
+                Long id = Marshaller.getIdFromHref(subHeader);
                 if(id != null)
                 {
                     subscriber = Subscriber.queryById(session, id);
                 }
-    
-                if(subscriber == null || id == null)
+                if(subscriber == null)
                 {
-                    LOG.warn("X-Listen-Subscriber HTTP header contained unknown subscriber href [" + subscriberHeader + "]");
+                    LOG.warn("X-Listen-Subscriber HTTP header contained unknown subscriber href [" + subHeader + "]");
                 }
             }
         }
 
         Channel channel = (Channel)request.getAttribute(RequestInformationFilter.CHANNEL_KEY);
-        return new DefaultPersistenceService(session, subscriber, channel);
+
+        PersistenceService service = new DefaultPersistenceService(session, subscriber, channel);
+        service.setCurrentDeviceId(request.getParameter("deviceId"));
+
+        return service;
     }
 
     private static class UriResourceAttributes

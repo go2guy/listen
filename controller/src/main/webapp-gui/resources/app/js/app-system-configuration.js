@@ -34,6 +34,12 @@ $(document).ready(function() {
                     $('#sysconfig-authentication-activeDirectoryDomain').val(data['com.interact.listen.activeDirectory.domain']);
                     toggleActiveDirectoryFields();
 
+                    $('#sysconfig-c2dm-enabled').attr('checked', data['com.interact.listen.google.c2dm.enabled'] == "true" ? true : false);
+                    $('#sysconfig-google-account').val(data['com.interact.listen.google.username']);
+                    $('#sysconfig-google-password').val('');
+                    $('#sysconfig-google-authtoken').val(data['com.interact.listen.google.authToken']);
+                    toggleAndroidFields();
+
                     // SPOT systems
                     var spotSystemTable = $('#sysconfig-spot-systems');
                     $('tr', spotSystemTable).remove(); // delete all rows
@@ -261,6 +267,35 @@ $(document).ready(function() {
         });
         return false;
     });
+    
+    $('#sysconfig-google-form').submit(function() {
+        $('#sysconfig-google-form .form-error-message').text('').hide();
+        var start = Listen.timestamp();
+        $.ajax({
+            type: 'POST',
+            url: Listen.url('/ajax/setGoogleAuth'),
+            data: { 'com.interact.listen.google.c2dm.enabled': $('#sysconfig-c2dm-enabled').attr('checked'),
+                    'com.interact.listen.google.username': $('#sysconfig-google-account').val(),
+                    'com.interact.listen.google.password': $('#sysconfig-google-password').val(),
+                    'com.interact.listen.google.authToken': $('#sysconfig-google-authtoken').val() },
+            success: function(data) {
+                application.load();
+                var elem = $('#sysconfig-google-form .form-success-message')
+                elem.text('Google account settings updated').slideDown(100);
+                setTimeout(function() {
+                    elem.slideUp(100);
+                }, 2000);
+            },
+            error: function(xhr) {
+                $('#sysconfig-google-form .form-error-message').text(xhr.responseText).slideDown(100);
+            },
+            complete: function(xhr, textStatus) {
+                var elapsed = Listen.timestamp() - start;
+                $('#latency').text(elapsed);
+            }
+        });
+        return false;
+    });
 
     function toggleActiveDirectoryFields() {
         var elem = $('#sysconfig-authentication-activeDirectoryEnabled');
@@ -274,6 +309,22 @@ $(document).ready(function() {
     }
 
     $('#sysconfig-authentication-activeDirectoryEnabled').click(toggleActiveDirectoryFields);
+
+    function toggleAndroidFields() {
+        var elem = $('#sysconfig-c2dm-enabled');
+        if(elem.is(':checked')) {
+            $('#sysconfig-google-account').removeAttr('readonly').removeClass('disabled');
+            $('#sysconfig-google-password').removeAttr('readonly').removeClass('disabled');
+            $('#sysconfig-google-authtoken').removeAttr('readonly').removeClass('disabled');
+        } else {
+            $('#sysconfig-google-account').attr('readonly', true).addClass('disabled');
+            $('#sysconfig-google-password').attr('readonly', true).addClass('disabled');
+            $('#sysconfig-google-authtoken').attr('readonly', true).addClass('disabled');
+        }
+    }
+
+    $('#sysconfig-c2dm-enabled').click(toggleAndroidFields);
+
 });
 
 // TODO remove this from the global scope. ideally, the system configuration app should be structured like the others

@@ -16,6 +16,7 @@ public class DefaultPersistenceService implements PersistenceService
 {
     private Session session;
     private Subscriber currentSubscriber;
+    private String currentDeviceId;
     private Channel channel;
     private HistoryService historyService = new DefaultHistoryService(this);
 
@@ -33,9 +34,16 @@ public class DefaultPersistenceService implements PersistenceService
 
         this.channel = channel;
         this.currentSubscriber = currentSubscriber;
+        this.currentDeviceId = null;
         this.session = session;
     }
 
+    @Override
+    public void setCurrentDeviceId(String deviceId)
+    {
+        this.currentDeviceId = deviceId;
+    }
+    
     @Override
     public Channel getChannel()
     {
@@ -54,6 +62,12 @@ public class DefaultPersistenceService implements PersistenceService
         return session;
     }
 
+    @Override
+    public String getCurrentDeviceId()
+    {
+        return currentDeviceId;
+    }
+    
     @Override
     public Resource get(Class<? extends Resource> resourceClass, Long id)
     {

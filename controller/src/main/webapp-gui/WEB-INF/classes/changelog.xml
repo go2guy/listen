@@ -494,4 +494,29 @@
             <column name="LEFT_BY_NAME" type="VARCHAR(255)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="53">
+        <createTable tableName="DEVICE_REGISTRATION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="INT"/>
+            <column name="SUBSCRIBER_ID" type="BIGINT">
+				<constraints nullable="false"/>
+            </column>
+            <column name="DEVICE_ID" type="VARCHAR(255)">
+				<constraints nullable="false"/>
+            </column>
+            <column name="DEVICE_TYPE" type="VARCHAR(50)" defaultValue="ANDROID">
+				<constraints nullable="false"/>
+            </column>
+            <column name="REGISTRATION_TOKEN" type="VARCHAR(512)"/>
+        </createTable>
+        <createIndex indexName="IDX_DEV_SUBSCRIBER_ID" tableName="DEVICE_REGISTRATION" unique="false">
+            <column name="SUBSCRIBER_ID"/>
+            <column name="DEVICE_TYPE"/>
+        </createIndex>
+    	<modifyColumn tableName="PROPERTY">
+            <column name="PROPERTY_VALUE" type="VARCHAR(512)"/>
+		</modifyColumn>
+	</changeSet>
 </databaseChangeLog>

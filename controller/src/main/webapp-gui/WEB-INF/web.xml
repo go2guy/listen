@@ -77,6 +77,10 @@
         <filter-name>AuthenticationFilter</filter-name>
         <url-pattern>/meta/audio/file/*</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/meta/registerDevice</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
@@ -89,6 +93,10 @@
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/meta/audio/file/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AuthorizationFilter</filter-name>
+        <url-pattern>/meta/registerDevice</url-pattern>
     </filter-mapping>
 
     <!-- servlet definitions -->
@@ -156,6 +164,12 @@
     <servlet>
         <servlet-name>GetAudioFileServlet</servlet-name>
         <servlet-class>com.interact.listen.api.GetAudioFileServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>RegisterDeviceServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.RegisterDeviceServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -321,6 +335,12 @@
     </servlet>
     
     <servlet>
+        <servlet-name>SetGoogleAuthServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SetGoogleAuthServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
         <servlet-name>StartRecordingServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.StartRecordingServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -356,6 +376,11 @@
     <servlet-mapping>
         <servlet-name>GetAudioFileServlet</servlet-name>
         <url-pattern>/meta/audio/file/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RegisterDeviceServlet</servlet-name>
+        <url-pattern>/meta/registerDevice</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -523,6 +548,11 @@
     <servlet-mapping>
         <servlet-name>SetPropertiesServlet</servlet-name>
         <url-pattern>/ajax/setProperties</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>SetGoogleAuthServlet</servlet-name>
+        <url-pattern>/ajax/setGoogleAuth</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>

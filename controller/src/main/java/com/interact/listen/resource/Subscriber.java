@@ -45,6 +45,9 @@ public class Subscriber extends Resource implements Serializable
     @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private List<Voicemail> voicemails = new ArrayList<Voicemail>();
 
+    @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.EAGER)
+    private Set<DeviceRegistration> devices = new HashSet<DeviceRegistration>();
+
     @Column(name = "USERNAME", nullable = false, unique = true)
     private String username;
 
@@ -131,6 +134,32 @@ public class Subscriber extends Resource implements Serializable
             numbers.deleteCharAt(numbers.length() - 1); // last comma
         }
         return numbers.toString();
+    }
+
+    public void setDevices(Set<DeviceRegistration> devices)
+    {
+        this.devices = devices;
+        for(DeviceRegistration device : devices)
+        {
+            device.setSubscriber(this);
+        }
+    }
+
+    public void addToDevices(DeviceRegistration device)
+    {
+        device.setSubscriber(this);
+        this.devices.add(device);
+    }
+
+    public void removeFromDevices(DeviceRegistration device)
+    {
+        this.devices.remove(device);
+        device.setSubscriber(null);
+    }
+    
+    public Set<DeviceRegistration> getDevices()
+    {
+        return devices;
     }
 
     @Override
@@ -392,6 +421,10 @@ public class Subscriber extends Resource implements Serializable
         for(AccessNumber accessNumber : accessNumbers)
         {
             copy.addToAccessNumbers(accessNumber.copy(false));
+        }
+        for(DeviceRegistration device : devices)
+        {
+            copy.addToDevices(device.copy(false));
         }
         copy.setPassword(password);
         copy.setRealName(realName);

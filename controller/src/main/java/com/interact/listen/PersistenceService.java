@@ -15,5 +15,8 @@ public interface PersistenceService
     
     public Channel getChannel();
     public Subscriber getCurrentSubscriber();
+    public String getCurrentDeviceId();
     public Session getSession();
+    
+    public void setCurrentDeviceId(String deviceId);
 }

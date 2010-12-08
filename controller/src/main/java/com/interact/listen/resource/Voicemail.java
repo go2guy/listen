@@ -2,6 +2,7 @@ package com.interact.listen.resource;
 
 import com.interact.listen.EmailerService;
 import com.interact.listen.PersistenceService;
+import com.interact.listen.c2dm.C2DMessaging;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.spot.*;
 import com.interact.listen.stats.Stat;
@@ -193,6 +194,7 @@ public class Voicemail extends Audio implements Serializable
         {
             historyService.writeForwardedVoicemail(this);
         }
+        sendDeviceSync(persistenceService);
 
         messageLightToggler.toggleMessageLight(persistenceService, getSubscriber());
     }
@@ -215,6 +217,7 @@ public class Voicemail extends Audio implements Serializable
         {
             LOG.error(e);
         }
+        sendDeviceSync(persistenceService);
 
         messageLightToggler.toggleMessageLight(persistenceService, getSubscriber());
     }
@@ -242,6 +245,7 @@ public class Voicemail extends Audio implements Serializable
         {
             sendNotification(persistenceService);
         }
+        sendDeviceSync(persistenceService);
 
         messageLightToggler.toggleMessageLight(persistenceService, getSubscriber());
     }
@@ -326,6 +330,13 @@ public class Voicemail extends Audio implements Serializable
 
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (ArrayList<Voicemail>)criteria.list();
+    }
+    
+    private void sendDeviceSync(PersistenceService persistenceService)
+    {
+        Subscriber vSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
+        C2DMessaging.enqueueDeviceSyncMessage(persistenceService.getSession(), vSubscriber,
+                                              C2DMessaging.Type.SYNC_VOICEMAILS, persistenceService.getCurrentDeviceId());
     }
     
     private void sendNotification(PersistenceService persistenceService)

@@ -60,7 +60,18 @@ public class Property
         PHONE_NUMBER             ("com.interact.listen.phoneNumber",             ""),
 
         /* Whether or not API requests should be authenticated */
-        AUTHENTICATE_API         ("com.interact.listen.auth.authenticateApi",    Boolean.TRUE.toString());
+        AUTHENTICATE_API         ("com.interact.listen.auth.authenticateApi",    Boolean.TRUE.toString()),
+
+        /* Whether or not Android C2DM is enabled */
+        ANDROID_C2DM_ENABLED     ("com.interact.listen.google.c2dm.enabled",     Boolean.FALSE.toString()),
+
+        /* Google Account used for C2DM */
+        GOOGLE_AUTH_USER        ("com.interact.listen.google.username",          ""),
+
+        /* Authorization token used for C2DM */
+        GOOGLE_AUTH_TOKEN       ("com.interact.listen.google.authToken",         ""),
+        
+        ;
 
         private final String key;
         private final String defaultValue;
