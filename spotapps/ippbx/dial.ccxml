@@ -78,6 +78,10 @@
             <log>INFO: Origination [<value expr="ANI"/>]</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
             <log>INFO: Inbound connection ID [<value expr="ibconnid"/>]</log>
+            <if cond="tmpDNIS == '0'">
+                <assign name="tmpDNIS" expr="officeOptr"/>
+            </if>
+            <log>INFO: tmpDNIS [<value expr="tmpDNIS"/></log>
             <send data="'dialog.user.chkCallType'" target="session.id"/>
         </transition>
 
