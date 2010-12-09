@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
-import java.util.List;
-
 public class VoicemailNotifyReceiver extends BroadcastReceiver
 {
     private static final String TAG = Constants.TAG + "NotifyReceiver";
@@ -24,11 +22,17 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
         if(Constants.ACTION_NOTIFY_NEW_VOICEMAILS.equals(intent.getAction()))
         {
             int[] ids = extras.getIntArray(Constants.EXTRA_IDS);
+            int count = extras.getInt(Constants.EXTRA_COUNT);
+            
             if(ids == null && extras.containsKey(Constants.EXTRA_ID))
             {
                 ids = new int[]{extras.getInt(Constants.EXTRA_ID)};
             }
-            NotificationHelper.updateNotifications(context, ids);
+            if(ids != null)
+            {
+                count = Math.max(count, ids.length);
+            }
+            NotificationHelper.updateNotifications(context, ids, count);
         }
         else if(Constants.ACTION_NOTIFY_ERROR.equals(intent.getAction()))
         {
@@ -40,33 +44,26 @@ public class VoicemailNotifyReceiver extends BroadcastReceiver
             Log.w(TAG, "Unexpected intent: " + intent);
         }
     }
-    
-    public static void broadcastVoicemailNotifications(Context context, ContentProviderClient provider,
-                                                       String userName, List<Integer> ids) throws RemoteException
+
+    public static void broadcastVoicemailNotification(Context context, ContentProviderClient provider,
+                                                      String userName, int id) throws RemoteException
     {
-        if(ids == null || ids.isEmpty())
-        {
-            return;
-        }
-        
-        int[] intIDs = null;
-        if(ids.size() < 20)
-        {
-            intIDs = new int[ids.size()];
-            int idx = 0;
-            for(Integer id : ids)
-            {
-                intIDs[idx++] = id;
-            }
-            Log.v(TAG, "broadcasted " + intIDs.length + " new voicemails");
-        }
-        else
-        {
-            Log.v(TAG, "broadcasted lots of voicemails: " + ids.size());
-        }
+        Log.v(TAG, "broadcast voicemail notification: " + id);
 
         Intent intent = new Intent(Constants.ACTION_NOTIFY_NEW_VOICEMAILS);
-        intent.putExtra(Constants.EXTRA_IDS, intIDs);
+        intent.putExtra(Constants.EXTRA_ID, id);
+        intent.putExtra(Constants.EXTRA_COUNT, 1);
+        intent.putExtra(Constants.EXTRA_ACCOUNT_NAME, userName);
+        context.sendBroadcast(intent);
+    }
+
+    public static void broadcastVoicemailNotifications(Context context, ContentProviderClient provider,
+                                                       String userName, int num) throws RemoteException
+    {
+        Log.v(TAG, "broadcast " + num + " voicemails");
+
+        Intent intent = new Intent(Constants.ACTION_NOTIFY_NEW_VOICEMAILS);
+        intent.putExtra(Constants.EXTRA_COUNT, num);
         intent.putExtra(Constants.EXTRA_ACCOUNT_NAME, userName);
         context.sendBroadcast(intent);
     }

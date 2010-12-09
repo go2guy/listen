@@ -72,12 +72,11 @@ public final class NotificationHelper
         // test showed that this also caused the deleteIntent to get executed to mark all voicemails notified
     }
     
-    public static void updateNotifications(Context context, int[] ids)
+    public static void updateNotifications(Context context, int[] ids, int count)
     {
-        int newCount = ids == null ? Integer.MAX_VALUE : ids.length;
-        Log.v(TAG, "updateNotifications: " + newCount);
+        Log.v(TAG, "updateNotifications: " + count);
 
-        if(newCount <= 0)
+        if(count <= 0)
         {
             return;
         }
@@ -86,23 +85,23 @@ public final class NotificationHelper
 
         int titleID = R.string.new_listen_voicemails;
         int contentFormatID = R.string.count_listen_voicemails;
-        if(newCount == 1)
+        if(count == 1)
         {
             titleID = R.string.new_listen_voicemail;
             contentFormatID = R.string.count_listen_voicemail;
         }
-        else if(newCount == Integer.MAX_VALUE)
+        else if(count == Integer.MAX_VALUE)
         {
             contentFormatID = R.string.lots_listen_voicemail;
         }
         String title = context.getString(titleID);
-        String content = context.getString(contentFormatID, newCount);
+        String content = context.getString(contentFormatID, count);
         
         int icon = R.drawable.notification_bar_icon;
         long when = System.currentTimeMillis();
 
         Intent notificationIntent = null;
-        if(newCount == 1)
+        if(count == 1 && ids != null && ids.length > 0)
         {
             // this breaks down with multiple accounts, but probably isn't an issue
             notificationIntent = new Intent(Constants.ACTION_VIEW_VOICEMAIL);
@@ -119,7 +118,7 @@ public final class NotificationHelper
 
         notification.deleteIntent = PendingIntent.getService(context, 0, new Intent(Constants.ACTION_MARK_NOTIFIED), 0);
 
-        notification.tickerText = context.getString(newCount == 1 ? R.string.new_voicemail_ticker : R.string.new_voicemails_ticker);
+        notification.tickerText = context.getString(count == 1 ? R.string.new_voicemail_ticker : R.string.new_voicemails_ticker);
         //notification.number = newCount == 1  || newCount > 9 ? 0 : newCount;
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;

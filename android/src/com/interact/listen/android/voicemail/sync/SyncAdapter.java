@@ -79,9 +79,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         boolean notifyEnabled = ApplicationSettings.isNotificationEnabled(getContext());
         
         List<Voicemail> needAudio = new ArrayList<Voicemail>();
-        List<Integer> notifyIDs = new ArrayList<Integer>();
         List<Voicemail> insertList = new ArrayList<Voicemail>();
 
+        int notifications = 0;
+        int notifyId = 0;
+        
         boolean keepNotification = false;
         
         iter.reset();
@@ -103,7 +105,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                 }
                 if(v.needsNotification())
                 {
-                    notifyIDs.add(v.getId());
+                    if(++notifications == 1)
+                    {
+                        // lets get the id of one notification in case we need it for broadcast
+                        VoicemailHelper.insertVoicemail(provider, v);
+                        notifyId = v.getId();
+                        insertList.remove(insertList.size() - 1);
+                    }
                 }
                 if(insertList.size() >= 50)
                 {
@@ -114,7 +122,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             {
                 if(iter.getServer().needsNotification() && iter.getLocal().needsNotification())
                 {
-                    notifyIDs.add(iter.getLocal().getId());
+                    if(++notifications == 1)
+                    {
+                        notifyId = iter.getLocal().getId();
+                    }
                 }
             }
             else if(!fullList && iter.getLocal().needsNotification())
@@ -126,13 +137,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
         syncResult.stats.numInserts += insertFromList(provider, insertList);
         
-        if(notifyIDs.isEmpty() && !keepNotification)
+        if(notifications == 0 && !keepNotification)
         {
             NotificationHelper.clearVoicemailNotifications(getContext());
         }
-        else
+        else if(notifications == 1 && notifyId > 0)
         {
-            VoicemailNotifyReceiver.broadcastVoicemailNotifications(getContext(), provider, account.name, notifyIDs);
+            VoicemailNotifyReceiver.broadcastVoicemailNotification(getContext(), provider, account.name, notifyId);
+        }
+        else if(notifications > 0)
+        {
+            VoicemailNotifyReceiver.broadcastVoicemailNotifications(getContext(), provider, account.name, notifications);
         }
         
         return needAudio;

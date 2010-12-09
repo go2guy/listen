@@ -135,6 +135,12 @@ public final class C2DMessaging
         context.startService(regIntent);
     }
 
+    public static void clearAllMetaData(Context context)
+    {
+        final SharedPreferences prefs = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
+        prefs.edit().clear().commit();
+    }
+    
     public static boolean isSenderChange(Context context, String id)
     {
         return !getSenderId(context).equals(id);

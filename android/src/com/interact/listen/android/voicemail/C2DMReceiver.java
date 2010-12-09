@@ -79,6 +79,7 @@ public class C2DMReceiver extends C2DMBaseReceiver
     public static void forceUnregister(Context context)
     {
         C2DMessaging.unregister(context);
+        C2DMessaging.clearAllMetaData(context);
     }
     
     /**

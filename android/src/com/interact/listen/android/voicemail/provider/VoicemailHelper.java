@@ -161,6 +161,19 @@ public final class VoicemailHelper
         return getVoicemailList(cursor);
     }
 
+    public static Uri insertVoicemail(ContentProviderClient resolver, Voicemail voicemail) throws RemoteException
+    {
+        ContentValues values = voicemail.getInsertValues();
+        Uri uri = resolver.insert(Voicemails.CONTENT_URI, values);
+        if(uri != null)
+        {
+            int id = Integer.parseInt(uri.getLastPathSegment());
+            Log.i(TAG, "inserted voicemail: " + id);
+            voicemail.setIdFromInsert(id);
+        }
+        return uri;
+    }
+
     public static int insertVoicemails(ContentProviderClient resolver, List<Voicemail> voicemails) throws RemoteException
     {
         if(voicemails == null || voicemails.size() == 0)

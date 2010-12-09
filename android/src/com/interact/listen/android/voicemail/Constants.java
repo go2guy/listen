@@ -20,6 +20,7 @@ public final class Constants
     public static final String EXTRA_VOICEMAIL_UPDATED = "updated";    // flag indicating a voicemail update
     public static final String EXTRA_ACCOUNT_NAME      = "username";   // account name
     public static final String EXTRA_IDS               = "ids";        // int array of provider voicemail id's
+    public static final String EXTRA_COUNT             = "count";      // indicate number of voicemails
     public static final String EXTRA_NOTIFY_ERROR      = "noterrmess"; // error message associated to a notification
     public static final String EXTRA_IS_READ           = "isRead";
     private Constants()
