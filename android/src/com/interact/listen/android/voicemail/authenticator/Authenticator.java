@@ -15,8 +15,6 @@ import android.util.Log;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.R;
 import com.interact.listen.android.voicemail.client.ClientUtilities;
-import com.interact.listen.android.voicemail.provider.VoicemailHelper;
-import com.interact.listen.android.voicemail.sync.SyncAdapter;
 
 public class Authenticator extends AbstractAccountAuthenticator
 {
@@ -183,17 +181,20 @@ public class Authenticator extends AbstractAccountAuthenticator
     @Override
     public Bundle getAccountRemovalAllowed(AccountAuthenticatorResponse response, Account account) throws NetworkErrorException
     {
-        Log.v(TAG, "removing account " + account.name);
-        VoicemailHelper.deleteVoicemails(mContext.getContentResolver(), account.name);
-        try
-        {
-            SyncAdapter.removeAccountInfo(mContext, account);
-        }
-        catch(Exception e)
-        {
-            Log.e(TAG, "exception removing account info", e);
-            throw new NetworkErrorException("clearing account information", e);
-        }
-        return super.getAccountRemovalAllowed(response, account);
+        Log.i(TAG, "account removal: " + account.name);
+        
+        Intent intent = new Intent(mContext, AccountRemovalActivity.class);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        
+        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+
+        mContext.startActivity(intent);
+        
+        return null;
     }
+    
 }

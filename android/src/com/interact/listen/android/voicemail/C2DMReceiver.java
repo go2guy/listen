@@ -58,6 +58,15 @@ public class C2DMReceiver extends C2DMBaseReceiver
         Log.i(TAG, "onMessage()");
         String accountName = intent.getExtras().getString(C2DM_ACCOUNT_EXTRA);
         String message = intent.getExtras().getString(C2DM_MESSAGE_EXTRA);
+        
+        if(AccountManager.get(context).getAccountsByType(Constants.ACCOUNT_TYPE).length == 0)
+        {
+            // we don't have any accounts but we are getting messages, unregister
+            Log.e(TAG, "received C2DM message but we don't have any accounts, unregistering...");
+            C2DMessaging.unregister(context);
+            return;
+        }
+        
         if(C2DM_MESSAGE_SYNC.equals(message))
         {
             if(accountName != null)

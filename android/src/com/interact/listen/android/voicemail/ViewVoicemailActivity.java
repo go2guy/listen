@@ -1,6 +1,7 @@
 package com.interact.listen.android.voicemail;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -23,6 +24,8 @@ public class ViewVoicemailActivity extends Activity
 {
     private static final String TAG = Constants.TAG + "ViewVoicemail";
 
+    private static final int DELETE_VOICEMAIL_DIALOG = 1;
+    
     private TextView mName = null;
     private TextView mLeftBy = null;
     private TextView mDate = null;
@@ -160,16 +163,7 @@ public class ViewVoicemailActivity extends Activity
                 if(mVoicemail != null)
                 {
                     mVoicemailPlayer.triggerPause();
-                    NotificationHelper.alertDelete(this, mVoicemailId, new NotificationHelper.OnConfirm()
-                    {
-                        @Override
-                        public void onConfirmed(Voicemail voicemail)
-                        {
-                            vmUpdated = true;
-                            setOkResult();
-                            finish();
-                        }
-                    });
+                    showDialog(DELETE_VOICEMAIL_DIALOG);
                 }
                 return true;
             case R.id.voicemail_view_inbox:
@@ -187,6 +181,27 @@ public class ViewVoicemailActivity extends Activity
                 return super.onMenuItemSelected(featureId, item);
         }
 
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id, Bundle bundle)
+    {
+        if(id == DELETE_VOICEMAIL_DIALOG)
+        {
+            NotificationHelper.OnConfirm listener = new NotificationHelper.OnConfirm()
+            {
+                @Override
+                public void onConfirmed(Voicemail voicemail)
+                {
+                    vmUpdated = true;
+                    setOkResult();
+                    finish();
+                }
+            };
+
+            return NotificationHelper.createDeleteVoicemailDialog(this, mVoicemailId, listener);
+        }
+        return null;
     }
 
     @Override

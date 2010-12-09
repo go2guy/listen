@@ -1,6 +1,7 @@
 package com.interact.listen.android.voicemail;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -166,12 +167,12 @@ public final class NotificationHelper
         void onConfirmed(Voicemail voicemail);
     }
     
-    public static void alertDelete(final Context context, final int id, final OnConfirm listener)
+    public static Dialog createDeleteVoicemailDialog(final Context context, final int id, final OnConfirm listener)
     {
         final Voicemail voicemail = VoicemailHelper.getVoicemail(context.getContentResolver(), id);
         if(voicemail == null)
         {
-            return;
+            return null;
         }
         
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -193,8 +194,7 @@ public final class NotificationHelper
         
         builder.setNegativeButton(R.string.dialog_delete_cancel, null);
         builder.setCancelable(true);
-        AlertDialog d = builder.create();
-        d.show();
+        return builder.create();
     }
     
     public static String getDialString(Context context, String leftBy, boolean asUri)

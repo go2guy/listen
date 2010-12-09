@@ -49,6 +49,10 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private static final String SYNC_SETTINGS = "accounts_sync_settings_key";
     private static final String RESET_PASSWORD = "pref_reset_password_key";
 
+    private static final int    CLEAR_CACHE_DIALOG = 1;
+    private static final int    UPDATE_SYNC_DIALOG = 2;
+    private static final int CACHE_PROGRESS_DIALOG = 3;
+    
     private SharedPreferences sharedPreferences;
     private Preference clearCachePref;
     private Preference syncIntervalPref;
@@ -154,14 +158,15 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         @Override
         public boolean onPreferenceClick(Preference pref)
         {
-            Dialog d = null;
             if(pref == clearCachePref)
             {
-                d = createClearCacheDialog();
+                showDialog(CLEAR_CACHE_DIALOG);
+                return true;
             }
             else if(pref == syncIntervalPref)
             {
-                d = createUpdateSyncIntervalDialog();
+                showDialog(UPDATE_SYNC_DIALOG);
+                return true;
             }
             else if(pref == syncSettingsPref)
             {
@@ -180,13 +185,35 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
                     am.updateCredentials(account, Constants.AUTHTOKEN_TYPE, null, ApplicationSettings.this, null, null);
                 }
             }
-            
-            if(d != null && !d.isShowing())
-            {
-                d.show();
-            }
-            return d != null;
+            return false;
         }
+    }
+    
+    @Override
+    protected Dialog onCreateDialog(int id, Bundle bundle)
+    {
+        if(id == UPDATE_SYNC_DIALOG)
+        {
+            return createUpdateSyncIntervalDialog();
+        }
+        if(id == CLEAR_CACHE_DIALOG)
+        {
+            return createClearCacheDialog();
+        }
+        if(id == CACHE_PROGRESS_DIALOG)
+        {
+            return createProgressDialog(R.string.clearing_cache_progress);
+        }
+        return null;
+    }
+    
+    private Dialog createProgressDialog(int resId)
+    {
+        ProgressDialog d = new ProgressDialog(this);
+        d.setIndeterminate(true);
+        d.setCancelable(false);
+        d.setMessage(getString(resId));
+        return d;
     }
     
     private Dialog createUpdateSyncIntervalDialog()
@@ -235,8 +262,8 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
                 {
                     Log.w(TAG, "currently a clear cache task");
                 }
-                clearCacheTask = new ClearCacheTask(ApplicationSettings.this);
-                clearCacheTask.execute((Void[])null);
+                clearCacheTask = new ClearCacheTask();
+                clearCacheTask.execute();
             }
             
         });
@@ -244,46 +271,13 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         return builder.create();
     }
     
-    private static final class ClearCacheTask extends AsyncTask<Void, Void, Integer>
+    private class ClearCacheTask extends AsyncTask<Void, Void, Integer>
     {
-        private Context mContext;
-        private ProgressDialog progressDialog;
-        private Object syncObject;
-        
-        public ClearCacheTask(Context context)
-        {
-            super();
-            mContext = context;
-            progressDialog = null;
-            syncObject = new Object();
-        }
 
-        private Context getContext()
-        {
-            synchronized(syncObject)
-            {
-                return mContext;
-            }
-        }
-        private Context clearContext()
-        {
-            Context c = null;
-            synchronized(syncObject)
-            {
-                c = mContext;
-                mContext = null;
-            }
-            return c;
-        }
-        
         @Override
         protected void onPreExecute()
         {
-            Context c = getContext();
-            if(c != null)
-            {
-                progressDialog = ProgressDialog.show(c, "", c.getString(R.string.clearing_cache_progress));
-            }
+            showDialog(CACHE_PROGRESS_DIALOG);
         }
 
         @Override
@@ -300,11 +294,13 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
 
         private void onEnd()
         {
-            clearContext();
-            if(progressDialog != null)
+            try
             {
-                progressDialog.dismiss();
-                progressDialog = null;
+                dismissDialog(CACHE_PROGRESS_DIALOG);
+            }
+            catch(IllegalArgumentException e)
+            {
+                Log.w(TAG, "cache clean progress dialog never shown");
             }
         }
         
@@ -312,23 +308,20 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         protected Integer doInBackground(Void... params)
         {
             Log.i(TAG, "clearing cache task starting");
-            Context context = clearContext();
-            
-            if(context != null)
-            {
-                NotificationHelper.clearNotificationBar(context);
 
-                VoicemailHelper.deleteVoicemails(context.getContentResolver(), null);
-                try
-                {
-                    SyncAdapter.removeAccountInfo(context, null);
-                }
-                catch(Exception e)
-                {
-                    Log.e(TAG, "problem clearing account information", e);
-                }
-                SyncSchedule.syncRegular(context, null, true);
+            NotificationHelper.clearNotificationBar(getApplicationContext());
+
+            VoicemailHelper.deleteVoicemails(getApplicationContext().getContentResolver(), null);
+            try
+            {
+                SyncAdapter.removeAccountInfo(getApplicationContext(), null);
             }
+            catch(Exception e)
+            {
+                Log.e(TAG, "problem clearing account information", e);
+            }
+            SyncSchedule.syncRegular(getApplicationContext(), null, true);
+
             Log.i(TAG, "clearing cache task done");
             return 0;
         }

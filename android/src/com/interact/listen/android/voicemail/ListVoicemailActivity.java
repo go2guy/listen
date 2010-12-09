@@ -1,6 +1,7 @@
 package com.interact.listen.android.voicemail;
 
 import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +42,8 @@ public class ListVoicemailActivity extends ListActivity
     private static final String TAG = Constants.TAG + "ListVoicemails";
 
     private static final int VIEWED_DETAILS = 2;
+
+    private static final int DELETE_VOICEMAIL_DIALOG = 1;
     
     private Cursor mCursor = null;
     private ListVoicemailViewBinder mViewBinder = null;
@@ -251,7 +254,9 @@ public class ListVoicemailActivity extends ListActivity
                 NotificationHelper.dial(this, cursor.getString(1));
                 return true;
             case R.id.voicemail_context_delete:
-                NotificationHelper.alertDelete(this, id, null);
+                Bundle bundle = new Bundle();
+                bundle.putInt(Constants.EXTRA_ID, id);
+                showDialog(DELETE_VOICEMAIL_DIALOG, bundle);
                 return true;
             case R.id.voicemail_mark_read:
                 read = true;
@@ -315,6 +320,17 @@ public class ListVoicemailActivity extends ListActivity
         triggerView(cursor.getInt(0));
     }
 
+    @Override
+    protected Dialog onCreateDialog(int id, Bundle bundle)
+    {
+        if(id == DELETE_VOICEMAIL_DIALOG && bundle != null && bundle.containsKey(Constants.EXTRA_ID))
+        {
+            int vID = bundle.getInt(Constants.EXTRA_ID);
+            return NotificationHelper.createDeleteVoicemailDialog(this, vID, null);
+        }
+        return null;
+    }
+    
     private void triggerView(int id)
     {
         Intent intent = new Intent(this, ViewVoicemailActivity.class);

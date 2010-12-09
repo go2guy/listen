@@ -31,6 +31,9 @@
 			</intent-filter>
 		</activity>
 
+		<activity android:name=".authenticator.AccountRemovalActivity" android:configChanges="keyboardHidden|orientation">
+		</activity>
+
         <activity android:name=".authenticator.AuthenticatorActivity"
             	  android:label="@string/ui_authenticate_title"
             	  android:theme="@android:style/Theme.Dialog"
