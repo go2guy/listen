@@ -62,7 +62,7 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
                     else
                     {
                         statSender.send(Stat.C2DM_QUEUED_RETRY);
-                        C2DMessaging.scheduleRetry(this, retryCount);
+                        C2DMessaging.getInstance().scheduleRetry(this, retryCount);
                     }
                 }
                 else if(error.isDeviceInvalid())

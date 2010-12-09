@@ -41,7 +41,8 @@ public class SetGoogleAuthServlet extends HttpServlet
         }
 
         GoogleAuth ga = GoogleAuth.getInstance();
-
+        C2DMessaging ms = C2DMessaging.getInstance();
+        
         boolean c2dmEnabled = Boolean.valueOf(request.getParameter(Property.Key.ANDROID_C2DM_ENABLED.getKey()));
         String username = getNonNullParameter(request, Property.Key.GOOGLE_AUTH_USER.getKey());
         String password = getNonNullParameter(request, "com.interact.listen.google.password");
@@ -49,7 +50,7 @@ public class SetGoogleAuthServlet extends HttpServlet
 
         LOG.debug("google auth servlet received: " + c2dmEnabled + ", " + username + ", " + password + ", " + token);
         
-        boolean wasEnabled = C2DMessaging.isEnabled();
+        boolean wasEnabled = ms.isEnabled();
         String oldUsername = ga.getUsername();
         String oldToken    = ga.getToken();
 
@@ -85,7 +86,7 @@ public class SetGoogleAuthServlet extends HttpServlet
             }
         }
 
-        C2DMessaging.setEnabled(c2dmEnabled);
+        ms.setEnabled(c2dmEnabled);
 
         String useToken = "";
         if(oldToken.length() > 0 && !username.equals(oldUsername))
@@ -104,7 +105,7 @@ public class SetGoogleAuthServlet extends HttpServlet
         if(useToken.length() > 0)
         {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            C2DMessaging.enqueueConfigChanges(session, DeviceType.ANDROID, useToken);
+            ms.enqueueConfigChanges(session, DeviceType.ANDROID, useToken);
         }
         else
         {

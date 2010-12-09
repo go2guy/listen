@@ -55,11 +55,21 @@ public class GoogleAuth
         }
     }
     
-    private static final GoogleAuth ga = new GoogleAuth();
+    private static enum Instance
+    {
+        INSTANCE;
+        
+        private GoogleAuth ga;
+        
+        private Instance()
+        {
+            ga = new GoogleAuth();
+        }
+    }
     
     public static GoogleAuth getInstance()
     {
-        return ga;
+        return Instance.INSTANCE.ga;
     }
     
     private String currentToken = null;

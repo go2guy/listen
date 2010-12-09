@@ -17,9 +17,6 @@ public class C2DMessaging
 {
     private static final Logger LOG = Logger.getLogger(C2DMessaging.class);
 
-    private static final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
-    private static Boolean currentEnabled = null;
-
     public static enum Type
     {
         SYNC_VOICEMAILS("sync-voicemails", "0-"),
@@ -46,13 +43,33 @@ public class C2DMessaging
         }
     }
     
-    public static void setEnabled(boolean enabled)
+    private static enum Instance
+    {
+        INSTANCE;
+        
+        private C2DMessaging m;
+        
+        private Instance()
+        {
+            m = new C2DMessaging();
+        }
+    }
+    
+    public static C2DMessaging getInstance()
+    {
+        return Instance.INSTANCE.m;
+    }
+
+    private final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
+    private Boolean currentEnabled = null;
+
+    public synchronized void setEnabled(boolean enabled)
     {
         Configuration.set(Property.Key.ANDROID_C2DM_ENABLED, Boolean.valueOf(enabled).toString());
         currentEnabled = enabled;
     }
     
-    public static boolean isEnabled()
+    public synchronized boolean isEnabled()
     {
         if(currentEnabled == null)
         {
@@ -62,7 +79,7 @@ public class C2DMessaging
         return currentEnabled;
     }
 
-    public static void enqueueConfigChanges(Session session, DeviceType type, String useToken)
+    public void enqueueConfigChanges(Session session, DeviceType type, String useToken)
     {
         List<DeviceRegistration> devices = DeviceRegistration.queryByDevice(session, type, null);
 
@@ -88,7 +105,7 @@ public class C2DMessaging
         // TODO: stat enqueued config changes
     }
 
-    public static void enqueueDeviceSyncMessage(Session session, Subscriber subscriber, Type type, String notToDeviceId)
+    public void enqueueDeviceSyncMessage(Session session, Subscriber subscriber, Type type, String notToDeviceId)
     {
         enqueueDeviceSyncMessage(session, subscriber, type, null, notToDeviceId);
     }
@@ -103,8 +120,8 @@ public class C2DMessaging
         return params;
     }
     
-    private static void enqueueDeviceSyncMessage(Session session, Subscriber subscriber, Type type,
-                                                 String useToken, String notToDeviceId)
+    private void enqueueDeviceSyncMessage(Session session, Subscriber subscriber, Type type,
+                                          String useToken, String notToDeviceId)
     {
         final boolean force = type == Type.SYNC_CONFIG_CHANGED;     // force config changes even if disabled
         final boolean withRetry = type != Type.SYNC_CONFIG_CHANGED; // don't bother with retries for config changes
@@ -151,7 +168,7 @@ public class C2DMessaging
         LOG.info("scheduled " + numDeviceMessages + " device messages for " + username);
     }
 
-    static void scheduleRetry(Runnable task, int retryCount)
+    void scheduleRetry(Runnable task, int retryCount)
     {
         if(retryCount < 0)
         {
@@ -163,7 +180,7 @@ public class C2DMessaging
         threadPool.schedule(task, (long)Math.pow(2, retryCount), TimeUnit.MINUTES);
     }
     
-    private static void queue(C2DMessage message, boolean withRetry, String useToken)
+    private void queue(C2DMessage message, boolean withRetry, String useToken)
     {
         Runnable task = new RetryC2DM(message, withRetry, useToken);
         threadPool.remove(task);

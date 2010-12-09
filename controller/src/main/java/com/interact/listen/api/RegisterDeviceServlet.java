@@ -65,7 +65,7 @@ public class RegisterDeviceServlet extends HttpServlet
             throw new BadRequestServletException("deviceId not provided");
         }
         
-        boolean enabled = C2DMessaging.isEnabled();
+        boolean enabled = C2DMessaging.getInstance().isEnabled();
         String username = GoogleAuth.getInstance().getUsername();
 
         DeviceRegistration reg = DeviceRegistration.queryByInfo(session, qReg);
