@@ -101,9 +101,12 @@ public final class NotificationHelper
         long when = System.currentTimeMillis();
 
         Intent notificationIntent = null;
+
+        /* There seems to be problems in which a new notification will carry an old ID, so list all in all cases
         if(count == 1 && ids != null && ids.length > 0)
         {
             // this breaks down with multiple accounts, but probably isn't an issue
+            Log.i(TAG, "setting notification ID for single voicemail: " + ids[0]);
             notificationIntent = new Intent(Constants.ACTION_VIEW_VOICEMAIL);
             notificationIntent.putExtra(Constants.EXTRA_ID, ids[0]);
         }
@@ -111,6 +114,9 @@ public final class NotificationHelper
         {
             notificationIntent = new Intent(Constants.ACTION_LISTALL_VOICEMAIL);
         }
+        */
+        notificationIntent = new Intent(Constants.ACTION_LISTALL_VOICEMAIL);
+        
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 

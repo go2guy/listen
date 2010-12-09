@@ -290,6 +290,7 @@ public class ListVoicemailActivity extends ListActivity
                 startActivity(i);
                 return true;
             case R.id.voicemail_list_refresh:
+                NotificationHelper.clearNotificationBar(this);
                 SyncSchedule.syncRegular(this, null, true);
                 return true;
             default:

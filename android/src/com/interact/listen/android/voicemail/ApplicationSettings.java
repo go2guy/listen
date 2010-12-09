@@ -313,8 +313,11 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         {
             Log.i(TAG, "clearing cache task starting");
             Context context = clearContext();
+            
             if(context != null)
             {
+                NotificationHelper.clearNotificationBar(context);
+
                 VoicemailHelper.deleteVoicemails(context.getContentResolver(), null);
                 try
                 {

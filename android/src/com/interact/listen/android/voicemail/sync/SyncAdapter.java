@@ -111,6 +111,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                         VoicemailHelper.insertVoicemail(provider, v);
                         notifyId = v.getId();
                         insertList.remove(insertList.size() - 1);
+                        Log.i(TAG, "first notification from insert: " + notifyId);
                     }
                 }
                 if(insertList.size() >= 50)
@@ -125,6 +126,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                     if(++notifications == 1)
                     {
                         notifyId = iter.getLocal().getId();
+                        Log.i(TAG, "first notification from local: " + notifyId);
                     }
                 }
             }

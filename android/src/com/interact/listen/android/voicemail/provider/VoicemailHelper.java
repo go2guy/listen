@@ -186,6 +186,7 @@ public final class VoicemailHelper
         {
             values[i++] = vm.getInsertValues();
         }
+        Log.i(TAG, "bulk inserting " + values.length + " voicemails");
         return resolver.bulkInsert(Voicemails.CONTENT_URI, values);
     }
 
