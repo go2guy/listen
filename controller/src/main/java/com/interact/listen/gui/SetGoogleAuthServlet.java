@@ -7,8 +7,8 @@ import com.interact.listen.config.GoogleAuth;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
-import com.interact.listen.resource.Subscriber;
 import com.interact.listen.resource.DeviceRegistration.DeviceType;
+import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 
 import javax.servlet.ServletException;

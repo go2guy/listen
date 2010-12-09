@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-class C2DSender
+final class C2DSender
 {
     private static final Logger LOG = Logger.getLogger(C2DSender.class);
 
@@ -21,7 +21,7 @@ class C2DSender
     private static final String C2DM_SEND_ENDPOINT = "https://" + C2DM_HOST + "/c2dm/send";
     private static final String UPDATE_CLIENT_AUTH = "Update-Client-Auth";
     
-    private static final HostnameVerifier hostNameVerifier = new HostnameVerifier()
+    private static final HostnameVerifier HOST_NAME_VERIFIER = new HostnameVerifier()
     {
         @Override
         public boolean verify(String hostname, SSLSession session)
@@ -34,6 +34,10 @@ class C2DSender
             return true;
         }
     };
+    
+    private C2DSender()
+    {
+    }
     
     static C2DError send(C2DMessage message, String token) throws IOException
     {
@@ -51,7 +55,7 @@ class C2DSender
         URL url = new URL(C2DM_SEND_ENDPOINT);
 
         HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
-        conn.setHostnameVerifier(hostNameVerifier);
+        conn.setHostnameVerifier(HOST_NAME_VERIFIER);
         conn.setDoOutput(true);
         conn.setUseCaches(false);
         conn.setRequestMethod("POST");
@@ -88,7 +92,7 @@ class C2DSender
         if(responseCode == HttpServletResponse.SC_SERVICE_UNAVAILABLE)
         {
             LOG.info("server is unavailable");
-            // TODO: handle retry-after
+            // Retry-After SHOULD be used
             return C2DError.ServiceUnavailable;
         }
 

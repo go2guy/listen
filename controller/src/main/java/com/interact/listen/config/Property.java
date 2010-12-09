@@ -10,7 +10,8 @@ import org.apache.commons.lang.StringUtils;
 @Table(name = "PROPERTY")
 public class Property
 {
-    public static enum Key {
+    public static enum Key
+    {
         /* Comma-delimited mapping of dialed numbers to applications, format is NUMBER:APPLICATION, e.g. "100:conferencing;200:voicemail" */
         DNIS_MAPPING             ("com.interact.listen.dnisMapping",             "770:mailbox;990:conferencing;*:voicemail"),
 
@@ -69,9 +70,7 @@ public class Property
         GOOGLE_AUTH_USER        ("com.interact.listen.google.username",          ""),
 
         /* Authorization token used for C2DM */
-        GOOGLE_AUTH_TOKEN       ("com.interact.listen.google.authToken",         ""),
-        
-        ;
+        GOOGLE_AUTH_TOKEN       ("com.interact.listen.google.authToken",         "");
 
         private final String key;
         private final String defaultValue;
@@ -151,7 +150,7 @@ public class Property
         {
             if(s.trim().equals(""))
             {
-               continue; 
+                continue; 
             }
             result.add(s);
         }

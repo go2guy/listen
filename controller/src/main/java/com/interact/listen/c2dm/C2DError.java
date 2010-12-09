@@ -14,8 +14,7 @@ enum C2DError
     MissingCollapseKey  (false, false, Stat.C2DM_UNKNOWN_ERROR        , "Collapse key is required."),
     InvalidAuthToken    (false, false, Stat.C2DM_INVALID_AUTH_TOKEN   , "Invalid authorization token."),
     ServiceUnavailable  (true , false, Stat.C2DM_SERVICE_UNAVAILABLE  , "Service unavailable."),
-    Unknown             (false, false, Stat.C2DM_UNKNOWN_ERROR        , "Unknown error."),
-    ;
+    Unknown             (false, false, Stat.C2DM_UNKNOWN_ERROR        , "Unknown error.");
 
     private static final Logger LOG = Logger.getLogger(C2DError.class);
 

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-public class GoogleAuth
+public final class GoogleAuth
 {
     private static final Logger LOG = Logger.getLogger(GoogleAuth.class);
 
@@ -34,8 +34,7 @@ public class GoogleAuth
         AccountDeleted     ("The user account has been deleted."),
         AccountDisabled    ("The user account has been disabled."),
         ServiceDisabled    ("The user's access to the specified service has been disabled."),
-        ServiceUnavailable ("The service is not available at the moment."),
-        ;
+        ServiceUnavailable ("The service is not available at the moment.");
         
         private String description;
         
@@ -67,17 +66,21 @@ public class GoogleAuth
         }
     }
     
-    public static GoogleAuth getInstance()
-    {
-        return Instance.INSTANCE.ga;
-    }
-    
     private String currentToken = null;
 
     private Error lastError = null;
     private Date nextRetry = null;
     private long retryTimeout = 1000;
 
+    private GoogleAuth()
+    {
+    }
+
+    public static GoogleAuth getInstance()
+    {
+        return Instance.INSTANCE.ga;
+    }
+    
     public synchronized void invalidateCachedToken(String token)
     {
         if(token == null || token.equals(currentToken))
@@ -310,8 +313,4 @@ public class GoogleAuth
         return lastError == null || nextRetry == null || nextRetry.before(new Date());
     }
     
-    private GoogleAuth()
-    {
-    }
-
 }

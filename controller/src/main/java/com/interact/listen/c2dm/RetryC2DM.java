@@ -19,7 +19,7 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
 
     private static final Logger LOG = Logger.getLogger(RetryC2DM.class);
 
-    private static final StatSender statSender = StatSenderFactory.getStatSender();
+    private static final StatSender STAT_SENDER = StatSenderFactory.getStatSender();
     
     private final C2DMessage message;
 
@@ -38,30 +38,30 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
     {
         if(retryCount == 0 || retryCount == Integer.MAX_VALUE)
         {
-            statSender.send(Stat.C2DM_QUEUED_MESSAGE);
+            STAT_SENDER.send(Stat.C2DM_QUEUED_MESSAGE);
         }
         try
         {
             C2DError error = C2DSender.send(message, useToken);
             if(error == null)
             {
-                statSender.send(Stat.C2DM_SENT_SUCCESFULLY);
+                STAT_SENDER.send(Stat.C2DM_SENT_SUCCESFULLY);
                 LOG.info("sent message succesfully");
             }
             else
             {
-                statSender.send(error.getStat());
+                STAT_SENDER.send(error.getStat());
                 LOG.info("Error result " + error + " for " + message.getRegistrationId());
                 if(error.isRetryable())
                 {
                     if(++retryCount >= MAX_RETRIES)
                     {
-                        statSender.send(Stat.C2DM_DISCARD_DUE_TO_RETRYS);
+                        STAT_SENDER.send(Stat.C2DM_DISCARD_DUE_TO_RETRYS);
                         LOG.error("Maximum retries reached: " + message.getRegistrationId());
                     }
                     else
                     {
-                        statSender.send(Stat.C2DM_QUEUED_RETRY);
+                        STAT_SENDER.send(Stat.C2DM_QUEUED_RETRY);
                         C2DMessaging.getInstance().scheduleRetry(this, retryCount);
                     }
                 }
@@ -73,7 +73,7 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
         }
         catch(IOException e)
         {
-            statSender.send(Stat.C2DM_UNKNOWN_ERROR);
+            STAT_SENDER.send(Stat.C2DM_UNKNOWN_ERROR);
             LOG.error("un-retryable error: + " + message.getRegistrationId(), e);
         }
     }

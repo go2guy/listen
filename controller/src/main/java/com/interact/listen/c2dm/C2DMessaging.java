@@ -13,15 +13,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-public class C2DMessaging
+public final class C2DMessaging
 {
-    private static final Logger LOG = Logger.getLogger(C2DMessaging.class);
-
     public static enum Type
     {
         SYNC_VOICEMAILS("sync-voicemails", "0-"),
-        SYNC_CONFIG_CHANGED("sync-config", "1-"),
-        ;
+        SYNC_CONFIG_CHANGED("sync-config", "1-");
         
         private final String message;
         private final String keyAppend;
@@ -55,13 +52,19 @@ public class C2DMessaging
         }
     }
     
+    private static final Logger LOG = Logger.getLogger(C2DMessaging.class);
+
+    private final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
+    private Boolean currentEnabled = null;
+
+    private C2DMessaging()
+    {
+    }
+
     public static C2DMessaging getInstance()
     {
         return Instance.INSTANCE.m;
     }
-
-    private final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
-    private Boolean currentEnabled = null;
 
     public synchronized void setEnabled(boolean enabled)
     {
@@ -101,8 +104,6 @@ public class C2DMessaging
             C2DMessage message = new C2DMessage(device.getRegistrationToken(), collapseKey, params, true);
             queue(message, false, useToken);
         }
-        
-        // TODO: stat enqueued config changes
     }
 
     public void enqueueDeviceSyncMessage(Session session, Subscriber subscriber, Type type, String notToDeviceId)
@@ -187,8 +188,4 @@ public class C2DMessaging
         threadPool.submit(task);
     }
 
-    private C2DMessaging()
-    {
-    }
-    
 }
