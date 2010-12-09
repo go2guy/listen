@@ -15,6 +15,7 @@ import com.interact.listen.android.voicemail.Voicemail;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class VoicemailHelper
@@ -195,7 +196,52 @@ public final class VoicemailHelper
         voicemail.setTrashed();
         resolver.delete(voicemail.getUri(), null, null);
     }
-    
+
+    public static int deleteVoicemails(ContentProviderClient resolver, List<Voicemail> voicemails) throws RemoteException
+    {
+        if(voicemails.isEmpty())
+        {
+            return 0;
+        }
+        
+        final int deleteMax = Math.min(voicemails.size(), 25);
+        final String orId = " OR " + Voicemails._ID + "=?";
+        
+        StringBuilder where = new StringBuilder(Voicemails._ID + "=?");
+        
+        for(int i = 1; i < deleteMax; ++i)
+        {
+            where.append(orId);
+        }
+        String selection = where.toString();
+        
+        String[] args = new String[deleteMax];
+        Arrays.fill(args, "-1");
+        
+        int deleted = 0;
+        
+        int idx = 0;
+        for(Voicemail voicemail : voicemails)
+        {
+            voicemail.setTrashed();
+            args[idx++] = Integer.toString(voicemail.getId());
+            if(idx >= deleteMax)
+            {
+                deleted += resolver.delete(Voicemails.CONTENT_URI, selection, args);
+                Arrays.fill(args, "-1");
+                idx = 0;
+            }
+        }
+        if(idx > 0)
+        {
+            deleted += resolver.delete(Voicemails.CONTENT_URI, selection, args);
+        }
+        
+        Log.i(TAG, "batch deleted " + deleted + " out of " + voicemails.size());
+        
+        return deleted;
+    }
+
     public static void moveVoicemailToTrash(ContentResolver resolver, Voicemail voicemail)
     {
         ContentValues values = voicemail.markDeleted();

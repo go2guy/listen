@@ -159,16 +159,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         throws RemoteException
     {
         iter.reset();
+        List<Voicemail> deleteList = new ArrayList<Voicemail>(25);
         while(iter.next())
         {
             if(iter.isMissingFromServer())
             {
                 Voicemail v = iter.getLocal();
                 Log.i(TAG, "voicemail was deleted on server: " + v.getVoicemailId());
-                VoicemailHelper.deleteVoicemail(provider, v);
-                syncResult.stats.numDeletes++;
+                deleteList.add(v);
             }
         }
+        syncResult.stats.numDeletes += VoicemailHelper.deleteVoicemails(provider, deleteList);
     }
     
     private boolean pushVoicemailUpdates(Uri host, String authToken, Account account, ContentProviderClient provider,
