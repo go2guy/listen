@@ -371,7 +371,7 @@ public class ViewVoicemailActivity extends Activity
                 {
                     Log.v(TAG, "creating download task");
                     mDownloadTask = new DownloadTask(this, mVoicemailPlayer, mVoicemail);
-                    mDownloadTask.execute((Void[])null);
+                    mDownloadTask.execute();
                 }
             }
             else if(!mVoicemail.isDownloaded())

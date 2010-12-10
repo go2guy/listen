@@ -48,7 +48,7 @@ public class AccountRemovalActivity extends Activity
         if(task == null)
         {
             task = new RemoveAccountTask();
-            task.execute((Void[])null);
+            task.execute();
         }
     }
     

@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.provider.Settings;
@@ -84,19 +85,9 @@ public final class NotificationHelper
         
         NotificationManager nManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        int titleID = R.string.new_listen_voicemails;
-        int contentFormatID = R.string.count_listen_voicemails;
-        if(count == 1)
-        {
-            titleID = R.string.new_listen_voicemail;
-            contentFormatID = R.string.count_listen_voicemail;
-        }
-        else if(count == Integer.MAX_VALUE)
-        {
-            contentFormatID = R.string.lots_listen_voicemail;
-        }
-        String title = context.getString(titleID);
-        String content = context.getString(contentFormatID, count);
+        final Resources res = context.getResources();
+        String title = res.getQuantityString(R.plurals.new_listen_voicemail, count);
+        String content = res.getQuantityString(R.plurals.count_listen_voicemail, count, count);
         
         int icon = R.drawable.notification_bar_icon;
         long when = System.currentTimeMillis();
@@ -124,8 +115,7 @@ public final class NotificationHelper
         Notification notification = new Notification(icon, title, when);
 
         notification.deleteIntent = PendingIntent.getService(context, 0, new Intent(Constants.ACTION_MARK_NOTIFIED), 0);
-
-        notification.tickerText = context.getString(count == 1 ? R.string.new_voicemail_ticker : R.string.new_voicemails_ticker);
+        notification.tickerText = res.getQuantityText(R.plurals.new_voicemail_ticker, count);
         //notification.number = newCount == 1  || newCount > 9 ? 0 : newCount;
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;

@@ -6,6 +6,7 @@ import android.provider.BaseColumns;
 public final class Voicemails implements BaseColumns
 {
     public static final Uri CONTENT_URI = Uri.parse("content://" + VoicemailProvider.AUTHORITY + "/voicemails");
+    public static final Uri AUDIO_URI = Uri.parse("content://" + VoicemailProvider.AUTHORITY + "/voicemails/audio");
 
     public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.com.interact.listen.voicemails";
     

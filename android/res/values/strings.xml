@@ -3,8 +3,8 @@
     <string name="app_name">Listen</string>
 
     <string name="list_view_label">Inbox</string>
-    <string name="list_view_label_with_info">Inbox (%d/%d)</string>
-    <string name="received_on_label">Received: %s (%s)</string>
+    <string name="list_view_label_with_info">Inbox (%1$d/%2$d)</string>
+    <string name="received_on_label">Received: %1$s (%2$s)</string>
 	
 	<string name="voicemailListEmpty">No items in this view</string>
 	<string name="leftByUnknown">Unavailable</string>
@@ -30,8 +30,8 @@
 	<string name="pref_sync_clear_title">Clear Cache</string>
 	<string name="pref_sync_clear_detail">Remove voicemails from the local cache</string>
 	<string name="pref_sync_interval_title">Poll Interval</string>
-	<string name="pref_sync_interval_detail_ns">%d minute</string>
-	<string name="pref_sync_interval_detail_ws">%d minutes</string>
+	<string name="pref_sync_interval_detail_ns">%1$d minute</string>
+	<string name="pref_sync_interval_detail_ws">%1$d minutes</string>
 	<string name="pref_sync_c2dm_enabled">Automatic sync enabled</string>
 	
 	<string name="pref_sync_audio">Sync Audio</string>
@@ -95,13 +95,21 @@
     <string name="cancel_button_label">Cancel</string>
     
     <string name="connection_error_notification_title">Listen connection error</string>
-    <string name="new_voicemail_ticker">New voicemail</string>
-    <string name="new_voicemails_ticker">New voicemails</string>
-    <string name="new_listen_voicemail">New Listen Voicemail</string>
-    <string name="new_listen_voicemails">New Listen Voicemails</string>
-    <string name="count_listen_voicemail">%d new Listen Voicemail</string>
-    <string name="count_listen_voicemails">%d new Listen Voicemails</string>
-	<string name="lots_listen_voicemail">New Listen Voicemails</string>
+    
+    <plurals name="new_voicemail_ticker">
+    	<item quantity="one">New voicemail</item>
+    	<item quantity="other">New voicemails</item>
+    </plurals>
+
+    <plurals name="new_listen_voicemail">
+    	<item quantity="one">New Listen Voicemail</item>
+    	<item quantity="other">New Listen Voicemails</item>
+    </plurals>
+
+    <plurals name="count_listen_voicemail">
+    	<item quantity="one">%1$d new Listen Voicemail</item>
+    	<item quantity="other">%1$d new Listen Voicemails</item>
+    </plurals>
 
 	<string name="generic_confirm">OK</string>
 	<string name="generic_cancel">Cancel</string>

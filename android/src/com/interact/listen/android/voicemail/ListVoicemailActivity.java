@@ -163,7 +163,7 @@ public class ListVoicemailActivity extends ListActivity
         if(mSyncStatusPoll == null || mSyncStatusPoll.isCancelled())
         {
             mSyncStatusPoll = new SyncStatusPoll(this);
-            mSyncStatusPoll.execute((Void[])null);
+            mSyncStatusPoll.execute();
         }
     }
     
