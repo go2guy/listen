@@ -94,10 +94,6 @@
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/meta/audio/file/*</url-pattern>
     </filter-mapping>
-    <filter-mapping>
-        <filter-name>AuthorizationFilter</filter-name>
-        <url-pattern>/meta/registerDevice</url-pattern>
-    </filter-mapping>
 
     <!-- servlet definitions -->
 
