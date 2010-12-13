@@ -52,6 +52,7 @@
 	<var name="artifactsDIR" expr="'/interact/listen/artifacts/'" />
 	<var name="FILE" expr="'defaultApp.cfg'" />
 	<var name="contentType" expr="'application/x-www-form-urlencoded'" />
+	<var name="EXT_LENGTH" expr="'4'" />
 
 
     <!-- Conference Variables -->
@@ -60,8 +61,8 @@
     <var name="II_SB_playEntryAudio" expr="'Yes'"/>     <!-- Determines if an entry tone is played on a conference -->
 
     <!-- Call to java scripts -->
-    <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	        <!-- Location of java script file -->
-    <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	    <!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	<!-- Location of java script file -->
     <script srcexpr="'file:' + II_SB_APP_PATH + 'listen_main.js'"></script>	<!-- Location of java script file -->
 
     <!-- Catch hang up event. User must have hung up -->

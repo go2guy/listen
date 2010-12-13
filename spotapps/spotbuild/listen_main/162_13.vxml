@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_162_13(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller,STATcontroller,artifactsDIR)
+            function II_SB_JS_function_162_13(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller,STATcontroller,artifactsDIR,EXT_LENGTH)
             {
-	            return "{\"application\":\""+appToAccess+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
+	            return "{\"application\":\""+appToAccess+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Create App Obj</log>
             <log>INFO: Entered run-javascript.vxml [162_13]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_162_13(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller,STATcontroller,artifactsDIR)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_162_13(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller,STATcontroller,artifactsDIR,EXT_LENGTH)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
