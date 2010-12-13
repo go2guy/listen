@@ -92,7 +92,7 @@
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
              If so, reset bargein to false. Otherwise go check the input mode -->
         <block>
-    	    <log target="status">Menu</log>
+    	    <log target="status">Message Menu</log>
             <log>INFO: Entered audio-input.vxml [103_161]</log>
             <log>INFO: Audio Interruptible [<value expr="II_SB_cutIn"/>]</log>
 

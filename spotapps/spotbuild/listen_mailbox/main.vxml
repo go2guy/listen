@@ -85,11 +85,16 @@
 	<var name="SB_UV_lstnChannel"/>
 	<var name="SB_UV_lstnSub"/>
 	<var name="SB_UV_newMsgPrompt"/>
+	<var name="SB_UV_chkOrigin"/>
+	<var name="SB_UV_getMbxCnt"/>
+	<var name="SB_UV_EXT_LENGTH"/>
+	<var name="SB_UV_afterHourSub"/>
+	<var name="SB_UV_inAfterHrs"/>
 
     
     <form id="beginDocument">
         <block>
-	        
+	        <log target="status">Begin</log>
             <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
             <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
@@ -296,6 +301,21 @@
 			</if>
 			<if cond="SB_UV_newMsgPrompt != undefined">
 				<assign name="newMsgPrompt" expr="SB_UV_newMsgPrompt" />
+			</if>
+			<if cond="SB_UV_chkOrigin != undefined">
+				<assign name="chkOrigin" expr="SB_UV_chkOrigin" />
+			</if>
+			<if cond="SB_UV_getMbxCnt != undefined">
+				<assign name="getMbxCnt" expr="SB_UV_getMbxCnt" />
+			</if>
+			<if cond="SB_UV_EXT_LENGTH != undefined">
+				<assign name="EXT_LENGTH" expr="SB_UV_EXT_LENGTH" />
+			</if>
+			<if cond="SB_UV_afterHourSub != undefined">
+				<assign name="afterHourSub" expr="SB_UV_afterHourSub" />
+			</if>
+			<if cond="SB_UV_inAfterHrs != undefined">
+				<assign name="inAfterHrs" expr="SB_UV_inAfterHrs" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

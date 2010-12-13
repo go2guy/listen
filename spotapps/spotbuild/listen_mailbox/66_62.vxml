@@ -12,7 +12,7 @@
 	    <log target="status">Mbx Path</log>
             <log>INFO: Entered assign-variable.vxml [66_62]</log>
             <log>INFO: Current value [<value expr="nxtPath"/>]</log>
-<assign name="nxtPath" expr="'MbxMenu'+''" />
+<assign name="nxtPath" expr="'MbxMenuA'+''" />
 <log>INFO: Updated value [<value expr="nxtPath"/>]</log>
 <log>INFO: Current value [<value expr="userInput"/>]</log>
 <assign name="userInput" expr="''+''" />
