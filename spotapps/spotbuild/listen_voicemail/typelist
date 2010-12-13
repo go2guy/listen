@@ -1,5 +1,4 @@
 120_71 - run-javascript
-146_12 - end
 146_13 - assign-variable
 173_67 - audio-input
 173_66 - audio-input
@@ -27,13 +26,13 @@
 120_48 - run-javascript
 146_52 - run-javascript
 142_33 - run-javascript
-146_56 - decision
 53_100 - assign-variable
 53_102 - decision
 199_16 - audio-input
 199_18 - decision
 146_50 - audio-input
 199_11 - audio-input
+146_59 - decision
 142_31 - run-javascript
 146_43 - run-javascript
 142_26 - run-javascript
@@ -75,11 +74,14 @@ begin - begin
 142_6 - run-javascript
 142_8 - run-javascript
 hang-up - hang-up
+146_64 - switch-application
 194_17 - create-session
+146_68 - end
 173_7 - assign-variable
 173_9 - decision
 194_10 - data-query
 173_4 - run-javascript
+146_61 - end
 53_153 - decision
 53_150 - run-javascript
 175_6 - data-query
