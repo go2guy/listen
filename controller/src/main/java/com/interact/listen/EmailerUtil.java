@@ -9,7 +9,7 @@ public final class EmailerUtil
                                      + "Conference details:<br/><br/>"
                                      + "Date/Time: %s until %s<br/>"
                                      + "Description: %s<br/>"
-                                     + "%s: %s<br/>" //this will be phone number or ip based on protocol
+                                     + "Conference Bridge Access Numbers: %s"
                                      + "Pin: %s<br/>"
                                      + "</body></html>";
     

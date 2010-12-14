@@ -26,6 +26,16 @@ $(document).ready(function() {
                     }
 
                     $('#conferencing-configuration-pinLength').val(data['com.interact.listen.conferencing.pinLength']);
+                    clearAllConferenceBridgeRows();
+                    var bridgeNumbers = data['com.interact.listen.conferenceBridges'];
+                    var mappings = bridgeNumbers.split(';');
+                    if(mappings != "") {
+                    	for(var i = 0; i < mappings.length; i++) {
+	                        var mapping = mappings[i].split(':');
+                        	addConferenceBridgeRow(mapping[0], mapping[1]);
+                    	}
+                    }
+                    
                     $('#alerts-configuration-realizeUrl').val(data['com.interact.listen.realizeUrl']);
                     $('#alerts-configuration-realizeAlertName').val(data['com.interact.listen.realizeAlertName']);
 
@@ -179,21 +189,109 @@ $(document).ready(function() {
                 $('#dnis-mapping-form .form-error-message').text(xhr.responseText).slideDown(100);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+            	var elapsed = Listen.timestamp() - start;
                 $('#latency').text(elapsed);
+                updateSelectLists();
             }
         });
 
         return false;
     });
+    
+    function updateSelectLists() {
+    	var conferenceNumbers = getConferenceNumbers();
+    	$('#conferencing-configuration-form select').each(function() {
+    		var selected = $('option:selected', this).val();
+    		$(this).empty();
+    		populateSelectList($(this), conferenceNumbers, selected);
+    	});
+    }
+    
+    function getConferenceNumbers() {
+    	var conferenceNumbers = [];
+    	$('#dnis-mapping-form table tbody tr').each(function() {
+    		if($('.dnis-row-select', $(this)).val() == 'conferencing')
+    		{
+    			conferenceNumbers.push($('input', $(this)).val());
+    		}
+    	});
+    	
+    	return conferenceNumbers;
+    }
+    
+    function populateSelectList(selectList, listOfItems, selectedItem) {
+    	$.each(listOfItems, function(index, value) {   
+     		$(selectList).
+          		append($("<option></option>").
+          		attr("value",value).
+          		text(value));
+          		
+          	
+          	if($.inArray(selectedItem, listOfItems) != -1)
+          	{
+          		$('selectList option[value=\'' + selectedItem + '\']').attr('selected', 'selected');
+          	}	
+		});
+    }
+    
+    function clearAllConferenceBridgeRows() {
+        $('#conferencing-bridge-numbers tr').not(':last').remove();
+    };
+    
+    function addConferenceBridgeRow(number, label) {
+    	var conferenceNumbers = getConferenceNumbers();
+    	var n = (number ? number : '');
+        var l = (label ? label : '');
+
+        var clone = $('#conference-bridge-row-template').clone();
+        clone.removeAttr("id");
+        $('.conference-bridge-number-label', clone).val(l);
+        $.each(conferenceNumbers, function(index, value) {
+        	$('select', clone).
+          		append($("<option></option>").
+          		attr("value",value).
+          		text(value)); 
+		});
+
+        $('#conferencing-configuration-form tbody tr:last').before(clone);
+        $('select option[value=\'' + n + '\']', clone).attr('selected', 'selected');
+        
+        $('.icon-delete', clone).click(function() {
+            $(this).parent().parent().remove();
+        });
+    }
+    
+    $('#add-conference-bridge-number').click(function() {
+        addConferenceBridgeRow();
+        return false;
+    });
 
     $('#conferencing-configuration-form').submit(function() {
         $('#conferencing-configuration-form .form-error-message').text('').hide();
+        var value = '';
+        var rows = $('#conferencing-bridge-numbers tr');
+        var num = 0;
+        for(var i = 0; i < rows.length - 1; i++) {
+        	var entry = '';
+            var number = $('select', rows[i]).val();
+            if(number.length == 0) {
+                continue;
+            }
+            var label = $('.conference-bridge-number-label', rows[i]).val();
+            entry += number + ':' + label + ';';
+            value += entry;
+            num++;
+        }
+        if(num > 0 && value.length > 0) {
+            value = value.substring(0, value.length - 1); // remove last semicolon
+        }
+        
         var start = Listen.timestamp();
         $.ajax({
             type: 'POST',
             url: Listen.url('/ajax/setProperties'),
-            data: { 'com.interact.listen.conferencing.pinLength': $('#conferencing-configuration-pinLength').val() },
+            data: { 'com.interact.listen.conferencing.pinLength': $('#conferencing-configuration-pinLength').val(),
+                    'com.interact.listen.conferenceBridges': value },
             success: function(data) {
                 application.load();
                 var elem = $('#conferencing-configuration-form .form-success-message')

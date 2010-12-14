@@ -24,6 +24,10 @@ table {
     width: 100%;
 }
 
+#conferencing-bridge-numbers {
+	width: auto;
+}
+
 table th {
     font-weight: bold;
 }

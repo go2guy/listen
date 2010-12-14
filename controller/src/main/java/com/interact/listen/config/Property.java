@@ -70,7 +70,10 @@ public class Property
         GOOGLE_AUTH_USER        ("com.interact.listen.google.username",          ""),
 
         /* Authorization token used for C2DM */
-        GOOGLE_AUTH_TOKEN       ("com.interact.listen.google.authToken",         "");
+        GOOGLE_AUTH_TOKEN       ("com.interact.listen.google.authToken",         ""),
+        
+        /* semi-colon-delimited mapping of numbers and labels of conference bridge numbers to use in conference invitations */
+        CONFERENCE_BRIDGES      ("com.interact.listen.conferenceBridges",        "");
 
         private final String key;
         private final String defaultValue;

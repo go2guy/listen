@@ -124,22 +124,20 @@ public class EmailerService
         return result;
     }
 
-    public boolean sendScheduledConferenceActiveEmail(ScheduledConference scheduledConference, String phoneNumber, String protocol)
+    public boolean sendScheduledConferenceActiveEmail(ScheduledConference scheduledConference, String phoneNumber)
     {
-        String numberTitle = protocol.equals("PSTN") ? "Phone Number" : "IP Address";
         String body = getActiveMessageBody(scheduledConference.getScheduledBy().friendlyName(),
                                            scheduledConference.getNotes(), scheduledConference.getConference(),
-                                           numberTitle, phoneNumber, scheduledConference.getStartDate(),
+                                           phoneNumber, scheduledConference.getStartDate(),
                                            scheduledConference.getEndDate());
         return sendScheduledConferenceEmail(scheduledConference.getActiveCallers(), scheduledConference.getTopic(), body);
     }
 
-    public boolean sendScheduledConferencePassiveEmail(ScheduledConference scheduledConference, String phoneNumber, String protocol)
+    public boolean sendScheduledConferencePassiveEmail(ScheduledConference scheduledConference, String phoneNumber)
     {
-        String numberTitle = protocol.equals("PSTN") ? "Phone Number" : "IP Address";
         String body = getPassiveMessageBody(scheduledConference.getScheduledBy().friendlyName(),
                                             scheduledConference.getNotes(), scheduledConference.getConference(),
-                                            numberTitle, phoneNumber, scheduledConference.getStartDate(),
+                                            phoneNumber, scheduledConference.getStartDate(),
                                             scheduledConference.getEndDate());
         return sendScheduledConferenceEmail(scheduledConference.getPassiveCallers(), scheduledConference.getTopic(), body);
     }
@@ -297,8 +295,8 @@ public class EmailerService
         return mailAddresses.toArray(returnArray);
     }
 
-    private String getActiveMessageBody(String username, String description, Conference conference, String numberTitle,
-                                        String phoneNumber, Date dateTime, Date endDateTime)
+    private String getActiveMessageBody(String username, String description, Conference conference, String phoneNumber,
+                                        Date dateTime, Date endDateTime)
     {
         String formattedDateTime = sdf.format(dateTime);
         String formattedEndDateTime = sdf.format(endDateTime);
@@ -306,13 +304,13 @@ public class EmailerService
         activePin = activePin + " (Active)";
         
         String formattedEmailBody = String.format(EmailerUtil.EMAIL_BODY, username, formattedDateTime, formattedEndDateTime,
-                                                  description, numberTitle, phoneNumber, activePin);
+                                                  description, getPhoneNumberHtml(phoneNumber), activePin);
         
         return formattedEmailBody;
     }
     
     private String getPassiveMessageBody(String username, String description, Conference conference,
-                                         String numberTitle, String phoneNumber, Date dateTime, Date endDateTime)
+                                         String phoneNumber, Date dateTime, Date endDateTime)
     {
         String formattedDateTime = sdf.format(dateTime);
         String formattedEndDateTime = sdf.format(endDateTime);
@@ -320,7 +318,7 @@ public class EmailerService
         passivePin = passivePin + " (Passive)";
         
         String formattedEmailBody = String.format(EmailerUtil.EMAIL_BODY, username, formattedDateTime, formattedEndDateTime,
-                                                  description, numberTitle, phoneNumber, passivePin);
+                                                  description, getPhoneNumberHtml(phoneNumber), passivePin);
         
         return formattedEmailBody;
     }
@@ -400,5 +398,28 @@ public class EmailerService
         }
         
         return returnBody;
+    }
+    
+    private String getPhoneNumberHtml(String phoneNumbers)
+    {
+        StringBuilder phoneNumbersAsHtml = new StringBuilder("<br/><ul>");
+        String[] individualNumbers = phoneNumbers.split(";");
+        
+        for(String oneNumber : individualNumbers)
+        {
+            if(oneNumber.contains(":"))
+            {
+                String[] oneNumberParts = oneNumber.split(":");
+                phoneNumbersAsHtml.append("<li>").append(oneNumberParts[1]).append(": <b>").append(oneNumberParts[0]).append("</b></li>");
+            }
+            else
+            {
+                phoneNumbersAsHtml.append("<li>").append(oneNumber).append("</li>");
+            }
+        }
+        
+        phoneNumbersAsHtml.append("</ul>");
+        
+        return phoneNumbersAsHtml.toString();
     }
 }

@@ -3,6 +3,7 @@ package com.interact.listen.resource;
 import com.interact.listen.EmailerService;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.config.Configuration;
+import com.interact.listen.config.Property;
 import com.interact.listen.util.ComparisonUtil;
 
 import java.io.Serializable;
@@ -290,20 +291,16 @@ public class ScheduledConference extends Resource implements Serializable
     {
         EmailerService emailService = new EmailerService(persistenceService);
         
-        String phoneNumber = Configuration.phoneNumber();
-        String protocol = Configuration.phoneNumberProtocol();
+        String phoneNumbers = Configuration.get(Property.Key.CONFERENCE_BRIDGES);
 
-        if(phoneNumber.equals(""))
+        if(phoneNumbers.equals(""))
         {
             // ***
             // Current implementation is a person has to have called into the spot system before the phone number is
             // available
             // We should still send the invites in my opinion
             // ***
-            phoneNumber = "Contact the conference administrator for access number";
-
-            // want the label to say "Phone Number" in the e-mail when phone number is above message
-            protocol = "PSTN";
+            phoneNumbers = "Contact the conference administrator for access number";
         }
 
         boolean activeSuccess = true;
@@ -311,12 +308,12 @@ public class ScheduledConference extends Resource implements Serializable
 
         if(!activeCallers.isEmpty())
         {
-            activeSuccess = emailService.sendScheduledConferenceActiveEmail(this, phoneNumber, protocol);
+            activeSuccess = emailService.sendScheduledConferenceActiveEmail(this, phoneNumbers);
         }
 
         if(!passiveCallers.isEmpty())
         {
-            passiveSuccess = emailService.sendScheduledConferencePassiveEmail(this, phoneNumber, protocol);
+            passiveSuccess = emailService.sendScheduledConferencePassiveEmail(this, phoneNumbers);
         }
 
         return activeSuccess && passiveSuccess;

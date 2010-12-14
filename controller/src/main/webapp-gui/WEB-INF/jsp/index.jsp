@@ -436,7 +436,17 @@ if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
                               <td><label for="conferencing-configuration-pinLength" class="required">PIN length</label></td>
                               <td><input type="text" id="conferencing-configuration-pinLength" name="conferencing-configuration-pinLength"/></td>
                             </tr>
-                            <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save configuration">Save</button></td></tr>
+                          </tbody>
+                        </table>
+                        <div class="help">Any numbers that are configured as mapping to the Conferencing application can be given a label to be used when sending conference invitations so all invitees will know which number to call to access the conference.</div>
+                        <button type="button" class="button-add" id="add-conference-bridge-number" title="Add a new conference bridge number">Add Conference Number Label</button>
+                        <table id="conferencing-bridge-numbers">
+                          <tbody>
+                            <tr>
+                              <td colspan="6" class="buttons">
+                              	<button type="submit" class="button-save" title="Save configuration">Save</button>
+                              </td>
+                            </tr>
                           </tbody>
                         </table>
                       </fieldset>
@@ -867,7 +877,7 @@ if(subscriber != null && subscriber.getIsAdministrator()) { %>
           <td><input type="text" value="" class="dnis-mapping-number"/></td>
           <td>maps to</td>
           <td>
-            <select><%
+            <select class="dnis-row-select"><%
 if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
               <option value="conferencing">Conferencing</option><%
 }
@@ -880,6 +890,17 @@ if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
             </select>
           </td>
           <td><input type="text" value="" class="dnis-mapping-custom-destination"/></td>
+          <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
+        </tr>
+        
+        <tr id="conference-bridge-row-template">
+          <td>Label</td>
+          <td><input type="text" value="" class="conference-bridge-number-label"/></td>
+          <td>Number</td>
+          <td>
+            <select>
+            </select>
+          </td>
           <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
         </tr>
 
