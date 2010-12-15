@@ -16,8 +16,7 @@ public class ScheduleConferenceServletTest extends ListenServletTest
 {
     private ScheduleConferenceServlet servlet = new ScheduleConferenceServlet();
 
-    private static final String[] ALL_REQUEST_PARAMETERS =
-                                                           new String[] { "date", "hour", "minute", "amPm", "endHour",
+    private static final String[] ALL_REQUEST_PARAMETERS = new String[] { "date", "hour", "minute", "amPm", "endHour",
                                                                          "endMinute", "endAmPm", "subject",
                                                                          "description", "activeParticipants",
                                                                          "passiveParticipants" };
@@ -40,64 +39,61 @@ public class ScheduleConferenceServletTest extends ListenServletTest
     @Test
     public void test_doPost_nullOrEmptyDate_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNullOrEmpty(request, "date", "Please provide a date");
+        testRequestParameterIsNotNullOrEmpty(request, "date", "Date");
     }
 
     @Test
     public void test_doPost_nullOrEmptyHour_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNullOrEmpty(request, "hour", "Please provide an hour for the conference start time");
+        testRequestParameterIsNotNullOrEmpty(request, "hour", "Start Hour");
     }
 
     @Test
     public void test_doPost_nullOrEmptyMinute_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNullOrEmpty(request, "minute", "Please provide a minute for the conference start time");
+        testRequestParameterIsNotNullOrEmpty(request, "minute", "Start Minute");
     }
 
     @Test
     public void test_doPost_nullOrEmptyAmPm_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNullOrEmpty(request, "amPm", "Please provide an am/pm for the conference start time");
+        testRequestParameterIsNotNullOrEmpty(request, "amPm", "Start AM/PM");
     }
 
     @Test
     public void test_doPost_nullOrEmptyEndHour_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNullOrEmpty(request, "endHour", "Please provide an hour for the conference end time");
+        testRequestParameterIsNotNullOrEmpty(request, "endHour", "End Hour");
     }
 
     @Test
     public void test_doPost_nullOrEmptyEndMinute_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNullOrEmpty(request, "endMinute",
-                                             "Please provide a minute for the conference end time");
+        testRequestParameterIsNotNullOrEmpty(request, "endMinute", "End Minute");
     }
 
     @Test
     public void test_doPost_nullOrEmptyEndAmPm_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNullOrEmpty(request, "endAmPm", "Please provide an am/pm for the conference end time");
+        testRequestParameterIsNotNullOrEmpty(request, "endAmPm", "End AM/PM");
     }
 
     @Test
     public void test_doPost_nullDescription_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNull(request, "description", "Please provide a description");
+        testRequestParameterIsNotNull(request, "description", "Description");
     }
 
     @Test
     public void test_doPost_nullActiveParticipants_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNull(request, "activeParticipants",
-                                      "Please provide a comma-separated list of active participants");
+        testRequestParameterIsNotNull(request, "activeParticipants", "Active Callers");
     }
 
     @Test
     public void test_doPost_nullPassiveParticipants_throwsBadRequest() throws ServletException, IOException
     {
-        testRequestParameterIsNotNull(request, "passiveParticipants",
-                                      "Please provide a comma-separated list of passive participants");
+        testRequestParameterIsNotNull(request, "passiveParticipants", "Passive Callers");
     }
 
     @Test
@@ -114,14 +110,14 @@ public class ScheduleConferenceServletTest extends ListenServletTest
     }
 
     private void testRequestParameterIsNotNullOrEmpty(MockHttpServletRequest request, String parameterName,
-                                                      String expectedMessage) throws ServletException, IOException
+                                                      String fieldName) throws ServletException, IOException
     {
-        testRequestParameterIsNotNull(request, parameterName, expectedMessage);
-        testRequestParameterIsNotEmpty(request, parameterName, expectedMessage);
+        testRequestParameterIsNotNull(request, parameterName, fieldName);
+        testRequestParameterIsNotEmpty(request, parameterName, fieldName);
     }
 
     private void testRequestParameterIsNotNull(MockHttpServletRequest request, String parameterName,
-                                               String expectedMessage) throws ServletException, IOException
+                                               String fieldName) throws ServletException, IOException
     {
         if(ServletUtil.currentSubscriber(request) == null)
         {
@@ -129,11 +125,11 @@ public class ScheduleConferenceServletTest extends ListenServletTest
         }
         request.setMethod("POST");
         request.setParameter(parameterName, (String)null);
-        testForListenServletException(servlet, 400, expectedMessage);
+        testForListenServletException(servlet, 400, fieldName + " cannot be null");
     }
 
     private void testRequestParameterIsNotEmpty(MockHttpServletRequest request, String parameterName,
-                                                String expectedMessage) throws ServletException, IOException
+                                                String fieldName) throws ServletException, IOException
     {
         if(ServletUtil.currentSubscriber(request) == null)
         {
@@ -141,7 +137,7 @@ public class ScheduleConferenceServletTest extends ListenServletTest
         }
         request.setMethod("POST");
         request.setParameter(parameterName, " ");
-        testForListenServletException(servlet, 400, expectedMessage);
+        testForListenServletException(servlet, 400, fieldName + " cannot be empty");
     }
 
     private void setAllRequestParametersToRandomStuff(MockHttpServletRequest request)

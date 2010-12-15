@@ -42,15 +42,11 @@ public class StartRecordingServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        Conference conference = (Conference)session.get(Conference.class, Long.valueOf(id));
+        Conference conference = Conference.queryById(session, id);
         
         // System admins and owners of the conference are the only ones that can start recording.
         if(!subscriber.ownsConference(conference))

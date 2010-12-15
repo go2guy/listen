@@ -426,6 +426,11 @@ public class Conference extends Resource implements Serializable
         return hash;
     }
 
+    public static Conference queryById(Session session, Long id)
+    {
+        return (Conference)session.get(Conference.class, id);
+    }
+
     public static List<Conference> queryAllPaged(Session session, int first, int max)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(Conference.class);

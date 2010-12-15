@@ -68,7 +68,7 @@ public class AuthorizationFilter implements Filter
                     if(((HttpServletRequest)request).getRequestURI().startsWith("/meta/audio/file"))
                     {
                         Long id = Long.valueOf(((HttpServletRequest)request).getPathInfo().substring(1));
-                        Voicemail v = (Voicemail)session.get(Voicemail.class, id);
+                        Voicemail v = Voicemail.queryById(session, id);
                         
                         if(v != null && v.getSubscriber().equals(subscriber))
                         {
@@ -105,7 +105,7 @@ public class AuthorizationFilter implements Filter
 
                         // TODO possibly verify that it's a PUT request, and if so, limit them to updating
                         // [isNew, hasNotified]
-                        Voicemail v = (Voicemail)session.get(Voicemail.class, id);
+                        Voicemail v = Voicemail.queryById(session, id);
                         if(v != null && v.getSubscriber().equals(subscriber))
                         {
                             authorized = true;

@@ -1,7 +1,6 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.*;
-import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
@@ -42,16 +41,12 @@ public class UnmuteParticipantServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
 
-        Participant participant = (Participant)persistenceService.get(Participant.class, Long.valueOf(id));
+        Participant participant = (Participant)persistenceService.get(Participant.class, id);
         if(!subscriber.canModifyParticipant(participant))
         {
             throw new UnauthorizedServletException("Not allowed to unmute participant");

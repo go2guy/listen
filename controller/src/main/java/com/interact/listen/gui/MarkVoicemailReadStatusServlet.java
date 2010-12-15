@@ -1,7 +1,6 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.*;
-import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
@@ -40,22 +39,13 @@ public class MarkVoicemailReadStatusServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
-
-        String readStatus = request.getParameter("readStatus");
-        if(readStatus == null || readStatus.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a readStatus");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
+        String readStatus = ServletUtil.getNotNullNotEmptyString("readStatus", request, "Read Status");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
 
-        Voicemail voicemail = (Voicemail)session.get(Voicemail.class, Long.valueOf(id));
+        Voicemail voicemail = Voicemail.queryById(session, id);
         if(!(subscriber.getIsAdministrator() || subscriber.equals(voicemail.getSubscriber())))
         {
             throw new UnauthorizedServletException("Not allowed to change voicemail");

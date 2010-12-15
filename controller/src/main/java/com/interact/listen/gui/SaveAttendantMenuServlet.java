@@ -62,7 +62,7 @@ public class SaveAttendantMenuServlet extends HttpServlet
         Menu menu = new Menu();
         if(modifying)
         {
-            menu = (Menu)session.get(Menu.class, Long.parseLong(id));
+            menu = Menu.queryById(session, Long.parseLong(id));
         }
 
         // only set the name if we're not modifying or we're modifying a menu that's not the current Top Menu
@@ -149,7 +149,7 @@ public class SaveAttendantMenuServlet extends HttpServlet
         if(action instanceof GoToMenuAction)
         {
             Long menuId = Long.parseLong((String)arguments.get("menuId"));
-            Menu menu = (Menu)session.get(Menu.class, menuId);
+            Menu menu = Menu.queryById(session, menuId);
             if(menu == null)
             {
                 throw new BadRequestServletException("Destination menu with id [" + menuId + "] for keypress [" +

@@ -58,7 +58,7 @@ public class GetSubscriberServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Subscriber s = (Subscriber)session.get(Subscriber.class, Long.parseLong(id));
+        Subscriber s = Subscriber.queryById(session, Long.valueOf(id));
         
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);

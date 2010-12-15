@@ -1,7 +1,6 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.*;
-import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
@@ -53,16 +52,12 @@ public class DownloadVoicemailServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
 
-        Voicemail voicemail = (Voicemail)session.get(Voicemail.class, Long.valueOf(id));
+        Voicemail voicemail = Voicemail.queryById(session, id);
         if(!(subscriber.getIsAdministrator() || subscriber.equals(voicemail.getSubscriber())))
         {
             throw new UnauthorizedServletException("Not allowed to download voicemail");

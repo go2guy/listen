@@ -1,5 +1,6 @@
 package com.interact.listen;
 
+import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -33,7 +34,7 @@ public final class ServletUtil
     {
         return (Subscriber)request.getSession().getAttribute("subscriber");
     }
-
+    
     public static Map<String, String> getQueryParameters(HttpServletRequest request)
     {
         Map<String, String> map = new HashMap<String, String>();
@@ -116,5 +117,55 @@ public final class ServletUtil
             statSender = new InsaStatSender();
         }
         statSender.send(stat);
+    }
+
+    public static String getNotNullNotEmptyString(String parameter, HttpServletRequest request, String fieldName)
+        throws BadRequestServletException
+    {
+        String p = getNotNullString(parameter, request, fieldName);
+        if(p.trim().equals(""))
+        {
+            throw new BadRequestServletException(fieldName + " cannot be empty");
+        }
+        return p;
+    }
+
+    public static Integer getNotNullInteger(String parameter, HttpServletRequest request, String fieldName)
+        throws BadRequestServletException
+    {
+        String p = getNotNullString(parameter, request, fieldName);
+        try
+        {
+            return Integer.valueOf(p);
+        }
+        catch(NumberFormatException e)
+        {
+            throw new BadRequestServletException(fieldName + " must be a number");
+        }
+    }
+
+    public static Long getNotNullLong(String parameter, HttpServletRequest request, String fieldName)
+        throws BadRequestServletException
+    {
+        String p = getNotNullString(parameter, request, fieldName);
+        try
+        {
+            return Long.valueOf(p);
+        }
+        catch(NumberFormatException e)
+        {
+            throw new BadRequestServletException(fieldName + " must be a number");
+        }
+    }
+
+    public static String getNotNullString(String parameter, HttpServletRequest request, String fieldName)
+        throws BadRequestServletException
+    {
+        String p = request.getParameter(parameter);
+        if(p == null)
+        {
+            throw new BadRequestServletException(fieldName + " cannot be null");
+        }
+        return p;
     }
 }

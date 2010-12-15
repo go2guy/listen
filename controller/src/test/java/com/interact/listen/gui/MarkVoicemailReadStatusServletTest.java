@@ -29,7 +29,7 @@ public class MarkVoicemailReadStatusServletTest extends ListenServletTest
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", (String)null);
-        testForListenServletException(servlet, 400, "Please provide an id");
+        testForListenServletException(servlet, 400, "Id cannot be null");
     }
 
     @Test
@@ -38,7 +38,7 @@ public class MarkVoicemailReadStatusServletTest extends ListenServletTest
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
         request.setParameter("id", " ");
-        testForListenServletException(servlet, 400, "Please provide an id");
+        testForListenServletException(servlet, 400, "Id must be a number");
     }
 
     @Test
@@ -46,9 +46,9 @@ public class MarkVoicemailReadStatusServletTest extends ListenServletTest
     {
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
-        request.setParameter("id", TestUtil.randomString());
+        request.setParameter("id", String.valueOf(TestUtil.randomNumeric(5)));
         request.setParameter("readStatus", (String)null);
-        testForListenServletException(servlet, 400, "Please provide a readStatus");
+        testForListenServletException(servlet, 400, "Read Status cannot be null");
     }
 
     @Test
@@ -56,8 +56,8 @@ public class MarkVoicemailReadStatusServletTest extends ListenServletTest
     {
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("POST");
-        request.setParameter("id", TestUtil.randomString());
+        request.setParameter("id", String.valueOf(TestUtil.randomNumeric(5)));
         request.setParameter("readStatus", "  ");
-        testForListenServletException(servlet, 400, "Please provide a readStatus");
+        testForListenServletException(servlet, 400, "Read Status cannot be empty");
     }
 }

@@ -45,15 +45,11 @@ public class GetScheduledConferenceListServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().length() == 0)
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        Conference conference = (Conference)session.get(Conference.class, Long.parseLong(id));
+        Conference conference = Conference.queryById(session, id);
         if(conference == null)
         {
             throw new BadRequestServletException("Conference not found");

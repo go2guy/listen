@@ -3,7 +3,6 @@ package com.interact.listen.gui;
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.OutputBufferFilter;
 import com.interact.listen.ServletUtil;
-import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
@@ -26,14 +25,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 public class GetConferenceRecordingServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
-
-    private static final Logger LOG = Logger.getLogger(GetConferenceRecordingServlet.class);
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -51,15 +47,11 @@ public class GetConferenceRecordingServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        ConferenceRecording recording = (ConferenceRecording)session.get(ConferenceRecording.class, Long.valueOf(id));
+        ConferenceRecording recording = ConferenceRecording.queryById(session, id);
         if(!subscriber.ownsConference(recording.getConference()))
         {
             throw new UnauthorizedServletException("Not allowed to download recording");
@@ -92,17 +84,7 @@ public class GetConferenceRecordingServlet extends HttpServlet
         }
         finally
         {
-            if(input != null)
-            {
-                try
-                {
-                    input.close();
-                }
-                catch(IOException e)
-                {
-                    LOG.warn("Unable to close InputStream when reading [" + recording.getUri() + "]");
-                }
-            }
+            IOUtils.closeQuietly(input);
         }
     }
 
@@ -111,5 +93,4 @@ public class GetConferenceRecordingServlet extends HttpServlet
         String uri = recording.getUri();
         return uri.substring(uri.lastIndexOf("/") + 1);
     }
-
 }

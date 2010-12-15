@@ -160,7 +160,7 @@ public class EditSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Username cannot be null");
     }
 
     @Test
@@ -177,7 +177,7 @@ public class EditSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", TestUtil.randomString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Username cannot be empty");
     }
 
     @Test

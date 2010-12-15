@@ -95,7 +95,7 @@ public class GetAudioFileServlet extends HttpServlet
 
         PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.TUI);
 
-        Voicemail voicemail = (Voicemail)session.get(Voicemail.class, Long.valueOf(id));
+        Voicemail voicemail = Voicemail.queryById(session, Long.valueOf(id));
 
         InputStream input = null;
 

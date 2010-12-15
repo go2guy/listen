@@ -30,7 +30,7 @@ public class GetConferenceRecordingServletTest extends ListenServletTest
 
         request.setMethod("GET");
         request.setParameter("id", (String)null);
-        testForListenServletException(servlet, 400, "Please provide an id");
+        testForListenServletException(servlet, 400, "Id cannot be null");
     }
 
     @Test
@@ -40,6 +40,6 @@ public class GetConferenceRecordingServletTest extends ListenServletTest
 
         request.setMethod("GET");
         request.setParameter("id", " ");
-        testForListenServletException(servlet, 400, "Please provide an id");
+        testForListenServletException(servlet, 400, "Id must be a number");
     }
 }

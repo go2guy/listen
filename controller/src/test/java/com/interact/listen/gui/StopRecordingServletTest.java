@@ -50,7 +50,7 @@ public class StopRecordingServletTest extends ListenServletTest
         request.setMethod("POST");
         request.setParameter("id", (String)null);
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an id");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Id cannot be null");
     }
 
     @Test
@@ -61,7 +61,7 @@ public class StopRecordingServletTest extends ListenServletTest
         request.setMethod("POST");
         request.setParameter("id", " ");
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide an id");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Id must be a number");
     }
 
     @Test

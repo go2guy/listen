@@ -30,14 +30,9 @@ public class DeleteSubscriberServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
-
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Subscriber subscriberToDelete = Subscriber.queryById(session, Long.parseLong(id));
+        Subscriber subscriberToDelete = Subscriber.queryById(session, id);
 
         if(subscriberToDelete == null)
         {

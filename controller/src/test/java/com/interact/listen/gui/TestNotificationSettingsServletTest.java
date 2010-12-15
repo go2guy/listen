@@ -26,25 +26,25 @@ public class TestNotificationSettingsServletTest extends ListenServletTest
     @Test
     public void test_doPost_blankMessageType_returnsError() throws IOException, ServletException
     {
-        testExceptionCausingRequest("", "foo@example.com", "Please provide a message type");
+        testExceptionCausingRequest("", "foo@example.com", "Message Type cannot be empty");
     }
 
     @Test
     public void test_doPost_nullMessageType_returnsError() throws IOException, ServletException
     {
-        testExceptionCausingRequest(null, "foo@example.com", "Please provide a message type");
+        testExceptionCausingRequest(null, "foo@example.com", "Message Type cannot be null");
     }
 
     @Test
     public void test_doPost_blankAddress_returnsError() throws IOException, ServletException
     {
-        testExceptionCausingRequest(TestUtil.randomString(), "", "Please provide an address");
+        testExceptionCausingRequest(TestUtil.randomString(), "", "Address cannot be empty");
     }
 
     @Test
     public void test_doPost_nullAddress_returnsError() throws IOException, ServletException
     {
-        testExceptionCausingRequest(TestUtil.randomString(), null, "Please provide an address");
+        testExceptionCausingRequest(TestUtil.randomString(), null, "Address cannot be null");
     }
 
     private void testExceptionCausingRequest(String messageType, String address, String expectedContent)

@@ -43,7 +43,7 @@ public class DeleteAttendantMenuServletTest extends ListenServletTest
         TestUtil.setSessionSubscriber(request, true, session);
         request.setMethod("POST");
         request.setParameter("id", (String)null);
-        testForListenServletException(servlet, 400, "Missing required parameter [id]");
+        testForListenServletException(servlet, 400, "Id cannot be null");
     }
 
     @Test
@@ -52,7 +52,7 @@ public class DeleteAttendantMenuServletTest extends ListenServletTest
         TestUtil.setSessionSubscriber(request, true, session);
         request.setMethod("POST");
         request.setParameter("id", "abcd");
-        testForListenServletException(servlet, 400, "Parameter [id] with value [abcd] is not a valid number");
+        testForListenServletException(servlet, 400, "Id must be a number");
     }
 
     @Test

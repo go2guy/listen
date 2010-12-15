@@ -48,7 +48,7 @@ public class OutdialServletTest extends ListenServletTest
         request.setParameter("number", TestUtil.randomString() + "foo");
         request.setParameter("interrupt", "false");
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a conferenceId");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Conference Id cannot be null");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class OutdialServletTest extends ListenServletTest
         request.setParameter("number", TestUtil.randomString() + "foo");
         request.setParameter("interrupt", "false");
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a conferenceId");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Conference Id must be a number");
     }
 
     @Test
@@ -72,11 +72,11 @@ public class OutdialServletTest extends ListenServletTest
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
-        request.setParameter("conferenceId", TestUtil.randomString());
+        request.setParameter("conferenceId", String.valueOf(TestUtil.randomNumeric(5)));
         request.setParameter("number", (String)null);
         request.setParameter("interrupt", "false");
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a number");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Number cannot be null");
     }
 
     @Test
@@ -86,11 +86,11 @@ public class OutdialServletTest extends ListenServletTest
         TestUtil.setSessionSubscriber(request, true, session);
 
         request.setMethod("POST");
-        request.setParameter("conferenceId", TestUtil.randomString());
+        request.setParameter("conferenceId", String.valueOf(TestUtil.randomNumeric(5)));
         request.setParameter("number", " ");
         request.setParameter("interrupt", "false");
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a number");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Number cannot be empty");
     }
 
     @Test

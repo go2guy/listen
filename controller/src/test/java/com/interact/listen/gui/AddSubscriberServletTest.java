@@ -136,7 +136,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Username cannot be null");
     }
 
     @Test
@@ -152,7 +152,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Username");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Username cannot be empty");
     }
 
     @Test
@@ -168,7 +168,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Password cannot be null");
     }
 
     @Test
@@ -184,7 +184,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Password");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Password cannot be empty");
     }
 
     @Test
@@ -200,7 +200,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Confirm Password");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Confirm Password cannot be null");
     }
 
     @Test
@@ -216,7 +216,7 @@ public class AddSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", TestUtil.randomNumeric(4).toString());
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
-        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Please provide a Confirm Password");
+        testForListenServletException(servlet, HttpServletResponse.SC_BAD_REQUEST, "Confirm Password cannot be empty");
     }
 
     @Test

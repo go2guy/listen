@@ -43,33 +43,16 @@ public class AddSubscriberServlet extends HttpServlet
 
         Subscriber subscriber = new Subscriber();
 
-        String username = request.getParameter("username");
-        subscriber.setUsername(username);
-
-        if(username == null || username.trim().equals(""))
-        {
-            // TODO this should be done in Subscriber.validate(), but that method needs to handle
-            // password and passwordConfirm first
-            throw new BadRequestServletException("Please provide a Username");
-        }
-
-        String password = request.getParameter("password");
-        if(password == null || password.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a Password");
-        }
-
-        String confirmPassword = request.getParameter("confirmPassword");
-        if(confirmPassword == null || confirmPassword.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a Confirm Password");
-        }
+        String username = ServletUtil.getNotNullNotEmptyString("username", request, "Username");
+        String password = ServletUtil.getNotNullNotEmptyString("password", request, "Password");
+        String confirmPassword = ServletUtil.getNotNullNotEmptyString("confirmPassword", request, "Confirm Password");
 
         if(!password.equals(confirmPassword))
         {
             throw new BadRequestServletException("Password and Confirm Password do not match");
         }
 
+        subscriber.setUsername(username);
         subscriber.setPassword(SecurityUtil.hashPassword(password));
 
         if(License.isLicensed(ListenFeature.VOICEMAIL))

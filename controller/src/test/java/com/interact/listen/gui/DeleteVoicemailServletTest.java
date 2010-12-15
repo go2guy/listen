@@ -90,7 +90,7 @@ public class DeleteVoicemailServletTest extends ListenServletTest
         }
         catch(BadRequestServletException e)
         {
-            assertEquals("Please provide an id", e.getContent());
+            assertEquals("Id cannot be null", e.getContent());
         }
     }
 

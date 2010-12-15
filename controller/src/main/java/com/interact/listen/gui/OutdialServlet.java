@@ -2,7 +2,6 @@ package com.interact.listen.gui;
 
 import com.interact.listen.*;
 import com.interact.listen.config.Configuration;
-import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
@@ -47,26 +46,10 @@ public class OutdialServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
-        String conferenceId = request.getParameter("conferenceId");
-        if(conferenceId == null || conferenceId.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a conferenceId");
-        }
+        Long conferenceId = ServletUtil.getNotNullLong("conferenceId", request, "Conference Id");
+        String number = ServletUtil.getNotNullNotEmptyString("number", request, "Number");
+        String interrupt = ServletUtil.getNotNullNotEmptyString("interrupt", request, "Interrupt Decision");
 
-        String number = request.getParameter("number");
-        if(number == null || number.trim().equals(""))
-        {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a number",
-                                             "text/plain");
-        }
-
-        String interrupt = request.getParameter("interrupt");
-        if(interrupt == null || interrupt.trim().equals(""))
-        {
-            throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Please provide a interrupt decision",
-                                             "text/plain");
-        }
-        
         number = removeWhitespace(number);
 
         LOG.debug("Outdialing to [" + number + "] for conference id [" + conferenceId + "] with admin interrupt of [" + interrupt + "]");
@@ -74,8 +57,7 @@ public class OutdialServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
 
-        Conference conference = (Conference)session.get(Conference.class, Long.valueOf(conferenceId));
-
+        Conference conference = Conference.queryById(session, conferenceId);
         if(conference == null)
         {
             throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "Conference not found", "text/plain");
@@ -115,17 +97,6 @@ public class OutdialServlet extends HttpServlet
 
     private String removeWhitespace(String theString)
     {
-        char[] theChars = theString.toCharArray();
-        StringBuilder returnString = new StringBuilder();
-        
-        for(int i = 0; i < theChars.length; i++)
-        {
-            if(theChars[i] != ' ')
-            {
-                returnString.append(theChars[i]);
-            }
-        }
-        
-        return returnString.toString();
+        return theString.replaceAll(" ", "");
     }
 }

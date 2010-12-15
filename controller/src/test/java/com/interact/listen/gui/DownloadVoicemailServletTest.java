@@ -31,7 +31,7 @@ public class DownloadVoicemailServletTest extends ListenServletTest
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("GET");
         request.setParameter("id", (String)null);
-        testForListenServletException(servlet, 400, "Please provide an id");
+        testForListenServletException(servlet, 400, "Id cannot be null");
     }
 
     @Test
@@ -40,7 +40,7 @@ public class DownloadVoicemailServletTest extends ListenServletTest
         TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("GET");
         request.setParameter("id", " ");
-        testForListenServletException(servlet, 400, "Please provide an id");
+        testForListenServletException(servlet, 400, "Id must be a number");
     }
 
     @Test

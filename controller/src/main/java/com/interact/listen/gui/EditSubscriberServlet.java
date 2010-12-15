@@ -37,14 +37,10 @@ public class EditSubscriberServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
         
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
         
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Subscriber subscriberToEdit = Subscriber.queryById(session, Long.parseLong(id));
+        Subscriber subscriberToEdit = Subscriber.queryById(session, id);
 
         if(subscriberToEdit == null)
         {
@@ -63,11 +59,7 @@ public class EditSubscriberServlet extends HttpServlet
             // username can only be changed by admin, and only if it's not an AD account
             if(currentSubscriber.getIsAdministrator())
             {
-                String username = request.getParameter("username");
-                if(username == null || username.trim().equals(""))
-                {
-                    throw new BadRequestServletException("Please provide a Username");
-                }
+                String username = ServletUtil.getNotNullNotEmptyString("username", request, "Username");
                 subscriberToEdit.setUsername(username);
             }
 

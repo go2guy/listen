@@ -54,7 +54,7 @@ public class DeleteSubscriberServletTest extends ListenServletTest
     public void test_doPost_withNoIdParameter_throwsException() throws ServletException, IOException
     {
         TestUtil.setSessionSubscriber(request, true, session);
-        testDoPostForBadRequestServletException(null, "Please provide an id");
+        testDoPostForBadRequestServletException(null, "Id cannot be null");
     }
 
     @Test

@@ -251,5 +251,4 @@ public class DeviceRegistration extends Resource implements Serializable
         criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
         return criteria;
     }
-
 }

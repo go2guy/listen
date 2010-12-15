@@ -345,7 +345,12 @@ public class Participant extends Resource implements Serializable
         hash *= prime + (getSessionID() == null ? 0 : getSessionID().hashCode());
         return hash;
     }
-    
+
+    public static Participant queryById(Session session, Long id)
+    {
+        return (Participant)session.get(Participant.class, id);
+    }
+
     public static List<Participant> queryByConferencePaged(Session session, Conference conference, int first, int max)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(Participant.class);

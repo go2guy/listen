@@ -2,7 +2,6 @@ package com.interact.listen.gui;
 
 import com.interact.listen.HibernateUtil;
 import com.interact.listen.ServletUtil;
-import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
@@ -42,15 +41,11 @@ public class MuteParticipantServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
-        Participant participant = (Participant)session.get(Participant.class, Long.valueOf(id));
+        Participant participant = Participant.queryById(session, id);
         if(!subscriber.canModifyParticipant(participant))
         {
             throw new UnauthorizedServletException("Not allowed to mute participant");

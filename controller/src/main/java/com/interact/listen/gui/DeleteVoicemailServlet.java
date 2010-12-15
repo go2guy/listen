@@ -30,14 +30,10 @@ public class DeleteVoicemailServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        String id = request.getParameter("id");
-        if(id == null || id.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an id");
-        }
+        Long id = ServletUtil.getNotNullLong("id", request, "Id");
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Voicemail voicemail = Voicemail.queryById(session, Long.parseLong(id));
+        Voicemail voicemail = Voicemail.queryById(session, id);
 
         if(voicemail == null)
         {

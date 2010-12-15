@@ -46,71 +46,20 @@ public class ScheduleConferenceServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
-        String date = request.getParameter("date");
-        if(date == null || date.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a date");
-        }
+        String date = ServletUtil.getNotNullNotEmptyString("date", request, "Date");
+        String hour = ServletUtil.getNotNullNotEmptyString("hour", request, "Start Hour");
+        String minute = ServletUtil.getNotNullNotEmptyString("minute", request, "Start Minute");
+        String amPm = ServletUtil.getNotNullNotEmptyString("amPm", request, "Start AM/PM");
+        String endHour = ServletUtil.getNotNullNotEmptyString("endHour", request, "End Hour");
+        String endMinute = ServletUtil.getNotNullNotEmptyString("endMinute", request, "End Minute");
+        String endAmPm = ServletUtil.getNotNullNotEmptyString("endAmPm", request, "End AM/PM");
+        
+        StringBuilder subjectPrepend = new StringBuilder();
+        subjectPrepend.append(ServletUtil.getNotNullString("subject", request, "Subject"));
 
-        String hour = request.getParameter("hour");
-        if(hour == null || hour.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an hour for the conference start time");
-        }
-
-        String minute = request.getParameter("minute");
-        if(minute == null || minute.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a minute for the conference start time");
-        }
-
-        String amPm = request.getParameter("amPm");
-        if(amPm == null || amPm.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an am/pm for the conference start time");
-        }
-
-        String endHour = request.getParameter("endHour");
-        if(endHour == null || endHour.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an hour for the conference end time");
-        }
-
-        String endMinute = request.getParameter("endMinute");
-        if(endMinute == null || endMinute.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide a minute for the conference end time");
-        }
-
-        String endAmPm = request.getParameter("endAmPm");
-        if(endAmPm == null || endAmPm.trim().equals(""))
-        {
-            throw new BadRequestServletException("Please provide an am/pm for the conference end time");
-        }
-
-        StringBuilder subjectPrepend = new StringBuilder(request.getParameter("subject"));
-        if(subjectPrepend == null)
-        {
-            throw new BadRequestServletException("Please provide a subject for the conference invitation e-mail");
-        }
-
-        String description = request.getParameter("description");
-        if(description == null)
-        {
-            throw new BadRequestServletException("Please provide a description");
-        }
-
-        String activeParticipants = request.getParameter("activeParticipants");
-        if(activeParticipants == null)
-        {
-            throw new BadRequestServletException("Please provide a comma-separated list of active participants");
-        }
-
-        String passiveParticipants = request.getParameter("passiveParticipants");
-        if(passiveParticipants == null)
-        {
-            throw new BadRequestServletException("Please provide a comma-separated list of passive participants");
-        }
+        String description = ServletUtil.getNotNullString("description", request, "Description");
+        String activeParticipants = ServletUtil.getNotNullString("activeParticipants", request, "Active Callers");
+        String passiveParticipants = ServletUtil.getNotNullString("passiveParticipants", request, "Passive Callers");
 
         if(activeParticipants.trim().length() == 0 && passiveParticipants.trim().length() == 0)
         {

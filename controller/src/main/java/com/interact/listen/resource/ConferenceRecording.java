@@ -51,6 +51,11 @@ public class ConferenceRecording extends Audio
         return copy;
     }
 
+    public static ConferenceRecording queryById(Session session, Long id)
+    {
+        return (ConferenceRecording)session.get(ConferenceRecording.class, id);
+    }
+
     public static List<ConferenceRecording> queryByConferencePaged(Session session, Conference conference, int first,
                                                                    int max)
     {

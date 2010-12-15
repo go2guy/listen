@@ -2,7 +2,6 @@ package com.interact.listen.gui;
 
 import com.interact.listen.EmailerService;
 import com.interact.listen.ServletUtil;
-import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Subscriber;
@@ -27,21 +26,12 @@ public class TestNotificationSettingsServlet extends HttpServlet
         {
             throw new UnauthorizedServletException();
         }
-        
-        String messageType = request.getParameter("messageType");
-        if(messageType == null || messageType.equals(""))
-        {
-            throw new BadRequestServletException("Please provide a message type");
-        }
-        
-        String address = request.getParameter("address");
-        if(address == null || address.equals(""))
-        {
-            throw new BadRequestServletException("Please provide an address");
-        }
-        
+
+        String messageType = ServletUtil.getNotNullNotEmptyString("messageType", request, "Message Type");
+        String address = ServletUtil.getNotNullNotEmptyString("address", request, "Address");
+
         EmailerService emailService = new EmailerService();
-        
+
         if(!emailService.sendTestNotificationSettingsMessage(messageType, address))
         {
             throw new ListenServletException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
