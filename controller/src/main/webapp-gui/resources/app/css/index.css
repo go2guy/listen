@@ -698,52 +698,102 @@ table#attendant-menu-list tbody tr.selected td {
     color: #FFFFFF;
 }
 
-#findme-application > .application-content {
-    font-size: 115%;
-}
-
-#findme-application > .application-content > div.simultaneous-numbers {
+#findme-application .application-content div.simultaneous-numbers {
     clear: both;
     float: left;
 }
 
-#findme-options {
-    margin: 10px 10px 0 10px;
-}
-
 .findme-simultaneous-numbers {
-    background-color: #EDD5D8;
+    border: 2px solid #E0C3C7;
     margin: 0 10px;
     padding: 10px;
+    width: 500px;
+    
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
 }
 
-.findme-text-dial,
-.findme-text-at-the-same-time,
-.findme-text-and-between-numbers,
-.findme-text-and-between-numbers-disabled {
-    font-style: italic;
+.findme-simultaneous-numbers .findme-dialed-number *,
+.findme-simultaneous-numbers .findme-dialed-number-disabled * {
+    margin-right: 5px;
+}
+
+.findme-simultaneous-numbers .findme-dialed-number button,
+.findme-simultaneous-numbers .findme-dialed-number-disabled button {
+    float: right;
+    margin-top: 5px;
+}
+
+#findme-application .help {
+    width: 500px;
+}
+
+#findme-application input,
+#findme-application select {
+    border: 2px solid #BBBBBB; 
+    font-size: 16px;
+    height: 24px;
+    line-height: 24px;
+}
+
+.findme-text-dial {
     margin: 5px 0;
 }
 
-.findme-text-and-between-numbers-disabled {
-    color: #666666;
+.findme-text-dial {
+    font-weight: bold;
 }
 
 .findme-text-when-somebody-calls,
 .findme-text-if-i-dont-answer {
-    font-weight: bold;
+    font-size: 16px;
     margin: 10px;
 }
 
-#findme-application .findme-dialed-number > button,
-#findme-application .findme-dialed-number-disabled > button {
-    margin-left: 5px;
+.findme-text-dial {
+    float: left;
+}
+
+.findme-dialed-number,
+.findme-dialed-number-disabled {
+    background-color: #E0C3C7;
+    clear: left;
+    margin-top: 5px;
+    padding: 3px;
+
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+
+.findme-dialed-number-disabled {
+    background-color: #EEEEEE;
+}
+
+.findme-dialed-number .findme-ring-seconds,
+.findme-dialed-number-disabled .findme-ring-seconds {
+    text-align: center;
+    width: 40px;
 }
 
 .findme-dialed-number-disabled input {
     background-color: #DDDDDD;
-    border: 2px solid #BBBBBB;
-    color: #666666;
+    color: #999999;
+}
+
+.findme-group-buttons .button-delete,
+.findme-group-buttons .button-cancel {
+    float: right;
+    margin-left: 5px;
+}
+
+.findme-group-buttons {
+    margin-top: 15px;
+}
+
+#findme-save {
+    margin: 0 0 10px 200px;
 }
 
 /* application - subscribers */
@@ -876,7 +926,7 @@ table#attendant-menu-list tbody tr.selected td {
 .icon-unmute-disabled,
 .icon-unread,
 .icon-view {
-    background-color: #FEFEFE;
+    background-color: inherit;
     background-image: url('../images/sprite.png');
     background-repeat: no-repeat;
     border-width: 0;
@@ -996,6 +1046,26 @@ table#attendant-menu-list tbody tr.selected td {
 .button-view:hover            { background-position: 2px -1198px; }
 .icon-view                    { background-position: 0   -1150px; }
 .icon-view:hover              { background-position: 0   -1200px; }
+
+.icon-toggle-on,
+.icon-toggle-off {
+    background-color: inherit;
+    background-repeat: no-repeat;
+    border-width: 0;
+    cursor: pointer;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    width: 36px;
+}
+
+.icon-toggle-on {
+    background-image: url(../images/new/icon_toggle_on_36x18.png);
+}
+
+.icon-toggle-off {
+    background-image: url(../images/new/icon_toggle_off_36x18.png);
+}
 
 /* dialogs, forms, tables */
 
