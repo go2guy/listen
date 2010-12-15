@@ -65,8 +65,8 @@ public class RegisterDeviceServlet extends HttpServlet
             throw new BadRequestServletException("deviceId not provided");
         }
         
-        boolean enabled = C2DMessaging.getInstance().isEnabled();
-        String username = GoogleAuth.getInstance().getUsername();
+        boolean enabled = C2DMessaging.INSTANCE.isEnabled();
+        String username = GoogleAuth.INSTANCE.getUsername();
 
         DeviceRegistration reg = DeviceRegistration.queryByInfo(session, qReg);
         String regId = reg == null || reg.getRegistrationToken() == null ? "" : reg.getRegistrationToken();
@@ -136,7 +136,6 @@ public class RegisterDeviceServlet extends HttpServlet
         {
             LOG.info("Registration for device not found to delete " + receivedDeviceReg.getDeviceId());
         }
-
     }
 
     private Marshaller getMarshaller(String contentType)
@@ -202,5 +201,4 @@ public class RegisterDeviceServlet extends HttpServlet
         Channel channel = (Channel)request.getAttribute(RequestInformationFilter.CHANNEL_KEY);
         return new DefaultPersistenceService(session, subscriber, channel);
     }
-
 }

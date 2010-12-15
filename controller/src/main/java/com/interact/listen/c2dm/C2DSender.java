@@ -37,11 +37,12 @@ final class C2DSender
     
     private C2DSender()
     {
+        throw new AssertionError("Cannot instantiate C2DSender");
     }
-    
+
     static C2DError send(C2DMessage message, String token) throws IOException
     {
-        GoogleAuth ga = GoogleAuth.getInstance();
+        GoogleAuth ga = GoogleAuth.INSTANCE;
 
         String authToken = token == null ? ga.getToken() : token;
         if(authToken == null)
@@ -137,5 +138,4 @@ final class C2DSender
         LOG.warn("Invalid response from google " + responseLine + " " + responseCode);
         throw new IOException("Invalid response from Google " + responseCode + " " + responseLine);
     }
-    
 }

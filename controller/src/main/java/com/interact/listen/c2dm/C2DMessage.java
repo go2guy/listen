@@ -4,9 +4,7 @@ import com.interact.listen.util.ComparisonUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 class C2DMessage
 {
@@ -27,24 +25,27 @@ class C2DMessage
     {
         this.registrationId = registrationId;
         this.collapseKey = collapseKey;
-        this.params = params == null ? new java.util.HashMap<String, String[]>() : params;
+        this.params = params == null ? new HashMap<String, String[]>() : params;
         this.delayWhileIdle = delayWhileIdle;
         
         this.postData = null;
     }
-    
+
     public String getRegistrationId()
     {
         return registrationId;
     }
+
     public String getCollapseKey()
     {
         return collapseKey;
     }
+
     public Map<String, String[]> getParams()
     {
         return params;
     }
+
     public boolean isDelayWhileIdle()
     {
         return delayWhileIdle;
@@ -121,5 +122,4 @@ class C2DMessage
     {
         return registrationId == null ? 0 : registrationId.hashCode();
     }
-
 }

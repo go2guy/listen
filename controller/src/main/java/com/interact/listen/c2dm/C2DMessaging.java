@@ -13,9 +13,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-public final class C2DMessaging
+public enum C2DMessaging
 {
-    public static enum Type
+    INSTANCE;
+
+    public enum Type
     {
         SYNC_VOICEMAILS("sync-voicemails", "0-"),
         SYNC_CONFIG_CHANGED("sync-config", "1-");
@@ -40,31 +42,10 @@ public final class C2DMessaging
         }
     }
     
-    private static enum Instance
-    {
-        INSTANCE;
-        
-        private C2DMessaging m;
-        
-        private Instance()
-        {
-            m = new C2DMessaging();
-        }
-    }
-    
     private static final Logger LOG = Logger.getLogger(C2DMessaging.class);
 
     private final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
     private Boolean currentEnabled = null;
-
-    private C2DMessaging()
-    {
-    }
-
-    public static C2DMessaging getInstance()
-    {
-        return Instance.INSTANCE.m;
-    }
 
     public synchronized void setEnabled(boolean enabled)
     {
@@ -176,7 +157,7 @@ public final class C2DMessaging
             throw new IllegalArgumentException("retry count must by non-negative");
         }
 
-        LOG.info("Sceduling retry " + retryCount);
+        LOG.info("Scheduling retry " + retryCount);
         threadPool.remove(task);
         threadPool.schedule(task, (long)Math.pow(2, retryCount), TimeUnit.MINUTES);
     }
@@ -187,5 +168,4 @@ public final class C2DMessaging
         threadPool.remove(task);
         threadPool.submit(task);
     }
-
 }

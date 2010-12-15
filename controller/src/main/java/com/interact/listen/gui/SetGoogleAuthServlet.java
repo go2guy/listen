@@ -22,9 +22,9 @@ import org.hibernate.Session;
 public class SetGoogleAuthServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
-
     private static final Logger LOG = Logger.getLogger(SetGoogleAuthServlet.class);
 
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
         ServletUtil.sendStat(request, Stat.GUI_GOOGLE_AUTH_POST);
@@ -40,8 +40,8 @@ public class SetGoogleAuthServlet extends HttpServlet
             throw new UnauthorizedServletException();
         }
 
-        GoogleAuth ga = GoogleAuth.getInstance();
-        C2DMessaging ms = C2DMessaging.getInstance();
+        GoogleAuth ga = GoogleAuth.INSTANCE;
+        C2DMessaging ms = C2DMessaging.INSTANCE;
         
         boolean c2dmEnabled = Boolean.valueOf(request.getParameter(Property.Key.ANDROID_C2DM_ENABLED.getKey()));
         String username = getNonNullParameter(request, Property.Key.GOOGLE_AUTH_USER.getKey());
@@ -118,5 +118,4 @@ public class SetGoogleAuthServlet extends HttpServlet
         String value = request.getParameter(key);
         return value == null ? "" : value;
     }
-
 }

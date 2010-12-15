@@ -11,17 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-public final class GoogleAuth
+public enum GoogleAuth
 {
-    private static final Logger LOG = Logger.getLogger(GoogleAuth.class);
-
-    private static final String GOOGLE_LOGIN = "https://www.google.com/accounts/ClientLogin";
-
-    private static final String GOOGLE_DATA = "accountType=HOSTED_OR_GOOGLE&service=ac2dm&source=interact-listen-voicemail";
+    INSTANCE;
     
+    private static final Logger LOG = Logger.getLogger(GoogleAuth.class);
+    private static final String GOOGLE_LOGIN = "https://www.google.com/accounts/ClientLogin";
+    private static final String GOOGLE_DATA = "accountType=HOSTED_OR_GOOGLE&service=ac2dm&source=interact-listen-voicemail";
     private static final String PARAM_EMAIL = "Email";
     private static final String PARAM_PASSWORD = "Passwd";
-    
     private static final String UTF8 = "UTF-8";
     
     public static enum Error
@@ -35,52 +33,36 @@ public final class GoogleAuth
         AccountDisabled    ("The user account has been disabled."),
         ServiceDisabled    ("The user's access to the specified service has been disabled."),
         ServiceUnavailable ("The service is not available at the moment.");
-        
+
         private String description;
-        
+
         private Error(String description)
         {
             this.description = description;
         }
-        
+
         public String getDescription()
         {
             return description;
         }
-        
+
         public boolean isRetryableError()
         {
             return this == ServiceUnavailable;
         }
     }
     
-    private static enum Instance
-    {
-        INSTANCE;
-        
-        private GoogleAuth ga;
-        
-        private Instance()
-        {
-            ga = new GoogleAuth();
-        }
-    }
-    
-    private String currentToken = null;
+    private String currentToken;
 
-    private Error lastError = null;
-    private Date nextRetry = null;
+    private Error lastError;
+    private Date nextRetry;
     private long retryTimeout = 1000;
 
     private GoogleAuth()
     {
+        throw new AssertionError("Cannot instantiate GoogleAuth");
     }
 
-    public static GoogleAuth getInstance()
-    {
-        return Instance.INSTANCE.ga;
-    }
-    
     public synchronized void invalidateCachedToken(String token)
     {
         if(token == null || token.equals(currentToken))
@@ -163,7 +145,7 @@ public final class GoogleAuth
         }
         if(!isOKToTry())
         {
-            LOG.debug("C2DM perminant failure already using the same information");
+            LOG.debug("C2DM permanent failure already using the same information");
             return null;
         }
         if(!isTimeToRetry())
@@ -312,5 +294,4 @@ public final class GoogleAuth
     {
         return lastError == null || nextRetry == null || nextRetry.before(new Date());
     }
-    
 }

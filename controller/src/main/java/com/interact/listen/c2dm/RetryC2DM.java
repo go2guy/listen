@@ -8,6 +8,7 @@ import com.interact.listen.stats.StatSender;
 import com.interact.listen.stats.StatSenderFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -18,7 +19,6 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
     public static final int MAX_RETRIES = 3;
 
     private static final Logger LOG = Logger.getLogger(RetryC2DM.class);
-
     private static final StatSender STAT_SENDER = StatSenderFactory.getStatSender();
     
     private final C2DMessage message;
@@ -62,7 +62,7 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
                     else
                     {
                         STAT_SENDER.send(Stat.C2DM_QUEUED_RETRY);
-                        C2DMessaging.getInstance().scheduleRetry(this, retryCount);
+                        C2DMessaging.INSTANCE.scheduleRetry(this, retryCount);
                     }
                 }
                 else if(error.isDeviceInvalid())
@@ -87,12 +87,12 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
         {
             transaction = session.beginTransaction();
 
-            java.util.List<DeviceRegistration> devices;
+            List<DeviceRegistration> devices;
             devices = DeviceRegistration.queryByDevice(session, DeviceType.ANDROID, registrationId);
 
             LOG.info("Removing device registrations: " + devices.size());
 
-            for (DeviceRegistration device : devices)
+            for(DeviceRegistration device : devices)
             {
                 session.delete(device);
             }
@@ -124,5 +124,4 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
     {
         return message.hashCode();
     }
-
 }

@@ -22,7 +22,7 @@ enum C2DError
     private final boolean deviceInvalid;
     private final Stat stat;
     private final String description;
-    
+
     private C2DError(boolean retry, boolean deviceInvalid, Stat stat, String description)
     {
         this.retry = retry;
@@ -30,18 +30,22 @@ enum C2DError
         this.stat = stat;
         this.description = description;
     }
+
     public boolean isRetryable()
     {
         return retry;
     }
+
     public boolean isDeviceInvalid()
     {
         return deviceInvalid;
     }
+
     public Stat getStat()
     {
         return stat;
     }
+
     public String getDescription()
     {
         return description;
@@ -69,5 +73,4 @@ enum C2DError
         }
         return error;
     }
-
 }
