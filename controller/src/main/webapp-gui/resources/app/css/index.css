@@ -751,6 +751,10 @@ table#attendant-menu-list tbody tr.selected td {
     margin: 10px;
 }
 
+.findme-text-if-i-dont-answer select {
+    margin-left: 10px;
+}
+
 .findme-text-dial {
     float: left;
 }
