@@ -1,4 +1,8 @@
 $(document).ready(function() {
+    $('#findme-save').click(function() {
+        Listen.FindMe.saveConfiguration();
+    });
+
     Listen.FindMe = function() {
         return {
             Application: function() {
@@ -158,6 +162,46 @@ $(document).ready(function() {
                 }
                 $(groupElement).animate({ opacity: 0 }, 250, 'linear', function() {
                     $(this).remove();
+                });
+            },
+            
+            buildObjectFromMarkup: function() {
+                var groups = [];
+                $('.findme-simultaneous-numbers').each(function(i, it) {
+                    var group = [];
+                    Listen.trace('GROUP ' + it);
+                    $('.findme-dialed-number, .findme-dialed-number-disabled', it).each(function(j, dial) {
+                        var inputs = $('input', dial);
+                        Listen.trace('  Number: ' + inputs.eq(0).val());
+                        var entry = {
+                            number: inputs.eq(0).val(),
+                            duration: inputs.eq(1).val(),
+                            enabled: $('.icon-toggle-on', dial).is(':visible')
+                        };
+                        if(entry.number != '') {
+                            group.push(entry);
+                        }
+                    });
+                    if(group.length > 0) {
+                        groups.push(group);
+                    }
+                });
+                return groups;
+            },
+            
+            saveConfiguration: function() {
+                var findme = Listen.FindMe.buildObjectFromMarkup();
+                Server.post({
+                    url: Listen.url('/ajax/saveFindMeConfiguration'),
+                    properties: {
+                        findme: JSON.stringify(findme)
+                    },
+                    successCallback: function(data, textStatus, xhr) {
+                        // TODO
+                    },
+                    errorCallback: function(message) {
+                        // TODO
+                    }
                 });
             }
         }

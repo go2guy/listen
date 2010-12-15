@@ -303,6 +303,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>SaveFindMeConfigurationServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SaveFindMeConfigurationServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>ScheduleConferenceServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.ScheduleConferenceServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -513,6 +519,11 @@
     <servlet-mapping>
         <servlet-name>SaveAttendantMenuServlet</servlet-name>
         <url-pattern>/ajax/saveAttendantMenu</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveFindMeConfigurationServlet</servlet-name>
+        <url-pattern>/ajax/saveFindMeConfiguration</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
