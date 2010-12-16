@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 11/29/2010
+    <!-- Last Modified 12/16/2010
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -15,6 +15,7 @@
     <var name="CUSTOMER_SERVICE" expr="5"/>     <!-- This number represents the menu option for customer service -->
     <var name="customerService" expr="'181'"/>  <!-- Customer Service extension -->
     <var name="dtmfHotKey" expr="''"/>
+    <var name="afterHrsTest" expr="'6'"/>       <!-- Back door for after hours testing -->
 
 	<form id="beginDocument">
 		<block>
@@ -68,7 +69,7 @@
             <assign name="fieldTimeOut" expr="'4s'"/>
             <assign name="cutIn" expr="'true'"/>
             <assign name="gotoForm" expr="'#userKeyPress'"/>
-            <assign name="dtmfHotKey" expr="'*,0,' + CUSTOMER_SERVICE"/>
+            <assign name="dtmfHotKey" expr="'*,0,' + CUSTOMER_SERVICE + ',' + afterHrsTest"/>
 			<goto next="#playAudio"/>
 		</block>
 	</form>
@@ -113,11 +114,11 @@
                 <log>INFO: Caller trying to access mailbox</log>
                 <assign name="status" expr="'mailbox'"/>
                 <goto next="#exit"/>
-            <elseif cond="userEntry == CUSTOMER_SERVICE"/>
+            <elseif cond="((userEntry == CUSTOMER_SERVICE) || (userEntry == afterHrsTest))"/>
                 <!-- This logic is here to check how to route the call to customer service.
                     If the office is closed, then go to after hrs functionality. Otherwise,
                     call the extension designated as customer service. -->
-                <if cond="isClosed == 'y'">
+                <if cond="((isClosed == 'y') || (userEntry == afterHrsTest))">
                     <log>INFO: Send caller to pager service</log>
                     <goto expr="'file:'+SUP_PATH+'afterHrsMain.vxml'"/>
                 <else/>
