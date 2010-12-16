@@ -98,7 +98,7 @@ Requires: spotbuild-vip
     /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/ %{buildroot}/interact/apps/spotbuild/listen_autoDial/ %{buildroot}/interact/apps/spotbuild/listen_confEvents/
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/ %{buildroot}/interact/apps/spotbuild/msgLightCntrl/ %{buildroot}/interact/apps/spotbuild/listen_transcription/
     /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
-    /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/ %{buildroot}/interact/apps/spotbuild/after_hours/
+    /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/
     /interact/program/iiXMLcrypt -e "Listen Attendant" %{buildroot}/interact/apps/spotbuild/listen_autoAttendant/
 
     # Add root.vxml
@@ -110,7 +110,6 @@ Requires: spotbuild-vip
     done
 
     /bin/cp %{STARTDIR}/ippbx/root.vxml %{buildroot}/interact/apps/spotbuild/ippbx/
-    /bin/cp %{STARTDIR}/spotbuild/after_hours/root.vxml %{buildroot}/interact/apps/spotbuild/after_hours/
 
     # Install php scripts
     mkdir -p %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen
@@ -130,7 +129,6 @@ Requires: spotbuild-vip
     /interact/apps/spotbuild/listen*
     /interact/apps/spotbuild/ippbx*
     /interact/apps/spotbuild/msgLightCntrl*
-    /interact/apps/spotbuild/after_hours*
     /interact/apps/spotbuild/lib/cgi-bin/listen
     /interact/listen/artifacts
     /interact/listen/bin/logtolinwav
