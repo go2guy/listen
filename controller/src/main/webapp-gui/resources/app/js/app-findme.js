@@ -9,21 +9,39 @@ $(document).ready(function() {
                 this.load = function() {
                     Listen.trace('Loading FindMe');
                     var saveButton = $('#findme-application .application-content #findme-save');
-                    var whenSomebodyCalls = $('<div class="findme-text-when-somebody-calls">When somebody calls me,</div>');
-                    saveButton.before(whenSomebodyCalls);
-                    var group = Listen.FindMe.addNewGroup(whenSomebodyCalls, false);
-                    
-                    var option = '<div class="findme-text-if-i-dont-answer">';
-                    option += '<span>If I don\'t answer,</span>';
-                    option += '<select><option selected="selected" value="voicemail">Send the caller to my voicemail</option><option value="dial">Dial...</option></select>';
-                    option += '</div.';
-                    
-                    var o = $(option);
+                    var whenSomebodyCalls = $('#findme-application .findme-text-when-somebody-calls');
+
+                    var start = Listen.timestamp();
+                    var after = whenSomebodyCalls;
+                    $.ajax({
+                        url: Listen.url('/ajax/getFindMeConfiguration'),
+                        dataType: 'json',
+                        cache: false,
+                        success: function(data, textStatus, xhr) {
+                            for(var i = 0, length = data.length; i < length; ++i) {
+                                var group = data[i];
+                                if(group.length > 0) {
+                                    if(i > 0) {
+                                        var text = $('<div class="findme-text-if-i-dont-answer">If I don\'t answer...</div>');
+                                        after.after(text);
+                                        after = text;
+                                    }
+                                    after = Listen.FindMe.addNewGroup(after, false, group);
+                                }
+                            }
+                        },
+                        complete: function(xhr, textStatus) {
+                            var elapsed = Listen.timestamp() - start;
+                            $('#latency').text(elapsed);
+                        }
+                    });
+
+                    var o = $('#findme-application .findme-text-if-i-dont-answer');
                     $('select', o).change(function(e) {
                         var select = $(e.target);
                         var selected = $(':selected', select);
                         if(selected.text() == 'Dial...') {
-                            var count = $('.findme-simultaneous-numbers').size(); // # groups before adding new one 
+                            var count = $('.findme-simultaneous-numbers').size(); // # of groups before adding new one 
                             var group = Listen.FindMe.addNewGroup(select.parent(), true);
                             var clone = select.parent().clone(true);
                             $('select', clone).val('voicemail');
@@ -36,24 +54,24 @@ $(document).ready(function() {
                         }
                     });
                     
-                    group.after(o);
+                    //group.after(o);
                 };
                 
                 this.unload = function() {
                     Listen.trace('Unloading FindMe');
-                    var divs = $('#findme-application .application-content div').not('.help').remove();
+                    $('#findme-application .application-content div').not('.help').not('.findme-text-when-somebody-calls').not('.findme-text-if-i-dont-answer:last').remove();
                 };
             },
             
-            addNewGroup: function(afterElement, animate) {
-                var group = Listen.FindMe.buildGroupElement();
+            addNewGroup: function(afterElement, animate, entries) {
+                var group = Listen.FindMe.buildGroupElement(entries);
                 group.css('opacity', 0);
                 $(afterElement).after(group);
                 group.animate({ opacity: 1 }, (animate === true ? 500 : 0));
                 return group;
             },
             
-            buildGroupElement: function() {
+            buildGroupElement: function(entries) {
                 var html = '<div class="findme-simultaneous-numbers">';
                 html += '<div class="findme-text-dial">Dial the following number</div>';
                 html += '<div class="findme-group-buttons">';
@@ -66,7 +84,7 @@ $(document).ready(function() {
                 var el = $(html);
                 
                 var addDialedNumber = function(buttonsContainer, forNumber, ringTime, isDisabled) {
-                    var dialedNumber = Listen.FindMe.buildDialedNumberElement('', 8, false);
+                    var dialedNumber = Listen.FindMe.buildDialedNumberElement(forNumber, ringTime, isDisabled);
                     if($('.findme-dialed-number, .findme-dialed-number-disabled', buttonsContainer.parent()).size() > 0) {
                         $('.findme-text-dial', buttonsContainer.parent()).text('Dial the following numbers at the same time');
                     }
@@ -82,14 +100,22 @@ $(document).ready(function() {
                     Listen.FindMe.removeGroup(group);
                 });
 
-                // give them a default form field                
-                addDialedNumber($('.findme-group-buttons', el), '', 8, false);
+                if(!Listen.isDefined(entries)) {
+                    // give them a default form field
+                    addDialedNumber($('.findme-group-buttons', el), '', 8, false);
+                } else {
+                    var buttonsEl = $('.findme-group-buttons', el);
+                    for(var i = 0, length = entries.length; i < length; ++i) {
+                        var entry = entries[i];
+                        addDialedNumber(buttonsEl, entry.number, entry.duration, !entry.enabled);
+                    }
+                }
                 return el;
             },
             
             buildDialedNumberElement: function(forNumber, ringTime, isDisabled) {
-                var html = '<div class="findme-dialed-number' + (isDisabled === true ? '-disabled' : '') + '" value="' + forNumber + '">';
-                html += '<input type="text"' + (isDisabled === true ? ' readonly="readonly"' : '') + '/>';
+                var html = '<div class="findme-dialed-number' + (isDisabled === true ? '-disabled' : '') + '">';
+                html += '<input type="text"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + forNumber + '"/>';
                 html += '<span>for</span><input type="text" class="findme-ring-seconds"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + ringTime + '"/><span>seconds</span>';
                 html += '<button type="button" class="icon-delete" title="Remove this number"></button>';
                 html += '<button type="button" class="icon-toggle-off" title="Re-enable this number"></button>';
@@ -190,6 +216,9 @@ $(document).ready(function() {
             },
             
             saveConfiguration: function() {
+                var saveButton = $('#findme-application .button-save');
+                var bg = '#FEFEFE';
+                saveButton.text('Saving...').attr('readonly', 'readonly').attr('disabled', 'disabled').css('background-color', '#DDDDDD');
                 var findme = Listen.FindMe.buildObjectFromMarkup();
                 Server.post({
                     url: Listen.url('/ajax/saveFindMeConfiguration'),
@@ -197,10 +226,16 @@ $(document).ready(function() {
                         findme: JSON.stringify(findme)
                     },
                     successCallback: function(data, textStatus, xhr) {
-                        // TODO
+                        saveButton.text('Saved').removeAttr('readonly').removeAttr('disabled').css('background-color', '#00FF00');
+                        setTimeout(function() {
+                            saveButton.text('Save').css('background-color', bg);
+                        }, 3000);
                     },
                     errorCallback: function(message) {
-                        // TODO
+                        saveButton.text('Error').removeAttr('readonly').removeAttr('disabled').css('background-color', '#FF0000');
+                        setTimeout(function() {
+                            saveButton.text('Save').css('background-color', bg);
+                        }, 3000);
                     }
                 });
             }

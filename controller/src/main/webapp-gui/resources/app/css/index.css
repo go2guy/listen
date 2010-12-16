@@ -1187,8 +1187,8 @@ table.data-table tr.odd {
 }
 
 div.help {
-    background: #FFFFD0 url('../images/sprite.png') 5px -45px no-repeat;
-    border: 1px dashed #FFE850;
+    background: #DAEDF7 url('../images/new/icon_info_16x16.png') 5px 5px no-repeat;
+    border: 1px dashed #99D4F2;
     color: #333333;
     font-size: 90%;
     margin: 10px;

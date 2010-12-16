@@ -196,6 +196,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetFindMeConfigurationServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetFindMeConfigurationServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetHistoryListServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetHistoryListServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -459,6 +465,11 @@
     <servlet-mapping>
         <servlet-name>GetConferenceRecordingListServlet</servlet-name>
         <url-pattern>/ajax/getConferenceRecordingList</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetFindMeConfigurationServlet</servlet-name>
+        <url-pattern>/ajax/getFindMeConfiguration</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

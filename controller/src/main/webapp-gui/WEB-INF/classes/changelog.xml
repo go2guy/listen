@@ -483,17 +483,32 @@
         <dropNotNullConstraint tableName="SUBSCRIBER" columnName="VOICEMAIL_PIN" columnDataType="VARCHAR(10)"/>
     </changeSet>
     <changeSet author="development" id="51">
-        <addColumn tableName="ACCESS_NUMBER">
-            <column name="IS_CREATED_BY_USER" type="BOOLEAN" defaultValueBoolean="true"/>
-        </addColumn>
-        <addColumn tableName="ACCESS_NUMBER">
-            <column name="IS_FIND_ME_NUMBER" type="BOOLEAN" defaultValueBoolean="false"/>
-        </addColumn>
-        <addColumn tableName="ACCESS_NUMBER">
-            <column name="FIND_ME_PRIORITY" type="INT" defaultValueNumeric="0"/>
-        </addColumn>
-        <addColumn tableName="ACCESS_NUMBER">
-            <column name="FIND_ME_DURATION" type="INT" defaultValueNumeric="0"/>
-        </addColumn>
+        <createTable tableName="FIND_ME_NUMBER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DIAL_DURATION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENABLED" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRIORITY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBSCRIBER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="development" id="52">
+        <addForeignKeyConstraint baseTableName="FIND_ME_NUMBER" baseColumnNames="SUBSCRIBER_ID" referencedColumnNames="ID" referencedTableName="SUBSCRIBER" constraintName="FK_FIND_ME_NUMBER_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false"/>
     </changeSet>
 </databaseChangeLog>

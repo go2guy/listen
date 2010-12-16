@@ -1,11 +1,12 @@
 package com.interact.listen.gui;
 
-import com.interact.listen.HibernateUtil;
-import com.interact.listen.ServletUtil;
+import com.interact.listen.*;
 import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
+import com.interact.listen.resource.FindMeNumber;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 
@@ -42,17 +43,24 @@ public class SaveFindMeConfigurationServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        JSONArray groups = (JSONArray)JSONValue.parse(request.getParameter("findme"));
+        PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
+        FindMeNumber.deleteBySubscriber(session, subscriber);
 
+        JSONArray groups = (JSONArray)JSONValue.parse(request.getParameter("findme"));
+        int priority = 0;
         for(JSONArray group : (List<JSONArray>)groups)
         {
-            System.out.println("GROUP ---");
             for(JSONObject dial : (List<JSONObject>)group)
             {
-                System.out.println("   number:   " + dial.get("number"));
-                System.out.println("   duration: " + dial.get("duration"));
-                System.out.println("   enabled:  " + dial.get("enabled"));
+                FindMeNumber fmn = new FindMeNumber();
+                fmn.setDialDuration(Integer.valueOf((String)dial.get("duration")));
+                fmn.setEnabled((Boolean)dial.get("enabled"));
+                fmn.setNumber((String)dial.get("number"));
+                fmn.setSubscriber(subscriber);
+                fmn.setPriority(priority);
+                persistenceService.save(fmn);
             }
+            ++priority;
         }
     }
 }
