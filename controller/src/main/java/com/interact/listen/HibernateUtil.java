@@ -158,6 +158,7 @@ public final class HibernateUtil
             config.addAnnotatedClass(ConferenceRecording.class);
             config.addAnnotatedClass(DialPressedNumberAction.class);
             config.addAnnotatedClass(DialNumberAction.class);
+            config.addAnnotatedClass(FindMeNumber.class);
             config.addAnnotatedClass(GoToMenuAction.class);
             config.addAnnotatedClass(History.class);
             config.addAnnotatedClass(LaunchApplicationAction.class);

@@ -39,4 +39,10 @@ public final class TestUtil
         SecureRandom random = new SecureRandom();
         return Long.valueOf(random.nextInt(maxlength));
     }
+
+    public static Integer randomInteger()
+    {
+        SecureRandom random = new SecureRandom();
+        return random.nextInt();
+    }
 }

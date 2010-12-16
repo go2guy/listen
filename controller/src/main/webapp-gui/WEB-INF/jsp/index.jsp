@@ -305,7 +305,18 @@ if(License.isLicensed(ListenFeature.FINDME)) { %>
             <div id="findme-application" class="application">
               <div class="application-header"><div class="title">FindMe</div></div>
               <div class="application-content">
-                FindMe Stuff
+                <div class="help">
+                  <b>Find Me / Follow Me</b> lets you control how you're contacted when someone tries to call you. You can have the call forwarded to several numbers at once, different numbers in succession, or any combination of both.
+                </div>
+                <div class="findme-text-when-somebody-calls">When somebody calls me,</div>
+                <div class="findme-text-if-i-dont-answer">
+                  <span>If I don't answer</span>
+                  <select>
+                    <option selected="selected" value="voicemail">Send the caller to my voicemail</option>
+                    <option value="dial">Dial...</option>
+                  </select>
+                </div>
+                <button class="button-save" id="findme-save">Save</button>
               </div>
             </div><%
 }

@@ -519,4 +519,33 @@
             <column name="PROPERTY_VALUE" type="VARCHAR(512)"/>
 		</modifyColumn>
 	</changeSet>
+    <changeSet author="development" id="54">
+        <createTable tableName="FIND_ME_NUMBER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DIAL_DURATION" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENABLED" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRIORITY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBSCRIBER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="development" id="55">
+        <addForeignKeyConstraint baseTableName="FIND_ME_NUMBER" baseColumnNames="SUBSCRIBER_ID" referencedColumnNames="ID" referencedTableName="SUBSCRIBER" constraintName="FK_FIND_ME_NUMBER_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false"/>
+    </changeSet>
 </databaseChangeLog>
