@@ -186,7 +186,7 @@ public class EmailerService
 
             Long newCount = Voicemail.countNewBySubscriber(persistenceService.getSession(), subscriber);
             String body = getEmailNotificationBody(voicemail, newCount, fileReadyForAttachment);
-            String subject = String.format(EmailerUtil.EMAIL_NOTIFICATION_SUBJECT, voicemail.getLeftBy());
+            String subject = String.format(EmailerUtil.EMAIL_NOTIFICATION_SUBJECT, voicemail.friendlyFrom());
             sendEmail(toAddresses, body, subject, attachment);
 
             if(attachment != null && !attachment.delete())
@@ -200,7 +200,7 @@ public class EmailerService
     {
         StringBuilder body = new StringBuilder();
         body.append("<html><body>");
-        body.append("You received a new voicemail from ").append(voicemail.getLeftBy());
+        body.append("You received a new voicemail from ").append(voicemail.friendlyFrom());
         body.append(" at ").append(sdf.format(voicemail.getDateCreated())).append(".");
         body.append("<br/><br/>");
         if(voicemail.hasTranscription())
@@ -236,8 +236,7 @@ public class EmailerService
         {
             String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
             String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY,
-                                        AccessNumber.querySubscriberNameByAccessNumber(persistenceService.getSession(), voicemail.getLeftBy()), 
-                                        voicemail.getLeftBy(), voicemail.getTranscription(), directVoicemailAccessNumber);
+                                        voicemail.friendlyFrom(), voicemail.getTranscription(), directVoicemailAccessNumber);
             
             body = truncateSMSBody(body, directVoicemailAccessNumber);
         

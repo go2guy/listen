@@ -50,7 +50,7 @@ public class Voicemail extends Audio implements Serializable
     private Boolean hasNotified = Boolean.FALSE;
     
     @Column(name = "LEFT_BY_NAME", nullable = true)
-    private String leftByName = "(Unknown)";
+    private String leftByName = "";
 
     @Transient
     private MessageLightToggler messageLightToggler = new SpotSystemMessageLightToggler();
@@ -125,9 +125,14 @@ public class Voicemail extends Audio implements Serializable
         this.leftByName = leftByName;
     }
     
-    public String nameAndNumber()
+    public String friendlyFrom()
     {
-        return this.leftByName + " " + this.leftBy; 
+        if(!this.leftByName.equals(""))
+        {
+            return this.leftByName + " (" + this.leftBy + ")"; 
+        }
+        
+        return this.leftBy;
     }
 
     @Override

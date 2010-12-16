@@ -22,7 +22,7 @@ public final class EmailerUtil
     public static final String EMAIL_NOTIFICATION_SUBJECT = "New voicemail from %s";
 
     public static final String DIRECT_VOICEMAIL_HEADER = ":Retrieve it at ";
-    public static final String SMS_NOTIFICATION_BODY = "New voicemail from %s (%s).  %s " +  DIRECT_VOICEMAIL_HEADER  + "%s";
+    public static final String SMS_NOTIFICATION_BODY = "New voicemail from %s.  %s " +  DIRECT_VOICEMAIL_HEADER  + "%s";
     public static final String ALTERNATE_NUMBER_SMS_NOTIFICATION_BODY = "%s New voicemail from %s.";
     public static final String FILE_IS_ATTACHED = "The voicemail is attached.";
     public static final String FILE_NOT_ATTACHED = "The voicemail could not be attached.  Contact a system administrator for assistance.";

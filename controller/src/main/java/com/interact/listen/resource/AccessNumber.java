@@ -238,7 +238,7 @@ public class AccessNumber extends Resource implements Serializable
         
         if(accessNumber != null)
         {
-            String name = accessNumber.getSubscriber().getRealName();
+            String name = accessNumber.getSubscriber().friendlyName();
             
             if(name != null)
             {
