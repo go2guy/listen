@@ -91,6 +91,7 @@ Requires: spotbuild-vip
     # Remove extras
     rm -rf %{buildroot}/interact/apps/spotbuild/*.docx
     rm -rf %{buildroot}/interact/apps/spotbuild/ippbx/php
+    rm -rf %{buildroot}/interact/apps/spotbuild/after_hours
     rm -rf %{buildroot}/interact/apps/spotbuild/rhinounit
 
     # Run Encryption
