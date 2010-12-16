@@ -4,57 +4,73 @@ $(document).ready(function() {
     });
 
     Listen.FindMe = function() {
+        var accessNumbers = [];
+    
         return {
             Application: function() {
                 this.load = function() {
                     Listen.trace('Loading FindMe');
-                    var saveButton = $('#findme-application .application-content #findme-save');
-                    var whenSomebodyCalls = $('#findme-application .findme-text-when-somebody-calls');
 
-                    var start = Listen.timestamp();
-                    var after = whenSomebodyCalls;
+                    function init() {
+                        var saveButton = $('#findme-application .application-content #findme-save');
+                        var whenSomebodyCalls = $('#findme-application .findme-text-when-somebody-calls');
+    
+                        var start = Listen.timestamp();
+                        var after = whenSomebodyCalls;
+                        $.ajax({
+                            url: Listen.url('/ajax/getFindMeConfiguration'),
+                            dataType: 'json',
+                            cache: false,
+                            success: function(data, textStatus, xhr) {
+                                for(var i = 0, length = data.length; i < length; ++i) {
+                                    var group = data[i];
+                                    if(group.length > 0) {
+                                        if(i > 0) {
+                                            var text = $('<div class="findme-text-if-i-dont-answer">If I don\'t answer...</div>');
+                                            after.after(text);
+                                            after = text;
+                                        }
+                                        after = Listen.FindMe.addNewGroup(after, false, group);
+                                    }
+                                }
+                            },
+                            complete: function(xhr, textStatus) {
+                                var elapsed = Listen.timestamp() - start;
+                                $('#latency').text(elapsed);
+                            }
+                        });
+    
+                        var o = $('#findme-application .findme-text-if-i-dont-answer');
+                        $('select', o).change(function(e) {
+                            var select = $(e.target);
+                            var selected = $(':selected', select);
+                            if(selected.text() == 'Dial...') {
+                                var count = $('.findme-simultaneous-numbers').size(); // # of groups before adding new one 
+                                var group = Listen.FindMe.addNewGroup(select.parent(), true);
+                                var clone = select.parent().clone(true);
+                                $('select', clone).val('voicemail');
+                                group.after(clone);
+                                if(count > 0) {
+                                    select.remove();
+                                } else {
+                                    select.parent().remove();
+                                }
+                            }
+                        });
+                    }
+
                     $.ajax({
-                        url: Listen.url('/ajax/getFindMeConfiguration'),
+                        url: Listen.url('/ajax/getSubscriber'),
                         dataType: 'json',
                         cache: false,
                         success: function(data, textStatus, xhr) {
-                            for(var i = 0, length = data.length; i < length; ++i) {
-                                var group = data[i];
-                                if(group.length > 0) {
-                                    if(i > 0) {
-                                        var text = $('<div class="findme-text-if-i-dont-answer">If I don\'t answer...</div>');
-                                        after.after(text);
-                                        after = text;
-                                    }
-                                    after = Listen.FindMe.addNewGroup(after, false, group);
-                                }
+                            for(var i = 0, len = data.accessNumbers.length; i < len; ++i) {
+                                var an = data.accessNumbers[i];
+                                accessNumbers.push(an.number);
                             }
-                        },
-                        complete: function(xhr, textStatus) {
-                            var elapsed = Listen.timestamp() - start;
-                            $('#latency').text(elapsed);
+                            init();
                         }
                     });
-
-                    var o = $('#findme-application .findme-text-if-i-dont-answer');
-                    $('select', o).change(function(e) {
-                        var select = $(e.target);
-                        var selected = $(':selected', select);
-                        if(selected.text() == 'Dial...') {
-                            var count = $('.findme-simultaneous-numbers').size(); // # of groups before adding new one 
-                            var group = Listen.FindMe.addNewGroup(select.parent(), true);
-                            var clone = select.parent().clone(true);
-                            $('select', clone).val('voicemail');
-                            group.after(clone);
-                            if(count > 0) {
-                                select.remove();
-                            } else {
-                                select.parent().remove();
-                            }
-                        }
-                    });
-                    
-                    //group.after(o);
                 };
                 
                 this.unload = function() {
@@ -123,6 +139,8 @@ $(document).ready(function() {
                 html += '</div>';
                 
                 var el = $(html);
+                $('input:first', el).autocomplete({source: accessNumbers, delay: 0, minLength: -1});
+                
                 $('.icon-delete', el).click(function(e) {
                     var number = $(e.target).parent();
                     var group = number.parent();
