@@ -19,6 +19,8 @@ import android.util.Log;
 import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.Voicemail;
+import com.interact.listen.android.voicemail.WavConversion;
+import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,7 +33,7 @@ public class VoicemailProvider extends ContentProvider
     private static final String TAG = Constants.TAG + "Provider";
 
     private static final String DATABASE_NAME = "com.interact.listen.voicemail.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String VOICEMAIL_TABLE = "voicemails";
     private static final String VOICEMAIL_INDEX = "vmviewidx";
     
@@ -156,8 +158,28 @@ public class VoicemailProvider extends ContentProvider
         switch(URI_MATCHER.match(uri))
         {
             case VOICEMAIL_MATCH:
-            case SPECIFIC_VOICEMAIL_MATCH:
                 return Voicemails.CONTENT_TYPE;
+            case SPECIFIC_VOICEMAIL_MATCH:
+            {
+                long id = ContentUris.parseId(uri);
+                String[] projection = new String[]{Voicemails.MIME_TYPE};
+                String[] args = new String[] {Long.toString(id)};
+                
+                SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+                qb.setTables(VOICEMAIL_TABLE);
+                qb.setProjectionMap(voicemailProjectionMap);
+
+                SQLiteDatabase db = helper.getReadableDatabase();
+                Cursor c = qb.query(db, projection, ID_WHERE, args, null, null, null);
+                
+                final String type = c.moveToFirst() ? c.getString(0) : WavConversion.Type.UNKNOWN.getMIME();
+
+                c.close();
+                
+                Log.v(TAG, "getType(" + uri + ") = " + type);
+                
+                return type;
+            }
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -395,10 +417,12 @@ public class VoicemailProvider extends ContentProvider
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException
     {
-        if (URI_MATCHER.match(uri) != SPECIFIC_VOICEMAIL_MATCH)
+        final int uriMatch = URI_MATCHER.match(uri);
+        if (uriMatch != SPECIFIC_VOICEMAIL_MATCH)
         {
             throw new IllegalArgumentException("Only support getting stream on voicemails: " + uri);
         }
+        
         int modeBits = audioModeBits(uri, mode);
         
         int id = (int)ContentUris.parseId(uri);
@@ -487,6 +511,13 @@ public class VoicemailProvider extends ContentProvider
         voicemailProjectionMap.put(Voicemails.AUDIO_STATE, Voicemails.AUDIO_STATE);
         voicemailProjectionMap.put(Voicemails.AUDIO_DATE, Voicemails.AUDIO_DATE);
         voicemailProjectionMap.put(Voicemails.DATA, Voicemails.DATA);
+        
+        voicemailProjectionMap.put(Voicemails.DATE_ADDED, Voicemails.AUDIO_DATE);
+        voicemailProjectionMap.put(Voicemails.DATE_MODIFIED, Voicemails.AUDIO_DATE);
+        voicemailProjectionMap.put(Voicemails.DISPLAY_NAME, Voicemails.DISPLAY_NAME);
+        voicemailProjectionMap.put(Voicemails.MIME_TYPE, Voicemails.MIME_TYPE);
+        voicemailProjectionMap.put(Voicemails.SIZE, Voicemails.SIZE);
+        voicemailProjectionMap.put(Voicemails.TITLE, Voicemails.TITLE);
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper
@@ -520,6 +551,10 @@ public class VoicemailProvider extends ContentProvider
             sb.append(Voicemails.AUDIO_STATE).append(" INTEGER,");
             sb.append(Voicemails.AUDIO_DATE).append(" INTEGER,");
             sb.append(Voicemails.DATA).append(" VARCHAR(255),");
+            sb.append(Voicemails.DISPLAY_NAME).append(" VARCHAR(255),");
+            sb.append(Voicemails.MIME_TYPE).append(" VARCHAR(112),");
+            sb.append(Voicemails.SIZE).append(" INTEGER,");
+            sb.append(Voicemails.TITLE).append(" VARCHAR(255),");
             sb.append(" UNIQUE (").append(Voicemails.USER_NAME).append(',').append(Voicemails.VOICEMAIL_ID);
             sb.append(") ON CONFLICT REPLACE)");
 
@@ -545,6 +580,8 @@ public class VoicemailProvider extends ContentProvider
             deleteAllVoicemailFiles(context);
             
             onCreate(db);
+            
+            SyncSchedule.syncRegular(context, null, false);
         }
     }
 

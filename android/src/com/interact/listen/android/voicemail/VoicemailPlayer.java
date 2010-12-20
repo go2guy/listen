@@ -453,7 +453,6 @@ public class VoicemailPlayer implements AudioController.Player
         if(mediaPlayer != null)
         {
             Log.v(TAG, "reseting media player");
-            mediaPlayer.reset();
             mediaPlayer.release();
             mediaPlayer = null;
             currentState = State.IDLE;

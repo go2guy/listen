@@ -96,6 +96,8 @@ public class C2DMReceiver extends C2DMBaseReceiver
      * 
      * @param context
      * @param info
+     * @param syncDesired true if sync is enabled
+     * @param force if true, re-register regardless
      * @return null for no action needed, otherwise the registrationId to register with Listen ("" for unregister)
      */
     public static String refreshAppC2DMRegistrationState(Context context, ServerRegistrationInfo info, boolean accountSync, boolean force)
@@ -107,7 +109,8 @@ public class C2DMReceiver extends C2DMBaseReceiver
         }
 
         final boolean autoSyncDesired = isAutoSyncDesired(context);
-        final boolean updatedEnabled = C2DMessaging.setEnabled(context, info.isEnabled());
+        
+        C2DMessaging.setEnabled(context, info.isEnabled());
         
         String regState = null;
         
@@ -160,11 +163,6 @@ public class C2DMReceiver extends C2DMBaseReceiver
             {
                 regState = info.getRegistrationId().equals(registrationId) ? null : registrationId;
             }
-        }
-        
-        if(updatedEnabled)
-        {
-            SyncSchedule.updatePeriodicSync(context);
         }
         
         return regState;

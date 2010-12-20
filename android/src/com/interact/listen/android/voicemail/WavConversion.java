@@ -2,21 +2,70 @@ package com.interact.listen.android.voicemail;
 
 import android.util.Log;
 
+import com.interact.listen.android.voicemail.provider.Voicemails;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 public final class WavConversion
 {
     public interface OnProgressUpdate
     {
         void onProgressUpdate(int percent);
+        void onTypeKnown(Type type);
     }
 
     private static final String TAG = Constants.TAG + "WavConvert";
+
+    public static enum Type
+    {
+        WAV("audio/x-wav", "wav"),
+        MP3("audio/mpeg", "mp3"),
+        UNKNOWN(Voicemails.CONTENT_TYPE, "dat");
+        
+        private String mime;
+        private String ext;
+        
+        private Type(String mime, String ext)
+        {
+            this.mime = mime;
+            this.ext = ext;
+        }
+        
+        public String getMIME()
+        {
+            return mime;
+        }
+        
+        public String getExtension()
+        {
+            return ext;
+        }
+    }
+
+    private static final byte[] WAV_HEAD = new byte[]{'R', 'I', 'F', 'F'};
     
+    public static Type getType(InputStream in) throws IOException
+    {
+        byte[] head = new byte[4];
+        if(in.read(head) == head.length)
+        {
+            if(Arrays.equals(head, WAV_HEAD))
+            {
+                return Type.WAV;
+            }
+            if(head[0] == (byte)0xFF)
+            {
+                return Type.MP3;
+            }
+            Log.w(TAG, "Don't know type: " + head[0] + " " + head[1] + " " + head[2] + " " + head[3]);
+        }
+        return Type.UNKNOWN;
+    }
     
     public static long copyToLinear(InputStream in, OutputStream out, long downloadSize,
                                     OnProgressUpdate listener) throws IOException
@@ -173,24 +222,24 @@ public final class WavConversion
             
             updateProgress();
             byteBuffer.limit(total);
-            
-            if(total < LOG_HEAD_SIZE)
-            {
-                return false;
-            }
-            
-            if(!checkAndIncrement("RIF"))
-            {
-                return false;
-            }
-            
-            byte oByte = byteBuffer.get();
-            if(oByte != 'F' && oByte != 'X')
-            {
-                return false;
-            }
-            byteBuffer.order(oByte == 'F' ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
+            if(total < LOG_HEAD_SIZE || !checkAndIncrement("RIFF"))
+            {
+                if(listener != null && total > 4 && buffer[0] == (byte)0xFF)
+                {
+                    listener.onTypeKnown(Type.MP3);
+                }
+                return false;
+            }
+            
+            // if started with RIFX would be big, but doesn't appear to ever happen
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+            if(listener != null)
+            {
+                listener.onTypeKnown(Type.WAV);
+            }
+            
             return true;
         }
         

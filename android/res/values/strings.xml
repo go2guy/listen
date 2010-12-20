@@ -20,6 +20,9 @@
 	<string name="menu_mark_unread">Mark unread</string>
 	<string name="menu_view">View</string>
 	<string name="menu_call">Call</string>
+	<string name="menu_forward">Forward</string>
+	
+	<string name="share_voicemail">Share Voicemail</string>
 	
 	<string name="dialog_delete_title">Delete Voicemail</string>
 	<string name="dialog_delete_summary">Delete this voicemail from your account?</string>
@@ -114,4 +117,8 @@
 	<string name="generic_confirm">OK</string>
 	<string name="generic_cancel">Cancel</string>
 
+	<string name="voicemail_display_name">voicemail-%1$s.%2$s</string>
+	<string name="voicemail_title">Voicemail from %3$s on %1$s (%2$s)</string>
+	<string name="voicemail_email_body">\nReceived: %1$s\nFrom: %2$s (%3$s)\nDuration: %4$s\n\nTranscription:\n%5$s\n\n</string>
+	<string name="voicemail_email_body_no_transcription">\nReceived: %1$s\nFrom: %2$s (%3$s)\nDuration: %4$s\nNo transcription available.\n\n</string>
 </resources>

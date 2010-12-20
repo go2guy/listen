@@ -22,9 +22,9 @@ import android.provider.Settings;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.util.Log;
 
-import com.google.android.c2dm.C2DMessaging;
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
 import com.interact.listen.android.voicemail.provider.VoicemailProvider;
+import com.interact.listen.android.voicemail.sync.CloudEnabled;
 import com.interact.listen.android.voicemail.sync.SyncAdapter;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 import com.interact.listen.android.voicemail.widget.NumberPicker;
@@ -61,7 +61,8 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     
     private ClearCacheTask clearCacheTask;
     
-    private OnSharedPreferenceChangeListener c2dmListener = null;
+    private CloudEnabled cloudRegistered = null;
+    private C2DMRegisteredListener c2dmListener = null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -93,26 +94,29 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         dialPrefix.setSummary(sharedPreferences.getString(DIAL_PREFIX, getString(R.string.pref_dial_prefix_summary)));
         dialPrefix.getEditText().addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         
-        updateSyncIntevalSummary();
+        cloudRegistered = new CloudEnabled(getApplicationContext());
+        c2dmListener = new C2DMRegisteredListener();
+        cloudRegistered.registerListener(c2dmListener);
         
-        c2dmListener = new C2DMEnabledListner();
+        updateSyncIntevalSummary();
     }
     
-    private class C2DMEnabledListner implements OnSharedPreferenceChangeListener, Runnable
+    private class C2DMRegisteredListener implements CloudEnabled.EnabledListener, Runnable
     {
+
         @Override
-        public void onSharedPreferenceChanged(SharedPreferences pref, String key)
+        public void updateEnabled(boolean registered)
         {
             runOnUiThread(this);
         }
-        
+
         @Override
         public void run()
         {
             updateSyncIntevalSummary();
         }
+
     }
-    
     
     @Override
     protected void onDestroy()
@@ -125,7 +129,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         }
         if(c2dmListener != null)
         {
-            C2DMessaging.unregisterEnabledListener(this, c2dmListener);
+            cloudRegistered.unregisterListener(c2dmListener);
             c2dmListener = null;
         }
         super.onDestroy();
@@ -135,7 +139,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     {
         int interval = 0;
         
-        if(C2DMessaging.isEnabled(getApplicationContext()))
+        if(cloudRegistered != null && cloudRegistered.isEnabled())
         {
             syncIntervalPref.setSummary(R.string.pref_sync_c2dm_enabled);
             syncIntervalPref.setEnabled(false);
@@ -333,7 +337,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         Log.v(TAG, "pausing application settings");
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-        C2DMessaging.unregisterEnabledListener(this, c2dmListener);
+        cloudRegistered.unregisterListener(c2dmListener);
     }
 
     @Override
@@ -342,7 +346,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         Log.v(TAG, "resuming application settings");
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        C2DMessaging.registerEnabledListener(this, c2dmListener);
+        cloudRegistered.registerListener(c2dmListener);
         updateSyncIntevalSummary();
     }
 
@@ -353,7 +357,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         
         if(SYNC_INTERVAL_MINUTES.equals(key))
         {
-            SyncSchedule.updatePeriodicSync(this);
+            SyncAdapter.updatePeriodicSync(this);
             updateSyncIntevalSummary();
         }
         else if(DIAL_PREFIX.equals(key))

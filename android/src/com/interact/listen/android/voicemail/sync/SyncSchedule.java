@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.c2dm.C2DMessaging;
 import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.provider.VoicemailProvider;
@@ -26,20 +25,13 @@ public final class SyncSchedule
 
     private static final String TAG = Constants.TAG + "SyncSchedule";
     
-    public static void addPeriodicSync(Context context, Account account)
+    public static void accountAdded(Context context, Account account)
     {
         ContentResolver.setIsSyncable(account, VoicemailProvider.AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(account, VoicemailProvider.AUTHORITY, true);
-
-        //setPeriodicSync(context, account, !C2DMessaging.isEnabled(context));
-    }
-    
-    public static void updatePeriodicSync(Context context)
-    {
-        setPeriodicSync(context, null, !C2DMessaging.isEnabled(context));
     }
 
-    private static void setPeriodicSync(Context context, Account account, boolean enabled)
+    static void setPeriodicSync(Context context, Account account, boolean enabled)
     {
         long interval = ApplicationSettings.getSyncIntervalMinutes(context) * 60;
 
@@ -80,6 +72,12 @@ public final class SyncSchedule
                 }
             }
         }
+    }
+    
+    static void removeLegacySync(Context context, Account account, Bundle extras)
+    {
+        Log.v(Constants.TAG, "removing legacy sync for " + account.name + ": " + extras);
+        ContentResolver.removePeriodicSync(account, VoicemailProvider.AUTHORITY, extras);
     }
     
     public static void syncUpdates(Context context, String userName)
@@ -133,6 +131,10 @@ public final class SyncSchedule
         {
             Log.e(TAG, "sync extras is null");
             return SyncType.INITIALIZE;
+        }
+        if(extras.containsKey("sync_type"))
+        {
+            return SyncType.LEGACY;
         }
         if(extras.getBoolean(ContentResolver.SYNC_EXTRAS_INITIALIZE, false))
         {

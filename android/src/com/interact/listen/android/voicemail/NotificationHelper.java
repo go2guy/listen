@@ -154,6 +154,7 @@ public final class NotificationHelper
     
     public interface OnConfirm
     {
+        boolean preCheck(Voicemail voicemail);
         void onConfirmed(Voicemail voicemail);
     }
     
@@ -173,6 +174,10 @@ public final class NotificationHelper
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
+                if(listener != null && !listener.preCheck(voicemail))
+                {
+                    return;
+                }
                 VoicemailHelper.moveVoicemailToTrash(context.getContentResolver(), voicemail);
                 SyncSchedule.syncUpdates(context, voicemail.getUserName());
                 if(listener != null)
@@ -234,4 +239,40 @@ public final class NotificationHelper
         call.setData(Uri.parse(dialString));
         context.startActivity(call);
     }
+
+    public static void shareVoicemail(Context context, int id)
+    {
+        shareVoicemail(context, VoicemailHelper.getVoicemail(context.getContentResolver(), id));
+    }
+    
+    public static void shareVoicemail(Context context, Voicemail voicemail)
+    {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+
+        intent.setType(context.getContentResolver().getType(voicemail.getUri()));
+
+        if(!voicemail.isDownloaded())
+        {
+            intent.setType("text/plain");
+        }
+        else
+        {
+            intent.putExtra(Intent.EXTRA_STREAM, voicemail.getUri());
+        }
+        
+        intent.putExtra(Intent.EXTRA_SUBJECT, voicemail.getAudioTitle());
+
+        final String dateStr = voicemail.getDateCreatedString(context, false, context.getString(R.string.dateCreatedUnknown));
+        final String fromStr = voicemail.getLeftBy();
+        final String fromName = TextUtils.isEmpty(voicemail.getLeftByName()) ? context.getString(R.string.leftByUnknown) : voicemail.getLeftByName();
+        final String durStr = voicemail.getDurationString();
+        final String transStr = voicemail.getTranscription();
+        final int resId = TextUtils.isEmpty(transStr) ? R.string.voicemail_email_body_no_transcription : R.string.voicemail_email_body;
+
+        intent.putExtra(Intent.EXTRA_TEXT, context.getString(resId, dateStr, fromStr, fromName, durStr, transStr));
+
+        Intent chooser = Intent.createChooser(intent, context.getString(R.string.share_voicemail));
+        context.startActivity(chooser);
+    }
+
 }

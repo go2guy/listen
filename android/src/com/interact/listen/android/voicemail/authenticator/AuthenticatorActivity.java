@@ -256,7 +256,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity implemen
             userData.putString(Authenticator.ID_DATA, Long.toString(id));
             mAccountManager.addAccountExplicitly(account, mPassword, userData);
 
-            SyncSchedule.addPeriodicSync(this, account);
+            SyncSchedule.accountAdded(this, account);
         }
         else
         {

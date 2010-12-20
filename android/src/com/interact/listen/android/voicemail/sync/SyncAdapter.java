@@ -16,7 +16,6 @@ import android.os.RemoteException;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.google.android.c2dm.C2DMessaging;
 import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.C2DMReceiver;
 import com.interact.listen.android.voicemail.Constants;
@@ -47,7 +46,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
     public static final String LAST_CLEAN = "last_audio_clean";
     public static final String SERVER_LAST_SYNC = "server_last_sync";
-    public static final String REGISTERED_SYNC = "sync_registered";
+    
+    static final String REGISTERED_SYNC = "sync_registered";
 
     private final AccountManager mAccountManager;
     
@@ -280,7 +280,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         
     }
     
-    private static SharedPreferences getSyncMeta(Context context, Account account)
+    static SharedPreferences getSyncMeta(Context context, Account account)
     {
         return context.getSharedPreferences("sync:" + account.name, 0);
     }
@@ -306,6 +306,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         }
     }
     
+    public static void updatePeriodicSync(Context context)
+    {
+        AccountManager am = AccountManager.get(context);
+        Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+        for(Account account : accounts)
+        {
+            final boolean reg = getSyncMeta(context, account).getBoolean(REGISTERED_SYNC, false);
+            if(!reg)
+            {
+                SyncSchedule.setPeriodicSync(context, account, !reg);
+            }
+        }
+    }
+
     public static void removeAccountInfo(Context context, Account account) throws IOException, OperationCanceledException
     {
         AccountManager am = AccountManager.get(context);
@@ -398,17 +412,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         SyncType syncType = SyncSchedule.getSyncType(extras);
         Log.i(TAG, "on perform sync " + account.name + ": " + syncType);
 
-        if(syncType == SyncType.INITIALIZE)
+        if(syncType == SyncType.LEGACY)
         {
-            if(ContentResolver.getIsSyncable(account, VoicemailProvider.AUTHORITY) <= 0)
-            {
-                // ensure we are set to be syncable
-                ContentResolver.setIsSyncable(account, VoicemailProvider.AUTHORITY, 1);
-            }
-            if(!C2DMessaging.isEnabled(getContext()))
-            {
-                SyncSchedule.updatePeriodicSync(getContext());
-            }
+            Log.w(TAG, "legacy sync encountered, removing periodic sync and performing INITIALIZE sync");
+            SyncSchedule.removeLegacySync(getContext(), account, extras);
+            syncType = SyncType.INITIALIZE;
         }
         
         final SharedPreferences syncMeta = getSyncMeta(account);
@@ -418,6 +426,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         final boolean syncDesired = ContentResolver.getMasterSyncAutomatically() &&
                                     ContentResolver.getSyncAutomatically(account, VoicemailProvider.AUTHORITY);
         final boolean serverReg = syncMeta.getBoolean(REGISTERED_SYNC, false);
+
+        if(syncType == SyncType.INITIALIZE)
+        {
+            if(ContentResolver.getIsSyncable(account, VoicemailProvider.AUTHORITY) <= 0)
+            {
+                // ensure we are set to be syncable
+                ContentResolver.setIsSyncable(account, VoicemailProvider.AUTHORITY, 1);
+            }
+            if(!serverReg)
+            {
+                // ensure we get a periodic sync going if needed
+                SyncSchedule.setPeriodicSync(getContext(), account, true);
+            }
+        }
         
         String authToken = null;
         try
@@ -474,10 +496,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
                     if(ClientUtilities.registerDevice(host, account.name, authToken, reg, deviceId))
                     {
                         syncMeta.edit().putBoolean(REGISTERED_SYNC, reg.length() > 0).commit();
+                        SyncSchedule.setPeriodicSync(getContext(), account, false);
                         Log.i(TAG, "updated account registration state: '" + reg + "'");
                     }
                     else
                     {
+                        syncMeta.edit().putBoolean(REGISTERED_SYNC, false).commit();
+                        SyncSchedule.setPeriodicSync(getContext(), account, true);
                         Log.e(TAG, "failed account registration update: '" + reg + "'");
                     }
                 }

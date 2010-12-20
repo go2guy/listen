@@ -1,7 +1,6 @@
 package com.interact.listen.android.voicemail;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -24,14 +23,13 @@ public class ViewVoicemailActivity extends Activity
 {
     private static final String TAG = Constants.TAG + "ViewVoicemail";
 
-    private static final int DELETE_VOICEMAIL_DIALOG = 1;
-    
     private TextView mName = null;
     private TextView mLeftBy = null;
     private TextView mDate = null;
     private TextView mTranscription = null;
     private MenuItem mDelete = null;
     private MenuItem mCall = null;
+    private MenuItem mForward = null;
     private ContactBadge.Data mBadge = null;
     
     private VoicemailPlayer mVoicemailPlayer = new VoicemailPlayer();
@@ -150,8 +148,30 @@ public class ViewVoicemailActivity extends Activity
         inflater.inflate(R.menu.menu_voicemail_view, menu);
         mDelete = menu.findItem(R.id.voicemail_view_delete);
         mCall = menu.findItem(R.id.voicemail_view_call);
+        mForward = menu.findItem(R.id.voicemail_view_forward);
         return true;
     }
+    
+    private final NotificationHelper.OnConfirm mConfirmListener = new NotificationHelper.OnConfirm()
+    {
+        @Override
+        public boolean preCheck(Voicemail voicemail)
+        {
+            if(mVoicemailPlayer != null)
+            {
+                mVoicemailPlayer.stopPlayback();
+            }
+            return true;
+        }
+
+        @Override
+        public void onConfirmed(Voicemail voicemail)
+        {
+            vmUpdated = true;
+            setOkResult();
+            finish();
+        }
+    };
     
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item)
@@ -162,8 +182,7 @@ public class ViewVoicemailActivity extends Activity
             case R.id.voicemail_view_delete:
                 if(mVoicemail != null)
                 {
-                    mVoicemailPlayer.triggerPause();
-                    showDialog(DELETE_VOICEMAIL_DIALOG);
+                    NotificationHelper.createDeleteVoicemailDialog(this, mVoicemailId, mConfirmListener).show();
                 }
                 return true;
             case R.id.voicemail_view_inbox:
@@ -177,31 +196,16 @@ public class ViewVoicemailActivity extends Activity
                     NotificationHelper.dial(this, mVoicemail.getLeftBy());
                 }
                 return true;
+            case R.id.voicemail_view_forward:
+                if(mVoicemail != null)
+                {
+                    NotificationHelper.shareVoicemail(this, mVoicemail);
+                }
+                return true;
             default:
                 return super.onMenuItemSelected(featureId, item);
         }
 
-    }
-
-    @Override
-    protected Dialog onCreateDialog(int id, Bundle bundle)
-    {
-        if(id == DELETE_VOICEMAIL_DIALOG)
-        {
-            NotificationHelper.OnConfirm listener = new NotificationHelper.OnConfirm()
-            {
-                @Override
-                public void onConfirmed(Voicemail voicemail)
-                {
-                    vmUpdated = true;
-                    setOkResult();
-                    finish();
-                }
-            };
-
-            return NotificationHelper.createDeleteVoicemailDialog(this, mVoicemailId, listener);
-        }
-        return null;
     }
 
     @Override
@@ -224,6 +228,7 @@ public class ViewVoicemailActivity extends Activity
 
         this.mBadge = null;
         this.mCall = null;
+        this.mForward = null;
         this.mCursor = null;
         this.mDate = null;
         this.mDelete = null;
@@ -283,6 +288,10 @@ public class ViewVoicemailActivity extends Activity
             if(mCall != null)
             {
                 mCall.setEnabled(false);
+            }
+            if(mForward != null)
+            {
+                mForward.setEnabled(false);
             }
             
             if(mDownloadTask != null)

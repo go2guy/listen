@@ -40,9 +40,10 @@ public final class C2DMessaging
 
     private static final String DM_REGISTRATION = "dm_registration";
     private static final String SENDER_ID = "sender_id";
-    private static final String C2DMENABLED = "c2dm_enabled";
     private static final String BACKOFF = "backoff";
-    
+
+    public static final String C2DMENABLED = "c2dm_enabled";
+
     private static final String GSF_PACKAGE = "com.google.android.gsf";
 
     private static final String PREFERENCE = "com.google.android.c2dm";

@@ -14,12 +14,12 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.interact.listen.android.voicemail.WavConversion.Type;
 import com.interact.listen.android.voicemail.authenticator.Authenticator;
 import com.interact.listen.android.voicemail.client.AuthorizationException;
 import com.interact.listen.android.voicemail.client.ClientUtilities;
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,6 +43,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
     private AccountManager accountManager;
     private ContentProviderClient provider;
     private OnProgressUpdate progressListener;
+    private WavConversion.Type type;
     
     public DownloadRunnable(Context context, Voicemail voicemail)
     {
@@ -54,6 +55,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         this.accountManager = AccountManager.get(context);
         this.provider = null;
         this.progressListener = null;
+        this.type = WavConversion.Type.UNKNOWN;
     }
 
     public void setAccount(Account acc, String token)
@@ -145,7 +147,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         }
         else
         {
-            voicemail.markDownloaded(downloaded != -1);
+            voicemail.markDownloaded(context, downloaded, type);
         }
         
         ContentValues values = voicemail.getAudioStateValues();
@@ -179,44 +181,25 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         return Thread.currentThread().isInterrupted();
     }
     
+    private final WavConversion.OnProgressUpdate mListener = new WavConversion.OnProgressUpdate()
+    {
+        @Override
+        public void onProgressUpdate(int percent)
+        {
+            progressUpdate(percent);
+        }
+
+        @Override
+        public void onTypeKnown(Type t)
+        {
+            type = t;
+            Log.v(TAG, "determined type: " + type.getMIME());
+        }
+    };
+    
     private long download(InputStream in, OutputStream out, long downloadSize) throws IOException
     {
-        WavConversion.OnProgressUpdate listener = null;
-        if(progressListener != null)
-        {
-            listener = new WavConversion.OnProgressUpdate()
-            {
-                @Override
-                public void onProgressUpdate(int percent)
-                {
-                    progressUpdate(percent);
-                }
-            };
-        }
-        return WavConversion.copyToLinear(in, out, downloadSize, listener);
-        
-        /*
-        byte[] buffer = new byte[(int)Math.min(downloadSize, 1024L)];
-        long total = 0;
-        int read = 0;
-        int lastPercent = 0;
-        while ((read = in.read(buffer)) != -1)
-        {
-            out.write(buffer, 0, read);
-            total += read;
-            if(isInterrupted() && total != downloadSize)
-            {
-                return -1;
-            }
-            int percent = (int)(total * 100L / downloadSize);
-            if(percent > lastPercent)
-            {
-                progressUpdate(percent);
-                lastPercent = percent;
-            }
-        }
-        return total;
-        */
+        return WavConversion.copyToLinear(in, out, downloadSize, mListener);
     }
     
     private long download() throws AuthenticatorException, AuthorizationException, OperationCanceledException,
@@ -260,13 +243,13 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         
         Log.i(TAG, "download bytes: " + downloadSize);
         
-        ParcelFileDescriptor pfd = null;
         OutputStream out = null;
         long downloaded = -1;
         boolean didOpen = false;
         
         try
         {
+            ParcelFileDescriptor pfd = null;
             if(provider != null)
             {
                 pfd = VoicemailHelper.getDownloadStream(provider, voicemail);
@@ -282,7 +265,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
             }
             didOpen = true;
             
-            out = new FileOutputStream(pfd.getFileDescriptor());
+            out = new ParcelFileDescriptor.AutoCloseOutputStream(pfd);
             downloaded = download(in, out, downloadSize);
         }
         finally
@@ -307,17 +290,6 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
                 catch(IOException e)
                 {
                     Log.e(TAG, "error closing output stream", e);
-                }
-            }
-            if(pfd != null)
-            {
-                try
-                {
-                    pfd.close();
-                }
-                catch(IOException e)
-                {
-                    Log.e(TAG, "error closing file descriptor", e);
                 }
             }
         }

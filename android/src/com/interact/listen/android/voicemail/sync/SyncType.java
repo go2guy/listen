@@ -8,4 +8,5 @@ enum SyncType
     USER_SYNC,    // User clicked refresh or cleared cache
     CONFIG_SYNC,  // Change in configuration
     CLOUD_SYNC,   // Otherwise, coming from the C2DM
+    LEGACY,       // an old sync that needs to be removed
 }

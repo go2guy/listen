@@ -46,7 +46,9 @@ public final class Voicemail implements Parcelable
                                                                 Voicemails.DESCRIPTION,
                                                                 Voicemails.DURATION, Voicemails.TRANSCRIPT,
                                                                 Voicemails.LABEL, Voicemails.STATE,
-                                                                Voicemails.AUDIO_STATE, Voicemails.AUDIO_DATE };
+                                                                Voicemails.AUDIO_STATE, Voicemails.AUDIO_DATE,
+                                                                Voicemails.DISPLAY_NAME, Voicemails.MIME_TYPE,
+                                                                Voicemails.SIZE, Voicemails.TITLE};
 
     private static final int MARKED_READ     = 0x01;
     private static final int MARKED_DELETED  = 0x02;
@@ -77,6 +79,11 @@ public final class Voicemail implements Parcelable
     
     private int audioState;
     private long audioDate;
+    
+    private String audioDisplayName;
+    private String audioMimeType;
+    private long audioFileSize;
+    private String audioTitle;
     
     public static int getAudioDownloadedState()
     {
@@ -124,6 +131,11 @@ public final class Voicemail implements Parcelable
             vm.state = cursor.getInt(idx++);
             vm.audioState = cursor.getInt(idx++);
             vm.audioDate = cursor.getLong(idx++);
+            
+            vm.audioDisplayName = getStringFromCursor(cursor, idx++);
+            vm.audioMimeType = getStringFromCursor(cursor, idx++);
+            vm.audioFileSize = cursor.getLong(idx++);
+            vm.audioTitle = getStringFromCursor(cursor, idx++);
             
             if(TextUtils.equals(vm.leftByName, "null"))
             {
@@ -173,7 +185,11 @@ public final class Voicemail implements Parcelable
         values.put(Voicemails.STATE,        state);
         values.put(Voicemails.AUDIO_STATE,  audioState);
         values.put(Voicemails.AUDIO_DATE,   audioDate);
-
+        values.put(Voicemails.DISPLAY_NAME, audioDisplayName);
+        values.put(Voicemails.TITLE,        audioTitle);
+        values.put(Voicemails.MIME_TYPE,    audioMimeType);
+        values.put(Voicemails.SIZE,         audioFileSize);
+        
         return values;
     }
     
@@ -208,6 +224,11 @@ public final class Voicemail implements Parcelable
         {
             vm.leftByName = null;
         }
+        
+        vm.audioDisplayName = "";
+        vm.audioTitle = "";
+        vm.audioFileSize = 0;
+        vm.audioMimeType = WavConversion.Type.UNKNOWN.getMIME();
         
         return vm;
     }
@@ -373,6 +394,10 @@ public final class Voicemail implements Parcelable
     {
         return !TextUtils.isEmpty(transcription);
     }
+    public String getAudioTitle()
+    {
+        return audioTitle == null ? "" : audioTitle;
+    }
     public Label getLabel()
     {
         return label;
@@ -424,23 +449,81 @@ public final class Voicemail implements Parcelable
     {
         audioDate = System.currentTimeMillis();
         audioState = AUDIO_ERROR;
+        clearAudioMeta();
     }
-    public void markDownloaded(boolean success)
+
+    private void clearAudioMeta()
+    {
+        audioFileSize = 0;
+        audioMimeType = WavConversion.Type.UNKNOWN.getMIME();
+        audioDisplayName = "";
+        audioTitle = "";
+    }
+    
+    /**
+     * 
+     * @param context
+     * @param downloaded -1 on error
+     * @param type
+     */
+    public void markDownloaded(Context context, long downloaded, WavConversion.Type type)
     {
         audioDate = System.currentTimeMillis();
-        audioState = success ? AUDIO_DOWNLOADED : AUDIO_ERROR;
+        audioState = downloaded != -1 ? AUDIO_DOWNLOADED : AUDIO_ERROR;
+        if(audioState == AUDIO_DOWNLOADED)
+        {
+            audioFileSize = downloaded;
+            audioMimeType = type.getMIME();
+            audioDisplayName = createDisplayName(context, type);
+            audioTitle = createTitle(context, type);
+        }
+        else
+        {
+            clearAudioMeta();
+        }
     }
+    
+    private String createDisplayName(Context context, WavConversion.Type type)
+    {
+        final CharSequence createStr;
+        if(dateCreated == 0)
+        {
+            createStr = "0";
+        }
+        else
+        {
+            createStr = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", dateCreated);
+        }
+
+        return context.getString(R.string.voicemail_display_name, createStr, type.getExtension());
+    }
+
+    private String createTitle(Context context, WavConversion.Type type)
+    {
+        final String createdStr = getDateCreatedString(context, false, "");
+        final String durStr = getDurationString();
+        final String leftByStr = leftByName == null ? leftBy : leftByName;
+        return context.getString(R.string.voicemail_title, createdStr, durStr, leftByStr);
+    }
+
     public ContentValues clearDownloaded()
     {
         audioDate = System.currentTimeMillis();
         audioState = 0;
-        
+
+        clearAudioMeta();
+
         return getClearedDownloadValues();
     }
     public static ContentValues getClearedDownloadValues()
     {
         ContentValues values = new ContentValues();
         values.put(Voicemails.AUDIO_STATE, 0);
+        values.put(Voicemails.SIZE, 0);
+        values.put(Voicemails.MIME_TYPE, WavConversion.Type.UNKNOWN.getMIME());
+        values.put(Voicemails.DISPLAY_NAME, "");
+        values.put(Voicemails.TITLE, "");
+        
         return values;
     }
 
@@ -449,6 +532,10 @@ public final class Voicemail implements Parcelable
         ContentValues values = new ContentValues();
         values.put(Voicemails.AUDIO_STATE, audioState);
         values.put(Voicemails.AUDIO_DATE, audioDate);
+        values.put(Voicemails.SIZE, audioFileSize);
+        values.put(Voicemails.MIME_TYPE, audioMimeType);
+        values.put(Voicemails.DISPLAY_NAME, audioDisplayName);
+        values.put(Voicemails.TITLE, audioTitle);
         return values;
     }
     
@@ -609,6 +696,8 @@ public final class Voicemail implements Parcelable
         sb.append(" leftByName='").append(leftByName).append("' created=").append(dateCreated);
         sb.append(" label=").append(label.name()).append(" state=").append(state);
         sb.append(" audioState=").append(audioState).append(" audioDate=").append(audioDate);
+        sb.append(" size=").append(audioFileSize).append(" type=").append(audioMimeType);
+        sb.append(" title=").append(audioTitle).append(" name=").append(audioDisplayName);
         sb.append(" duration=").append(duration).append(" transcription='").append(transcription).append("']");
         return sb.toString();
     }
@@ -687,5 +776,5 @@ public final class Voicemail implements Parcelable
     {
         return c.isNull(idx) ? null : c.getString(idx);
     }
-    
+
 }

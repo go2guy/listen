@@ -5,6 +5,7 @@
 <item android:title="@string/menu_call" android:id="@+id/voicemail_context_call"/>
 <item android:title="@string/menu_mark_read" android:id="@+id/voicemail_mark_read"/>
 <item android:title="@string/menu_mark_unread" android:id="@+id/voicemail_mark_unread"/>
+<item android:title="@string/menu_forward" android:id="@+id/voicemail_forward"/>
 <item android:title="@string/menu_delete" android:id="@+id/voicemail_context_delete"/>
 
 </menu>
