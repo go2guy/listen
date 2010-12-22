@@ -58,11 +58,6 @@ public enum GoogleAuth
     private Date nextRetry;
     private long retryTimeout = 1000;
 
-    private GoogleAuth()
-    {
-        throw new AssertionError("Cannot instantiate GoogleAuth");
-    }
-
     public synchronized void invalidateCachedToken(String token)
     {
         if(token == null || token.equals(currentToken))
