@@ -1,0 +1,13 @@
+<decorators defaultdir="/WEB-INF/layouts">
+   <decorator page="main.jsp" name="main">
+       <pattern>/WEB-INF/jsp/attendant.jsp</pattern>
+       <pattern>/WEB-INF/jsp/conferences.jsp</pattern>
+       <pattern>/WEB-INF/jsp/conferencing.jsp</pattern>
+       <pattern>/WEB-INF/jsp/configuration.jsp</pattern>
+       <pattern>/WEB-INF/jsp/findme.jsp</pattern>
+       <pattern>/WEB-INF/jsp/history.jsp</pattern>
+       <pattern>/WEB-INF/jsp/settings.jsp</pattern>
+       <pattern>/WEB-INF/jsp/subscribers.jsp</pattern>
+       <pattern>/WEB-INF/jsp/voicemail.jsp</pattern>
+   </decorator>
+</decorators>

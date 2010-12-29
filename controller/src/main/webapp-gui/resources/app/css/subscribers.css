@@ -1,0 +1,16 @@
+li#menu-subscribers a {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+fieldset {
+    border-width: 0;
+}
+
+#subscriber-form-edit-button, #subscriber-form-cancel-button, #subscriber-form-emailInputRow, #subscriber-form-smsInputRow, #profile-form-emailInputRow, #profile-form-smsInputRow {
+    display: none;
+}
+
+#subscriber-form textarea {
+    width: 100%;
+}

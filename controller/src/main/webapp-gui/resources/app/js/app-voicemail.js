@@ -1,143 +1,179 @@
+var interact = interact || {};
+var Voicemail;
 $(document).ready(function() {
-
-    $('#voicemail-bubble-new').click(function() {
-        Listen.Voicemail.updateBubbleNew();
+    $('#bubble-new').click(function() {
+        Voicemail.updateBubbleNew();
     });
 
-    $('#voicemail-header .voicemail-cell-received a').click(function() {
-        var indicator = $('#voicemail-header .voicemail-cell-received span');
+    $('#voicemail-header .received a').click(function() {
+        var indicator = $('#voicemail-header .received span');
         var ascending = !indicator.hasClass('sort-descending');
 
         indicator.removeClass(ascending ? 'sort-ascending' : 'sort-descending');
         indicator.addClass(ascending ? 'sort-descending' : 'sort-ascending');
 
-        $('#voicemail-header .voicemail-cell-from span').removeClass('sort-ascending').removeClass('sort-descending');
+        $('#voicemail-header .from span').removeClass('sort-ascending').removeClass('sort-descending');
 
-        Listen.Voicemail.sort('received', ascending);
+        Voicemail.sort('received', ascending);
     });
 
-    $('#voicemail-header .voicemail-cell-from a').click(function() {
-        var indicator = $('#voicemail-header .voicemail-cell-from span');
+    $('#voicemail-header .from a').click(function() {
+        var indicator = $('#voicemail-header .from span');
         var ascending = !indicator.hasClass('sort-descending');
 
         indicator.removeClass(ascending ? 'sort-ascending' : 'sort-descending');
         indicator.addClass(ascending ? 'sort-descending' : 'sort-ascending');
 
-        $('#voicemail-header .voicemail-cell-received span').removeClass('sort-ascending').removeClass('sort-descending');
+        $('#voicemail-header .received span').removeClass('sort-ascending').removeClass('sort-descending');
 
-        Listen.Voicemail.sort('from', ascending);
+        Voicemail.sort('from', ascending);
     });
 
-    Listen.Voicemail = function() {
+    Voicemail = function() {
         var dynamicTable, interval;
         return {
             Application: function() {
-                dynamicTable = new Listen.DynamicTable({
-                    url: Listen.url('/ajax/getVoicemailList'),
-                    tableId: 'voicemail-table',
-                    templateId: 'voicemail-row-template',
+                dynamicTable = new interact.util.DynamicTable({
+                    url: interact.listen.url('/ajax/getVoicemailList'),
+                    tableId: 'voicemail-list',
+                    templateId: 'voicemail-template',
                     retrieveList: function(data) {
                         return data.results;
                     },
-                    countContainer: 'voicemail-new-count',
+                    countContainer: 'voicemail-new-count', // FIXME the count container needs to have the voicemail count even if they're not looking at the voicemail application
                     retrieveCount: function(data) {
                         return data.newCount;
                     },
                     reverse: true,
                     isList: true,
-                    paginationId: 'voicemail-pagination',
+                    paginationId: 'pagination',
                     updateRowCallback: function(row, data, animate) {
                         if(data.isNew) {
-                            row.removeClass('voicemail-read');
-                            row.addClass('voicemail-unread');
+                            row.removeClass('old-voicemail');
+                            row.addClass('new-voicemail');
                         } else {
-                            row.removeClass('voicemail-unread');
-                            row.addClass('voicemail-read');
+                            row.removeClass('new-voicemail');
+                            row.addClass('old-voicemail');
                         }
 
-                        var statusButton = '<button class="icon-' + (data.isNew ? 'unread' : 'read') + '" onclick="' + (data.isNew ? 'Listen.Voicemail.markVoicemailNew(' + data.id + ');' : 'Listen.Voicemail.markVoicemailOld(' + data.id + ');return false;') + '" title="' + (data.isNew ? 'Mark as old' : 'Mark as new') + '"></button>';
-                        Listen.setFieldContent(row.find('.voicemail-cell-from'), '<div>' + statusButton + '</div><div>' + data.leftBy + '</div>', false, true);
-                        Listen.setFieldContent(row.find('.voicemail-cell-received'), data.dateCreated, animate);
-                        
-                        var playAction = '<a href="#" onclick="Listen.Voicemail.playVoicemail(' + data.id + ', \'' + data.uri + '\');return false;">Play</a>';
-                        var playerCell = $('#voicemail-table-row-' + data.id + ' .voicemail-cell-play');
-                        
-                        if(playerCell.html() == null)
-                        {
-                        	Listen.setFieldContent(row.find('.voicemail-cell-play'), '<div>' + data.duration + '</div><div class="playLink" id="playLink' + data.id + '">' + playAction + '</div>', false, true);
+                        // status button
+                        var statusButton = row.find('.icon-unread, .icon-read');
+                        statusButton.unbind('click').removeClass().addClass(data.isNew ? 'icon-unread' : 'icon-read');
+                        statusButton.attr('title', data.isNew ? 'Mark as old' : 'Mark as new');
+                        if(data.isNew) {
+                            statusButton.click(function() {
+                                Voicemail.markVoicemailNew(data.id);
+                                return false;
+                            });
+                        } else {
+                            statusButton.click(function() {
+                                Voicemail.markVoicemailOld(data.id);
+                                return false;
+                            });
                         }
 
-                        var downloadAction = '<a href="' + Listen.url('/ajax/downloadVoicemail?id=' + data.id) + '">Download</a>';
-                        var deleteAction = '<a href="#" onclick="Listen.Voicemail.confirmDeleteVoicemail(' + data.id + ');return false;" title="Delete this voicemail">Delete</a>';
-                        Listen.setFieldContent(row.find('.voicemail-cell-actions'), '<div>' + deleteAction + '</div><div>' + downloadAction + '</div>', false, true);
+                        interact.util.setFieldContent(row.find('.from'), '<div>' + data.leftBy + '</div>', false, true);
+                        interact.util.setFieldContent(row.find('.received'), data.dateCreated, animate);
+                        
+                        var playAction = '<a href="#" onclick="Voicemail.playVoicemail(' + data.id + ', \'' + data.uri + '\');return false;">Play</a>';
+                        var playerCell = $('#voicemail-list-row-' + data.id + ' .play');
+                        
+                        if(playerCell.html() == null) {
+                            interact.util.trace('setting player cell contents to link');
+                        	interact.util.setFieldContent(row.find('.play'), '<div>' + data.duration + '</div><div class="playLink" id="playLink' + data.id + '">' + playAction + '</div>', false, true);
+                        }
 
-                        var transcriptionField = row.find('.voicemail-cell-transcription');
+                        // download, delete buttons
+                        var deleteButton = row.find('.icon-delete');
+                        deleteButton.unbind('click').click(function() {
+                            Voicemail.confirmDeleteVoicemail(data.id);
+                            return false;
+                        });
+                        
+                        var downloadButton = row.find('.icon-view');
+                        downloadButton.unbind('click').click(function() {
+                            var url = interact.listen.url('/ajax/downloadVoicemail?id=' + data.id);
+                            window.location = url;
+                            return false;
+                        });
+                        
+                        var transcriptionField = row.find('.transcription-bubble');
                         if(data.transcription != null && data.transcription.length > 0) {
-                            Listen.setFieldContent(transcriptionField, data.transcription, false, true);
+                            interact.util.setFieldContent(transcriptionField, data.transcription, false, true);
                             transcriptionField.css('display', 'block');
                         } else {
                             transcriptionField.css('display', 'none');
                         }
+                    },
+                    updateFinishedCallback: function(data) {
+                        if(data.results.length == 0) {
+                            $('#voicemail-header').hide();
+                            $('#pagination').hide();
+                        } else {
+                            $('#voicemail-header').show();
+                            $('#pagination').show();
+                        }
                     }
                 });
 
+                // TODO don't really need a separate "load()" anymore, do we?
                 this.load = function() {
-                    Listen.trace('Loading voicemail');
+                    interact.util.trace('Loading voicemail');
                     dynamicTable.pollAndSet(false);
                     interval = setInterval(function() {
                         dynamicTable.pollAndSet(true);
                     }, 1000);
                 };
 
-                this.unload = function() {
-                    Listen.trace('Unloading voicemail');
-                    if(interval) {
-                        clearInterval(interval);
-                    }
-                };
+//                this.unload = function() {
+//                    interact.util.trace('Unloading voicemail');
+//                    if(interval) {
+//                        clearInterval(interval);
+//                    }
+//                };
             },
 
             confirmDeleteVoicemail: function(id) {
-                Listen.trace('Listen.Voicemail.confirmDeleteVoicemail');
+                interact.util.trace('Voicemail.confirmDeleteVoicemail');
                 if(confirm('Are you sure?')) {
-                    Listen.Voicemail.deleteVoicemail(id);
+                    Voicemail.deleteVoicemail(id);
                 }
             },
 
             deleteVoicemail: function(id) {
-                Listen.trace('Listen.Voicemail.deleteVoicemail');
+                interact.util.trace('Voicemail.deleteVoicemail');
                 Server.post({
-                    url: Listen.url('/ajax/deleteVoicemail'),
+                    url: interact.listen.url('/ajax/deleteVoicemail'),
                     properties: { id: id }
                 });
             },
 
             markVoicemailNew: function(id) {
                 Server.post({
-                    url: Listen.url('/ajax/markVoicemailReadStatus'),
+                    url: interact.listen.url('/ajax/markVoicemailReadStatus'),
                     properties: { id: id, readStatus: true},
                     successCallback: function() {
-                        Listen.Voicemail.updateBubbleNew();
+                        Voicemail.updateBubbleNew();
                     }
                 });
             },
             
             markVoicemailOld: function(id) {
                 Server.post({
-                    url: Listen.url('/ajax/markVoicemailReadStatus'),
+                    url: interact.listen.url('/ajax/markVoicemailReadStatus'),
                     properties: {id: id, readStatus: false },
                     successCallback: function() {
-                        Listen.Voicemail.updateBubbleNew();
+                        Voicemail.updateBubbleNew();
                     }
                 });
             },
             
             playVoicemail: function(id, uri) {
-            	Listen.trace('Listen.Voicemail.playVoicemail');
+            	interact.util.trace('Voicemail.playVoicemail');
             	$('.playerDiv').remove();
             	$('.playLink').show();
             	var playerHtml = '<div class="playerDiv"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="165" height="37" id="player' + id + '" align=""><param name=movie value="./resources/audio/niftyplayer.swf?file=' + uri + '&as=1"><param name=quality value=high><param name=bgcolor value=#FFFFFF><embed src="./resources/audio/niftyplayer.swf?file=' + uri + '&as=1" quality=high bgcolor=#FFFFFF width="165" height="37" id="player' + id + '" name="player' + id + '" align="" type="application/x-shockwave-flash" swLiveConnect="true" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed></object></div>';
-            	$('#voicemail-table-row-' + id + ' .voicemail-cell-play').append(playerHtml);
+            	$('#voicemail-list-row-' + id + ' .play').append(playerHtml);
             	$('#playLink' + id).hide()
 			},
 
@@ -150,7 +186,7 @@ $(document).ready(function() {
 
                 dynamicTable.clear();
 
-                var bubble = $('#voicemail-bubble-new').is(':checked');
+                var bubble = $('#bubble-new').is(':checked');
                 dynamicTable.setUrl('/ajax/getVoicemailList?bubbleNew=' + (bubble ? 'true' : 'false'));
 
                 // start polling (ugly)
@@ -179,6 +215,6 @@ $(document).ready(function() {
             }
         }
     }();
-
-    Listen.registerApp(new Listen.Application('voicemail', 'voicemail-application', 'menu-voicemail', new Listen.Voicemail.Application()));
+    
+    new Voicemail.Application().load();
 });

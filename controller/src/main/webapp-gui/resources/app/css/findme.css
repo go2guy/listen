@@ -1,0 +1,126 @@
+/* FINDME - light = EEABAB, dark = D73B3B */
+
+li#menu-findme a {
+    background-color: #D73B3B;
+    color: #FFFFFF;
+}
+
+.application-findme #content {
+    /*background-color: #FAE8E8;*/
+    background-color: #FFFFFF;
+}
+
+.application-findme #content h1 {
+    background: #DD0000;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEABAB', endColorstr='#D73B3B'); /* IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#EEABAB), to(#D73B3B)); /* webkit */
+    background: -moz-linear-gradient(top, #EEABAB, #D73B3B); /* FF 3.6+ */
+}
+
+.simultaneous-numbers,
+.if-i-dont-answer,
+.when-somebody-calls,
+.save-button-container {
+    background-color: #FAE8E8;
+    border: 2px solid #FAE8E8;
+    clear: both;
+    float: left;
+    padding: 5px 10px;
+    width: 786px;
+}
+
+.simultaneous-numbers {
+    border-color: #E0C3C7;
+    background-color: #FAE8E8;
+    margin: 10px 0 15px 0; /* bottom gets an extra 5 to account for the drop shadow */
+    padding: 10px;
+    
+    box-shadow: 0 5px 5px #AAAAAA;
+    -moz-box-shadow: 0 5px 5px #AAAAAA;
+    -webkit-box-shadow: 0 5px 5px #AAAAAA;
+
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.simultaneous-numbers .dialed-number *,
+.simultaneous-numbers .dialed-number-disabled * {
+    margin-right: 5px;
+}
+
+.simultaneous-numbers .dialed-number button,
+.simultaneous-numbers .dialed-number-disabled button {
+    float: right;
+    margin-top: 5px;
+}
+
+.help {
+    margin: 5px 0;
+    width: 777px;
+}
+
+input,
+select {
+    border: 2px solid #BBBBBB; 
+    font-size: 16px;
+    height: 24px;
+    line-height: 24px;
+}
+
+.findme-text-dial {
+    float: left;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.when-somebody-calls,
+.if-i-dont-answer {
+    font-size: 16px;
+}
+
+.if-i-dont-answer select {
+    margin-left: 10px;
+}
+
+.dialed-number,
+.dialed-number-disabled {
+    background-color: #E0C3C7;
+    clear: left;
+    margin-top: 5px;
+    padding: 3px;
+
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+
+.dialed-number-disabled {
+    background-color: #EEEEEE;
+}
+
+.dialed-number .ring-seconds,
+.dialed-number-disabled .ring-seconds {
+    text-align: center;
+    width: 50px;
+}
+
+.dialed-number input,
+.dialed-number-disabled input {
+    width: 300px;
+}
+
+.dialed-number-disabled input {
+    background-color: #DDDDDD;
+    color: #999999;
+}
+
+.group-buttons .button-delete,
+.group-buttons .button-cancel {
+    float: right;
+    margin-left: 5px;
+}
+
+.group-buttons {
+    margin-top: 15px;
+}

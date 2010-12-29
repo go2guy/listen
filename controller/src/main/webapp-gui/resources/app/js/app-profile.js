@@ -1,34 +1,36 @@
+var interact = interact || {};
+var Profile;
 $(document).ready(function() {
 
     $('#profile-form').submit(function() {
-        Listen.Profile.editSubscriber();
+        Profile.editSubscriber();
         return false;
     });
 
     $('#profile-form-testEmail-button').click(function() {
-        Listen.Profile.testEmailAddress();
+        Profile.testEmailAddress();
         return false;
     });
 
     $('#profile-form-testSms-button').click(function() {
-        Listen.Profile.testSmsAddress();
+        Profile.testSmsAddress();
         return false;
     });
 
     $('#pager-form').submit(function() {
-        Listen.Profile.editPagerInfo();
+        Profile.editPagerInfo();
         return false;
     });
 
-    Listen.Profile = function() {
+    Profile = function() {
         return {
             Application: function() {
-                Listen.trace('Listen.Profile.Application [construct]');                
+                interact.util.trace('Profile.Application [construct]');                
                 
                 this.load = function() {
-                    Listen.trace('Loading profile');
+                    interact.util.trace('Loading profile');
                     $.ajax({
-                        url: Listen.url('/ajax/getSubscriber'),
+                        url: interact.listen.url('/ajax/getSubscriber'),
                         dataType: 'json',
                         cache: 'false',
                         success: function(data, textStatus, xhr) {
@@ -83,19 +85,13 @@ $(document).ready(function() {
                         }
                     });
                 };
-                
-                this.unload = function() {
-                    Listen.trace('Unloading profile');
-                    Listen.Profile.clearError();
-                    $('#pager-form .form-error-message').text('').hide();
-                };
             },
             
             editSubscriber: function() {
-                Listen.trace('Listen.Profile.editSubscriber');
-                Listen.Profile.disableButtons();
+                interact.util.trace('Profile.editSubscriber');
+                Profile.disableButtons();
                 Server.post({
-                    url: Listen.url('/ajax/editSubscriber'),
+                    url: interact.listen.url('/ajax/editSubscriber'),
                     properties: {
                         id: $('#profile-form-id').val(),
                         username: $('#profile-form-username').val(),
@@ -112,102 +108,75 @@ $(document).ready(function() {
                         voicemailPlaybackOrder: $('#profile-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
-                        Listen.Profile.showSuccess('Profile updated');
-                        Listen.Profile.enableButtons();
+                        interact.listen.notifySuccess('Profile updated');
+                        Profile.enableButtons();
                     },
                     errorCallback: function(message) {
-                        Listen.Profile.showError(message);
+                        interact.listen.notifyError(message);
                     }
                 });
             },
             
             editPagerInfo: function() {
-                Listen.trace('Listen.Profile.editPagerInfo');
-                $('#pager-form .form-error-message').text('').hide();
+                interact.util.trace('Profile.editPagerInfo');
                 
                 $('#pager-form-alternate-number').val($('#pager-form-alternate-number').val().replace(/[-\.]/g, ""));
                 
                 $('#pager-form button').attr('readonly', 'readonly');
                 Server.post({
-                    url: Listen.url('/ajax/editPager'),
+                    url: interact.listen.url('/ajax/editPager'),
                     properties: {
                         alternateNumber: $('#pager-form-alternate-number').val(),
                         alternateAddress: $('#pager-form-alternate-address').val(),
                         pagePrefix: $('#pager-form-page-prefix').val()
                     },
                     successCallback: function() {
-                        var elem = $('#pager-form .form-success-message');
-                        elem.text('Alternate number updated').slideDown(100);
-                        setTimeout(function() {
-                            elem.slideUp(100);
-                        }, 2000);
-                        
+                        interact.listen.notifySuccess('Alternate number updated');
                         $('#pager-form button').removeAttr('readonly');
                     },
                     errorCallback: function(message) {
-                        $('#pager-form .form-error-message').text(message).slideDown(100);
+                        interact.listen.notifyError(message);
                     }
                 });
             },
 
-            clearError: function() {
-                Listen.trace('Listen.Profile.clearError');
-                $('#profile-form .form-error-message').text('').hide();
-            },
-
-            showError: function(message) {
-                Listen.trace('Listen.Profile.showError');
-                $('#profile-form .form-error-message').text(message).slideDown(100);
-            },
-
-            showSuccess: function(message) {
-                Listen.trace('Listen.Profile.showSuccess');
-                Listen.Profile.clearError();
-                var elem = $('#profile-form .form-success-message');
-                elem.text(message).slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
-            },
-
             disableButtons: function() {
-                Listen.trace('Listen.Profile.disableButtons');
+                interact.util.trace('Profile.disableButtons');
                 $('#profile-form button').attr('readonly', 'readonly');
             },
 
             enableButtons: function() {
-                Listen.trace('Listen.Profile.enableButtons');
+                interact.util.trace('Profile.enableButtons');
                 $('#profile-form button').removeAttr('readonly');
             },
             
             testEmailAddress: function() {
-                Listen.trace('Listen.Profile.testEmailAddress');
-                Listen.Profile.testAddress('email', $('#profile-form-emailAddress').val());
+                interact.util.trace('Profile.testEmailAddress');
+                Profile.testAddress('email', $('#profile-form-emailAddress').val());
             },
             
             testSmsAddress: function() {
-                Listen.trace('Listen.Profile.testSmsAddress');
-                Listen.Profile.testAddress('sms', $('#profile-form-smsAddress').val());
+                interact.util.trace('Profile.testSmsAddress');
+                Profile.testAddress('sms', $('#profile-form-smsAddress').val());
             },
             
             testAddress: function(type, address) {
                 Server.post({
-                    url: Listen.url('/ajax/testNotificationSettings'),
+                    url: interact.listen.url('/ajax/testNotificationSettings'),
                     properties: {
                         messageType: type,
                         address: address
                     },
                     successCallback: function() {
-                        Listen.Profile.showSuccess("Test notification sent to " + address);
+                        interact.listen.notifySuccess('Test notification sent to ' + address);
                     },
                     errorCallback: function(message) {
-                        Listen.Profile.showError(message);
+                        interact.listen.notifyError(message);
                     }
                 });
             }
         }
     }();
 
-    var app = new Listen.Profile.Application();
-    Listen.registerApp(new Listen.Application('profile', 'profile-application', 'profile-button', app));
+    new Profile.Application().load();
 });

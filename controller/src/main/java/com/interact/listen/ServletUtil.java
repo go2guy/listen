@@ -1,6 +1,10 @@
 package com.interact.listen;
 
 import com.interact.listen.exception.BadRequestServletException;
+import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
+import com.interact.listen.license.NotLicensedException;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -34,7 +38,35 @@ public final class ServletUtil
     {
         return (Subscriber)request.getSession().getAttribute("subscriber");
     }
-    
+
+    /**
+     * Requires that the application be licensed for the specified ListenFeature. If not, throws a NotLicensedException.
+     * 
+     * @param feature feature to verify
+     * @throws NotLicensedException if feature is not licensed
+     */
+    public static void requireLicensedFeature(ListenFeature feature) throws NotLicensedException
+    {
+        if(!License.isLicensed(feature))
+        {
+            throw new NotLicensedException(feature);
+        }
+    }
+
+    public static Subscriber requireCurrentSubscriber(HttpServletRequest request, boolean requireAdministrator) throws UnauthorizedServletException
+    {
+        Subscriber subscriber = currentSubscriber(request);
+        if(subscriber == null)
+        {
+            throw new UnauthorizedServletException("Not logged in");
+        }
+        if(requireAdministrator && !subscriber.getIsAdministrator())
+        {
+            throw new UnauthorizedServletException("Insufficient permissions");
+        }
+        return subscriber;
+    }
+
     public static Map<String, String> getQueryParameters(HttpServletRequest request)
     {
         Map<String, String> map = new HashMap<String, String>();

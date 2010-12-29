@@ -1,0 +1,55 @@
+li#menu-history a {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+#history-list li {
+    border-color: #CCCCCC;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    height: 3em;
+    margin-top: 1px;
+}
+
+#history-list li div {
+    float: left;
+    height: 100%;
+    overflow: hidden;
+    padding-top: 2px;
+}
+
+#history-list li.history-row-conferencing {
+    background-color: #E7F0FF;
+    border-color: #84B4E2;
+}
+
+#history-list li.history-row-findme {
+    background-color: #FFEBEB;
+    border-color: #DD0000;
+}
+
+#history-list li.history-row-unknown {
+    background-color: #EEEEEE;
+    border-color: #CCCCCC;
+}
+
+#history-list li.history-row-voicemail {
+    background-color: #FCF8D2;
+    border-color: #FFE472;
+}
+
+.history-call-date, .history-action-date {
+    width: 180px;
+}
+
+.history-call-type, .history-action-type {
+    width: 25px;
+}
+
+.history-call-subscriber, .history-action-subscriber {
+    width: 105px;
+}
+
+.history-call-description, .history-action-description {
+    width: 500px;
+}

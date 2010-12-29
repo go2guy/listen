@@ -1,6 +1,6 @@
 var Server = {
     post: function(args) {
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
             url: args.url,
@@ -16,145 +16,140 @@ var Server = {
                 }
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     dropCaller: function(id) {
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/dropParticipant'),
+            url: interact.listen.url('/ajax/dropParticipant'),
             data: { id: id },
             success: function(data) {
-                //noticeSuccess('Participant dropped');
+                interact.listen.notifySuccess('Caller has been dropped');
             },
             error: function(req) {
-                //noticeError(req.responseText);
+                interact.listen.notifyError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     markVoicemailReadStatus: function(id, readStatus) {
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/markVoicemailReadStatus'),
+            url: interact.listen.url('/ajax/markVoicemailReadStatus'),
             data: { id: id, readStatus: readStatus },
             success: function(data) { /* TODO anything? */ },
-            error: function(req) { /* TODO anything? */ },
+            error: function(req) {
+                interact.listen.notifyError(req.responseText);
+            },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     muteCaller: function(id) {
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/muteParticipant'),
+            url: interact.listen.url('/ajax/muteParticipant'),
             data: { id: id },
             success: function(data) {
-                //noticeSuccess('Participant muted');
+                interact.listen.notifySuccess('Participant has been muted');
             },
             error: function(req) {
-                //noticeError(req.responseText);
+                interact.listen.notifyError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     outdial: function(number, conferenceId, interrupt) {
-        var errorDiv = $('#outdial-dialog .form-error-message');
-        errorDiv.hide();
-        errorDiv.text('');
-
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/outdial'),
+            url: interact.listen.url('/ajax/outdial'),
             data: { number: number,
                     conferenceId: conferenceId, 
                     interrupt: interrupt},
             success: function(data) {
-                $('#outdial-dialog').slideUp(200);
-                Listen.notify('Number ' + number + ' is being dialed');
+                interact.listen.notifySuccess('Number ' + number + ' is being dialed');
             },
             error: function(req) {
-                errorDiv.text(req.responseText);
-                errorDiv.slideDown(200);
-                //notify('An error occurred dialing the number - please contact an Administrator.');
+                interact.listen.notifyError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
     
     startRecording: function(id) {
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/startRecording'),
+            url: interact.listen.url('/ajax/startRecording'),
             data: { id: id },
             success: function(data) {
-                //noticeSuccess('Started Recording');
+                interact.listen.notifySuccess('Started recording');
             },
             error: function(req) {
-                //noticeError(req.responseText);
+                interact.listen.notifyError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
     
     stopRecording: function(id) {
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/stopRecording'),
+            url: interact.listen.url('/ajax/stopRecording'),
             data: { id: id },
             success: function(data) {
-                //noticeSuccess('Stopped Recording');
+                interact.listen.notifySuccess('Stopped recording');
             },
             error: function(req) {
-                //noticeError(req.responseText);
+                interact.listen.notifyError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
     },
 
     unmuteCaller: function(id) {
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/unmuteParticipant'),
+            url: interact.listen.url('/ajax/unmuteParticipant'),
             data: { id: id },
             success: function(data) {
-                //noticeSuccess('Participant unmuted');
+                interact.listen.notifySuccess('Participant has been unmuted');
             },
             error: function(req) {
-                //noticeError(req.responseText);
+                interact.listen.notifyError(req.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });

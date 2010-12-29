@@ -1,0 +1,177 @@
+/* ATTENDANT - light = C5A8F1, dark = 7A35DD */
+
+li#menu-attendant a {
+    background-color: #7A35DD;
+    color: #FFFFFF;
+}
+
+.application-attendant #content {
+    background-color: #F1E3FA;
+}
+
+.application-attendant #content h1 {
+    background: #DD0000;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C5A8F1', endColorstr='#7A35DD'); /* IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#C5A8F1), to(#7A35DD)); /* webkit */
+    background: -moz-linear-gradient(top, #C5A8F1, #7A35DD); /* FF 3.6+ */
+}
+
+#attendant-menu-action-template {
+    display: none;
+}
+
+/**** [OLD] ****/
+
+#attendant-application .tab-container .tabs {
+    background-color: #FFFFFF;
+    border-color: #DBCCF1;
+}
+
+#attendant-application .tab-container .tabs ul li {
+    border-color: #DBCCF1;
+}
+
+#attendant-application .tab-container .tabs ul li:hover,
+#attendant-application .tab-container .tabs ul li.current {
+    background-color: #DBCCF1;
+    color: #FFFFFF;
+}
+
+#attendant-menu-name {
+    margin: 10px 10px 0 10px;
+}
+
+#attendant-menu-information {
+    margin: 10px 10px 0 10px;
+    width: 20em;
+}
+
+#attendant-menu-information-input {
+    background-color: #DBCCF1;
+    border: 1px solid #7A35DD;
+    padding: 5px;
+}
+
+#attendant-menu-audio-file-transcription {
+    background-color: #E7E1F1;
+    border: 1px solid #DBCCF1;
+    display: none; /* TODO remove when transcriptions available */
+    margin-top: 5px;
+    padding: 5px;
+}
+
+#attendant-menu-actions {
+    margin: 10px;
+}
+
+#attendant-menu-list-container {
+    border-color: #DBCCF1;
+    border-style: dashed;
+    border-width: 0 1px 1px 0;
+    width: 200px;
+}
+
+#attendant-menu-list-container,
+#attendant-menu-builder-container,
+#attendant-menu-builder-container-placeholder {
+    float: left;
+}
+
+#attendant-menu-builder-container {
+    display: none;
+}
+
+table#attendant-menu-list {
+    border-collapse: separate;
+    border-spacing: 0px 5px;
+    width: 100%;
+}
+
+table#attendant-menu-list tbody tr {
+    background-color: #E7E1F1;
+}
+
+table#attendant-menu-list tbody tr.selected {
+    background-color: #DBCCF1;
+}
+
+table#attendant-menu-list tbody tr.selected td {
+    border-color: #7A35DD;
+    border-style: solid;
+    border-width: 1px 0;
+}
+
+#attendant-menu-name {
+    font-size: 125%;
+    font-weight: bold;
+}
+
+#attendant-menu-information div {
+    margin-left: auto;
+    margin-right: auto;
+    width: 99%;
+}
+
+#attendant-menu-information-caption,
+#attendant-menu-actions-caption {
+    color: #666666;
+    font-size: 85%;
+    margin-bottom: 5px;
+}
+
+#attendant-application input {
+    font-weight: bold;
+}
+
+.attendant-menu-action {
+    background-color: #DBCCF1;
+    border: 1px solid #7A35DD;
+    height: 3em;
+    margin-bottom: 5px;
+}
+
+.attendant-menu-action div {
+    float: left;
+    height: 3em;
+    line-height: 3em;
+    margin-left: 5px;
+}
+
+.attendant-menu-action div input,
+.attendant-menu-action div select {
+    margin-top: 10px;
+}
+
+.attendant-menu-number-input {
+    width: 5em;
+}
+
+.attendant-menu-action-launchApplicationCustomInput input {
+    margin-right: 10px;
+    width: 7em;
+}
+
+.attendant-menu-button-container {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    text-align: right;
+}
+
+.attendant-menu-action-delete button {
+    margin-top: 10px;
+}
+
+.attendant-menu-action-delete,
+.attendant-menu-action-keypressLabel,
+.attendant-menu-action-defaultLabel,
+.attendant-menu-action-timeoutLabel,
+.attendant-menu-action-keypressInput,
+.attendant-menu-action-actionSelect,
+.attendant-menu-action-menuSelect,
+.attendant-menu-action-dialNumberInput,
+.attendant-menu-action-launchApplicationSelect,
+.attendant-menu-action-launchApplicationCustomInput {
+    display: none;
+}
+
+/**** [/OLD] ****/

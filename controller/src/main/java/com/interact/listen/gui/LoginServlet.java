@@ -4,6 +4,8 @@ import com.interact.listen.*;
 import com.interact.listen.history.Channel;
 import com.interact.listen.history.DefaultHistoryService;
 import com.interact.listen.history.HistoryService;
+import com.interact.listen.license.License;
+import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.security.AuthenticationService;
 import com.interact.listen.stats.Stat;
@@ -88,7 +90,21 @@ public class LoginServlet extends HttpServlet
         }
         else
         {
-            ServletUtil.redirect("/index", request, response);
+            if(License.isLicensed(ListenFeature.VOICEMAIL))
+            {
+                ServletUtil.redirect("/voicemail", request, response);
+            }
+            else if(License.isLicensed(ListenFeature.CONFERENCING))
+            {
+                ServletUtil.redirect("/conferencing", request, response);
+            }
+            else if(License.isLicensed(ListenFeature.FINDME))
+            {
+                ServletUtil.redirect("/findme", request, response);
+            }
+
+            // FIXME need an 'else' to display some page saying that nothing is licensed
+            // FIXME also conditionalize this based on user privileges - admins should go to configuration?
         }
     }
 

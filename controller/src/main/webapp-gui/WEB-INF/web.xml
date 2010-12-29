@@ -2,6 +2,25 @@
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
 
+    <!-- sitemesh -->
+    <filter>
+        <filter-name>SiteMesh</filter-name>
+        <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SiteMesh</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <!-- /sitemesh -->
+
+    <!-- taglib -->
+    <taglib>
+        <taglib-uri>http://www.iivip.com/taglibs/listen</taglib-uri>
+        <taglib-location>/WEB-INF/tld/listen.tld</taglib-location>
+    </taglib>
+    <!-- /taglib -->
+
     <filter>
         <filter-name>RequestInformationFilter</filter-name>
         <filter-class>com.interact.listen.RequestInformationFilter</filter-class>
@@ -110,6 +129,30 @@
     </servlet>
 
     <servlet>
+        <servlet-name>AttendantServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.AttendantServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConferencesServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.ConferencesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConferencingServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.ConferencingServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfigurationServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.ConfigurationServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>DeleteAttendantMenuServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.DeleteAttendantMenuServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -148,6 +191,12 @@
     <servlet>
         <servlet-name>EditSubscriberServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.EditSubscriberServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>FindMeServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.FindMeServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -265,8 +314,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>IndexServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.IndexServlet</servlet-class>
+        <servlet-name>HistoryServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.HistoryServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -349,6 +398,12 @@
     </servlet>
     
     <servlet>
+        <servlet-name>SettingsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SettingsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
         <servlet-name>StartRecordingServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.StartRecordingServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -359,7 +414,13 @@
         <servlet-class>com.interact.listen.gui.StopRecordingServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
+    <servlet>
+        <servlet-name>SubscribersServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SubscribersServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <servlet>
         <servlet-name>TestNotificationSettingsServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.TestNotificationSettingsServlet</servlet-class>
@@ -369,6 +430,12 @@
     <servlet>
         <servlet-name>UnmuteParticipantServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.UnmuteParticipantServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>VoicemailServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.VoicemailServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -596,8 +663,33 @@
     <!-- main pages -->
     
     <servlet-mapping>
-        <servlet-name>IndexServlet</servlet-name>
-        <url-pattern>/index</url-pattern>
+        <servlet-name>AttendantServlet</servlet-name>
+        <url-pattern>/attendant</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>ConferencesServlet</servlet-name>
+        <url-pattern>/conferences</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>ConferencingServlet</servlet-name>
+        <url-pattern>/conferencing</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>ConfigurationServlet</servlet-name>
+        <url-pattern>/configuration</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>FindMeServlet</servlet-name>
+        <url-pattern>/findme</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>HistoryServlet</servlet-name>
+        <url-pattern>/history</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -608,6 +700,21 @@
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SettingsServlet</servlet-name>
+        <url-pattern>/settings</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SubscribersServlet</servlet-name>
+        <url-pattern>/subscribers</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>VoicemailServlet</servlet-name>
+        <url-pattern>/voicemail</url-pattern>
     </servlet-mapping>
 
     <!-- welcome files -->

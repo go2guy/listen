@@ -1,39 +1,41 @@
+var interact = interact || {};
+var Subscribers;
 $(document).ready(function() {
     $('#subscriber-form-cancel-button').click(function() {
-        Listen.Subscribers.resetForm();
+        Subscribers.resetForm();
         return false;
     });
 
     $('#subscriber-form-testEmail-button').click(function() {
-        Listen.Subscribers.testEmailAddress();
+        Subscribers.testEmailAddress();
         return false;
     });
 
     $('#subscriber-form-testSms-button').click(function() {
-        Listen.Subscribers.testSmsAddress();
+        Subscribers.testSmsAddress();
         return false;
     });
 
     $('#subscriber-form').submit(function() {
         if($('#subscriber-form-add-button').is(':visible')) {
-            Listen.Subscribers.addSubscriber();
+            Subscribers.addSubscriber();
         } else {
-            Listen.Subscribers.editSubscriber();
+            Subscribers.editSubscriber();
         }
         return false;
     });
 
     $('#subscriber-form-addAccessNumber').click(function() {
-        Listen.Subscribers.addAccessNumberRow();
+        Subscribers.addAccessNumberRow();
     });
 
-    Listen.Subscribers = function() {
+    Subscribers = function() {
         return {
             Application: function() {
-                Listen.trace('Listen.Subscribers.Application [construct]');
+                interact.util.trace('Subscribers.Application [construct]');
                 var interval;
-                var dynamicTable = new Listen.DynamicTable({
-                    url: Listen.url('/ajax/getSubscriberList'),
+                var dynamicTable = new interact.util.DynamicTable({
+                    url: interact.listen.url('/ajax/getSubscriberList'),
                     tableId: 'subscribers-table',
                     templateId: 'subscriber-row-template',
                     retrieveList: function(data) {
@@ -42,7 +44,7 @@ $(document).ready(function() {
                     paginationId: 'subscribers-pagination',
                     alternateRowColors: true,
                     updateRowCallback: function(row, data, animate) {
-                        Listen.setFieldContent(row.find('.subscriber-cell-username'), data.username, animate);
+                        interact.util.setFieldContent(row.find('.subscriber-cell-username'), data.username, animate);
 
                         var numbers = '';
                         for(var i = 0; i < data.accessNumbers.length; i++) {
@@ -52,40 +54,32 @@ $(document).ready(function() {
                             }
                         }
 
-                        Listen.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, animate);
-                        Listen.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, animate);
-                        Listen.setFieldContent(row.find('.subscriber-cell-editButton'), '<button type="button" class="icon-edit" title="Edit subscriber" onclick="Listen.Subscribers.loadSubscriber(' + data.id + ');"></button>', false, true);
+                        interact.util.setFieldContent(row.find('.subscriber-cell-accessNumbers'), numbers, animate);
+                        interact.util.setFieldContent(row.find('.subscriber-cell-lastLogin'), data.lastLogin, animate);
+                        interact.util.setFieldContent(row.find('.subscriber-cell-editButton'), '<button type="button" class="icon-edit" title="Edit subscriber" onclick="Subscribers.loadSubscriber(' + data.id + ');"></button>', false, true);
                         if(data.isCurrentSubscriber) {
-                            Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '', false);
+                            interact.util.setFieldContent(row.find('.subscriber-cell-deleteButton'), '', false);
                         } else {
-                            Listen.setFieldContent(row.find('.subscriber-cell-deleteButton'), '<button type="button" class="icon-delete" title="Delete subscriber" onclick="Listen.Subscribers.confirmDeleteSubscriber(' + data.id + ');"></button>', false, true);
+                            interact.util.setFieldContent(row.find('.subscriber-cell-deleteButton'), '<button type="button" class="icon-delete" title="Delete subscriber" onclick="Subscribers.confirmDeleteSubscriber(' + data.id + ');"></button>', false, true);
                         }
                     }
                 });
 
                 this.load = function() {
-                    Listen.trace('Listen.Subscribers.Application.load');
+                    interact.util.trace('Subscribers.Application.load');
                     dynamicTable.pollAndSet(false);
                     interval = setInterval(function() {
                         dynamicTable.pollAndSet(true);
                     }, 1000);
                 };
-
-                this.unload = function() {
-                    Listen.trace('Listen.Subscribers.Application.unload');
-                    if(interval) {
-                        clearInterval(interval);
-                    }
-                    Listen.Subscribers.resetForm();
-                };
             },
 
             loadSubscriber: function(id) {
-                Listen.trace('Listen.Subscribers.loadSubscriber ' + id);
-                Listen.Subscribers.resetForm();
-                var start = Listen.timestamp();
+                interact.util.trace('Subscribers.loadSubscriber ' + id);
+                Subscribers.resetForm();
+                var start = interact.util.timestamp();
                 $.ajax({
-                    url: Listen.url('/ajax/getSubscriber?id=' + id),
+                    url: interact.listen.url('/ajax/getSubscriber?id=' + id),
                     dataType: 'json',
                     cache: 'false',
                     success: function(data, textStatus, xhr) {
@@ -105,9 +99,9 @@ $(document).ready(function() {
 
                         $('#subscriber-form-realName').val(data.realName);
 
-                        Listen.Subscribers.clearAllAccessNumberRows();
+                        Subscribers.clearAllAccessNumberRows();
                         for(var i = 0; i < data.accessNumbers.length; i++) {
-                            Listen.Subscribers.addAccessNumberRow(data.accessNumbers[i].number, data.accessNumbers[i].messageLight);
+                            Subscribers.addAccessNumberRow(data.accessNumbers[i].number, data.accessNumbers[i].messageLight);
                         }
 
                         if(data.voicemailPin !== null) {
@@ -144,16 +138,14 @@ $(document).ready(function() {
                         $('#subscriber-form-cancel-button').show();
                     },
                     complete: function(xhr, textStatus) {
-                        var elapsed = Listen.timestamp() - start;
+                        var elapsed = interact.util.timestamp() - start;
                         $('#latency').text(elapsed);
                     }
                 });
-                
             },
 
             resetForm: function() {
-                Listen.trace('Listen.Subscribers.resetForm');
-                Listen.Subscribers.clearError();
+                interact.util.trace('Subscribers.resetForm');
                 $('#subscriber-form')[0].reset();
                 $('#subscriber-form-cancel-button').hide();
                 $('#subscriber-form-edit-button').hide();
@@ -163,20 +155,20 @@ $(document).ready(function() {
                 $('#subscriber-form-password').removeAttr('readonly').removeClass('disabled');
                 $('#subscriber-form-confirmPassword').removeAttr('readonly').removeClass('disabled');
                 $('#subscriber-form-accountType').text('Local');
-                Listen.Subscribers.clearAllAccessNumberRows();
+                Subscribers.clearAllAccessNumberRows();
             },
 
             addSubscriber: function() {
-                Listen.trace('Listen.Subscribers.addSubscriber');
-                Listen.Subscribers.disableButtons();
+                interact.util.trace('Subscribers.addSubscriber');
+                Subscribers.disableButtons();
                 Server.post({
-                    url: Listen.url('/ajax/addSubscriber'),
+                    url: interact.listen.url('/ajax/addSubscriber'),
                     properties: {
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
                         realName: $('#subscriber-form-realName').val(),
-                        accessNumbers: Listen.Subscribers.buildAccessNumberString(),
+                        accessNumbers: Subscribers.buildAccessNumberString(),
                         voicemailPin: $('#subscriber-form-voicemailPin').val(),
                         enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
@@ -188,28 +180,28 @@ $(document).ready(function() {
                         voicemailPlaybackOrder: $('#subscriber-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
-                        Listen.Subscribers.resetForm();
-                        Listen.Subscribers.showSuccess('Subscriber added');
-                        Listen.Subscribers.enableButtons();
+                        Subscribers.resetForm();
+                        interact.listen.notifySuccess('Subscriber added');
+                        Subscribers.enableButtons();
                     },
                     errorCallback: function(message) {
-                        Listen.Subscribers.showError(message);
+                        interact.listen.notifyError(message);
                     }
                 });
             },
 
             editSubscriber: function() {
-                Listen.trace('Listen.Subscribers.editSubscriber');
-                Listen.Subscribers.disableButtons();
+                interact.util.trace('Subscribers.editSubscriber');
+                Subscribers.disableButtons();
                 Server.post({
-                    url: Listen.url('/ajax/editSubscriber'),
+                    url: interact.listen.url('/ajax/editSubscriber'),
                     properties: {
                         id: $('#subscriber-form-id').val(),
                         username: $('#subscriber-form-username').val(),
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
                         realName: $('#subscriber-form-realName').val(),
-                        accessNumbers: Listen.Subscribers.buildAccessNumberString(),
+                        accessNumbers: Subscribers.buildAccessNumberString(),
                         voicemailPin: $('#subscriber-form-voicemailPin').val(),
                         enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#subscriber-form-enableSmsNotification').is(":checked"),
@@ -221,83 +213,63 @@ $(document).ready(function() {
                         voicemailPlaybackOrder: $('#subscriber-form-voicemailPlaybackOrder').val()
                     },
                     successCallback: function() {
-                        Listen.Subscribers.resetForm();
-                        Listen.Subscribers.showSuccess('Subscriber updated');
-                        Listen.Subscribers.enableButtons();
+                        Subscribers.resetForm();
+                        interact.listen.notifySuccess('Subscriber updated');
+                        Subscribers.enableButtons();
                     },
                     errorCallback: function(message) {
-                        Listen.Subscribers.showError(message);
+                        interact.listen.notifyError(message);
                     }
                 });
             },
 
             confirmDeleteSubscriber: function(id) {
-                Listen.trace('Listen.Subscribers.confirmDeleteSubscriber');
+                interact.util.trace('Subscribers.confirmDeleteSubscriber');
                 if(confirm('Are you sure?')) {
-                    Listen.Subscribers.deleteSubscriber(id);
+                    Subscribers.deleteSubscriber(id);
                 }
             },
 
             deleteSubscriber: function(id) {
-                Listen.trace('Listen.Subscribers.deleteSubscriber');
+                interact.util.trace('Subscribers.deleteSubscriber');
                 Server.post({
-                    url: Listen.url('/ajax/deleteSubscriber'),
+                    url: interact.listen.url('/ajax/deleteSubscriber'),
                     properties: { id: id }
                 });
             },
 
-            clearError: function() {
-                Listen.trace('Listen.Subscribers.clearError');
-                $('#subscriber-form .form-error-message').text('').hide();
-            },
-
-            showError: function(message) {
-                Listen.trace('Listen.Subscribers.showError');
-                $('#subscriber-form .form-error-message').text(message).slideDown(100);
-            },
-
-            showSuccess: function(message) {
-                Listen.trace('Listen.Subscribers.showSuccess');
-                Listen.Subscribers.clearError();
-                var elem = $('#subscriber-form .form-success-message');
-                elem.text(message).slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
-            },
-
             disableButtons: function() {
-                Listen.trace('Listen.Subscribers.disableButtons');
+                interact.util.trace('Subscribers.disableButtons');
                 $('#subscriber-form button').attr('readonly', 'readonly');
             },
 
             enableButtons: function() {
-                Listen.trace('Listen.Subscribers.enableButtons');
+                interact.util.trace('Subscribers.enableButtons');
                 $('#subscriber-form button').removeAttr('readonly');
             },
 
             testEmailAddress: function() {
-                Listen.trace('Listen.Subscribers.testEmailAddress');
-                Listen.Subscribers.testAddress('email', $('#subscriber-form-emailAddress').val());
+                interact.util.trace('Subscribers.testEmailAddress');
+                Subscribers.testAddress('email', $('#subscriber-form-emailAddress').val());
             },
 
             testSmsAddress: function() {
-                Listen.trace('Listen.Subscribers.testSmsAddress');
-                Listen.Subscribers.testAddress('sms', $('#subscriber-form-smsAddress').val());
+                interact.util.trace('Subscribers.testSmsAddress');
+                Subscribers.testAddress('sms', $('#subscriber-form-smsAddress').val());
             },
 
             testAddress: function(type, address) {
                 Server.post({
-                    url: Listen.url('/ajax/testNotificationSettings'),
+                    url: interact.listen.url('/ajax/testNotificationSettings'),
                     properties: {
                         messageType: type,
                         address: address
                     },
                     successCallback: function() {
-                        Listen.Subscribers.showSuccess("Test notification sent to " + address);
+                        interact.listen.notifySuccess('Test notification sent to ' + address);
                     },
                     errorCallback: function(message) {
-                        Listen.Subscribers.showError(message);
+                        interact.listen.notifyError(message);
                     }
                 });
             },
@@ -340,6 +312,5 @@ $(document).ready(function() {
         }
     }();
 
-    var app = new Listen.Subscribers.Application();
-    Listen.registerApp(new Listen.Application('subscribers', 'subscribers-application', 'menu-subscribers', app));
+    new Subscribers.Application().load();
 });

@@ -1,14 +1,14 @@
+var interact = interact || {};
 $(document).ready(function() {
     var application = new SystemConfigurationApplication();
-
-    Listen.registerApp(new Listen.Application('sysconfig', 'sysconfig-application', 'menu-sysconfig', application));
+    application.load();
 
     function SystemConfigurationApplication() {
         this.load = function() {
-            Listen.trace('Loading system configuration');
-            var start = Listen.timestamp();
+            interact.util.trace('Loading system configuration');
+            var start = interact.util.timestamp();
             $.ajax({
-                url: Listen.url('/ajax/getProperties'),
+                url: interact.listen.url('/ajax/getProperties'),
                 dataType: 'json',
                 cache: false,
                 success: function(data, textStatus, xhr) {
@@ -65,15 +65,10 @@ $(document).ready(function() {
                     }
                 },
                 complete: function(xhr, textStatus) {
-                    var elapsed = Listen.timestamp() - start;
+                    var elapsed = interact.util.timestamp() - start;
                     $('#latency').text(elapsed);
                 }
             });
-        };
-
-        this.unload = function() {
-            Listen.trace('Unloading system configuration');
-            // no-op
         };
     };
 
@@ -114,28 +109,23 @@ $(document).ready(function() {
     });
 
     $('#mail-form').submit(function() {
-        $('#mail-form .form-error-message').text('').hide();
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/setProperties'),
+            url: interact.listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.mail.smtpHost': $('#smtp-server').val(),
                     'com.interact.listen.mail.smtpUsername': $('#smtp-username').val(),
                     'com.interact.listen.mail.smtpPassword': $('#smtp-password').val(),
                     'com.interact.listen.mail.fromAddress': $('#from-address').val() },
             success: function(data) {
                 application.load();
-                var elem = $('#mail-form .form-success-message')
-                elem.text('Mail settings updated').slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
+                interact.listen.notifySuccess('Mail settings updated');
             },
             error: function(xhr) {
-                $('#mail-form .form-error-message').text(xhr.responseText).slideDown(100);
+                interact.listen.notifyError(xhr.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -143,7 +133,6 @@ $(document).ready(function() {
     });
 
     $('#dnis-mapping-form').submit(function() {
-        $('#dnis-mapping-form .form-error-message').text('').hide();
         var value = '';
         var rows = $('#dnis-mapping-form tr');
         var num = 0;
@@ -172,21 +161,17 @@ $(document).ready(function() {
             value = value.substring(0, value.length - 1); // remove last semicolon
         }
 
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/setProperties'),
+            url: interact.listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.dnisMapping': value },
             success: function(data) {
                 application.load();
-                var elem = $('#dnis-mapping-form .form-success-message')
-                elem.text('Phone numbers updated').slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
+                interact.listen.notifySuccess('Phone numbers updated');
             },
             error: function(xhr) {
-                $('#dnis-mapping-form .form-error-message').text(xhr.responseText).slideDown(100);
+                interact.listen.notifyError(xhr.responseText);
             },
             complete: function(xhr, textStatus) {
             	var elapsed = Listen.timestamp() - start;
@@ -254,7 +239,7 @@ $(document).ready(function() {
 		});
 
         $('#conferencing-configuration-form tbody tr:last').before(clone);
-        $('select option[value=\'' + n + '\']', clone).attr('selected', 'selected');
+        $("select option[value='" + n + "']", clone).attr('selected', 'selected');
         
         $('.icon-delete', clone).click(function() {
             $(this).parent().parent().remove();
@@ -267,7 +252,6 @@ $(document).ready(function() {
     });
 
     $('#conferencing-configuration-form').submit(function() {
-        $('#conferencing-configuration-form .form-error-message').text('').hide();
         var value = '';
         var rows = $('#conferencing-bridge-numbers tr');
         var num = 0;
@@ -286,25 +270,21 @@ $(document).ready(function() {
             value = value.substring(0, value.length - 1); // remove last semicolon
         }
         
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/setProperties'),
+            url: interact.listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.conferencing.pinLength': $('#conferencing-configuration-pinLength').val(),
                     'com.interact.listen.conferenceBridges': value },
             success: function(data) {
                 application.load();
-                var elem = $('#conferencing-configuration-form .form-success-message')
-                elem.text('Conferencing settings updated').slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
+                interact.listen.notifySuccess('Conferencing settings updated');
             },
             error: function(xhr) {
-                $('#conferencing-configuration-form .form-error-message').text(xhr.responseText).slideDown(100);
+                interact.listen.notifyError(xhr.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -312,26 +292,21 @@ $(document).ready(function() {
     });
 
     $('#alerts-configuration-form').submit(function() {
-        $('#alerts-configuration-form .form-error-message').text('').hide();
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/setProperties'),
+            url: interact.listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.realizeUrl': $('#alerts-configuration-realizeUrl').val(),
                     'com.interact.listen.realizeAlertName': $('#alerts-configuration-realizeAlertName').val() },
             success: function(data) {
                 application.load();
-                var elem = $('#alerts-configuration-form .form-success-message')
-                elem.text('Alert settings updated').slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
+                interact.listen.notifySuccess('Alert settings updated');
             },
             error: function(xhr) {
-                $('#alerts-configuration-form .form-error-message').text(xhr.responseText).slideDown(100);
+                interact.listen.notifyError(xhr.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -339,27 +314,22 @@ $(document).ready(function() {
     });
 
     $('#sysconfig-authentication-form').submit(function() {
-        $('#sysconfig-authentication-form .form-error-message').text('').hide();
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/setProperties'),
+            url: interact.listen.url('/ajax/setProperties'),
             data: { 'com.interact.listen.activeDirectory.enabled': $('#sysconfig-authentication-activeDirectoryEnabled').attr('checked'),
                     'com.interact.listen.activeDirectory.server': $('#sysconfig-authentication-activeDirectoryServer').val(),
                     'com.interact.listen.activeDirectory.domain': $('#sysconfig-authentication-activeDirectoryDomain').val() },
             success: function(data) {
                 application.load();
-                var elem = $('#sysconfig-authentication-form .form-success-message')
-                elem.text('Authentication settings updated').slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
+                interact.listen.notifySuccess('Authentication settings updated');
             },
             error: function(xhr) {
-                $('#sysconfig-authentication-form .form-error-message').text(xhr.responseText).slideDown(100);
+                interact.listen.notifyError(xhr.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -367,28 +337,23 @@ $(document).ready(function() {
     });
     
     $('#sysconfig-google-form').submit(function() {
-        $('#sysconfig-google-form .form-error-message').text('').hide();
-        var start = Listen.timestamp();
+        var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
-            url: Listen.url('/ajax/setGoogleAuth'),
+            url: interact.listen.url('/ajax/setGoogleAuth'),
             data: { 'com.interact.listen.google.c2dm.enabled': $('#sysconfig-c2dm-enabled').attr('checked'),
                     'com.interact.listen.google.username': $('#sysconfig-google-account').val(),
                     'com.interact.listen.google.password': $('#sysconfig-google-password').val(),
                     'com.interact.listen.google.authToken': $('#sysconfig-google-authtoken').val() },
             success: function(data) {
                 application.load();
-                var elem = $('#sysconfig-google-form .form-success-message')
-                elem.text('Google account settings updated').slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
+                interact.listen.notifySuccess('Google account settings updated');
             },
             error: function(xhr) {
-                $('#sysconfig-google-form .form-error-message').text(xhr.responseText).slideDown(100);
+                interact.listen.notifyError(xhr.responseText);
             },
             complete: function(xhr, textStatus) {
-                var elapsed = Listen.timestamp() - start;
+                var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
             }
         });
@@ -443,7 +408,7 @@ function deleteSpotSystem(system) {
     }
 
     Server.post({
-        url: Listen.url('/ajax/setProperties'),
+        url: interact.listen.url('/ajax/setProperties'),
         properties: {
             'com.interact.listen.spotSystems': systems
         }

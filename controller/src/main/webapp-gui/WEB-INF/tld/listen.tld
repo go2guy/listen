@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+
+<taglib>
+    <tlibversion>1.0</tlibversion>
+    <jspversion>1.1</jspversion>
+    <shortname>listen</shortname>
+    <info>Interact Incorporated Listen Tag Library</info>
+
+    <tag>
+        <name>resource</name>
+        <tag-class>com.interact.listen.taglib.ResourceTag</tag-class>
+        <body-content>empty</body-content>
+        <info>Outputs a path to the provided resource with the correct context path</info>
+
+        <attribute>
+            <name>path</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>ifLicensed</name>
+        <tag-class>com.interact.listen.taglib.IfLicensedTag</tag-class>
+        <body-content>JSP</body-content>
+        <info>If the provided 'feature' is licensed, the content within the tag is displayed.</info>
+        <attribute>
+            <name>feature</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+</taglib>

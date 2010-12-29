@@ -1,88 +1,79 @@
+var interact = interact || {};
+var Attendant;
 $(document).ready(function() {
 
     $('#attendant-menu-add-new-action').click(function() {
-        Listen.Attendant.addAction(Listen.Attendant.getTemplateAction(), $('#attendant-menu-actions-container'), false, false);
+        Attendant.addAction(Attendant.getTemplateAction(), $('#attendant-menu-actions-container'), false, false);
     });
 
     $('#attendant-menu-add-new-menu').click(function() {
-        Listen.Attendant.deselectMenuList();
-        Listen.Attendant.loadNewMenu();
+        Attendant.deselectMenuList();
+        Attendant.loadNewMenu();
     });
 
     $('#attendant-menu-cancel').click(function() {
-        Listen.Attendant.deselectMenuList();
-        Listen.Attendant.clearError();
+        Attendant.deselectMenuList();
         $('#attendant-menu-builder-container').hide();
         $('#attendant-menu-builder-container-placeholder').show();
     });
 
     $('#attendant-menu-save').click(function() {
-        Listen.Attendant.saveMenu();
+        Attendant.saveMenu();
     });
 
-    Listen.Attendant = function() {
+    Attendant = function() {
         return {
             prompts: [],
             Application: function() {
                 var interval, promptInterval;
-                var dynamicTable = new Listen.DynamicTable({
-                    url: Listen.url('/ajax/getAttendantMenuList'),
+                var dynamicTable = new interact.util.DynamicTable({
+                    url: interact.listen.url('/ajax/getAttendantMenuList'),
                     tableId: 'attendant-menu-list',
                     templateId: 'attendant-menu-list-row-template',
                     retrieveList: function(data) {
                         return data;
                     },
                     updateRowCallback: function(row, data, animate) {
-                        Listen.setFieldContent(row.find('.attendant-menu-list-cell-name'), data.name, animate);
-                        Listen.setFieldContent(row.find('.attendant-menu-list-cell-edit'), '<button class="icon-edit" onclick="Listen.Attendant.loadMenu(' + data.id + ');"></button>', false, true);
+                        interact.util.setFieldContent(row.find('.attendant-menu-list-cell-name'), data.name, animate);
+                        interact.util.setFieldContent(row.find('.attendant-menu-list-cell-edit'), '<button class="icon-edit" onclick="Attendant.loadMenu(' + data.id + ');"></button>', false, true);
                         if(data.name !== 'Top Menu') {
-                            Listen.setFieldContent(row.find('.attendant-menu-list-cell-delete'), '<button class="icon-delete" onclick="Listen.Attendant.deleteMenu(' + data.id + ');"></button>', false, true);
+                            interact.util.setFieldContent(row.find('.attendant-menu-list-cell-delete'), '<button class="icon-delete" onclick="Attendant.deleteMenu(' + data.id + ');"></button>', false, true);
                         }
                     }
                 });
 
                 this.load = function() {
-                    Listen.trace('Loading Attendant');
+                    interact.util.trace('Loading Attendant');
                     dynamicTable.pollAndSet(false);
                     interval = setInterval(function() {
                         dynamicTable.pollAndSet(true);
                     }, 1000);
                     
-                    Listen.Attendant.loadPrompts();
+                    Attendant.loadPrompts();
                     promptInterval = setInterval(function() {
-                        Listen.Attendant.loadPrompts();
+                        Attendant.loadPrompts();
                     }, 30000);
-                };
-
-                this.unload = function() {
-                    Listen.trace('Unloading Attendant');
-                    if(interval) {
-                        clearInterval(interval);
-                    }
-                    if(promptInterval) {
-                        clearInterval(promptInterval);
-                    }
                 };
             },
 
             loadNewMenu: function() {
-                Listen.Attendant.resetMenu();
+                Attendant.resetMenu();
 
-                Listen.Attendant.addAction({action: 'GoToMenu', arguments: {menuId: 1}}, $('#attendant-menu-actions-default-action-container'), true, false);
-                Listen.Attendant.addAction({action: 'GoToMenu', arguments: {menuId: 1}}, $('#attendant-menu-actions-timeout-action-container'), false, true);
+                Attendant.addAction({action: 'GoToMenu', arguments: {menuId: 1}}, $('#attendant-menu-actions-default-action-container'), true, false);
+                Attendant.addAction({action: 'GoToMenu', arguments: {menuId: 1}}, $('#attendant-menu-actions-timeout-action-container'), false, true);
 
                 $('#attendant-menu-builder-container-placeholder').hide();
                 $('#attendant-menu-builder-container').show();
             },
 
             loadMenu: function(id) {
-                var start = Listen.timestamp();
+                var start = interact.util.timestamp();
                     $.ajax({
-                        url: Listen.url('/ajax/getAttendantMenuList'),
+                        url: interact.listen.url('/ajax/getAttendantMenuList'),
                         dataType: 'json',
                         cache: false,
                         success: function(data, textStatus, xhr) {
-                            Listen.Attendant.resetMenu();
+                            Attendant.resetMenu();
 
                             $('#attendant-menu-list tbody tr').each(function(index, value) {
                                 var row = $(value);
@@ -100,7 +91,7 @@ $(document).ready(function() {
                                 }
                             }
                             if(menu) {
-                                Listen.debug('Populating menu [' + id + ']');
+                                interact.util.debug('Populating menu [' + id + ']');
         
                                 $('#attendant-menu-id').val(id);
                                 $('#attendant-menu-name input').val(menu.name);
@@ -111,22 +102,22 @@ $(document).ready(function() {
         
                                 for(var i = 0; i < menu.actions.length; i++) {
                                     var action = menu.actions[i];
-                                    Listen.debug('Loading action [' + action.keyPressed + '] -> [' + action.action + ']');
-                                    Listen.Attendant.addAction(action, $('#attendant-menu-actions-container'), false, false);
+                                    interact.util.debug('Loading action [' + action.keyPressed + '] -> [' + action.action + ']');
+                                    Attendant.addAction(action, $('#attendant-menu-actions-container'), false, false);
                                 }
 
-                                Listen.Attendant.addAction(menu.defaultAction, $('#attendant-menu-actions-default-action-container'), true, false);
-                                Listen.Attendant.addAction(menu.timeoutAction, $('#attendant-menu-actions-timeout-action-container'), false, true);
+                                Attendant.addAction(menu.defaultAction, $('#attendant-menu-actions-default-action-container'), true, false);
+                                Attendant.addAction(menu.timeoutAction, $('#attendant-menu-actions-timeout-action-container'), false, true);
                             }
                             else
                             {
-                                Listen.debug('Menu not found in list with id [' + id + ']');
+                                interact.util.debug('Menu not found in list with id [' + id + ']');
                             }
                             $('#attendant-menu-builder-container-placeholder').hide();
                             $('#attendant-menu-builder-container').show();
                         },
                         complete: function(xhr, textStatus) {
-                            var elapsed = Listen.timestamp() - start;
+                            var elapsed = interact.util.timestamp() - start;
                             $('#latency').text(elapsed);
                         }
                     });
@@ -144,7 +135,7 @@ $(document).ready(function() {
                 $('#attendant-menu-actions-timeout-action-container div').remove();
                 $('#attendant-menu-actions-container div').remove();
 
-                Listen.Attendant.deselectMenuList();
+                Attendant.deselectMenuList();
             },
 
             addAction: function(action, container, isDefault, isTimeout) {
@@ -155,7 +146,7 @@ $(document).ready(function() {
 
                 if(!isDefault && !isTimeout) {
                     $('.attendant-menu-action-delete', clone).show();
-                    $('.attendant-menu-action-delete', clone).html('<button type="button" class="icon-delete" onclick="Listen.Attendant.deleteAction(this);"></button>');
+                    $('.attendant-menu-action-delete', clone).html('<button type="button" class="icon-delete" onclick="Attendant.deleteAction(this);"></button>');
                 }
 
                 if(isDefault) {
@@ -170,14 +161,14 @@ $(document).ready(function() {
 
                 $('.attendant-menu-action-actionSelect', clone).show();
                 $('.attendant-menu-action-actionSelect select', clone).change(function(e) {
-                    Listen.Attendant.toggleActionFields($(e.target).parent().parent());
+                    Attendant.toggleActionFields($(e.target).parent().parent());
                 });
                 $('.attendant-menu-action-actionSelect select', clone).val(action.action);
                 if(isTimeout) {
                     $(".attendant-menu-action-actionSelect select option[value='DialPressedNumber']", clone).remove();
                 }
 
-                Listen.Attendant.toggleActionFields(clone, action);
+                Attendant.toggleActionFields(clone, action);
                 clone.show();
             },
 
@@ -202,7 +193,7 @@ $(document).ready(function() {
             toggleActionFields: function(div, action) {
                 var sel = $('.attendant-menu-action-actionSelect select', div);
                 var a = {arguments: {}};
-                if(Listen.isDefined(action)) {
+                if(interact.util.isDefined(action)) {
                     a = action;
                 }
 
@@ -245,9 +236,9 @@ $(document).ready(function() {
                             $('.attendant-menu-action-launchApplicationCustomInput input', div).val(a.arguments.applicationName);
                         }
                         $('.attendant-menu-action-launchApplicationSelect', div).change(function(e) {
-                            Listen.Attendant.toggleCustomApplicationInput($(e.target).parent().parent());
+                            Attendant.toggleCustomApplicationInput($(e.target).parent().parent());
                         });
-                        Listen.Attendant.toggleCustomApplicationInput(div);
+                        Attendant.toggleCustomApplicationInput(div);
 
                         $('.attendant-menu-action-menuSelect', div).hide();
                         $('.attendant-menu-action-dialNumberInput', div).hide();
@@ -274,12 +265,12 @@ $(document).ready(function() {
                     id: $('#attendant-menu-id').val(),
                     name: $('#attendant-menu-name input').val(),
                     audioFile: $('#attendant-menu-audio-file').val(),
-                    defaultAction: Listen.Attendant.buildAction($('#attendant-menu-actions-default-action-container div:first-child')),
-                    timeoutAction: Listen.Attendant.buildAction($('#attendant-menu-actions-timeout-action-container div:first-child')),
+                    defaultAction: Attendant.buildAction($('#attendant-menu-actions-default-action-container div:first-child')),
+                    timeoutAction: Attendant.buildAction($('#attendant-menu-actions-timeout-action-container div:first-child')),
                     actions: []
                 };
                 $('#attendant-menu-actions-container div.attendant-menu-action').each(function(index, value) {
-                    menu.actions.push(Listen.Attendant.buildAction($(value)));
+                    menu.actions.push(Attendant.buildAction($(value)));
                 });
                 return menu;
             },
@@ -314,71 +305,53 @@ $(document).ready(function() {
             },
 
             saveMenu: function() {
-                var menu = Listen.Attendant.buildMenuObject();
-                Listen.Attendant.clearError();
+                var menu = Attendant.buildMenuObject();
                 Server.post({
-                    url: Listen.url('/ajax/saveAttendantMenu'),
+                    url: interact.listen.url('/ajax/saveAttendantMenu'),
                     properties: {
                         menu: JSON.stringify(menu)
                     },
                     successCallback: function(data, textStatus, xhr) {
-                        Listen.Attendant.showSuccess('Menu saved');
-                        Listen.Attendant.deselectMenuList();
+                        interact.listen.notifySuccess('Menu saved');
+                        Attendant.deselectMenuList();
                         $('#attendant-menu-builder-container').hide();
                         $('#attendant-menu-builder-container-placeholder').show();
                     },
                     errorCallback: function(message) {
-                        Listen.Attendant.showError(message);
+                        interact.listen.notifyError(message);
                     }
                 });
             },
 
             deleteMenu: function(id) {
                 if($('#attendant-menu-id').val() == id) {
-                    Listen.Attendant.resetMenu();
+                    Attendant.resetMenu();
                 }
                 Server.post({
-                    url: Listen.url('/ajax/deleteAttendantMenu'),
+                    url: interact.listen.url('/ajax/deleteAttendantMenu'),
                     properties: {
                         id: id
                     },
                     successCallback: function() {
-                        Listen.Attendant.showSuccess('Menu deleted');
+                        interact.listen.notifySuccess('Menu deleted');
                     }
                 });
             },
 
-            clearError: function() {
-                $('#subscriber-form .form-error-message').text('').hide();
-            },
-
-            showError: function(message) {
-                $('#attendant-application .form-error-message').text(message).slideDown(100);
-            },
-
-            showSuccess: function(message) {
-                Listen.Attendant.clearError();
-                var elem = $('#attendant-application .form-success-message');
-                elem.text(message).slideDown(100);
-                setTimeout(function() {
-                    elem.slideUp(100);
-                }, 2000);
-            },
-
             loadPrompts: function() {
-                Listen.trace('Listen.Attendant.loadPrompts');
+                interact.util.trace('Attendant.loadPrompts');
                 $.ajax({
-                    url: Listen.url('/ajax/getMenuPrompts'),
+                    url: interact.listen.url('/ajax/getMenuPrompts'),
                     dataType: 'json',
                     cache: false,
                     success: function(data, textStatus, xhr) {
-                        Listen.debug('Loading ' + data.length + ' prompts');
-                        Listen.Attendant.prompts = data;
+                        interact.util.debug('Loading ' + data.length + ' prompts');
+                        Attendant.prompts = data;
                         var select = $('#attendant-menu-audio-file');
                         var currentSelection = select.val();
                         $('option', select).remove();
                         for(var i = 0; i < data.length; i++) {
-                            select.append($('<option></option>').attr('value', data[i].file).text(Listen.isDefined(data[i].description) ? data[i].description : data[i].file));
+                            select.append($('<option></option>').attr('value', data[i].file).text(interact.util.isDefined(data[i].description) ? data[i].description : data[i].file));
                         }
                         select.val(currentSelection);
                     }
@@ -387,5 +360,5 @@ $(document).ready(function() {
         }
     }();
 
-    Listen.registerApp(new Listen.Application('attendant', 'attendant-application', 'menu-attendant', new Listen.Attendant.Application()));
+    new Attendant.Application().load();
 });

@@ -1,13 +1,15 @@
+var interact = interact || {};
+var History;
 $(document).ready(function() {
-    Listen.History = function() {
+    History = function() {
         return {
             Application: function() {
-                Listen.trace('Listen.History.Application [construct]');
+                interact.util.trace('History.Application [construct]');
                 var first = 0;
                 var max = 25;
 
-                var historyList = new Listen.DynamicTable({
-                    url: Listen.url('/ajax/getHistoryList'),
+                var historyList = new interact.util.DynamicTable({
+                    url: interact.listen.url('/ajax/getHistoryList'),
                     tableId: 'history-list',
                     isList: true,
                     templateId: function(dataRow) {
@@ -16,7 +18,7 @@ $(document).ready(function() {
                         } else if(dataRow.type == 'Call') {
                             return 'history-call-template';
                         } else {
-                            Listen.error('No template found for [' + dataRow.type + ']');
+                            interact.util.error('No template found for [' + dataRow.type + ']');
                             return false;
                         }
                     },
@@ -32,35 +34,30 @@ $(document).ready(function() {
                             row.addClass(c);
                         }
                         if(data.type == 'Action') {
-                            Listen.setFieldContent(row.find('.history-action-date'), data.date, animate);
-                            Listen.setFieldContent(row.find('.history-action-type'), '<div class="image-edit"></div>', animate, true);
-                            Listen.setFieldContent(row.find('.history-action-subscriber'), data.subscriber, animate);
+                            interact.util.setFieldContent(row.find('.history-action-date'), data.date, animate);
+                            interact.util.setFieldContent(row.find('.history-action-type'), '<div class="image-edit"></div>', animate, true);
+                            interact.util.setFieldContent(row.find('.history-action-subscriber'), data.subscriber, animate);
 
                             var description = '<b>' + data.action + '</b> [' + data.channel + '] - ' + data.description;
-                            Listen.setFieldContent(row.find('.history-action-description'), description, animate, true);
+                            interact.util.setFieldContent(row.find('.history-action-description'), description, animate, true);
                         } else if(data.type == 'Call') {
-                            Listen.setFieldContent(row.find('.history-call-date'), data.date, animate);
-                            Listen.setFieldContent(row.find('.history-call-type'), '<div class="image-outdial"></div>', animate, true);
-                            Listen.setFieldContent(row.find('.history-call-subscriber'), data.subscriber, animate);
+                            interact.util.setFieldContent(row.find('.history-call-date'), data.date, animate);
+                            interact.util.setFieldContent(row.find('.history-call-type'), '<div class="image-outdial"></div>', animate, true);
+                            interact.util.setFieldContent(row.find('.history-call-subscriber'), data.subscriber, animate);
 
                             var description = '<b>' + data.ani + '</b> dialed <b>' + data.dnis + '</b> <i>(' + data.duration + ')</i>';
-                            Listen.setFieldContent(row.find('.history-call-description'), description, animate, true);
+                            interact.util.setFieldContent(row.find('.history-call-description'), description, animate, true);
                         }
                     }
                 });
 
                 this.load = function() {
-                    Listen.trace('Listen.History.Application.load');
+                    interact.util.trace('History.Application.load');
                     historyList.pollAndSet();
-                };
-
-                this.unload = function() {
-                    // no-op
                 };
             }
         }
     }();
 
-    var app = new Listen.History.Application();
-    Listen.registerApp(new Listen.Application('history', 'history-application', 'menu-history', app));
+    new History.Application().load();
 });

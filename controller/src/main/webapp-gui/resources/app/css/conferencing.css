@@ -1,0 +1,142 @@
+/**** CONFERENCING - light = A9D5F0, dark = 379EDC ****/
+
+li#menu-conferencing a {
+    background-color: #379EDC;
+    color: #FFFFFF;
+}
+
+.application-conferencing #content {
+    background-color: #FFFFFF;
+}
+
+.application-conferencing #content h1 {
+    background: #379EDC;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A9D5F0', endColorstr='#379EDC'); /* IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#A9D5F0), to(#379EDC)); /* webkit */
+    background: -moz-linear-gradient(top, #A9D5F0, #379EDC); /* FF 3.6+ */
+}
+
+.conference-content {
+    display: none;
+}
+
+.conference-notloaded {
+    display: none;
+    margin: 1em;
+}
+
+#conference-caller-table td {
+    background-color: #E8EEF4;
+    border-color: #FFFFFF;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    height: 2em;
+}
+
+td.caller-cell-dropIcon, td.caller-cell-muteIcon, td.pin-cell-removeIcon {
+    width: 26px;
+}
+
+#conference-pin-table button {
+    display: none;
+}
+
+#record-button-div {
+    display: none;
+}
+
+.control-panel-button {
+    float: left;
+    margin: 3px 0 3px 3px;
+}
+
+#outdial-show {
+    display: none;
+}
+
+.conference-info-value {
+    font-weight: bold;
+    text-align: right;
+}
+
+.conference-not-started {
+    color: #CC0000;
+}
+
+.conference-started {
+    color: #00CC00;
+}
+
+.caller-row-admin {
+    color: #00CC00;
+    font-weight: bold;
+}
+
+.caller-row-active {
+    color: #000000;
+    font-weight: bold;
+}
+
+.caller-row-passive {
+    color: #666666;
+    font-weight: bold;
+}
+
+#scheduled-conference-table li,
+#historic-scheduled-conference-table li {
+    border-color: #E8EEF4;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    padding: 3px 0 0 3px;
+}
+
+#scheduled-conference-table div.scheduled-conference-cell-when,
+#scheduled-conference-table div.scheduled-conference-cell-topic,
+#scheduled-conference-table div.scheduled-conference-cell-callers,
+#scheduled-conference-table div.scheduled-conference-cell-view,
+#historic-scheduled-conference-table div.scheduled-conference-cell-when,
+#historic-scheduled-conference-table div.scheduled-conference-cell-topic,
+#historic-scheduled-conference-table div.scheduled-conference-cell-callers,
+#historic-scheduled-conference-table div.scheduled-conference-cell-view {
+    float: left;
+    height: 2em;
+}
+#scheduled-conference-table div.scheduled-conference-cell-when,
+#scheduled-conference-table div.scheduled-conference-cell-topic,
+#scheduled-conference-table div.scheduled-conference-cell-callers,
+#historic-scheduled-conference-table div.scheduled-conference-cell-when,
+#historic-scheduled-conference-table div.scheduled-conference-cell-topic,
+#historic-scheduled-conference-table div.scheduled-conference-cell-callers {
+    width: 30%
+}
+#scheduled-conference-table div.scheduled-conference-cell-view,
+#historic-scheduled-conference-table div.scheduled-conference-cell-view {
+    clear: right;
+    width: 10%;
+}
+#scheduled-conference-table div.scheduled-conference-cell-notes,
+#scheduled-conference-table div.scheduled-conference-cell-activeCallers,
+#scheduled-conference-table div.scheduled-conference-cell-passiveCallers,
+#historic-scheduled-conference-table div.scheduled-conference-cell-notes,
+#historic-scheduled-conference-table div.scheduled-conference-cell-activeCallers,
+#historic-scheduled-conference-table div.scheduled-conference-cell-passiveCallers {
+    display: none;
+    float: left;
+    font-weight: normal;
+    height: 2em;
+    padding-left: 2.5em;
+    width: 90%;
+}
+
+#scheduleConferenceForm table caption {
+    font-style: italic;
+}
+
+#scheduleConferenceForm textarea {
+    height: 4em;
+    width: 100%;
+}
+
+#scheduleConferenceDate {
+    width: 10em;
+}

@@ -47,11 +47,11 @@ public class PingServletTest extends ListenServletTest
     }
 
     @Test
-    public void test_doGet_withAuthParameterTrueAndCurrentUser_returnsPong() throws ServletException, IOException
+    public void test_doGet_withAuthParameterTrueAndCurrentUserWithNoVoicemails_returnsPong() throws ServletException, IOException
     {
         TestUtil.setSessionSubscriber(request, false, session);
         performRequest("true");
-        assertOutputBufferContentEquals("pong");
+        assertOutputBufferContentEquals("{\"pong\":true,\"newVoicemailCount\":\"0\"}");
     }
 
     private void performRequest(String authParameter) throws ServletException, IOException

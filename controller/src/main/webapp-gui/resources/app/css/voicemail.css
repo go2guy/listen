@@ -1,0 +1,153 @@
+/* VOICEMAIL - light = EDEF3F, dark = E8BB2B */
+
+li#menu-voicemail a {
+    background-color: #E8BB2B;
+    color: #FFFFFF;
+}
+
+#content {
+    /*background-color: #FAF8D7;*/
+    background-color: #FFFFFF;
+}
+
+#content h1 {
+    background: #E8BB2B;
+    color: #333333;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EDEF3F', endColorstr='#E8BB2B'); /* IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#EDEF3F), to(#E8BB2B)); /* webkit */
+    background: -moz-linear-gradient(top, #EDEF3F, #E8BB2B); /* FF 3.6+ */
+}
+
+#voicemail-list,
+#voicemail-header {
+    width: 810px;
+}
+
+#voicemail-header {
+    border-color: #FAF8D7;
+    margin-bottom: 5px;
+}
+
+#voicemail-header li {
+    background-color: inherit;
+    font-size: 14px;
+    height: 20px;
+    line-height: 20px;
+}
+
+#voicemail-list li ol {
+    margin-bottom: 10px;
+    
+    box-shadow: 0 5px 5px #AAAAAA;
+    -moz-box-shadow: 0 5px 5px #AAAAAA;
+    -webkit-box-shadow: 0 5px 5px #AAAAAA;
+    
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+#voicemail-list .new-voicemail ol {
+    background-color: #F5ED7F;
+    border: 2px solid #E8BB2B;
+}
+
+#voicemail-list .old-voicemail ol {
+    background-color: #F5F1BF;
+    border: 2px solid #F5ED7F;
+    
+    box-shadow: 0 3px 5px #CCCCCC;
+    -moz-box-shadow: 0 3px 5px #CCCCCC;
+    -webkit-box-shadow: 0 3px 5px #CCCCCC;
+}
+
+#voicemail-list .new-voicemail .from {
+    font-weight: bold;
+}
+
+#voicemail-list .buttons,
+#voicemail-header .buttons {
+    float: right;
+    width: 30px;
+}
+
+#voicemail-list .buttons .icon-delete,
+#voicemail-list .buttons .icon-unread,
+#voicemail-list .buttons .icon-read,
+#voicemail-list .buttons .icon-view {
+    margin: 5px 5px 5px 9px;
+}
+
+#voicemail-list .from,
+#voicemail-header .from,
+#voicemail-list .received,
+#voicemail-header .received,
+#voicemail-list .play,
+#voicemail-header .play {
+    float: left;
+}
+
+#voicemail-list .from,
+#voicemail-list .received,
+#voicemail-list .play {
+    font-size: 18px;
+    height: 40px;
+    line-height: 40px;
+}
+
+#voicemail-list .received {
+    font-size: 12px;
+}
+
+#voicemail-list .transcription {
+    float: left;
+    margin-left: 5px;
+    width: 761px;
+}
+
+#voicemail-list .transcription-bubble {
+    background-color: #FAF8D7;
+    margin-bottom: 5px;
+    padding: 5px;
+    width: 756px;
+    
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+#voicemail-list .from,
+#voicemail-header .from {
+    margin-left: 10px;
+    width: 390px;
+}
+
+#voicemail-list .received,
+#voicemail-header .received {
+    width: 166px;
+}
+
+#voicemail-list .play,
+#voicemail-header .play {
+    text-align: right;
+    white-space: nowrap;
+    width: 200px;
+}
+
+#voicemail-list .play div {
+    display: inline;
+    margin-left: 5px;
+}
+
+#voicemail-header .play {
+    text-align: right;
+}
+
+.placeholder {
+    background-color: #F5F1BF;
+    font-size: 16px;
+    margin-top: 5px;
+    padding: 10px 0;
+    text-align: center;
+    width: 810px;
+}

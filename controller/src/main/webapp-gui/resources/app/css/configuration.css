@@ -1,0 +1,16 @@
+li#menu-configuration a {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+.dnis-mapping-custom-destination {
+    display: none;
+}
+
+#alerts-configuration-realizeUrl, #alerts-configuration-realizeAlertName {
+    width: 50em;
+}
+
+#conferencing-bridge-numbers {
+    width: auto;
+}

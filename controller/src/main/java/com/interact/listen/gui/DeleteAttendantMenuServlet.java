@@ -5,11 +5,7 @@ import com.interact.listen.ServletUtil;
 import com.interact.listen.attendant.Action;
 import com.interact.listen.attendant.Menu;
 import com.interact.listen.exception.BadRequestServletException;
-import com.interact.listen.exception.UnauthorizedServletException;
-import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
-import com.interact.listen.license.NotLicensedException;
-import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 
 import javax.servlet.ServletException;
@@ -26,23 +22,9 @@ public class DeleteAttendantMenuServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        if(!License.isLicensed(ListenFeature.ATTENDANT))
-        {
-            throw new NotLicensedException(ListenFeature.ATTENDANT);
-        }
-
         ServletUtil.sendStat(request, Stat.GUI_DELETE_ATTENDANT_MENU);
-
-        Subscriber subscriber = ServletUtil.currentSubscriber(request);
-        if(subscriber == null)
-        {
-            throw new UnauthorizedServletException("Not logged in");
-        }
-
-        if(!subscriber.getIsAdministrator())
-        {
-            throw new UnauthorizedServletException("Insufficient permissions");
-        }
+        ServletUtil.requireLicensedFeature(ListenFeature.ATTENDANT);
+        ServletUtil.requireCurrentSubscriber(request, true);
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
