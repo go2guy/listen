@@ -50,7 +50,7 @@ $(document).ready(function() {
                         for(var i = 0; i < data.accessNumbers.length; i++) {
                             numbers += data.accessNumbers[i].number;
                             if(i < data.accessNumbers.length - 1) {
-                                numbers += ',';
+                                numbers += ' ';
                             }
                         }
 
