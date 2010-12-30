@@ -37,7 +37,7 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
     <div id="container" class="clearfix">
       <ul id="user-info">
         <li class="first"><%= subscriber.friendlyName() %></li>
-        <li><a href="<listen:resource path="/settings"/>">Settings</a></li>
+        <li><a id="profile-button" href="<listen:resource path="/settings"/>">Settings</a></li>
         <li><a href="<listen:resource path="/logout"/>">Logout</a></li>
       </ul>
 

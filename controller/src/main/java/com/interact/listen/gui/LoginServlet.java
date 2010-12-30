@@ -61,6 +61,7 @@ public class LoginServlet extends HttpServlet
             errors.put("password", "Please provide a password");
         }
 
+        Subscriber subscriber = null;
         if(errors.size() == 0)
         {
             AuthenticationService service = new AuthenticationService();
@@ -71,7 +72,7 @@ public class LoginServlet extends HttpServlet
                 errors.put("username", result.getCode().getMessage());
             }
 
-            Subscriber subscriber = result.getSubscriber();
+            subscriber = result.getSubscriber();
             if(subscriber != null && result.wasSuccessful())
             {
                 updateLastLogin(hibernateSession, subscriber);
@@ -90,17 +91,24 @@ public class LoginServlet extends HttpServlet
         }
         else
         {
-            if(License.isLicensed(ListenFeature.VOICEMAIL))
+            if(subscriber != null && subscriber.getIsAdministrator())
             {
-                ServletUtil.redirect("/voicemail", request, response);
+                ServletUtil.redirect("/configuration", request, response);
             }
-            else if(License.isLicensed(ListenFeature.CONFERENCING))
+            else
             {
-                ServletUtil.redirect("/conferencing", request, response);
-            }
-            else if(License.isLicensed(ListenFeature.FINDME))
-            {
-                ServletUtil.redirect("/findme", request, response);
+                if(License.isLicensed(ListenFeature.VOICEMAIL))
+                {
+                    ServletUtil.redirect("/voicemail", request, response);
+                }
+                else if(License.isLicensed(ListenFeature.CONFERENCING))
+                {
+                    ServletUtil.redirect("/conferencing", request, response);
+                }
+                else if(License.isLicensed(ListenFeature.FINDME))
+                {
+                    ServletUtil.redirect("/findme", request, response);
+                }
             }
 
             // FIXME need an 'else' to display some page saying that nothing is licensed
