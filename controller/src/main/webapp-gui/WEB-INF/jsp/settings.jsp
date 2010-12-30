@@ -14,12 +14,10 @@
   <%
 Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
                 <div class="tab-container">
-                  <div class="tabs">
-                    <ul>
-                      <li>Account</li>
-                      <li>After Hours Pager</li>
-                    </ul>
-                  </div>
+                  <ul class="tabs">
+                    <li><a href="#">Account</a></li>
+                    <li><a href="#">After Hours Pager</a></li>
+                  </ul>
                   <div class="tab-content-default">
                     <form id="profile-form">
                       <fieldset>

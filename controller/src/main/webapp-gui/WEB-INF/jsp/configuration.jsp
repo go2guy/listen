@@ -12,19 +12,17 @@
   </head>
   <body>
                 <div class="tab-container">
-                  <div class="tabs">
-                    <ul>
-                      <li>Phone Numbers</li>
-                      <li>Mail</li>
-                      <listen:ifLicensed feature="CONFERENCING">
-                        <li>Conferencing</li>
-                      </listen:ifLicensed>
-                      <li>Alerts</li>
-                      <li>Authentication</li>
-                      <li>SPOT Systems</li>
-                      <li>Android</li>
-                    </ul>
-                  </div>
+                  <ul class="tabs">
+                    <li><a href="#">Phone Numbers</a></li>
+                    <li><a href="#">Mail</a></li>
+                    <listen:ifLicensed feature="CONFERENCING">
+                      <li><a href="#">Conferencing</a></li>
+                    </listen>
+                    <li><a href="#">Alerts</a></li>
+                    <li><a href="#">Authentication</a></li>
+                    <li><a href="#">SPOT Systems</a></li>
+                    <li><a href="#">Android</a></li>
+                  </ul>
 
                   <div class="tab-content-default">
                     <form id="dnis-mapping-form">

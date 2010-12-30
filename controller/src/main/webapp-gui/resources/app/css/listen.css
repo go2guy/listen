@@ -361,12 +361,13 @@ ul#user-info li.first {
     border-color: #AAAAAA;
     border-style: solid;
     border-width: 0 0 1px 0;
+    display: block;
     height: 2em;
     clear: both;
     width: 100%;
 }
 
-.tab-container .tabs ul li {
+.tab-container .tabs a {
     background-color: #FFFFFF;
     border-style: solid;
     border-width: 1px 1px 0 1px;
@@ -378,7 +379,8 @@ ul#user-info li.first {
     margin: 2px 0 0 10px;
 }
 
-.tab-container .tabs ul li:hover, .tab-container .tabs ul li.current {
+.tab-container .tabs a:hover,
+.tab-container .tabs a.current {
     background-color: #AAAAAA;
     color: #FFFFFF;
 }

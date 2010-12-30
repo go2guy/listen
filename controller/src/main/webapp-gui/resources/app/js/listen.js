@@ -101,7 +101,7 @@ $(document).ready(function() {
     }, 2000);
     
     $('.tab-container').each(function(containerIndex, containerElement) {
-        var tabs = $('.tabs li', containerElement);
+        var tabs = $('.tabs a', containerElement);
         var panels = $('.tab-content, .tab-content-default', containerElement);
 
         panels.each(function(panelIndex, panelElement) {

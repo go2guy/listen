@@ -21,13 +21,12 @@ if(id != null && !id.trim().equals("")) { %>
   </head>
   <body>
                   <div class="tab-container">
-                    <div class="tabs">
-                      <ul>
-                        <li>Main</li>
-                        <li>Scheduling</li>
-                        <li>Recordings</li>
-                      </ul>
-                    </div>
+                    <ul class="tabs">
+                      <li><a href="#">Main</a></li>
+                      <li><a href="#">Scheduling</a></li>
+                      <li><a href="#">Recordings</a></li>
+                    </ul>
+
                     <div class="tab-content-default">
                       <div class="left">
                         <div class="panel">
