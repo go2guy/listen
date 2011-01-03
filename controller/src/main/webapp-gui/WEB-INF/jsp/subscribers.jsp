@@ -6,8 +6,8 @@
     <script type="text/javascript" src="<listen:resource path="/resources/app/js/app-subscribers-min.js"/>"></script>
     <link rel="stylesheet" type="text/css" href="<listen:resource path="/resources/app/css/subscribers-min.css"/>">
 
-    <meta name="body-class" content="application-attendant"/>
-    <meta name="page-title" content="Attendant"/>
+    <meta name="body-class" content="application-subscribers"/>
+    <meta name="page-title" content="Subscribers"/>
   </head>
   <body>
                 <div class="left">

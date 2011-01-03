@@ -20,7 +20,7 @@
                     </listen:ifLicensed>
                     <li><a href="#">Alerts</a></li>
                     <li><a href="#">Authentication</a></li>
-                    <li><a href="#">SPOT Systems</a></li>
+                    <li><a href="#">SPOT</a></li>
                     <li><a href="#">Android</a></li>
                   </ul>
 

@@ -9,7 +9,7 @@
 <decorator:usePage id="decoratedPage"/> 
 <html>
   <head>
-    <title>Listen - <decorator:title/> - Interact Incorporated &copy;2010</title>
+    <title>Listen - <decorator:title/> - Interact Incorporated</title>
     <link rel="SHORTCUT ICON" href="./resources/app/images/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="<listen:resource path="/resources/yui-2.8.0r4/reset-fonts/reset-fonts.css"/>">
     <link rel="stylesheet" type="text/css" href="./resources/jquery/skin/css/custom-theme/jquery-ui-1.8.2.custom.css">
@@ -37,7 +37,7 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
     <div id="container" class="clearfix">
       <ul id="user-info">
         <li class="first"><%= subscriber.friendlyName() %></li>
-        <li><a id="profile-button" href="<listen:resource path="/settings"/>">Settings</a></li>
+        <li><a href="<listen:resource path="/settings"/>">Settings</a></li>
         <li><a href="<listen:resource path="/logout"/>">Logout</a></li>
       </ul>
 
