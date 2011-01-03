@@ -17,7 +17,7 @@
                     <li><a href="#">Mail</a></li>
                     <listen:ifLicensed feature="CONFERENCING">
                       <li><a href="#">Conferencing</a></li>
-                    </listen>
+                    </listen:ifLicensed>
                     <li><a href="#">Alerts</a></li>
                     <li><a href="#">Authentication</a></li>
                     <li><a href="#">SPOT Systems</a></li>
