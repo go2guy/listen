@@ -367,6 +367,10 @@ ul#user-info li.first {
     width: 100%;
 }
 
+.tab-container .tabs li {
+    display: inline;
+}
+
 .tab-container .tabs a {
     background-color: #FFFFFF;
     border-style: solid;
