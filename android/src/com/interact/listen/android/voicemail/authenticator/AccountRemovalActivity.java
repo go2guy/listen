@@ -14,7 +14,7 @@ import android.view.Window;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.R;
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
-import com.interact.listen.android.voicemail.sync.SyncAdapter;
+import com.interact.listen.android.voicemail.sync.AbstractCloudSyncAdapter;
 
 public class AccountRemovalActivity extends Activity
 {
@@ -149,7 +149,7 @@ public class AccountRemovalActivity extends Activity
             VoicemailHelper.deleteVoicemails(getContentResolver(), accountName);
             try
             {
-                SyncAdapter.removeAccountInfo(getApplicationContext(), account);
+                AbstractCloudSyncAdapter.removeAccountInfo(getApplicationContext(), account);
                 Log.v(TAG, "done removing account");
             }
             catch(Exception e)

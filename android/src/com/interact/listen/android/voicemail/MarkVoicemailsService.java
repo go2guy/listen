@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
+import com.interact.listen.android.voicemail.sync.Authority;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
 import java.util.Set;
@@ -119,7 +120,7 @@ public class MarkVoicemailsService extends BackgroundService
                 {
                     if(name != null)
                     {
-                        SyncSchedule.syncUpdates(this, name);
+                        SyncSchedule.syncUpdates(this, name, Authority.VOICEMAIL);
                     }
                 }
             }

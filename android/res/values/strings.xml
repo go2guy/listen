@@ -6,7 +6,7 @@
     <string name="list_view_label_with_info">Inbox (%1$d/%2$d)</string>
     <string name="received_on_label">Received: %1$s (%2$s)</string>
 	
-	<string name="voicemailListEmpty">No items in this view</string>
+	<string name="voicemailListEmpty">You do not have any voicemail</string>
 	<string name="leftByUnknown">Unavailable</string>
 	<string name="transcriptionUnknown">Transcript not available</string>
 	<string name="dateCreatedUnknown"></string>
@@ -31,7 +31,7 @@
 	
 	<string name="pref_sync_category">Sync Settings</string>
 	<string name="pref_sync_clear_title">Clear Cache</string>
-	<string name="pref_sync_clear_detail">Remove voicemails from the local cache</string>
+	<string name="pref_sync_clear_detail">Remove Listen data from the local cache</string>
 	<string name="pref_sync_interval_title">Poll Interval</string>
 	<string name="pref_sync_interval_detail_ns">%1$d minute</string>
 	<string name="pref_sync_interval_detail_ws">%1$d minutes</string>
@@ -63,12 +63,14 @@
 	<string name="pref_accounts_reset_password_title">Set Password</string>
 	<string name="pref_accounts_reset_password_summary">Change the Listen password stored on the phone</string>
 
-	<string name="dialog_clear_cache_title">Clear Listen Voicemails</string>
-	<string name="dialog_clear_cache_details">Clear the voicemails stored on this device.</string>
+	<string name="dialog_clear_cache_title">Clear Listen Data</string>
+	<string name="dialog_clear_cache_details">Removes the Listen voicemails and contacts stored on this device and then synchronizes with the Listen server. Previously hidden Listen contacts will be viewable again.</string>
 	<string name="dialog_clear_cache_confirm">Clear</string>
 	<string name="dialog_clear_cache_cancel">Cancel</string>
-	<string name="clearing_cache_progress">Clearing cache</string>
+	<string name="clearing_cache_progress">Clearing cache\u2026</string>
 
+	<string name="office_prefix_progress">Updating contacts\u2026</string>
+	
 	<string name="remove_account_progress">Removing account</string>
 	
 	<string name="dialog_sync_interval_title">Listen Poll Interval</string>
@@ -76,8 +78,9 @@
 	<string name="dialog_sync_interval_confirm">Set</string>
 	<string name="dialog_sync_interval_cancel">Cancel</string>
 
-    <string name="syncLabel">Listen Voicemail</string>
-    <string name="authLabel">Listen Voicemail</string>
+    <string name="authLabel">Listen</string>
+    <string name="syncVoicemailLabel">Voicemail</string>
+    <string name="syncContactsLabel">Contacts</string>
     
     <string name="ui_authenticate_title">Sign-in</string>
     <string name="ui_authenticating">Authenticating\u2026</string>
@@ -121,4 +124,9 @@
 	<string name="voicemail_title">Voicemail from %3$s on %1$s (%2$s)</string>
 	<string name="voicemail_email_body">\nReceived: %1$s\nFrom: %2$s (%3$s)\nDuration: %4$s\n\nTranscription:\n%5$s\n\n</string>
 	<string name="voicemail_email_body_no_transcription">\nReceived: %1$s\nFrom: %2$s (%3$s)\nDuration: %4$s\nNo transcription available.\n\n</string>
+	
+	<string name="contact_profile_action">Listen contact</string>
+    <string name="contact_view_profile">Listen contact</string>
+    <!-- Intent { act=android.intent.action.VIEW dat=content://com.android.contacts/data/239 } -->
+	
 </resources>

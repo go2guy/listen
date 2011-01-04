@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public final class Voicemail implements Parcelable
+public final class Voicemail implements Parcelable, Comparable<Voicemail>
 {
     public enum Label
     {
@@ -268,6 +268,16 @@ public final class Voicemail implements Parcelable
         vm.audioDate = audioDate;
 
         return vm;
+    }
+
+    @Override
+    public int compareTo(Voicemail another)
+    {
+        if(another == null || this.getVoicemailId() > another.getVoicemailId())
+        {
+            return 1;
+        }
+        return this.getVoicemailId() == another.getVoicemailId() ? 0 : -1;
     }
 
     public Uri getUri()
@@ -776,5 +786,5 @@ public final class Voicemail implements Parcelable
     {
         return c.isNull(idx) ? null : c.getString(idx);
     }
-
+    
 }

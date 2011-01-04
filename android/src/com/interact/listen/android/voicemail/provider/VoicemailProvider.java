@@ -20,6 +20,7 @@ import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.Voicemail;
 import com.interact.listen.android.voicemail.WavConversion;
+import com.interact.listen.android.voicemail.sync.Authority;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
 import java.io.File;
@@ -28,9 +29,9 @@ import java.util.HashMap;
 
 public class VoicemailProvider extends ContentProvider
 {
-    public static final String AUTHORITY = "com.interact.listen.voicemail";
+    static final String AUTHORITY = Authority.VOICEMAIL.get();
 
-    private static final String TAG = Constants.TAG + "Provider";
+    private static final String TAG = Constants.TAG + "VoicemailProvider";
 
     private static final String DATABASE_NAME = "com.interact.listen.voicemail.db";
     private static final int DATABASE_VERSION = 5;
@@ -334,6 +335,10 @@ public class VoicemailProvider extends ContentProvider
         if(cursor == null || !cursor.moveToNext())
         {
             Log.e(TAG, "voicemail not found for audio lookup: " + id);
+            if(cursor != null)
+            {
+                cursor.close();
+            }
             throw new FileNotFoundException("voicemail " + id + " not found");
         }
         return cursor;
@@ -581,7 +586,7 @@ public class VoicemailProvider extends ContentProvider
             
             onCreate(db);
             
-            SyncSchedule.syncRegular(context, null, false);
+            SyncSchedule.syncUser(context, null, Authority.VOICEMAIL);
         }
     }
 

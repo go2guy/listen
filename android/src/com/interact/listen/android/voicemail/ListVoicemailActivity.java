@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
 import com.interact.listen.android.voicemail.provider.Voicemails;
+import com.interact.listen.android.voicemail.sync.Authority;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 import com.interact.listen.android.voicemail.widget.ContactBadge;
 
@@ -294,7 +295,7 @@ public class ListVoicemailActivity extends ListActivity
                 return true;
             case R.id.voicemail_list_refresh:
                 NotificationHelper.clearNotificationBar(this);
-                SyncSchedule.syncRegular(this, null, true);
+                SyncSchedule.syncUser(this, null, Authority.VOICEMAIL);
                 return true;
             default:
                 return super.onMenuItemSelected(featureId, item);

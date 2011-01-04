@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.os.IBinder;
 
 
-public class SyncService extends Service
+public class SyncVoicemailService extends Service
 {
     private static final Object SYNC_LOCK = new Object();
-    private static SyncAdapter sSyncAdapter = null;
+    private static SyncVoicemailAdapter sSyncAdapter = null;
 
     @Override
     public void onCreate()
@@ -17,7 +17,7 @@ public class SyncService extends Service
         {
             if (sSyncAdapter == null)
             {
-                sSyncAdapter = new SyncAdapter(getApplicationContext(), true);
+                sSyncAdapter = new SyncVoicemailAdapter(getApplicationContext(), true);
             }
         }
     }

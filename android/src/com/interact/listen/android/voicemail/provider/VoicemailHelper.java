@@ -242,6 +242,44 @@ public final class VoicemailHelper
         return deleted;
     }
 
+    public static Voicemail getVoicemailFromServerID(ContentProviderClient resolver, Voicemail vm) throws RemoteException
+    {
+        final String selection = Voicemails.VOICEMAIL_ID + "=? AND " + Voicemails.USER_NAME + "=?";
+        final String[] args = new String[] {Long.toString(vm.getVoicemailId()), vm.getUserName()};
+        
+        Cursor c = resolver.query(vm.getUri(), Voicemail.ALL_PROJECTION, selection, args, null);
+        try
+        {
+            return c.moveToFirst() ? Voicemail.create(c, Voicemail.ALL_PROJECTION) : null;
+        }
+        finally
+        {
+            if(c != null)
+            {
+                c.close();
+            }
+        }
+    }
+
+    public static Voicemail getVoicemailFromServerID(ContentResolver resolver, Voicemail vm)
+    {
+        final String selection = Voicemails.VOICEMAIL_ID + "=? AND " + Voicemails.USER_NAME + "=?";
+        final String[] args = new String[] {Long.toString(vm.getVoicemailId()), vm.getUserName()};
+        
+        Cursor c = resolver.query(vm.getUri(), Voicemail.ALL_PROJECTION, selection, args, null);
+        try
+        {
+            return Voicemail.create(c, Voicemail.ALL_PROJECTION);
+        }
+        finally
+        {
+            if(c != null)
+            {
+                c.close();
+            }
+        }
+    }
+
     public static void moveVoicemailToTrash(ContentResolver resolver, Voicemail voicemail)
     {
         ContentValues values = voicemail.markDeleted();

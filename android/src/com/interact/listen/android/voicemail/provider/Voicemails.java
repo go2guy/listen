@@ -24,8 +24,6 @@ public final class Voicemails implements MediaColumns
     public static final String AUDIO_STATE = "audio_state";
     public static final String AUDIO_DATE = "audio_date";
 
-    public static final String DATA = "_data";
-    
     private Voicemails()
     {
     }

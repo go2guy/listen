@@ -22,10 +22,11 @@ import android.provider.Settings;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.util.Log;
 
+import com.interact.listen.android.voicemail.contact.ListenContacts;
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
-import com.interact.listen.android.voicemail.provider.VoicemailProvider;
+import com.interact.listen.android.voicemail.sync.AbstractCloudSyncAdapter;
+import com.interact.listen.android.voicemail.sync.Authority;
 import com.interact.listen.android.voicemail.sync.CloudEnabled;
-import com.interact.listen.android.voicemail.sync.SyncAdapter;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 import com.interact.listen.android.voicemail.widget.NumberPicker;
 import com.interact.listen.android.voicemail.widget.NumberPickerDialog;
@@ -49,9 +50,10 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
     private static final String SYNC_SETTINGS = "accounts_sync_settings_key";
     private static final String RESET_PASSWORD = "pref_reset_password_key";
 
-    private static final int    CLEAR_CACHE_DIALOG = 1;
-    private static final int    UPDATE_SYNC_DIALOG = 2;
-    private static final int CACHE_PROGRESS_DIALOG = 3;
+    private static final int    CLEAR_CACHE_DIALOG  = 1;
+    private static final int    UPDATE_SYNC_DIALOG  = 2;
+    private static final int CACHE_PROGRESS_DIALOG  = 3;
+    private static final int OFFICE_PROGRESS_DIALOG = 4;
     
     private SharedPreferences sharedPreferences;
     private Preference clearCachePref;
@@ -175,7 +177,7 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
             else if(pref == syncSettingsPref)
             {
                 Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-                intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
+                intent.putExtra(Settings.EXTRA_AUTHORITIES, Authority.getAuthorities());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 return true;
@@ -207,6 +209,10 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         if(id == CACHE_PROGRESS_DIALOG)
         {
             return createProgressDialog(R.string.clearing_cache_progress);
+        }
+        if(id == OFFICE_PROGRESS_DIALOG)
+        {
+            return createProgressDialog(R.string.office_prefix_progress);
         }
         return null;
     }
@@ -315,16 +321,18 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
 
             NotificationHelper.clearNotificationBar(getApplicationContext());
 
-            VoicemailHelper.deleteVoicemails(getApplicationContext().getContentResolver(), null);
+            VoicemailHelper.deleteVoicemails(getContentResolver(), null);
+            ListenContacts.deleteAll(getContentResolver(), null);
             try
             {
-                SyncAdapter.removeAccountInfo(getApplicationContext(), null);
+                AbstractCloudSyncAdapter.removeAccountInfo(getApplicationContext(), null);
             }
             catch(Exception e)
             {
                 Log.e(TAG, "problem clearing account information", e);
             }
-            SyncSchedule.syncRegular(getApplicationContext(), null, true);
+            
+            SyncSchedule.syncUser(getApplicationContext(), null, null);
 
             Log.i(TAG, "clearing cache task done");
             return 0;
@@ -357,15 +365,60 @@ public class ApplicationSettings extends PreferenceActivity implements OnSharedP
         
         if(SYNC_INTERVAL_MINUTES.equals(key))
         {
-            SyncAdapter.updatePeriodicSync(this);
+            AbstractCloudSyncAdapter.updatePeriodicSync(this, null);
             updateSyncIntevalSummary();
         }
         else if(DIAL_PREFIX.equals(key))
         {
             Preference pref = findPreference(key);
             pref.setSummary(preferences.getString(key, getString(R.string.pref_dial_prefix_summary)));
+            new UpdateOfficeNumber().execute();
         }
     }
+    
+    private class UpdateOfficeNumber extends AsyncTask<Void, Void, Integer>
+    {
+
+        @Override
+        protected void onPreExecute()
+        {
+            showDialog(OFFICE_PROGRESS_DIALOG);
+        }
+
+        @Override
+        protected void onPostExecute(Integer result)
+        {
+            onEnd();
+        }
+
+        @Override
+        protected void onCancelled()
+        {
+            onEnd();
+        }
+
+        private void onEnd()
+        {
+            try
+            {
+                dismissDialog(OFFICE_PROGRESS_DIALOG);
+            }
+            catch(IllegalArgumentException e)
+            {
+                Log.w(TAG, "cache clean progress dialog never shown");
+            }
+        }
+        
+        @Override
+        protected Integer doInBackground(Void... params)
+        {
+            Log.i(TAG, "updating contacts starting");
+            int num = ListenContacts.updateOfficeNumber(getApplicationContext());
+            Log.i(TAG, "done updating office numbers: " + num);
+            return 0;
+        }
+    }
+
     
     public static int getSyncIntervalMinutes(Context context)
     {

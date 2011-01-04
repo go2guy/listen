@@ -92,6 +92,32 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
     @Override
     public void run()
     {
+        if(voicemail.getId() <= 0)
+        {
+            Log.i(TAG, "need to query for voicemail ID");
+            if(provider != null)
+            {
+                try
+                {
+                    voicemail = VoicemailHelper.getVoicemailFromServerID(provider, voicemail);
+                }
+                catch(RemoteException e)
+                {
+                    Log.e(TAG, "remote exception looking for voicemail locally for download", e);
+                    voicemail = null;
+                }
+            }
+            else
+            {
+                voicemail = VoicemailHelper.getVoicemailFromServerID(resolver, voicemail);
+            }
+            if(voicemail == null)
+            {
+                Log.e(TAG, "unable to find voicemail locally: " + voicemail);
+                return;
+            }
+        }
+        
         if(!VoicemailHelper.shouldAttemptDownload(voicemail, true))
         {
             Log.i(TAG, "voicemail downloaded or downloading now: " + voicemail);
@@ -226,7 +252,7 @@ public class DownloadRunnable implements Runnable, Comparable<DownloadRunnable>
         Uri host = Uri.parse(hStr);
         String userName = account.name;
         
-        HttpEntity entity = ClientUtilities.getVoicemailInput(host, voicemail.getVoicemailId(), userName, authToken);
+        HttpEntity entity = ClientUtilities.getVoicemailInput(host, userName, authToken, voicemail.getVoicemailId());
         if(entity == null)
         {
             Log.e(TAG, "unable to get voicemail HttpEntity for " + host + " - " + userName + " - " + voicemail.getVoicemailId());

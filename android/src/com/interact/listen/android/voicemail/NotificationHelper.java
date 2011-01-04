@@ -17,7 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.interact.listen.android.voicemail.provider.VoicemailHelper;
-import com.interact.listen.android.voicemail.provider.VoicemailProvider;
+import com.interact.listen.android.voicemail.sync.Authority;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
 public final class NotificationHelper
@@ -49,7 +49,7 @@ public final class NotificationHelper
         notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
 
         Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-        intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{VoicemailProvider.AUTHORITY});
+        intent.putExtra(Settings.EXTRA_AUTHORITIES, Authority.getAuthorities());
 
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
         notification.setLatestEventInfo(context, title, message, pIntent);
@@ -179,7 +179,7 @@ public final class NotificationHelper
                     return;
                 }
                 VoicemailHelper.moveVoicemailToTrash(context.getContentResolver(), voicemail);
-                SyncSchedule.syncUpdates(context, voicemail.getUserName());
+                SyncSchedule.syncUpdates(context, voicemail.getUserName(), Authority.VOICEMAIL);
                 if(listener != null)
                 {
                     listener.onConfirmed(voicemail);
@@ -220,6 +220,34 @@ public final class NotificationHelper
         }
 
         sb.append(leftBy);
+        
+        return sb.toString();
+    }
+    
+    private static boolean isOfficeNumber(String number)
+    {
+        return !TextUtils.isEmpty(number) && number.length() < 7;
+    }
+    
+    public static String getDialString(String dialPrefix, String number)
+    {
+        if(!isOfficeNumber(number))
+        {
+            return number;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if(!TextUtils.isEmpty(dialPrefix))
+        {
+            sb.append(dialPrefix);
+            if (PhoneNumberUtils.extractPostDialPortion(dialPrefix).length() == 0)
+            {
+                sb.append(PhoneNumberUtils.WAIT);
+            }
+        }
+
+        sb.append(number);
         
         return sb.toString();
     }

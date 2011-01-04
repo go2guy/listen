@@ -9,7 +9,7 @@ import android.content.SyncStatusObserver;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.interact.listen.android.voicemail.provider.VoicemailProvider;
+import com.interact.listen.android.voicemail.sync.Authority;
 
 import java.lang.ref.WeakReference;
 
@@ -40,7 +40,7 @@ public class SyncStatusPoll extends AsyncTask<Void, Boolean, Void> implements Sy
             Account[] accounts = AccountManager.get(context).getAccountsByType(Constants.ACCOUNT_TYPE);
             for(Account account : accounts)
             {
-                if(ContentResolver.isSyncActive(account, VoicemailProvider.AUTHORITY))
+                if(ContentResolver.isSyncActive(account, Authority.VOICEMAIL.get()))
                 {
                     active = true;
                     break;

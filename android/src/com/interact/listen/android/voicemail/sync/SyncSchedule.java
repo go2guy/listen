@@ -4,12 +4,12 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.Constants;
-import com.interact.listen.android.voicemail.provider.VoicemailProvider;
 
 public final class SyncSchedule
 {
@@ -18,23 +18,64 @@ public final class SyncSchedule
     // and syncadapter.xml android:supportsUploading.
     // We want to only upload on delete and change in isNew, so take care of it ourselves.
     
-    private static final String SYNC_EXTRAS_UPLOAD = "com.interact.listen.upload_sync";
+    private static final String SYNC_EXTRAS_UPLOAD   = "com.interact.listen.upload_sync";
     private static final String SYNC_EXTRAS_PERIODIC = "com.interact.listen.periodic_sync";
-    private static final String SYNC_EXTRAS_CONFIG = "com.interact.listen.config_sync";
-    private static final String SYNC_EXTRAS_CLOUD = "com.interact.listen.cloud_sync";
-
+    private static final String SYNC_EXTRAS_CONFIG   = "com.interact.listen.config_sync";
+    private static final String SYNC_EXTRAS_CLOUD    = "com.interact.listen.cloud_sync";
+    private static final String SYNC_EXTRAS_ID       = "com.interact.listen.sync_id";
+    
     private static final String TAG = Constants.TAG + "SyncSchedule";
     
     public static void accountAdded(Context context, Account account)
     {
-        ContentResolver.setIsSyncable(account, VoicemailProvider.AUTHORITY, 1);
-        ContentResolver.setSyncAutomatically(account, VoicemailProvider.AUTHORITY, true);
+        final String[] auths = Authority.getAuthorities();
+        for(String auth : auths)
+        {
+            ContentResolver.setIsSyncable(account, auth, 1);
+            ContentResolver.setSyncAutomatically(account, auth, true);
+        }
+    }
+    
+    public static void syncUser(Context context, String userName, Authority auth)
+    {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        bundle.putLong(SYNC_EXTRAS_ID, SyncId.INSTANCE.getAndIncrement(context));
+        requestSync(context, userName, bundle, SyncType.USER_SYNC, auth);
+    }
+    
+    public static void syncCloud(Context context, String userName, Authority auth)
+    {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(SYNC_EXTRAS_CLOUD, true);
+        requestSync(context, userName, bundle, SyncType.CLOUD_SYNC, auth);
+    }
+    
+    public static void syncConfig(Context context, String userName)
+    {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(SYNC_EXTRAS_CONFIG, true);
+        bundle.putLong(SYNC_EXTRAS_ID, SyncId.INSTANCE.getAndIncrement(context));
+        requestSync(context, userName, bundle, SyncType.CONFIG_SYNC, null);
     }
 
-    static void setPeriodicSync(Context context, Account account, boolean enabled)
+    public static void syncUpdates(Context context, String userName, Authority auth)
     {
-        long interval = ApplicationSettings.getSyncIntervalMinutes(context) * 60;
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(SYNC_EXTRAS_UPLOAD, true);
+        //bundle.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true);
 
+        requestSync(context, userName, bundle, SyncType.UPLOAD_ONLY, auth);
+    }
+
+    static void removeLegacySync(Account account, Bundle extras, String authority)
+    {
+        Log.v(Constants.TAG, "removing legacy sync for " + account.name + ": " + extras);
+        removeSync(account, extras, authority);
+    }
+
+    static void setPeriodicSync(Context context, Account account, boolean enabled, Authority auth)
+    {
         Bundle bundle = new Bundle();
         bundle.putBoolean(SYNC_EXTRAS_PERIODIC, true);
 
@@ -42,13 +83,14 @@ public final class SyncSchedule
         {
             if(enabled)
             {
+                long interval = ApplicationSettings.getSyncIntervalMinutes(context) * 60L;
                 Log.v(Constants.TAG, "adding periodic sync for " + account.name + " at interval " + interval);
-                ContentResolver.addPeriodicSync(account, VoicemailProvider.AUTHORITY, bundle, interval);
+                addSync(account, bundle, interval, auth);
             }
             else
             {
                 Log.v(Constants.TAG, "removing periodic sync for " + account.name);
-                ContentResolver.removePeriodicSync(account, VoicemailProvider.AUTHORITY, bundle);
+                removeSync(account, bundle, auth);
             }
         }
         else
@@ -57,10 +99,11 @@ public final class SyncSchedule
             Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
             if(enabled)
             {
+                long interval = ApplicationSettings.getSyncIntervalMinutes(context) * 60L;
                 for(Account acc : accounts)
                 {
                     Log.v(Constants.TAG, "updating periodic sync for " + acc.name + " at interval " + interval);
-                    ContentResolver.addPeriodicSync(acc, VoicemailProvider.AUTHORITY, bundle, interval);
+                    addSync(acc, bundle, interval, auth);
                 }
             }
             else
@@ -68,64 +111,13 @@ public final class SyncSchedule
                 for(Account acc : accounts)
                 {
                     Log.v(Constants.TAG, "removing periodic sync for " + acc.name);
-                    ContentResolver.removePeriodicSync(acc, VoicemailProvider.AUTHORITY, bundle);
+                    removeSync(acc, bundle, auth);
                 }
             }
         }
     }
     
-    static void removeLegacySync(Context context, Account account, Bundle extras)
-    {
-        Log.v(Constants.TAG, "removing legacy sync for " + account.name + ": " + extras);
-        ContentResolver.removePeriodicSync(account, VoicemailProvider.AUTHORITY, extras);
-    }
-    
-    public static void syncUpdates(Context context, String userName)
-    {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(SYNC_EXTRAS_UPLOAD, true);
-        //bundle.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true);
-
-        requestSync(context, userName, bundle, SyncType.UPLOAD_ONLY);
-    }
-    
-    public static void syncRegular(Context context, String userName, boolean fromUser)
-    {
-        Bundle bundle = new Bundle();
-        if(fromUser)
-        {
-            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-            requestSync(context, userName, bundle, SyncType.USER_SYNC);
-        }
-        else
-        {
-            bundle.putBoolean(SYNC_EXTRAS_CLOUD, true);
-            requestSync(context, userName, bundle, SyncType.CLOUD_SYNC);
-        }
-    }
-    
-    public static void syncConfig(Context context, String userName)
-    {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(SYNC_EXTRAS_CONFIG, true);
-        requestSync(context, userName, bundle, SyncType.CONFIG_SYNC);
-    }
-    
-    private static void requestSync(Context context, String userName, Bundle bundle, SyncType type)
-    {
-        AccountManager am = AccountManager.get(context);
-        Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
-        for(Account account : accounts)
-        {
-            if(userName == null || userName.equals(account.name))
-            {
-                Log.v(Constants.TAG, "requesting " + type.name() + " for: " + account.name);
-                ContentResolver.requestSync(account, VoicemailProvider.AUTHORITY, bundle);
-            }
-        }
-    }
-
-    public static SyncType getSyncType(Bundle extras)
+    static SyncType getSyncType(Bundle extras)
     {
         if(extras == null)
         {
@@ -164,7 +156,91 @@ public final class SyncSchedule
         return SyncType.INITIALIZE;
     }
     
+    static long getSyncID(Bundle extras)
+    {
+        return extras == null ? 0 : extras.getLong(SYNC_EXTRAS_ID);
+    }
+    
+    static void clearMeta(Context context)
+    {
+        SyncId.INSTANCE.clearMeta(context);
+    }
+    
+    private static void addSync(Account account, Bundle bundle, long interval, Authority authority)
+    {
+        if(authority != null)
+        {
+            ContentResolver.addPeriodicSync(account, authority.get(), bundle, interval);
+        }
+        else
+        {
+            final String[] auths = Authority.getAuthorities();
+            for(String auth : auths)
+            {
+                ContentResolver.addPeriodicSync(account, auth, bundle, interval);
+            }
+        }
+    }
+    
+    private static void removeSync(Account account, Bundle bundle, Authority authority)
+    {
+        if(authority != null)
+        {
+            removeSync(account, bundle, authority.get());
+        }
+        else
+        {
+            final String[] auths = Authority.getAuthorities();
+            for(String auth : auths)
+            {
+                removeSync(account, bundle, auth);
+            }
+        }
+    }
+
+    private static void removeSync(Account account, Bundle bundle, String authority)
+    {
+        ContentResolver.removePeriodicSync(account, authority, bundle);
+    }
+    
+    private static void requestSync(Context context, String userName, Bundle bundle, SyncType type, Authority authority)
+    {
+        final String[] auths = authority == null ? Authority.getAuthorities() : new String[]{authority.get()};
+        AccountManager am = AccountManager.get(context);
+        Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+        for(Account account : accounts)
+        {
+            if(userName == null || userName.equals(account.name))
+            {
+                Log.v(Constants.TAG, "requesting " + type.name() + " for: " + account.name);
+                for(String auth : auths)
+                {
+                    ContentResolver.requestSync(account, auth, bundle);
+                }
+            }
+        }
+    }
+
     private SyncSchedule()
     {
+    }
+    
+    private enum SyncId
+    {
+        INSTANCE;
+        
+        public synchronized long getAndIncrement(Context context)
+        {
+            final SharedPreferences sp = context.getSharedPreferences("sync_schedule", Context.MODE_PRIVATE);
+            long id = sp.getLong("sync_id", 1);
+            sp.edit().putLong("sync_id", id + 1).commit();
+            return id;
+        }
+        
+        public synchronized void clearMeta(Context context)
+        {
+            final SharedPreferences sp = context.getSharedPreferences("sync_schedule", Context.MODE_PRIVATE);
+            sp.edit().clear().commit();
+        }
     }
 }

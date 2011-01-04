@@ -9,12 +9,19 @@ import android.util.Log;
 
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.Voicemail;
+import com.interact.listen.android.voicemail.contact.ContactMIME;
+import com.interact.listen.android.voicemail.contact.ListenContacts;
+import com.interact.listen.android.voicemail.sync.Authority;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
@@ -26,6 +33,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,12 +47,18 @@ public final class ClientUtilities
     private static final String AUTHENTICATION_TYPE_HEADER = "X-Listen-AuthenticationType";
     private static final String USERNAME_HEADER = "X-Listen-AuthenticationUsername";
     private static final String PASSWORD_HEADER = "X-Listen-AuthenticationPassword";
-
+    private static final String DEVICEID_HEADER = "X-Listen-DeviceID";
+    
     private static final String SUBSCRIBER_PATH = "api/subscribers";
     private static final String VOICEMAIL_PATH = "api/voicemails";
-    private static final String NEXT_PREPEND_PATH = "api";
+    private static final String NEXT_API_PREPEND_PATH = "api";
     private static final String REGISTER_PATH = "meta/registerDevice";
     private static final String AUDIO_PATH = "meta/audio/file";
+    private static final String EMAILS_PATH = "meta/contacts/emailContacts";
+    private static final String NUMBERS_PATH = "meta/contacts/numberContacts";
+    private static final String NEXT_CONTACT_PREPEND_PATH = "meta/contacts";
+
+    private static final int MAX_PAGED_GET = 100;
 
     private static final String DEVICE_TYPE = "ANDROID";
 
@@ -218,6 +232,11 @@ public final class ClientUtilities
         return ClientUtilities.performOnBackgroundThread(runnable);
     }
 
+    private static void addDeviceIDHeader(HttpRequestBase requestObject, String deviceId)
+    {
+        requestObject.addHeader(DEVICEID_HEADER, deviceId);
+    }
+    
     private static void addAuthorizationHeaders(HttpRequestBase requestObject, String username, String authToken)
     {
         requestObject.addHeader(AUTHENTICATION_TYPE_HEADER, BASE_64_SUBSCRIBER);
@@ -225,10 +244,8 @@ public final class ClientUtilities
         requestObject.addHeader(PASSWORD_HEADER, authToken);
     }
 
-    private static final int MAX_VM_GET = 100;
-
-    public static Uri getPagedVoicemails(Uri host, long subscriberID, String username, String authToken,
-                                         boolean forView, Uri nextRef, List<Voicemail> voicemails, Long[] syncTime)
+    public static Uri getPagedVoicemails(AccountInfo aInfo, boolean forView, Uri nextRef,
+                                         List<Voicemail> voicemails, Long[] syncTime)
         throws IOException, AuthorizationException
     {
         Uri apiUri = null;
@@ -236,11 +253,11 @@ public final class ClientUtilities
         {
             try
             {
-                Uri.Builder builder = host.buildUpon();
+                Uri.Builder builder = aInfo.getHost().buildUpon();
                 builder.appendEncodedPath(VOICEMAIL_PATH);
-                builder.appendQueryParameter("subscriber", "/subscribers/" + subscriberID);
+                builder.appendQueryParameter("subscriber", "/subscribers/" + aInfo.getUserID());
                 builder.appendQueryParameter("_first", Integer.toString(0));
-                builder.appendQueryParameter("_max", Integer.toString(MAX_VM_GET));
+                builder.appendQueryParameter("_max", Integer.toString(MAX_PAGED_GET));
                 builder.appendQueryParameter("_fields", "id,isNew,leftBy,leftByName,description,dateCreated,duration,transcription,hasNotified");
                 
                 if(syncTime != null && syncTime[0] > 0)
@@ -273,7 +290,9 @@ public final class ClientUtilities
         
         HttpGet httpGet = new HttpGet(apiUri.toString());
         httpGet.addHeader("Accept", "application/json");
-        addAuthorizationHeaders(httpGet, username, authToken);
+        AndroidHttpClient.modifyRequestToAcceptGzipResponse(httpGet);
+
+        addAuthorizationHeaders(httpGet, aInfo.getName(), aInfo.getAuthToken());
 
         Log.i(TAG, "Retrieving voicemails " + httpGet.getURI().toString());
         maybeCreateHttpClient();
@@ -303,7 +322,7 @@ public final class ClientUtilities
                 JSONObject result = results.getJSONObject(i);
                 try
                 {
-                    Voicemail v = Voicemail.parse(username, result);
+                    Voicemail v = Voicemail.parse(aInfo.getName(), result);
                     voicemails.add(v);
                     if(syncTime != null)
                     {
@@ -327,38 +346,11 @@ public final class ClientUtilities
             return null;
         }
         
-        Uri nextUri = null;
-        
-        if(TextUtils.isEmpty(next))
-        {
-            nextUri = Uri.EMPTY;
-        }
-        else
-        {
-            try
-            {
-                Uri.Builder builder = host.buildUpon();
-                builder.appendEncodedPath(NEXT_PREPEND_PATH);
-                if(next.charAt(0) == '/')
-                {
-                    next = next.substring(1);
-                }
-                builder.appendEncodedPath(next);
-                nextUri = builder.build();
-            }
-            catch(Exception e)
-            {
-                Log.i(TAG, "error creating next URI", e);
-                return null;
-            }
-
-        }
-        
-        return nextUri;
+        return getNextUri(aInfo, next, NEXT_API_PREPEND_PATH);
     }
-    
-    public static List<Voicemail> retrieveVoicemails(Uri host, long subscriberID, String username, String authToken,
-                                                     Long[] syncTime) throws IOException, AuthorizationException
+
+    public static List<Voicemail> retrieveVoicemails(AccountInfo aInfo, Long[] syncTime)
+        throws IOException, AuthorizationException
     {
         List<Voicemail> voicemails = new ArrayList<Voicemail>();
 
@@ -371,7 +363,7 @@ public final class ClientUtilities
                 return null;
             }
 
-            next = getPagedVoicemails(host, subscriberID, username, authToken, false, next, voicemails, syncTime);
+            next = getPagedVoicemails(aInfo, false, next, voicemails, syncTime);
             if(next == null)
             {
                 Log.e(TAG, "error getting voicemails");
@@ -384,16 +376,15 @@ public final class ClientUtilities
         return voicemails;
     }
 
-    private static boolean putUpdate(String deviceId, Uri host, long voicemailID, String username, String authToken, JSONObject json)
+    private static boolean putUpdate(String deviceId, AccountInfo aInfo, long voicemailID, JSONObject json)
         throws IOException, AuthorizationException
     {
         Uri apiUri = null;
         try
         {
-            Uri.Builder builder = host.buildUpon();
+            Uri.Builder builder = aInfo.getHost().buildUpon();
             builder.appendEncodedPath(VOICEMAIL_PATH);
             builder.appendEncodedPath(Long.toString(voicemailID));
-            builder.appendQueryParameter("deviceId", deviceId);
             apiUri = builder.build();
         }
         catch(Exception e)
@@ -404,8 +395,8 @@ public final class ClientUtilities
     
         try
         {
-            HttpResponse response = sendJsonPut(apiUri, username, authToken, json);
-            return checkStatus("voicemail update", response);
+            HttpResponse response = sendJsonPut(apiUri, aInfo, json, deviceId);
+            return checkStatus("voicemail update", response, true);
         }
         catch(UnsupportedEncodingException e)
         {
@@ -414,26 +405,7 @@ public final class ClientUtilities
         }
     }
 
-    /*
-    public static boolean markVoicemailNotified(String deviceId, Uri host, long voicemailID, String username, String authToken, boolean isNotified)
-        throws IOException, AuthorizationException
-    {
-        try
-        {
-            JSONObject json = new JSONObject();
-            json.put("hasNotified", isNotified);
-            
-            return putUpdate(deviceId, host, voicemailID, username, authToken, json);
-        }
-        catch(JSONException e)
-        {
-            Log.e(TAG, "has notified json exception", e);
-            return false;
-        }
-    }
-    */
-    
-    public static boolean markVoicemailRead(String deviceId, Uri host, long voicemailID, String username, String authToken, boolean isRead)
+    public static boolean markVoicemailRead(String deviceId, AccountInfo aInfo, long voicemailID, boolean isRead)
         throws IOException, AuthorizationException
     {
         try
@@ -441,7 +413,7 @@ public final class ClientUtilities
             JSONObject json = new JSONObject();
             json.put("isNew", !isRead);
             
-            return putUpdate(deviceId, host, voicemailID, username, authToken, json);
+            return putUpdate(deviceId, aInfo, voicemailID, json);
         }
         catch(JSONException e)
         {
@@ -450,16 +422,15 @@ public final class ClientUtilities
         }
     }
 
-    public static boolean deleteVoicemail(String deviceId, Uri host, long voicemailID, String username, String authToken)
+    public static boolean deleteVoicemail(String deviceId, AccountInfo aInfo, long voicemailID)
         throws IOException, AuthorizationException
     {
         Uri apiUri = null;
         try
         {
-            Uri.Builder builder = host.buildUpon();
+            Uri.Builder builder = aInfo.getHost().buildUpon();
             builder.appendEncodedPath(VOICEMAIL_PATH);
             builder.appendEncodedPath(Long.toString(voicemailID));
-            builder.appendQueryParameter("deviceId", deviceId);
             apiUri = builder.build();
         }
         catch(Exception e)
@@ -472,15 +443,16 @@ public final class ClientUtilities
 
         HttpDelete httpDelete = new HttpDelete(apiUri.toString());
         httpDelete.setHeader("Accept", "application/json");
-        addAuthorizationHeaders(httpDelete, username, authToken);
+        addDeviceIDHeader(httpDelete, deviceId);
+        addAuthorizationHeaders(httpDelete, aInfo.getName(), aInfo.getAuthToken());
 
         Log.d(TAG, "Sending DELETE request to " + httpDelete.getURI().toString());
         
         HttpResponse response = mHttpClient.execute(httpDelete);
-        return checkStatus("deleting voicemail", response);
+        return checkStatus("deleting voicemail", response, true);
     }
 
-    public static HttpEntity getVoicemailInput(Uri host, long voicemailID, String username, String authToken)
+    public static HttpEntity getVoicemailInput(Uri host, String accountName, String authToken, long voicemailID)
         throws IOException, AuthorizationException
     {
         Uri apiUri = null;
@@ -499,24 +471,24 @@ public final class ClientUtilities
 
         maybeCreateHttpClient();
 
-        Log.i(TAG, "getting audio file " + apiUri + " " + username);
+        Log.i(TAG, "getting audio file " + apiUri + " " + accountName);
         HttpGet httpGet = new HttpGet(apiUri.toString());
-        addAuthorizationHeaders(httpGet, username, authToken);
+        addAuthorizationHeaders(httpGet, accountName, authToken);
 
         httpGet.setHeader("Accept", "audio/mpeg");
 
         HttpResponse response = mHttpClient.execute(httpGet);
 
-        return checkStatus("getting audio", response) ? response.getEntity() : null;
+        return checkStatus("getting audio", response, false) ? response.getEntity() : null;
     }
 
-    public static ServerRegistrationInfo getServerRegistrationInfo(Uri host, String name, String authToken, String deviceId)
+    public static ServerRegistrationInfo getServerRegistrationInfo(AccountInfo aInfo, String deviceId)
         throws AuthorizationException
     {
         Uri apiUri = null;
         try
         {
-            Uri.Builder builder = host.buildUpon();
+            Uri.Builder builder = aInfo.getHost().buildUpon();
             builder.appendEncodedPath(REGISTER_PATH);
             builder.appendQueryParameter("deviceType", DEVICE_TYPE);
             builder.appendQueryParameter("deviceId", deviceId);
@@ -530,7 +502,7 @@ public final class ClientUtilities
 
         HttpGet httpGet = new HttpGet(apiUri.toString());
         httpGet.addHeader("Accept", "application/json");
-        addAuthorizationHeaders(httpGet, name, authToken);
+        addAuthorizationHeaders(httpGet, aInfo.getName(), aInfo.getAuthToken());
 
         Log.i(TAG, "Retrieving server registration info " + httpGet.getURI().toString());
         maybeCreateHttpClient();
@@ -558,25 +530,40 @@ public final class ClientUtilities
         }
     }
 
+    private static void addAuthoritiesToJSON(JSONObject json, String key, Authority[] authorities)
+        throws JSONException
+    {
+        JSONArray jArray = new JSONArray();
+        if(authorities != null)
+        {
+            for(Authority auth : authorities)
+            {
+                jArray.put(auth.name());
+            }
+        }
+        json.put(key, jArray);
+    }
+    
     /**
      * Register/Unregister a device with the Listen server.
      * 
-     * @param host
-     * @param username
-     * @param authToken
-     * @param registrationId null or "" to unregister, otherwise registration ID to register
+     * @param aInfo
+     * @param registrationId null to not change, "" to unregister, otherwise registration ID to register
      * @param clientDeviceId
+     * @param enable authorities to enable or null
+     * @param disable authorities to disable or null
      * @return
      * @throws IOException
      * @throws AuthorizationException
      */
-    public static boolean registerDevice(Uri host, String username, String authToken, String registrationId,
-                                         String clientDeviceId) throws IOException, AuthorizationException
+    public static boolean registerDevice(String clientDeviceId, AccountInfo aInfo, String registrationId,
+                                         Authority[] enable, Authority[] disable)
+        throws IOException, AuthorizationException
     {
         Uri apiUri = null;
         try
         {
-            Uri.Builder builder = host.buildUpon();
+            Uri.Builder builder = aInfo.getHost().buildUpon();
             builder.appendEncodedPath(REGISTER_PATH);
             apiUri = builder.build();
         }
@@ -591,7 +578,14 @@ public final class ClientUtilities
         {
             json.put("deviceId", clientDeviceId);
             json.put("deviceType", DEVICE_TYPE);
-            json.put("registrationToken", registrationId == null ? "" : registrationId);
+
+            if(registrationId != null)
+            {
+                json.put("registrationToken", registrationId);
+            }
+
+            addAuthoritiesToJSON(json, "registerTypes", enable);
+            addAuthoritiesToJSON(json, "unregisterTypes", disable);
         }
         catch(JSONException e)
         {
@@ -599,11 +593,156 @@ public final class ClientUtilities
             return false;
         }
    
-        HttpResponse response = sendJsonPut(apiUri, username, authToken, json);
-        return checkStatus("device registration", response);
+        HttpResponse response = sendJsonPut(apiUri, aInfo, json, null);
+        return checkStatus("device registration", response, true);
+    }
+    
+    public static boolean getEmailContacts(AccountInfo aInfo, ListenContacts contacts) throws AuthorizationException, IOException
+    {
+        return getAllContacts(aInfo, contacts, ContactMIME.EMAIL, EMAILS_PATH);
     }
 
-    private static HttpResponse sendJsonPut(Uri apiUri, String username, String authToken, JSONObject json) throws IOException
+    public static boolean getNumberContacts(AccountInfo aInfo, ListenContacts contacts) throws AuthorizationException, IOException
+    {
+        return getAllContacts(aInfo, contacts, ContactMIME.PHONE, NUMBERS_PATH);
+    }
+    
+    private static boolean getAllContacts(AccountInfo aInfo, ListenContacts contacts, ContactMIME mime, String path)
+        throws AuthorizationException, IOException
+    {
+        Uri next = null;
+        do
+        {
+            if(Thread.currentThread().isInterrupted())
+            {
+                Log.i(TAG, "interrupted retrieval of " + mime.name());
+                return false;
+            }
+    
+            next = getPagedResults(aInfo, next, contacts, mime, path);
+            if(next == null)
+            {
+                Log.e(TAG, "error getting " + mime.name());
+                return false;
+            }
+            Log.i(TAG, "got first page: " + next);
+        }
+        while(next != Uri.EMPTY);
+        
+        return true;
+    }
+
+    private static Uri getPagedResults(AccountInfo aInfo, Uri nextRef, ListenContacts contacts,
+                                       ContactMIME mime, String path)
+        throws IOException, AuthorizationException
+    {
+        Uri apiUri = null;
+        if(nextRef == null)
+        {
+            try
+            {
+                Uri.Builder builder = aInfo.getHost().buildUpon();
+                builder.appendEncodedPath(path);
+                builder.appendQueryParameter("_first", Integer.toString(0));
+                builder.appendQueryParameter("_max", Integer.toString(MAX_PAGED_GET));
+                
+                apiUri = builder.build();
+            }
+            catch(Exception e)
+            {
+                Log.i(TAG, "error creating URI", e);
+                return null;
+            }
+        }
+        else
+        {
+            apiUri = nextRef;
+        }
+        
+        HttpGet httpGet = new HttpGet(apiUri.toString());
+        httpGet.addHeader("Accept", "application/json");
+        AndroidHttpClient.modifyRequestToAcceptGzipResponse(httpGet);
+        addAuthorizationHeaders(httpGet, aInfo.getName(), aInfo.getAuthToken());
+
+        Log.i(TAG, "Retrieving contacts: " + httpGet.getURI().toString());
+        maybeCreateHttpClient();
+
+        String next = null;
+        
+        try
+        {
+            ControllerResponse response = mHttpClient.execute(httpGet, new JsonObjectResponseHandler());
+            response.throwExceptions();
+            
+            JSONObject json = response.jsonObject;
+            if(json == null)
+            {
+                throw new JSONException("JSON object not set");
+            }
+            
+            next = json.has("next") ? json.getString("next") : null;
+            int total = json.getInt("total");
+            int count = json.getInt("count");
+            JSONArray results = (JSONArray)json.get("results");
+            
+            Log.i(TAG, "Results array total: " + total + " array: " + results.length() + " next: " + next + " count: " + count);
+
+            int n = 0;
+            for(int i = 0; i < count; i++)
+            {
+                JSONObject result = results.getJSONObject(i);
+                if(contacts.add(result, mime))
+                {
+                    ++n;
+                }
+            }
+            Log.d(TAG, "inserted " + n + " addresses out of " + count);
+        }
+        catch(JSONException e)
+        {
+            Log.e(TAG, "JSONException overall", e);
+            return null;
+        }
+        
+        return getNextUri(aInfo, next, NEXT_CONTACT_PREPEND_PATH);
+    }
+
+    private static Uri getNextUri(AccountInfo aInfo, String next, String prePath)
+    {
+        Uri nextUri = null;
+        
+        if(TextUtils.isEmpty(next))
+        {
+            nextUri = Uri.EMPTY;
+        }
+        else
+        {
+            try
+            {
+                Uri.Builder builder = aInfo.getHost().buildUpon();
+                builder.appendEncodedPath(prePath);
+                if(next.charAt(0) == '/')
+                {
+                    builder.appendEncodedPath(next.substring(1));
+                }
+                else
+                {
+                    builder.appendEncodedPath(next);
+                }
+                nextUri = builder.build();
+            }
+            catch(Exception e)
+            {
+                Log.i(TAG, "error creating next URI", e);
+                return null;
+            }
+
+        }
+        
+        return nextUri;
+    }
+
+    private static HttpResponse sendJsonPut(Uri apiUri, AccountInfo aInfo, JSONObject json, String deviceId) throws IOException
     {
         maybeCreateHttpClient();
 
@@ -616,14 +755,20 @@ public final class ClientUtilities
         httpPut.setHeader("Accept", "application/json");
         httpPut.setHeader("Content-Type", "application/json");
         
-        addAuthorizationHeaders(httpPut, username, authToken);
+        if(deviceId != null)
+        {
+            addDeviceIDHeader(httpPut, deviceId);
+        }
+
+        addAuthorizationHeaders(httpPut, aInfo.getName(), aInfo.getAuthToken());
    
         Log.d(TAG, "Sending PUT request " + httpPut.getURI().toString());
 
         return mHttpClient.execute(httpPut);
     }
     
-    private static boolean checkStatus(String description, HttpResponse response) throws AuthorizationException
+    private static boolean checkStatus(String description, HttpResponse response, boolean consume)
+        throws AuthorizationException
     {
         int status = response.getStatusLine().getStatusCode();
         if(status < 200 || status > 299)
@@ -636,6 +781,22 @@ public final class ClientUtilities
             return false;
         }
         Log.i(TAG, description + ": " + status);
+        
+        if(consume)
+        {
+            HttpEntity entity = response.getEntity();
+            if(entity != null)
+            {
+                try
+                {
+                    entity.consumeContent();
+                }
+                catch(IOException e)
+                {
+                    Log.e(TAG, "error consuming content for " + description, e);
+                }
+            }
+        }
         return true;
     }
     
@@ -667,9 +828,63 @@ public final class ClientUtilities
                 return null;
             }
 
-            String entityString = EntityUtils.toString(entity);
+            String entityString = entityToString(entity);
             return new ControllerResponse(status, entityString);
         }
+    }
+    
+    private static String entityToString(HttpEntity entity) throws IOException
+    {
+        InputStream in = AndroidHttpClient.getUngzippedContent(entity);
+        if(in == null)
+        {
+            return "";
+        }
+        long contentLength = entity.getContentLength();
+        if(contentLength > Integer.MAX_VALUE)
+        {
+            throw new IllegalArgumentException("HTTP data to large to buffer");
+        }
+        
+        int initCapacity = contentLength < 0 ? 4096 : (int)contentLength;
+        if(in instanceof GZIPInputStream)
+        {
+            Log.v(TAG, "GZIP content initial size: " + contentLength);
+            if(contentLength > 0 && initCapacity < (Integer.MAX_VALUE / 2))
+            {
+                // figure about 50% gzip compression ratio
+                initCapacity *= 2;
+            }
+        }
+        
+        String charSet = EntityUtils.getContentCharSet(entity);
+        if(charSet == null)
+        {
+            charSet = HTTP.DEFAULT_CONTENT_CHARSET;
+        }
+        
+        Reader reader = new InputStreamReader(in, charSet);
+        StringBuilder sb = new StringBuilder(initCapacity);
+        try
+        {
+            char[] tmp = new char[1024];
+            int read;
+            while((read = reader.read(tmp)) != -1)
+            {
+                sb.append(tmp, 0, read);
+            }
+        }
+        finally
+        {
+            reader.close();
+        }
+
+        if(sb.length() != contentLength)
+        {
+            Log.i(TAG, "content length of " + contentLength + " bytes: " + sb.length() + " characters");
+        }
+        
+        return sb.toString();
     }
     
     private static final class ControllerResponse

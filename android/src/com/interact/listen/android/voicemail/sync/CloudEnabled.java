@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.Log;
 
-import com.google.android.c2dm.C2DMessaging;
 import com.interact.listen.android.voicemail.Constants;
 
 import java.lang.ref.WeakReference;
@@ -71,11 +70,11 @@ public class CloudEnabled
         Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
         for(Account account : accounts)
         {
-            final SharedPreferences prefs = SyncAdapter.getSyncMeta(context, account);
+            final SharedPreferences prefs = CloudState.INSTANCE.getAccountMeta(context, account);
             prefs.unregisterOnSharedPreferenceChangeListener(mPrefListener);
         }
 
-        C2DMessaging.unregisterEnabledListener(context, mPrefListener);
+        CloudState.INSTANCE.getC2DMMeta(context).unregisterOnSharedPreferenceChangeListener(mPrefListener);
         
         context = null;
     }
@@ -89,29 +88,35 @@ public class CloudEnabled
         }
 
         int nEnabled = 0;
-        
+        int nTotal = 0;
         AccountManager am = AccountManager.get(context);
         Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+        Authority[] authorities = Authority.values();
         for(Account account : accounts)
         {
-            final SharedPreferences prefs = SyncAdapter.getSyncMeta(context, account);
-            if(prefs.getBoolean(SyncAdapter.REGISTERED_SYNC, false))
+            for(Authority authority : authorities)
             {
-                ++nEnabled;
+                ++nTotal;
+                if(CloudState.INSTANCE.isAuthorityCloudSyncEnabled(context, account, authority))
+                {
+                    ++nEnabled;
+                }
             }
             if(addListener)
             {
-                prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
+                final SharedPreferences pref = CloudState.INSTANCE.getAccountMeta(context, account);
+                pref.registerOnSharedPreferenceChangeListener(mPrefListener);
             }
         }
 
         if(addListener)
         {
-            C2DMessaging.registerEnabledListener(context, mPrefListener);
+            final SharedPreferences pref = CloudState.INSTANCE.getC2DMMeta(context);
+            pref.registerOnSharedPreferenceChangeListener(mPrefListener);
         }
         
-        mCurrentRegistered = nEnabled != 0 && nEnabled == accounts.length;
-        mCurrentEnabled = C2DMessaging.isEnabled(context);
+        mCurrentRegistered = nEnabled != 0 && nEnabled == nTotal;
+        mCurrentEnabled = CloudState.INSTANCE.isCloudSyncEnabled(context);
 
         Log.v(TAG, "Registered: " + mCurrentRegistered + " Enabled: " + mCurrentEnabled);
         
@@ -236,11 +241,8 @@ public class CloudEnabled
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
         {
-            if(SyncAdapter.REGISTERED_SYNC.equals(key) || C2DMessaging.C2DMENABLED.equals(key))
-            {
-                Log.v(TAG, "preference " + key + " changed");
-                checkEnabled(false);
-            }
+            Log.v(TAG, "preference " + key + " changed");
+            checkEnabled(false);
         }
         
     }

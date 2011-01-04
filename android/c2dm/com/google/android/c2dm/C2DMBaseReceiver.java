@@ -69,25 +69,25 @@ public abstract class C2DMBaseReceiver extends IntentService
 
     /**
      * Called on registration error. Override to provide better error messages. This is called in the context of a
-     * Service - no dialog or UI.
+     * Service - no dialog or UI.  Can also schedule retry by callilng scheduleRetry() if applicable.
      */
-    public abstract void onError(Context context, String errorId);
+    protected abstract void onError(Context context, String errorId, boolean retryAllowed);
 
     /**
      * Called when a registration token has been received.
      */
-    public void onRegistrered(Context context, String registrationId) throws IOException
-    {
-        // registrationId will be saved after this
-    }
+    protected abstract void onRegistrered(Context context, String registrationId) throws IOException;
 
     /**
      * Called when the device has been unregistered.
      */
-    public void onUnregistered(Context context)
-    {
-    }
-
+    protected abstract void onUnregistered(Context context);
+    
+    /**
+     * Called when a retry is requested.
+     */
+    protected abstract void onRetry(Context context);
+    
     @Override
     public final void onHandleIntent(Intent intent)
     {
@@ -104,7 +104,7 @@ public abstract class C2DMBaseReceiver extends IntentService
             }
             else if(intent.getAction().equals(C2DM_RETRY))
             {
-                C2DMessaging.register(context);
+                onRetry(context);
             }
         }
         finally
@@ -133,9 +133,7 @@ public abstract class C2DMBaseReceiver extends IntentService
         }
         mWakeLock.acquire();
 
-        // Use a naming convention, similar with how permissions and intents are
-        // used. Alternatives are introspection or an ugly use of statics.
-        String receiver = context.getPackageName() + ".C2DMReceiver";
+        String receiver = context.getPackageName() + ".sync.C2DMReceiver";
         intent.setClassName(context, receiver);
 
         context.startService(intent);
@@ -150,6 +148,16 @@ public abstract class C2DMBaseReceiver extends IntentService
         am.cancel(retryPIntent);
     }
     
+    void scheduleRetry(final Context context, long backoffTimeMs)
+    {
+        Log.d(TAG, "Scheduling registration retry, backoff = " + backoffTimeMs);
+        Intent retryIntent = new Intent(C2DM_RETRY);
+        PendingIntent retryPIntent = PendingIntent.getBroadcast(context, 0 /* requestCode */, retryIntent, 0 /* flags */);
+
+        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        am.set(AlarmManager.ELAPSED_REALTIME, backoffTimeMs, retryPIntent);
+    }
+    
     private void handleRegistration(final Context context, Intent intent)
     {
         final String registrationId = intent.getStringExtra(EXTRA_REGISTRATION_ID);
@@ -160,41 +168,18 @@ public abstract class C2DMBaseReceiver extends IntentService
 
         if(removed != null)
         {
-            // remember we are unregistered
-            C2DMessaging.clearRegistrationId(context);
             onUnregistered(context);
         }
         else if(error != null)
         {
-            // we are not registered, can try again
-            C2DMessaging.clearRegistrationId(context);
-            
-            // registration failed
             Log.e(TAG, "Registration error " + error);
-            onError(context, error);
-
-            if(ERR_SERVICE_NOT_AVAILABLE.equals(error))
-            {
-                long backoffTimeMs = C2DMessaging.getBackoff(context);
-
-                Log.d(TAG, "Scheduling registration retry, backoff = " + backoffTimeMs);
-                Intent retryIntent = new Intent(C2DM_RETRY);
-                PendingIntent retryPIntent = PendingIntent.getBroadcast(context, 0 /* requestCode */, retryIntent, 0 /* flags */);
-
-                AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-                am.set(AlarmManager.ELAPSED_REALTIME, backoffTimeMs, retryPIntent);
-
-                // next retry should wait longer.
-                backoffTimeMs = Math.min(backoffTimeMs * 2, 86400000L);
-                C2DMessaging.setBackoff(context, backoffTimeMs);
-            }
+            onError(context, error, ERR_SERVICE_NOT_AVAILABLE.equals(error));
         }
         else
         {
             try
             {
                 onRegistrered(context, registrationId);
-                C2DMessaging.setRegistrationId(context, registrationId);
             }
             catch(IOException ex)
             {
