@@ -94,7 +94,7 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "IS_ACTIVE_DIRECTORY", nullable = false)
     private Boolean isActiveDirectory = Boolean.FALSE;
 
-    @Column(name = "WORK_EMAIL_ADDRESS")
+    @Column(name = "WORK_EMAIL_ADDRESS", nullable = false)
     private String workEmailAddress = "";
 
     public enum PlaybackOrder
