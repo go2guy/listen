@@ -748,10 +748,13 @@ public class Subscriber extends Resource implements Serializable
     
     private void sendDeviceSync(PersistenceService persistenceService)
     {
-        final Session session = persistenceService.getSession();
-        final C2DMessaging.Type type = C2DMessaging.Type.SYNC_CONTACTS;
-        
-        C2DMessaging.INSTANCE.enqueueAllSyncMessages(session, DeviceType.ANDROID, type, null);
+        if(persistenceService != null)
+        {
+            final Session session = persistenceService.getSession();
+            final C2DMessaging.Type type = C2DMessaging.Type.SYNC_CONTACTS;
+            
+            C2DMessaging.INSTANCE.enqueueAllSyncMessages(session, DeviceType.ANDROID, type, null);
+        }
     }
 
 }

@@ -77,6 +77,11 @@ public enum C2DMessaging
 
     public void enqueueAllSyncMessages(Session session, DeviceType dType, Type type, String useToken)
     {
+        if(session == null)
+        {
+            LOG.error("session null executing enqueueAllSyncMessages");
+            return;
+        }
         List<DeviceRegistration> devices = DeviceRegistration.queryByDeviceType(session, dType);
 
         LOG.info("Sending " + type + " change to all devices, " + devices.size() + ", registered with " + type.getRegisteredType());
@@ -103,7 +108,7 @@ public enum C2DMessaging
 
     public void enqueueDeviceSyncMessage(Session session, Subscriber subscriber, Type type, String notToDeviceId)
     {
-        enqueueDeviceSyncMessage(session, subscriber, type, null, notToDeviceId);
+        enqueueDeviceSyncMessage(subscriber, type, null, notToDeviceId);
     }
 
     private static Map<String, String[]> createParamMap(String username, Type type)
@@ -116,7 +121,7 @@ public enum C2DMessaging
         return params;
     }
     
-    private void enqueueDeviceSyncMessage(Session session, Subscriber subscriber, Type type,
+    private void enqueueDeviceSyncMessage(Subscriber subscriber, Type type,
                                           String useToken, String notToDeviceId)
     {
         final boolean force = type == Type.SYNC_CONFIG_CHANGED;     // force config changes even if disabled

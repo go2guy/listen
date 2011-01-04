@@ -366,7 +366,8 @@ public class EditSubscriberServletTest extends ListenServletTest
         final String voicemailPin = String.valueOf(subscriber.getId());
         final String enableEmail = "false";
         final String emailAddress = TestUtil.randomString();
-
+        final String workEmailAddress = TestUtil.randomString();
+        
         request.setMethod("POST");
         request.setParameter("id", id);
         request.setParameter("username", username);
@@ -375,6 +376,7 @@ public class EditSubscriberServletTest extends ListenServletTest
         request.setParameter("voicemailPin", voicemailPin);
         request.setParameter("enableEmail", enableEmail);
         request.setParameter("emailAddress", emailAddress);
+        request.setParameter("workEmailAddress", workEmailAddress);
         request.setParameter("voicemailPlaybackOrder", PlaybackOrder.NEWEST_TO_OLDEST.name());
 
         servlet.service(request, response);
@@ -384,6 +386,7 @@ public class EditSubscriberServletTest extends ListenServletTest
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(emailAddress, subscriber.getEmailAddress());
+        assertEquals(workEmailAddress, subscriber.getWorkEmailAddress());
     }
 
     @Test
@@ -417,7 +420,8 @@ public class EditSubscriberServletTest extends ListenServletTest
         final String voicemailPin = String.valueOf(subscriber.getId());
         final String enableSms = "false";
         final String smsAddress = TestUtil.randomString();
-
+        final String workEmailAddress = subscriber.getWorkEmailAddress();
+        
         request.setMethod("POST");
         request.setParameter("id", id);
         request.setParameter("username", username);
@@ -435,5 +439,6 @@ public class EditSubscriberServletTest extends ListenServletTest
         assertEquals(username, subscriber.getUsername());
         assertEquals(SecurityUtil.hashPassword(password), subscriber.getPassword());
         assertEquals(smsAddress, subscriber.getSmsAddress());
+        assertEquals(workEmailAddress, subscriber.getWorkEmailAddress());
     }
 }

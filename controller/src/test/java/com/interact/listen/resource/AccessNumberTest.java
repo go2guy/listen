@@ -109,7 +109,7 @@ public class AccessNumberTest extends ListenTest
         
         MessageLightToggler mlt = mock(MessageLightToggler.class);
         PersistenceService ps = mock(PersistenceService.class);
-        
+
         accessNumber.setSupportsMessageLight(true);
         accessNumber.useMessageLightToggler(mlt);
         
@@ -134,7 +134,7 @@ public class AccessNumberTest extends ListenTest
     }
     
     @Test
-    public void test_afterDelete_invokesMessageLightToggleOff()
+    public void test_afterDelete_whenAccessNumberDoesntSupportMessageLight_doesntInvokesMessageLightToggle()
     {
         Subscriber subscriber = createSubscriber(session);
         AccessNumber accessNumber = createAccessNumber(session, subscriber);
@@ -142,9 +142,27 @@ public class AccessNumberTest extends ListenTest
         MessageLightToggler mlt = mock(MessageLightToggler.class);
         PersistenceService ps = mock(PersistenceService.class);
         
+        accessNumber.setSupportsMessageLight(false);
+        accessNumber.useMessageLightToggler(mlt);
+        
+        accessNumber.afterDelete(ps, null);
+        verifyZeroInteractions(mlt);
+    }
+
+    @Test
+    public void test_afterDelete_whenAccessNumberSupportsMessageLight_invokesMessageLightToggle()
+    {
+        Subscriber subscriber = createSubscriber(session);
+        AccessNumber accessNumber = createAccessNumber(session, subscriber);
+        
+        MessageLightToggler mlt = mock(MessageLightToggler.class);
+        PersistenceService ps = mock(PersistenceService.class);
+        
+        accessNumber.setSupportsMessageLight(true);
         accessNumber.useMessageLightToggler(mlt);
         
         accessNumber.afterDelete(ps, null);
         verify(mlt).toggleMessageLight(ps, accessNumber, MessageLightState.OFF);
     }
+
 }

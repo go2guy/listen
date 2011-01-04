@@ -134,7 +134,11 @@ public class EditSubscriberServlet extends HttpServlet
 
         subscriberToEdit.setRealName(request.getParameter("realName"));
 
-        subscriberToEdit.setWorkEmailAddress(request.getParameter("workEmailAddress"));
+        final String workEmail = request.getParameter("workEmailAddress");
+        if(workEmail != null)
+        {
+            subscriberToEdit.setWorkEmailAddress(workEmail);
+        }
         
         if(request.getParameter("enableAdmin") != null)
         {

@@ -339,12 +339,15 @@ public class Voicemail extends Audio implements Serializable
     
     private void sendDeviceSync(PersistenceService persistenceService)
     {
-        final Subscriber vSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
-        final Session session = persistenceService.getSession();
-        final String deviceId = persistenceService.getCurrentDeviceId();
-        final C2DMessaging.Type type = C2DMessaging.Type.SYNC_VOICEMAILS;
-        
-        C2DMessaging.INSTANCE.enqueueDeviceSyncMessage(session, vSubscriber, type, deviceId);
+        if(persistenceService != null)
+        {
+            final Subscriber vSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
+            final Session session = persistenceService.getSession();
+            final String deviceId = persistenceService.getCurrentDeviceId();
+            final C2DMessaging.Type type = C2DMessaging.Type.SYNC_VOICEMAILS;
+            
+            C2DMessaging.INSTANCE.enqueueDeviceSyncMessage(session, vSubscriber, type, deviceId);
+        }
     }
     
     private void sendNotification(PersistenceService persistenceService)
