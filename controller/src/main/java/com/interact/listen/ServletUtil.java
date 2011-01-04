@@ -1,10 +1,14 @@
 package com.interact.listen;
 
+import com.interact.listen.api.security.AuthenticationFilter;
+import com.interact.listen.api.security.AuthenticationFilter.Authentication;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.license.NotLicensedException;
+import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.InsaStatSender;
 import com.interact.listen.stats.Stat;
@@ -23,7 +27,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 public final class ServletUtil
 {
@@ -200,4 +206,55 @@ public final class ServletUtil
         }
         return p;
     }
+    
+    public static PersistenceService getAuthPersistenceService(Session session, HttpServletRequest request) throws UnauthorizedServletException
+    {
+        Subscriber subscriber = null;
+
+        Authentication auth = (Authentication)request.getAttribute(AuthenticationFilter.AUTHENTICATION_KEY);
+        if(auth != null)
+        {
+            if(auth.getType() == AuthenticationFilter.AuthenticationType.SUBSCRIBER && auth.getSubscriber() != null)
+            {
+                subscriber = auth.getSubscriber();
+            }
+            if(subscriber == null)
+            {
+                throw new UnauthorizedServletException("Unathorized Subscriber");
+            }
+        }
+        else
+        {
+            String subHeader = request.getHeader("X-Listen-Subscriber");
+            if(subHeader == null)
+            {
+                subHeader = request.getHeader("X-Listen-AuthenticationUsername");
+                if(subHeader != null)
+                {
+                    subHeader = new String(Base64.decodeBase64(subHeader));
+                    subscriber = Subscriber.queryByUsername(session, subHeader);
+                }
+                if(subscriber == null)
+                {
+                    throw new UnauthorizedServletException("Unable to get subscriber from encoded header [" + subHeader + "]");
+                }
+            }
+            else
+            {
+                Long id = Marshaller.getIdFromHref(subHeader);
+                if(id != null)
+                {
+                    subscriber = Subscriber.queryById(session, id);
+                }
+                if(subscriber == null)
+                {
+                    throw new UnauthorizedServletException("X-Listen-Subscriber HTTP header contained unknown subscriber href [" + subHeader + "]");
+                }
+            }
+        }
+        
+        Channel channel = (Channel)request.getAttribute(RequestInformationFilter.CHANNEL_KEY);
+        return new DefaultPersistenceService(session, subscriber, channel);
+    }
+
 }

@@ -20,6 +20,17 @@ public class EmailContact extends Resource implements Serializable
 
     private static final Logger LOG = Logger.getLogger(EmailContact.class);
 
+    private static final ResultTransformer TRANSFORMER = new EmailContactTransformer();
+
+    private static final Set<String> QUERY_FIELDS = new TreeSet<String>();
+    static
+    {
+        QUERY_FIELDS.add("subscriberId");
+        QUERY_FIELDS.add("name");
+        QUERY_FIELDS.add("emailAddress");
+        QUERY_FIELDS.add("type");
+    }
+
     public enum Type
     {
         WORK,
@@ -128,15 +139,6 @@ public class EmailContact extends Resource implements Serializable
         return sb.toString();
     }
     
-    private static final Set<String> QUERY_FIELDS = new TreeSet<String>();
-    static
-    {
-        QUERY_FIELDS.add("subscriberId");
-        QUERY_FIELDS.add("name");
-        QUERY_FIELDS.add("emailAddress");
-        QUERY_FIELDS.add("type");
-    }
-
     public static ResourceList queryForEmails(Session session, int first, int max)
     {
         final Criteria sCriteria = createCriteriaForAll(session, first, max, false);
@@ -211,8 +213,6 @@ public class EmailContact extends Resource implements Serializable
         criteria.add(r);
     }
     
-    private static final ResultTransformer TRANSFORMER = new EmailContactTransformer();
-
     private static void setProjection(Criteria criteria)
     {
         criteria.setProjection(Projections.projectionList()

@@ -573,6 +573,7 @@ public class Subscriber extends Resource implements Serializable
         return (Long)criteria.list().get(0);
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Subscriber> queryAllPaged(Session session, int first, int max)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(Subscriber.class);
@@ -593,6 +594,7 @@ public class Subscriber extends Resource implements Serializable
         return (List<Subscriber>)criteria.list();
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Subscriber> queryByIsSubscribedToPaging(Session session, boolean isSubscribedToPaging)
     {
         Criteria criteria = session.createCriteria(Subscriber.class);
@@ -663,7 +665,7 @@ public class Subscriber extends Resource implements Serializable
 
     public void updateAccessNumbers(Session session, PersistenceService persistenceService,
                                     String accessNumberString, boolean allowSystem)
-        throws NumberAlreadyInUseException, UnauthorizedModificationException
+        throws NumberAlreadyInUseException, UnauthorizedModificationException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
     {
         List<AccessNumber> newNumbers = new ArrayList<AccessNumber>();
         Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();

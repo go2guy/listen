@@ -19,6 +19,18 @@ public class NumberContact extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(NumberContact.class);
+
+    private static final ResultTransformer TRANSFORMER = new NumberContactTrasformer();
+
+    private static final Set<String> QUERY_FIELDS = new TreeSet<String>();
+    static
+    {
+        QUERY_FIELDS.add("id");
+        QUERY_FIELDS.add("subscriberId");
+        QUERY_FIELDS.add("name");
+        QUERY_FIELDS.add("number");
+        QUERY_FIELDS.add("type");
+    }
     
     private Long id;
     private Long subscriberId;
@@ -120,16 +132,6 @@ public class NumberContact extends Resource implements Serializable
         return nc;
     }
 
-    private static final Set<String> QUERY_FIELDS = new TreeSet<String>();
-    static
-    {
-        QUERY_FIELDS.add("id");
-        QUERY_FIELDS.add("subscriberId");
-        QUERY_FIELDS.add("name");
-        QUERY_FIELDS.add("number");
-        QUERY_FIELDS.add("type");
-    }
-    
     public static ResourceList queryForNumbers(Session session, int first, int max)
     {
         final Criteria sCriteria = createCriteriaForAll(session, first, max, false);
@@ -206,8 +208,6 @@ public class NumberContact extends Resource implements Serializable
         return criteria;
     }
     
-    private static final ResultTransformer TRANSFORMER = new NumberContactTrasformer();
-
     private static void setProjection(Criteria criteria)
     {
         criteria.setProjection(Projections.projectionList()

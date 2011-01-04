@@ -1,14 +1,10 @@
 package com.interact.listen.api;
 
 import com.interact.listen.*;
-import com.interact.listen.api.security.AuthenticationFilter;
-import com.interact.listen.api.security.AuthenticationFilter.Authentication;
 import com.interact.listen.contacts.resource.EmailContact;
 import com.interact.listen.contacts.resource.NumberContact;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.ListenServletException;
-import com.interact.listen.exception.UnauthorizedServletException;
-import com.interact.listen.history.Channel;
 import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.marshal.MarshallerNotFoundException;
 import com.interact.listen.marshal.json.JsonMarshaller;
@@ -26,7 +22,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -35,6 +30,8 @@ public class GetContactInformationServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOG = Logger.getLogger(GetContactInformationServlet.class);
+
+    private static final Pattern PATH_PATTERN = Pattern.compile("/([A-Za-z]+s)(/([0-9]+)(/([A-Za-z]+))?)?");
 
     private enum RequestType
     {
@@ -65,7 +62,7 @@ public class GetContactInformationServlet extends HttpServlet
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        getPersistenceService(session, request);
+        ServletUtil.getAuthPersistenceService(session, request);
 
         final Map<String, String> query = ServletUtil.getQueryParameters(request);
 
@@ -150,40 +147,6 @@ public class GetContactInformationServlet extends HttpServlet
         return content;
     }
 
-    private static final Pattern PATH_PATTERN = Pattern.compile("/([A-Za-z]+s)(/([0-9]+)(/([A-Za-z]+))?)?");
-
-    private static Matcher createMatcher(HttpServletRequest request) throws BadRequestServletException
-    {
-        final String path = request.getPathInfo();
-        
-        Matcher matcher = path == null || path.length() <= 1 ? null : PATH_PATTERN.matcher(path);
-        
-        if(matcher == null || !matcher.matches())
-        {
-            throw new BadRequestServletException("Unparseable URL");
-        }
-
-        return matcher;
-    }
-    
-    private static Long getRequestId(Matcher matcher) throws ListenServletException
-    {
-        Long id = null;
-        if(matcher != null && matcher.group(3) != null && matcher.group(3).trim().length() > 0)
-        {
-            try
-            {
-                id = Long.parseLong(matcher.group(3));
-            }
-            catch(NumberFormatException e)
-            {
-                LOG.error("error parsing ID", e);
-                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "invalid ID", "text/plain");
-            }
-        }
-        return id;
-    }
-    
     private RequestType getRequestType(Matcher matcher)
     {
         RequestType type = RequestType.EMAILCONTACTS;
@@ -242,53 +205,36 @@ public class GetContactInformationServlet extends HttpServlet
         }
     }
 
-    private static PersistenceService getPersistenceService(Session session, HttpServletRequest request) throws UnauthorizedServletException
+    private static Matcher createMatcher(HttpServletRequest request) throws BadRequestServletException
     {
-        Subscriber subscriber = null;
-
-        Authentication auth = (Authentication)request.getAttribute(AuthenticationFilter.AUTHENTICATION_KEY);
-        if(auth != null)
-        {
-            if(auth.getType() == AuthenticationFilter.AuthenticationType.SUBSCRIBER && auth.getSubscriber() != null)
-            {
-                subscriber = auth.getSubscriber();
-            }
-            if(subscriber == null)
-            {
-                throw new UnauthorizedServletException("Unathorized Subscriber");
-            }
-        }
-        else
-        {
-            String subHeader = request.getHeader("X-Listen-Subscriber");
-            if(subHeader == null)
-            {
-                subHeader = request.getHeader("X-Listen-AuthenticationUsername");
-                if(subHeader != null)
-                {
-                    subHeader = new String(Base64.decodeBase64(subHeader));
-                    subscriber = Subscriber.queryByUsername(session, subHeader);
-                }
-                if(subscriber == null)
-                {
-                    throw new UnauthorizedServletException("Unable to get subscriber from encoded header [" + subHeader + "]");
-                }
-            }
-            else
-            {
-                Long id = Marshaller.getIdFromHref(subHeader);
-                if(id != null)
-                {
-                    subscriber = Subscriber.queryById(session, id);
-                }
-                if(subscriber == null)
-                {
-                    throw new UnauthorizedServletException("X-Listen-Subscriber HTTP header contained unknown subscriber href [" + subHeader + "]");
-                }
-            }
-        }
+        final String path = request.getPathInfo();
         
-        Channel channel = (Channel)request.getAttribute(RequestInformationFilter.CHANNEL_KEY);
-        return new DefaultPersistenceService(session, subscriber, channel);
+        Matcher matcher = path == null || path.length() <= 1 ? null : PATH_PATTERN.matcher(path);
+        
+        if(matcher == null || !matcher.matches())
+        {
+            throw new BadRequestServletException("Unparseable URL");
+        }
+
+        return matcher;
     }
+    
+    private static Long getRequestId(Matcher matcher) throws ListenServletException
+    {
+        Long id = null;
+        if(matcher != null && matcher.group(3) != null && matcher.group(3).trim().length() > 0)
+        {
+            try
+            {
+                id = Long.parseLong(matcher.group(3));
+            }
+            catch(NumberFormatException e)
+            {
+                LOG.error("error parsing ID", e);
+                throw new ListenServletException(HttpServletResponse.SC_BAD_REQUEST, "invalid ID", "text/plain");
+            }
+        }
+        return id;
+    }
+    
 }

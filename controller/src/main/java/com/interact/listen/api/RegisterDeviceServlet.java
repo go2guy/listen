@@ -1,14 +1,9 @@
 package com.interact.listen.api;
 
 import com.interact.listen.*;
-import com.interact.listen.api.security.AuthenticationFilter;
-import com.interact.listen.api.security.AuthenticationFilter.Authentication;
 import com.interact.listen.c2dm.C2DMessaging;
 import com.interact.listen.config.GoogleAuth;
 import com.interact.listen.exception.BadRequestServletException;
-import com.interact.listen.exception.UnauthorizedServletException;
-import com.interact.listen.history.Channel;
-import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.DeviceRegistration.DeviceType;
 import com.interact.listen.resource.DeviceRegistration.RegisteredType;
@@ -23,7 +18,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -44,7 +38,7 @@ public class RegisterDeviceServlet extends HttpServlet
         ServletUtil.sendStat(request, Stat.META_API_GET_DEVICE_REGISTER);
         
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService service = getPersistenceService(session, request);
+        PersistenceService service = ServletUtil.getAuthPersistenceService(session, request);
 
         DeviceRegistration qReg = new DeviceRegistration();
         qReg.setSubscriber(service.getCurrentSubscriber());
@@ -108,7 +102,7 @@ public class RegisterDeviceServlet extends HttpServlet
         ServletUtil.sendStat(request, Stat.META_API_PUT_DEVICE_REGISTER);
         
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        PersistenceService persistenceService = getPersistenceService(session, request);
+        PersistenceService persistenceService = ServletUtil.getAuthPersistenceService(session, request);
 
         String requestedContentType = request.getHeader("Content-Type");
         if(requestedContentType != null && !requestedContentType.equalsIgnoreCase("application/json"))
@@ -287,53 +281,4 @@ public class RegisterDeviceServlet extends HttpServlet
         }
     }
     
-    private static PersistenceService getPersistenceService(Session session, HttpServletRequest request) throws UnauthorizedServletException
-    {
-        Subscriber subscriber = null;
-
-        Authentication auth = (Authentication)request.getAttribute(AuthenticationFilter.AUTHENTICATION_KEY);
-        if(auth != null)
-        {
-            if(auth.getType() == AuthenticationFilter.AuthenticationType.SUBSCRIBER && auth.getSubscriber() != null)
-            {
-                subscriber = auth.getSubscriber();
-            }
-            if(subscriber == null)
-            {
-                throw new UnauthorizedServletException("Unathorized Subscriber");
-            }
-        }
-        else
-        {
-            String subHeader = request.getHeader("X-Listen-Subscriber");
-            if(subHeader == null)
-            {
-                subHeader = request.getHeader("X-Listen-AuthenticationUsername");
-                if(subHeader != null)
-                {
-                    subHeader = new String(Base64.decodeBase64(subHeader));
-                    subscriber = Subscriber.queryByUsername(session, subHeader);
-                }
-                if(subscriber == null)
-                {
-                    throw new UnauthorizedServletException("Unable to get subscriber from encoded header [" + subHeader + "]");
-                }
-            }
-            else
-            {
-                Long id = Marshaller.getIdFromHref(subHeader);
-                if(id != null)
-                {
-                    subscriber = Subscriber.queryById(session, id);
-                }
-                if(subscriber == null)
-                {
-                    throw new UnauthorizedServletException("X-Listen-Subscriber HTTP header contained unknown subscriber href [" + subHeader + "]");
-                }
-            }
-        }
-        
-        Channel channel = (Channel)request.getAttribute(RequestInformationFilter.CHANNEL_KEY);
-        return new DefaultPersistenceService(session, subscriber, channel);
-    }
 }

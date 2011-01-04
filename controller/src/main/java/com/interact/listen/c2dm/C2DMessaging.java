@@ -53,10 +53,11 @@ public enum C2DMessaging
     
     private static final Logger LOG = Logger.getLogger(C2DMessaging.class);
 
-    private final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
-    private final Map< C2DMessage, ScheduledFuture<?> > futures = Collections.synchronizedMap(new WeakHashMap< C2DMessage, ScheduledFuture<?> >());
+    private final transient ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
+    private final transient Map< C2DMessage, ScheduledFuture<?> > futures =
+        Collections.synchronizedMap(new WeakHashMap< C2DMessage, ScheduledFuture<?> >());
     
-    private Boolean currentEnabled = null;
+    private transient Boolean currentEnabled = null;
 
     public synchronized void setEnabled(boolean enabled)
     {
