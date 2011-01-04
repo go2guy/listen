@@ -1,6 +1,4 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
-<%@ page import="com.interact.listen.license.License" %>
-<%@ page import="com.interact.listen.license.ListenFeature" %>
 <%@ taglib prefix="listen" uri="http://www.iivip.com/taglibs/listen" %>
 <html>
   <head>
@@ -93,15 +91,16 @@
           <input type="text" class="attendant-menu-number-input"/>
         </div>
         <div class="attendant-menu-action-launchApplicationSelect">
-          <select><% /* ordered alphabetically */
-if(License.isLicensed(ListenFeature.CONFERENCING)) { %>
-            <option value="conferencing">Conferencing</option><%
-}
-if(License.isLicensed(ListenFeature.VOICEMAIL)) { %>
-            <option value="directVoicemail">Direct Voicemail</option>
-            <option value="mailbox">Mailbox</option>
-            <option value="voicemail">Voicemail</option><%
-} %>
+          <select>
+            <% /* ordered alphabetically */ %>
+            <listen:ifLicensed feature="CONFERENCING">
+              <option value="conferencing">Conferencing</option>
+            </listen:ifLicensed>
+            <listen:ifLicensed feature="VOICEMAIL">
+              <option value="directVoicemail">Direct Voicemail</option>
+              <option value="mailbox">Mailbox</option>
+              <option value="voicemail">Voicemail</option>
+            </listen:ifLicensed>
             <option value="custom">Custom</option>
           </select>
         </div>
