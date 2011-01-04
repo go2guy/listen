@@ -548,4 +548,37 @@
     <changeSet author="development" id="55">
         <addForeignKeyConstraint baseTableName="FIND_ME_NUMBER" baseColumnNames="SUBSCRIBER_ID" referencedColumnNames="ID" referencedTableName="SUBSCRIBER" constraintName="FK_FIND_ME_NUMBER_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false"/>
     </changeSet>
+    <changeSet author="development" id="56">
+        <addForeignKeyConstraint baseTableName="DEVICE_REGISTRATION" baseColumnNames="SUBSCRIBER_ID" referencedTableName="SUBSCRIBER" referencedColumnNames="ID" constraintName="FK_DEVICE_REGISTRATION_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false"/>
+
+        <createTable tableName="DEVICE_REGISTRATION_TYPE">
+            <column name="REGISTRATION_ID" type="BIGINT">
+	            <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(255)">
+	            <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="DEVICE_REGISTRATION_TYPE" baseColumnNames="REGISTRATION_ID" referencedTableName="DEVICE_REGISTRATION" referencedColumnNames="ID" constraintName="FK_DEVICE_REGISTRATION_TYPE_1" deferrable="false" initiallyDeferred="false"/>
+        <sql>INSERT INTO DEVICE_REGISTRATION_TYPE (REGISTRATION_ID, TYPE) (SELECT ID, 'VOICEMAIL' FROM DEVICE_REGISTRATION)</sql>
+
+		<addColumn tableName="SUBSCRIBER">
+            <column name="WORK_EMAIL_ADDRESS" type="VARCHAR(255)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+		</addColumn>
+		<sql>update SUBSCRIBER set WORK_EMAIL_ADDRESS = EMAIL_ADDRESS</sql>
+		
+        <addColumn tableName="ACCESS_NUMBER">
+            <column name="NUMBER_TYPE" type="VARCHAR(31)" defaultValue="OTHER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_PUBLIC" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <sql>update ACCESS_NUMBER set NUMBER_TYPE = 'EXTENSION' where LENGTH(NUMBER) &lt; 7</sql>
+        <sql>update ACCESS_NUMBER set NUMBER_TYPE = 'VOICEMAIL' where NUMBER like '40242039%'</sql>
+        <sql>update ACCESS_NUMBER set IS_PUBLIC = (select IS_ACTIVE_DIRECTORY FROM SUBSCRIBER s WHERE s.ID = ACCESS_NUMBER.SUBSCRIBER_ID)</sql>
+    </changeSet>
 </databaseChangeLog>

@@ -47,6 +47,7 @@
                               <tr><td><label for="subscriber-form-password" class="required">Password</label></td><td><input type="password" id="subscriber-form-password" name="subscriber-form-password"/></td></tr>
                               <tr><td><label for="subscriber-form-confirmPassword" class="required">Confirm Password</label></td><td><input type="password" id="subscriber-form-confirmPassword" name="subscriber-form-confirmPassword"/></td></tr>
                               <tr><td><label for="subscriber-form-realName">Real Name</label></td><td><input type="text" id="subscriber-form-realName" name="subscriber-form-realName"/></td></tr>
+                              <tr><td><label for="subscriber-form-workEmailAddress">Work Email Address</label></td><td><input type="text" id="subscriber-form-workEmailAddress" name="subscriber-form-workEmailAddress"/></td></tr>
                               <tr><td><label for="subscriber-form-isAdmin">Administrator</label></td><td><input type="checkbox" id="subscriber-form-isAdmin" name="subscriber-form-isAdmin" value="enableAdmin"/></td></tr>
                               <listen:ifLicensed feature="VOICEMAIL">
                                 <tr><td><label for="subscriber-form-voicemailPin">Voicemail Passcode</label></td><td><input type="text" id="subscriber-form-voicemailPin" name="subscriber-form-voicemailPin" maxlength="10"/></td></tr>
@@ -122,8 +123,16 @@
         </tr>
         
         <tr id="accessNumber-row-template">
-          <td><input type="text" class="accessNumber-row-number" value=""/></td>
-          <td><input type="checkbox" class="accessNumber-row-messageLight"/>&nbsp;<label>Message Light</label></td>
+          <td><input type="text" class="accessNumber-row-number" value="" size="10"/></td>
+          <td><input type="checkbox" class="accessNumber-row-messageLight"/>&nbsp;<label>Light</label></td>
+          <td><select class="accessNumber-row-numberType">
+          		<option value="EXTENSION">Ext</option>
+          		<option value="VOICEMAIL">Voicemail</option>
+          		<option value="MOBILE">Mobile</option>
+          		<option value="HOME">Home</option>
+          		<option value="OTHER">Other</option>
+          </select></td>
+          <td><input type="checkbox" class="accessNumber-row-publicNumber"/>&nbsp;<label>Public</label></td>
           <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
         </tr>
       </tbody>

@@ -105,7 +105,7 @@ public class SetGoogleAuthServlet extends HttpServlet
         if(useToken.length() > 0)
         {
             Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            ms.enqueueConfigChanges(session, DeviceType.ANDROID, useToken);
+            ms.enqueueAllSyncMessages(session, DeviceType.ANDROID, C2DMessaging.Type.SYNC_CONFIG_CHANGED, useToken);
         }
         else
         {

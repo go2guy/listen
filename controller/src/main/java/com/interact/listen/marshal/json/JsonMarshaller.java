@@ -112,9 +112,9 @@ public class JsonMarshaller extends Marshaller
         
         if(count < list.getTotal())
         {
-             if(list.getFirst() + list.getMax() < list.getTotal())
+             if(list.getFirst() + count < list.getTotal())
              {
-                 String next = buildListHref(tag + "s", list.getMax() + list.getFirst(), list.getMax(),
+                 String next = buildListHref(tag + "s", count + list.getFirst(), list.getMax(),
                                              list.getFieldsForQuery(), list.getSearchPropertiesForQuery());
                  json.append("\"next\":\"").append(next).append("\",");
              }

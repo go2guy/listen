@@ -8,16 +8,15 @@ import com.interact.listen.config.GoogleAuth;
 import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
-import com.interact.listen.marshal.MalformedContentException;
 import com.interact.listen.marshal.Marshaller;
-import com.interact.listen.marshal.MarshallerNotFoundException;
-import com.interact.listen.marshal.xml.XmlMarshaller;
-import com.interact.listen.resource.DeviceRegistration;
+import com.interact.listen.resource.*;
 import com.interact.listen.resource.DeviceRegistration.DeviceType;
-import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.DeviceRegistration.RegisteredType;
 import com.interact.listen.stats.Stat;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,8 +24,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class RegisterDeviceServlet extends HttpServlet
 {
@@ -58,7 +62,7 @@ public class RegisterDeviceServlet extends HttpServlet
                 throw new BadRequestServletException("device type unknown");
             }
         }
-
+        
         qReg.setDeviceId(request.getParameter("deviceId"));
         if(qReg.getDeviceId() == null || qReg.getDeviceId().length() == 0)
         {
@@ -69,16 +73,31 @@ public class RegisterDeviceServlet extends HttpServlet
         String username = GoogleAuth.INSTANCE.getUsername();
 
         DeviceRegistration reg = DeviceRegistration.queryByInfo(session, qReg);
-        String regId = reg == null || reg.getRegistrationToken() == null ? "" : reg.getRegistrationToken();
         
+        String regId = reg == null || reg.getRegistrationToken() == null ? "" : reg.getRegistrationToken();
+
         LOG.info("getting C2D information enabled: " + enabled + " account: '" + username + "' reg: '" + regId + "'");
 
         StringBuilder json = new StringBuilder();
         json.append("{\"").append("enabled").append("\":\"").append(enabled).append("\",");
         json.append("\"").append("account").append("\":\"").append(username).append("\",");
-        json.append("\"").append("registrationToken").append("\":\"").append(regId).append("\"}");
+        json.append("\"").append("registrationToken").append("\":\"").append(regId).append("\",");
+        json.append("\"").append("registeredTypes").append("\":[");
+        
+        if(reg != null)
+        {
+            for(RegisteredType rType : reg.getRegisteredTypes())
+            {
+                json.append('\"').append(rType.name()).append("\",");
+            }
+            if(!reg.getRegisteredTypes().isEmpty())
+            {
+                json.deleteCharAt(json.length() - 1);
+            }
+            response.setStatus(HttpServletResponse.SC_OK);
+        }
 
-        response.setStatus(HttpServletResponse.SC_OK);
+        json.append("]}");
         
         OutputBufferFilter.append(request, json.toString(), "application/json");
     }
@@ -91,67 +110,183 @@ public class RegisterDeviceServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = getPersistenceService(session, request);
 
+        String requestedContentType = request.getHeader("Content-Type");
+        if(requestedContentType != null && !requestedContentType.equalsIgnoreCase("application/json"))
+        {
+            throw new BadRequestServletException("requested content type not supported");
+        }
+        
         LOG.info("updating registration for " + persistenceService.getCurrentSubscriber());
 
+        DeviceRegistration currentReg = null;
         DeviceRegistration receivedDeviceReg = new DeviceRegistration();
+        String regToken = null;
+        Set<RegisteredType> enableTypes = new TreeSet<RegisteredType>();
+        Set<RegisteredType> disableTypes = new TreeSet<RegisteredType>();
         
-        Marshaller marshaller = getMarshaller(request.getHeader("Content-Type"));
+        String input = IOUtils.toString(request.getInputStream());
+        LOG.debug("Received JSON for unmarshalling: <<" + input + ">>");
+
+        JSONParser parser = new JSONParser();
         try
         {
-            marshaller.unmarshal(request.getInputStream(), receivedDeviceReg, false);
-        }
-        catch(MalformedContentException e)
-        {
-            LOG.error("unable to unmarshal request", e);
-            throw new BadRequestServletException("invalid registration data");
-        }
-
-        receivedDeviceReg.setSubscriber(persistenceService.getCurrentSubscriber());
-
-        DeviceRegistration currentReg = DeviceRegistration.queryByInfo(session, receivedDeviceReg);
-
-        if(receivedDeviceReg.getRegistrationToken() != null && receivedDeviceReg.getRegistrationToken().length() > 0)
-        {
-            ServletUtil.sendStat(request, Stat.C2DM_REGISTERED_DEVICE);
-            if(currentReg == null)
+            JSONObject json = (JSONObject)parser.parse(input);
+            String deviceId = (String)json.get("deviceId");
+            regToken = (String)json.get("registrationToken");
+            DeviceType dType = DeviceType.ANDROID;
+            if(json.containsKey("deviceType"))
             {
-                currentReg = receivedDeviceReg;
-                LOG.info("Saving new registration for device " + currentReg.getDeviceId());
-                session.save(currentReg);
+                try
+                {
+                    dType = DeviceType.valueOf((String)json.get("deviceType"));
+                }
+                catch(Exception e)
+                {
+                    LOG.error("unknown device type", e);
+                }
+            }
+
+            if(deviceId == null)
+            {
+                throw new BadRequestServletException("device ID required");
+            }
+
+            if(!json.containsKey("registerTypes") && !json.containsKey("unregisterTypes"))
+            {
+                // legacy
+                if(regToken == null)
+                {
+                    throw new BadRequestServletException("registration token required if not adjusting types");
+                }
+                if(regToken.length() == 0)
+                {
+                    disableTypes.add(RegisteredType.VOICEMAIL);
+                }
+                else
+                {
+                    enableTypes.add(RegisteredType.VOICEMAIL);
+                }
             }
             else
             {
-                currentReg.setRegistrationToken(receivedDeviceReg.getRegistrationToken());
-                LOG.info("Updating registration for device " + currentReg.getDeviceId());
-                session.update(currentReg);
+                addRegisteredTypesToSet(enableTypes, json, "registerTypes");
+                addRegisteredTypesToSet(disableTypes, json, "unregisterTypes");
+            }
+            
+            receivedDeviceReg.setSubscriber(persistenceService.getCurrentSubscriber());
+            receivedDeviceReg.setDeviceId(deviceId);
+            receivedDeviceReg.setDeviceType(dType);
+            receivedDeviceReg.setRegistrationToken(regToken == null ? "" : regToken);
+            
+            currentReg = DeviceRegistration.queryByInfo(session, receivedDeviceReg);
+
+        }
+        catch(ParseException e)
+        {
+            throw new BadRequestServletException("unable to parse JSON");
+        }
+
+        if(currentReg == null)
+        {
+            LOG.debug("device " + receivedDeviceReg.getDeviceId() + " not found in registration table");
+            currentReg = receivedDeviceReg;
+        }
+
+        boolean isRegChange = false;
+        if(regToken != null)
+        {
+            if(regToken.length() > 0)
+            {
+                if(currentReg == receivedDeviceReg)
+                {
+                    isRegChange = true;
+                    LOG.info("Saving new registration for device " + currentReg.getDeviceId());
+                }
+                else if(!regToken.equals(currentReg.getRegistrationToken()))
+                {
+                    isRegChange = true;
+                    currentReg.setRegistrationToken(receivedDeviceReg.getRegistrationToken());
+                    LOG.info("Updating registration for device " + currentReg.getDeviceId());
+                }
+            }
+            else if(currentReg == receivedDeviceReg)
+            {
+                isRegChange = true;
+                LOG.info("Registration for device not found to delete " + receivedDeviceReg.getDeviceId());
+            }
+            else
+            {
+                isRegChange = true;
+                currentReg.setRegistrationToken(regToken);
+                LOG.info("Deleting registration for device " + currentReg.getDeviceId());
             }
         }
-        else if(currentReg != null)
+        
+        enableTypes.removeAll(disableTypes);
+        
+        boolean isTypeChange = false;
+        if(currentReg.getRegisteredTypes().addAll(enableTypes))
         {
-            ServletUtil.sendStat(request, Stat.C2DM_UNREGISTERED_DEVICE);
-            LOG.info("Deleting registration for device " + currentReg.getDeviceId());
-            session.delete(currentReg);
+            isTypeChange = true;
         }
-        else
+        if(currentReg.getRegisteredTypes().removeAll(disableTypes))
         {
-            LOG.info("Registration for device not found to delete " + receivedDeviceReg.getDeviceId());
+            isTypeChange = true;
         }
+
+        if(isRegChange || isTypeChange)
+        {
+            if(currentReg.getRegistrationToken().length() > 0)
+            {
+                if(isRegChange)
+                {
+                    ServletUtil.sendStat(request,  Stat.C2DM_REGISTERED_DEVICE);
+                }
+                if(isTypeChange)
+                {
+                    LOG.debug("registered types: " + currentReg.getRegisteredTypes());
+                }
+                if(currentReg == receivedDeviceReg)
+                {
+                    session.save(currentReg);
+                }
+                else
+                {
+                    session.update(currentReg);
+                }
+            }
+            else if(currentReg != receivedDeviceReg)
+            {
+                ServletUtil.sendStat(request, Stat.C2DM_UNREGISTERED_DEVICE);
+                session.delete(currentReg);
+            }
+        }
+        
     }
 
-    private Marshaller getMarshaller(String contentType)
+    private static void addRegisteredTypesToSet(Set<RegisteredType> types, JSONObject json, String key)
     {
-        try
+        JSONArray rArray = (JSONArray)json.get(key);
+        if(rArray == null)
         {
-            LOG.debug("Creating Marshaller for 'Accept' content type of " + contentType);
-            return Marshaller.createMarshaller(contentType);
+            return;
         }
-        catch(MarshallerNotFoundException e)
+        for(int i = 0; i < rArray.size(); ++i)
         {
-            LOG.warn("Unrecognized content-type provided, assuming XML");
-            return new XmlMarshaller();
+            String rStr = (String)rArray.get(i);
+            try
+            {
+                RegisteredType rType = RegisteredType.valueOf(rStr);
+                types.add(rType);
+                LOG.debug(key + "=>" + rType);
+            }
+            catch(Exception e)
+            {
+                LOG.error("unable to determine registered type", e);
+            }
         }
     }
-
+    
     private static PersistenceService getPersistenceService(Session session, HttpServletRequest request) throws UnauthorizedServletException
     {
         Subscriber subscriber = null;

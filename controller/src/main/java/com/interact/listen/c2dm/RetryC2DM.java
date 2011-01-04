@@ -36,6 +36,8 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
     @Override
     public void run()
     {
+        C2DMessaging.INSTANCE.clearFuture(message);
+        
         if(retryCount == 0 || retryCount == Integer.MAX_VALUE)
         {
             STAT_SENDER.send(Stat.C2DM_QUEUED_MESSAGE);
@@ -88,7 +90,7 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
             transaction = session.beginTransaction();
 
             List<DeviceRegistration> devices;
-            devices = DeviceRegistration.queryByDevice(session, DeviceType.ANDROID, registrationId);
+            devices = DeviceRegistration.queryByRegistrationId(session, DeviceType.ANDROID, registrationId);
 
             LOG.info("Removing device registrations: " + devices.size());
 
@@ -123,5 +125,10 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
     public int hashCode()
     {
         return message.hashCode();
+    }
+
+    public C2DMessage getMessage()
+    {
+        return message;
     }
 }

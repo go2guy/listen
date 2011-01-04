@@ -108,9 +108,9 @@ public class XmlMarshaller extends Marshaller
         String next = null;
         if(count < list.getTotal())
         {
-            if(list.getFirst() + list.getMax() < list.getTotal())
+            if(list.getFirst() + count < list.getTotal())
             {
-                next = escape(buildListHref(listName, list.getMax() + list.getFirst(), list.getMax(),
+                next = escape(buildListHref(listName, count + list.getFirst(), list.getMax(),
                                             list.getFieldsForQuery(), list.getSearchPropertiesForQuery()));
             }
         }

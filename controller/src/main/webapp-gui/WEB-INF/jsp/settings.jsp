@@ -32,7 +32,24 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
                             <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr> <%
     } %>
                             <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        
-                            <tr><td><label for="profile-form-number">Access Numbers</label></td><td id="profile-form-accessNumbers" name="profile-form-accessNumbers"></td></tr>
+                            <tr><td><label for="profile-form-workEmailAddress">Work Email Address</label></td><td><input type="text" id="profile-form-workEmailAddress" name="profile-form-workEmailAddress"/></td></tr>                        
+
+                              <tr><td colspan="2"><label for="profile-form-acessNumbersTable>Access Numbers</label></td></tr>
+                              <tr>
+                                <td colspan="2">
+                                  <table id="profile-form-accessNumbersTable">
+                                    <tbody>
+                                      <tr>
+                                        <td colspan="3" class="buttons">
+                                          <button type="button" class="button-add" id="profile-form-addAccessNumber" title="New access number">New access number</button>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </td>
+                              </tr>
+
+
                             <listen:ifLicensed feature="VOICEMAIL">
                               <tr><td><label for="profile-form-voicemailPin">Voicemail Passcode</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
                               <tr>
@@ -103,5 +120,24 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
                   </div>
                   <div class="cleaner">&nbsp;</div>
                 </div>
+                
+	<table class="templates">
+      <tbody>
+        <tr id="profile-accessNumber-row-template">
+          <td><input type="text" class="accessNumber-row-number" value="" size="15"/></td>
+          <td><input type="checkbox" disabled="disabled" class="accessNumber-row-messageLight"/>&nbsp;<label>Message Light</label></td>
+          <td><select class="accessNumber-row-numberType">
+          		<option value="EXTENSION" disabled="disabled">Extension</option>
+          		<option value="VOICEMAIL" disabled="disabled">Voicemail</option>
+          		<option value="MOBILE" selected="selected">Mobile</option>
+          		<option value="HOME">Home</option>
+          		<option value="OTHER">Other</option>
+          </select></td>
+          <td><input type="checkbox" class="accessNumber-row-publicNumber"/>&nbsp;<label>Public</label></td>
+          <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
+        </tr>
+      </tbody>
+    </table>
+                
   </body>
 </html>

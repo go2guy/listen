@@ -1,7 +1,9 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.c2dm.C2DMessaging;
 import com.interact.listen.history.HistoryService;
+import com.interact.listen.resource.DeviceRegistration.DeviceType;
 import com.interact.listen.resource.Voicemail.MessageLightState;
 import com.interact.listen.spot.MessageLightToggler;
 import com.interact.listen.spot.SpotSystemMessageLightToggler;
@@ -12,9 +14,10 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 
 @Entity
 @Table(name = "ACCESS_NUMBER")
@@ -22,6 +25,8 @@ public class AccessNumber extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
+    private static final Logger LOG = Logger.getLogger(AccessNumber.class);
+    
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
@@ -44,6 +49,34 @@ public class AccessNumber extends Resource implements Serializable
     @Column(name = "SUPPORTS_MESSAGE_LIGHT", nullable = false)
     private Boolean supportsMessageLight = Boolean.FALSE;
 
+    @Column(name = "NUMBER_TYPE", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private NumberType numberType = NumberType.OTHER;
+
+    public enum NumberType
+    {
+        EXTENSION(true),
+        VOICEMAIL(true),
+        MOBILE(false),
+        HOME(false),
+        OTHER(false);
+        
+        private boolean system;
+        
+        private NumberType(boolean system)
+        {
+            this.system = system;
+        }
+        
+        public boolean isSystem()
+        {
+            return system;
+        }
+    }
+
+    @Column(name = "IS_PUBLIC", nullable = false)
+    private boolean publicNumber = true;
+    
     @Transient
     private MessageLightToggler messageLightToggler = new SpotSystemMessageLightToggler();
 
@@ -112,6 +145,26 @@ public class AccessNumber extends Resource implements Serializable
         this.messageLightToggler = toggler;
     }
     
+    public void setNumberType(NumberType numberType)
+    {
+        this.numberType = numberType;
+    }
+
+    public NumberType getNumberType()
+    {
+        return this.numberType;
+    }
+    
+    public void setPublicNumber(boolean publicNumber)
+    {
+        this.publicNumber = publicNumber;
+    }
+    
+    public boolean getPublicNumber()
+    {
+        return this.publicNumber;
+    }
+
     @Override
     public boolean validate()
     {
@@ -141,6 +194,9 @@ public class AccessNumber extends Resource implements Serializable
         copy.setNumber(number);
         copy.setSubscriber(subscriber);
         copy.setSupportsMessageLight(supportsMessageLight);
+        copy.setNumberType(numberType);
+        copy.setPublicNumber(publicNumber);
+        
         return copy;
     }
 
@@ -188,8 +244,27 @@ public class AccessNumber extends Resource implements Serializable
         {
             messageLightToggler.toggleMessageLight(persistenceService, this);
         }
+        
+        if(getPublicNumber())
+        {
+            LOG.debug("C2DM number saved: " + getNumber());
+            sendDeviceSync(persistenceService);
+        }
     }
 
+    private boolean isChangedPublicNumber(AccessNumber orig)
+    {
+        if(getPublicNumber() != orig.getPublicNumber())
+        {
+            return true;
+        }
+        if(!getPublicNumber())
+        {
+            return false;
+        }
+        return orig.getNumberType() != getNumberType() || !ComparisonUtil.isEqual(orig.getNumber(), getNumber());
+    }
+    
     @Override
     public void afterUpdate(PersistenceService persistenceService, HistoryService historyService, Resource originalResource)
     {
@@ -203,12 +278,26 @@ public class AccessNumber extends Resource implements Serializable
         {
             messageLightToggler.toggleMessageLight(persistenceService, original, MessageLightState.OFF);
         }
+        if(isChangedPublicNumber(original))
+        {
+            LOG.debug("C2DM number updated: " + getNumber());
+            sendDeviceSync(persistenceService);
+        }
     }
 
     @Override
     public void afterDelete(PersistenceService persistenceService, HistoryService historyService)
     {
-        messageLightToggler.toggleMessageLight(persistenceService, this, MessageLightState.OFF);
+        if(supportsMessageLight)
+        {
+            messageLightToggler.toggleMessageLight(persistenceService, this, MessageLightState.OFF);
+        }
+        
+        if(getPublicNumber())
+        {
+            LOG.debug("C2DM number deleted: " + getNumber());
+            sendDeviceSync(persistenceService);
+        }
     }
 
     public static AccessNumber queryByNumber(Session session, String number)
@@ -248,7 +337,7 @@ public class AccessNumber extends Resource implements Serializable
         
         return "";
     }
-
+    
     private static Criteria buildCriteriaForSubscriberQuery(Session session, Subscriber subscriber)
     {
         Criteria criteria = session.createCriteria(AccessNumber.class);
@@ -257,4 +346,13 @@ public class AccessNumber extends Resource implements Serializable
         criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
         return criteria;
     }
+    
+    private void sendDeviceSync(PersistenceService persistenceService)
+    {
+        final Session session = persistenceService.getSession();
+        final C2DMessaging.Type type = C2DMessaging.Type.SYNC_CONTACTS;
+        
+        C2DMessaging.INSTANCE.enqueueAllSyncMessages(session, DeviceType.ANDROID, type, null);
+    }
+
 }

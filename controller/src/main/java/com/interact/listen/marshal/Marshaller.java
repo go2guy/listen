@@ -1,5 +1,6 @@
 package com.interact.listen.marshal;
 
+import com.interact.listen.contacts.resource.EmailContact;
 import com.interact.listen.history.Channel;
 import com.interact.listen.marshal.converter.*;
 import com.interact.listen.marshal.json.JsonMarshaller;
@@ -50,6 +51,9 @@ public abstract class Marshaller
         DEFAULT_CONVERTERS.put(Duration.class, JodaDurationConverter.class);
         DEFAULT_CONVERTERS.put(PlaybackOrder.class, PlaybackOrderConverter.class);
         DEFAULT_CONVERTERS.put(DeviceType.class, DeviceTypeConverter.class);
+        DEFAULT_CONVERTERS.put(AccessNumber.NumberType.class, AccessNumberTypeConverter.class);
+        DEFAULT_CONVERTERS.put(EmailContact.Type.class, EmailContactTypeConverter.class);
+        DEFAULT_CONVERTERS.put(DeviceRegistration.RegisteredType.class, DeviceRegisteredTypeConverter.class);
     }
 
     /**

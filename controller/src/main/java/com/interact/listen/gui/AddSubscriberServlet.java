@@ -1,9 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.*;
-import com.interact.listen.exception.BadRequestServletException;
-import com.interact.listen.exception.NumberAlreadyInUseException;
-import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.exception.*;
 import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
@@ -18,12 +16,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.classic.Session;
 import org.hibernate.exception.ConstraintViolationException;
 
 public class AddSubscriberServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
+    
+    private static final Logger LOG = Logger.getLogger(AddSubscriberServlet.class);
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
@@ -103,12 +104,17 @@ public class AddSubscriberServlet extends HttpServlet
         {
             try
             {
-                subscriber.updateAccessNumbers(session, persistenceService, accessNumbers);
+                subscriber.updateAccessNumbers(session, persistenceService, accessNumbers, true);
             }
             catch(NumberAlreadyInUseException e)
             {
                 throw new BadRequestServletException("Access number [" + e.getNumber() +
                                                      "] is already in use by another account");
+            }
+            catch(UnauthorizedModificationException e)
+            {
+                LOG.error(e.getMessage());
+                throw new UnauthorizedServletException();
             }
         }
 

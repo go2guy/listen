@@ -17,10 +17,15 @@ $(document).ready(function() {
         return false;
     });
 
+    $('#profile-form-addAccessNumber').click(function() {
+        Profile.addAccessNumberRow();
+    });
+
     $('#pager-form').submit(function() {
         Profile.editPagerInfo();
         return false;
     });
+    
 
     Profile = function() {
         return {
@@ -38,14 +43,13 @@ $(document).ready(function() {
                             $('#profile-form-username').val(data.username);
                             $('#profile-form-accountType').text(data.isActiveDirectory ? 'Active Directory' : 'Local');
                             $('#profile-form-realName').val(data.realName);
-                            var numbers = '';
+                            $('#profile-form-workEmailAddress').val(data.workEmailAddress);
+
+                            Profile.clearAllAccessNumberRows();
                             for(var i = 0; i < data.accessNumbers.length; i++) {
-                                numbers += data.accessNumbers[i].number;
-                                if(i < data.accessNumbers.length - 1) {
-                                    numbers += ',';
-                                }
+                                Profile.addAccessNumberRow(data.accessNumbers[i].number, data.accessNumbers[i].messageLight, data.accessNumbers[i].numberType, data.accessNumbers[i].publicNumber);
                             }
-                            $('#profile-form-accessNumbers').text(numbers);
+                            
                             if(data.voicemailPin !== null) {
                                 $('#profile-form-voicemailPin').val(data.voicemailPin);
                             }
@@ -98,6 +102,8 @@ $(document).ready(function() {
                         password: $('#profile-form-password').val(),
                         confirmPassword: $('#profile-form-confirmPassword').val(),
                         realName: $('#profile-form-realName').val(),
+                        workEmailAddress: $('#profile-form-workEmailAddress').val(),
+                        accessNumbers: Profile.buildAccessNumberString(),
                         voicemailPin: $('#profile-form-voicemailPin').val(),
                         enableEmail: $('#profile-form-enableEmailNotification').is(":checked"),
                         enableSms: $('#profile-form-enableSmsNotification').is(":checked"),
@@ -174,7 +180,58 @@ $(document).ready(function() {
                         interact.listen.notifyError(message);
                     }
                 });
+            },
+            
+            clearAllAccessNumberRows: function() {
+                $('#profile-form-accessNumbersTable tbody tr').not(':last').remove();
+            },
+
+            addAccessNumberRow: function(number, messageLight, numberType, publicNumber) {
+                var clone = $('#profile-accessNumber-row-template').clone();
+                clone.removeAttr('id');
+                $('.accessNumber-row-number', clone).val(number);
+                if(messageLight) {
+                    $('.accessNumber-row-messageLight', clone).attr('checked', 'checked');
+                } else {
+                    $('.accessNumber-row-messageLight', clone).removeAttr('checked');
+                }
+                $('.accessNumber-row-numberType', clone).val(numberType);
+                if(publicNumber) {
+                    $('.accessNumber-row-publicNumber', clone).attr('checked', 'checked');
+                } else {
+                    $('.accessNumber-row-publicNumber', clone).removeAttr('checked');
+                }
+                $('.icon-delete', clone).click(function() {
+                    $(this).parent().parent().remove();
+                });
+                if(numberType == 'VOICEMAIL' || numberType == 'EXTENSION') {
+                	$('.accessNumber-row-number', clone).attr('disabled', 'disabled');
+                	$('.accessNumber-row-numberType', clone).attr('disabled', 'disabled');
+                	$('.accessNumber-row-publicNumber', clone).attr('disabled', 'disabled');
+                	$('.icon-delete', clone).attr('disabled', 'disabled');
+                }
+                $('#profile-form-accessNumbersTable tbody tr:last').before(clone);
+            },
+
+            buildAccessNumberString: function() {
+                var value = '';
+                var rows = $('#profile-form-accessNumbersTable tr');
+                for(var i = 0; i < rows.length - 1; i++) {
+                    var number = $('.accessNumber-row-number', rows[i]).val();
+                    if(number.length == 0) {
+                        continue;
+                    }
+                    var messageLight = $('.accessNumber-row-messageLight', rows[i]).is(':checked');
+                    var numberType = $('.accessNumber-row-numberType', rows[i]).val();
+                    var publicNumber = $('.accessNumber-row-publicNumber', rows[i]).is(':checked');
+                    value += number + ':' + messageLight + ':' + numberType + ':' + publicNumber + ';';
+                }
+                if(value.length > 0) {
+                    value = value.substring(0, value.length - 1); // remove last semicolon
+                }
+                return value;
             }
+
         }
     }();
 

@@ -1,8 +1,11 @@
 package com.interact.listen.resource;
 
 import com.interact.listen.PersistenceService;
+import com.interact.listen.c2dm.C2DMessaging;
 import com.interact.listen.exception.NumberAlreadyInUseException;
+import com.interact.listen.exception.UnauthorizedModificationException;
 import com.interact.listen.history.HistoryService;
+import com.interact.listen.resource.DeviceRegistration.DeviceType;
 import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.util.ComparisonUtil;
@@ -90,6 +93,9 @@ public class Subscriber extends Resource implements Serializable
 
     @Column(name = "IS_ACTIVE_DIRECTORY", nullable = false)
     private Boolean isActiveDirectory = Boolean.FALSE;
+
+    @Column(name = "WORK_EMAIL_ADDRESS")
+    private String workEmailAddress = "";
 
     public enum PlaybackOrder
     {
@@ -320,6 +326,16 @@ public class Subscriber extends Resource implements Serializable
         this.emailAddress = emailAddress;
     }
 
+    public String getWorkEmailAddress()
+    {
+        return workEmailAddress;
+    }
+
+    public void setWorkEmailAddress(String workEmailAddress)
+    {
+        this.workEmailAddress = workEmailAddress;
+    }
+
     public String getSmsAddress()
     {
         return smsAddress;
@@ -426,11 +442,21 @@ public class Subscriber extends Resource implements Serializable
         {
             copy.addToDevices(device.copy(false));
         }
+        copy.setEmailAddress(emailAddress);
+        copy.setConferences(conferences);
+        copy.setIsEmailNotificationEnabled(isEmailNotificationEnabled);
+        copy.setIsSmsNotificationEnabled(isSmsNotificationEnabled);
+        copy.setSmsAddress(smsAddress);
+        copy.setIsSubscribedToPaging(isSubscribedToPaging);
+        copy.setIsSubscribedToTranscription(isSubscribedToTranscription);
+        copy.setVoicemailPlaybackOrder(voicemailPlaybackOrder);
+        copy.setIsActiveDirectory(isActiveDirectory);
         copy.setPassword(password);
         copy.setRealName(realName);
         copy.setUsername(username);
         copy.setVoicemailPin(voicemailPin);
         copy.setVoicemails(voicemails);
+        copy.setWorkEmailAddress(workEmailAddress);
         return copy;
     }
 
@@ -475,6 +501,12 @@ public class Subscriber extends Resource implements Serializable
     public void afterSave(PersistenceService persistenceService, HistoryService historyService)
     {
         historyService.writeCreatedSubscriber(this);
+        
+        if(getWorkEmailAddress() != null && getWorkEmailAddress().length() > 0)
+        {
+            LOG.debug("C2DM subscriber saved: " + getWorkEmailAddress());
+            sendDeviceSync(persistenceService);
+        }
     }
 
     @Override
@@ -485,6 +517,11 @@ public class Subscriber extends Resource implements Serializable
         {
             historyService.writeChangedVoicemailPin(this, subscriber.getVoicemailPin(), getVoicemailPin());
         }
+        if(!ComparisonUtil.isEqual(subscriber.getWorkEmailAddress(), getWorkEmailAddress()))
+        {
+            LOG.debug("C2DM subscriber updated '" + getWorkEmailAddress() + "' from '" + subscriber.getWorkEmailAddress() + "'");
+            sendDeviceSync(persistenceService);
+        }
     }
 
     @Override
@@ -492,6 +529,12 @@ public class Subscriber extends Resource implements Serializable
     {
         historyService.writeDeletedSubscriber(this);
 
+        if(getWorkEmailAddress() != null && getWorkEmailAddress().length() > 0)
+        {
+            LOG.debug("C2DM subscriber deleted: " + getWorkEmailAddress());
+            sendDeviceSync(persistenceService);
+        }
+        
         SpotSystem spotSystem = new SpotSystem(persistenceService.getCurrentSubscriber());
         try
         {
@@ -618,8 +661,9 @@ public class Subscriber extends Resource implements Serializable
         return realName != null && !realName.trim().equals("") ? realName : username;
     }
 
-    public void updateAccessNumbers(Session session, PersistenceService persistenceService, String accessNumberString)
-        throws NumberAlreadyInUseException
+    public void updateAccessNumbers(Session session, PersistenceService persistenceService,
+                                    String accessNumberString, boolean allowSystem)
+        throws NumberAlreadyInUseException, UnauthorizedModificationException
     {
         List<AccessNumber> newNumbers = new ArrayList<AccessNumber>();
         Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();
@@ -638,6 +682,19 @@ public class Subscriber extends Resource implements Serializable
                 AccessNumber newNumber = new AccessNumber();
                 newNumber.setNumber(parts[0].trim());
                 newNumber.setSupportsMessageLight(Boolean.valueOf(parts[1]));
+                
+                try
+                {
+                    newNumber.setNumberType(AccessNumber.NumberType.valueOf(parts[2]));
+                }
+                catch(Exception e)
+                {
+                    LOG.error("Unknown number type: " + parts[2]);
+                    newNumber.setNumberType(AccessNumber.NumberType.OTHER);
+                }
+                
+                newNumber.setPublicNumber(Boolean.valueOf(parts[3]));
+                
                 newNumbers.add(newNumber);
             }
         }
@@ -646,7 +703,11 @@ public class Subscriber extends Resource implements Serializable
         {
             if(!newNumbers.contains(entry.getValue()))
             {
-                session.delete(entry.getValue());
+                if(entry.getValue().getNumberType().isSystem() && !allowSystem)
+                {
+                    throw new UnauthorizedModificationException("Attempted delete on system access number by non-admin.");
+                }
+                persistenceService.delete(entry.getValue());
             }
         }
 
@@ -659,16 +720,36 @@ public class Subscriber extends Resource implements Serializable
             }
             else if(result == null)
             {
+                if(newNumber.getNumberType().isSystem() && !allowSystem)
+                {
+                    throw new UnauthorizedModificationException("Attempted creation of system access number by non-admin.");
+                }
                 newNumber.setSubscriber(this);
                 addToAccessNumbers(newNumber);
                 persistenceService.save(newNumber);
             }
             else
             {
-                // updating an existing record, save the found result
+                if(result.getNumberType().isSystem() && !allowSystem)
+                {
+                    throw new UnauthorizedModificationException("Attempted update of system access number by non-admin.");
+                }
+                // updating an existing record
+                AccessNumber original = result.copy(false);
                 result.setSupportsMessageLight(newNumber.getSupportsMessageLight());
-                persistenceService.save(result);
+                result.setNumberType(newNumber.getNumberType());
+                result.setPublicNumber(newNumber.getPublicNumber());
+                persistenceService.update(result, original);
             }
         }
     }
+    
+    private void sendDeviceSync(PersistenceService persistenceService)
+    {
+        final Session session = persistenceService.getSession();
+        final C2DMessaging.Type type = C2DMessaging.Type.SYNC_CONTACTS;
+        
+        C2DMessaging.INSTANCE.enqueueAllSyncMessages(session, DeviceType.ANDROID, type, null);
+    }
+
 }

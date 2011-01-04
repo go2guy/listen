@@ -12,6 +12,11 @@ import javax.persistence.*;
 //import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.criterion.*;
 
 @Entity
@@ -45,9 +50,25 @@ public class DeviceRegistration extends Resource implements Serializable
     @Column(name = "REGISTRATION_TOKEN")
     private String registrationToken;
 
+    @CollectionOfElements
+    @Enumerated(EnumType.STRING)
+    @Sort(type = SortType.NATURAL)
+    @CollectionTable(name = "DEVICE_REGISTRATION_TYPE",
+               joinColumns = { @JoinColumn(name = "REGISTRATION_ID") },
+               uniqueConstraints = { @UniqueConstraint(columnNames = { "REGISTRATION_ID", "TYPE" }) })
+    @Fetch(FetchMode.SELECT)
+    @Column(name = "TYPE", nullable = false)
+    private Set<RegisteredType> registeredTypes = new TreeSet<RegisteredType>();
+    
     public enum DeviceType
     {
         ANDROID;
+    }
+    
+    public enum RegisteredType
+    {
+        VOICEMAIL,
+        CONTACTS
     }
 
     @Override
@@ -81,6 +102,11 @@ public class DeviceRegistration extends Resource implements Serializable
         return registrationToken;
     }
 
+    public Set<RegisteredType> getRegisteredTypes()
+    {
+        return registeredTypes;
+    }
+
     @Override
     public void setId(Long id)
     {
@@ -112,6 +138,20 @@ public class DeviceRegistration extends Resource implements Serializable
         this.registrationToken = registrationToken;
     }
 
+    public void setRegisteredTypes(Set<RegisteredType> registeredTypes)
+    {
+        this.registeredTypes = registeredTypes;
+    }
+    
+    public boolean isRegistered(DeviceType dType, RegisteredType rType)
+    {
+        if(registrationToken == null || registrationToken.length() == 0)
+        {
+            return false;
+        }
+        return deviceType == dType && (rType == null || registeredTypes.contains(rType));
+    }
+    
     @Override
     public boolean validate()
     {
@@ -131,7 +171,10 @@ public class DeviceRegistration extends Resource implements Serializable
         {
             addToErrors("set the subscriber");
         }
-
+        if(registeredTypes == null)
+        {
+            addToErrors("registered types must be set");
+        }
         return !hasErrors();
     }
 
@@ -149,6 +192,7 @@ public class DeviceRegistration extends Resource implements Serializable
         copy.setDeviceId(deviceId);
         copy.setDeviceType(deviceType);
         copy.setRegistrationToken(registrationToken);
+        copy.setRegisteredTypes(new TreeSet<RegisteredType>(getRegisteredTypes()));
         
         return copy;
     }
@@ -194,61 +238,38 @@ public class DeviceRegistration extends Resource implements Serializable
         // Need history?
     }
 
-    public static DeviceRegistration queryById(Session session, Long id)
-    {
-        return (DeviceRegistration)session.get(DeviceRegistration.class, id);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static List<DeviceRegistration> queryBySubscriber(Session session, Subscriber subscriber, DeviceType type)
-    {
-        Criteria criteria = buildCriteriaForSubscriberQuery(session, subscriber);
-        if(type != null)
-        {
-            criteria.add(Restrictions.eq("deviceType", type));
-        }
-        return (List<DeviceRegistration>)criteria.list();
-    }
-    
     public static DeviceRegistration queryByInfo(Session session, DeviceRegistration reg)
     {
-        Criteria criteria = buildCriteriaForSubscriberQuery(session, reg.getSubscriber());
-        
-        criteria.add(Restrictions.eq("deviceId", reg.getDeviceId()));
-        criteria.add(Restrictions.eq("deviceType", reg.getDeviceType()));
+        Criteria criteria = session.createCriteria(DeviceRegistration.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.conjunction()
+                     .add(Restrictions.eq("subscriber_alias.id", reg.getSubscriber().getId()))
+                     .add(Restrictions.eq("deviceId", reg.getDeviceId()))
+                     .add(Restrictions.eq("deviceType", reg.getDeviceType())));
         criteria.setMaxResults(1);
         
         return (DeviceRegistration)criteria.uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
-    public static List<DeviceRegistration> queryByDevice(Session session, DeviceType type, String registrationId)
+    public static List<DeviceRegistration> queryByDeviceType(Session session, DeviceType type)
     {
         Criteria criteria = session.createCriteria(DeviceRegistration.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.add(Restrictions.eq("deviceType", type));
-        
-        if(registrationId != null)
-        {
-            criteria.add(Restrictions.eq("registrationToken", registrationId));
-        }
-        
         return (List<DeviceRegistration>)criteria.list();
     }
 
-    public static Long count(Session session)
+    @SuppressWarnings("unchecked")
+    public static List<DeviceRegistration> queryByRegistrationId(Session session, DeviceType type, String registrationId)
     {
         Criteria criteria = session.createCriteria(DeviceRegistration.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.setProjection(Projections.rowCount());
-        return (Long)criteria.list().get(0);
+        criteria.add(Restrictions.conjunction()
+                     .add(Restrictions.eq("deviceType", type))
+                     .add(Restrictions.eq("registrationToken", registrationId)));
+        return (List<DeviceRegistration>)criteria.list();
     }
-
-    private static Criteria buildCriteriaForSubscriberQuery(Session session, Subscriber subscriber)
-    {
-        Criteria criteria = session.createCriteria(DeviceRegistration.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.createAlias("subscriber", "subscriber_alias");
-        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
-        return criteria;
-    }
+    
 }

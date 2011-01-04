@@ -88,6 +88,14 @@ public class GetSubscriberServlet extends HttpServlet
         }
         json.append("\",");
 
+        json.append("\"workEmailAddress\":\"");
+        if(subscriber.getWorkEmailAddress() != null)
+        {
+            String email = marshaller.convertAndEscape(String.class, subscriber.getWorkEmailAddress());
+            json.append(email);
+        }
+        json.append("\",");
+
         String lastLogin = marshaller.convertAndEscape(Date.class, subscriber.getLastLogin());
         json.append("\"lastLogin\":\"").append(lastLogin).append("\"");
 
@@ -97,7 +105,9 @@ public class GetSubscriberServlet extends HttpServlet
         {
             json.append("{");
             json.append("\"number\":\"").append(accessNumber.getNumber()).append("\",");
-            json.append("\"messageLight\":").append(accessNumber.getSupportsMessageLight() ? "true" : "false");
+            json.append("\"messageLight\":").append(accessNumber.getSupportsMessageLight() ? "true" : "false").append(",");
+            json.append("\"numberType\":\"").append(accessNumber.getNumberType().name()).append("\",");
+            json.append("\"publicNumber\":").append(accessNumber.getPublicNumber() ? "true" : "false");
             json.append("},");
         }
         if(accessNumbers.size() > 0)

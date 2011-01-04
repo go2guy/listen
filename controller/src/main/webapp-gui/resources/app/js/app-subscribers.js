@@ -99,9 +99,11 @@ $(document).ready(function() {
 
                         $('#subscriber-form-realName').val(data.realName);
 
+                        $('#subscriber-form-workEmailAddress').val(data.workEmailAddress);
+
                         Subscribers.clearAllAccessNumberRows();
                         for(var i = 0; i < data.accessNumbers.length; i++) {
-                            Subscribers.addAccessNumberRow(data.accessNumbers[i].number, data.accessNumbers[i].messageLight);
+                            Subscribers.addAccessNumberRow(data.accessNumbers[i].number, data.accessNumbers[i].messageLight, data.accessNumbers[i].numberType, data.accessNumbers[i].publicNumber);
                         }
 
                         if(data.voicemailPin !== null) {
@@ -168,6 +170,7 @@ $(document).ready(function() {
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
                         realName: $('#subscriber-form-realName').val(),
+                        workEmailAddress: $('#subscriber-form-workEmailAddress').val(),
                         accessNumbers: Subscribers.buildAccessNumberString(),
                         voicemailPin: $('#subscriber-form-voicemailPin').val(),
                         enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
@@ -201,6 +204,7 @@ $(document).ready(function() {
                         password: $('#subscriber-form-password').val(),
                         confirmPassword: $('#subscriber-form-confirmPassword').val(),
                         realName: $('#subscriber-form-realName').val(),
+                        workEmailAddress: $('#subscriber-form-workEmailAddress').val(),
                         accessNumbers: Subscribers.buildAccessNumberString(),
                         voicemailPin: $('#subscriber-form-voicemailPin').val(),
                         enableEmail: $('#subscriber-form-enableEmailNotification').is(":checked"),
@@ -278,7 +282,7 @@ $(document).ready(function() {
                 $('#subscriber-form-accessNumbersTable tbody tr').not(':last').remove();
             },
 
-            addAccessNumberRow: function(number, messageLight) {
+            addAccessNumberRow: function(number, messageLight, numberType, publicNumber) {
                 var clone = $('#accessNumber-row-template').clone();
                 clone.removeAttr('id');
                 $('.accessNumber-row-number', clone).val(number);
@@ -286,6 +290,12 @@ $(document).ready(function() {
                     $('.accessNumber-row-messageLight', clone).attr('checked', 'checked');
                 } else {
                     $('.accessNumber-row-messageLight', clone).removeAttr('checked');
+                }
+                $('.accessNumber-row-numberType', clone).val(numberType);
+                if(publicNumber) {
+                    $('.accessNumber-row-publicNumber', clone).attr('checked', 'checked');
+                } else {
+                    $('.accessNumber-row-publicNumber', clone).removeAttr('checked');
                 }
                 $('.icon-delete', clone).click(function() {
                     $(this).parent().parent().remove();
@@ -302,7 +312,9 @@ $(document).ready(function() {
                         continue;
                     }
                     var messageLight = $('.accessNumber-row-messageLight', rows[i]).is(':checked');
-                    value += number + ':' + messageLight + ';';
+                    var numberType = $('.accessNumber-row-numberType', rows[i]).val();
+                    var publicNumber = $('.accessNumber-row-publicNumber', rows[i]).is(':checked');
+                    value += number + ':' + messageLight + ':' + numberType + ':' + publicNumber + ';';
                 }
                 if(value.length > 0) {
                     value = value.substring(0, value.length - 1); // remove last semicolon

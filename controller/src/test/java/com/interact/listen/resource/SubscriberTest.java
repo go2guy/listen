@@ -77,6 +77,8 @@ public class SubscriberTest
         assertEquals(original.getPassword(), copy.getPassword());
         assertEquals(original.getVoicemailPin(), copy.getVoicemailPin());
         assertTrue(original.getVoicemails() == copy.getVoicemails()); // same reference
+        assertEquals(original.getEmailAddress(), copy.getEmailAddress());
+        assertEquals(original.getWorkEmailAddress(), copy.getWorkEmailAddress());
 
         assertNull(copy.getId());
         assertEquals(Integer.valueOf(0), copy.getVersion());

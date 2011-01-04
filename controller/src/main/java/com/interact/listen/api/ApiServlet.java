@@ -454,8 +454,10 @@ public class ApiServlet extends HttpServlet
         Channel channel = (Channel)request.getAttribute(RequestInformationFilter.CHANNEL_KEY);
 
         PersistenceService service = new DefaultPersistenceService(session, subscriber, channel);
-//        service.setCurrentDeviceId(request.getParameter("deviceId"));
+        service.setCurrentDeviceId(request.getHeader("X-Listen-DeviceID"));
 
+        LOG.debug("Device ID: " + service.getCurrentDeviceId());
+        
         return service;
     }
 

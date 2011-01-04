@@ -2,11 +2,12 @@ package com.interact.listen.c2dm;
 
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
-import com.interact.listen.resource.DeviceRegistration;
+import com.interact.listen.resource.*;
 import com.interact.listen.resource.DeviceRegistration.DeviceType;
-import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.DeviceRegistration.RegisteredType;
 
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -19,32 +20,42 @@ public enum C2DMessaging
 
     public enum Type
     {
-        SYNC_VOICEMAILS("sync-voicemails", "0-"),
-        SYNC_CONFIG_CHANGED("sync-config", "1-");
+        SYNC_VOICEMAILS("sync-voicemails", "0-", RegisteredType.VOICEMAIL),
+        SYNC_CONTACTS("sync-contacts", "2-", RegisteredType.CONTACTS),
+        SYNC_CONFIG_CHANGED("sync-config", "1-", null);
         
         private final String message;
         private final String keyAppend;
+        private final RegisteredType rType;
         
-        private Type(String message, String keyAppend)
+        private Type(String message, String keyAppend, RegisteredType rType)
         {
             this.message = message;
             this.keyAppend = keyAppend;
+            this.rType = rType;
         }
         
         public String getMessage()
         {
             return message;
         }
-        
+
         public String getCollapseKey(String username)
         {
             return keyAppend + Long.toHexString(username.hashCode());
+        }
+        
+        public RegisteredType getRegisteredType()
+        {
+            return rType;
         }
     }
     
     private static final Logger LOG = Logger.getLogger(C2DMessaging.class);
 
     private final ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(1);
+    private final Map< C2DMessage, ScheduledFuture<?> > futures = Collections.synchronizedMap(new WeakHashMap< C2DMessage, ScheduledFuture<?> >());
+    
     private Boolean currentEnabled = null;
 
     public synchronized void setEnabled(boolean enabled)
@@ -63,24 +74,26 @@ public enum C2DMessaging
         return currentEnabled;
     }
 
-    public void enqueueConfigChanges(Session session, DeviceType type, String useToken)
+    public void enqueueAllSyncMessages(Session session, DeviceType dType, Type type, String useToken)
     {
-        List<DeviceRegistration> devices = DeviceRegistration.queryByDevice(session, type, null);
+        List<DeviceRegistration> devices = DeviceRegistration.queryByDeviceType(session, dType);
 
-        LOG.info("Sending config change to all devices: " + devices.size());
+        LOG.info("Sending " + type + " change to all devices, " + devices.size() + ", registered with " + type.getRegisteredType());
         
         for(DeviceRegistration device : devices)
         {
-            if(device.getRegistrationToken() == null || device.getRegistrationToken().length() == 0)
+            if(device.getRegistrationToken() == null || device.getRegistrationToken().length() == 0 ||
+                (type.getRegisteredType() != null && !device.isRegistered(dType, type.getRegisteredType())))
             {
+                LOG.info("skipping device: " + device.getDeviceId());
                 continue;
             }
 
             String username = device.getSubscriber().getUsername();
-            LOG.info("queueing config change for " + username + " '" + device.getRegistrationToken() + "'");
+            LOG.info("queueing " + type + " change for " + username + " '" + device.getRegistrationToken() + "'");
 
-            String collapseKey = Type.SYNC_CONFIG_CHANGED.getCollapseKey(username);
-            Map<String, String[]> params = createParamMap(username, Type.SYNC_CONFIG_CHANGED);
+            String collapseKey = type.getCollapseKey(username);
+            Map<String, String[]> params = createParamMap(username, type);
 
             C2DMessage message = new C2DMessage(device.getRegistrationToken(), collapseKey, params, true);
             queue(message, false, useToken);
@@ -121,8 +134,13 @@ public enum C2DMessaging
         }
         
         String username = subscriber.getUsername();
+        if(username == null)
+        {
+            LOG.error("subscriber username is null");
+            return;
+        }
         Set<DeviceRegistration> devices = subscriber.getDevices();
-        if(devices.isEmpty())
+        if(devices == null || devices.isEmpty())
         {
             LOG.debug(username + " has no devices");
             return;
@@ -134,8 +152,7 @@ public enum C2DMessaging
         int numDeviceMessages = 0;
         for(DeviceRegistration device : devices)
         {
-            if(device.getRegistrationToken().length() == 0 ||
-                DeviceRegistration.DeviceType.ANDROID != device.getDeviceType() ||
+            if(!device.isRegistered(DeviceRegistration.DeviceType.ANDROID, type.getRegisteredType()) ||
                 device.getDeviceId().equals(notToDeviceId))
             {
                 LOG.info("skipping device: " + device.getDeviceId());
@@ -150,7 +167,7 @@ public enum C2DMessaging
         LOG.info("scheduled " + numDeviceMessages + " device messages for " + username);
     }
 
-    void scheduleRetry(Runnable task, int retryCount)
+    void scheduleRetry(RetryC2DM task, int retryCount)
     {
         if(retryCount < 0)
         {
@@ -158,14 +175,35 @@ public enum C2DMessaging
         }
 
         LOG.info("Scheduling retry " + retryCount);
-        threadPool.remove(task);
-        threadPool.schedule(task, (long)Math.pow(2, retryCount), TimeUnit.MINUTES);
+        ScheduledFuture<?> future = threadPool.schedule(task, (long)Math.pow(2, retryCount), TimeUnit.MINUTES);
+        cancelAndAddFuture(task.getMessage(), future);
     }
     
     private void queue(C2DMessage message, boolean withRetry, String useToken)
     {
-        Runnable task = new RetryC2DM(message, withRetry, useToken);
-        threadPool.remove(task);
-        threadPool.submit(task);
+        RetryC2DM task = new RetryC2DM(message, withRetry, useToken);
+        ScheduledFuture<?> future = threadPool.schedule(task, 1, TimeUnit.SECONDS); // give it a second in case there is a burst
+        cancelAndAddFuture(message, future);
     }
+    
+    void clearFuture(C2DMessage message)
+    {
+        if(futures.remove(message) != null)
+        {
+            LOG.debug("removed future from cache");
+        }
+    }
+    
+    private void cancelAndAddFuture(C2DMessage message, ScheduledFuture<?> newFuture)
+    {
+        ScheduledFuture<?> sf = futures.put(message, newFuture);
+        if(sf != null)
+        {
+            if(sf.cancel(false))
+            {
+                LOG.debug("canceled pending C2DM message");
+            }
+        }
+    }
+    
 }

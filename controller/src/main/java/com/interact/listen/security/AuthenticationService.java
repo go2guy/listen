@@ -5,6 +5,7 @@ import com.interact.listen.PersistenceService;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.exception.NumberAlreadyInUseException;
+import com.interact.listen.exception.UnauthorizedModificationException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
@@ -134,12 +135,16 @@ public class AuthenticationService
                         {
                             try
                             {
-                                subscriber.updateAccessNumbers(session, ps, result.getTelephoneNumber() + ":true");
+                                subscriber.updateAccessNumbers(session, ps, result.getTelephoneNumber() + ":true", true);
                             }
                             catch(NumberAlreadyInUseException e)
                             {
                                 LOG.warn("When adding new AD Subscriber [" + username + "], accessNumber [" +
                                          e.getNumber() + "] was already in use by another Subscriber");
+                            }
+                            catch(UnauthorizedModificationException e)
+                            {
+                                LOG.warn("Admin received unathorized modification exception?", e);
                             }
                         }
 

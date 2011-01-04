@@ -1,9 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.*;
-import com.interact.listen.exception.BadRequestServletException;
-import com.interact.listen.exception.NumberAlreadyInUseException;
-import com.interact.listen.exception.UnauthorizedServletException;
+import com.interact.listen.exception.*;
 import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
@@ -20,11 +18,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 public class EditSubscriberServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOG = Logger.getLogger(EditSubscriberServlet.class);
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
@@ -66,7 +67,7 @@ public class EditSubscriberServlet extends HttpServlet
             String password = request.getParameter("password");
             String confirmPassword = request.getParameter("confirmPassword");
             if((password != null && !password.trim().equals("")) ||
-               (confirmPassword != null && !confirmPassword.trim().equals("")))
+                (confirmPassword != null && !confirmPassword.trim().equals("")))
             {
                 if(password == null || password.trim().equals(""))
                 {
@@ -90,16 +91,21 @@ public class EditSubscriberServlet extends HttpServlet
         PersistenceService persistenceService = new DefaultPersistenceService(session, currentSubscriber, Channel.GUI);
 
         String accessNumbers = request.getParameter("accessNumbers");
-        if(currentSubscriber.getIsAdministrator() && accessNumbers != null)
+        if(accessNumbers != null)
         {
             try
             {
-                subscriberToEdit.updateAccessNumbers(session, persistenceService, accessNumbers);
+                subscriberToEdit.updateAccessNumbers(session, persistenceService, accessNumbers, currentSubscriber.getIsAdministrator());
             }
             catch(NumberAlreadyInUseException e)
             {
                 throw new BadRequestServletException("Access number [" + e.getNumber() +
                                                      "] is already in use by another account");
+            }
+            catch(UnauthorizedModificationException e)
+            {
+                LOG.error(e.getMessage());
+                throw new UnauthorizedServletException();
             }
         }
 
@@ -128,6 +134,8 @@ public class EditSubscriberServlet extends HttpServlet
 
         subscriberToEdit.setRealName(request.getParameter("realName"));
 
+        subscriberToEdit.setWorkEmailAddress(request.getParameter("workEmailAddress"));
+        
         if(request.getParameter("enableAdmin") != null)
         {
             Boolean enableAdmin = Boolean.valueOf(request.getParameter("enableAdmin"));
