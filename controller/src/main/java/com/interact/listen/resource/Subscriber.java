@@ -707,7 +707,8 @@ public class Subscriber extends Resource implements Serializable
             {
                 if(entry.getValue().getNumberType().isSystem() && !allowSystem)
                 {
-                    throw new UnauthorizedModificationException("Attempted delete on system access number by non-admin.");
+                    throw new UnauthorizedModificationException("Attempted delete on system access number '" +
+                                                                entry.getValue().getNumber() + "' by non-admin.");
                 }
                 persistenceService.delete(entry.getValue());
             }
@@ -724,17 +725,21 @@ public class Subscriber extends Resource implements Serializable
             {
                 if(newNumber.getNumberType().isSystem() && !allowSystem)
                 {
-                    throw new UnauthorizedModificationException("Attempted creation of system access number by non-admin.");
+                    throw new UnauthorizedModificationException("Attempted creation of system access number '" +
+                                                                newNumber.getNumber() + "' by non-admin.");
                 }
                 newNumber.setSubscriber(this);
                 addToAccessNumbers(newNumber);
                 persistenceService.save(newNumber);
             }
-            else
+            else if(newNumber.getSupportsMessageLight() != result.getSupportsMessageLight() ||
+                    newNumber.getNumberType() != result.getNumberType() ||
+                    newNumber.getPublicNumber() != result.getPublicNumber())
             {
                 if(result.getNumberType().isSystem() && !allowSystem)
                 {
-                    throw new UnauthorizedModificationException("Attempted update of system access number by non-admin.");
+                    throw new UnauthorizedModificationException("Attempted update of system access number '" +
+                                                                result.getNumber() + "' by non-admin.");
                 }
                 // updating an existing record
                 AccessNumber original = result.copy(false);
