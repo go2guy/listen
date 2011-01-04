@@ -732,7 +732,7 @@ public class Subscriber extends Resource implements Serializable
                 addToAccessNumbers(newNumber);
                 persistenceService.save(newNumber);
             }
-            else if(newNumber.getSupportsMessageLight() != result.getSupportsMessageLight() ||
+            else if(!ComparisonUtil.isEqual(newNumber.getSupportsMessageLight(), result.getSupportsMessageLight()) ||
                     newNumber.getNumberType() != result.getNumberType() ||
                     newNumber.getPublicNumber() != result.getPublicNumber())
             {
