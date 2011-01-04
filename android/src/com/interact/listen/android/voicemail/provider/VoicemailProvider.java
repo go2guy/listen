@@ -1,6 +1,9 @@
 package com.interact.listen.android.voicemail.provider;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -34,7 +37,7 @@ public class VoicemailProvider extends ContentProvider
     private static final String TAG = Constants.TAG + "VoicemailProvider";
 
     private static final String DATABASE_NAME = "com.interact.listen.voicemail.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String VOICEMAIL_TABLE = "voicemails";
     private static final String VOICEMAIL_INDEX = "vmviewidx";
     
@@ -586,6 +589,19 @@ public class VoicemailProvider extends ContentProvider
             
             onCreate(db);
             
+            if(oldVersion < newVersion && newVersion == 6)
+            {
+                AccountManager am = AccountManager.get(context);
+                Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+                for(Account account : accounts)
+                {
+                    if(ContentResolver.getSyncAutomatically(account, Authority.VOICEMAIL.get()))
+                    {
+                        ContentResolver.setSyncAutomatically(account, Authority.CONTACTS.get(), true);
+                        SyncSchedule.syncUser(context, account.name, Authority.CONTACTS);
+                    }
+                }
+            }
             SyncSchedule.syncUser(context, null, Authority.VOICEMAIL);
         }
     }
