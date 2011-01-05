@@ -3,6 +3,7 @@ package com.interact.listen.android.voicemail.contact;
 import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.RawContacts.Entity;
 import android.provider.ContactsContract.RawContactsEntity;
+import android.provider.ContactsContract.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -73,6 +75,56 @@ public class ListenContacts
     public Collection<ListenContact> getContacts()
     {
         return contacts.values();
+    }
+    
+    public static void insertContactsSettings(ContentProviderClient client, String accountName) throws RemoteException
+    {
+        final boolean isDef = isContactsDisplaySettings(client, accountName);
+        Log.i(TAG, "Contact Settings: " + isDef);
+        
+        if(!isDef)
+        {
+            ContentValues values = new ContentValues();
+            values.put(Settings.ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
+            values.put(Settings.ACCOUNT_NAME, accountName);
+            values.put(Settings.SHOULD_SYNC, 1);
+            values.put(Settings.UNGROUPED_VISIBLE, 1);
+            
+            Uri res = client.insert(Settings.CONTENT_URI, values);
+            Log.v(TAG, "inserted settings: " + res);
+        }
+    }
+
+    private static boolean isContactsDisplaySettings(ContentProviderClient client, String accountName) throws RemoteException
+    {
+        final String selection = Settings.ACCOUNT_TYPE + "=? AND " + Settings.ACCOUNT_NAME + "=?";
+        final String[] args = new String[] {Constants.ACCOUNT_TYPE, accountName};
+
+        Cursor c = null;
+        try
+        {
+            c = client.query(Settings.CONTENT_URI, new String[]{Settings.UNGROUPED_VISIBLE}, selection, args, null);
+            return c.moveToFirst();
+        }
+        finally
+        {
+            if(c != null)
+            {
+                c.close();
+            }
+        }
+    }
+
+    public static void setContactsDisplayed(ContentResolver resolver, boolean visible)
+    {
+        ContentValues values = new ContentValues();
+        values.put(Settings.UNGROUPED_VISIBLE, visible ? 1 : 0);
+        
+        final String selection = Settings.ACCOUNT_TYPE + "=?";
+        final String[] args = new String[] {Constants.ACCOUNT_TYPE};
+
+        int count = resolver.update(Settings.CONTENT_URI, values, selection, args);
+        Log.v(TAG, "updated visible to " + visible + " in " + count + " accounts");
     }
 
     public static int deleteAll(ContentResolver resolver, String accountName)

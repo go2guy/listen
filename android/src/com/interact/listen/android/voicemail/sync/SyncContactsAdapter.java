@@ -35,6 +35,8 @@ public class SyncContactsAdapter extends AbstractCloudSyncAdapter
     {
         Log.i(TAG, "authority sync " + aInfo.getName() + ": " + syncType + " auth=" + auth.name());
 
+        ListenContacts.insertContactsSettings(provider, aInfo.getName());
+        
         ListenContacts serverContacts = new ListenContacts();
         if(!ClientUtilities.getEmailContacts(aInfo, serverContacts) || isInterrupted())
         {
