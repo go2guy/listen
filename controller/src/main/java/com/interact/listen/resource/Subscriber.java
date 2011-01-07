@@ -384,11 +384,6 @@ public class Subscriber extends Resource implements Serializable
             addToErrors("Please provide a Username");
         }
 
-        if(password == null)
-        {
-            addToErrors("Please provide a Password");
-        }
-
         if(isAdministrator == null)
         {
             addToErrors("Please provide a value for isAdministrator");
