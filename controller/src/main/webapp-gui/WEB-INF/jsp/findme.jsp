@@ -19,7 +19,7 @@
     <div class="if-i-dont-answer">
       <span>If I don't answer</span>
       <select>
-        <option selected="selected" value="voicemail">Send the caller to my voicemail</option>
+        <option selected="selected" value="voicemail" id="if-i-dont-answer-select">Send the caller to my voicemail</option>
         <option value="dial">Dial...</option>
       </select>
     </div>
