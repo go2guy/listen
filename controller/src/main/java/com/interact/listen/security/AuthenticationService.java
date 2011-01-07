@@ -8,9 +8,9 @@ import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.exception.UnauthorizedModificationException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.resource.AccessNumber;
+import com.interact.listen.resource.AccessNumber.NumberType;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
-import com.interact.listen.resource.AccessNumber.NumberType;
 
 import java.util.ArrayList;
 import java.util.Date;
