@@ -44,6 +44,11 @@ public abstract class Resource
         return errors;
     }
 
+    public void clearErrors()
+    {
+        errors.clear();
+    }
+
     /**
      * Callback to be executed before this {@code Resource} is saved.
      * 

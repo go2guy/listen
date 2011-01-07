@@ -7,6 +7,7 @@ import com.interact.listen.jobs.NewVoicemailPagerJob;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.*;
+import com.interact.listen.resource.AccessNumber.NumberType;
 import com.interact.listen.resource.Pin.PinType;
 import com.interact.listen.security.SecurityUtil;
 import com.interact.listen.stats.InsaStatSender;
@@ -248,6 +249,7 @@ public final class HibernateUtil
             accessNumber.setGreetingLocation("/greetings/" + extension);
             accessNumber.setNumber(extension);
             accessNumber.setSubscriber(subscriber);
+            accessNumber.setNumberType(NumberType.EXTENSION);
             persistenceService.save(accessNumber);
 
             subscriber.addToAccessNumbers(accessNumber);

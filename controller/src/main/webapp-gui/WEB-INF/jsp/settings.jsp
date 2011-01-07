@@ -5,7 +5,9 @@
 <html>
   <head>
     <title>Settings</title>
-    <script type="text/javascript" src="<listen:resource path="/resources/app/js/app-profile-min.js"/>"></script>
+    <script type="text/javascript" src="<listen:resource path="/resources/app/js/app-profile.js"/>"></script>
+    <link rel="stylesheet" type="text/css" href="<listen:resource path="/resources/app/css/lib/forms.css"/>">
+    <link rel="stylesheet" type="text/css" href="<listen:resource path="/resources/app/css/settings.css"/>">
 
     <meta name="body-class" content="application-settings"/>
     <meta name="page-title" content="Settings"/>
@@ -13,131 +15,225 @@
   <body>
   <%
 Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
-                <div class="tab-container">
-                  <ul class="tabs">
-                    <li><a href="#">Account</a></li>
-                    <li><a href="#">After Hours Pager</a></li>
-                  </ul>
-                  <div class="tab-content-default">
-                    <form id="profile-form">
-                      <fieldset>
-                        <legend>Account</legend>
-                        <input type="hidden" id="profile-form-id" name="profile-form-id"/>
-                        <table>
-                          <tbody>
-                            <tr><td><label for="profile-form-username">Username</label></td><td><input type="text" id="profile-form-username" name="profile-form-username"<%= !subscriber.getIsAdministrator() ? " readonly=\"readonly\" class=\"disabled\"" : "" %>/></td></tr>
-                            <tr><td>Account Type</td><td id="profile-form-accountType"></td></tr> <%
-    if(!subscriber.getIsActiveDirectory()) { %>
-                            <tr><td><label for="profile-form-password">Password</label></td><td><input type="password" id="profile-form-password" name="profile-form-password"/></td></tr>
-                            <tr><td><label for="profile-form-confirmPassword">Confirm Password</label></td><td><input type="password" id="profile-form-confirmPassword" name="profile-form-confirmPassword"/></td></tr> <%
-    } %>
-                            <tr><td><label for="profile-form-realName">Real Name</label></td><td><input type="text" id="profile-form-realName" name="profile-form-realName"/></td></tr>                        
-                            <tr><td><label for="profile-form-workEmailAddress">Work Email Address</label></td><td><input type="text" id="profile-form-workEmailAddress" name="profile-form-workEmailAddress"/></td></tr>                        
+    <div class="tab-container">
+      <ul class="tabs">
+        <li><a href="#">General</a></li>
+        <listen:ifLicensed feature="VOICEMAIL">
+          <li><a href="#">Voicemail</a></li>
+        </listen:ifLicensed>
+        <li><a href="#">Phone Numbers</a></li>
+        <li><a href="#">After Hours Pager</a></li>
+      </ul>
+      <div class="tab-content-default">
+        <form id="generalSettingsForm">
+          <fieldset>
+            <label for="username">
+              Username
+              <input type="text" id="username" class="disabled" disabled="disabled" readonly="readonly"/>
+            </label>
+              
+            <label for="accountType">
+              Account Type
+              <input type="text" id="accountType" class="disabled" disabled="disabled" readonly="readonly"/>
+            </label>
+                  
+            <fieldset class="side-by-side clearfix">
+              <label for="password">
+                Password
+                <input type="password" id="password"/>
+              </label>
+            
+              <label for="passwordConfirm">
+                Confirm
+                <input type="password" id="passwordConfirm"/>
+              </label>
+            </fieldset>
+                      
+            <label for="realName">
+              Real Name
+              <input type="text" id="realName"/>
+            </label>
+          
+            <label for="emailAddress">
+              Email Address
+              <input type="text" id="emailAddress"/>
+            </label>
 
-                              <tr><td colspan="2"><label for="profile-form-acessNumbersTable>Access Numbers</label></td></tr>
-                              <tr>
-                                <td colspan="2">
-                                  <table id="profile-form-accessNumbersTable">
-                                    <tbody>
-                                      <tr>
-                                        <td colspan="3" class="buttons">
-                                          <button type="button" class="button-add" id="profile-form-addAccessNumber" title="New access number">New access number</button>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </td>
-                              </tr>
+            <input type="submit" class="first" value="Save"/>
+          </fieldset>
+        </form>
+      </div>
+                  
+      <listen:ifLicensed feature="VOICEMAIL">
+                  
+        <div class="tab-content">
+          <form id="voicemailSettingsForm">
+            <fieldset>
+              <label for="voicemailPasscode">
+                Voicemail Passcode
+                <input type="text" id="voicemailPasscode"/>
+                <span class="annotation">4 numbers, used when calling the IVR</span>
+              </label>
 
+              <label for="playbackOrder">
+                Playback Order
+                <select id="playbackOrder">
+                  <option value="NEWEST_TO_OLDEST">Newest to Oldest</option>
+                  <option value="OLDEST_TO_NEWEST">Oldest to Newest</option>
+                </select>
+                <span class="annotation">Order voicemails are played on the IVR</span>
+              </label>
 
-                            <listen:ifLicensed feature="VOICEMAIL">
-                              <tr><td><label for="profile-form-voicemailPin">Voicemail Passcode</label></td><td><input type="text" id="profile-form-voicemailPin" name="profile-form-voicemailPin" maxlength="10"/></td></tr>
-                              <tr>
-                                <td><label for="profile-form-enableEmailNotification">Send e-mail when voicemail received</label></td>
-                                <td>
-                                  <input type="checkbox" id="profile-form-enableEmailNotification" name="profile-form-enableEmailNotification" value="enableEmail"/>
-                                  <input type="text" id="profile-form-emailAddress" name="profile-form-emailAddress"/>
-                                  <button type="button" class="button-save" id="profile-form-testEmail-button" name="profile-form-testEmail-button" title="Test Email Address">Verify</button>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td><label for="profile-form-enableSmsNotification">Send SMS when voicemail received</label></td>
-                                <td>
-                                  <input type="checkbox" id="profile-form-enableSmsNotification" name="profile-form-enableSmsNotification" value="enableSms"/>
-                                  <input type="text" id="profile-form-smsAddress" name="profile-form-smsAddress"/>
-                                  <button type="button" class="button-save" id="profile-form-testSms-button" name="profile-form-testSms-button" title="Test SMS Address">Verify</button>
-                                </td>
-                              </tr>
-                              <tr><td><label for="profile-form-paging">Send SMS notification for voicemails until read</label></td><td><input type="checkbox" id="profile-form-paging" name="profile-form-paging" value="enablePaging"/></td></tr>
-                              <tr>
-                              <tr><td><label for="profile-form-transcription">Transcribe new voicemail</label></td><td><input type="checkbox" id="profile-form-transcription" name="profile-form-transcription" value="enableTranscription"/></td></tr>
-                                <td><label for="profile-form-voicemailPlaybackOrder">Voicemail Playback Order</label></td>
-                                <td>
-                                  <select name="profile-form-voicemailPlaybackOrder" id="profile-form-voicemailPlaybackOrder">
-                                    <option value="NEWEST_TO_OLDEST">Newest to Oldest</option>
-                                    <option value="OLDEST_TO_NEWEST">Oldest to Newest</option>
-                                  </select>
-                                </td>
-                              </tr>
-                            </listen:ifLicensed>
-                            <tr>
-                              <td colspan="2" class="buttons">
-                                <button type="submit" class="button-edit" id="profile-form-edit-button" name="profile-form-edit-button" title="Edit">Save</button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </fieldset>
-                    </form>
-                  </div>
-                  <div class="tab-content">
-                    <form id="pager-form">
-                      <fieldset>
-                        <legend>After Hours Pager</legend>
-                        <table>
-                          <tbody>
-                            <tr><td><label for="pager-form-number">Pager Number</label></td><td id="pager-form-number" name="pager-form-number"></td></tr>
-                            <tr>
-                              <td><label for="pager-form-alternate-number">Alternate Number</label></td><td><input type="text" id="pager-form-alternate-number" name="pager-form-alternate-number" maxlength="14"/></td>
-                              <td>
-                                <select id="pager-form-alternate-address" name="pager-form-alternate-address"><%
-    for(EmailerUtil.SmsEmailAddress entry : EmailerUtil.SmsEmailAddress.values()) { %>
-                                     <option value="<%= entry.getEmailAddress() %>"><%= entry.getProvider() %></option><%
-    } %>
-                                </select>
-                              </td>
-                            </tr>
-                            <tr><td><label for="pager-form-page-prefix">Page Prefix</label></td><td><input type="text" id="pager-form-page-prefix" name="pager-form-page-prefix" maxlength="20"/></td></tr>
-                            <tr>
-                              <td colspan="2" class="buttons">
-                                <button type="submit" class="button-edit" id="pager-form-edit-button" name="pager-form-edit-button" title="Edit">Save</button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </fieldset>
-                    </form>
-                  </div>
-                  <div class="cleaner">&nbsp;</div>
-                </div>
-                
-	<table class="templates">
-      <tbody>
-        <tr id="profile-accessNumber-row-template">
-          <td><input type="text" class="accessNumber-row-number" value="" size="15"/></td>
-          <td><input type="checkbox" disabled="disabled" class="accessNumber-row-messageLight"/>&nbsp;<label>Message Light</label></td>
-          <td><select class="accessNumber-row-numberType">
-          		<option value="EXTENSION" disabled="disabled">Extension</option>
-          		<option value="VOICEMAIL" disabled="disabled">Voicemail</option>
-          		<option value="MOBILE" selected="selected">Mobile</option>
-          		<option value="HOME">Home</option>
-          		<option value="OTHER">Other</option>
-          </select></td>
-          <td><input type="checkbox" class="accessNumber-row-publicNumber"/>&nbsp;<label>Public</label></td>
-          <td><button type="button" class="icon-delete" title="Remove this phone number"></button></td>
-        </tr>
-      </tbody>
-    </table>
+              <h2>When I receive a new voicemail:</h2>
+              <fieldset class="group">
+                <label for="transcribeVoicemail">
+                    <input type="checkbox" class="inline" id="transcribeVoicemail"/>
+                    Transcribe the voicemail
+                    <span class="annotation">If checked, messages below will not be sent until the transcription is complete</span>
+                </label>
+
+                <label for="sendEmail">
+                    <input type="checkbox" class="inline" id="sendEmail"/>
+                    Send me an email
+                </label>
+
+                <fieldset class="group" id="sendEmailOptions">
+                  <label for="sendEmailUseCurrent">
+                    <input type="radio" class="inline" id="sendEmailUseCurrent" name="sendEmailUse"/>
+                    Use my current email address (<span id="sendEmailMyAddress">Not Set</span>)
+                  </label>
+
+                  <label for="sendEmailUseAnother">
+                    <input type="radio" class="inline" id="sendEmailUseAnother" name="sendEmailUse"/>
+                    Use another address
+                  </label>
+
+                  <fieldset class="side-by-side clearfix">
+                    <label for="sendEmailOtherAddress">
+                      <input type="text" id="sendEmailOtherAddress"/>
+                    </label>
+
+                    <label>
+                      <button class="button" id="sendTestEmail">Send Test Email</button>
+                    </label>
+                  </fieldset>
+                </fieldset>
+
+                <label for="sendSms">
+                  <input type="checkbox" class="inline" id="sendSms"/>
+                  Send me an SMS
+                </label>
+                        
+                <fieldset class="group" id="sendSmsOptions">
+                  <fieldset class="side-by-side clearfix">
+                    <label for="sendSmsNumber">
+                      Phone Number
+                      <input type="text" id="sendSmsNumber"/>
+                    </label>
+
+                    <label for="sendSmsNumberProvider">
+                      Service Provider
+                      <listen:mobileProviderSelect id="sendSmsNumberProvider" withEmpty="true"/>
+                    </label>
+
+                    <label>
+                      &nbsp;
+                      <button class="button" id="sendTestSms">Send Test SMS</button>
+                    </label>
+                  </fieldset>
+                          
+                  <label for="keepSendingSms">
+                    <input type="checkbox" class="inline" id="keepSendingSms"/>
+                    Send the SMS every 10 minutes until I listen to the voicemail
+                  </label>
+                </fieldset>
+              </fieldset>
+
+              <input type="submit" class="first" value="Save"/>
+            </fieldset>
+          </form>
+        </div>
+      </listen:ifLicensed>
+                  
+      <div class="tab-content" id="phoneNumbersTab">
+        <form id="phoneNumbersForm">
+          <fieldset id="phoneNumbersButtons">
+            <input type="submit" class="first" value="Save"/>
+            <button type="button" id="addAnotherNumber">Add Another Number</button>
+          </fieldset>
+        </form>
+      </div>
+
+      <div class="tab-content">
+        <form id="afterHoursForm">
+          <fieldset>
+            <label for="pagerNumber">
+              Pager Number
+              <input type="text" id="pagerNumber" class="disabled" disabled="disabled" readonly="readonly"/>
+            </label>
+          
+            <fieldset class="side-by-side">
+              <label for="alternatePagerNumber">
+                Alternate Number
+                <input type="text" id="alternatePagerNumber" name="alternatePagerNumber" maxlength="14"/>
+              </label>
+            
+              <label for="alternatePagerNumberProvider">
+                Service Provider
+                <listen:mobileProviderSelect id="alternatePagerNumberProvider"/>
+              </label>
+            </fieldset>
+          
+            <label for="pagePrefix">
+              Page Prefix
+              <input type="text" id="pagePrefix" name="pagePrefix" maxlength="20"/>
+              <span class="annotation">Will be prefixed to pager SMS messages</span>
+            </label>
+          
+            <input type="submit" class="first" value="Save"/>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+
+	<div class="templates">
+      <fieldset id="phoneNumberTemplate">
+        <fieldset class="side-by-side">
+
+          <label>
+            Phone Number
+            <input type="text" class="phone-number"/>
+            <span class="annotation">e.g. 14024768786 or 101</span>
+          </label>
+
+          <label>
+            Category
+            <select class="phone-number-category">
+              <option value="HOME">Home</option>
+              <option value="MOBILE">Mobile</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </label>
+
+          <label class="phone-number-service-provider">
+            Service Provider
+            <listen:mobileProviderSelect/>
+          </label>
+        </fieldset>
+
+        <label>
+          <input type="checkbox" class="inline message-light"/>
+          Supports message light indicator
+        </label>
+
+        <label>
+          <input type="checkbox" class="inline public-number"/>
+          Show in other peoples' contact lists
+        </label>
+
+        <button type="button" class="first delete-button">Delete This Number</button>
+      </fieldset>
+    </div>
                 
   </body>
 </html>

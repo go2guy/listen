@@ -1,0 +1,153 @@
+fieldset {
+    display: block;
+    padding: 5px;
+}
+
+fieldset fieldset {
+    padding: 0;
+}
+
+/* prefer h1 to a fieldset legend, since the legends don't render consistently
+   across all browsers, even with a whole bunch of hacks */
+fieldset h1 {
+    border-bottom: 1px solid #000000;
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+fieldset label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+fieldset input,
+fieldset select,
+fieldset button {
+    display: block;
+    margin: 5px 0 0 0;
+}
+
+/* standardize borders for all "text-y" fields (i.e. not checkboxes, radios) */
+fieldset input[type=text],
+fieldset input[type=password],
+fieldset input[type=submit],
+fieldset input[type=reset],
+fieldset input[type=file],
+fieldset button,
+fieldset .button,
+fieldset select,
+fieldset textarea {
+    border: 1px solid #666666;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 2px;
+}
+
+/* most of the input types, except buttons, get a fixed width */
+fieldset input[type=text],
+fieldset input[type=password],
+fieldset input[type=file],
+fieldset select,
+fieldset textarea {
+    width: 240px;
+}
+
+/* bold font for buttons and selects is a little overwhelming, so remove it */
+fieldset select,
+fieldset button,
+fieldset .button,
+fieldset input[type=submit],
+fieldset input[type=reset] {
+    font-weight: normal;
+}
+
+fieldset button:hover,
+fieldset .button:hover,
+fieldset input[type=submit]:hover,
+fieldset input[type=reset]:hover {
+    background-color: #FFFFFF;
+    cursor: pointer;
+}
+
+fieldset input.disabled {
+    background-color: #DDDDDD;
+    color: #111111;
+}
+
+/* use a class of 'inline' on any checkbox or radio that you want to align
+   horizontally with its label; the [type='checkbox'] CSS selector doesn't
+   work right in IE6; using the class works consistently cross-browser */
+fieldset input.inline {
+    display: inline;
+    padding: 0;
+    width: auto;
+    
+    /* the next three attributes are to center the checkbox vertically
+       (i.e. line it up with the text; 'vertical-align: bottom' seems to work
+       the most consistently across browsers; the checkbox is then corrected
+       upward with a negative 'top' style. adapted from:
+       http://stackoverflow.com/questions/306252/how-to-align-checkboxes-and-their-labels-consistently-cross-browsers */
+
+    position: relative;
+    top: -3px;
+    vertical-align: bottom;
+}
+
+fieldset .annotation {
+    display: block;
+    font-size: 11px;
+    margin-left: 10px;
+    color: #666666;
+}
+
+fieldset fieldset.side-by-side {
+    padding: 0;
+}
+
+fieldset fieldset.side-by-side label {
+    float: left;
+    margin-right: 5px;
+}
+
+fieldset fieldset.side-by-side input,
+fieldset fieldset.side-by-side select {
+    width: 180px;
+}
+
+fieldset fieldset.group {
+    margin-left: 25px;
+    padding: 5px;
+}
+
+fieldset fieldset.group fieldset {
+    padding: 0;
+}
+
+fieldset fieldset fieldset {
+    margin-left: 10px;
+}
+
+fieldset fieldset fieldset fieldset {
+    margin-left: 20px;
+}
+
+fieldset h2 {
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+fieldset > input[type=submit],
+fieldset > input[type=reset],
+fieldset > button {
+    float: left;
+    margin-left: 15px;
+}
+
+fieldset > input[type=submit].first,
+fieldset > input[type=reset].first,
+fieldset > button.first {
+    margin-left: 40px;
+}

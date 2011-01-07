@@ -7,10 +7,14 @@ import com.interact.listen.config.Property;
 import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.exception.UnauthorizedModificationException;
 import com.interact.listen.history.Channel;
+import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.AccessNumber.NumberType;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -127,6 +131,7 @@ public class AuthenticationService
                         subscriber.setIsActiveDirectory(true);
                         subscriber.setLastLogin(new Date());
                         subscriber.setRealName(result.getDisplayName());
+                        subscriber.setWorkEmailAddress(result.getMail());
 
                         PersistenceService ps = new DefaultPersistenceService(session, subscriber, Channel.GUI);
                         ps.save(subscriber);
@@ -135,7 +140,16 @@ public class AuthenticationService
                         {
                             try
                             {
-                                subscriber.updateAccessNumbers(session, ps, result.getTelephoneNumber() + ":true", true);
+                                AccessNumber number = new AccessNumber();
+                                number.setNumber(result.getTelephoneNumber());
+                                number.setNumberType(NumberType.EXTENSION);
+                                number.setPublicNumber(true);
+                                number.setSupportsMessageLight(true);
+
+                                List<AccessNumber> newNumbers = new ArrayList<AccessNumber>();
+                                newNumbers.add(number);
+
+                                subscriber.updateAccessNumbers(session, ps, newNumbers, true);
                             }
                             catch(NumberAlreadyInUseException e)
                             {

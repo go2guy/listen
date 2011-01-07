@@ -10,6 +10,7 @@ public class AuthenticationResult
     private boolean successful = false;
     private String displayName = "";
     private String telephoneNumber;
+    private String mail;
 
     public Set<String> getGroups()
     {
@@ -51,6 +52,16 @@ public class AuthenticationResult
         this.telephoneNumber = telephoneNumber;
     }
 
+    public void setMail(String mail)
+    {
+        this.mail = mail;
+    }
+
+    public String getMail()
+    {
+        return mail;
+    }
+
     @Override
     public String toString()
     {
@@ -58,6 +69,7 @@ public class AuthenticationResult
         string.append("successful = [").append(successful).append("], ");
         string.append("displayName = [").append(displayName).append("], ");
         string.append("telephoneNumber = [").append(telephoneNumber).append("], ");
+        string.append("mail = [").append(mail).append("], ");
         string.append("groups = [").append(Arrays.toString(groups.toArray())).append("]");
         return string.toString();
     }

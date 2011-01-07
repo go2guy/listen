@@ -95,6 +95,7 @@ public class AuthenticationResultTest extends ListenTest
         String expected = "successful = [" + successful + "], ";
         expected += "displayName = [" + displayName + "], ";
         expected += "telephoneNumber = [" + telephoneNumber + "], ";
+        expected += "mail = [null], ";
         expected += "groups = [" + Arrays.toString(groups.toArray()) + "]";
         assertEquals(expected, result.toString());
     }

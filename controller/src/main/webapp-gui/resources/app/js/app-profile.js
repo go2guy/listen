@@ -2,35 +2,52 @@ var interact = interact || {};
 var Profile;
 $(document).ready(function() {
 
-    $('#profile-form').submit(function() {
-        Profile.editSubscriber();
+    $('#sendEmail').click(function() {
+        $('#sendEmailOptions').toggle();
+    });
+
+    $('#sendSms').click(function() {
+        $('#sendSmsOptions').toggle();
+    });
+
+    $('#generalSettingsForm').submit(function() {
+        Profile.saveGeneralSettings();
+        return false;
+    });
+    
+    $('#voicemailSettingsForm').submit(function() {
+        Profile.saveVoicemailSettings();
         return false;
     });
 
-    $('#profile-form-testEmail-button').click(function() {
+    $('#phoneNumbersForm').submit(function() {
+        Profile.savePhoneNumberSettings();
+        return false;
+    });
+
+    $('#afterHoursForm').submit(function() {
+        Profile.saveAfterHoursSettings();
+        return false;
+    });
+
+    $('#addAnotherNumber').click(function() {
+        Profile.addPhoneNumber();
+    });
+    
+    $('#sendTestEmail').click(function() {
         Profile.testEmailAddress();
         return false;
     });
 
-    $('#profile-form-testSms-button').click(function() {
+    $('#sendTestSms').click(function() {
         Profile.testSmsAddress();
         return false;
     });
 
-    $('#profile-form-addAccessNumber').click(function() {
-        Profile.addAccessNumberRow();
-    });
-
-    $('#pager-form').submit(function() {
-        Profile.editPagerInfo();
-        return false;
-    });
-    
-
     Profile = function() {
         return {
             Application: function() {
-                interact.util.trace('Profile.Application [construct]');                
+                interact.util.trace('Profile.Application [construct]');
                 
                 this.load = function() {
                     interact.util.trace('Loading profile');
@@ -39,83 +56,115 @@ $(document).ready(function() {
                         dataType: 'json',
                         cache: 'false',
                         success: function(data, textStatus, xhr) {
-                            $('#profile-form-id').val(data.id);
-                            $('#profile-form-username').val(data.username);
-                            $('#profile-form-accountType').text(data.isActiveDirectory ? 'Active Directory' : 'Local');
-                            $('#profile-form-realName').val(data.realName);
-                            $('#profile-form-workEmailAddress').val(data.workEmailAddress);
 
-                            Profile.clearAllAccessNumberRows();
+                            // GENERAL TAB
+                            $('#username').val(data.username);
+                            $('#accountType').val(data.isActiveDirectory ? 'Active Directory' : 'Local');
+                            $('#realName').val(data.realName);
+                            $('#emailAddress').val(data.workEmailAddress);
+                            
+                            // VOICEMAIL TAB
+                            
+                            // initialize selects and other data dependent on the response
+                            $('#sendEmailMyAddress').text(data.workEmailAddress ? data.workEmailAddress : 'Not Set');
+
+                            // passcode
+                            $('#voicemailPasscode').val(data.voicemailPin !== null ? data.voicemailPin : '');
+                            
+                            // voicemail playback order
+                            $('#playbackOrder').val(data.voicemailPlaybackOrder);
+                            
+                            // email notifications
+                            $('#sendEmail').attr('checked', data.enableEmail);
+                            $('#sendEmailOptions').toggle(data.enableEmail);
+                            if(!data.workEmailAddress) {
+                                $('#sendEmailUseCurrent').attr('disabled', 'disabled').attr('readonly', 'readonly');
+                            }
+                            if(data.workEmailAddress && data.emailAddress === data.workEmailAddress) {
+                                $('#sendEmailUseCurrent').attr('checked', 'checked');
+                            } else {
+                                $('#sendEmailUseAnother').attr('checked', 'checked');
+                                $('#sendEmailOtherAddress').val(data.emailAddress);
+                            }
+                            
+                            // sms notifications
+                            $('#sendSms').attr('checked', data.enableSms);
+                            $('#sendSmsOptions').toggle(data.enableSms);
+
+                            var found = false;
+                            if(data.smsAddress.indexOf('@') == -1) {
+                                $('#sendSmsNumber').val(data.smsAddress);
+                                $('#sendSmsNumberProvider').val('N/A');
+                            } else {
+                                var split = data.smsAddress.split('@');
+                                $('#sendSmsNumber').val(split[0]);
+                                $('#sendSmsNumberProvider').val(split[1]);
+                            }
+                            $('#keepSendingSms').attr('checked', data.enablePaging);
+                            $('#transcribeVoicemail').attr('checked', data.enableTranscription);
+                            
+                            // PHONE NUMBERS TAB
+                            
+                            Profile.clearPhoneNumbers();
                             for(var i = 0; i < data.accessNumbers.length; i++) {
-                                Profile.addAccessNumberRow(data.accessNumbers[i].number, data.accessNumbers[i].messageLight, data.accessNumbers[i].numberType, data.accessNumbers[i].publicNumber);
+                                Profile.addPhoneNumber(data.accessNumbers[i].number, data.accessNumbers[i].messageLight, data.accessNumbers[i].numberType, data.accessNumbers[i].publicNumber);
                             }
                             
-                            if(data.voicemailPin !== null) {
-                                $('#profile-form-voicemailPin').val(data.voicemailPin);
-                            }
-                            $('#profile-form-emailAddress').val(data.emailAddress);
-                            $('#profile-form-smsAddress').val(data.smsAddress);
+                            // ALTERNATE PAGER NUMBER TAB
                             
-                            if(data.enableEmail) {                        
-                                $('#profile-form-enableEmailNotification').attr('checked', true);
+                            $('#pagerNumber').val(data.pagerNumber);
+                            $('#pagePrefix').val(data.pagePrefix);
+                            if(data.pagerAlternateNumber != '') {
+                                var split = data.pagerAlternateNumber.split('@');
+                                $('#alternatePagerNumber').val(split[0]);
+                                $('#alternatePagerNumberProvider').val(split[1]);
                             }
-                            
-                            if(data.enableSms) {                        
-                                $('#profile-form-enableSmsNotification').attr('checked', true);
-                            }
-                            
-                            if(data.enablePaging) {                        
-                                $('#profile-form-paging').attr('checked', true);
-                            }
-                            if(data.enableTranscription) {                        
-                                $('#profile-form-transcription').attr('checked', true);
-                            }
-                            $('#profile-form-voicemailPlaybackOrder').val(data.voicemailPlaybackOrder);
-                            $('#profile-form-edit-button').show();
-
-                            $('#pager-form-number').text(data.pagerNumber);
-                            
-                            if(data.pagerAlternateNumber != '')
-                            {
-                                var fullAlternateNumber = data.pagerAlternateNumber.split("@");
-                                var alternateNumber = fullAlternateNumber[0];
-                                var alternateAddress = fullAlternateNumber[1];
-                                
-                                $('#pager-form-alternate-number').val(alternateNumber);
-                                $('#pager-form-alternate-address').val(alternateAddress);
-                            }
-                            
-                            $('#pager-form-page-prefix').val(data.pagePrefix);
                         }
                     });
-                };
+                }
             },
             
-            editSubscriber: function() {
-                interact.util.trace('Profile.editSubscriber');
-                Profile.disableButtons();
+            clearPhoneNumbers: function() {
+                $('#phoneNumbersForm > fieldset').not(':last').remove();
+            },
+            
+            addPhoneNumber: function(number, messageLight, numberType, publicNumber) {
+                var clone = $('#phoneNumberTemplate').clone();
+                clone.removeAttr('id');
+                
+                $('.phone-number', clone).val(number);
+                $('.message-light', clone).attr('checked', messageLight);
+                $('.public-number', clone).attr('checked', publicNumber);
+                
+                if(numberType == 'EXTENSION' || numberType == 'VOICEMAIL') {
+                    clone.addClass('system');
+                    $('input, select', clone).attr('disabled', 'disabled').attr('readonly', 'readonly').addClass('disabled');
+                    $('button', clone).remove();
+                    $('select', clone).append('<option value="VOICEMAIL">Voicemail</option>').append('<option value="EXTENSION">Office/Desk</option>');
+                    
+                    clone.append('<span class="annotation unmodifiable-number-annotation">This number is not modifiable</span>');
+                } else {
+                    $('.delete-button', clone).click(function(e) {
+                        $(e.target).parent().remove();
+                    })
+                }
+
+                $('.phone-number-category', clone).val(numberType);
+                $('#phoneNumbersButtons').before(clone);
+            },
+
+            saveGeneralSettings: function() {
+                interact.util.trace('Profile.saveGeneralSettings');
                 Server.post({
-                    url: interact.listen.url('/ajax/editSubscriber'),
+                    url: interact.listen.url('/ajax/mySetSubscriberGeneralSettings'),
                     properties: {
-                        id: $('#profile-form-id').val(),
-                        username: $('#profile-form-username').val(),
-                        password: $('#profile-form-password').val(),
-                        confirmPassword: $('#profile-form-confirmPassword').val(),
-                        realName: $('#profile-form-realName').val(),
-                        workEmailAddress: $('#profile-form-workEmailAddress').val(),
-                        accessNumbers: Profile.buildAccessNumberString(),
-                        voicemailPin: $('#profile-form-voicemailPin').val(),
-                        enableEmail: $('#profile-form-enableEmailNotification').is(":checked"),
-                        enableSms: $('#profile-form-enableSmsNotification').is(":checked"),
-                        emailAddress: $('#profile-form-emailAddress').val(),
-                        smsAddress: $('#profile-form-smsAddress').val(),
-                        enablePaging: $('#profile-form-paging').is(":checked"),
-                        enableTranscription: $('#profile-form-transcription').is(":checked"),
-                        voicemailPlaybackOrder: $('#profile-form-voicemailPlaybackOrder').val()
+                        password: $('#password').val(),
+                        passwordConfirm: $('#passwordConfirm').val(),
+                        realName: $('#realName').val(),
+                        emailAddress: $('#emailAddress').val()
                     },
                     successCallback: function() {
-                        interact.listen.notifySuccess('Profile updated');
-                        Profile.enableButtons();
+                        interact.listen.notifySuccess('General settings updated');
                     },
                     errorCallback: function(message) {
                         interact.listen.notifyError(message);
@@ -123,49 +172,95 @@ $(document).ready(function() {
                 });
             },
             
-            editPagerInfo: function() {
-                interact.util.trace('Profile.editPagerInfo');
-                
-                $('#pager-form-alternate-number').val($('#pager-form-alternate-number').val().replace(/[-\.]/g, ""));
-                
-                $('#pager-form button').attr('readonly', 'readonly');
+            saveVoicemailSettings: function() {
+                interact.util.trace('Profile.saveVoicemailSettings');
+                interact.util.trace("is sendEmailUseCurrent checked? " + ($('#sendEmailUseCurrent').is(':checked') ? 'yes' : 'no'));
+                Server.post({
+                    url: interact.listen.url('/ajax/mySetSubscriberVoicemailSettings'),
+                    properties: {
+                        voicemailPasscode: $('#voicemailPasscode').val(),
+                        playbackOrder: $('#playbackOrder').val(),
+                        transcribeVoicemail: $('#transcribeVoicemail').is(':checked'),
+                        sendEmail: $('#sendEmail').is(':checked'),
+                        sendEmailToAddress: $('#sendEmailUseCurrent').is(':checked') ? $('#emailAddress').val() : $('#sendEmailOtherAddress').val(),
+                        sendSms: $('#sendSms').is(':checked'),
+                        sendSmsToAddress: $('#sendSmsNumber').val() + ($('#sendSmsNumberProvider') != 'N/A' ? '@' + $('#sendSmsNumberProvider').val() : ''),
+                        keepSendingSms: $('#keepSendingSms').is(':checked')
+                    },
+                    successCallback: function() {
+                        interact.listen.notifySuccess('Voicemail settings updated');
+                    },
+                    errorCallback: function(message) {
+                        interact.listen.notifyError(message);
+                    }
+                });
+            },
+            
+            savePhoneNumberSettings: function() {
+                interact.util.trace('Profile.savePhoneNumberSettings');
+                Server.post({
+                    url: interact.listen.url('/ajax/mySetSubscriberPhoneNumberSettings'),
+                    properties: {
+                        numbers: JSON.stringify(Profile.buildPhoneNumberObject())
+                    },
+                    successCallback: function() {
+                        interact.listen.notifySuccess('Phone number settings updated');
+                    },
+                    errorCallback: function(message) {
+                        interact.listen.notifyError(message);
+                    }
+                });
+            },
+            
+            saveAfterHoursSettings: function() {
+                interact.util.trace('Profile.saveAfterHoursSettings');
+
                 Server.post({
                     url: interact.listen.url('/ajax/editPager'),
                     properties: {
-                        alternateNumber: $('#pager-form-alternate-number').val(),
-                        alternateAddress: $('#pager-form-alternate-address').val(),
-                        pagePrefix: $('#pager-form-page-prefix').val()
+                        alternateNumber: $('#alternatePagerNumber').val().replace(/[-\.]/g, ""),
+                        alternateAddress: $('#alternatePagerNumberProvider').val(),
+                        pagePrefix: $('#pagePrefix').val()
                     },
                     successCallback: function() {
                         interact.listen.notifySuccess('Alternate number updated');
-                        $('#pager-form button').removeAttr('readonly');
                     },
                     errorCallback: function(message) {
                         interact.listen.notifyError(message);
                     }
                 });
             },
-
-            disableButtons: function() {
-                interact.util.trace('Profile.disableButtons');
-                $('#profile-form button').attr('readonly', 'readonly');
-            },
-
-            enableButtons: function() {
-                interact.util.trace('Profile.enableButtons');
-                $('#profile-form button').removeAttr('readonly');
+            
+            buildPhoneNumberObject: function() {
+                var numbers = [];
+                $('#phoneNumbersForm > fieldset').not('.system').not('#phoneNumbersButtons').each(function(index, entry) {
+                    numbers.push({
+                        number: $('.phone-number', entry).val(),
+                        //serviceProvider: $('.phone-number-service-provider', entry).val(),
+                        category: $('.phone-number-category', entry).val(),
+                        messageLight: $('.message-light', entry).is(':checked'),
+                        publicNumber: $('.public-number', entry).is(':checked')
+                    });
+                });
+                return numbers;
             },
             
             testEmailAddress: function() {
                 interact.util.trace('Profile.testEmailAddress');
-                Profile.testAddress('email', $('#profile-form-emailAddress').val());
+                Profile.testAddress('email', $('#sendEmailOtherAddress').val());
             },
             
             testSmsAddress: function() {
                 interact.util.trace('Profile.testSmsAddress');
-                Profile.testAddress('sms', $('#profile-form-smsAddress').val());
+                var address = $('#sendSmsNumber').val();
+                var select = $('#sendSmsNumberProvider').val();
+                if(select != 'N/A') {
+                    address += '@' + select;
+                }
+
+                Profile.testAddress('sms', address);
             },
-            
+
             testAddress: function(type, address) {
                 Server.post({
                     url: interact.listen.url('/ajax/testNotificationSettings'),
@@ -180,58 +275,7 @@ $(document).ready(function() {
                         interact.listen.notifyError(message);
                     }
                 });
-            },
-            
-            clearAllAccessNumberRows: function() {
-                $('#profile-form-accessNumbersTable tbody tr').not(':last').remove();
-            },
-
-            addAccessNumberRow: function(number, messageLight, numberType, publicNumber) {
-                var clone = $('#profile-accessNumber-row-template').clone();
-                clone.removeAttr('id');
-                $('.accessNumber-row-number', clone).val(number);
-                if(messageLight) {
-                    $('.accessNumber-row-messageLight', clone).attr('checked', 'checked');
-                } else {
-                    $('.accessNumber-row-messageLight', clone).removeAttr('checked');
-                }
-                $('.accessNumber-row-numberType', clone).val(numberType);
-                if(publicNumber) {
-                    $('.accessNumber-row-publicNumber', clone).attr('checked', 'checked');
-                } else {
-                    $('.accessNumber-row-publicNumber', clone).removeAttr('checked');
-                }
-                $('.icon-delete', clone).click(function() {
-                    $(this).parent().parent().remove();
-                });
-                if(numberType == 'VOICEMAIL' || numberType == 'EXTENSION') {
-                	$('.accessNumber-row-number', clone).attr('disabled', 'disabled');
-                	$('.accessNumber-row-numberType', clone).attr('disabled', 'disabled');
-                	$('.accessNumber-row-publicNumber', clone).attr('disabled', 'disabled');
-                	$('.icon-delete', clone).attr('disabled', 'disabled');
-                }
-                $('#profile-form-accessNumbersTable tbody tr:last').before(clone);
-            },
-
-            buildAccessNumberString: function() {
-                var value = '';
-                var rows = $('#profile-form-accessNumbersTable tr');
-                for(var i = 0; i < rows.length - 1; i++) {
-                    var number = $('.accessNumber-row-number', rows[i]).val();
-                    if(number.length == 0) {
-                        continue;
-                    }
-                    var messageLight = $('.accessNumber-row-messageLight', rows[i]).is(':checked');
-                    var numberType = $('.accessNumber-row-numberType', rows[i]).val();
-                    var publicNumber = $('.accessNumber-row-publicNumber', rows[i]).is(':checked');
-                    value += number + ':' + messageLight + ':' + numberType + ':' + publicNumber + ';';
-                }
-                if(value.length > 0) {
-                    value = value.substring(0, value.length - 1); // remove last semicolon
-                }
-                return value;
             }
-
         }
     }();
 

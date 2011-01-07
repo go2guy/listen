@@ -373,6 +373,24 @@
     </servlet>
 
     <servlet>
+        <servlet-name>MySetSubscriberPhoneNumberSettingsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.MySetSubscriberPhoneNumberSettingsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>MySetSubscriberGeneralSettingsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.MySetSubscriberGeneralSettingsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>MySetSubscriberVoicemailSettingsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.MySetSubscriberVoicemailSettingsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>OutdialServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.OutdialServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -637,6 +655,21 @@
     <servlet-mapping>
         <servlet-name>MuteParticipantServlet</servlet-name>
         <url-pattern>/ajax/muteParticipant</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MySetSubscriberPhoneNumberSettingsServlet</servlet-name>
+        <url-pattern>/ajax/mySetSubscriberPhoneNumberSettings</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MySetSubscriberGeneralSettingsServlet</servlet-name>
+        <url-pattern>/ajax/mySetSubscriberGeneralSettings</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MySetSubscriberVoicemailSettingsServlet</servlet-name>
+        <url-pattern>/ajax/mySetSubscriberVoicemailSettings</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -9,7 +9,7 @@ li#menu-attendant a {
     background-color: #F1E3FA;
 }
 
-.application-attendant #content h1 {
+.application-attendant #content h1#page-title {
     background: #DD0000;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C5A8F1', endColorstr='#7A35DD'); /* IE */
     background: -webkit-gradient(linear, left top, left bottom, from(#C5A8F1), to(#7A35DD)); /* webkit */

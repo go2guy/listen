@@ -54,6 +54,7 @@ public class ActiveDirectoryAuthenticator
             {
                 result.setDisplayName(extractAttribute(searchResult, "displayName"));
                 result.setTelephoneNumber(extractAttribute(searchResult, "telephoneNumber"));
+                result.setMail(extractAttribute(searchResult, "mail"));
             }
             catch(NamingException e)
             {

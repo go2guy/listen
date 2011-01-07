@@ -10,7 +10,7 @@ li#menu-findme a {
     background-color: #FFFFFF;
 }
 
-.application-findme #content h1 {
+.application-findme #content h1#page-title {
     background: #DD0000;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEABAB', endColorstr='#D73B3B'); /* IE */
     background: -webkit-gradient(linear, left top, left bottom, from(#EEABAB), to(#D73B3B)); /* webkit */

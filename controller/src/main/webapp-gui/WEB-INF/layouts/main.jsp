@@ -67,7 +67,7 @@ if(subscriber.getIsAdministrator()) { %>
       </ul>
 
       <div id="content" class="clearfix">
-        <h1 class="clearfix"><%= decoratedPage.getProperty("meta.page-title") %></h1>
+        <h1 id="page-title" class="clearfix"><%= decoratedPage.getProperty("meta.page-title") %></h1>
         <decorator:body/>
       </div>
       

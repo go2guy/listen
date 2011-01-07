@@ -79,7 +79,8 @@ ul#user-info li.first {
 
 #user-menu li {
     border: 1px solid #CCCCCC;
-    font-size: 12px;
+    font-family: Trebuchet, Verdana, Arial, sans-serif;
+    font-size: 11px;
     height: 25px;
     letter-spacing: -1px;
     line-height: 25px;
@@ -119,7 +120,7 @@ ul#user-info li.first {
     -webkit-border-radius: 5px;
 }
 
-#content h1 {
+#content h1#page-title {
     color: #FFFFFF;
     font-weight: bold;
     height: 30px;
@@ -361,9 +362,10 @@ ul#user-info li.first {
     border-color: #AAAAAA;
     border-style: solid;
     border-width: 0 0 1px 0;
+    clear: both;
     display: block;
     height: 2em;
-    clear: both;
+    margin-bottom: 5px;
     width: 100%;
 }
 
@@ -655,45 +657,6 @@ table td, table th {
     opacity: .5;
 }
 
-fieldset {
-    border: 1px solid #DDDDDD;
-    float: left;
-    display: block;
-    padding: 6px;
-    margin: 3px;
-}
-
-fieldset legend {
-    color: #444444;
-    font-size: 125%;
-    font-weight: bold;
-    margin-bottom: 6px;
-    margin-left: 10px;
-    padding: 0 6px;
-}
-
-fieldset table, fieldset table td {
-    border-width: 0;
-}
-
-fieldset table td {
-    padding: 2px;
-    text-align: left;
-}
-
-fieldset table td.buttons {
-    background-color: #EEEEEE;
-    text-align: center;
-}
-
-fieldset table .buttons button {
-    margin-right: 6px;
-}
-
-label.required {
-    font-weight: bold;
-}
-
 table.data-table {
     border: 1px solid #CCCCCC;
 }
@@ -704,9 +667,4 @@ table.data-table td, table.data-table th {
 
 table.data-table tr.odd {
     background-color: #EEEEEE;
-}
-
-input.disabled {
-    background-color: #EEEEEE;
-    color: #666666;
 }

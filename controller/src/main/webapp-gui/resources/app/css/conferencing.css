@@ -9,7 +9,7 @@ li#menu-conferencing a {
     background-color: #FFFFFF;
 }
 
-.application-conferencing #content h1 {
+.application-conferencing #content h1#page-title {
     background: #379EDC;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A9D5F0', endColorstr='#379EDC'); /* IE */
     background: -webkit-gradient(linear, left top, left bottom, from(#A9D5F0), to(#379EDC)); /* webkit */

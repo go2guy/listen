@@ -663,28 +663,22 @@ public class Subscriber extends Resource implements Serializable
         return realName != null && !realName.trim().equals("") ? realName : username;
     }
 
-    public void updateAccessNumbers(Session session, PersistenceService persistenceService,
-                                    String accessNumberString, boolean allowSystem)
-        throws NumberAlreadyInUseException, UnauthorizedModificationException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
+    public void updateAccessNumbers(Session session, PersistenceService persistenceService, String accessNumberString,
+                                    boolean allowSystem) throws NumberAlreadyInUseException,
+        UnauthorizedModificationException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
     {
         List<AccessNumber> newNumbers = new ArrayList<AccessNumber>();
-        Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();
-        for(AccessNumber accessNumber : AccessNumber.queryBySubscriber(session, this))
-        {
-            existingNumbers.put(accessNumber.getNumber(), accessNumber);
-        }
-
         if(accessNumberString.length() > 0)
         {
             String[] split = accessNumberString.split(";");
             for(String an : split)
             {
                 String[] parts = an.split(":");
-    
+
                 AccessNumber newNumber = new AccessNumber();
                 newNumber.setNumber(parts[0].trim());
                 newNumber.setSupportsMessageLight(Boolean.valueOf(parts[1]));
-                
+
                 try
                 {
                     newNumber.setNumberType(AccessNumber.NumberType.valueOf(parts[2]));
@@ -694,11 +688,24 @@ public class Subscriber extends Resource implements Serializable
                     LOG.error("Unknown number type: " + parts[2]);
                     newNumber.setNumberType(AccessNumber.NumberType.OTHER);
                 }
-                
+
                 newNumber.setPublicNumber(Boolean.valueOf(parts[3]));
-                
+
                 newNumbers.add(newNumber);
             }
+
+            updateAccessNumbers(session, persistenceService, newNumbers, allowSystem);
+        }
+    }
+    
+    public void updateAccessNumbers(Session session, PersistenceService persistenceService,
+                                    List<AccessNumber> newNumbers, boolean allowSystem)
+        throws NumberAlreadyInUseException, UnauthorizedModificationException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
+    {
+        Map<String, AccessNumber> existingNumbers = new HashMap<String, AccessNumber>();
+        for(AccessNumber accessNumber : AccessNumber.queryBySubscriber(session, this))
+        {
+            existingNumbers.put(accessNumber.getNumber(), accessNumber);
         }
 
         for(Map.Entry<String, AccessNumber> entry : existingNumbers.entrySet())
@@ -707,9 +714,13 @@ public class Subscriber extends Resource implements Serializable
             {
                 if(entry.getValue().getNumberType().isSystem() && !allowSystem)
                 {
-                    throw new UnauthorizedModificationException("Attempted delete on system access number '" +
-                                                                entry.getValue().getNumber() + "' by non-admin.");
+                    continue;
                 }
+//                if(entry.getValue().getNumberType().isSystem() && !allowSystem)
+//                {
+//                    throw new UnauthorizedModificationException("Attempted delete on system access number '" +
+//                                                                entry.getValue().getNumber() + "' by non-admin.");
+//                }
                 persistenceService.delete(entry.getValue());
             }
         }

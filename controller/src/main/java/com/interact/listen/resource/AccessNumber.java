@@ -17,7 +17,7 @@ import javax.persistence.*;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Restrictions;
 
 @Entity
 @Table(name = "ACCESS_NUMBER")
@@ -52,7 +52,7 @@ public class AccessNumber extends Resource implements Serializable
     @Column(name = "NUMBER_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
     private NumberType numberType = NumberType.OTHER;
-
+    
     public enum NumberType
     {
         EXTENSION(true),

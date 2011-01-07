@@ -31,4 +31,21 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
+    
+    <tag>
+        <name>mobileProviderSelect</name>
+        <tag-class>com.interact.listen.taglib.MobileProviderSelectTagLib</tag-class>
+        <body-content>empty</body-content>
+        <info>Outputs an HTML select list of known mobile phone service providers, with option values of the provider email addresses for texting.</info>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>withEmpty</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
 </taglib>

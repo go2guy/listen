@@ -65,7 +65,7 @@ public class NewVoicemailPagerJob implements Job
         {
             List<Voicemail> newVoicemails = Voicemail.queryNewVoicemailsBySubscriberList(session, subscriberIds);
             
-            LOG.debug("Sending pages for  " + newVoicemails.size() + " new voicemails");
+            LOG.debug("Sending pages for " + newVoicemails.size() + " new voicemails");
             
             //Get concurrent modification errors when trying to iterate over a map made by the keyset.  Using this as a workaround
             Set<Long> voicemailIds = new HashSet<Long>();

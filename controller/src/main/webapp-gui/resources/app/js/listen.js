@@ -71,7 +71,7 @@ $(document).ready(function() {
             dataType: 'json',
             cache: 'false',
             success: function(data, textStatus, xhr) {
-                if(!data && !data.pong) {
+                if(!data || !data.pong) {
                     if(failedTries++ > 2) {
                         showUnavailableModal();
                     }
@@ -80,7 +80,7 @@ $(document).ready(function() {
                     hideUnavailableModal();
                 }
                 
-                if(data.pong) {
+                if(data && data.pong) {
                     interact.util.setFieldContent($('#voicemail-new-count'), data.newVoicemailCount, false, false);
                 }
             },

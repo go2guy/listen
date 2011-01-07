@@ -1,0 +1,19 @@
+#sendEmailOptions,
+#sendSmsOptions,
+.phone-number-service-provider {
+    display: none;
+}
+
+#phoneNumbersForm > fieldset {
+    border: 1px solid #CCCCCC;
+    margin-bottom: 10px;
+}
+
+.tab-content-default,
+.tab-content {
+    background-color: #F6F6F6;
+}
+
+#phoneNumbersTab {
+    background-color: #FFFFFF;
+}
