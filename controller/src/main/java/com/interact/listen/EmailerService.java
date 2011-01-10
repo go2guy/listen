@@ -1,7 +1,6 @@
 package com.interact.listen;
 
 import com.interact.listen.HibernateUtil.Environment;
-import com.interact.listen.api.GetDnisServlet;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
 import com.interact.listen.history.DefaultHistoryService;
@@ -202,6 +201,8 @@ public class EmailerService
         body.append("<html><body>");
         body.append("You received a new voicemail from ").append(voicemail.friendlyFrom());
         body.append(" at ").append(sdf.format(voicemail.getDateCreated())).append(".");
+        body.append("<br/>");
+        body.append("Retrieve it at " + Configuration.get(Property.Key.DIRECT_VOICEMAIL_NUMBER));
         body.append("<br/><br/>");
         if(voicemail.hasTranscription())
         {
@@ -234,7 +235,7 @@ public class EmailerService
         
         if(toAddresses.length > 0)
         {
-            String directVoicemailAccessNumber = getDirectVoicemailAccessNumber();
+            String directVoicemailAccessNumber = Configuration.get(Property.Key.DIRECT_VOICEMAIL_NUMBER);
             String body = String.format(EmailerUtil.SMS_NOTIFICATION_BODY,
                                         voicemail.friendlyFrom(), voicemail.getTranscription(), directVoicemailAccessNumber);
             
@@ -370,14 +371,6 @@ public class EmailerService
         }
         
         return uri;
-    }
-    
-    private String getDirectVoicemailAccessNumber()
-    {
-        List<String> directVoicemailAccessNumbers = GetDnisServlet.getMappingByType("directVoicemail");
-        
-        //Even if multiple ones are configured, all should be valid and we can just return the first one
-        return directVoicemailAccessNumbers.size() > 0 ? directVoicemailAccessNumbers.get(0) : "N/A";
     }
     
     private String truncateSMSBody(String body, String directVoicemailAccessNumber)

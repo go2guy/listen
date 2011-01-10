@@ -36,6 +36,12 @@ $(document).ready(function() {
                     	}
                     }
                     
+                    var mailboxSelect = $('#direct-voicemail-access-number-select');
+                    mailboxSelect.empty();
+                    var mailboxNumbers = getMailboxNumbers();
+                    var selectedDirectVoicemailNumber = data['com.interact.listen.directVoicemailNumber'];
+                    populateSelectList(mailboxSelect, mailboxNumbers, selectedDirectVoicemailNumber);
+                    
                     $('#alerts-configuration-realizeUrl').val(data['com.interact.listen.realizeUrl']);
                     $('#alerts-configuration-realizeAlertName').val(data['com.interact.listen.realizeAlertName']);
 
@@ -108,7 +114,7 @@ $(document).ready(function() {
         return false;
     });
 
-    $('#mail-form').submit(function() {
+    $('#notifications-form').submit(function() {
         var start = interact.util.timestamp();
         $.ajax({
             type: 'POST',
@@ -116,7 +122,8 @@ $(document).ready(function() {
             data: { 'com.interact.listen.mail.smtpHost': $('#smtp-server').val(),
                     'com.interact.listen.mail.smtpUsername': $('#smtp-username').val(),
                     'com.interact.listen.mail.smtpPassword': $('#smtp-password').val(),
-                    'com.interact.listen.mail.fromAddress': $('#from-address').val() },
+                    'com.interact.listen.mail.fromAddress': $('#from-address').val(),
+                    'com.interact.listen.directVoicemailNumber': $('#direct-voicemail-access-number-select').val() },
             success: function(data) {
                 application.load();
                 interact.listen.notifySuccess('Mail settings updated');
@@ -174,7 +181,7 @@ $(document).ready(function() {
                 interact.listen.notifyError(xhr.responseText);
             },
             complete: function(xhr, textStatus) {
-            	var elapsed = Listen.timestamp() - start;
+            	var elapsed = interact.util.timestamp() - start;
                 $('#latency').text(elapsed);
                 updateSelectLists();
             }
@@ -185,11 +192,18 @@ $(document).ready(function() {
     
     function updateSelectLists() {
     	var conferenceNumbers = getConferenceNumbers();
+    	var mailboxNumbers = getMailboxNumbers();
+    	
     	$('#conferencing-configuration-form select').each(function() {
     		var selected = $('option:selected', this).val();
     		$(this).empty();
     		populateSelectList($(this), conferenceNumbers, selected);
     	});
+    	
+		var mailboxSelect = $('#direct-voicemail-access-number-select');
+		var selected = $('option:selected', mailboxSelect).val();
+		mailboxSelect.empty();
+		populateSelectList(mailboxSelect, mailboxNumbers, selected);
     }
     
     function getConferenceNumbers() {
@@ -204,19 +218,30 @@ $(document).ready(function() {
     	return conferenceNumbers;
     }
     
+    function getMailboxNumbers() {
+    	var mailboxNumbers = [];
+    	$('#dnis-mapping-form table tbody tr').each(function() {
+    		if($('.dnis-row-select', $(this)).val() == 'mailbox')
+    		{
+    			mailboxNumbers.push($('input', $(this)).val());
+    		}
+    	});
+    	
+    	return mailboxNumbers;
+    }
+    
     function populateSelectList(selectList, listOfItems, selectedItem) {
     	$.each(listOfItems, function(index, value) {   
      		$(selectList).
           		append($("<option></option>").
           		attr("value",value).
           		text(value));
-          		
-          	
-          	if($.inArray(selectedItem, listOfItems) != -1)
-          	{
-          		$('selectList option[value=\'' + selectedItem + '\']').attr('selected', 'selected');
-          	}	
 		});
+		
+		if($.inArray(selectedItem, listOfItems) != -1)
+        {
+			selectList.val(selectedItem);
+		}
     }
     
     function clearAllConferenceBridgeRows() {

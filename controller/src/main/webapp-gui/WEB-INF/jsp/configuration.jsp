@@ -14,7 +14,7 @@
                 <div class="tab-container">
                   <ul class="tabs">
                     <li><a href="#">Phone Numbers</a></li>
-                    <li><a href="#">Mail</a></li>
+                    <li><a href="#">Notifications</a></li>
                     <listen:ifLicensed feature="CONFERENCING">
                       <li><a href="#">Conferencing</a></li>
                     </listen:ifLicensed>
@@ -43,15 +43,21 @@
                   </div>
 
                   <div class="tab-content">
-                    <form id="mail-form">
+                    <form id="notifications-form">
                       <fieldset>
-                        <legend>Mail</legend>
+                        <legend>Notifications</legend>
                         <table>
                           <tbody>
                             <tr><td><label for="smtp-server">SMTP Server</label></td><td><input type="text" id="smtp-server" name="smtp-server"/></td></tr>
                             <tr><td><label for="smtp-username">SMTP Username</label></td><td><input type="text" id="smtp-username" name="smtp-username"/></td></tr>
                             <tr><td><label for="smtp-password">SMTP Password</label></td><td><input type="password" id="smtp-password" name="smtp-password"/></td></tr>
                             <tr><td><label for="from-address">From Address</label></td><td><input type="text" id="from-address" name="from-address"/></td></tr>
+                            <tr><td><label for="direct-access-number">Direct Access Number</label></td>
+                              <td>
+                                <select id="direct-voicemail-access-number-select">
+              					</select>
+                              </td>
+                            </tr>
                             <tr><td colspan="2" class="buttons"><button type="submit" class="button-save" title="Save mail settings">Save</button></td></tr>
                           </tbody>
                         </table>
