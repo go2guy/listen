@@ -218,6 +218,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>FindMeNumbersServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.FindMeNumbersServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>FindMeServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.FindMeServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -232,12 +238,6 @@
     <servlet>
         <servlet-name>GetAudioFileServlet</servlet-name>
         <servlet-class>com.interact.listen.api.GetAudioFileServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>RegisterDeviceServlet</servlet-name>
-        <servlet-class>com.interact.listen.api.RegisterDeviceServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -403,6 +403,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>RegisterDeviceServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.RegisterDeviceServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>RegisterSpotSystemServlet</servlet-name>
         <servlet-class>com.interact.listen.api.RegisterSpotSystemServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -427,6 +433,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>SetGoogleAuthServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SetGoogleAuthServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>SetPhoneNumberServlet</servlet-name>
         <servlet-class>com.interact.listen.api.SetPhoneNumberServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -437,13 +449,7 @@
         <servlet-class>com.interact.listen.gui.SetPropertiesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
-    <servlet>
-        <servlet-name>SetGoogleAuthServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.SetGoogleAuthServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    
+
     <servlet>
         <servlet-name>SettingsServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.SettingsServlet</servlet-class>
@@ -496,13 +502,13 @@
     </servlet-mapping>
     
     <servlet-mapping>
+        <servlet-name>FindMeNumbersServlet</servlet-name>
+        <url-pattern>/meta/findMeNumbers</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
         <servlet-name>GetAudioFileServlet</servlet-name>
         <url-pattern>/meta/audio/file/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>RegisterDeviceServlet</servlet-name>
-        <url-pattern>/meta/registerDevice</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -531,6 +537,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>RegisterDeviceServlet</servlet-name>
+        <url-pattern>/meta/registerDevice</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>RegisterSpotSystemServlet</servlet-name>
         <url-pattern>/meta/registerSpotSystem</url-pattern>
     </servlet-mapping>
@@ -541,6 +552,11 @@
     </servlet-mapping>
 
     <!-- ajax -->
+
+    <servlet-mapping>
+        <servlet-name>AddSubscriberServlet</servlet-name>
+        <url-pattern>/ajax/addSubscriber</url-pattern>    
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>DeleteAttendantMenuServlet</servlet-name>
@@ -675,11 +691,6 @@
     <servlet-mapping>
         <servlet-name>OutdialServlet</servlet-name>
         <url-pattern>/ajax/outdial</url-pattern>    
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>AddSubscriberServlet</servlet-name>
-        <url-pattern>/ajax/addSubscriber</url-pattern>    
     </servlet-mapping>
 
     <servlet-mapping>

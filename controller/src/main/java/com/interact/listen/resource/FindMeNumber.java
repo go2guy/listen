@@ -1,7 +1,7 @@
 package com.interact.listen.resource;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -9,6 +9,8 @@ import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 @Entity
 @Table(name = "FIND_ME_NUMBER")
@@ -111,7 +113,8 @@ public class FindMeNumber extends Resource implements Serializable
         this.dialDuration = dialDuration;
     }
 
-    public static List<FindMeNumber> queryBySubscriberOrderByPriority(Session session, Subscriber subscriber)
+    public static List<FindMeNumber> queryBySubscriberOrderByPriority(Session session, Subscriber subscriber,
+                                                                      boolean includeDisabled)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(FindMeNumber.class);
         subquery.createAlias("subscriber", "subscriber_alias");
@@ -121,6 +124,10 @@ public class FindMeNumber extends Resource implements Serializable
 
         Criteria criteria = session.createCriteria(FindMeNumber.class);
         criteria.add(Subqueries.propertyIn("id", subquery));
+        if(!includeDisabled)
+        {
+            criteria.add(Restrictions.eq("enabled", true));
+        }
         criteria.addOrder(Order.asc("priority"));
 
         criteria.setFetchMode("subscriber", FetchMode.SELECT);
@@ -133,6 +140,49 @@ public class FindMeNumber extends Resource implements Serializable
         org.hibernate.Query query = session.createQuery(hql);
         query.setParameter("s", subscriber.getId());
         query.executeUpdate();
+    }
+
+    /**
+     * Retrieves the provided subscribers Find Me numbers, grouped into sets by priority. The returned Map will be a
+     * TreeMap, keyed by priority. Each map entry will be a set of FindMeNumbers.
+     * 
+     * @param session
+     * @param subscriber
+     */
+    public static TreeMap<Integer, Set<FindMeNumber>> queryBySubscriberInPriorityGroups(Session session,
+                                                                                        Subscriber subscriber,
+                                                                                        boolean includeDisabled)
+    {
+        List<FindMeNumber> results = queryBySubscriberOrderByPriority(session, subscriber, includeDisabled);
+        TreeMap<Integer, Set<FindMeNumber>> groups = new TreeMap<Integer, Set<FindMeNumber>>();
+        for(FindMeNumber result : results)
+        {
+            if(groups.get(result.getPriority()) == null)
+            {
+                groups.put(result.getPriority(), new HashSet<FindMeNumber>());
+            }
+            groups.get(result.getPriority()).add(result);
+        }
+        return groups;
+    }
+    
+    public static JSONArray groupsToJson(TreeMap<Integer, Set<FindMeNumber>> groups)
+    {
+        JSONArray json = new JSONArray();
+        for(Set<FindMeNumber> group : groups.values())
+        {
+            JSONArray jsonGroup = new JSONArray();
+            for(FindMeNumber number : group)
+            {
+                JSONObject jsonNumber = new JSONObject();
+                jsonNumber.put("number", number.getNumber());
+                jsonNumber.put("duration", number.getDialDuration());
+                jsonNumber.put("enabled", number.getEnabled());
+                jsonGroup.add(jsonNumber);
+            }
+            json.add(jsonGroup);
+        }
+        return json;
     }
 
     @Override

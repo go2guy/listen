@@ -11,7 +11,8 @@ import com.interact.listen.resource.FindMeNumber;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 
-import java.util.*;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Session;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 public class GetFindMeConfigurationServlet extends HttpServlet
 {
@@ -43,35 +43,10 @@ public class GetFindMeConfigurationServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List<FindMeNumber> results = FindMeNumber.queryBySubscriberOrderByPriority(session, subscriber);
+        TreeMap<Integer, Set<FindMeNumber>> groups = FindMeNumber.queryBySubscriberInPriorityGroups(session,
+                                                                                                    subscriber, true);
 
-        // sort into groups by priority
-        Map<Integer, List<FindMeNumber>> groups = new TreeMap<Integer, List<FindMeNumber>>();
-        for(FindMeNumber result : results)
-        {
-            if(groups.get(result.getPriority()) == null)
-            {
-                groups.put(result.getPriority(), new ArrayList<FindMeNumber>());
-            }
-            groups.get(result.getPriority()).add(result);
-        }
-
-        // turn sorted group map into json
-        JSONArray json = new JSONArray();
-        for(List<FindMeNumber> group : groups.values())
-        {
-            JSONArray jsonGroup = new JSONArray();
-            for(FindMeNumber number : group)
-            {
-                JSONObject jsonNumber = new JSONObject();
-                jsonNumber.put("number", number.getNumber());
-                jsonNumber.put("duration", number.getDialDuration());
-                jsonNumber.put("enabled", number.getEnabled());
-                jsonGroup.add(jsonNumber);
-            }
-            json.add(jsonGroup);
-        }
-
+        JSONArray json = FindMeNumber.groupsToJson(groups);
         OutputBufferFilter.append(request, json.toJSONString(), "application/json");
     }
 }
