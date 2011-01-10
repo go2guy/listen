@@ -5,7 +5,11 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.CharArrayBuffer;
+import android.database.CrossProcessCursor;
 import android.database.Cursor;
+import android.database.CursorWindow;
+import android.database.CursorWrapper;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
@@ -15,6 +19,7 @@ import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.RawContacts.Entity;
 import android.provider.ContactsContract.RawContactsEntity;
 import android.provider.ContactsContract.Settings;
+import android.provider.LiveFolders;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -31,6 +36,8 @@ import org.json.JSONObject;
 
 public class ListenContacts
 {
+    public static final String PROFILE_MIME = "vnd.android.cursor.item/vnd.com.interact.listen.contacts.profile";
+
     private static final String TAG = Constants.TAG + "Contacts";
     
     private static final String[] PROJECTION = new String[] {RawContacts.Entity._ID,
@@ -42,6 +49,14 @@ public class ListenContacts
                                                              RawContacts.Entity.DATA2,
                                                              RawContacts.Entity.DATA3,
                                                              RawContacts.Entity.DATA15};
+
+    private static final String[] LIVE_COLUMNS = new String[]{LiveFolders._ID, LiveFolders.NAME};
+                                                              //LiveFolders.DESCRIPTION, LiveFolders.INTENT,
+                                                              //LiveFolders.ICON_BITMAP, LiveFolders.ICON_PACKAGE, LiveFolders.ICON_RESOURCE};
+
+    private static final int[] LIVE_COLUMNS_MAP = new int[]{3, 5, -1, -1, -1, -1, -1};
+    
+    public static final String LIVE_CONTENT_TYPE = StructuredName.CONTENT_ITEM_TYPE;
 
     private static final Uri RAW_UPDATE_URI;
     private static final Uri ENTITY_UPDATE_URI;
@@ -62,9 +77,8 @@ public class ListenContacts
     private static final String RAW_ID_SELECTION = RawContacts._ID + "=?";
     private static final String DATA_ID_SELECTION = Data._ID + "=?";
     private static final String ENTITY_SELECTION = RawContacts.ACCOUNT_TYPE + "=? AND " + RawContacts.ACCOUNT_NAME + "=?";
+    private static final String ENTITY_BY_RAW_TYPE = RawContacts.ACCOUNT_TYPE + "=? AND " + Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?";
 
-    private static final String PROFILE_MIME = "vnd.android.cursor.item/vnd.com.interact.listen.contacts.profile";
-    
     private SortedMap<Long, ListenContact> contacts;
     
     public ListenContacts()
@@ -75,6 +89,47 @@ public class ListenContacts
     public Collection<ListenContact> getContacts()
     {
         return contacts.values();
+    }
+    
+    public static Cursor getContactCursor(ContentResolver resolver, long rawID, String mimeType)
+    {
+        final String[] args = new String[]{Constants.ACCOUNT_TYPE, Long.toString(rawID), StructuredName.CONTENT_ITEM_TYPE};
+        return resolver.query(ENTITY_SELECT_URI, PROJECTION, ENTITY_BY_RAW_TYPE, args, null);
+    }
+
+    public static String getContactName(ContentResolver resolver, long rawID)
+    {
+        Cursor cursor = getContactCursor(resolver, rawID, StructuredName.CONTENT_ITEM_TYPE);
+        if(cursor == null)
+        {
+            Log.e(TAG, "unable to get name cursor");
+            return null;
+        }
+        
+        try
+        {
+            if(cursor.moveToFirst())
+            {
+                return cursor.getString(cursor.getColumnIndex(StructuredName.DISPLAY_NAME));
+            }
+        }
+        finally
+        {
+            cursor.close();
+        }
+        return null;
+    }
+
+    public static Cursor getContactNameCursor(ContentResolver resolver)
+    {
+        final String[] args = new String[]{Constants.ACCOUNT_TYPE, "0", StructuredName.CONTENT_ITEM_TYPE};
+        final String sel = RawContacts.ACCOUNT_TYPE + "=? AND " + RawContacts.DELETED + "=? AND " + Data.MIMETYPE + "=?";
+        return resolver.query(ENTITY_SELECT_URI, PROJECTION, sel, args, StructuredName.DISPLAY_NAME + " ASC");
+    }
+    
+    public static Cursor getLiveContactsCursor(ContentResolver resolver)
+    {
+        return new LiveCursor(resolver, getContactNameCursor(resolver));
     }
     
     public static void insertContactsSettings(ContentProviderClient client, String accountName) throws RemoteException
@@ -285,7 +340,6 @@ public class ListenContacts
                                                                     Entity.DATA1,
                                                                     Entity.DATA15};
 
-    
     public static int updateOfficeNumber(Context context)
     {
         int num = 0;
@@ -347,6 +401,42 @@ public class ListenContacts
             client.release();
         }
         return num;
+    }
+    
+    public static ContactType getContactType(ContentValues entryValues)
+    {
+        final String mime = entryValues.getAsString(Data.MIMETYPE);
+        final ContactMIME cMIME = ContactMIME.getMIME(mime);
+        if(cMIME == null)
+        {
+            return null;
+        }
+        
+        final String ext = entryValues.containsKey(Data.DATA15) ? entryValues.getAsString(Data.DATA15) : "";
+        final int dataType = entryValues.containsKey(Data.DATA2) ? entryValues.getAsInteger(Data.DATA2) : 0;
+        final String label = entryValues.containsKey(Data.DATA3) ? entryValues.getAsString(Data.DATA3) : "";
+        final boolean isExt = !TextUtils.isEmpty(ext);
+        
+        Log.v(TAG, "finding contact type for " + cMIME + " dType=" + dataType + " isExt=" + isExt + " label='" + label + "'");
+
+        return cMIME == null ? null : ContactType.getContactType(cMIME, dataType, isExt, label);
+    }
+
+    public static String getContactValue(ContactType type, ContentValues entryValues, boolean preferExtension)
+    {
+        String val = null;
+        if(type != null)
+        {
+            if(type == ContactType.EXTENSION && preferExtension)
+            {
+                val = entryValues.getAsString(Data.DATA15);
+            }
+            if(val == null)
+            {
+                val = entryValues.getAsString(Data.DATA1);
+            }
+        }
+        return val == null ? "" : val;
     }
     
     public void add(ContentProviderClient provider, String accountName) throws RemoteException
@@ -521,6 +611,180 @@ public class ListenContacts
             ret[i] = Long.toString(args[i]);
         }
         return ret;
+    }
+
+    private static final class LiveCursor extends CursorWrapper implements CrossProcessCursor
+    {
+        private final Cursor mCursor;
+        
+        public LiveCursor(ContentResolver resolver, Cursor cursor)
+        {
+            super(cursor);
+            this.mCursor = cursor;
+        }
+        
+        @Override
+        public void copyStringToBuffer(int columnIndex, CharArrayBuffer buffer)
+        {
+            mCursor.copyStringToBuffer(LIVE_COLUMNS_MAP[columnIndex], buffer);
+        }
+
+        @Override
+        public byte[] getBlob(int columnIndex)
+        {
+            return mCursor.getBlob(LIVE_COLUMNS_MAP[columnIndex]);
+        }
+
+        @Override
+        public int getColumnCount()
+        {
+            return getColumnNames().length;
+        }
+
+        @Override
+        public int getColumnIndex(String columnName)
+        {
+            String columnNames[] = getColumnNames();
+            for(int i = 0; i < columnNames.length; i++)
+            {
+                if(columnNames[i].equalsIgnoreCase(columnName))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        @Override
+        public int getColumnIndexOrThrow(String columnName)
+        {
+            int idx = getColumnIndex(columnName);
+            if(idx < 0)
+            {
+                throw new IllegalArgumentException("column '" + columnName + "' does not exist");
+            }
+            return idx;
+        }
+
+        @Override
+        public String getColumnName(int columnIndex)
+        {
+            return getColumnNames()[columnIndex];
+        }
+
+        @Override
+        public String[] getColumnNames()
+        {
+            return LIVE_COLUMNS;
+        }
+
+        @Override
+        public double getDouble(int columnIndex)
+        {
+            return mCursor.getDouble(LIVE_COLUMNS_MAP[columnIndex]);
+        }
+
+        @Override
+        public float getFloat(int columnIndex)
+        {
+            return mCursor.getFloat(LIVE_COLUMNS_MAP[columnIndex]);
+        }
+
+        @Override
+        public int getInt(int columnIndex)
+        {
+            return mCursor.getInt(LIVE_COLUMNS_MAP[columnIndex]);
+        }
+
+        @Override
+        public long getLong(int columnIndex)
+        {
+            return mCursor.getLong(LIVE_COLUMNS_MAP[columnIndex]);
+        }
+
+        @Override
+        public short getShort(int columnIndex)
+        {
+            return mCursor.getShort(LIVE_COLUMNS_MAP[columnIndex]);
+        }
+
+        @Override
+        public String getString(int columnIndex)
+        {
+            return mCursor.getString(LIVE_COLUMNS_MAP[columnIndex]);
+        }
+
+        @Override
+        public boolean isNull(int columnIndex)
+        {
+            return mCursor.isNull(LIVE_COLUMNS_MAP[columnIndex]);
+        }
+
+        @Override
+        public void fillWindow(int position, CursorWindow window)
+        {
+            if(position < 0 || position >= getCount())
+            {
+                return;
+            }
+            window.acquireReference();
+            try
+            {
+                int oldpos = getPosition();
+                mCursor.moveToPosition(position - 1);
+
+                window.clear();
+                window.setStartPosition(position);
+                int columnNum = getColumnCount();
+                window.setNumColumns(columnNum);
+                while(moveToNext() && window.allocRow())
+                {
+                    for(int i = 0; i < columnNum; i++)
+                    {
+                        String field = getString(i);
+                        if(field != null)
+                        {
+                            if(!window.putString(field, getPosition(), i))
+                            {
+                                window.freeLastRow();
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if(!window.putNull(getPosition(), i))
+                            {
+                                window.freeLastRow();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                mCursor.moveToPosition(oldpos);
+            }
+            catch(IllegalStateException e)
+            {
+                Log.v(TAG, "illegal state ignored");
+            }
+            finally
+            {
+                window.releaseReference();
+            }
+        }
+
+        @Override
+        public CursorWindow getWindow()
+        {
+            return null;
+        }
+
+        @Override
+        public boolean onMove(int oldPosition, int newPosition)
+        {
+            return true;
+        }
+
     }
 
 }

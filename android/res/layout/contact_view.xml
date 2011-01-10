@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contact_root_view"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+>
+    
+    <LinearLayout
+	    android:id="@+id/contact_header_view"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:background="@color/darkgray"
+	    android:paddingRight="5dip"
+	    android:paddingLeft="5dip"
+	    android:paddingTop="5dip"
+	    android:paddingBottom="5dip"
+	>
+
+		<ImageView
+			android:id="@+id/contact_header_icon"
+			android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:layout_marginRight="8dip"
+	        android:layout_marginLeft="-1dip"
+	        android:src="@drawable/icon"
+		/>
+	
+	    <TextView android:id="@+id/contact_view_name"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true"
+	        android:ellipsize="end"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+	        android:textStyle="bold"
+	        android:shadowColor="#BB000000"
+	        android:shadowRadius="2.75"
+	    />
+
+	</LinearLayout>
+    
+    <ListView android:id="@+id/contact_view_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+    />
+    
+    <ScrollView android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+    >
+        <TextView android:id="@+id/emptyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_contact_details"
+            android:textSize="20sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:paddingTop="10dip"
+            android:lineSpacingMultiplier="0.92"
+        />
+    </ScrollView>
+            
+</LinearLayout>
+

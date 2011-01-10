@@ -5,14 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.RawContacts;
 import android.provider.LiveFolders;
+
+import com.interact.listen.android.voicemail.sync.Authority;
 
 public class ContactsLiveFolder extends Activity
 {
-    public static final Uri CONTENT_URI = Uri.parse("content://contacts/live_folders/people").buildUpon()
-                                            .appendQueryParameter(RawContacts.ACCOUNT_TYPE, Constants.ACCOUNT_TYPE).build();
+    public static final Uri CONTENT_URI = Uri.parse("content://" + Authority.VOICEMAIL.get() + "/live_contacts");
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,10 +36,12 @@ public class ContactsLiveFolder extends Activity
     
     private static Intent createLiveFolder(Context context, Uri uri, String name, int icon)
     {
-        final Intent intent = new Intent();
+        final Intent bIntent = new Intent(Intent.ACTION_VIEW, CONTENT_URI);
+        //bIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+        final Intent intent = new Intent();
         intent.setData(uri);
-        intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_BASE_INTENT, new Intent(Intent.ACTION_VIEW, Contacts.CONTENT_URI));
+        intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_BASE_INTENT, bIntent);
         intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_NAME, name);
         intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_ICON, Intent.ShortcutIconResource.fromContext(context, icon));
         intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_DISPLAY_MODE, LiveFolders.DISPLAY_MODE_LIST);

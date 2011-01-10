@@ -6,22 +6,32 @@ import android.text.TextUtils;
 
 public enum ContactType
 {
-    EXTENSION(Phone.TYPE_WORK  , 0                , ""),
-    VOICEMAIL(Phone.TYPE_CUSTOM, 0                , "voicemail"), // should be localized
-    WORK     (Phone.TYPE_WORK  , Email.TYPE_WORK  , ""),
-    HOME     (Phone.TYPE_HOME  , Email.TYPE_HOME  , ""),
-    MOBILE   (Phone.TYPE_MOBILE, Email.TYPE_MOBILE, ""),
-    OTHER    (Phone.TYPE_OTHER , Email.TYPE_OTHER , "");
+    // TODO: localize contact type labels
+    EXTENSION(Phone.TYPE_WORK  , 0                , "extension", ""         , false),
+    VOICEMAIL(Phone.TYPE_CUSTOM, 0                , "voicemail", "voicemail", false),
+    WORK     (Phone.TYPE_WORK  , Email.TYPE_WORK  , "work"     , ""         , false),
+    HOME     (Phone.TYPE_HOME  , Email.TYPE_HOME  , "home"     , ""         , false),
+    MOBILE   (Phone.TYPE_MOBILE, Email.TYPE_MOBILE, "mobile"   , ""         , true),
+    OTHER    (Phone.TYPE_OTHER , Email.TYPE_OTHER , ""         , ""         , true);
     
     private int phoneType;
     private int emailType;
+    private String viewLabel;
     private String label;
+    private boolean text;
     
-    private ContactType(int phoneType, int emailType, String label)
+    private ContactType(int phoneType, int emailType, String viewLabel, String label, boolean text)
     {
         this.phoneType = phoneType;
         this.emailType = emailType;
+        this.viewLabel = viewLabel;
         this.label = label;
+        this.text = text;
+    }
+    
+    public boolean isTextable()
+    {
+        return text;
     }
     
     public int getType(ContactMIME mime)
@@ -41,15 +51,24 @@ public enum ContactType
     
     public static ContactType getContactType(ContactMIME mime, int dataType, boolean isExt, String label)
     {
-        ContactType[] types = values();
-        for(ContactType type : types)
+        if(mime != null)
         {
-            if(type.getType(mime) == dataType && (isExt == (type == EXTENSION)) &&
-                TextUtils.equals(type.getLabel(), label))
+            final String lb = label == null ? "" : label;
+            ContactType[] types = values();
+            for(ContactType type : types)
             {
-                return type;
+                if(type.getType(mime) == dataType && (isExt == (type == EXTENSION)) &&
+                    TextUtils.equals(type.getLabel(), lb))
+                {
+                    return type;
+                }
             }
         }
         return null;
+    }
+    
+    public String getViewLabel()
+    {
+        return isLabel() ? getLabel() : viewLabel;
     }
 }

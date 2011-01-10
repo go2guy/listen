@@ -21,7 +21,9 @@
 	<string name="menu_view">View</string>
 	<string name="menu_call">Call</string>
 	<string name="menu_forward">Forward</string>
-	
+	<string name="menu_sms">Text</string>
+	<string name="menu_email">Email</string>
+		
 	<string name="share_voicemail">Share Voicemail</string>
 	
 	<string name="dialog_delete_title">Delete Voicemail</string>
@@ -126,8 +128,18 @@
 	<string name="voicemail_email_body_no_transcription">\nReceived: %1$s\nFrom: %2$s (%3$s)\nDuration: %4$s\nNo transcription available.\n\n</string>
 	
 	<string name="contact_profile_action">Listen contact</string>
-    <string name="contact_view_profile">Listen contact</string>
-    <!-- Intent { act=android.intent.action.VIEW dat=content://com.android.contacts/data/239 } -->
+    <string name="contact_view_profile">View contact information</string>
 
 	<string name="liveFolder_listenContacts">Listen Contacts</string>	
+	<string name="contact_view_activity">Listen Contact</string>
+	<string name="no_contact_details">No additional information for this contact</string>
+	<string name="hideContactTitle">Hide</string>
+	<string name="hideContactMessage">Hide Listen information for this contact.</string>
+	<string name="invalidContactToast">Listen contact not found.</string>
+	<string name="noContactActionToast">No action found.</string>
+	<string name="menu_delete_contact">Delete</string>
+	<string name="contactOptionsTitle">Options</string>
+	<string name="phoneContactHeader">Call %1$s</string>
+	<string name="emailContactHeader">Email %1$s</string>
+	
 </resources>

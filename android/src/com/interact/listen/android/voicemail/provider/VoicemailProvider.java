@@ -23,6 +23,7 @@ import com.interact.listen.android.voicemail.ApplicationSettings;
 import com.interact.listen.android.voicemail.Constants;
 import com.interact.listen.android.voicemail.Voicemail;
 import com.interact.listen.android.voicemail.WavConversion;
+import com.interact.listen.android.voicemail.contact.ListenContacts;
 import com.interact.listen.android.voicemail.sync.Authority;
 import com.interact.listen.android.voicemail.sync.SyncSchedule;
 
@@ -44,6 +45,8 @@ public class VoicemailProvider extends ContentProvider
     private static final UriMatcher URI_MATCHER;
     private static final int VOICEMAIL_MATCH = 1;
     private static final int SPECIFIC_VOICEMAIL_MATCH = 2;
+    private static final int LIVE_CONTACTS_MATCH = 3;
+    private static final int LIVE_CONTACTS_VIEW_MATCH = 4;
     private static final String AUDIO_FILE_PREFIX = "voicemail_audio-";
     
     private static final String ID_WHERE = Voicemails._ID + "=?";
@@ -62,8 +65,13 @@ public class VoicemailProvider extends ContentProvider
 
     private String matchWhere(Uri uri, String where)
     {
+        return matchWhere(uri, URI_MATCHER.match(uri), where);
+    }
+
+    private String matchWhere(Uri uri, int code, String where)
+    {
         String myWhere = null;
-        switch(URI_MATCHER.match(uri))
+        switch(code)
         {
             case SPECIFIC_VOICEMAIL_MATCH:
                 if(TextUtils.isEmpty(where))
@@ -76,6 +84,7 @@ public class VoicemailProvider extends ContentProvider
                 }
                 break;
             case VOICEMAIL_MATCH:
+            case LIVE_CONTACTS_MATCH:
                 myWhere = where;
                 break;
             default:
@@ -184,6 +193,8 @@ public class VoicemailProvider extends ContentProvider
                 
                 return type;
             }
+            case LIVE_CONTACTS_VIEW_MATCH:
+                return ListenContacts.LIVE_CONTENT_TYPE;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -270,13 +281,19 @@ public class VoicemailProvider extends ContentProvider
         
         return inserts;
     }
-
+    
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
     {
+        int uriMatch = URI_MATCHER.match(uri);
+        if(uriMatch == LIVE_CONTACTS_MATCH)
+        {
+            return ListenContacts.getLiveContactsCursor(getContext().getContentResolver());
+        }
+        
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(VOICEMAIL_TABLE);
-        String myWhere = matchWhere(uri, selection);
+        String myWhere = matchWhere(uri, uriMatch, selection);
         
         qb.setProjectionMap(voicemailProjectionMap);
 
@@ -501,6 +518,8 @@ public class VoicemailProvider extends ContentProvider
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         URI_MATCHER.addURI(AUTHORITY, VOICEMAIL_TABLE, VOICEMAIL_MATCH);
         URI_MATCHER.addURI(AUTHORITY, VOICEMAIL_TABLE + "/#", SPECIFIC_VOICEMAIL_MATCH);
+        URI_MATCHER.addURI(AUTHORITY, "live_contacts", LIVE_CONTACTS_MATCH);
+        URI_MATCHER.addURI(AUTHORITY, "live_contacts/#", LIVE_CONTACTS_VIEW_MATCH);
 
         voicemailProjectionMap = new HashMap<String, String>();
         voicemailProjectionMap.put(Voicemails._ID, Voicemails._ID);
