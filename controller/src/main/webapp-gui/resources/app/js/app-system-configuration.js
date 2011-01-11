@@ -126,7 +126,7 @@ $(document).ready(function() {
                     'com.interact.listen.directVoicemailNumber': $('#direct-voicemail-access-number-select').val() },
             success: function(data) {
                 application.load();
-                interact.listen.notifySuccess('Mail settings updated');
+                interact.listen.notifySuccess('Notification settings updated');
             },
             error: function(xhr) {
                 interact.listen.notifyError(xhr.responseText);
