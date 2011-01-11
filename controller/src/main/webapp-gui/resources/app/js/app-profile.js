@@ -144,6 +144,8 @@ $(document).ready(function() {
                     
                     clone.append('<span class="annotation unmodifiable-number-annotation">This number is not modifiable</span>');
                 } else {
+                    $('.message-light', clone).attr('disabled', 'disabled');
+
                     $('.delete-button', clone).click(function(e) {
                         $(e.target).parent().remove();
                     })
