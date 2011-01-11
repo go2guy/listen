@@ -57,6 +57,11 @@ public class MySetSubscriberPhoneNumberSettingsServlet extends HttpServlet
             {
                 LOG.error("Unknown number type " + number.get("category"));
             }
+            if(!newNumber.getNumberType().isSystem() && newNumber.getSupportsMessageLight().booleanValue())
+            {
+                LOG.error("Non system number " + newNumber.getNumber() + " - " + newNumber.getNumberType() + " can not support message light");
+                newNumber.setSupportsMessageLight(false);
+            }
             newNumbers.add(newNumber);
         }
 
