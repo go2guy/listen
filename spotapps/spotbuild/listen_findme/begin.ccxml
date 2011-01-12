@@ -6,7 +6,7 @@
 
     <!-- Application constants. These are used to control the flow of the application -->
     <var name="II_SB_PROJECT_NAME" expr="'listen_findme'"/> <!--  PROJECT_NAME. Project directory -->
-    <var name="II_SB_NEXT_OPTION" expr="'124_7'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
+    <var name="II_SB_NEXT_OPTION" expr="'124_62'"/>   <!--  NEXT_OPTION. Contains the vxml file name to start -->
     <var name="II_SB_MAIN_VXML" expr="'main.vxml'"/>    <!-- MAIN_VXML. Contains the file name of the document to start once ccxml is loaded -->
     <var name="II_SB_BASE_DIR" expr="'/interact/apps/spotbuild/'"/>                 <!-- BASE_DIR. Base directory -->
     <var name="II_SB_CODE_DIR" expr="II_SB_BASE_DIR + II_SB_PROJECT_NAME + '/'"/>   <!-- CODE_DIR. Application directory under base directory. Contains all code -->
@@ -28,6 +28,42 @@
     <var name="II_SB_newNxtOpt"/>               <!-- newNextOpt. Contains name of next vxml. Gets its value from the create-session file -->
     <var name="II_SB_importedValue"/>
 
+	<var name="SB_UV_phoneNumber"/>
+	<var name="SB_UV_outBoundID"/>
+	<var name="SB_UV_userID"/>
+	<var name="SB_UV_phoneNumbers"/>
+	<var name="SB_UV_count"/>
+	<var name="SB_UV_sessionList"/>
+	<var name="SB_UV_startSession"/>
+	<var name="SB_UV_answeredLine"/>
+	<var name="SB_UV_createdSession"/>
+	<var name="SB_UV_session"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_params"/>
+	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_id"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_request"/>
+	<var name="SB_UV_passValues"/>
+	<var name="SB_UV_subID"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_HTTPcontroller"/>
+	<var name="SB_UV_STATcontroller"/>
+	<var name="SB_UV_sysAccessTime"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_appStartTime"/>
+	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_DNIS"/>
+	<var name="SB_UV_accessNum"/>
+	<var name="SB_UV_loopCount"/>
+	<var name="SB_UV_loopTotal"/>
+	<var name="SB_UV_countTotal"/>
+	<var name="SB_UV_duration"/>
+	<var name="SB_UV_enabled"/>
+	<var name="SB_UV_phoneNumLength"/>
+	<var name="SB_UV_extPrefix"/>
+	<var name="SB_UV_extSuffix"/>
 
 
     <!-- Global variables -->
@@ -75,7 +111,7 @@
             <assign name="II_SB_state" expr="'alerted'"/>
             <if cond="((II_SB_transfer == undefined) &amp;&amp; (II_SB_status == undefined))">
                 <assign name="II_SB_ibcallid" expr="II_SB_connectionID"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue "/> <!-- Start vxml dialog -->
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_phoneNumber SB_UV_outBoundID SB_UV_userID SB_UV_phoneNumbers SB_UV_count SB_UV_sessionList SB_UV_startSession SB_UV_answeredLine SB_UV_createdSession SB_UV_session SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_request SB_UV_passValues SB_UV_subID SB_UV_hostName SB_UV_HTTPcontroller SB_UV_STATcontroller SB_UV_sysAccessTime SB_UV_returnStr SB_UV_status SB_UV_appStartTime SB_UV_ANI SB_UV_DNIS SB_UV_accessNum SB_UV_loopCount SB_UV_loopTotal SB_UV_countTotal SB_UV_duration SB_UV_enabled SB_UV_phoneNumLength SB_UV_extPrefix SB_UV_extSuffix"/> <!-- Start vxml dialog -->
             <else/>
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
@@ -119,12 +155,12 @@
 
         <transition event="dialog.user.startMain" name="alertEV" cond="II_SB_ibcallid.length &gt; 0">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue "/> <!-- Start vxml dialog -->
+            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_phoneNumber SB_UV_outBoundID SB_UV_userID SB_UV_phoneNumbers SB_UV_count SB_UV_sessionList SB_UV_startSession SB_UV_answeredLine SB_UV_createdSession SB_UV_session SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_request SB_UV_passValues SB_UV_subID SB_UV_hostName SB_UV_HTTPcontroller SB_UV_STATcontroller SB_UV_sysAccessTime SB_UV_returnStr SB_UV_status SB_UV_appStartTime SB_UV_ANI SB_UV_DNIS SB_UV_accessNum SB_UV_loopCount SB_UV_loopTotal SB_UV_countTotal SB_UV_duration SB_UV_enabled SB_UV_phoneNumLength SB_UV_extPrefix SB_UV_extSuffix"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.user.startMain" name="alertEV">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue "/> <!-- Start vxml dialog -->
+            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_phoneNumber SB_UV_outBoundID SB_UV_userID SB_UV_phoneNumbers SB_UV_count SB_UV_sessionList SB_UV_startSession SB_UV_answeredLine SB_UV_createdSession SB_UV_session SB_UV_resource SB_UV_params SB_UV_cntrlURL SB_UV_id SB_UV_returnVal SB_UV_request SB_UV_passValues SB_UV_subID SB_UV_hostName SB_UV_HTTPcontroller SB_UV_STATcontroller SB_UV_sysAccessTime SB_UV_returnStr SB_UV_status SB_UV_appStartTime SB_UV_ANI SB_UV_DNIS SB_UV_accessNum SB_UV_loopCount SB_UV_loopTotal SB_UV_countTotal SB_UV_duration SB_UV_enabled SB_UV_phoneNumLength SB_UV_extPrefix SB_UV_extSuffix"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->
@@ -138,7 +174,7 @@
             <goto fetchid="evt.fetchid"/> <!-- Go to ccxml document -->
         </transition>
 
-        <transition state="alerted endCall terminatingDialog" event="dialog.exit" name="evt">
+        <transition state="alerted endCall terminatingDialog hangUpCont" event="dialog.exit" name="evt">
             <!-- Handles return from vxml dialog. This transition is used when we need to 
                  end the call, transfer control to a new application or start a different
                  ccxml file. -->
@@ -276,7 +312,7 @@
         <!-- Return from vxml dialog -->
         <transition state="hangUp" event="dialog.exit" name="evt">
             <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
-            <assign name="II_SB_state" expr="'endCall'"/>
+            <assign name="II_SB_state" expr="'hangUpCont'"/>
             <assign name="II_SB_indialog" expr="'false'"/>
             <if cond="evt.values.II_SB_status != 'Failure'">
                 <if cond="evt.values.II_SB_fileSize != ''">

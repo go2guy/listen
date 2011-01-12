@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_findme/root.vxml">
+
+    <!-- Last Modified 10/20/2009 -->
+
+    <!--
+      /**
+       *   @Name   send-custom-event.vxml
+       *   @desc   Sends a custom event and message to ccxml layer
+       */
+    -->
+
+    <var name="II_SB_valueToPass" expr="session"/>   <!-- Config: Name of file confrence creates -->
+    <var name="II_SB_eventToPass" expr="'Notify Admin'"/>
+    <var name="II_SB_sessionID" expr="startSession"/>        <!-- Config: Session ID for the message to send -->
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'211_19'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'211_21'"/>
+    <var name="II_SB_nextOpt" expr="'211_23'"/>
+
+    <var name="II_SB_returnValues" expr="''"/>
+    <var name="II_SB_userEntry"/>
+    
+    <form id="beginDocument">
+        <block>
+    	    <log target="status">Notify Admin</log>
+            <log>INFO: Entered send-custom-event.vxml [211_23]</log>
+            <log>INFO: Entered beginDocument</log>
+            <var name="II_SB_returnValues" expr="II_SB_sessionID + '|' + II_SB_eventToPass + '|' + II_SB_valueToPass + '|' + II_SB_NEXT_OPTION_SUCCESS + '|' + II_SB_NEXT_OPTION_FAILURE"/>
+            <var name="II_SB_status" expr="'conferenceEnd'"/>
+            <!-- Exit to ccxml layer -->
+            <log>INFO: Status [<value expr="II_SB_status"/>]</log>
+            <exit namelist="II_SB_status II_SB_nextOpt II_SB_returnValues"/>
+        </block>
+    </form>
+
+</vxml>

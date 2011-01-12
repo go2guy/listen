@@ -19,6 +19,42 @@
     <var name="II_SB_transfer"/>
     <var name="II_SB_projectSource"/>
     <var name="II_SB_importedValue"/>
+	<var name="SB_UV_phoneNumber"/>
+	<var name="SB_UV_outBoundID"/>
+	<var name="SB_UV_userID"/>
+	<var name="SB_UV_phoneNumbers"/>
+	<var name="SB_UV_count"/>
+	<var name="SB_UV_sessionList"/>
+	<var name="SB_UV_startSession"/>
+	<var name="SB_UV_answeredLine"/>
+	<var name="SB_UV_createdSession"/>
+	<var name="SB_UV_session"/>
+	<var name="SB_UV_resource"/>
+	<var name="SB_UV_params"/>
+	<var name="SB_UV_cntrlURL"/>
+	<var name="SB_UV_id"/>
+	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_request"/>
+	<var name="SB_UV_passValues"/>
+	<var name="SB_UV_subID"/>
+	<var name="SB_UV_hostName"/>
+	<var name="SB_UV_HTTPcontroller"/>
+	<var name="SB_UV_STATcontroller"/>
+	<var name="SB_UV_sysAccessTime"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_status"/>
+	<var name="SB_UV_appStartTime"/>
+	<var name="SB_UV_ANI"/>
+	<var name="SB_UV_DNIS"/>
+	<var name="SB_UV_accessNum"/>
+	<var name="SB_UV_loopCount"/>
+	<var name="SB_UV_loopTotal"/>
+	<var name="SB_UV_countTotal"/>
+	<var name="SB_UV_duration"/>
+	<var name="SB_UV_enabled"/>
+	<var name="SB_UV_phoneNumLength"/>
+	<var name="SB_UV_extPrefix"/>
+	<var name="SB_UV_extSuffix"/>
 
     
     <form id="beginDocument">
@@ -29,7 +65,118 @@
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="DNIS" expr="II_SB_local" />
+			<assign name="session" expr="II_SB_sessionID" />
+			<assign name="passValues" expr="II_SB_importedValue" />
 
+			<if cond="SB_UV_phoneNumber != undefined">
+				<assign name="phoneNumber" expr="SB_UV_phoneNumber" />
+			</if>
+			<if cond="SB_UV_outBoundID != undefined">
+				<assign name="outBoundID" expr="SB_UV_outBoundID" />
+			</if>
+			<if cond="SB_UV_userID != undefined">
+				<assign name="userID" expr="SB_UV_userID" />
+			</if>
+			<if cond="SB_UV_phoneNumbers != undefined">
+				<assign name="phoneNumbers" expr="SB_UV_phoneNumbers" />
+			</if>
+			<if cond="SB_UV_count != undefined">
+				<assign name="count" expr="SB_UV_count" />
+			</if>
+			<if cond="SB_UV_sessionList != undefined">
+				<assign name="sessionList" expr="SB_UV_sessionList" />
+			</if>
+			<if cond="SB_UV_startSession != undefined">
+				<assign name="startSession" expr="SB_UV_startSession" />
+			</if>
+			<if cond="SB_UV_answeredLine != undefined">
+				<assign name="answeredLine" expr="SB_UV_answeredLine" />
+			</if>
+			<if cond="SB_UV_createdSession != undefined">
+				<assign name="createdSession" expr="SB_UV_createdSession" />
+			</if>
+			<if cond="SB_UV_session != undefined">
+				<assign name="session" expr="SB_UV_session" />
+			</if>
+			<if cond="SB_UV_resource != undefined">
+				<assign name="resource" expr="SB_UV_resource" />
+			</if>
+			<if cond="SB_UV_params != undefined">
+				<assign name="params" expr="SB_UV_params" />
+			</if>
+			<if cond="SB_UV_cntrlURL != undefined">
+				<assign name="cntrlURL" expr="SB_UV_cntrlURL" />
+			</if>
+			<if cond="SB_UV_id != undefined">
+				<assign name="id" expr="SB_UV_id" />
+			</if>
+			<if cond="SB_UV_returnVal != undefined">
+				<assign name="returnVal" expr="SB_UV_returnVal" />
+			</if>
+			<if cond="SB_UV_request != undefined">
+				<assign name="request" expr="SB_UV_request" />
+			</if>
+			<if cond="SB_UV_passValues != undefined">
+				<assign name="passValues" expr="SB_UV_passValues" />
+			</if>
+			<if cond="SB_UV_subID != undefined">
+				<assign name="subID" expr="SB_UV_subID" />
+			</if>
+			<if cond="SB_UV_hostName != undefined">
+				<assign name="hostName" expr="SB_UV_hostName" />
+			</if>
+			<if cond="SB_UV_HTTPcontroller != undefined">
+				<assign name="HTTPcontroller" expr="SB_UV_HTTPcontroller" />
+			</if>
+			<if cond="SB_UV_STATcontroller != undefined">
+				<assign name="STATcontroller" expr="SB_UV_STATcontroller" />
+			</if>
+			<if cond="SB_UV_sysAccessTime != undefined">
+				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
+			</if>
+			<if cond="SB_UV_returnStr != undefined">
+				<assign name="returnStr" expr="SB_UV_returnStr" />
+			</if>
+			<if cond="SB_UV_status != undefined">
+				<assign name="status" expr="SB_UV_status" />
+			</if>
+			<if cond="SB_UV_appStartTime != undefined">
+				<assign name="appStartTime" expr="SB_UV_appStartTime" />
+			</if>
+			<if cond="SB_UV_ANI != undefined">
+				<assign name="ANI" expr="SB_UV_ANI" />
+			</if>
+			<if cond="SB_UV_DNIS != undefined">
+				<assign name="DNIS" expr="SB_UV_DNIS" />
+			</if>
+			<if cond="SB_UV_accessNum != undefined">
+				<assign name="accessNum" expr="SB_UV_accessNum" />
+			</if>
+			<if cond="SB_UV_loopCount != undefined">
+				<assign name="loopCount" expr="SB_UV_loopCount" />
+			</if>
+			<if cond="SB_UV_loopTotal != undefined">
+				<assign name="loopTotal" expr="SB_UV_loopTotal" />
+			</if>
+			<if cond="SB_UV_countTotal != undefined">
+				<assign name="countTotal" expr="SB_UV_countTotal" />
+			</if>
+			<if cond="SB_UV_duration != undefined">
+				<assign name="duration" expr="SB_UV_duration" />
+			</if>
+			<if cond="SB_UV_enabled != undefined">
+				<assign name="enabled" expr="SB_UV_enabled" />
+			</if>
+			<if cond="SB_UV_phoneNumLength != undefined">
+				<assign name="phoneNumLength" expr="SB_UV_phoneNumLength" />
+			</if>
+			<if cond="SB_UV_extPrefix != undefined">
+				<assign name="extPrefix" expr="SB_UV_extPrefix" />
+			</if>
+			<if cond="SB_UV_extSuffix != undefined">
+				<assign name="extSuffix" expr="SB_UV_extSuffix" />
+			</if>
 
             <log>INFO: Completed global variable setup</log>
 			<if cond="II_SB_nextOpt != ''">

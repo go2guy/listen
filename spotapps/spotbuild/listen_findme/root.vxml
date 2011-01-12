@@ -29,6 +29,42 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
+	<var name="phoneNumber" expr="''" />
+	<var name="outBoundID" expr="'bla@blah'" />
+	<var name="userID" expr="''" />
+	<var name="phoneNumbers" expr="''" />
+	<var name="count" expr="'0'" />
+	<var name="sessionList" expr="''" />
+	<var name="startSession" expr="''" />
+	<var name="answeredLine" expr="''" />
+	<var name="createdSession" expr="''" />
+	<var name="session" expr="'sessionID'" />
+	<var name="resource" expr="''" />
+	<var name="params" expr="''" />
+	<var name="cntrlURL" expr="''" />
+	<var name="id" expr="''" />
+	<var name="returnVal" expr="''" />
+	<var name="request" expr="'get'" />
+	<var name="passValues" expr="'importedValue'" />
+	<var name="subID" expr="''" />
+	<var name="hostName" expr="''" />
+	<var name="HTTPcontroller" expr="''" />
+	<var name="STATcontroller" expr="''" />
+	<var name="sysAccessTime" expr="''" />
+	<var name="returnStr" expr="''" />
+	<var name="status" expr="''" />
+	<var name="appStartTime" expr="''" />
+	<var name="ANI" expr="''" />
+	<var name="DNIS" expr="'local'" />
+	<var name="accessNum" expr="''" />
+	<var name="loopCount" expr="'0'" />
+	<var name="loopTotal" expr="''" />
+	<var name="countTotal" expr="''" />
+	<var name="duration" expr="''" />
+	<var name="enabled" expr="''" />
+	<var name="phoneNumLength" expr="''" />
+	<var name="extPrefix" expr="'ext'" />
+	<var name="extSuffix" expr="'@iipbx'" />
 
 
     <!-- Conference Variables -->
