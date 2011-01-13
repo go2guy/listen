@@ -75,7 +75,7 @@ public class AccessNumber extends Resource implements Serializable
     }
 
     @Column(name = "IS_PUBLIC", nullable = false)
-    private boolean publicNumber = true;
+    private Boolean publicNumber = true;
     
     @Transient
     private MessageLightToggler messageLightToggler = new SpotSystemMessageLightToggler();
@@ -155,12 +155,12 @@ public class AccessNumber extends Resource implements Serializable
         return this.numberType;
     }
     
-    public void setPublicNumber(boolean publicNumber)
+    public void setPublicNumber(Boolean publicNumber)
     {
         this.publicNumber = publicNumber;
     }
     
-    public boolean getPublicNumber()
+    public Boolean getPublicNumber()
     {
         return this.publicNumber;
     }

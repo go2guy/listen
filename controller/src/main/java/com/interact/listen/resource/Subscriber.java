@@ -70,10 +70,10 @@ public class Subscriber extends Resource implements Serializable
     private Set<Conference> conferences = new HashSet<Conference>();
 
     @Column(name = "EMAIL_NOTIFICATION_ENABLED")
-    private boolean isEmailNotificationEnabled = Boolean.FALSE;
+    private Boolean isEmailNotificationEnabled = Boolean.FALSE;
 
     @Column(name = "SMS_NOTIFICATION_ENABLED")
-    private boolean isSmsNotificationEnabled = Boolean.FALSE;
+    private Boolean isSmsNotificationEnabled = Boolean.FALSE;
 
     @Column(name = "EMAIL_ADDRESS")
     private String emailAddress = "";
