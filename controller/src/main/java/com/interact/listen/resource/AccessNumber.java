@@ -252,7 +252,7 @@ public class AccessNumber extends Resource implements Serializable
         }
     }
 
-    private boolean isChangedPublicNumber(AccessNumber orig)
+    private Boolean isChangedPublicNumber(AccessNumber orig)
     {
         if(getPublicNumber() != orig.getPublicNumber())
         {

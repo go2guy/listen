@@ -740,7 +740,7 @@ public class Subscriber extends Resource implements Serializable
             }
             else if(!ComparisonUtil.isEqual(newNumber.getSupportsMessageLight(), result.getSupportsMessageLight()) ||
                     newNumber.getNumberType() != result.getNumberType() ||
-                    newNumber.getPublicNumber() != result.getPublicNumber())
+                    newNumber.getPublicNumber().booleanValue() != result.getPublicNumber().booleanValue())
             {
                 if(result.getNumberType().isSystem() && !allowSystem)
                 {
