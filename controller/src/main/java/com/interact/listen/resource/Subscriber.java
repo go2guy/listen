@@ -438,7 +438,7 @@ public class Subscriber extends Resource implements Serializable
             copy.addToDevices(device.copy(false));
         }
         copy.setEmailAddress(emailAddress);
-        copy.setConferences(conferences);
+        //copy.setConferences(conferences); -- this screws stuff up
         copy.setIsEmailNotificationEnabled(isEmailNotificationEnabled);
         copy.setIsSmsNotificationEnabled(isSmsNotificationEnabled);
         copy.setSmsAddress(smsAddress);
