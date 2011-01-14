@@ -254,7 +254,7 @@ public class AccessNumber extends Resource implements Serializable
 
     private Boolean isChangedPublicNumber(AccessNumber orig)
     {
-        if(getPublicNumber() != orig.getPublicNumber())
+        if(!getPublicNumber().equals(orig.getPublicNumber()))
         {
             return true;
         }
