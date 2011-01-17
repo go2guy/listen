@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -64,6 +65,7 @@ public class ViewContactActivity extends Activity implements View.OnCreateContex
     private Uri mDataUri = null;
     
     private long mRawID = -1;
+    private long mContactID = -1;
     private String mDisplayName = null;
     
     private ArrayList<ViewEntry> mPhoneEntries = new ArrayList<ViewEntry>();
@@ -80,6 +82,7 @@ public class ViewContactActivity extends Activity implements View.OnCreateContex
     private ContentResolver mResolver;
     private ViewAdapter mAdapter;
     private View mEmptyView;
+    private View mFooterView;
     private ListView mListView;
 
     private ContentObserver mObserver = new ContentObserver(new Handler())
@@ -117,6 +120,8 @@ public class ViewContactActivity extends Activity implements View.OnCreateContex
         mListView.setScrollBarStyle(ListView.SCROLLBARS_OUTSIDE_OVERLAY);
         mListView.setOnItemClickListener(this);
         mEmptyView = findViewById(android.R.id.empty);
+        
+        mFooterView = mInflater.inflate(R.layout.contact_view_footer, null, false);
 
         mSections.add(mPhoneEntries);
         mSections.add(mEmailEntries);
@@ -199,7 +204,7 @@ public class ViewContactActivity extends Activity implements View.OnCreateContex
         }
     }
 
-    private static final String[] PROFILE_PROJECTION = {RawContacts.Data.RAW_CONTACT_ID, RawContacts.Data.MIMETYPE};
+    private static final String[] PROFILE_PROJECTION = {RawContacts.Data.RAW_CONTACT_ID, RawContacts.Data.MIMETYPE, RawContacts.CONTACT_ID};
     
     private static Cursor setupRawContactCursor(ContentResolver resolver, Uri profileUri)
     {
@@ -250,7 +255,8 @@ public class ViewContactActivity extends Activity implements View.OnCreateContex
         }
 
         mRawID = mCursor.getLong(mCursor.getColumnIndex(RawContacts.Data.RAW_CONTACT_ID));
-        Log.d(TAG, "found raw contact " + mRawID);
+        mContactID = mCursor.getLong(mCursor.getColumnIndex(RawContacts.CONTACT_ID));
+        Log.d(TAG, "found raw contact " + mRawID + "/" + mContactID);
 
         mCursor.registerContentObserver(mObserver);
 
@@ -284,6 +290,11 @@ public class ViewContactActivity extends Activity implements View.OnCreateContex
 
         if(mAdapter == null)
         {
+            if(mFooterView != null)
+            {
+                mListView.addFooterView(mFooterView, null, true);
+            }
+
             mAdapter = new ViewAdapter(this, mSections);
             mListView.setAdapter(mAdapter);
         }
@@ -394,6 +405,17 @@ public class ViewContactActivity extends Activity implements View.OnCreateContex
 
     public void onItemClick(@SuppressWarnings("rawtypes") AdapterView parent, View v, int position, long id)
     {
+        if(v == mFooterView)
+        {
+            if(mContactID >= 0)
+            {
+                Uri lUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, mContactID);
+                Intent intent = new Intent(Intent.ACTION_VIEW, lUri);
+                startActivity(intent);
+            }
+            return;
+        }
+        
         ViewEntry entry = ViewAdapter.getEntry(mSections, position);
         if(entry != null)
         {

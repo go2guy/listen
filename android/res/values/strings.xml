@@ -141,5 +141,5 @@
 	<string name="contactOptionsTitle">Options</string>
 	<string name="phoneContactHeader">Call %1$s</string>
 	<string name="emailContactHeader">Email %1$s</string>
-	
+	<string name="fullContactInfo">View Contact</string>	
 </resources>
