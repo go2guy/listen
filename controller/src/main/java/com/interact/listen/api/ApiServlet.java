@@ -250,7 +250,7 @@ public class ApiServlet extends HttpServlet
         catch(StaleObjectStateException e)
         {
             throw new ListenServletException(HttpServletResponse.SC_CONFLICT,
-                                             "Data in the reqest was stale.  Re-query resource before sending again",
+                                             "Data in the request was stale.  Re-query resource before sending again",
                                              "text/plain", e);
         }
         catch(ConstraintViolationException e)
