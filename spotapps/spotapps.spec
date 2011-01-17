@@ -98,7 +98,7 @@ Requires: spotbuild-vip
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/ %{buildroot}/interact/apps/spotbuild/listen_artifacts/
     /interact/program/iiXMLcrypt -e "Listen Conferencing" %{buildroot}/interact/apps/spotbuild/listen_conference/ %{buildroot}/interact/apps/spotbuild/listen_record/ %{buildroot}/interact/apps/spotbuild/listen_autoDial/ %{buildroot}/interact/apps/spotbuild/listen_confEvents/
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/ %{buildroot}/interact/apps/spotbuild/msgLightCntrl/ %{buildroot}/interact/apps/spotbuild/listen_transcription/
-    /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/
+    /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/ %{buildroot}/interact/apps/spotbuild/listen_findmeAdmin/
     /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/
     /interact/program/iiXMLcrypt -e "Listen Attendant" %{buildroot}/interact/apps/spotbuild/listen_autoAttendant/
 
