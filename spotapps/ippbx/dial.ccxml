@@ -522,7 +522,7 @@
         <transition event="dialog.user.listenVoiceMail" name="evt">
             <!-- Here we'll pass control to the begin ccxml script which calls the Listen Voice Mail project -->
             <log>INFO: Entered [dialog.user.listenVoiceMail] with state [<value expr="state"/>]</log>
-            <if cond="origDNIS.length &gt; 0">
+            <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0))">
                 <!-- If we're dealing with an extension that was forwarded, we need to use the original
                 voicemail not where the call was forwarded to -->
                 <assign name="DNIS" expr="origDNIS"/>
