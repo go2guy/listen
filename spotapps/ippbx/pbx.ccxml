@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/29/2010
+    <!-- Last Modified 01/18/2011
        *   @Name	pbx.ccxml
        *   @Desc	This script handles all the control logic for the PBX application -->
 
@@ -120,8 +120,9 @@
             <var name="status" expr="evt.values.status"/>
             <if cond="state == 'hangUp'">
                 <send data="'dialog.user.updateClientRecord'" target="session.id"/>
-            <elseif cond="inString(status,listenApps,',')"/>
+            <elseif cond="status == 'listenApp'"/>
                 <var name="appName" expr="''"/>
+                <assign name="status" expr="evt.values.whichApp"/>
                 <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', status)"/>
                 <if cond="status == 'conferencing'">
                     <assign name="appName" expr="'listen_conference'"/>

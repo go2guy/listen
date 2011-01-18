@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 12/16/2010
+    <!-- Last Modified 01/18/2011
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -16,6 +16,7 @@
     <var name="customerService" expr="'181'"/>  <!-- Customer Service extension -->
     <var name="dtmfHotKey" expr="''"/>
     <var name="afterHrsTest" expr="'6'"/>       <!-- Back door for after hours testing -->
+    <var name="whichApp" expr="''"/>
 
 	<form id="beginDocument">
 		<block>
@@ -196,7 +197,8 @@
                 <if cond="chkMap.result == 'ippbx'">
                     <log>INFO: User trying to call ext [<value expr="userEntry"/>]</log>
                 <else/>
-                    <assign name="status" expr="chkMap.result"/>
+                    <assign name="status" expr="'listenApp'"/>
+                    <assign name="whichApp" expr="chkMap.result"/>
                     <goto next="#exit"/>
                 </if>
             <elseif cond="chkMap.status == 'CNTRL_DOWN'"/>
@@ -221,7 +223,7 @@
 
     <form id="exit">
         <block>
-            <exit namelist="userEntry status extension isClosed"/>
+            <exit namelist="userEntry status whichApp extension isClosed"/>
         </block>
     </form>
 
