@@ -55,6 +55,7 @@
 	<var name="number" expr="''" />
 	<var name="userInput" expr="''" />
 	<var name="enabledAudio" expr="''" />
+	<var name="pin" expr="''" />
 
 
     <!-- Conference Variables -->

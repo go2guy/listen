@@ -45,6 +45,7 @@
 	<var name="SB_UV_number"/>
 	<var name="SB_UV_userInput"/>
 	<var name="SB_UV_enabledAudio"/>
+	<var name="SB_UV_pin"/>
 
     
     <form id="beginDocument">
@@ -135,6 +136,9 @@
 			</if>
 			<if cond="SB_UV_enabledAudio != undefined">
 				<assign name="enabledAudio" expr="SB_UV_enabledAudio" />
+			</if>
+			<if cond="SB_UV_pin != undefined">
+				<assign name="pin" expr="SB_UV_pin" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
