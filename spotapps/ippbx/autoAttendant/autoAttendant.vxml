@@ -113,7 +113,8 @@
                 <goto next="#exit"/>
             <elseif cond="userEntry[0] == '*'"/>
                 <log>INFO: Caller trying to access mailbox</log>
-                <assign name="status" expr="'mailbox'"/>
+                <assign name="status" expr="'listenApp'"/>
+                <assign name="whichApp" expr="'mailbox'"/>
                 <goto next="#exit"/>
             <elseif cond="((userEntry == CUSTOMER_SERVICE) || (userEntry == afterHrsTest))"/>
                 <!-- This logic is here to check how to route the call to customer service.
