@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/14/2010
+    <!-- Last Modified 01/18/2011
        *   @Name	blindTransfer.ccxml
        *   @Desc	This script handles the logic for doing a blind call transfer -->
 
@@ -18,6 +18,7 @@
     <var name="EXT_LENGTH"/>    <!-- Extensions are less than seven digit numbers -->
     <var name="SB_PATH"/>       <!-- Spotbuild Path. Base directory for spotbuild -->
     <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
+    <var name="origDNIS"/>      <!-- Stores the original DNIS in a forwarded scenario -->
 
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
@@ -112,7 +113,7 @@
             <else/>
                 <assign name="callType" expr="'external'"/>
             </if>
-            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpDNIS DNIS tmpANI ANI callType importedValue"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid origDNIS tmpDNIS DNIS tmpANI ANI callType importedValue"/>
         </transition>
 
         <transition event="dialog.started" name="evt">

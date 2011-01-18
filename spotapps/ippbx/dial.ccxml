@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/26/2010
+    <!-- Last Modified 01/18/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -18,6 +18,8 @@
     <var name="isClosed"/>  <!-- Flag to determine if the office is closed -->
     <var name="EXT_LENGTH"/>        <!-- Extension length -->
     <var name="importedValue"/>     <!-- Imported Value. Values passed in from Listen application -->
+    <var name="origDNIS"/>          <!-- Stores the original DNIS in a forwarded scenario -->
+
 
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>       <!-- State. Used to track which state a transition is in -->
@@ -81,7 +83,8 @@
             <if cond="tmpDNIS == '0'">
                 <assign name="tmpDNIS" expr="officeOptr"/>
             </if>
-            <log>INFO: tmpDNIS [<value expr="tmpDNIS"/></log>
+            <log>INFO: DNIS [<value expr="tmpDNIS"/>]</log>
+            <log>INFO: Orig DNIS [<value expr="origDNIS"/>]</log>
             <send data="'dialog.user.chkCallType'" target="session.id"/>
         </transition>
 
@@ -98,10 +101,16 @@
             <elseif cond="tmpDNIS.length &lt; EXT_LENGTH"/>
                 <!-- This is part of the forwarding logic. Before dialing an internal extension
                 we need to make sure it is not forwarded -->
-                <assign name="state" expr="'chkFwd'"/>
-                <var name="mBox" expr="tmpDNIS"/>
-                <var name="flag" expr="'select'"/>
-       	   		<dialogstart src="'file:'+TRANS_PATH+'forward.vxml'" namelist="mBox flag"/>
+                <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0))">
+                    <!-- If this variable is already set to a value, we're likely dealing with a
+                    blindtransfer request that needs to go to voice mail -->
+                    <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+                <else/>
+                    <assign name="state" expr="'chkFwd'"/>
+                    <var name="mBox" expr="tmpDNIS"/>
+                    <var name="flag" expr="'select'"/>
+       	   		    <dialogstart src="'file:'+TRANS_PATH+'forward.vxml'" namelist="mBox flag"/>
+                </if>
             <else/>
                 <send data="'dialog.user.getCallerID'" target="session.id"/>
             </if>
@@ -116,10 +125,17 @@
             <var name="list" expr="'EMPTY,Failure'"/>
             <if cond="((result.length &gt; 0) &amp;&amp; !(inString(result,list,',')))">
                 <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
+                <assign name="origDNIS" expr="DNIS"/> <!-- Let's save off original destination for later use -->
                 <assign name="DNIS" expr="result"/>
                 <assign name="tmpDNIS" expr="result"/>
             </if>
-            <send data="'dialog.user.getCallerID'" target="session.id"/>
+            <if cond="((tmpANI == DNIS) &amp;&amp; (origDNIS.length &gt; 0))">
+                <!-- This implies that the extension we are forwarded to is calling our extension.
+                In this case, we'll go directly to our mailbox -->
+                <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.getCallerID'" target="session.id"/>
+            </if>
         </transition>
 
         <transition event="dialog.user.getCallerID" name="evt">
@@ -293,7 +309,7 @@
             <log target="status">Blind transfer request</log>
             <var name="xferConnID" expr="evt.connectionid"/>
             <var name="URI" expr="evt.uri"/>
-            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID"/>
+            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID"/>
 		</transition>
 
 		<transition state="callConnected" event="connection.signal" name="evt">
@@ -304,7 +320,7 @@
                 <!-- Here, we assume this event is in connection to a 3-way call/conference. 
                 We'll ignore it and allow the IP phone handle the call -->
             <else/>
-                <fetch next="'file:'+APP_PATH+'transfer/hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
+                <fetch next="'file:'+APP_PATH+'transfer/hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
             </if>
 		</transition>
 
@@ -506,6 +522,11 @@
         <transition event="dialog.user.listenVoiceMail" name="evt">
             <!-- Here we'll pass control to the begin ccxml script which calls the Listen Voice Mail project -->
             <log>INFO: Entered [dialog.user.listenVoiceMail] with state [<value expr="state"/>]</log>
+            <if cond="origDNIS.length &gt; 0">
+                <!-- If we're dealing with an extension that was forwarded, we need to use the original
+                voicemail not where the call was forwarded to -->
+                <assign name="DNIS" expr="origDNIS"/>
+            </if>
             <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
                 <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
                 <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', 'ippbx')"/>
