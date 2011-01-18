@@ -581,4 +581,57 @@
         <sql>update ACCESS_NUMBER set NUMBER_TYPE = 'VOICEMAIL' where NUMBER like '40242039%'</sql>
         <sql>update ACCESS_NUMBER set IS_PUBLIC = (select IS_ACTIVE_DIRECTORY FROM SUBSCRIBER s WHERE s.ID = ACCESS_NUMBER.SUBSCRIBER_ID)</sql>
     </changeSet>
+    <changeSet author="development" id="57">
+        <createTable tableName="TIME_RESTRICTION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+            <column name="START_ENTRY" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="END_ENTRY" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_TIME" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="END_TIME" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACTION" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MONDAY" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TUESDAY" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WEDNESDAY" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="THURSDAY" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FRIDAY" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SATURDAY" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUNDAY" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBSCRIBER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="development" id="58">
+        <addForeignKeyConstraint baseTableName="TIME_RESTRICTION" baseColumnNames="SUBSCRIBER_ID" referencedTableName="SUBSCRIBER" referencedColumnNames="ID" constraintName="FK_TIME_RESTRICTION_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false"/>
+    </changeSet>
 </databaseChangeLog>

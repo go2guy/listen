@@ -6,8 +6,30 @@ $(document).ready(function() {
         $('#sendEmailOptions').toggle();
     });
 
+    $('#sendEmailRestrictTime').click(function() {
+        if($('#sendEmailTimeRestrictions .period-selector').size() == 0) {
+            Profile.addTimeRestriction($('#addEmailTimeRestriction'));
+        }
+        $('#sendEmailTimeRestrictions').toggle();
+    });
+
+    $('#addEmailTimeRestriction').click(function() {
+        Profile.addTimeRestriction($('#addEmailTimeRestriction'));
+    });
+
     $('#sendSms').click(function() {
         $('#sendSmsOptions').toggle();
+    });
+
+    $('#sendSmsRestrictTime').click(function() {
+        if($('#sendSmsTimeRestrictions .period-selector').size() == 0) {
+            Profile.addTimeRestriction($('#addSmsTimeRestriction'));
+        }
+        $('#sendSmsTimeRestrictions').toggle();
+    });
+
+    $('#addSmsTimeRestriction').click(function() {
+        Profile.addTimeRestriction($('#addSmsTimeRestriction'));
     });
 
     $('#generalSettingsForm').submit(function() {
@@ -43,6 +65,40 @@ $(document).ready(function() {
         Profile.testSmsAddress();
         return false;
     });
+
+    // initialize toggleboxes
+    $('ul.togglebox').click(function() {
+        var ul = $(this);
+        if(!ul.hasClass('disabled')) {
+            var next = $('li.active', ul).next();
+            if(next.size() == 0) {
+                next = $(':first-child', ul);
+            }
+            $('li', ul).removeClass('active');
+            next.addClass('active');
+        }
+    }).children('.default').addClass('active');
+    
+    $('input.time').keyup(function() {
+        var field = $(this);
+        var result = parseTime(field.val());
+        
+        field.parent().next().toggleClass('disabled', result.isMilitary).attr('title', result.isMilitary ? 'You have specified a 24-hour time' : '');
+        field.toggleClass('invalid', !result.isValid);
+    }).blur(function() {
+        var field = $(this);
+        var value = field.val();
+        var result = parseTime(value);
+        if(result.isValid && (value.length == 1 || value.length == 2)) {
+            field.val(value + ':00');
+        } else if(result.isValid && value.indexOf(':') == -1) {
+            var h = value.substr(0, value.length == 3 ? 1 : 2);
+            var m = value.substr(value.length == 3 ? 1 : 2);
+            field.val(h + ':' + m);
+        }
+    });
+    // TODO validate that start < end
+    // TODO if start is PM, default end to PM
 
     Profile = function() {
         return {
@@ -86,6 +142,12 @@ $(document).ready(function() {
                                 $('#sendEmailUseAnother').attr('checked', 'checked');
                                 $('#sendEmailOtherAddress').val(data.emailAddress);
                             }
+                            $('#sendEmailRestrictTime').attr('checked', data.emailTimeRestrictions.length > 0);
+                            $('#sendEmailTimeRestrictions').toggle(data.emailTimeRestrictions.length > 0);
+                            var addEmailRestrictionButton = $('#addEmailTimeRestriction');
+                            for(var i = 0, restriction; restriction = data.emailTimeRestrictions[i]; i++) {
+                                Profile.addEmailTimeRestriction(addEmailRestrictionButton, restriction.from, restriction.to, restriction.days);
+                            }
                             
                             // sms notifications
                             $('#sendSms').attr('checked', data.enableSms);
@@ -101,6 +163,13 @@ $(document).ready(function() {
                                 $('#sendSmsNumberProvider').val(split[1]);
                             }
                             $('#keepSendingSms').attr('checked', data.enablePaging);
+                            $('#sendSmsRestrictTime').attr('checked', data.smsTimeRestrictions.length > 0);
+                            $('#sendSmsTimeRestrictions').toggle(data.smsTimeRestrictions.length > 0);
+                            var addSmsRestrictionButton = $('#addSmsTimeRestriction');
+                            for(var i = 0, restriction; restriction = data.smsTimeRestrictions[i]; i++) {
+                                Profile.addTimeRestriction(addSmsRestrictionButton, restriction.from, restriction.to, restriction.days);
+                            }
+                            
                             $('#transcribeVoicemail').attr('checked', data.enableTranscription);
                             
                             // PHONE NUMBERS TAB
@@ -155,6 +224,50 @@ $(document).ready(function() {
                 $('#phoneNumbersButtons').before(clone);
             },
 
+            addTimeRestriction: function(before, from, to, days) {
+                var clone = $('#period-selector-template').clone(true);
+                clone.removeAttr('id');
+                $('button', clone).click(function() {
+                    $(this).parent().remove();
+                });
+
+                function setMeridiem(time, togglebox) { // time should have 'AM' or 'PM' appended, or nothing if military
+                    if(time.indexOf('AM') > -1) {
+                        $('.am', togglebox).addClass('active');
+                        $('.pm', togglebox).removeClass('active');
+                    } else if(time.indexOf('PM') > -1) {
+                        $('.am', togglebox).removeClass('active');
+                        $('.pm', togglebox).addClass('active');
+                    } else { // assume military
+                        togglebox.addClass('disabled');
+                    }
+                }
+
+                function setTime(time, input) { // will remove AM/PM at the end of the time
+                    if(time.indexOf('AM') > -1 || time.indexOf('PM') > -1) {
+                        input.val(time.substr(0, time.indexOf('M') - 1));
+                    } else {
+                        input.val(time);
+                    }
+                }
+
+                if(from) {
+                    setTime(from, $('.from-time', clone));
+                    setMeridiem(from, $('.from-meridiem', clone));
+                }
+                if(to) {
+                    setTime(to, $('.to-time', clone));
+                    setMeridiem(to, $('.to-meridiem', clone));
+                }
+                if(days) {
+                    var all = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    for(var i = 0, day; day = all[i]; i++) {
+                        $('.' + day + ' .on', clone).toggleClass('active', days[day]);
+                    }
+                }
+                before.before(clone);
+            },
+
             saveGeneralSettings: function() {
                 interact.util.trace('Profile.saveGeneralSettings');
                 Server.post({
@@ -176,7 +289,6 @@ $(document).ready(function() {
             
             saveVoicemailSettings: function() {
                 interact.util.trace('Profile.saveVoicemailSettings');
-                interact.util.trace("is sendEmailUseCurrent checked? " + ($('#sendEmailUseCurrent').is(':checked') ? 'yes' : 'no'));
                 Server.post({
                     url: interact.listen.url('/ajax/mySetSubscriberVoicemailSettings'),
                     properties: {
@@ -185,8 +297,10 @@ $(document).ready(function() {
                         transcribeVoicemail: $('#transcribeVoicemail').is(':checked'),
                         sendEmail: $('#sendEmail').is(':checked'),
                         sendEmailToAddress: $('#sendEmailUseCurrent').is(':checked') ? $('#emailAddress').val() : $('#sendEmailOtherAddress').val(),
+                        sendEmailTimeRestrictions: Profile.buildTimeRestrictions('sendEmailTimeRestrictions'),
                         sendSms: $('#sendSms').is(':checked'),
                         sendSmsToAddress: $('#sendSmsNumber').val() + ($('#sendSmsNumberProvider') != 'N/A' ? '@' + $('#sendSmsNumberProvider').val() : ''),
+                        sendSmsTimeRestrictions: Profile.buildTimeRestrictions('sendSmsTimeRestrictions'),
                         keepSendingSms: $('#keepSendingSms').is(':checked')
                     },
                     successCallback: function() {
@@ -247,6 +361,25 @@ $(document).ready(function() {
                 return numbers;
             },
             
+            buildTimeRestrictions: function(id) {
+                var parent = $('#' + id);
+                var restrictions = [];
+                $('.period-selector', parent).each(function() {
+                    var restriction = {};
+                    restriction.from = $('.from-time', this).val() + ($('.from-meridiem', this).hasClass('disabled') ? '' : $('.from-meridiem .active', this).text());
+                    restriction.to = $('.to-time', this).val() + ($('.to-meridiem', this).hasClass('disabled') ? '' : $('.to-meridiem .active', this).text());
+                    
+                    var days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    var group = $('.togglebox-group', this);
+                    for(var i = 0, day; day = days[i]; i++) {
+                        var item = $('.' + day, group);
+                        restriction[day] = $('.active', item).hasClass('on');
+                    }
+                    restrictions.push(restriction);
+                });
+                return JSON.stringify(restrictions);
+            },
+            
             testEmailAddress: function() {
                 interact.util.trace('Profile.testEmailAddress');
                 Profile.testAddress('email', $('#sendEmailOtherAddress').val());
@@ -283,3 +416,28 @@ $(document).ready(function() {
 
     new Profile.Application().load();
 });
+
+function parseTime(input) {
+    var result = {
+        isValid: false,
+        isMilitary: false
+    }; // TODO possible improvement: if military, return the meridiem and change the value of the togglebox
+    var valid = /^[0-9]{1,2}:?[0-9]{2}$|^[0-9]{1,2}$/.test(input);
+    if (!valid) {
+        return result;
+    }
+
+    var numeric = input.replace(/:/g, '');
+    var hours, minutes;
+    if(numeric.length == 1 || numeric.length == 2) {
+        hours = numeric;
+        minutes = 0;
+    } else {
+        hours = parseInt(numeric.substr(0, numeric.length == 3 ? 1 : 2), 10);
+        minutes = parseInt(numeric.substr(numeric == 3 ? 1 : 2), 10);
+    }
+
+    result.isValid = hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+    result.isMilitary = result.isValid && (hours == 0 || (hours >= 13 && hours <= 23));
+    return result;
+}

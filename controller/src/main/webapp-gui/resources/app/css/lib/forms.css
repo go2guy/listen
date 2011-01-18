@@ -1,15 +1,17 @@
-fieldset {
+/* vertical fieldset */
+
+fieldset.vertical {
     display: block;
     padding: 5px;
 }
 
-fieldset fieldset {
+fieldset.vertical fieldset {
     padding: 0;
 }
 
 /* prefer h1 to a fieldset legend, since the legends don't render consistently
    across all browsers, even with a whole bunch of hacks */
-fieldset h1 {
+fieldset.vertical h1 {
     border-bottom: 1px solid #000000;
     display: block;
     font-size: 18px;
@@ -17,29 +19,29 @@ fieldset h1 {
     margin-bottom: 5px;
 }
 
-fieldset label {
+fieldset.vertical label {
     display: block;
     font-size: 14px;
     margin-bottom: 10px;
 }
 
-fieldset input,
-fieldset select,
-fieldset button {
+fieldset.vertical input,
+fieldset.vertical select,
+fieldset.vertical button {
     display: block;
     margin: 5px 0 0 0;
 }
 
 /* standardize borders for all "text-y" fields (i.e. not checkboxes, radios) */
-fieldset input[type=text],
-fieldset input[type=password],
-fieldset input[type=submit],
-fieldset input[type=reset],
-fieldset input[type=file],
-fieldset button,
-fieldset .button,
-fieldset select,
-fieldset textarea {
+fieldset.vertical input[type=text],
+fieldset.vertical input[type=password],
+fieldset.vertical input[type=submit],
+fieldset.vertical input[type=reset],
+fieldset.vertical input[type=file],
+fieldset.vertical button,
+fieldset.vertical .button,
+fieldset.vertical select,
+fieldset.vertical textarea {
     border: 1px solid #666666;
     font-size: 16px;
     font-weight: bold;
@@ -47,32 +49,32 @@ fieldset textarea {
 }
 
 /* most of the input types, except buttons, get a fixed width */
-fieldset input[type=text],
-fieldset input[type=password],
-fieldset input[type=file],
-fieldset select,
-fieldset textarea {
+fieldset.vertical input[type=text],
+fieldset.vertical input[type=password],
+fieldset.vertical input[type=file],
+fieldset.vertical select,
+fieldset.vertical textarea {
     width: 240px;
 }
 
 /* bold font for buttons and selects is a little overwhelming, so remove it */
-fieldset select,
-fieldset button,
-fieldset .button,
-fieldset input[type=submit],
-fieldset input[type=reset] {
+fieldset.vertical select,
+fieldset.vertical button,
+fieldset.vertical .button,
+fieldset.vertical input[type=submit],
+fieldset.vertical input[type=reset] {
     font-weight: normal;
 }
 
-fieldset button:hover,
-fieldset .button:hover,
-fieldset input[type=submit]:hover,
-fieldset input[type=reset]:hover {
+fieldset.vertical button:hover,
+fieldset.vertical .button:hover,
+fieldset.vertical input[type=submit]:hover,
+fieldset.vertical input[type=reset]:hover {
     background-color: #FFFFFF;
     cursor: pointer;
 }
 
-fieldset input.disabled {
+fieldset.vertical input.disabled {
     background-color: #DDDDDD;
     color: #111111;
 }
@@ -80,7 +82,7 @@ fieldset input.disabled {
 /* use a class of 'inline' on any checkbox or radio that you want to align
    horizontally with its label; the [type='checkbox'] CSS selector doesn't
    work right in IE6; using the class works consistently cross-browser */
-fieldset input.inline {
+fieldset.vertical input.inline {
     display: inline;
     padding: 0;
     width: auto;
@@ -96,58 +98,171 @@ fieldset input.inline {
     vertical-align: bottom;
 }
 
-fieldset .annotation {
+fieldset.vertical .annotation {
     display: block;
     font-size: 11px;
     margin-left: 10px;
     color: #666666;
 }
 
-fieldset fieldset.side-by-side {
+fieldset.vertical fieldset.side-by-side {
     padding: 0;
 }
 
-fieldset fieldset.side-by-side label {
+fieldset.vertical fieldset.side-by-side label {
     float: left;
     margin-right: 5px;
 }
 
-fieldset fieldset.side-by-side input,
-fieldset fieldset.side-by-side select {
+fieldset.vertical fieldset.side-by-side input,
+fieldset.vertical fieldset.side-by-side select {
     width: 180px;
 }
 
-fieldset fieldset.group {
+fieldset.vertical fieldset.group {
     margin-left: 25px;
     padding: 5px;
 }
 
-fieldset fieldset.group fieldset {
+fieldset.vertical fieldset.group fieldset {
     padding: 0;
 }
 
-fieldset fieldset fieldset {
+fieldset.vertical fieldset fieldset {
     margin-left: 10px;
 }
 
-fieldset fieldset fieldset fieldset {
+fieldset.vertical fieldset fieldset fieldset {
     margin-left: 20px;
 }
 
-fieldset h2 {
+fieldset.vertical h2 {
     font-weight: normal;
     margin-bottom: 10px;
 }
 
-fieldset > input[type=submit],
-fieldset > input[type=reset],
-fieldset > button {
+fieldset.vertical > input[type=submit],
+fieldset.vertical > input[type=reset],
+fieldset.vertical > button {
     float: left;
     margin-left: 15px;
 }
 
-fieldset > input[type=submit].first,
-fieldset > input[type=reset].first,
-fieldset > button.first {
+fieldset.vertical > input[type=submit].first,
+fieldset.vertical > input[type=reset].first,
+fieldset.vertical > button.first {
     margin-left: 40px;
+}
+
+/* togglebox */
+
+fieldset.period-selector,
+fieldset.period-selector fieldset {
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+    height: 32px;
+}
+
+fieldset.period-selector label,
+fieldset.period-selector ul.togglebox {
+    display: block;
+    float: left;
+}
+
+fieldset.period-selector label {
+    height: 32px;
+    line-height: 32px;
+    margin: 0;
+    vertical-align: bottom;
+}
+
+fieldset.period-selector input.time,
+ul.togglebox {
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    color: #666666;
+    
+    line-height: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+fieldset.period-selector input.time {
+    display: inline;
+    font-size: 20px;
+    font-weight: bold;
+    width: 100px;
+}
+
+fieldset.period-selector input.invalid {
+    background-color: #FFE3F0;
+}
+
+fieldset.period-selector .meridian {
+    border-left-width: 0;
+    margin-right: 5px;
+}
+
+ul.togglebox {
+    font-size: 18px;
+    overflow: hidden;
+    width: 30px;
+    text-transform: lowercase;
+    font-variant: small-caps;
+}
+
+ul.togglebox li {
+    display: none;
+    height: 30px;
+    width: 30px;
+}
+
+ul.togglebox li.active {
+    display: block;
+}
+
+ul.togglebox:hover {
+    cursor: pointer;
+    background-color: #EEEEEE;
+}
+
+ul.togglebox li.on {
+    background-color: #666666;
+    color: #FFFFFF;
+}
+
+ul.togglebox li.off {
+    background-color: #FFFFFF;
+}
+
+ul.togglebox li.on:hover {
+    background-color: #888888;
+}
+
+ul.togglebox li.off:hover {
+    background-color: #EEEEEE;
+}
+
+ul.disabled,
+ul.disabled:hover {
+    background-color: #FFFFFF;
+    border-color: #EEEEEE;
+    color: #FFFFFF;
+    cursor: default;
+}
+
+.togglebox-group {
+    display: inline;
+    margin: 0;
+}
+
+.togglebox-group ul {
+    border-right-width: 0px;
+}
+
+.togglebox-group ul.last {
+    border-right-width: 1px;
 }

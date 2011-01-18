@@ -1,6 +1,7 @@
 #sendEmailOptions,
 #sendSmsOptions,
-.phone-number-service-provider {
+.phone-number-service-provider,
+#sendEmailTimeRestrictions {
     display: none;
 }
 
@@ -16,4 +17,21 @@
 
 #phoneNumbersTab {
     background-color: #FFFFFF;
+}
+
+fieldset.period-selector {
+    display: block;
+    margin-bottom: 5px;
+}
+
+fieldset.period-selector button {
+    display: inline;
+    vertical-align: top;
+}
+
+#addEmailTimeRestriction {
+    clear: both;
+    display: block;
+    float: left;
+    width: 150px;
 }

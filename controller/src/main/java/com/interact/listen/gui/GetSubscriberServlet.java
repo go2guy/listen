@@ -11,6 +11,8 @@ import com.interact.listen.marshal.converter.FriendlyIso8601DateConverter;
 import com.interact.listen.marshal.json.JsonMarshaller;
 import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.resource.TimeRestriction;
+import com.interact.listen.resource.TimeRestriction.Action;
 import com.interact.listen.stats.Stat;
 
 import java.util.Date;
@@ -23,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  * Provides a GET implementation that retrieves a list of {@link Subscribers}.
@@ -119,9 +123,15 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"voicemailPin\":\"").append(subscriber.getVoicemailPin()).append("\",");
 
         json.append("\"enableEmail\":").append(subscriber.getIsEmailNotificationEnabled()).append(",");
-        json.append("\"enableSms\":").append(subscriber.getIsSmsNotificationEnabled()).append(",");
         json.append("\"emailAddress\":\"").append(subscriber.getEmailAddress()).append("\",");
+        List<TimeRestriction> emailTimeRestrictions = TimeRestriction.queryBySubscriberAndAction(session, subscriber, Action.NEW_VOICEMAIL_EMAIL);
+        json.append("\"emailTimeRestrictions\":").append(timeRestrictionsToJson(emailTimeRestrictions)).append(",");
+        
+        json.append("\"enableSms\":").append(subscriber.getIsSmsNotificationEnabled()).append(",");
         json.append("\"smsAddress\":\"").append(subscriber.getSmsAddress()).append("\",");
+        List<TimeRestriction> smsTimeRestrictions = TimeRestriction.queryBySubscriberAndAction(session, subscriber, Action.NEW_VOICEMAIL_SMS);
+        json.append("\"smsTimeRestrictions\":").append(timeRestrictionsToJson(smsTimeRestrictions)).append(",");
+
         json.append("\"voicemailPlaybackOrder\":\"").append(subscriber.getVoicemailPlaybackOrder().toString()).append("\",");
         json.append("\"enablePaging\":").append(subscriber.getIsSubscribedToPaging()).append(",");
         json.append("\"enableTranscription\":").append(subscriber.getIsSubscribedToTranscription()).append(",");
@@ -136,5 +146,29 @@ public class GetSubscriberServlet extends HttpServlet
         json.append("\"isCurrentSubscriber\":").append(subscriber.equals(currentSubscriber));
         json.append("}");
         return json.toString();
+    }
+
+    private static String timeRestrictionsToJson(List<TimeRestriction> restrictions)
+    {
+        JSONArray array = new JSONArray();
+        for(TimeRestriction restriction : restrictions)
+        {
+            JSONObject obj = new JSONObject();
+            obj.put("from", restriction.getStartEntry());
+            obj.put("to", restriction.getEndEntry());
+
+            JSONObject days = new JSONObject();
+            days.put("monday", restriction.getMonday());
+            days.put("tuesday", restriction.getTuesday());
+            days.put("wednesday", restriction.getWednesday());
+            days.put("thursday", restriction.getThursday());
+            days.put("friday", restriction.getFriday());
+            days.put("saturday", restriction.getSaturday());
+            days.put("sunday", restriction.getSunday());
+            obj.put("days", days);
+
+            array.add(obj);
+        }
+        return array.toJSONString();
     }
 }

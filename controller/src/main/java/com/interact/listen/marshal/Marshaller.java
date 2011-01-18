@@ -19,6 +19,7 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
+import org.joda.time.LocalTime;
 
 /**
  * Marshals {@code Resource}s into various content types and unmarshals {@code String}s back into {@code Resource}s.
@@ -40,20 +41,22 @@ public abstract class Marshaller
     static
     {
         OMIT_METHODS.add("getClass");
+        DEFAULT_CONVERTERS.put(AccessNumber.NumberType.class, AccessNumberTypeConverter.class);
         DEFAULT_CONVERTERS.put(Boolean.class, BooleanConverter.class);
+        DEFAULT_CONVERTERS.put(CallDetailRecord.CallDirection.class, CallDirectionConverter.class);
+        DEFAULT_CONVERTERS.put(Channel.class, HistoryChannelConverter.class);
         DEFAULT_CONVERTERS.put(Date.class, Iso8601DateConverter.class);
+        DEFAULT_CONVERTERS.put(DeviceRegistration.RegisteredType.class, DeviceRegisteredTypeConverter.class);
+        DEFAULT_CONVERTERS.put(DeviceType.class, DeviceTypeConverter.class);
+        DEFAULT_CONVERTERS.put(Duration.class, JodaDurationConverter.class);
+        DEFAULT_CONVERTERS.put(EmailContact.Type.class, EmailContactTypeConverter.class);
         DEFAULT_CONVERTERS.put(Integer.class, IntegerConverter.class);
+        DEFAULT_CONVERTERS.put(LocalTime.class, JodaLocalTimeConverter.class);
         DEFAULT_CONVERTERS.put(Long.class, LongConverter.class);
         DEFAULT_CONVERTERS.put(Pin.PinType.class, PinTypeConverter.class);
-        DEFAULT_CONVERTERS.put(String.class, StringConverter.class);
-        DEFAULT_CONVERTERS.put(Channel.class, HistoryChannelConverter.class);
-        DEFAULT_CONVERTERS.put(CallDetailRecord.CallDirection.class, CallDirectionConverter.class);
-        DEFAULT_CONVERTERS.put(Duration.class, JodaDurationConverter.class);
         DEFAULT_CONVERTERS.put(PlaybackOrder.class, PlaybackOrderConverter.class);
-        DEFAULT_CONVERTERS.put(DeviceType.class, DeviceTypeConverter.class);
-        DEFAULT_CONVERTERS.put(AccessNumber.NumberType.class, AccessNumberTypeConverter.class);
-        DEFAULT_CONVERTERS.put(EmailContact.Type.class, EmailContactTypeConverter.class);
-        DEFAULT_CONVERTERS.put(DeviceRegistration.RegisteredType.class, DeviceRegisteredTypeConverter.class);
+        DEFAULT_CONVERTERS.put(String.class, StringConverter.class);
+        DEFAULT_CONVERTERS.put(TimeRestriction.Action.class, TimeRestrictionActionConverter.class);
     }
 
     /**

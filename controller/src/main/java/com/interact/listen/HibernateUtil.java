@@ -157,8 +157,9 @@ public final class HibernateUtil
             config.addAnnotatedClass(Conference.class);
             config.addAnnotatedClass(ConferenceHistory.class);
             config.addAnnotatedClass(ConferenceRecording.class);
-            config.addAnnotatedClass(DialPressedNumberAction.class);
+            config.addAnnotatedClass(DeviceRegistration.class);
             config.addAnnotatedClass(DialNumberAction.class);
+            config.addAnnotatedClass(DialPressedNumberAction.class);
             config.addAnnotatedClass(FindMeNumber.class);
             config.addAnnotatedClass(GoToMenuAction.class);
             config.addAnnotatedClass(History.class);
@@ -169,9 +170,8 @@ public final class HibernateUtil
             config.addAnnotatedClass(Property.class);
             config.addAnnotatedClass(ScheduledConference.class);
             config.addAnnotatedClass(Subscriber.class);
-            config.addAnnotatedClass(Voicemail.class);
-            config.addAnnotatedClass(DeviceRegistration.class);
             config.addAnnotatedClass(TimeRestriction.class);
+            config.addAnnotatedClass(Voicemail.class);
 
             SESSION_FACTORY = config.buildSessionFactory();
 

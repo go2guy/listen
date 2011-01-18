@@ -26,7 +26,7 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
       </ul>
       <div class="tab-content-default">
         <form id="generalSettingsForm">
-          <fieldset>
+          <fieldset class="vertical">
             <label for="username">
               Username
               <input type="text" id="username" class="disabled" disabled="disabled" readonly="readonly"/>
@@ -65,10 +65,10 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
       </div>
                   
       <listen:ifLicensed feature="VOICEMAIL">
-                  
+
         <div class="tab-content">
           <form id="voicemailSettingsForm">
-            <fieldset>
+            <fieldset class="vertical">
               <label for="voicemailPasscode">
                 Voicemail Passcode
                 <input type="text" id="voicemailPasscode"/>
@@ -117,6 +117,16 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
                       <button class="button" id="sendTestEmail">Send Test Email</button>
                     </label>
                   </fieldset>
+                  
+                  <label for="sendEmailRestrictTime">
+                    <input type="checkbox" class="inline" id="sendEmailRestrictTime"/>
+                    Only send during certain times
+                  </label>
+
+                  <fieldset class="time-restrictions" id="sendEmailTimeRestrictions">
+                    <button type="button" id="addEmailTimeRestriction">Add Time Period</button>
+                  </fieldset>
+
                 </fieldset>
 
                 <label for="sendSms">
@@ -146,6 +156,15 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
                     <input type="checkbox" class="inline" id="keepSendingSms"/>
                     Send the SMS every 10 minutes until I listen to the voicemail
                   </label>
+                  
+                  <label for="sendSmsRestrictTime">
+                    <input type="checkbox" class="inline" id="sendSmsRestrictTime"/>
+                    Only send during certain times
+                  </label>
+                  
+                  <fieldset class="time-restrictions" id="sendSmsTimeRestrictions">
+                    <button type="button" id="addSmsTimeRestriction">Add Time Period</button>
+                  </fieldset>
                 </fieldset>
               </fieldset>
 
@@ -157,7 +176,7 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
                   
       <div class="tab-content" id="phoneNumbersTab">
         <form id="phoneNumbersForm">
-          <fieldset id="phoneNumbersButtons">
+          <fieldset id="phoneNumbersButtons" class="vertical">
             <input type="submit" class="first" value="Save"/>
             <button type="button" id="addAnotherNumber">Add Another Number</button>
           </fieldset>
@@ -166,7 +185,7 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
 
       <div class="tab-content">
         <form id="afterHoursForm">
-          <fieldset>
+          <fieldset class="vertical">
             <label for="pagerNumber">
               Pager Number
               <input type="text" id="pagerNumber" class="disabled" disabled="disabled" readonly="readonly"/>
@@ -197,7 +216,7 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
     </div>
 
 	<div class="templates">
-      <fieldset id="phoneNumberTemplate">
+      <fieldset id="phoneNumberTemplate" class="vertical">
         <fieldset class="side-by-side">
 
           <label>
@@ -233,7 +252,28 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
 
         <button type="button" class="first delete-button">Delete This Number</button>
       </fieldset>
+      
+      <fieldset class="period-selector" id="period-selector-template">
+        <label>
+          From <input type="text" class="time from-time" value="8:00"/>
+        </label>
+        <ul class="togglebox meridian from-meridiem"><li class="am default">AM</li><li class="pm">PM</li></ul>
+        <label>
+          To <input type="text" class="time to-time" value="5:00"/>
+        </label>
+        <ul class="togglebox meridian to-meridiem"><li class="am">AM</li><li class="pm default">PM</li></ul>
+        <label>On&nbsp;</label>
+        <fieldset class="togglebox-group">
+          <ul class="togglebox monday"><li class="on">M</li><li class="off default">M</li></ul>
+          <ul class="togglebox tuesday"><li class="on">T</li><li class="off default">T</li></ul>
+          <ul class="togglebox wednesday"><li class="on">W</li><li class="off default">W</li></ul>
+          <ul class="togglebox thursday"><li class="on">T</li><li class="off default">T</li></ul>
+          <ul class="togglebox friday"><li class="on">F</li><li class="off default">F</li></ul>
+          <ul class="togglebox saturday"><li class="on">S</li><li class="off default">S</li></ul>
+          <ul class="togglebox sunday last"><li class="on">S</li><li class="off default">S</li></ul>
+        </fieldset>
+        <button type="button">Delete</button>
+      </fieldset>
     </div>
-                
   </body>
 </html>
