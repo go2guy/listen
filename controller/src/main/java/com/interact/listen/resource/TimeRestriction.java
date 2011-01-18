@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.LocalTime;
 
 public class TimeRestriction extends Resource implements Serializable
@@ -26,19 +27,22 @@ public class TimeRestriction extends Resource implements Serializable
     private String endEntry;
     
     @Column(name = "START_TIME", nullable = false)
+    @Type(type = "org.joda.time.contrib.hibernate.PersistentLocalTimeAsTime")
     private LocalTime startTime;
     
     @Column(name = "END_TIME", nullable = false)
+    @Type(type = "org.joda.time.contrib.hibernate.PersistentLocalTimeAsTime")
     private LocalTime endTime;
     
     @Column(name = "ACTION")
+    @Enumerated(EnumType.STRING)
     private Action action;
     
     @JoinColumn(name = "SUBSCRIBER_ID")
     @ManyToOne
     private Subscriber subscriber;
     
-    public enum Action
+    public static enum Action
     {
         NEW_VOICEMAIL_EMAIL, NEW_VOICEMAIL_SMS;
     }
