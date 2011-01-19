@@ -246,10 +246,10 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
           <span class="annotation">Leave blank to disable forwarding</span>
         </label>
 
-        <label>
+<!--        <label>
           <input type="checkbox" class="inline message-light"/>
           Supports message light indicator
-        </label>
+        </label>-->
 
         <label>
           <input type="checkbox" class="inline public-number"/>
