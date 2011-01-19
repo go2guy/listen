@@ -232,8 +232,7 @@ $(document).ready(function() {
             
             saveConfiguration: function() {
                 var saveButton = $('#findme-save');
-                var bg = '#FEFEFE';
-                saveButton.text('Saving...').attr('readonly', 'readonly').attr('disabled', 'disabled').css('background-color', '#DDDDDD');
+                saveButton.attr('readonly', 'readonly').attr('disabled', 'disabled');
                 var findme = FindMe.buildObjectFromMarkup();
                 Server.post({
                     url: interact.listen.url('/ajax/saveFindMeConfiguration'),
@@ -241,16 +240,12 @@ $(document).ready(function() {
                         findme: JSON.stringify(findme)
                     },
                     successCallback: function(data, textStatus, xhr) {
-                        saveButton.text('Saved').removeAttr('readonly').removeAttr('disabled').css('background-color', '#00FF00');
-                        setTimeout(function() {
-                            saveButton.text('Save').css('background-color', bg);
-                        }, 3000);
+                        saveButton.removeAttr('readonly').removeAttr('disabled');
+                        interact.listen.notifySuccess('Find Me / Follow Me configuration saved');
                     },
                     errorCallback: function(message) {
-                        saveButton.text('Error').removeAttr('readonly').removeAttr('disabled').css('background-color', '#FF0000');
-                        setTimeout(function() {
-                            saveButton.text('Save').css('background-color', bg);
-                        }, 3000);
+                        saveButton.removeAttr('readonly').removeAttr('disabled');
+                        interact.listen.notifyError(message);
                     }
                 });
             }
