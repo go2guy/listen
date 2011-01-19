@@ -468,8 +468,7 @@ div#latency {
 
 .announcement-success,
 .announcement-error {
-    border-style: solid;
-    border-width: 0 0 2px 0;
+    border-width: 0;
     display: block;
     font-size: 14px;
     height: 20px;
@@ -488,12 +487,10 @@ div#latency {
 
 .announcement-success {
     background-color: #9CFA84;
-    border-color: #68DB4B;
 }
 
 .announcement-error {
     background-color: #FF3064;
-    border-color: #B52146;
     color: #FFFFFF;
 }
 
