@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/18/2011
+    <!-- Last Modified 01/19/2011
        *   @Name	blindTransfer.ccxml
        *   @Desc	This script handles the logic for doing a blind call transfer -->
 
@@ -84,6 +84,7 @@
             <!-- Back from removing disconnected caller's info. Let's join the remaining caller to
             a voice channel --> 
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
             <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
         </transition>
 
@@ -95,6 +96,7 @@
 
         <transition event="dialog.exit" name="evt">
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
             <send data="'dialog.user.endCall'" target="session.id" />
         </transition>
 
