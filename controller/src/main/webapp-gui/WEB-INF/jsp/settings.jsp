@@ -234,11 +234,17 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
             </select>
           </label>
 
-          <label class="phone-number-service-provider">
+<!--          <label class="phone-number-service-provider">
             Service Provider
             <listen:mobileProviderSelect/>
-          </label>
+          </label>-->
         </fieldset>
+
+        <label>
+          Forward this number to
+          <input type="text" class="forwarded-to"/>
+          <span class="annotation">Leave blank to disable forwarding</span>
+        </label>
 
         <label>
           <input type="checkbox" class="inline message-light"/>

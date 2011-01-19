@@ -176,7 +176,11 @@ $(document).ready(function() {
                             
                             Profile.clearPhoneNumbers();
                             for(var i = 0; i < data.accessNumbers.length; i++) {
-                                Profile.addPhoneNumber(data.accessNumbers[i].number, data.accessNumbers[i].messageLight, data.accessNumbers[i].numberType, data.accessNumbers[i].publicNumber);
+                                Profile.addPhoneNumber(data.accessNumbers[i].number,
+                                        data.accessNumbers[i].forwardedTo,
+                                        data.accessNumbers[i].messageLight,
+                                        data.accessNumbers[i].numberType,
+                                        data.accessNumbers[i].publicNumber);
                             }
                             
                             // ALTERNATE PAGER NUMBER TAB
@@ -197,11 +201,12 @@ $(document).ready(function() {
                 $('#phoneNumbersForm > fieldset').not(':last').remove();
             },
             
-            addPhoneNumber: function(number, messageLight, numberType, publicNumber) {
+            addPhoneNumber: function(number, forwardedTo, messageLight, numberType, publicNumber) {
                 var clone = $('#phoneNumberTemplate').clone();
                 clone.removeAttr('id');
                 
                 $('.phone-number', clone).val(number);
+                $('.forwarded-to', clone).val(forwardedTo);
                 $('.message-light', clone).attr('checked', messageLight);
                 $('.public-number', clone).attr('checked', publicNumber);
                 
@@ -354,6 +359,7 @@ $(document).ready(function() {
                         number: $('.phone-number', entry).val(),
                         //serviceProvider: $('.phone-number-service-provider', entry).val(),
                         category: $('.phone-number-category', entry).val(),
+                        forwardedTo: $('.forwarded-to', entry).val(),
                         messageLight: $('.message-light', entry).is(':checked'),
                         publicNumber: $('.public-number', entry).is(':checked')
                     });
