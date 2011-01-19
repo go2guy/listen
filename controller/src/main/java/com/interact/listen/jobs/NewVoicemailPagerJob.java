@@ -130,6 +130,11 @@ public class NewVoicemailPagerJob implements Job
     private void sendPage(Voicemail voicemail, Subscriber subscriber, Subscriber pagerSubscriber,
                           HistoryService historyService, EmailerService emailerService)
     {
+        if(!subscriber.shouldSendNewVoicemailSms())
+        {
+            return;
+        }
+
         try
         {
             emailerService.sendSmsVoicemailNotification(voicemail, subscriber);

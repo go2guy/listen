@@ -1,11 +1,13 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.HibernateUtil;
 import com.interact.listen.PersistenceService;
 import com.interact.listen.c2dm.C2DMessaging;
 import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.exception.UnauthorizedModificationException;
 import com.interact.listen.history.HistoryService;
 import com.interact.listen.resource.DeviceRegistration.DeviceType;
+import com.interact.listen.resource.TimeRestriction.Action;
 import com.interact.listen.spot.SpotCommunicationException;
 import com.interact.listen.spot.SpotSystem;
 import com.interact.listen.util.ComparisonUtil;
@@ -17,10 +19,10 @@ import java.util.*;
 import javax.persistence.*;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.Session;
+import org.hibernate.*;
 import org.hibernate.criterion.*;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 
 @Entity
 @Table(name = "SUBSCRIBER")
@@ -36,7 +38,7 @@ public class Subscriber extends Resource implements Serializable
     private Long id;
 
     @Column(name = "VERSION")
-    @Version
+    @javax.persistence.Version
     private Integer version = Integer.valueOf(0);
 
     @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.EAGER)
@@ -768,4 +770,89 @@ public class Subscriber extends Resource implements Serializable
         }
     }
 
+    public boolean shouldSendNewVoicemailEmail()
+    {
+        if(!isEmailNotificationEnabled.booleanValue())
+        {
+            return false;
+        }
+
+        if(emailAddress == null || emailAddress.trim().equals(""))
+        {
+            return false;
+        }
+
+        return isNotificationAllowedForTime(Action.NEW_VOICEMAIL_EMAIL, new LocalDateTime());
+    }
+
+    public boolean shouldSendNewVoicemailSms()
+    {
+        if(!isSmsNotificationEnabled.booleanValue())
+        {
+            return false;
+        }
+
+        if(smsAddress == null || smsAddress.trim().equals(""))
+        {
+            return false;
+        }
+
+        return isNotificationAllowedForTime(Action.NEW_VOICEMAIL_SMS, new LocalDateTime());
+    }
+    
+    /**
+     * Whether or not the subscriber has allowed notifications for the specified action during the specified time.
+     * 
+     * @param action type of notification
+     * @param forDateTime date and time to see if notification is allowed for
+     * @return {@code true} if notification should be sent, {@code false} otherwise
+     */
+    private boolean isNotificationAllowedForTime(Action action, LocalDateTime forDateTime)
+    {
+        // open up a new session - normally we'd have one passed in, but for this, it's just a simple,
+        // non-modifying query. if we need to make it use the current session later, we can refactor.
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        try
+        {
+            List<TimeRestriction> restrictions = TimeRestriction.queryBySubscriberAndAction(session, this, action);
+            session.flush();
+            tx.commit();
+
+            // no restrictions means they haven't configured any, which means we should always send it
+            if(restrictions.size() == 0)
+            {
+                return true;
+            }
+
+            for(TimeRestriction range : restrictions)
+            {
+                // ignore it if it doesn't even apply to the target date
+                if(!range.appliesToJodaDayOfWeek(forDateTime.getDayOfWeek()))
+                {
+                    continue;
+                }
+
+                LocalTime start = range.getStartTime();
+                LocalTime end = range.getEndTime();
+                LocalTime forTime = forDateTime.toLocalTime();
+
+                // start time should be at the beginning of the minute...
+                start = new LocalTime(start.getHourOfDay(), start.getMinuteOfHour(), 0, 0);
+                // ... and end time should be at the end of the minute
+                end = new LocalTime(end.getHourOfDay(), start.getMinuteOfHour(), 59, 999);
+
+                // comparisons should be inclusive
+                if(forTime.equals(start) || forTime.equals(end) || (forTime.isAfter(start) && forTime.isBefore(end)))
+                {
+                    return true;
+                }
+            }
+            return false; // we didn't find a time period that forTime fit into
+        }
+        finally
+        {
+            session.close();
+        }
+    }
 }

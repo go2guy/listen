@@ -2,12 +2,22 @@ package com.interact.listen.resource;
 
 import static org.junit.Assert.*;
 
+import com.interact.listen.ListenTest;
 import com.interact.listen.TestUtil;
+import com.interact.listen.resource.TimeRestriction.Action;
+import com.interact.listen.resource.TimeRestriction.DayOfWeek;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SubscriberTest
+public class SubscriberTest extends ListenTest
 {
     private Subscriber subscriber;
 
@@ -150,6 +160,206 @@ public class SubscriberTest
         assertEquals(70610985, obj.hashCode());
     }
 
+    // email notification restriction tests
+    
+    @Test
+    public void test_shouldSendNewVoicemailEmail_whenNotificationIsDisabled_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsEmailNotificationEnabled(false);
+        
+        assertFalse(subscriber.shouldSendNewVoicemailEmail());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailEmail_whenNotificationIsEnabledButEmailAddressisNull_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsEmailNotificationEnabled(true);
+        subscriber.setEmailAddress(null);
+        
+        assertFalse(subscriber.shouldSendNewVoicemailEmail());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailEmail_whenNotificationIsEnabledButEmailAddressisBlank_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsEmailNotificationEnabled(true);
+        subscriber.setEmailAddress(" ");
+        
+        assertFalse(subscriber.shouldSendNewVoicemailEmail());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailEmail_whenEnabledAndNoTimeRestrictionsAreSet_returnsTrue()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsEmailNotificationEnabled(true);
+        assert subscriber.getEmailAddress() != null && !subscriber.getEmailAddress().trim().equals("");
+
+        int count = TimeRestriction.queryBySubscriberAndAction(session, subscriber, Action.NEW_VOICEMAIL_EMAIL).size();
+        assert count == 0; // no time restrictions
+
+        assertTrue(subscriber.shouldSendNewVoicemailEmail());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailEmail_whenEnabledAndCurrentTimeIsOutsideOfTheOnlyTimeRestriction_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsEmailNotificationEnabled(true);
+        assert subscriber.getEmailAddress() != null && !subscriber.getEmailAddress().trim().equals("");
+        
+        LocalTime now = new LocalTime();
+        Set<DayOfWeek> days = new HashSet<DayOfWeek>();
+        for(DayOfWeek dow : DayOfWeek.values())
+        {
+            days.add(dow);
+        }
+
+        TimeRestriction restriction = TimeRestriction.create(subscriber, now.plusHours(2), now.plusHours(3), days, Action.NEW_VOICEMAIL_EMAIL);
+        session.save(restriction);
+
+        assertFalse(subscriber.shouldSendNewVoicemailEmail());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailEmail_whenEnabledAndCurrentTimeIsInsideOfTheOnlyTimeRestriction_returnsTrue()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsEmailNotificationEnabled(true);
+        assert subscriber.getEmailAddress() != null && !subscriber.getEmailAddress().trim().equals("");
+        
+        Set<DayOfWeek> days = new HashSet<DayOfWeek>();
+        DayOfWeek today = jodaDayOfWeekToDayOfWeek(new LocalDate().getDayOfWeek());
+        days.add(today);
+        
+        LocalTime now = new LocalTime();
+        TimeRestriction restriction = TimeRestriction.create(subscriber, now.minusHours(1), now.plusHours(1), days, Action.NEW_VOICEMAIL_EMAIL);
+        session.save(restriction);
+        
+        assertTrue(subscriber.shouldSendNewVoicemailEmail());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailEmail_whenEnabledAndCurrentTimeIsInsideOfTheOnlyTimeRestrictionButRestrictionOnlyAppliesToTomorrow_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsEmailNotificationEnabled(true);
+        assert subscriber.getEmailAddress() != null && !subscriber.getEmailAddress().trim().equals("");
+        
+        Set<DayOfWeek> days = new HashSet<DayOfWeek>();
+        DayOfWeek today = jodaDayOfWeekToDayOfWeek(new LocalDate().plusDays(1).getDayOfWeek());
+        days.add(today);
+        
+        LocalTime now = new LocalTime();
+        TimeRestriction restriction = TimeRestriction.create(subscriber, now.minusHours(1), now.plusHours(1), days, Action.NEW_VOICEMAIL_EMAIL);
+        session.save(restriction);
+        
+        assertFalse(subscriber.shouldSendNewVoicemailEmail());
+    }
+    
+    // SMS notification restriction tests
+    
+    @Test
+    public void test_shouldSendNewVoicemailSms_whenNotificationIsDisabled_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsSmsNotificationEnabled(false);
+        
+        assertFalse(subscriber.shouldSendNewVoicemailSms());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailSms_whenNotificationIsEnabledButSmsAddressisNull_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsSmsNotificationEnabled(true);
+        subscriber.setSmsAddress(null);
+        
+        assertFalse(subscriber.shouldSendNewVoicemailSms());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailSms_whenNotificationIsEnabledButSmsAddressisBlank_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsSmsNotificationEnabled(true);
+        subscriber.setSmsAddress(" ");
+        
+        assertFalse(subscriber.shouldSendNewVoicemailSms());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailSms_whenEnabledAndNoTimeRestrictionsAreSet_returnsTrue()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsSmsNotificationEnabled(true);
+        assert subscriber.getSmsAddress() != null && !subscriber.getSmsAddress().trim().equals("");
+
+        int count = TimeRestriction.queryBySubscriberAndAction(session, subscriber, Action.NEW_VOICEMAIL_SMS).size();
+        assert count == 0; // no time restrictions
+
+        assertTrue(subscriber.shouldSendNewVoicemailSms());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailSms_whenEnabledAndCurrentTimeIsOutsideOfTheOnlyTimeRestriction_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsSmsNotificationEnabled(true);
+        assert subscriber.getSmsAddress() != null && !subscriber.getSmsAddress().trim().equals("");
+        
+        LocalTime now = new LocalTime();
+        Set<DayOfWeek> days = new HashSet<DayOfWeek>();
+        for(DayOfWeek dow : DayOfWeek.values())
+        {
+            days.add(dow);
+        }
+
+        TimeRestriction restriction = TimeRestriction.create(subscriber, now.plusHours(2), now.plusHours(3), days, Action.NEW_VOICEMAIL_SMS);
+        session.save(restriction);
+
+        assertFalse(subscriber.shouldSendNewVoicemailSms());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailSms_whenEnabledAndCurrentTimeIsInsideOfTheOnlyTimeRestriction_returnsTrue()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsSmsNotificationEnabled(true);
+        assert subscriber.getSmsAddress() != null && !subscriber.getSmsAddress().trim().equals("");
+        
+        Set<DayOfWeek> days = new HashSet<DayOfWeek>();
+        DayOfWeek today = jodaDayOfWeekToDayOfWeek(new LocalDate().getDayOfWeek());
+        days.add(today);
+        
+        LocalTime now = new LocalTime();
+        TimeRestriction restriction = TimeRestriction.create(subscriber, now.minusHours(1), now.plusHours(1), days, Action.NEW_VOICEMAIL_SMS);
+        session.save(restriction);
+        
+        assertTrue(subscriber.shouldSendNewVoicemailSms());
+    }
+    
+    @Test
+    public void test_shouldSendNewVoicemailSms_whenEnabledAndCurrentTimeIsInsideOfTheOnlyTimeRestrictionButRestrictionOnlyAppliesToTomorrow_returnsFalse()
+    {
+        subscriber = createSubscriber(session);
+        subscriber.setIsSmsNotificationEnabled(true);
+        assert subscriber.getSmsAddress() != null && !subscriber.getSmsAddress().trim().equals("");
+        
+        Set<DayOfWeek> days = new HashSet<DayOfWeek>();
+        DayOfWeek today = jodaDayOfWeekToDayOfWeek(new LocalDate().plusDays(1).getDayOfWeek());
+        days.add(today);
+        
+        LocalTime now = new LocalTime();
+        TimeRestriction restriction = TimeRestriction.create(subscriber, now.minusHours(1), now.plusHours(1), days, Action.NEW_VOICEMAIL_SMS);
+        session.save(restriction);
+        
+        assertFalse(subscriber.shouldSendNewVoicemailSms());
+    }
+    
     private Subscriber getPopulatedSubscriber()
     {
         Subscriber s = new Subscriber();
@@ -159,5 +369,28 @@ public class SubscriberTest
         s.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         s.setVersion(1);
         return s;
+    }
+    
+    private DayOfWeek jodaDayOfWeekToDayOfWeek(int jodaDayOfWeek)
+    {
+        switch(jodaDayOfWeek)
+        {
+            case DateTimeConstants.MONDAY:
+                return DayOfWeek.MONDAY;
+            case DateTimeConstants.TUESDAY:
+                return DayOfWeek.TUESDAY;
+            case DateTimeConstants.WEDNESDAY:
+                return DayOfWeek.WEDNESDAY;
+            case DateTimeConstants.THURSDAY:
+                return DayOfWeek.THURSDAY;
+            case DateTimeConstants.FRIDAY:
+                return DayOfWeek.FRIDAY;
+            case DateTimeConstants.SATURDAY:
+                return DayOfWeek.SATURDAY;
+            case DateTimeConstants.SUNDAY:
+                return DayOfWeek.SUNDAY;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }

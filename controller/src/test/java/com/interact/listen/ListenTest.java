@@ -67,6 +67,7 @@ public abstract class ListenTest
     {
         Subscriber subscriber = new Subscriber();
         subscriber.setEmailAddress(TestUtil.randomString() + "@example.com");
+        subscriber.setSmsAddress(TestUtil.randomString() + "@example.com");
         subscriber.setIsActiveDirectory(false);
         subscriber.setIsAdministrator(false);
         subscriber.setPassword(TestUtil.randomString());

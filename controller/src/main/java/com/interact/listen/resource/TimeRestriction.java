@@ -2,6 +2,7 @@ package com.interact.listen.resource;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -9,6 +10,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.annotations.Type;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 
 @Entity
@@ -74,6 +76,70 @@ public class TimeRestriction extends Resource implements Serializable
         NEW_VOICEMAIL_EMAIL, NEW_VOICEMAIL_SMS;
     }
 
+    public enum DayOfWeek
+    {
+        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
+    }
+
+    /**
+     * Creates a new TimeRestriction.
+     * 
+     * @param subscriber subscriber to whom the restriction applies
+     * @param start start time
+     * @param end end time
+     * @param days Set containing all days the TimeRestriction should be active
+     * @param action action the restriction applies to
+     * @throws IllegalArgumentException if start or end time is not parseable as a time
+     * @return new TimeRestriction
+     */
+    public static TimeRestriction create(Subscriber subscriber, String start, String end, Set<DayOfWeek> days,
+                                         Action action)
+    {
+        LocalTime startTime = TimeRestriction.parseTime(start);
+        LocalTime endTime = TimeRestriction.parseTime(end);
+
+        TimeRestriction restriction = create(subscriber, startTime, endTime, days, action);
+
+        // since the other create() method normalizes the entry values, re-set them here (kind of hacky, but meh)
+        restriction.setStartEntry(start);
+        restriction.setEndEntry(end);
+        return restriction;
+    }
+
+    /**
+     * Creates a new TimeRestriction. Forces the {@code startEntry} and {@code endEntry} values to be HH24:MM.
+     * 
+     * @param subscriber subscriber to whom the restriction applies
+     * @param start start time
+     * @param end end time
+     * @param days Set containing all days the TimeRestriction should be active
+     * @param action action the restriction applies to
+     * @throws IllegalArgumentException if start or end time is not parseable as a time
+     * @return new TimeRestriction
+     */
+    public static TimeRestriction create(Subscriber subscriber, LocalTime start, LocalTime end, Set<DayOfWeek> days,
+                                         Action action)
+    {
+        TimeRestriction restriction = new TimeRestriction();
+        restriction.setAction(action);
+        restriction.setSubscriber(subscriber);
+
+        restriction.setStartTime(start);
+        restriction.setEndTime(end);
+        restriction.setStartEntry(start.getHourOfDay() + ":" + start.getMinuteOfHour());
+        restriction.setEndEntry(end.getHourOfDay() + ":" + start.getMinuteOfHour());
+
+        restriction.setMonday(days.contains(DayOfWeek.MONDAY));
+        restriction.setTuesday(days.contains(DayOfWeek.TUESDAY));
+        restriction.setWednesday(days.contains(DayOfWeek.WEDNESDAY));
+        restriction.setThursday(days.contains(DayOfWeek.THURSDAY));
+        restriction.setFriday(days.contains(DayOfWeek.FRIDAY));
+        restriction.setSaturday(days.contains(DayOfWeek.SATURDAY));
+        restriction.setSunday(days.contains(DayOfWeek.SUNDAY));
+
+        return restriction;
+    }
+    
     public Long getId()
     {
         return id;
@@ -325,5 +391,28 @@ public class TimeRestriction extends Resource implements Serializable
         }
 
         return new LocalTime(hours, minutes);
+    }
+
+    public boolean appliesToJodaDayOfWeek(int jodaDayOfWeek)
+    {
+        switch(jodaDayOfWeek)
+        {
+            case DateTimeConstants.MONDAY:
+                return monday;
+            case DateTimeConstants.TUESDAY:
+                return tuesday;
+            case DateTimeConstants.WEDNESDAY:
+                return wednesday;
+            case DateTimeConstants.THURSDAY:
+                return thursday;
+            case DateTimeConstants.FRIDAY:
+                return friday;
+            case DateTimeConstants.SATURDAY:
+                return saturday;
+            case DateTimeConstants.SUNDAY:
+                return sunday;
+            default:
+                return false;
+        }
     }
 }

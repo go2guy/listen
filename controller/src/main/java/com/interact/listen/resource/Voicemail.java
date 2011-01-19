@@ -356,14 +356,15 @@ public class Voicemail extends Audio implements Serializable
         StatSender statSender = StatSenderFactory.getStatSender();
         Subscriber voicemailSubscriber = (Subscriber)persistenceService.get(Subscriber.class, getSubscriber().getId());
 
-        if(voicemailSubscriber.getIsEmailNotificationEnabled().booleanValue())
+        if(voicemailSubscriber.shouldSendNewVoicemailEmail())
         {
-            LOG.debug("Sending email notification for [" + getId() + "] to subscriber [" + voicemailSubscriber.getEmailAddress() + "]");
+            LOG.debug("Sending email notification for [" + getId() + "] to subscriber [" +
+                      voicemailSubscriber.getEmailAddress() + "]");
             statSender.send(Stat.VOICEMAIL_EMAIL_NOTIFICATION);
             emailService.sendEmailVoicmailNotification(this, voicemailSubscriber);
         }
 
-        if(voicemailSubscriber.getIsSmsNotificationEnabled().booleanValue())
+        if(voicemailSubscriber.shouldSendNewVoicemailSms())
         {
             LOG.debug("Sending SMS notification for [" + getId() + "] to subscriber [" + voicemailSubscriber.getSmsAddress() + "]");
             statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
