@@ -46,6 +46,9 @@
 	<var name="SB_UV_userInput"/>
 	<var name="SB_UV_enabledAudio"/>
 	<var name="SB_UV_pin"/>
+	<var name="SB_UV_errCnt"/>
+	<var name="SB_UV_maxErr"/>
+	<var name="SB_UV_whichPath"/>
 
     
     <form id="beginDocument">
@@ -139,6 +142,15 @@
 			</if>
 			<if cond="SB_UV_pin != undefined">
 				<assign name="pin" expr="SB_UV_pin" />
+			</if>
+			<if cond="SB_UV_errCnt != undefined">
+				<assign name="errCnt" expr="SB_UV_errCnt" />
+			</if>
+			<if cond="SB_UV_maxErr != undefined">
+				<assign name="maxErr" expr="SB_UV_maxErr" />
+			</if>
+			<if cond="SB_UV_whichPath != undefined">
+				<assign name="whichPath" expr="SB_UV_whichPath" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

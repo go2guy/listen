@@ -56,6 +56,9 @@
 	<var name="userInput" expr="''" />
 	<var name="enabledAudio" expr="''" />
 	<var name="pin" expr="''" />
+	<var name="errCnt" expr="'0'" />
+	<var name="maxErr" expr="'3'" />
+	<var name="whichPath" expr="''" />
 
 
     <!-- Conference Variables -->

@@ -14,6 +14,9 @@
             <log>INFO: Current value [<value expr="userInput"/>]</log>
 <assign name="userInput" expr="''+''" />
 <log>INFO: Updated value [<value expr="userInput"/>]</log>
+<log>INFO: Current value [<value expr="whichPath"/>]</log>
+<assign name="whichPath" expr="'getSubID'+''" />
+<log>INFO: Updated value [<value expr="whichPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
