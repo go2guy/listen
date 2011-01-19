@@ -742,7 +742,8 @@ public class Subscriber extends Resource implements Serializable
             }
             else if(!ComparisonUtil.isEqual(newNumber.getSupportsMessageLight(), result.getSupportsMessageLight()) ||
                     newNumber.getNumberType() != result.getNumberType() ||
-                    newNumber.getPublicNumber().booleanValue() != result.getPublicNumber().booleanValue())
+                    newNumber.getPublicNumber().booleanValue() != result.getPublicNumber().booleanValue() ||
+                    !newNumber.getForwardedTo().equals(result.getForwardedTo()))
             {
                 if(result.getNumberType().isSystem() && !allowSystem)
                 {
@@ -754,6 +755,7 @@ public class Subscriber extends Resource implements Serializable
                 result.setSupportsMessageLight(newNumber.getSupportsMessageLight());
                 result.setNumberType(newNumber.getNumberType());
                 result.setPublicNumber(newNumber.getPublicNumber());
+                result.setForwardedTo(newNumber.getForwardedTo());
                 persistenceService.update(result, original);
             }
         }

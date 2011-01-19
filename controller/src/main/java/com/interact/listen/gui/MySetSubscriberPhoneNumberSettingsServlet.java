@@ -49,6 +49,7 @@ public class MySetSubscriberPhoneNumberSettingsServlet extends HttpServlet
             newNumber.setNumber((String)number.get("number"));
             newNumber.setSupportsMessageLight((Boolean)number.get("messageLight"));
             newNumber.setPublicNumber((Boolean)number.get("publicNumber"));
+            newNumber.setForwardedTo((String)number.get("forwardedTo"));
             try
             {
                 newNumber.setNumberType(AccessNumber.NumberType.valueOf((String)number.get("category")));

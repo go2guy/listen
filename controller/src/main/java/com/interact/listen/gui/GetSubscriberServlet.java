@@ -111,7 +111,8 @@ public class GetSubscriberServlet extends HttpServlet
             json.append("\"number\":\"").append(accessNumber.getNumber()).append("\",");
             json.append("\"messageLight\":").append(accessNumber.getSupportsMessageLight() ? "true" : "false").append(",");
             json.append("\"numberType\":\"").append(accessNumber.getNumberType().name()).append("\",");
-            json.append("\"publicNumber\":").append(accessNumber.getPublicNumber() ? "true" : "false");
+            json.append("\"publicNumber\":").append(accessNumber.getPublicNumber() ? "true" : "false").append(",");
+            json.append("\"forwardedTo\":\"").append(accessNumber.getForwardedTo()).append("\"");
             json.append("},");
         }
         if(accessNumbers.size() > 0)
