@@ -5,14 +5,10 @@ import java.util.List;
 
 import javax.persistence.*;
 
-<<<<<<< .mine
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.annotations.Type;
 import org.hibernate.criterion.Restrictions;
-=======
-import org.hibernate.annotations.Type;
->>>>>>> .r1612
 import org.joda.time.LocalTime;
 
 @Entity
