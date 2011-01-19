@@ -745,13 +745,16 @@ public class Subscriber extends Resource implements Serializable
                     newNumber.getPublicNumber().booleanValue() != result.getPublicNumber().booleanValue() ||
                     !newNumber.getForwardedTo().equals(result.getForwardedTo()))
             {
+                AccessNumber original = result.copy(false);
+
                 if(result.getNumberType().isSystem() && !allowSystem)
                 {
-                    throw new UnauthorizedModificationException("Attempted update of system access number '" +
-                                                                result.getNumber() + "' by non-admin.");
+                    result.setForwardedTo(newNumber.getForwardedTo());
+                    persistenceService.update(result, original);
+                    continue;
                 }
+
                 // updating an existing record
-                AccessNumber original = result.copy(false);
                 result.setSupportsMessageLight(newNumber.getSupportsMessageLight());
                 result.setNumberType(newNumber.getNumberType());
                 result.setPublicNumber(newNumber.getPublicNumber());

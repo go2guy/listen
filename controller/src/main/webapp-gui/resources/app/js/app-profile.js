@@ -212,7 +212,7 @@ $(document).ready(function() {
                 
                 if(numberType == 'EXTENSION' || numberType == 'VOICEMAIL') {
                     clone.addClass('system');
-                    $('input, select', clone).attr('disabled', 'disabled').attr('readonly', 'readonly').addClass('disabled');
+                    $('input, select', clone).not('.forwarded-to').attr('disabled', 'disabled').attr('readonly', 'readonly').addClass('disabled');
                     $('button', clone).remove();
                     $('select', clone).append('<option value="VOICEMAIL">Voicemail</option>').append('<option value="EXTENSION">Office/Desk</option>');
                     
@@ -354,7 +354,7 @@ $(document).ready(function() {
             
             buildPhoneNumberObject: function() {
                 var numbers = [];
-                $('#phoneNumbersForm > fieldset').not('.system').not('#phoneNumbersButtons').each(function(index, entry) {
+                $('#phoneNumbersForm > fieldset')./*not('.system').*/not('#phoneNumbersButtons').each(function(index, entry) {
                     numbers.push({
                         number: $('.phone-number', entry).val(),
                         //serviceProvider: $('.phone-number-service-provider', entry).val(),
