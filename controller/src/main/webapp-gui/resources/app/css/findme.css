@@ -124,3 +124,8 @@ select {
 .group-buttons {
     margin-top: 15px;
 }
+
+.forwarded-to {
+    font-style: italic;
+    margin-left: 15px;
+}

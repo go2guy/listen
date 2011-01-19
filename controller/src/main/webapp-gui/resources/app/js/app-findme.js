@@ -7,6 +7,7 @@ $(document).ready(function() {
 
     FindMe = function() {
         var accessNumbers = [];
+        var forwardedNumbers = []; // array of objects, each object is an object, e.g. { from: '1234', to: '4321' }
     
         return {
             Application: function() {
@@ -69,6 +70,12 @@ $(document).ready(function() {
                             for(var i = 0, len = data.accessNumbers.length; i < len; ++i) {
                                 var an = data.accessNumbers[i];
                                 accessNumbers.push(an.number);
+                                if(an.forwardedTo != '') {
+                                    forwardedNumbers.push({
+                                        from: an.number,
+                                        to: an.forwardedTo
+                                    });
+                                }
                             }
                             init();
                         }
@@ -134,9 +141,12 @@ $(document).ready(function() {
                 html += '<button type="button" class="icon-toggle-off" title="Re-enable this number"></button>';
                 html += '<button type="button" class="icon-toggle-on" title="Temporarily disable this number"></button>';
                 html += '</div>';
-                
+
                 var el = $(html);
-                $('input:first', el).autocomplete({source: accessNumbers, delay: 0, minLength: -1});
+                FindMe.toggleForwardedIndicator(el);
+                $('input:first', el).autocomplete({source: accessNumbers, delay: 0, minLength: -1}).change(function() {
+                    FindMe.toggleForwardedIndicator($(this).parent());
+                });
                 
                 $('.icon-delete', el).click(function(e) {
                     var number = $(e.target).parent();
@@ -187,6 +197,21 @@ $(document).ready(function() {
                 });
 
                 return el;
+            },
+            
+            toggleForwardedIndicator: function(dialedNumberEl) {
+                var number = $('input:first', dialedNumberEl).val();
+                var forwardedTo = '';
+                for(var i = 0; i < forwardedNumbers.length; i++) {
+                    if(forwardedNumbers[i].from == number) {
+                        forwardedTo = forwardedNumbers[i].to;
+                    }
+                }
+                if(forwardedTo != '' && $('.forwarded-to', dialedNumberEl).size() == 0) {
+                    $('.ring-seconds', dialedNumberEl).next().after('<span class="forwarded-to">( Forwarded to <b>' + forwardedTo + '</b> )</span>');
+                } else {
+                    $('.forwarded-to', dialedNumberEl).remove();
+                }
             },
             
             removeGroup: function(groupElement) {
