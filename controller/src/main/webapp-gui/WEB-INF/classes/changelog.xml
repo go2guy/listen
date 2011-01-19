@@ -634,4 +634,10 @@
     <changeSet author="development" id="58">
         <addForeignKeyConstraint baseTableName="TIME_RESTRICTION" baseColumnNames="SUBSCRIBER_ID" referencedTableName="SUBSCRIBER" referencedColumnNames="ID" constraintName="FK_TIME_RESTRICTION_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false"/>
     </changeSet>
+    <changeSet author="development" id="59">
+        <addColumn tableName="ACCESS_NUMBER">
+            <column name="FORWARDED_TO" type="VARCHAR(255)">
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

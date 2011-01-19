@@ -53,6 +53,9 @@ public class AccessNumber extends Resource implements Serializable
     @Enumerated(EnumType.STRING)
     private NumberType numberType = NumberType.OTHER;
     
+    @Column(name = "FORWARDED_TO")
+    private String forwardedTo = "";
+    
     public enum NumberType
     {
         EXTENSION(true),
@@ -165,6 +168,16 @@ public class AccessNumber extends Resource implements Serializable
         return this.publicNumber;
     }
 
+    public String getForwardedTo()
+    {
+        return forwardedTo;
+    }
+
+    public void setForwardedTo(String forwardedTo)
+    {
+        this.forwardedTo = forwardedTo;
+    }
+
     @Override
     public boolean validate()
     {
@@ -196,6 +209,7 @@ public class AccessNumber extends Resource implements Serializable
         copy.setSupportsMessageLight(supportsMessageLight);
         copy.setNumberType(numberType);
         copy.setPublicNumber(publicNumber);
+        copy.setForwardedTo(forwardedTo);
         
         return copy;
     }
