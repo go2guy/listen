@@ -593,10 +593,10 @@
             <column name="END_ENTRY" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="START_TIME" type="VARCHAR(20)">
+            <column name="START_TIME" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="END_TIME" type="VARCHAR(20)">
+            <column name="END_TIME" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
             <column name="ACTION" type="VARCHAR(50)">
@@ -639,5 +639,13 @@
             <column name="FORWARDED_TO" type="VARCHAR(255)">
             </column>
         </addColumn>
+    </changeSet>
+    <changeSet author="development" id="60">
+        <modifyColumn tableName="TIME_RESTRICTION">
+            <column name="START_TIME" type="VARCHAR(30)"/>
+        </modifyColumn>
+        <modifyColumn tableName="TIME_RESTRICTION">
+            <column name="END_TIME" type="VARCHAR(30)"/>
+        </modifyColumn>
     </changeSet>
 </databaseChangeLog>
