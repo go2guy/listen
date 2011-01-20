@@ -159,8 +159,13 @@ $(document).ready(function() {
                                 $('#sendSmsNumberProvider').val('N/A');
                             } else {
                                 var split = data.smsAddress.split('@');
-                                $('#sendSmsNumber').val(split[0]);
-                                $('#sendSmsNumberProvider').val(split[1]);
+                                if($('#sendSmsNumberProvider option[value="' + split[1] + '"]').size() > 0) {
+                                    $('#sendSmsNumber').val(split[0]);
+                                    $('#sendSmsNumberProvider').val(split[1]);
+                                } else {
+                                    $('#sendSmsNumber').val(data.smsAddress);
+                                    $('#sendSmsNumberProvider').val('N/A');
+                                }
                             }
                             $('#keepSendingSms').attr('checked', data.enablePaging);
                             $('#sendSmsRestrictTime').attr('checked', data.smsTimeRestrictions.length > 0);
@@ -304,7 +309,7 @@ $(document).ready(function() {
                         sendEmailToAddress: $('#sendEmailUseCurrent').is(':checked') ? $('#emailAddress').val() : $('#sendEmailOtherAddress').val(),
                         sendEmailTimeRestrictions: Profile.buildTimeRestrictions('sendEmailTimeRestrictions'),
                         sendSms: $('#sendSms').is(':checked'),
-                        sendSmsToAddress: $('#sendSmsNumber').val() + ($('#sendSmsNumberProvider') != 'N/A' ? '@' + $('#sendSmsNumberProvider').val() : ''),
+                        sendSmsToAddress: $('#sendSmsNumber').val() + ($('#sendSmsNumberProvider').val() != 'N/A' ? '@' + $('#sendSmsNumberProvider').val() : ''),
                         sendSmsTimeRestrictions: Profile.buildTimeRestrictions('sendSmsTimeRestrictions'),
                         keepSendingSms: $('#keepSendingSms').is(':checked')
                     },
