@@ -47,8 +47,8 @@ public class FindMeNumbersServlet extends HttpServlet
             AccessNumber destinationAccessNumber = AccessNumber.queryByNumber(session, destination);
             if(destinationAccessNumber != null)
             {
-                findmeNumber.setNumber(destinationAccessNumber.getForwardedTo().equals("") ? destinationAccessNumber.getNumber()
-                                                                                           : destinationAccessNumber.getForwardedTo());
+                findmeNumber.setNumber(destinationAccessNumber.isForwarded() ? destinationAccessNumber.getForwardedTo()
+                                                                             : destinationAccessNumber.getNumber());
             }
             else
             {
@@ -87,7 +87,7 @@ public class FindMeNumbersServlet extends HttpServlet
         AccessNumber accessNumber = AccessNumber.queryByNumber(session, findMeNumber.getNumber());
         if(accessNumber != null)
         {
-            updatedNumber.setNumber(accessNumber.getForwardedTo().equals("") ? accessNumber.getNumber() : accessNumber.getForwardedTo());
+            updatedNumber.setNumber(accessNumber.isForwarded() ? accessNumber.getForwardedTo() : accessNumber.getNumber());
         }
         
         return updatedNumber;

@@ -177,6 +177,16 @@ public class AccessNumber extends Resource implements Serializable
     {
         this.forwardedTo = forwardedTo;
     }
+    
+    public Boolean isForwarded()
+    {
+        if(this.forwardedTo == null || this.forwardedTo.equals(""))
+        {
+            return false;
+        }
+        
+        return true;
+    }
 
     @Override
     public boolean validate()
