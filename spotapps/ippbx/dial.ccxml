@@ -131,13 +131,14 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <var name="result" expr="evt.values.result"/>
-            <if cond="result != 'Failure'">
+            <var name="status" expr="evt.values.status"/>
+            <if cond="status != 'Failure'">
                 <if cond="result == 'listen_findMe'">
                     <send data="'dialog.user.listenFindMe'" target="session.id"/>
                 <elseif cond="result != tmpDNIS"/>
                     <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
                     <assign name="origDNIS" expr="DNIS"/> <!-- Let's save off original destination for possible later use -->
-                    <if cond="((iiNumber(result)) &amp;&amp; (result &gt; EXT_LENGTH))">
+                    <if cond="((result.length &gt; EXT_LENGTH) &amp;&amp; (iiNumber(result)))">
                         <assign name="result" expr="OUTSIDE_LINE + result"/>
                     </if>
                     <assign name="DNIS" expr="result"/>
