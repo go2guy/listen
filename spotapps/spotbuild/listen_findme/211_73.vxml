@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'124_68'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'211_75'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_124_50(ANI)
+            function II_SB_JS_function_211_73(returnVal,count,loopCount)
             {
-	            return getnum(ANI);
+	            var result = eval("("+returnVal+")");return result[loopCount][count].enabled;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get ANI</log>
-            <log>INFO: Entered run-javascript.vxml [124_50]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_124_50(ANI)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="subID" expr="II_SB_userJava" />   
+            <log target="status">Get Enabled</log>
+            <log>INFO: Entered run-javascript.vxml [211_73]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_211_73(returnVal,count,loopCount)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="enabled" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

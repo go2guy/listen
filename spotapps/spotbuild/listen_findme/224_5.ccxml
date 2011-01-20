@@ -49,7 +49,7 @@
     <eventprocessor statevariable="II_SB_state">
 
 	    <transition state="idle" event="ccxml.loaded" name="evt">  <!-- Load CCXML file. Log status and update state -->
-            <log>INFO: Entered create-session.ccxml [211_16]</log>
+            <log>INFO: Entered create-session.ccxml [224_5]</log>
             <log>INFO: transition event [ccxml.loaded] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="evt.sessionid"/>
             <assign name="II_SB_oldNxtOpt" expr="getNextElement(0,II_SB_passValues,'|')"/>
@@ -70,10 +70,10 @@
             <!-- In this transition, we return to the vxml layer to grab variables that will be passed
             to the new session -->
 			<log>INFO: transition event [dialog.user.getVariables] state [<value expr="II_SB_state"/>]</log>
-            <log>INFO: Get variables from [<value expr="'211_16.vxml'"/>]</log>
+            <log>INFO: Get variables from [<value expr="'224_5.vxml'"/>]</log>
             <assign name="II_SB_state" expr="'getVariables'"/>
             <var name="II_SB_action" expr="'assign'"/>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + '211_16.vxml'" namelist="II_SB_action"/>
+            <dialogstart src="'file:' + II_SB_CODE_DIR + '224_5.vxml'" namelist="II_SB_action"/>
         </transition>
 
         <transition state="getVariables" event="dialog.exit" name="evt">
@@ -81,16 +81,11 @@
             and pass any identified variables along -->
             <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_indialog" expr="'false'"/>
-			<var name="SB_UV_phoneNumber" expr="evt.values.phoneNumber"/>
-			<var name="SB_UV_outBoundID" expr="evt.values.outBoundID"/>
-			<var name="SB_UV_startSession" expr="evt.values.startSession"/>
-			<var name="SB_UV_passValues" expr="evt.values.passValues"/>
-			<var name="SB_UV_duration" expr="evt.values.duration"/>
-			<var name="SB_UV_isLongest" expr="evt.values.isLongest"/>
+			<var name="SB_UV_" expr="evt.values."/>
         
             <assign name="II_SB_state" expr="'createSession'"/>
 	        <assign name="II_SB_status" expr="'createSession'"/>
-    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_phoneNumber SB_UV_outBoundID SB_UV_startSession SB_UV_passValues SB_UV_duration SB_UV_isLongest"/>
+    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_"/>
 	    </transition>
 
 	    <transition state="createSession" event="ccxml.created" name="evt" cond="(II_SB_whichID == II_SB_obcallid) &amp;&amp; (II_SB_obcallid.length != 0)">
@@ -236,7 +231,7 @@
 		<transition state="nextOptionRun" event="dialog.user.startDialog">
 			<log>INFO: transition event ["dialog.user.startDialog] state [<value expr="II_SB_state"/>]</log>
             <var name="II_SB_action" expr="'nextOpt'"/>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + '211_16.vxml'" namelist="II_SB_newSID II_SB_action II_SB_whichOpt"/>
+            <dialogstart src="'file:' + II_SB_CODE_DIR + '224_5.vxml'" namelist="II_SB_newSID II_SB_action II_SB_whichOpt"/>
         </transition>
 
         <transition state="nextOptionRun endCall" event="dialog.exit" name="evt">

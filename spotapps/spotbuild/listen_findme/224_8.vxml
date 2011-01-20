@@ -10,20 +10,20 @@
        */
     -->
 
-    <var name="II_SB_valueToPass" expr="''"/>   <!-- Config: Name of file confrence creates -->
-    <var name="II_SB_eventToPass" expr="'Stop Call'"/>
-    <var name="II_SB_sessionID" expr="createdSession"/>        <!-- Config: Session ID for the message to send -->
-    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'209_17'"/>
-    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'209_17'"/>
-    <var name="II_SB_nextOpt" expr="'209_13'"/>
+    <var name="II_SB_valueToPass" expr="session"/>   <!-- Config: Name of file confrence creates -->
+    <var name="II_SB_eventToPass" expr="'Notify Admin'"/>
+    <var name="II_SB_sessionID" expr="startSession"/>        <!-- Config: Session ID for the message to send -->
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'224_5'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'213_3'"/>
+    <var name="II_SB_nextOpt" expr="'224_8'"/>
 
     <var name="II_SB_returnValues" expr="''"/>
     <var name="II_SB_userEntry"/>
     
     <form id="beginDocument">
         <block>
-    	    
-            <log>INFO: Entered send-custom-event.vxml [209_13]</log>
+    	    <log target="status">Notify Admin</log>
+            <log>INFO: Entered send-custom-event.vxml [224_8]</log>
             <log>INFO: Entered beginDocument</log>
             <var name="II_SB_returnValues" expr="II_SB_sessionID + '|' + II_SB_eventToPass + '|' + II_SB_valueToPass + '|' + II_SB_NEXT_OPTION_SUCCESS + '|' + II_SB_NEXT_OPTION_FAILURE"/>
             <var name="II_SB_status" expr="'conferenceEnd'"/>

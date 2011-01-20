@@ -55,6 +55,11 @@
 	<var name="SB_UV_phoneNumLength"/>
 	<var name="SB_UV_extPrefix"/>
 	<var name="SB_UV_extSuffix"/>
+	<var name="SB_UV_maxDuration"/>
+	<var name="SB_UV_longestCall"/>
+	<var name="SB_UV_isLongest"/>
+	<var name="SB_UV_terminationReason"/>
+	<var name="SB_UV_calledDNIS"/>
 
     
     <form id="beginDocument">
@@ -176,6 +181,21 @@
 			</if>
 			<if cond="SB_UV_extSuffix != undefined">
 				<assign name="extSuffix" expr="SB_UV_extSuffix" />
+			</if>
+			<if cond="SB_UV_maxDuration != undefined">
+				<assign name="maxDuration" expr="SB_UV_maxDuration" />
+			</if>
+			<if cond="SB_UV_longestCall != undefined">
+				<assign name="longestCall" expr="SB_UV_longestCall" />
+			</if>
+			<if cond="SB_UV_isLongest != undefined">
+				<assign name="isLongest" expr="SB_UV_isLongest" />
+			</if>
+			<if cond="SB_UV_terminationReason != undefined">
+				<assign name="terminationReason" expr="SB_UV_terminationReason" />
+			</if>
+			<if cond="SB_UV_calledDNIS != undefined">
+				<assign name="calledDNIS" expr="SB_UV_calledDNIS" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

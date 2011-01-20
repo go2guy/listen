@@ -6,16 +6,16 @@
        *   @Desc   Calls the create session ccxml template -->
 
     <!-- Node Variables -->
-    <var name="II_SB_whichID" expr="''"/>  <!-- Connection or conference ID used in new session -->
+    <var name="II_SB_whichID" expr="userID"/>  <!-- Connection or conference ID used in new session -->
 
     <!-- Edge Variables -->
-    <var name="II_SB_oldNxtOpt" expr="'211_101'"/>       <!-- Next option for original session -->
-    <var name="II_SB_newNxtOpt" expr="'224_15'"/>        <!-- Next option for new session -->
+    <var name="II_SB_oldNxtOpt" expr="'213_3'"/>       <!-- Next option for original session -->
+    <var name="II_SB_newNxtOpt" expr="'210_4'"/>        <!-- Next option for new session -->
     <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
     <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
 
     <!-- Global Variables -->
-    <var name="II_SB_nextOpt" expr="'211_16'"/> <!-- Next ccxml file that will be called -->
+    <var name="II_SB_nextOpt" expr="'224_5'"/> <!-- Next ccxml file that will be called -->
     <var name="II_SB_returnValues" expr="''"/>  <!-- List of values returned to ccxml layer -->
     <var name="II_SB_action"/>                  <!-- Identifies action to take -->
     <var name="II_SB_whichOpt"/>                <!-- Identifies next option -->
@@ -24,13 +24,12 @@
     <form id="beginDocument">
         <block>
 	         
-            <log>INFO: Entered create-session.vxml [211_16]</log>
+            <log>INFO: Entered create-session.vxml [224_5]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>
-                <exit namelist="phoneNumber outBoundID startSession passValues duration isLongest"/>
+                <exit namelist=""/>
             <elseif cond="II_SB_action == 'nextOpt'"/>
-    	    <assign name="createdSession" expr="II_SB_newSID" />
-
+    	    
                 <log>INFO: Next option [<value expr="II_SB_whichOpt"/>.vxml]</log>
     		    <goto expr="'file:' + II_SB_APP_PATH + II_SB_whichOpt + '.vxml'"/>
             <else/>

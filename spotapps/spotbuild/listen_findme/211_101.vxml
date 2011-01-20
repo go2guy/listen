@@ -5,15 +5,15 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'211_78'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'211_27'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Session List 1st</log>
-            <log>INFO: Entered assign-variable.vxml [211_25]</log>
-            <log>INFO: Current value [<value expr="sessionList"/>]</log>
-<assign name="sessionList" expr="createdSession+''" />
-<log>INFO: Updated value [<value expr="sessionList"/>]</log>
+	    <log target="status">isLongest</log>
+            <log>INFO: Entered assign-variable.vxml [211_101]</log>
+            <log>INFO: Current value [<value expr="isLongest"/>]</log>
+<assign name="isLongest" expr="'false'+''" />
+<log>INFO: Updated value [<value expr="isLongest"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

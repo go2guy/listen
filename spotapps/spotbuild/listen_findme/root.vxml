@@ -65,6 +65,11 @@
 	<var name="phoneNumLength" expr="''" />
 	<var name="extPrefix" expr="'ext'" />
 	<var name="extSuffix" expr="'@iipbx'" />
+	<var name="maxDuration" expr="''" />
+	<var name="longestCall" expr="''" />
+	<var name="isLongest" expr="'false'" />
+	<var name="terminationReason" expr="''" />
+	<var name="calledDNIS" expr="''" />
 
 
     <!-- Conference Variables -->
