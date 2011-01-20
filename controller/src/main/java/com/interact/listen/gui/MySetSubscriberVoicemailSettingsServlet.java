@@ -91,9 +91,6 @@ public class MySetSubscriberVoicemailSettingsServlet extends HttpServlet
                 tr.setStartTime(TimeRestriction.parseTime(tr.getStartEntry()));
                 tr.setEndTime(TimeRestriction.parseTime(tr.getEndEntry()));
 
-                System.out.println("Start [" + tr.getStartTime() + "]");
-                System.out.println("End   [" + tr.getEndTime() + "]");
-                
                 if(!tr.getStartTime().isBefore(tr.getEndTime()))
                 {
                     throw new BadRequestServletException("Time '" + tr.getStartEntry() + "' must be before '" + tr.getEndEntry() + "'");
