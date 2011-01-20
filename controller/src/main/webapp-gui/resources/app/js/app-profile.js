@@ -146,7 +146,7 @@ $(document).ready(function() {
                             $('#sendEmailTimeRestrictions').toggle(data.emailTimeRestrictions.length > 0);
                             var addEmailRestrictionButton = $('#addEmailTimeRestriction');
                             for(var i = 0, restriction; restriction = data.emailTimeRestrictions[i]; i++) {
-                                Profile.addEmailTimeRestriction(addEmailRestrictionButton, restriction.from, restriction.to, restriction.days);
+                                Profile.addTimeRestriction(addEmailRestrictionButton, restriction.from, restriction.to, restriction.days);
                             }
                             
                             // sms notifications
