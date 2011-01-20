@@ -1,29 +1,33 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 11/05/2010
+    <!-- Last Modified 01/20/2011
        *   @Name	validatePasscode.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we validate the passcode associated with an extension -->
-
-    <!-- Global Variable -->
-    <var name="subID" expr="''"/>
 
 	<form id="beginDocument">
 		<block>
 	        <log>INFO: Entered beginDocument</log>
             <if cond="listenArgs.length &gt; 0">
-                <log target="status">Get Sub ID</log>
-                <assign name="resource" expr="'accessNumbers'"/>
-                <assign name="request"  expr="'get'"/>
-                <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
-                <assign name="params" expr="setParam(extension)"/>
-                <goto next="#sendEvent"/>
+                <log target="status">Get Access ID</log>
+                <goto next="#getAccessNum"/>
             <else/>
                 <log>ERROR: Controller is unavailable</log>
                 <assign name="errID" expr="''" />
                 <goto next="#serviceError"/>
             </if>
+            <goto next="#getAccessNum"/>
+        </block>
+    </form>
+
+    <form id="getAccessNum">
+        <block>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="request"  expr="'get'"/>
+            <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
+            <assign name="params" expr="setParam(extension)"/>
+            <goto next="#sendEvent"/>
         </block>
     </form>
 
@@ -56,9 +60,16 @@
             <var name="count" expr="getJsonVal(result, 'count')"/>
             <if cond="count == 1">
                 <log target="status">Get Sub Info</log>
+                <assign name="accessNumID" expr="getResultsKeyValue(result, 0, 'href')"/>
+                <assign name="accessNumID" expr="getNextElement('L',accessNumID, '/')"/>
                 <assign name="params" expr="getID(result)"/>
-                <assign name="resource" expr="'subscribers/'"/>
-                <goto next="#sendEvent"/>
+                <assign name="subID" expr="params"/>
+                <if cond="flag == 'cancelFWD'">
+                    <goto expr="'file:'+TRANS_PATH+'forward.vxml#setFlag'"/>
+                <else/>
+                    <assign name="resource" expr="'subscribers/'"/>
+                    <goto next="#sendEvent"/>
+                </if>
             </if>
         </block>
         <block cond="resource == 'subscribers/'">

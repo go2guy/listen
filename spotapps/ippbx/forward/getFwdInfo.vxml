@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 11/04/2010
+    <!-- Last Modified 01/20/2011
        *   @Name	getFwdInfo.vxml.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we get the mailbox/passcode information -->
 
     <!-- Passed in from pbx.ccxml -->
     <var name="mBox"/>
-    <var name="flag"/>
+    <var name="whichFlag"/>
     <var name="importedValue"/>
     <var name="EXT_LENGTH"/>
     <var name="mbxCnt" expr="0"/>
@@ -20,6 +20,7 @@
 		<block>
 	        <log>INFO: Entered beginDocument</log>
             <assign name="listenArgs" expr="importedValue"/>    <!-- Save off controller information -->
+            <assign name="flag" expr="whichFlag"/>
             <assign name="fldTrmChar" expr="'#'"/>
             <assign name="digitTimeOut" expr="'3s'"/>
             <assign name="fieldTimeOut" expr="'4s'"/>
@@ -29,7 +30,11 @@
                 <goto next="#getMbx"/>
             <else/>
                 <assign name="extension" expr="mBox"/>
-                <goto next="#getPasscode"/>
+                <if cond="flag == 'cancelFWD'">
+                    <goto expr="'file:'+TRANS_PATH+'validatePasscode.vxml'"/>
+                <else/>
+                    <goto next="#getPasscode"/>
+                </if>
             </if>
         </block>
     </form>
@@ -113,7 +118,7 @@
                 <if cond="status == 'mailBox'">
                     <assign name="extension" expr="userEntry"/>
                     <if cond="flag == 'cancelFWD'">
-                        <goto expr="'file:'+TRANS_PATH+'forward.vxml#setFlag'"/>
+                        <goto expr="'file:'+TRANS_PATH+'validatePasscode.vxml'"/>
                     <else/>
                         <goto next="#getPasscode"/>
                     </if>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/19/2010
+    <!-- Last Modified 01/20/2011
        *   @Name	forward.vxml
        *   @Desc	This script calls the php code that handles the updating 
                     the database for forwarding and cancelling a forward -->
@@ -16,11 +16,11 @@
             <log>INFO: Entered beginDocument</log>
             <if cond="mBox == undefined">
                 <!-- This implies we're in the process of forwarding an extension.
-                We alreaady got the information we need; nothing more to do here -->
+                We'll set up relevant variables -->
                 <assign name="flag" expr="'forward'"/>
             <else/>
                 <assign name="extension" expr="mBox"/>
-                <assign name="destination" expr="''"/>
+                <assign name="destination" expr="'null'"/>
                 <if cond="flag == 'select'">
                     <!-- This implies we want to check if extension is currently forwarded -->
                 <else/>
@@ -35,7 +35,7 @@
     <form id="setFlag">
         <block>
             <log>INFO: Entered setExt</log>
-            <assign name="destination" expr="''"/>
+            <assign name="destination" expr="'null'"/>
             <assign name="flag" expr="'cancel'"/>
             <goto next="#sendEvent"/>
         </block>
@@ -44,8 +44,35 @@
     <form id="sendEvent">
         <block>
             <log>INFO: Entered sendEvent</log>
-            <data name="fwdExt" srcexpr="DB_PATH+'fwdExtension.php'" namelist="flag extension destination" fetchtimeout="1s" method="post"/>
-            <assign name="result" expr="fwdExt.Result"/>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="request"  expr="'put'"/>
+            <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
+            <assign name="params" expr="setParam(destination)"/>
+            <assign name="id" expr="accessNumID"/>
+            <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params id" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="result" expr="apiObj.Result" />
+            <if cond="status == 'Failure'">
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                </if>
+            </if>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'" cond="errID.length &gt; 0">
+            <param name="id" expr="errID"/>
+            <param name="statServer" expr="getJsonVal(listenArgs, 'STATcontroller')"/>
+        </subdialog>
+        <block>
             <goto next="#exit"/>
         </block>
     </form>
@@ -56,12 +83,12 @@
             <if cond="flag == 'select'">
                 <exit namelist="result"/>
             <else/>
-                <if cond="result == 'Success'">
+                <if cond="status == 'Success'">
                     <log target="status">Success</log>
                     <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
                 <else/>
                     <log target="status">Failed</log>
-                    <assign name="promptID" expr="'APserviceErr|APnotifyAdmin|APthankYou|APgoodbye'"/>
+                    <assign name="promptID" expr="'APserviceErr|APserviceError2|APnotifyAdmin|APthankYou|APgoodbye'"/>
                 </if>
                 <assign name="status" expr="'endCall'"/>
                 <assign name="fldTrmChar" expr="''"/>
@@ -80,5 +107,29 @@
         <assign name="result" expr="'Failure'"/> <!-- Set db response -->
         <goto next="#exit"/>
     </catch>
+
+    <script>
+        <![CDATA[
+            function setParam(inStr) {
+                return "{\"forwardedTo\":" + inStr +"}";
+            }
+
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
+            }
+        ]]>
+    </script>
 
 </vxml>
