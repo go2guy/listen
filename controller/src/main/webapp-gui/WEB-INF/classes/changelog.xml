@@ -593,10 +593,10 @@
             <column name="END_ENTRY" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="START_TIME" type="VARCHAR(10)">
+            <column name="START_TIME" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="END_TIME" type="VARCHAR(10)">
+            <column name="END_TIME" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
             <column name="ACTION" type="VARCHAR(50)">
