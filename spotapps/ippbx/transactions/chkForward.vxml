@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 01/20/2011
+       *   @Name	chkForward.vxml
+       *   @Desc	This script is part of the logic for forwarding an extension.
+                    Here, we check if an extension is forwarded -->
+
+    <var name="importedValue"/>
+    <var name="mBox"/>
+
+	<form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <assign name="listenArgs" expr="importedValue"/>
+            <log target="status">Get Sub ID</log>
+            <goto next="#getAccessNum"/>
+        </block>
+    </form>
+
+    <form id="getAccessNum">
+        <block>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="request"  expr="'get'"/>
+            <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
+            <assign name="params" expr="setAccess(mBox)"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="sendEvent">
+        <block>
+            <log>INFO: Entered sendEvent</log>
+            <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="result" expr="apiObj.Result" />
+            <if cond="status == 'Failure'">
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <else/>
+                    <log>INFO: No information on controller</log>
+                    <assign name="status" expr="'Failure'"/>
+                    <goto next="#exit"/>
+                </if>
+            <else/>
+                <goto next="#chkResult"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="chkResult">
+        <!-- Check Results -->
+        <block cond="resource == 'accessNumbers'">
+            <log>INFO: Entered chkResult</log>
+            <var name="count" expr="getJsonVal(result, 'count')"/>
+            <if cond="count == 1">
+                <log target="status">Get Sub Info</log>
+                <assign name="accessNumID" expr="getResultsKeyValue(result, 0, 'href')"/>
+                <assign name="accessNumID" expr="getNextElement('L',accessNumID, '/')"/>
+                <assign name="params" expr="getID(result)"/>
+                <assign name="params" expr="setFindMe(params, mBox)"/>
+                <assign name="resource" expr="'findMeNumbers'"/>
+                <assign name="cntrlURL" expr="setCNTRL(listenArgs)"/>
+                <goto next="#sendEvent"/>
+            <else/>
+                <assign name="status" expr="'Failure'"/>
+                <goto next="#exit"/>
+            </if>        
+        </block>
+        <block cond="resource == 'findMeNumbers'">
+            <log>INFO: Entered chkResult</log>
+            <assign name="result" expr="chkReturn(result)"/>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'" cond="errID.length &gt; 0">
+            <param name="id" expr="errID"/>
+            <param name="statServer" expr="getJsonVal(listenArgs, 'STATcontroller')"/>
+        </subdialog>
+        <block>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <exit namelist="status result"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
+        <log>ERROR: Unable to connect with local webserver</log>
+        <assign name="errID" expr="''" />
+        <goto next="#serviceError"/>
+    </catch>
+
+    <script>
+        <![CDATA[
+            function setAccess(inStr) {
+                return "?_fields=subscriber&number=" + inStr;
+            }
+
+            function setFindMe(inStr, ext) {
+                return "?subscriber=/subscribers/" + inStr + "&destination=" + ext;
+            }
+
+            function setCNTRL(inStr) {
+                var result = getJsonVal(inStr, 'cntrlURL').split('/api');
+                return result[0] + "/meta";
+            }
+
+            function getID(jsonObj) {
+                var result = eval("("+jsonObj+")");
+                var subscriber = result.results[0].subscriber.href;
+                subscriber = getNextElement('L',subscriber,'/');
+                return subscriber;
+            }
+
+            function chkReturn(jsonObj) {
+                var result = eval("("+jsonObj+")");
+                if (result.length > 1)
+                    return 'listen_findMe';
+                else {
+                    return result[0][0].number;
+                }
+            }
+
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
+            }
+        ]]>
+    </script>
+
+</vxml>

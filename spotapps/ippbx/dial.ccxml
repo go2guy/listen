@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/19/2011
+    <!-- Last Modified 01/20/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -112,10 +112,13 @@
                     blindtransfer request that needs to go to voice mail -->
                     <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
                 <else/>
-                    <assign name="state" expr="'chkFwd'"/>
-                    <var name="mBox" expr="tmpDNIS"/>
-                    <var name="flag" expr="'select'"/>
-       	   		    <dialogstart src="'file:'+TRANS_PATH+'forward.vxml'" namelist="mBox flag"/>
+                    <if cond="importedValue.length &gt; 0">
+                        <assign name="state" expr="'chkFwd'"/>
+                        <var name="mBox" expr="tmpDNIS"/>
+       	   		        <dialogstart src="'file:'+TRANS_PATH+'chkForward.vxml'" namelist="importedValue mBox"/>
+                    <else/>
+                        <send data="'dialog.user.getCallerID'" target="session.id"/>
+                    </if>
                 </if>
             <else/>
                 <send data="'dialog.user.getCallerID'" target="session.id"/>
@@ -128,12 +131,19 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <var name="result" expr="evt.values.result"/>
-            <var name="list" expr="'EMPTY,Failure'"/>
-            <if cond="((result.length &gt; 0) &amp;&amp; !(inString(result,list,',')))">
-                <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
-                <assign name="origDNIS" expr="DNIS"/> <!-- Let's save off original destination for possible later use -->
-                <assign name="DNIS" expr="result"/>
-                <assign name="tmpDNIS" expr="result"/>
+            <if cond="result != 'Failure'">
+                <if cond="result == 'listen_findMe'">
+                    <send data="'dialog.user.listenFindMe'" target="session.id"/>
+                <elseif cond="result != tmpDNIS"/>
+                    <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
+                    <assign name="origDNIS" expr="DNIS"/> <!-- Let's save off original destination for possible later use -->
+                    <if cond="((iiNumber(result)) &amp;&amp; (result &gt; EXT_LENGTH))">
+                        <assign name="result" expr="OUTSIDE_LINE + result"/>
+                    </if>
+                    <assign name="DNIS" expr="result"/>
+                    <assign name="tmpDNIS" expr="result"/>
+                <else/>
+                </if>
             </if>
             <if cond="((tmpANI == DNIS) &amp;&amp; (origDNIS.length &gt; 0))">
                 <!-- This implies that the extension we are forwarded to is calling our extension.
@@ -640,6 +650,37 @@
             <!-- Here, we call the attended transfer ccxml script that handles joining the call legs -->
             <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
             <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID"/>
+        </transition>
+
+        <transition event="dialog.user.listenFindMe" name="evt">
+            <!-- Here we'll pass control to the begin ccxml script which calls the Listen Find Me project -->
+            <log>INFO: Entered [dialog.user.listenVoiceMail] with state [<value expr="state"/>]</log>
+            <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
+                <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
+                <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', 'ippbx')"/>
+                <var name="II_SB_status" expr="''"/>
+                <var name="II_SB_local" expr="DNIS"/>
+                <var name="II_SB_remote" expr="ANI"/>
+                <var name="II_SB_originator" expr="''"/>
+                <var name="II_SB_protocol" expr="'VOIP'"/>
+                <var name="II_SB_connectionID" expr="ibconnid"/>
+                <var name="II_SB_type" expr="''"/>
+                <var name="II_SB_ibcallid" expr="ibconnid"/>
+                <var name="II_SB_transfer" expr="'yes'"/>
+                <var name="II_SB_projectSource" expr="'ippbx'"/>
+                <var name="II_SB_obcallid" expr="''"/>
+                <var name="II_SB_CODE_DIR" expr="''"/>
+                <var name="II_SB_line" expr="''"/>
+                <var name="II_SB_importedValue" expr="importedValue"/>
+                <fetch next="'file:'+SB_PATH+'listen_findme/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+            <else/>
+                <!-- Play service error prompts -->
+                <assign name="state" expr="'cntrlDown'"/>
+                <var name="II_SB_repeat" expr="'n'"/>
+                <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceErr.00.wav'+' '+AUDIO_PATH+'tryAgainLater.00.wav'+' '+AUDIO_PATH+'thankYou.00.wav'+' '+AUDIO_PATH+'goodbye.00.wav'"/>
+                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+            </if>
         </transition>
 
         <transition event="dialog.user.listenVoiceMail" name="evt">

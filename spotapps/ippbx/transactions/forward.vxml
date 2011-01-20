@@ -20,7 +20,7 @@
                 <assign name="flag" expr="'forward'"/>
             <else/>
                 <assign name="extension" expr="mBox"/>
-                <assign name="destination" expr="'null'"/>
+                <assign name="destination" expr="'&quot;&quot;'"/>
                 <if cond="flag == 'select'">
                     <!-- This implies we want to check if extension is currently forwarded -->
                 <else/>
@@ -35,7 +35,7 @@
     <form id="setFlag">
         <block>
             <log>INFO: Entered setExt</log>
-            <assign name="destination" expr="'null'"/>
+            <assign name="destination" expr="'&quot;&quot;'"/>
             <assign name="flag" expr="'cancel'"/>
             <goto next="#sendEvent"/>
         </block>
