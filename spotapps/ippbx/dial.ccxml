@@ -142,13 +142,16 @@
                     </if>
                     <assign name="DNIS" expr="result"/>
                     <assign name="tmpDNIS" expr="result"/>
+                    <if cond="((tmpANI == DNIS) &amp;&amp; (origDNIS.length &gt; 0))">
+                        <!-- This implies that the extension we are forwarded to is calling our extension.
+                        In this case, we'll go directly to our voice mail -->
+                        <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+                    <else/>
+                        <send data="'dialog.user.getCallerID'" target="session.id"/>
+                    </if>
                 <else/>
+                    <send data="'dialog.user.getCallerID'" target="session.id"/>
                 </if>
-            </if>
-            <if cond="((tmpANI == DNIS) &amp;&amp; (origDNIS.length &gt; 0))">
-                <!-- This implies that the extension we are forwarded to is calling our extension.
-                In this case, we'll go directly to our voice mail -->
-                <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
             <else/>
                 <send data="'dialog.user.getCallerID'" target="session.id"/>
             </if>
@@ -654,7 +657,7 @@
 
         <transition event="dialog.user.listenFindMe" name="evt">
             <!-- Here we'll pass control to the begin ccxml script which calls the Listen Find Me project -->
-            <log>INFO: Entered [dialog.user.listenVoiceMail] with state [<value expr="state"/>]</log>
+            <log>INFO: Entered [dialog.user.listenFindMe] with state [<value expr="state"/>]</log>
             <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
                 <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
                 <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', 'ippbx')"/>

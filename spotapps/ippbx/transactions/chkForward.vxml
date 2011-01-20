@@ -126,7 +126,7 @@
 
             function chkReturn(jsonObj) {
                 var result = eval("("+jsonObj+")");
-                if (result.length > 1)
+                if (result[0].length > 1)
                     return 'listen_findMe';
                 else {
                     return result[0][0].number;
