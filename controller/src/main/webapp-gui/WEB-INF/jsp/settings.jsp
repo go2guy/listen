@@ -112,11 +112,11 @@ Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
                     <label for="sendEmailOtherAddress">
                       <input type="text" id="sendEmailOtherAddress"/>
                     </label>
-
-                    <label>
-                      <button class="button" id="sendTestEmail">Send Test Email</button>
-                    </label>
                   </fieldset>
+                  
+                  <label>
+                      <button class="button" id="sendTestEmail">Send Test Email</button>
+                  </label>
                   
                   <label for="sendEmailRestrictTime">
                     <input type="checkbox" class="inline" id="sendEmailRestrictTime"/>

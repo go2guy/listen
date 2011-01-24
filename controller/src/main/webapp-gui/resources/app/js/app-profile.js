@@ -393,7 +393,14 @@ $(document).ready(function() {
             
             testEmailAddress: function() {
                 interact.util.trace('Profile.testEmailAddress');
-                Profile.testAddress('email', $('#sendEmailOtherAddress').val());
+                var addressToTest = $('#sendEmailOtherAddress').val();
+                
+                var useCurrentEmailRadio = $("#sendEmailUseCurrent");
+                if(useCurrentEmailRadio.attr("checked")) {
+                	addressToTest = $("#sendEmailMyAddress").html();
+                }
+                
+                Profile.testAddress('email', addressToTest);
             },
             
             testSmsAddress: function() {
