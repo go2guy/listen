@@ -1,16 +1,17 @@
-<?xml version="1.0"?>                                    
-<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
+<?xml version="1.0"?>
 <vxml version="2.0">
 
     <!-- These are passed in from ippbx_main.ccxml -->
     <var name="EXT_LENGTH"/>
     <var name="ANI"/>
+    <var name="DNIS"/>
 
     <!-- Application constants -->
     <var name="LINE_NUMBER" expr="session.channelnum"/>
     <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>
     <var name="APP_PATH" expr="SB_PATH+'ippbx/'"/>
     <var name="AUDIO_PATH" expr="APP_PATH+'audio/'"/>
+    <var name="FWD_PATH" expr="APP_PATH+'forward/'"/>
     <var name="SYSTEM_PATH" expr="SB_PATH+'audio/system/'"/>
     <var name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
     <var name="LIB_PATH" expr="SB_PATH+'lib/'"/>
@@ -34,7 +35,8 @@
     <var name="aftHrsMbxName" expr="'After Hours'"/>
     <var name="subID" expr="''"/>
     <var name="accessNumID" expr="''"/>
-    <var name="flag" expr="''"/>
+    <var name="fwdFlag" expr="''"/>
+    <var name="fwdCode" expr="''"/>
 
     <!-- Controller vars -->
     <var name="cntrlURL" expr="''"/>

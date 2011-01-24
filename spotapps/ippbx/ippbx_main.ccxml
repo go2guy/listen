@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/20/2011
+    <!-- Last Modified 01/21/2011
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -143,16 +143,12 @@
             <!-- Here we determine how to handle the call based on the incoming DNIS -->
             <log>INFO: Entered [dialog.user.forward] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'fwd'"/>
-            <var name="fwdCode" expr="iiSubstr(tmpDNIS,0,3)"/>
-            <if cond="fwdCode == '#33'">        <!-- Caller is attempting to forward an extension -->
-                <var name="mBox" expr="tmpANI"/>
-       	   		<dialogstart src="'file:'+APP_PATH+'forward/getFwdInfo.vxml'" namelist="mBox importedValue EXT_LENGTH"/>
-            <elseif cond="fwdCode == '#34'"/>   <!-- Caller is attempting to cancel the forward on an extension -->
-                <var name="mBox" expr="iiSubstr(tmpDNIS,3,-1)"/>
-                <var name="whichFlag" expr="'cancelFWD'"/>
-           	   	<dialogstart src="'file:'+APP_PATH+'forward/getFwdInfo.vxml'" namelist="mBox importedValue whichFlag EXT_LENGTH"/>
+            <var name="fwdInfo" expr="iiSubstr(tmpDNIS,0,3)"/>
+            <if cond="((fwdInfo == '#33') || (fwdInfo == '#34'))">
+                <!-- Caller attempting to use forward functionality -->
+                <dialogstart src="'file:'+APP_PATH+'forward/chkFwdType.vxml'" namelist="fwdInfo tmpANI tmpDNIS importedValue"/>
             <else/>
-                <log>ERROR: Unknown forward code [<value expr="fwdCode"/>]</log>
+                <log>ERROR: Unknown code [<value expr="fwdCode"/>]</log>
                 <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
             </if>
         </transition>

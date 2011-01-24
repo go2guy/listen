@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
-<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/20/2011
+    <!-- Last Modified 01/24/2011
        *   @Name	chkForward.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we check if an extension is forwarded -->
@@ -13,7 +12,6 @@
 		<block>
 	        <log>INFO: Entered beginDocument</log>
             <assign name="listenArgs" expr="importedValue"/>
-            <log target="status">Get Sub ID</log>
             <goto next="#getAccessNum"/>
         </block>
     </form>
@@ -81,8 +79,8 @@
         <block>
             <log>INFO: Entered serviceError</log>
         </block>
-        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'" cond="errID.length &gt; 0">
-            <param name="id" expr="errID"/>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'">
+            <param name="id" expr="cntrlErrID"/>
             <param name="statServer" expr="getJsonVal(listenArgs, 'STATcontroller')"/>
         </subdialog>
         <block>
@@ -98,8 +96,8 @@
 
     <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
         <log>ERROR: Unable to connect with local webserver</log>
-        <assign name="errID" expr="''" />
-        <goto next="#serviceError"/>
+        <assign name="status" expr="'Failure'"/>
+        <goto next="#exit"/>
     </catch>
 
     <script>
