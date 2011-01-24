@@ -82,24 +82,13 @@ public class SingleQueueRouter implements Router
         }
 
         @Override
-        public Boolean call()
+        public Boolean call() throws InterruptedException, RouteUnsuccessfulException
         {
-            try
-            {
-                Destination destination = destinations.take(); // blocks until there's a destination available
-                parcel.routeTo(destination);
-                // this doesn't re-add the destination; it's the responsibility of the client to do that when the
-                // destination is available again
-                return Boolean.TRUE;
-            }
-            catch(RouteUnsuccessfulException e)
-            {
-                return Boolean.FALSE;
-            }
-            catch(InterruptedException e)
-            {
-                return Boolean.FALSE;
-            }
+            Destination destination = destinations.take(); // blocks until there's a destination available
+            parcel.routeTo(destination);
+            // this doesn't re-add the destination; it's the responsibility of the client to do that when the
+            // destination is available again
+            return Boolean.TRUE;
         }
     }
 }
