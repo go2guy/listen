@@ -1,53 +1,27 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/20/2011
-       *   @Name	getFwdInfo.vxml.vxml
-       *   @Desc	This script is part of the logic for forwarding an extension.
-                    Here, we get the mailbox/passcode information -->
-
-    <!-- Passed in from pbx.ccxml -->
-    <var name="mBox"/>
-    <var name="whichFlag"/>
-    <var name="importedValue"/>
-    <var name="EXT_LENGTH"/>
-    <var name="mbxCnt" expr="0"/>
+    <!-- Last Modified 01/24/2011
+       *   @Name	getCallerInfo.vxml
+       *   @Desc	This script is part of the logic for forwarding / cancelling
+                    a forwarded extension. -->
 
     <!-- Global Variable -->
+    <var name="mbxCnt" expr="0"/>
+    <var name="HOT_KEY" expr="''"/>
+    <var name="ANY_WHERE" expr="30"/>
     <var name="passCodeLngth" expr="10"/>
-
-	<form id="beginDocument">
-		<block>
-	        <log>INFO: Entered beginDocument</log>
-            <assign name="listenArgs" expr="importedValue"/>    <!-- Save off controller information -->
-            <assign name="flag" expr="whichFlag"/>
-            <assign name="fldTrmChar" expr="'#'"/>
-            <assign name="digitTimeOut" expr="'3s'"/>
-            <assign name="fieldTimeOut" expr="'4s'"/>
-            <assign name="cutIn" expr="'true'"/>
-            <assign name="gotoForm" expr="'#userKeyPress'"/>
-            <if cond="mBox.length == 0">
-                <goto next="#getMbx"/>
-            <else/>
-                <assign name="extension" expr="mBox"/>
-                <if cond="flag == 'cancelFWD'">
-                    <goto expr="'file:'+TRANS_PATH+'validatePasscode.vxml'"/>
-                <else/>
-                    <goto next="#getPasscode"/>
-                </if>
-            </if>
-        </block>
-    </form>
 
     <form id="getMbx">
         <!-- Set up parameters that are used by the play audio subdialog for get mailbox -->
         <block>
             <log>INFO: Entered getMbx</log>
             <log target="status">Get Mailbox</log>
+            <assign name="HOT_KEY" expr="''"/>
             <assign name="status" expr="'mailBox'"/>
             <assign name="fieldLength" expr="parseInt(EXT_LENGTH) - 1"/>
-            <assign name="promptID" expr="'APgetMbx'"/>
             <assign name="tmpVal" expr="'APgetMbx'"/>
-			<goto next="#playAudio"/>
+            <assign name="promptID" expr="'APgetMbx'"/>
+			<goto next="#setUp"/>
         </block>
     </form>
 
@@ -56,10 +30,36 @@
         <block>
             <log>INFO: Entered getPasscode</log>
             <log target="status">Get Pass Code</log>
+            <assign name="HOT_KEY" expr="'*'"/>
             <assign name="status" expr="'passCode'"/>
             <assign name="fieldLength" expr="passCodeLngth"/>
             <assign name="promptID" expr="'APgetPasscode'"/>
             <assign name="tmpVal" expr="'APgetPasscode'"/>
+			<goto next="#setUp"/>
+        </block>
+    </form>
+
+    <form id="getDestination">
+        <!-- Set up parameters that are used by the play audio subdialog to get forward destination -->
+        <block>
+            <log>INFO: Entered getDestination</log>
+            <log target="status">Get Destination</log>
+            <assign name="HOT_KEY" expr="''"/>
+            <assign name="status" expr="'destination'"/>
+            <assign name="fieldLength" expr="ANY_WHERE"/>
+            <assign name="promptID" expr="'APgetDestination'"/>
+            <assign name="tmpVal" expr="'APgetDestination'"/>
+			<goto next="#setUp"/>
+        </block>
+    </form>
+
+    <form id="setUp">
+        <block>
+            <assign name="cutIn" expr="'true'"/>
+            <assign name="fldTrmChar" expr="'#'"/>
+            <assign name="digitTimeOut" expr="'3s'"/>
+            <assign name="fieldTimeOut" expr="'4s'"/>
+            <assign name="gotoForm" expr="'#userKeyPress'"/>
 			<goto next="#playAudio"/>
         </block>
     </form>
@@ -76,7 +76,7 @@
             <param name="fldTermchar" expr="fldTrmChar"/>
             <param name="fldTimeOut" expr="fieldTimeOut"/>
             <param name="interrupt" expr="cutIn"/>
-            <param name="hotKey" expr="'*'"/>
+            <param name="hotKey" expr="HOT_KEY"/>
             <param name="file" expr="promptID"/>
         </subdialog>
         <block>
@@ -94,7 +94,8 @@
         <!-- In here, we analyse the user's key press and progress accordingly -->
         <block>
             <log>INFO: Entered userKeyPress</log>
-            <if cond="((status == 'passCode') &amp;&amp; (userEntry == '*'))">  <!-- Assume caller wants to enter mailbox -->
+            <if cond="((status == 'passCode') &amp;&amp; (userEntry == '*'))">
+                <!-- Assume caller wants to enter mailbox -->
                 <log target="status">Get Mailbox</log>
                 <!-- To prevent an endless loop, we'll use a counter here -->
                 <assign name="mbxCnt" expr="mbxCnt + 1"/>
@@ -112,18 +113,15 @@
                 <!-- Assume caller did not enter any value for mailbox, pass code or destination number -->
             <elseif cond="status == 'destination'"/>
                 <assign name="destination" expr="userEntry"/>
-                <goto expr="'file:'+TRANS_PATH+'forward.vxml'"/>
+                <assign name="status" expr="'endCall'"/>
+                <goto expr="'file:'+FWD_PATH+'processInfo.vxml#forward'"/>
             <else/>
                 <if cond="status == 'mailBox'">
                     <assign name="extension" expr="userEntry"/>
-                    <if cond="flag == 'cancelFWD'">
-                        <goto expr="'file:'+TRANS_PATH+'validatePasscode.vxml'"/>
-                    <else/>
-                        <goto next="#getPasscode"/>
-                    </if>
+                    <goto expr="'file:'+FWD_PATH+'processInfo.vxml#accessNum'"/>
                 <else/>
                     <assign name="passcode" expr="userEntry"/>
-                    <goto expr="'file:'+TRANS_PATH+'validatePasscode.vxml'"/>
+                    <goto expr="'file:'+FWD_PATH+'processInfo.vxml#passCode'"/>
                 </if>
             </if>
             <goto next="#error"/>

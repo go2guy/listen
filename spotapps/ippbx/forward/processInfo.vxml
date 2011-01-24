@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 01/24/2011
+       *   @Name	processInfo.vxml
+       *   @Desc	This script is part of the logic for forwarding / cancelling
+                    a forwarded extension. -->
+
+    <var name="extCnt" expr="0"/>
+
+    <form id="accessNum">
+        <!--  -->
+        <block>
+            <log>INFO: Entered accessNum</log>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="request" expr="'get'"/>
+            <assign name="params"  expr="setAccess(extension)"/>
+            <goto next="#validateInfo"/>
+        </block>
+    </form>
+
+    <form id="passCode">
+        <!--  -->
+        <block>
+            <log>INFO: Entered passCode</log>
+            <assign name="resource" expr="'subscribers/'"/>
+            <goto next="#validateInfo"/>
+        </block>
+    </form>
+
+    <form id="forward">
+        <!--  -->
+        <block>
+            <log>INFO: Entered forward</log>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="request" expr="'put'"/>
+            <assign name="params"  expr="setFwd(destination)"/>
+            <goto next="#validateInfo"/>
+        </block>
+    </form>
+
+    <form id="validateInfo">
+        <block>
+            <log>INFO: Entered validateInfo</log>
+        </block>
+        <subdialog name="validate" srcexpr="'file:'+TRANS_PATH+'validateInfo.vxml'">
+            <param name="req" expr="request"/>
+            <param name="args" expr="params"/>
+            <param name="rsrc" expr="resource"/>
+            <param name="appInfo" expr="listenArgs"/>
+            <param name="whichID" expr="accessNumID"/>
+        </subdialog>
+        <block>
+            <if cond="validate.status == 'Failure'">
+                <if cond="((validate.reason == 'CNTRL_DOWN') || (validate.reason == 'HTTP_ERROR'))">
+                    <assign name="status" expr="'endCall'"/>
+                    <assign name="gotoForm" expr="'#exit'"/>
+                    <assign name="promptID" expr="'APserviceError|APserviceError2|APnotifyAdmin|APthankYou|APgoodbye'"/>
+                    <goto next="#playAudio"/>
+                <else/>
+                    <goto next="#error"/>
+                </if>
+            <elseif cond="status == 'endCall'"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
+                <goto next="#playAudio"/>
+            <else/>
+                <assign name="result" expr="validate.result"/>
+                <goto next="#chkResult"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="chkResult">
+        <!-- Check Results -->
+        <block cond="resource == 'accessNumbers'">
+            <log>INFO: Entered chkResult</log>
+            <assign name="accessNumID" expr="getResultsKeyValue(result, 0, 'href')"/>
+            <assign name="accessNumID" expr="getNextElement('L',accessNumID, '/')"/>
+            <assign name="params" expr="getID(result)"/>
+            <assign name="subID" expr="params"/>
+            <if cond="status == 'mailBox'">
+                <if cond="fwdFlag == 'CANCEL_FWD'">
+                    <assign name="status" expr="'endCall'"/>
+                    <assign name="destination" expr="'&quot;&quot;'"/>
+                    <goto next="#forward"/>
+                <else/>
+                    <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getPasscode'"/>
+                </if>
+            <else/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
+                <goto next="#playAudio"/>
+            </if>
+        </block>
+        <block cond="resource == 'subscribers/'">
+            <log>INFO: Entered chkResult</log>
+            <var name="pin" expr="getJsonVal(result, 'voicemailPin')"/>
+            <if cond="pin == passcode">
+                <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getDestination'"/>
+            <else/>
+                <log target="status">Success</log>
+                <assign name="status" expr="'endCall'"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+                <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
+                <goto next="#playAudio"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="playAudio">
+        <!-- This form plays the prompts found in this script -->
+        <block>
+            <log>INFO: Entered playAudio</log>
+        </block>
+        <subdialog name="playAudio" srcexpr="'file:'+APP_PATH+'getUserEntry.vxml'">
+            <param name="dgtTimeOut" expr="''"/>
+            <param name="fldLength" expr="''"/>
+            <param name="fldTermchar" expr="''"/>
+            <param name="fldTimeOut" expr="''"/>
+            <param name="interrupt" expr="'false'"/>
+            <param name="hotKey" expr="''"/>
+            <param name="file" expr="promptID"/>
+        </subdialog>
+        <block>
+            <goto expr="gotoForm"/>
+        </block>
+    </form>
+
+    <form id="error">
+        <!-- In here, we handle the error sequence -->
+        <block>
+            <log>INFO: Entered error</log>
+            <assign name="errCnt" expr="errCnt + 1"/>
+            <if cond="errCnt &lt; MAX_ERR">
+                <if cond="status == 'mailbox'">
+                    <assign name="promptID" expr="'APsorryExtension|'"/>
+                    <goto next="#buildPrompt"/>
+                </if>
+            <else/>
+                <log target="status">Goodbye</log>
+                <assign name="promptID" expr="'APmaxErr|APgoodbye'"/>
+                <assign name="status" expr="'endCall'"/>
+                <assign name="gotoForm" expr="'#exit'"/>
+            </if>
+			<goto next="#playAudio"/>
+        </block>
+    </form>
+
+    <form id="buildPrompt">
+        <!--  -->
+        <block cond="extCnt &lt; extension.length">
+            <log>INFO: Entered buildPrompt</log>
+            <var name="item" expr="getNextElement(extCnt, extension, '')"/>
+            <if cond="((iiNumber(item)) &amp;&amp; (item != '-1'))">
+                <assign name="extCnt" expr="extCnt + 1"/>
+                <assign name="promptID" expr="promptID + 'SP' + item + '|'"/>
+                <goto next="#buildPrompt"/>
+            </if>
+        </block>
+        <block>
+            <assign name="extCnt" expr="0"/>
+            <assign name="promptID" expr="promptID + 'APisNotAssigned'"/>
+            <assign name="gotoForm" expr="'file:'+FWD_PATH+'forward/getCallerInfo.vxml#getMbx'"/>
+            <goto next="#playAudio"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <exit namelist="status"/>
+        </block>
+    </form>
+
+    <script>
+        <![CDATA[
+            function setAccess(inStr) {
+                return "?_fields=subscriber&number=" + inStr;
+            }
+
+            function setFwd(inStr) {
+                return "{\"forwardedTo\":" + inStr +"}";
+            }
+
+            function getID(jsonObj) {
+                var result = eval("("+jsonObj+")");
+                var subscriber = result.results[0].subscriber.href;
+                subscriber = getNextElement('L',subscriber,'/');
+                return subscriber;
+            }
+        ]]>
+    </script>
+
+
+</vxml>

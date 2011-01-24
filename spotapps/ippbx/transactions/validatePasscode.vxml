@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<!DOCTYPE vxml PUBLIC "VoiceXML DTD" "http://www.w3.org/TR/voicexml20/vxml.dtd">
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
     <!-- Last Modified 01/20/2011
        *   @Name	validatePasscode.vxml
