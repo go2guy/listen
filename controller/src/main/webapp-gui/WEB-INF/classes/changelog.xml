@@ -648,4 +648,24 @@
             <column name="END_TIME" type="VARCHAR(30)"/>
         </modifyColumn>
     </changeSet>
+    <changeSet author="development" id="61">
+        <createTable tableName="GROUP_MEMBER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="IS_ADMINISTRATOR" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GROUP_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBSCRIBER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
 </databaseChangeLog>

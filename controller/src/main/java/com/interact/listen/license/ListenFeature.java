@@ -11,6 +11,7 @@ import java.util.Set;
  */
 public enum ListenFeature implements Feature
 {
+    ACD("Listen Automatic Call Distribution"),
     ATTENDANT("Listen Attendant"),
     CONFERENCING("Listen Conferencing", Conference.class, ConferenceHistory.class, Participant.class, Pin.class),
     FINDME("Listen Find Me"),

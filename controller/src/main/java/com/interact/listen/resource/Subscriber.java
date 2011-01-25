@@ -570,6 +570,13 @@ public class Subscriber extends Resource implements Serializable
         return (Long)criteria.list().get(0);
     }
 
+    public static List<Subscriber> queryAll(Session session)
+    {
+        Criteria criteria = session.createCriteria(Subscriber.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return (List<Subscriber>)criteria.list();
+    }
+
     @SuppressWarnings("unchecked")
     public static List<Subscriber> queryAllPaged(Session session, int first, int max)
     {

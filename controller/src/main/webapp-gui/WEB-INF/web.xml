@@ -230,6 +230,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetAcdConfigurationServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetAcdConfigurationServlet</servlet-name>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetAttendantMenuListServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.GetAttendantMenuListServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -415,6 +421,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>SaveAcdConfigurationServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SaveAcdConfigurationServlet</servlet-name>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>SaveAttendantMenuServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.SaveAttendantMenuServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -594,6 +606,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>GetAcdConfigurationServlet</servlet-name>
+        <url-pattern>/ajax/getAcdConfiguration</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>GetAttendantMenuListServlet</servlet-name>
         <url-pattern>/ajax/getAttendantMenuList</url-pattern>
     </servlet-mapping>
@@ -691,6 +708,11 @@
     <servlet-mapping>
         <servlet-name>OutdialServlet</servlet-name>
         <url-pattern>/ajax/outdial</url-pattern>    
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveAcdConfigurationServlet</servlet-name>
+        <url-pattern>/ajax/saveAcdConfiguration</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
