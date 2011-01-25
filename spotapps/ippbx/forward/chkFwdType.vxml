@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/24/2011
+    <!-- Last Modified 01/25/2011
        *   @Name	chkFwdType.vxml
        *   @Desc	This script is part of the logic for forwarding / cancelling
                     a forwarded extension. Here, we figure out the action the caller
@@ -32,6 +32,7 @@
                 <log>ERROR: Controller is unavailable</log>
                 <assign name="status" expr="'endCall'"/>
                 <assign name="promptID" expr="'APserviceError|APserviceError2|APtryAgainLater|APthankYou|APgoodbye'"/>
+                <goto next="#playAudio"/>
             </if>
         </block>
     </form>
@@ -45,11 +46,12 @@
                 the pbx, we need to get the caller's mailbox number. Otherwise, we'll just ask for their
                 pass code -->
                 <assign name="fwdFlag" expr="'FORWARD'"/>
-                <if cond="ANI.length &gt; EXT_LENGTH">
-                    <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getMbx'"/>
-                <else/>
+                <assign name="firstAccessChk" expr="'true'"/>
+                <if cond="ANI.length &lt; EXT_LENGTH">
                     <assign name="extension" expr="ANI"/>
                     <goto expr="'file:'+FWD_PATH+'processInfo.vxml#accessNum'"/>
+                <else/>
+                    <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getMbx'"/>
                 </if>
             <else/>
                 <!-- Assume caller is trying to cancel a forward -->

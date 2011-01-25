@@ -37,6 +37,7 @@
     <var name="accessNumID" expr="''"/>
     <var name="fwdFlag" expr="''"/>
     <var name="fwdCode" expr="''"/>
+    <var name="firstAccessChk" expr="'false'"/>
 
     <!-- Controller vars -->
     <var name="cntrlURL" expr="''"/>

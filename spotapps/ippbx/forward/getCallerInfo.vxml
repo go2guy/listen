@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/24/2011
+    <!-- Last Modified 01/25/2011
        *   @Name	getCallerInfo.vxml
        *   @Desc	This script is part of the logic for forwarding / cancelling
                     a forwarded extension. -->
@@ -113,6 +113,9 @@
                 <!-- Assume caller did not enter any value for mailbox, pass code or destination number -->
             <elseif cond="status == 'destination'"/>
                 <assign name="destination" expr="userEntry"/>
+                <if cond="inString('*',destination,'')">    <!-- Check if destination is an IP address -->
+                    <assign name="destination" expr="iiReplace(destination,'*','.')"/>  <!-- If so, replace '*' with '.' -->
+                </if>
                 <assign name="status" expr="'endCall'"/>
                 <goto expr="'file:'+FWD_PATH+'processInfo.vxml#forward'"/>
             <else/>

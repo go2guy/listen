@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/24/2011
+    <!-- Last Modified 01/25/2011
        *   @Name	processInfo.vxml
        *   @Desc	This script is part of the logic for forwarding / cancelling
                     a forwarded extension. -->
@@ -8,7 +8,8 @@
     <var name="extCnt" expr="0"/>
 
     <form id="accessNum">
-        <!--  -->
+        <!-- Here, we set up the variables that are needed to get a caller's access
+        number ID from the web controller -->
         <block>
             <log>INFO: Entered accessNum</log>
             <assign name="resource" expr="'accessNumbers'"/>
@@ -19,7 +20,7 @@
     </form>
 
     <form id="passCode">
-        <!--  -->
+        <!-- Set up variable for getting to the subscriber resource -->
         <block>
             <log>INFO: Entered passCode</log>
             <assign name="resource" expr="'subscribers/'"/>
@@ -28,7 +29,7 @@
     </form>
 
     <form id="forward">
-        <!--  -->
+        <!-- Set up variables for updating the access number resource -->
         <block>
             <log>INFO: Entered forward</log>
             <assign name="resource" expr="'accessNumbers'"/>
@@ -74,22 +75,27 @@
         <!-- Check Results -->
         <block cond="resource == 'accessNumbers'">
             <log>INFO: Entered chkResult</log>
-            <assign name="accessNumID" expr="getResultsKeyValue(result, 0, 'href')"/>
-            <assign name="accessNumID" expr="getNextElement('L',accessNumID, '/')"/>
-            <assign name="params" expr="getID(result)"/>
-            <assign name="subID" expr="params"/>
-            <if cond="status == 'mailBox'">
-                <if cond="fwdFlag == 'CANCEL_FWD'">
-                    <assign name="status" expr="'endCall'"/>
-                    <assign name="destination" expr="'&quot;&quot;'"/>
-                    <goto next="#forward"/>
+            <var name="count" expr="getJsonVal(result, 'count')"/>
+            <if cond="count == 1">
+                <assign name="accessNumID" expr="getResultsKeyValue(result, 0, 'href')"/>
+                <assign name="accessNumID" expr="getNextElement('L',accessNumID, '/')"/>
+                <assign name="params" expr="getID(result)"/>
+                <assign name="subID" expr="params"/>
+                <if cond="status == 'mailBox'">
+                    <if cond="fwdFlag == 'CANCEL_FWD'">
+                        <assign name="status" expr="'endCall'"/>
+                        <assign name="destination" expr="'&quot;&quot;'"/>
+                        <goto next="#forward"/>
+                    <else/>
+                        <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getPasscode'"/>
+                    </if>
                 <else/>
-                    <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getPasscode'"/>
+                    <assign name="gotoForm" expr="'#exit'"/>
+                    <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
+                    <goto next="#playAudio"/>
                 </if>
             <else/>
-                <assign name="gotoForm" expr="'#exit'"/>
-                <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
-                <goto next="#playAudio"/>
+                <goto next="#error"/>
             </if>
         </block>
         <block cond="resource == 'subscribers/'">
@@ -98,11 +104,7 @@
             <if cond="pin == passcode">
                 <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getDestination'"/>
             <else/>
-                <log target="status">Success</log>
-                <assign name="status" expr="'endCall'"/>
-                <assign name="gotoForm" expr="'#exit'"/>
-                <assign name="promptID" expr="'APthankYou|APgoodbye'"/>
-                <goto next="#playAudio"/>
+                <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#error'"/>
             </if>
         </block>
     </form>
@@ -130,19 +132,24 @@
         <!-- In here, we handle the error sequence -->
         <block>
             <log>INFO: Entered error</log>
-            <assign name="errCnt" expr="errCnt + 1"/>
-            <if cond="errCnt &lt; MAX_ERR">
-                <if cond="status == 'mailbox'">
-                    <assign name="promptID" expr="'APsorryExtension|'"/>
-                    <goto next="#buildPrompt"/>
-                </if>
+            <if cond="firstAccessChk == 'true'">
+                <assign name="firstAccessChk" expr="'false'"/>
+                <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getMbx'"/>
             <else/>
-                <log target="status">Goodbye</log>
-                <assign name="promptID" expr="'APmaxErr|APgoodbye'"/>
-                <assign name="status" expr="'endCall'"/>
-                <assign name="gotoForm" expr="'#exit'"/>
+                <assign name="errCnt" expr="errCnt + 1"/>
+                <if cond="errCnt &lt; MAX_ERR">
+                    <if cond="status == 'mailBox'">
+                        <assign name="promptID" expr="'APsorryExtension|'"/>
+                        <goto next="#buildPrompt"/>
+                    </if>
+                <else/>
+                    <log target="status">Goodbye</log>
+                    <assign name="promptID" expr="'APmaxErr|APgoodbye'"/>
+                    <assign name="status" expr="'endCall'"/>
+                    <assign name="gotoForm" expr="'#exit'"/>
+                </if>
+    			<goto next="#playAudio"/>
             </if>
-			<goto next="#playAudio"/>
         </block>
     </form>
 
@@ -160,7 +167,7 @@
         <block>
             <assign name="extCnt" expr="0"/>
             <assign name="promptID" expr="promptID + 'APisNotAssigned'"/>
-            <assign name="gotoForm" expr="'file:'+FWD_PATH+'forward/getCallerInfo.vxml#getMbx'"/>
+            <assign name="gotoForm" expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getMbx'"/>
             <goto next="#playAudio"/>
         </block>
     </form>
