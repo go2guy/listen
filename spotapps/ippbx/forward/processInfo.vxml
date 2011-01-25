@@ -185,7 +185,10 @@
             }
 
             function setFwd(inStr) {
-                return "{\"forwardedTo\":\"" + inStr +"\"}";
+                if (inString('.',inStr,''))
+                    return "{\"forwardedTo\":\"" + inStr +"\"}";
+                else
+                    return "{\"forwardedTo\":" + inStr +"}";
             }
 
             function getID(jsonObj) {
