@@ -9,7 +9,7 @@ import org.hibernate.Session;
 
 @Entity
 @Table(name = "GROUP_MEMBER")
-public class GroupMember extends Resource
+public class GroupMember extends Resource implements Comparable<GroupMember>
 {
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -135,5 +135,11 @@ public class GroupMember extends Resource
         String hql = "delete from GroupMember";
         org.hibernate.Query query = session.createQuery(hql);
         query.executeUpdate();
+    }
+
+    @Override
+    public int compareTo(GroupMember other)
+    {
+        return subscriber.friendlyName().compareTo(other.getSubscriber().friendlyName());
     }
 }
