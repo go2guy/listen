@@ -7,6 +7,9 @@ import javax.persistence.*;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
+/**
+ * Note: this class has a natural ordering that is inconsistent with equals
+ */
 @Entity
 @Table(name = "GROUP_MEMBER")
 public class GroupMember extends Resource implements Comparable<GroupMember>
@@ -138,6 +141,7 @@ public class GroupMember extends Resource implements Comparable<GroupMember>
     }
 
     @Override
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "EQ_COMPARETO_USE_OBJECT_EQUALS", justification = "Comparison only used in TreeMap")
     public int compareTo(GroupMember other)
     {
         return subscriber.friendlyName().compareTo(other.getSubscriber().friendlyName());
