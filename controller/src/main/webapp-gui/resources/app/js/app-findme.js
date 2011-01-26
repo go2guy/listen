@@ -95,8 +95,8 @@ $(document).ready(function() {
                 var html = '<div class="simultaneous-numbers">';
                 html += '<div class="dial">Dial the following number</div>';
                 html += '<div class="group-buttons">';
-                html += '<button class="button-add">Add Number</button>';
                 html += '<button class="button-delete">Delete Group</button>';
+                html += '<button class="button-add">Add Number</button>';
                 //html += '<button class="button-cancel">Disable Group</button>';
                 html += '</div>';
                 html += '</div>';
@@ -135,11 +135,11 @@ $(document).ready(function() {
             
             buildDialedNumberElement: function(forNumber, ringTime, isDisabled) {
                 var html = '<div class="dialed-number' + (isDisabled === true ? '-disabled' : '') + '">';
-                html += '<input type="text"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + forNumber + '"/>';
-                html += '<span>for</span><input type="text" class="ring-seconds"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + ringTime + '"/><span>seconds</span>';
                 html += '<button type="button" class="icon-delete" title="Remove this number"></button>';
                 html += '<button type="button" class="icon-toggle-off" title="Re-enable this number"></button>';
                 html += '<button type="button" class="icon-toggle-on" title="Temporarily disable this number"></button>';
+                html += '<input type="text"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + forNumber + '"/>';
+                html += '<span>for</span><input type="text" class="ring-seconds"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + ringTime + '"/><span>seconds</span>';
                 html += '</div>';
 
                 var el = $(html);
