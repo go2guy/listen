@@ -54,7 +54,7 @@
 	<var name="returnStr" expr="''" />
 	<var name="status" expr="''" />
 	<var name="appStartTime" expr="''" />
-	<var name="ANI" expr="''" />
+	<var name="ANI" expr="'remote'" />
 	<var name="DNIS" expr="'local'" />
 	<var name="accessNum" expr="''" />
 	<var name="loopCount" expr="'0'" />
@@ -70,6 +70,12 @@
 	<var name="isLongest" expr="'false'" />
 	<var name="terminationReason" expr="''" />
 	<var name="calledDNIS" expr="''" />
+	<var name="nxtPath" expr="''" />
+	<var name="source" expr="'findMe'" />
+	<var name="value" expr="''" />
+	<var name="operation" expr="''" />
+	<var name="appAnsweredTime" expr="''" />
+	<var name="appEndTime" expr="''" />
 
 
     <!-- Conference Variables -->

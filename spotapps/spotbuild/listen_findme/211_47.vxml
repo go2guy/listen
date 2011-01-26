@@ -17,6 +17,9 @@
 <log>INFO: Current value [<value expr="maxDuration"/>]</log>
 <assign name="maxDuration" expr="'0'+''" />
 <log>INFO: Updated value [<value expr="maxDuration"/>]</log>
+<log>INFO: Current value [<value expr="sessionList"/>]</log>
+<assign name="sessionList" expr="''+''" />
+<log>INFO: Updated value [<value expr="sessionList"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

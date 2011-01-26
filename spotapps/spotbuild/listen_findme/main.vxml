@@ -60,6 +60,12 @@
 	<var name="SB_UV_isLongest"/>
 	<var name="SB_UV_terminationReason"/>
 	<var name="SB_UV_calledDNIS"/>
+	<var name="SB_UV_nxtPath"/>
+	<var name="SB_UV_source"/>
+	<var name="SB_UV_value"/>
+	<var name="SB_UV_operation"/>
+	<var name="SB_UV_appAnsweredTime"/>
+	<var name="SB_UV_appEndTime"/>
 
     
     <form id="beginDocument">
@@ -71,6 +77,7 @@
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
+			<assign name="ANI" expr="II_SB_remote" />
 			<assign name="session" expr="II_SB_sessionID" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
@@ -196,6 +203,24 @@
 			</if>
 			<if cond="SB_UV_calledDNIS != undefined">
 				<assign name="calledDNIS" expr="SB_UV_calledDNIS" />
+			</if>
+			<if cond="SB_UV_nxtPath != undefined">
+				<assign name="nxtPath" expr="SB_UV_nxtPath" />
+			</if>
+			<if cond="SB_UV_source != undefined">
+				<assign name="source" expr="SB_UV_source" />
+			</if>
+			<if cond="SB_UV_value != undefined">
+				<assign name="value" expr="SB_UV_value" />
+			</if>
+			<if cond="SB_UV_operation != undefined">
+				<assign name="operation" expr="SB_UV_operation" />
+			</if>
+			<if cond="SB_UV_appAnsweredTime != undefined">
+				<assign name="appAnsweredTime" expr="SB_UV_appAnsweredTime" />
+			</if>
+			<if cond="SB_UV_appEndTime != undefined">
+				<assign name="appEndTime" expr="SB_UV_appEndTime" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

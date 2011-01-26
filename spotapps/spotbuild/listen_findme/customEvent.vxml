@@ -34,7 +34,7 @@
 				<assign name="answeredLine" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'Notify Hangup'">
-				<assign name="II_SB_assign_NxtOpt" expr="'213_3'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'213_26'"/>
 			</if>
 
             <if cond="II_SB_assign_NxtOpt != ''">

@@ -5,15 +5,24 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'211_109'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'227_3'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">setup Vars</log>
-            <log>INFO: Entered assign-variable.vxml [211_32]</log>
-            <log>INFO: Current value [<value expr="startSession"/>]</log>
-<assign name="startSession" expr="session+''" />
-<log>INFO: Updated value [<value expr="startSession"/>]</log>
+	    <log target="status">Call Answered</log>
+            <log>INFO: Entered assign-variable.vxml [224_75]</log>
+            <log>INFO: Current value [<value expr="id"/>]</log>
+<assign name="id" expr="'LSTNAPP_0035'+''" />
+<log>INFO: Updated value [<value expr="id"/>]</log>
+<log>INFO: Current value [<value expr="operation"/>]</log>
+<assign name="operation" expr="'increment'+''" />
+<log>INFO: Updated value [<value expr="operation"/>]</log>
+<log>INFO: Current value [<value expr="nxtPath"/>]</log>
+<assign name="nxtPath" expr="''+''" />
+<log>INFO: Updated value [<value expr="nxtPath"/>]</log>
+<log>INFO: Current value [<value expr="value"/>]</log>
+<assign name="value" expr="'1'+''" />
+<log>INFO: Updated value [<value expr="value"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
