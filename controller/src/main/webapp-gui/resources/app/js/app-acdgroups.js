@@ -25,7 +25,10 @@ $(document).ready(function() {
             Application: function() {
                 this.load = function() {
                     interact.util.trace('Loading ACD Groups');
+                    var addGroupButton = $("#acdgroups-add-group");
+                	addGroupButton.attr('readonly', 'readonly').attr('disabled', 'disabled');
                     
+                    var start = interact.util.timestamp();
                     $.ajax({
                         url: interact.listen.url('/ajax/getAcdConfiguration'),
                         dataType: 'json',
@@ -38,6 +41,11 @@ $(document).ready(function() {
                             for(var i =0, group; group = data.groups[i]; i++) {
                             	ACDGroups.loadGroup(group);	
                             }
+                        },
+						complete: function(xhr, textStatus) {
+							addGroupButton.removeAttr('readonly').removeAttr('disabled');
+                        	var elapsed = interact.util.timestamp() - start;
+                            $('#latency').text(elapsed);
                         }
                     });
                 };

@@ -62,7 +62,9 @@ if(subscriber.getIsAdministrator()) { %>
           <li id="menu-conferences"><a href="<listen:resource path="/conferences"/>">Conferences</a></li>
         </listen:ifLicensed>
         <li id="menu-subscribers"><a href="<listen:resource path="/subscribers"/>">Subscribers</a></li>
-        <li id="menu-acdgroups"><a href="<listen:resource path="/acdgroups"/>">ACD Groups</a></li>
+        <listen:ifLicensed feature="ACD">
+          <li id="menu-acdgroups"><a href="<listen:resource path="/acdgroups"/>">ACD Groups</a></li>
+        </listen:ifLicensed>
         <li id="menu-history"><a href="<listen:resource path="/history"/>">History</a></li><%
 } %>
       </ul>

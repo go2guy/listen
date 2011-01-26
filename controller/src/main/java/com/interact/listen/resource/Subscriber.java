@@ -576,6 +576,14 @@ public class Subscriber extends Resource implements Serializable
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (List<Subscriber>)criteria.list();
     }
+    
+    public static List<Subscriber> queryAllAlphabeticallyByRealName(Session session)
+    {
+        Criteria criteria = session.createCriteria(Subscriber.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.addOrder(Order.asc("realName"));
+        return (List<Subscriber>)criteria.list();
+    }
 
     @SuppressWarnings("unchecked")
     public static List<Subscriber> queryAllPaged(Session session, int first, int max)

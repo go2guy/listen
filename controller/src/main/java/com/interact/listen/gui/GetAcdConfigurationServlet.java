@@ -55,7 +55,7 @@ public class GetAcdConfigurationServlet extends HttpServlet
             groupsJson.add(groupJson);
         }
 
-        List<Subscriber> subscribers = Subscriber.queryAll(session);
+        List<Subscriber> subscribers = Subscriber.queryAllAlphabeticallyByRealName(session);
         JSONArray subscribersJson = new JSONArray();
         for(Subscriber subscriber : subscribers)
         {

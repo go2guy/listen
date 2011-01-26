@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.ServletUtil;
+import com.interact.listen.license.ListenFeature;
 import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class ACDGroupsServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        //ServletUtil.requireLicensedFeature(ListenFeature.FINDME);
+        ServletUtil.requireLicensedFeature(ListenFeature.ACD);
         Subscriber subscriber = ServletUtil.currentSubscriber(request);
         if(subscriber == null)
         {
