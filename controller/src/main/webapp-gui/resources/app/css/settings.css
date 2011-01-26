@@ -34,3 +34,12 @@ fieldset.period-selector button {
     float: left;
     width: 150px;
 }
+
+#addEmailTimeRestriction,
+#addSmsTimeRestriction {
+    margin-left: 20px;
+}
+
+fieldset.time-restrictions {
+    margin-bottom: 10px;
+}
