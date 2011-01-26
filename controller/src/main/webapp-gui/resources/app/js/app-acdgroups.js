@@ -34,7 +34,6 @@ $(document).ready(function() {
                         
                         	eligibleMembers = data.eligible;
                         	ACDGroups.addSelectOptions(eligibleMembers);
-                        	console.log(data);
 
                             for(var i =0, group; group = data.groups[i]; i++) {
                             	ACDGroups.loadGroup(group);	
@@ -119,7 +118,6 @@ $(document).ready(function() {
             	for(var i = 0; i < eligibleMembers.length; i++) {
             		if(name === eligibleMembers[i].name)
             		{
-            			console.log("returning " + eligibleMembers[i].id);
             			return eligibleMembers[i].id;
             		}
             	}
@@ -166,7 +164,6 @@ $(document).ready(function() {
                 saveButton.attr('readonly', 'readonly').attr('disabled', 'disabled');
                 
                 var acdgroups = ACDGroups.buildObjectFromMarkup();
-                console.log(JSON.stringify(acdgroups));
                 Server.post({
                     url: interact.listen.url('/ajax/saveAcdConfiguration'),
                     properties: {
