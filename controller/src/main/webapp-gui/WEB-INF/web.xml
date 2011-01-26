@@ -140,6 +140,12 @@
     <!-- servlet definitions -->
 
     <servlet>
+        <servlet-name>ACDGroupsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.ACDGroupsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
         <servlet-name>AddSubscriberServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.AddSubscriberServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -231,7 +237,7 @@
 
     <servlet>
         <servlet-name>GetAcdConfigurationServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.GetAcdConfigurationServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetAcdConfigurationServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -422,7 +428,7 @@
 
     <servlet>
         <servlet-name>SaveAcdConfigurationServlet</servlet-name>
-        <servlet-class>com.interact.listen.gui.SaveAcdConfigurationServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SaveAcdConfigurationServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -761,6 +767,11 @@
     </servlet-mapping>
 
     <!-- main pages -->
+    
+    <servlet-mapping>
+        <servlet-name>ACDGroupsServlet</servlet-name>
+        <url-pattern>/acdgroups</url-pattern>
+    </servlet-mapping>
     
     <servlet-mapping>
         <servlet-name>AttendantServlet</servlet-name>

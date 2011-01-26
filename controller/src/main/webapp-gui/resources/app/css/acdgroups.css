@@ -1,0 +1,28 @@
+.acdGroup {
+    border: 1px solid #CCCCCC;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+fieldset {
+	margin: 5px;
+}
+
+.button-delete {
+    float: right;
+    margin-left: 5px;
+}
+
+.acdGroupMemberList {
+	width: auto;
+}
+
+.acdGroupMember {
+	width: 20%;
+	display: block;
+	float: left;
+}
+
+.acdGroupAdmin {
+	font-weight: bold;
+}

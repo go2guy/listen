@@ -236,6 +236,7 @@
       <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
     </copy>
     
+    <minify in="${war.staging.dir}/resources/app/js/app-acdgroups.js" out="${war.staging.dir}/resources/app/js/app-acdgroups-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-attendant.js" out="${war.staging.dir}/resources/app/js/app-attendant-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-conference-list.js" out="${war.staging.dir}/resources/app/js/app-conference-list-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-conferencing.js" out="${war.staging.dir}/resources/app/js/app-conferencing-min.js"/>
@@ -248,7 +249,8 @@
     <minify in="${war.staging.dir}/resources/app/js/listen.js" out="${war.staging.dir}/resources/app/js/listen-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/server.js" out="${war.staging.dir}/resources/app/js/server-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/util.js" out="${war.staging.dir}/resources/app/js/util-min.js"/>
-
+    
+    <minify in="${war.staging.dir}/resources/app/css/acdgroups.css" out="${war.staging.dir}/resources/app/css/acdgroups-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/all.css" out="${war.staging.dir}/resources/app/css/all-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/attendant.css" out="${war.staging.dir}/resources/app/css/attendant-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/conferences.css" out="${war.staging.dir}/resources/app/css/conferences-min.css"/>
