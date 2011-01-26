@@ -128,7 +128,7 @@ public class FindMeNumber extends Resource implements Serializable
         {
             criteria.add(Restrictions.eq("enabled", true));
         }
-        criteria.addOrder(Order.asc("priority"));
+        criteria.addOrder(Order.asc("priority")).addOrder(Order.asc("number"));
 
         criteria.setFetchMode("subscriber", FetchMode.SELECT);
         return (List<FindMeNumber>)criteria.list();
@@ -149,27 +149,27 @@ public class FindMeNumber extends Resource implements Serializable
      * @param session
      * @param subscriber
      */
-    public static TreeMap<Integer, Set<FindMeNumber>> queryBySubscriberInPriorityGroups(Session session,
+    public static TreeMap<Integer, List<FindMeNumber>> queryBySubscriberInPriorityGroups(Session session,
                                                                                         Subscriber subscriber,
                                                                                         boolean includeDisabled)
     {
         List<FindMeNumber> results = queryBySubscriberOrderByPriority(session, subscriber, includeDisabled);
-        TreeMap<Integer, Set<FindMeNumber>> groups = new TreeMap<Integer, Set<FindMeNumber>>();
+        TreeMap<Integer, List<FindMeNumber>> groups = new TreeMap<Integer, List<FindMeNumber>>();
         for(FindMeNumber result : results)
         {
             if(groups.get(result.getPriority()) == null)
             {
-                groups.put(result.getPriority(), new HashSet<FindMeNumber>());
+                groups.put(result.getPriority(), new ArrayList<FindMeNumber>());
             }
             groups.get(result.getPriority()).add(result);
         }
         return groups;
     }
     
-    public static JSONArray groupsToJson(TreeMap<Integer, Set<FindMeNumber>> groups)
+    public static JSONArray groupsToJson(TreeMap<Integer, List<FindMeNumber>> groups)
     {
         JSONArray json = new JSONArray();
-        for(Set<FindMeNumber> group : groups.values())
+        for(List<FindMeNumber> group : groups.values())
         {
             JSONArray jsonGroup = new JSONArray();
             for(FindMeNumber number : group)

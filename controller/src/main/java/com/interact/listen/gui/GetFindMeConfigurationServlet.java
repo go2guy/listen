@@ -11,7 +11,7 @@ import com.interact.listen.resource.FindMeNumber;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 
-import java.util.Set;
+import java.util.List;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -43,7 +43,7 @@ public class GetFindMeConfigurationServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        TreeMap<Integer, Set<FindMeNumber>> groups = FindMeNumber.queryBySubscriberInPriorityGroups(session,
+        TreeMap<Integer, List<FindMeNumber>> groups = FindMeNumber.queryBySubscriberInPriorityGroups(session,
                                                                                                     subscriber, true);
 
         JSONArray json = FindMeNumber.groupsToJson(groups);

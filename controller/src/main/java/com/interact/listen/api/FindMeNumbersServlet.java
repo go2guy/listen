@@ -10,7 +10,7 @@ import com.interact.listen.resource.FindMeNumber;
 import com.interact.listen.resource.Subscriber;
 
 import java.util.*;
-
+ 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +37,7 @@ public class FindMeNumbersServlet extends HttpServlet
             throw new BadRequestServletException("Subscriber not found");
         }
         
-        TreeMap<Integer, Set<FindMeNumber>> groups = FindMeNumber.queryBySubscriberInPriorityGroups(session, subscriber, false);
+        TreeMap<Integer, List<FindMeNumber>> groups = FindMeNumber.queryBySubscriberInPriorityGroups(session, subscriber, false);
         
         //No find me configuration for this subscriber, return just the number or where it's forwarded to in 
         //the expected json format.
@@ -59,16 +59,16 @@ public class FindMeNumbersServlet extends HttpServlet
             findmeNumber.setDialDuration(25);
             findmeNumber.setEnabled(Boolean.TRUE);
             
-            Set<FindMeNumber> findMeNumbers = new HashSet<FindMeNumber>(1);
+            List<FindMeNumber> findMeNumbers = new ArrayList<FindMeNumber>(1);
             findMeNumbers.add(findmeNumber);
             groups.put(0, findMeNumbers);
         }
         else
         {
             //Check each find me number to see if it maps to an access number that may have been forwarded
-            for(Map.Entry<Integer, Set<FindMeNumber>> entry : groups.entrySet())
+            for(Map.Entry<Integer, List<FindMeNumber>> entry : groups.entrySet())
             {
-                Set<FindMeNumber> updatedNumberSet = new HashSet<FindMeNumber>();
+                List<FindMeNumber> updatedNumberSet = new ArrayList<FindMeNumber>();
                 for(FindMeNumber number : entry.getValue())
                 {
                     updatedNumberSet.add(checkForForwarding(session, number));
