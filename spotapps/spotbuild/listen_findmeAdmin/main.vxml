@@ -49,6 +49,7 @@
 	<var name="SB_UV_errCnt"/>
 	<var name="SB_UV_maxErr"/>
 	<var name="SB_UV_whichPath"/>
+	<var name="SB_UV_firstThrough"/>
 
     
     <form id="beginDocument">
@@ -151,6 +152,9 @@
 			</if>
 			<if cond="SB_UV_whichPath != undefined">
 				<assign name="whichPath" expr="SB_UV_whichPath" />
+			</if>
+			<if cond="SB_UV_firstThrough != undefined">
+				<assign name="firstThrough" expr="SB_UV_firstThrough" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

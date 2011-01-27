@@ -9,7 +9,7 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_219_8(subID)
+            function II_SB_JS_function_219_8(subID,ANI)
             {
 	            return '?subscriber=/subscribers/' + subID;
             }
@@ -20,7 +20,7 @@
         <block>
             <log target="status">params</log>
             <log>INFO: Entered run-javascript.vxml [219_8]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_219_8(subID)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_219_8(subID,ANI)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
