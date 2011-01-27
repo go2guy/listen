@@ -90,7 +90,7 @@ $(document).ready(function() {
                             return false;
                         });
                         
-                        var downloadButton = row.find('.icon-view');
+                        var downloadButton = row.find('.icon-download');
                         downloadButton.unbind('click').click(function() {
                             var url = interact.listen.url('/ajax/downloadVoicemail?id=' + data.id);
                             window.location = url;
