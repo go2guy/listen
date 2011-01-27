@@ -66,6 +66,7 @@
 	<var name="SB_UV_operation"/>
 	<var name="SB_UV_appAnsweredTime"/>
 	<var name="SB_UV_appEndTime"/>
+	<var name="SB_UV_confName"/>
 
     
     <form id="beginDocument">
@@ -221,6 +222,9 @@
 			</if>
 			<if cond="SB_UV_appEndTime != undefined">
 				<assign name="appEndTime" expr="SB_UV_appEndTime" />
+			</if>
+			<if cond="SB_UV_confName != undefined">
+				<assign name="confName" expr="SB_UV_confName" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -30,7 +30,7 @@
 
     <!-- User Dertermined Globals -->
 	<var name="phoneNumber" expr="''" />
-	<var name="outBoundID" expr="'bla@blah'" />
+	<var name="outBoundID" expr="''" />
 	<var name="userID" expr="''" />
 	<var name="phoneNumbers" expr="''" />
 	<var name="count" expr="'0'" />
@@ -76,6 +76,7 @@
 	<var name="operation" expr="''" />
 	<var name="appAnsweredTime" expr="''" />
 	<var name="appEndTime" expr="''" />
+	<var name="confName" expr="''" />
 
 
     <!-- Conference Variables -->

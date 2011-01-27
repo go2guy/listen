@@ -6,7 +6,7 @@
        *   @Desc   Starts the conference -->
     
     <!-- Node Variables -->
-    <var name="II_SB_confName" expr="'confName'"/>          	<!--  Conference Identifier -->
+    <var name="II_SB_confName" expr="confName"/>          	<!--  Conference Identifier -->
     <var name="II_SB_dtmfLength" expr="'1'"/>              <!--  Number of keys used for drop key -->
     <var name="II_SB_interDgtTime" expr="'3s'"/>            <!--  Time between drop key presses -->
     <var name="II_SB_drpKeyEnabled" expr="'true'"/>       <!--  Whether drop keys are enabled -->
