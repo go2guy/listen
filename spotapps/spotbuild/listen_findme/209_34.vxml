@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_209_34(sysAccessTime,appAnsweredTime)
+            function II_SB_JS_function_209_34(appStartTime,appAnsweredTime)
             {
-	            return getTimeDifference(sysAccessTime,appAnsweredTime);
+	            return getTimeDifference(appStartTime,appAnsweredTime);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Get Total Time</log>
             <log>INFO: Entered run-javascript.vxml [209_34]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_209_34(sysAccessTime,appAnsweredTime)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_209_34(appStartTime,appAnsweredTime)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="value" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
