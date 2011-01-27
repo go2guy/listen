@@ -15,7 +15,7 @@
 	<var name="II_SB_entryAudio" expr="''"/>  	            <!--  Audio file(s) to play when entring conference -->
 
     <!-- Edge Variables -->
-    <var name="II_SB_userHangup" expr="'213_26'"/>            <!--  Next option when user hangs up -->
+    <var name="II_SB_userHangup" expr="'210_19'"/>            <!--  Next option when user hangs up -->
     <var name="II_SB_keyPressOption" expr="'210_5'"/>    <!--  Next option when drop key(s) is pressed -->
 
     <!-- Global Variables -->

@@ -67,6 +67,7 @@
 	<var name="SB_UV_appAnsweredTime"/>
 	<var name="SB_UV_appEndTime"/>
 	<var name="SB_UV_confName"/>
+	<var name="SB_UV_talkingSession"/>
 
     
     <form id="beginDocument">
@@ -225,6 +226,9 @@
 			</if>
 			<if cond="SB_UV_confName != undefined">
 				<assign name="confName" expr="SB_UV_confName" />
+			</if>
+			<if cond="SB_UV_talkingSession != undefined">
+				<assign name="talkingSession" expr="SB_UV_talkingSession" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

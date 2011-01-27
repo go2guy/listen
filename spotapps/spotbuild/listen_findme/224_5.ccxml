@@ -84,10 +84,12 @@
 			<var name="SB_UV_STATcontroller" expr="evt.values.STATcontroller"/>
 			<var name="SB_UV_sysAccessTime" expr="evt.values.sysAccessTime"/>
 			<var name="SB_UV_confName" expr="evt.values.confName"/>
+			<var name="SB_UV_startSession" expr="evt.values.startSession"/>
+			<var name="SB_UV_answeredLine" expr="evt.values.answeredLine"/>
         
             <assign name="II_SB_state" expr="'createSession'"/>
 	        <assign name="II_SB_status" expr="'createSession'"/>
-    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_STATcontroller SB_UV_sysAccessTime SB_UV_confName"/>
+    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_STATcontroller SB_UV_sysAccessTime SB_UV_confName SB_UV_startSession SB_UV_answeredLine"/>
 	    </transition>
 
 	    <transition state="createSession" event="ccxml.created" name="evt" cond="(II_SB_whichID == II_SB_obcallid) &amp;&amp; (II_SB_obcallid.length != 0)">
