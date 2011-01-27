@@ -165,6 +165,7 @@ ul#user-info li.first {
 .button-add,
 .button-cancel,
 .button-delete,
+.button-download,
 .button-edit,
 .button-mute,
 .button-outdial,
@@ -197,6 +198,7 @@ ul#user-info li.first {
 .icon-add,
 .icon-cancel,
 .icon-delete,
+.icon-download,
 .icon-edit,
 .icon-mute,
 .icon-outdial,
@@ -236,6 +238,7 @@ ul#user-info li.first {
 .button-add:hover,
 .button-cancel:hover,
 .button-delete:hover,
+.button-download:hover,
 .button-edit:hover,
 .button-mute:hover,
 .button-outdial:hover,
@@ -266,6 +269,11 @@ ul#user-info li.first {
 .button-delete:hover          { background-position: 2px -998px; }
 .icon-delete                  { background-position: 0   -950px; }
 .icon-delete:hover            { background-position: 0   -1000px; }
+
+.button-download              { background-position: 2px -1748px; }
+.button-download:hover        { background-position: 2px -1798px; }
+.icon-download                { background-position: 0   -1750px; }
+.icon-download:hover          { background-position: 0   -1800px; }
 
 .button-edit                  { background-position: 2px -1448px; }
 .button-edit:hover            { background-position: 2px -1498px; }

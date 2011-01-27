@@ -34,7 +34,7 @@
           <li class="buttons">
             <button type="button" class="icon-delete" title="Delete"></button>
             <button type="button" class="icon-unread"></button>
-            <button type="button" class="icon-view" title="Download"></button>
+            <button type="button" class="icon-download" title="Download"></button>
           </li>
           <li class="from"></li>
           <li class="received"></li>
