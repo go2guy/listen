@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_findmeAdmin/root.vxml"> <!--  Set location of root document -->
-    <!-- Last Modified 10/29/2010
+    <!-- Last Modified 01/27/2011
        *   @Name	Audio-prompt.vxml
        *   @Desc	This script allows a developer play audio / speech
        			   	and collect user inputs. An MRCP server is needed for speech. -->
@@ -63,30 +63,6 @@
     <var name="II_SB_plyOrdinal" expr="'n'"/>   <!-- Play Ordinal. Flag to indicate if number value should be played as an ordinal -->
     <var name="II_SB_plyAs" expr="''"/>         <!-- Play As. Holds information on what prompt should be played as -->
     <var name="II_SB_userEntry" expr="''"/>     <!-- User Entry. Stores value received from user -->
-
-    <script>    <!-- User's Javascript function will be written here -->
-        <![CDATA[
-            function II_SB_JS_checkTime(time)
-            {
-                if (iiNumber(time))
-                    return time + 's';
-                else if (time.match(/^\d*s$/))
-                    return time;
-                else if (time.match(/^\d*ms$/))
-                    return time;
-                else 
-                    return '0s';
-            }
-
-            function II_SB_JS_checkNum(number)
-            {
-                if (iiNumber(number))
-                    return number;
-                else
-                    return '';
-            }
-        ]]>
-    </script>
 
     <form id="begin">
         <!-- Bargein property is defaulted to true. So first check if user set interrupt to false.
