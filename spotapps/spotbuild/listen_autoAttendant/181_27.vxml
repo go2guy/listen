@@ -44,7 +44,7 @@
              out-dial.ccxml, then we just need to transition to the next vxml template. -->
         <block>
             
-            <log>INFO: Entered out-dial.vxml [181_7]</log>
+            <log>INFO: Entered out-dial.vxml [181_27]</log>
 			<if cond="II_SB_firstPass == 'no'">
     			<log>INFO: First pass through [<value expr="II_SB_firstPass"/>]</log>
 				<goto next="#assignvariables"/>
@@ -81,7 +81,7 @@
             <assign name="II_SB_returnValues" expr="II_SB_returnValues + '|' + II_SB_maxTimeOpt"/>      <!-- 15: Next Opt when max call time elapses -->
             <assign name="II_SB_returnValues" expr="II_SB_returnValues + '|' + II_SB_callerID"/>        <!-- 16: Caller ID -->
 	    	<assign name="II_SB_status" expr="'out-dial'"/>
-    		<assign name="II_SB_nextOpt" expr="'181_7'"/>  <!-- ID of next ccxml file -->
+    		<assign name="II_SB_nextOpt" expr="'181_27'"/>  <!-- ID of next ccxml file -->
             <goto next="#exit"/>
 		</block>
     </form>
