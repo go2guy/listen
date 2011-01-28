@@ -69,7 +69,7 @@
             <!-- This transition contains the first event encountered when this file is loaded.
                  If this is the first time we've loaded the file, we need to set up the parameters
                  for making a call. Otherwise there's no action required. -->
-            <log>INFO: Entered out-dial.ccxml [182_5]</log>
+            <log>INFO: Entered out-dial.ccxml [182_87]</log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <log>INFO: Values passed in [<value expr="II_SB_passValues"/>]</log>
@@ -434,7 +434,7 @@
                         <join id1="II_SB_ibcallid" id2="'VXML_CHANNEL'"/>
                     </if>
                 </if>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + '182_5'+ '.vxml'" namelist="II_SB_firstPass II_SB_callerIdentity II_SB_outBoundID II_SB_userEntry II_SB_nxtOpt II_SB_connectTime II_SB_failTime II_SB_startTime"/>
+                <dialogstart src="'file:' + II_SB_CODE_DIR + '182_87'+ '.vxml'" namelist="II_SB_firstPass II_SB_callerIdentity II_SB_outBoundID II_SB_userEntry II_SB_nxtOpt II_SB_connectTime II_SB_failTime II_SB_startTime"/>
             <else/>
                 <if cond="II_SB_hangUp == 'y'">
                     <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
