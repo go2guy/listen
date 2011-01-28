@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/20/2011
+    <!-- Last Modified 01/28/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -362,6 +362,7 @@
             <if cond="((voiceMailID[0] == TO_VOICEMAIL) &amp;&amp; (voiceMailID.length == EXT_LENGTH))">
                 <assign name="voiceMailID" expr="iiSubstr(voiceMailID,1,voiceMailID.length)"/>
                 <assign name="state" expr="'xferToVoiceMail'"/>
+                <assign name="origDNIS" expr="''"/>
                 <log>INFO: Transfer [<value expr="tmpANI"/>] to voicemail box [<value expr="voiceMailID"/>]</log>
                 <disconnect connectionid="obconnid"/>
             <else/>
