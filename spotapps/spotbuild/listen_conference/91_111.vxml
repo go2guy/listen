@@ -43,8 +43,8 @@
              template and we need to set up all the parameters necessary to make a call. If access is from
              out-dial.ccxml, then we just need to transition to the next vxml template. -->
         <block>
-            <log target="status">Call in Progress</log>
-            <log>INFO: Entered out-dial.vxml [91_87]</log>
+            <log target="status">Call In Progress</log>
+            <log>INFO: Entered out-dial.vxml [91_111]</log>
 			<if cond="II_SB_firstPass == 'no'">
     			<log>INFO: First pass through [<value expr="II_SB_firstPass"/>]</log>
 				<goto next="#assignvariables"/>
@@ -81,7 +81,7 @@
             <assign name="II_SB_returnValues" expr="II_SB_returnValues + '|' + II_SB_maxTimeOpt"/>      <!-- 15: Next Opt when max call time elapses -->
             <assign name="II_SB_returnValues" expr="II_SB_returnValues + '|' + II_SB_callerID"/>        <!-- 16: Caller ID -->
 	    	<assign name="II_SB_status" expr="'out-dial'"/>
-    		<assign name="II_SB_nextOpt" expr="'91_87'"/>  <!-- ID of next ccxml file -->
+    		<assign name="II_SB_nextOpt" expr="'91_111'"/>  <!-- ID of next ccxml file -->
             <goto next="#exit"/>
 		</block>
     </form>
