@@ -18,7 +18,7 @@
 <assign name="answeredLine" expr="answeredLine+''" />
 <log>INFO: Updated value [<value expr="answeredLine"/>]</log>
 <log>INFO: Current value [<value expr="createdSession"/>]</log>
-<assign name="createdSession" expr="createdSession+''" />
+<assign name="createdSession" expr="''+''" />
 <log>INFO: Updated value [<value expr="createdSession"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

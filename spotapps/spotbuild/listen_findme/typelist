@@ -20,6 +20,7 @@
 228_4 - switch-application
 209_34 - run-javascript
 224_58 - decision
+209_38 - send-custom-event
 227_3 - data-query
 228_11 - assign-variable
 228_13 - run-javascript
@@ -27,7 +28,6 @@
 224_40 - out-dial
 224_44 - out-dial
 224_48 - decision
-209_13 - send-custom-event
 211_71 - run-javascript
 209_10 - decision
 211_75 - decision

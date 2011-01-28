@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    
+	    <log target="status">Increase Count</log>
             <log>INFO: Entered math.vxml [209_17]</log>
             <assign name="count" expr="parseInt(count) + parseInt('1') "/>
             <if cond="II_SB_nxtOpt != ''">

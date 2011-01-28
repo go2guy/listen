@@ -21,7 +21,7 @@
             <log target="status">Split Sessions</log>
             <log>INFO: Entered run-javascript.vxml [209_6]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_209_6(sessionList,count)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="createdSession" expr="II_SB_userJava" />   
+            <assign name="talkingSession" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
