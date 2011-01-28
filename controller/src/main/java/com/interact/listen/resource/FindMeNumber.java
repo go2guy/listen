@@ -1,5 +1,7 @@
 package com.interact.listen.resource;
 
+import com.interact.listen.marshal.Marshaller;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -178,6 +180,7 @@ public class FindMeNumber extends Resource implements Serializable
                 jsonNumber.put("number", number.getNumber());
                 jsonNumber.put("duration", number.getDialDuration());
                 jsonNumber.put("enabled", number.getEnabled());
+                jsonNumber.put("href", Marshaller.buildHref(number));
                 jsonGroup.add(jsonNumber);
             }
             json.add(jsonGroup);

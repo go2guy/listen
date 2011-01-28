@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.json.simple.JSONArray;
 
@@ -78,12 +79,16 @@ public class FindMeNumbersServlet extends HttpServlet
         }
         
         JSONArray json = FindMeNumber.groupsToJson(groups);
-        OutputBufferFilter.append(request, json.toJSONString(), "application/json");
+        
+        //Need to strip out the escaping that json simple does by default
+        String returnString = StringUtils.remove(json.toJSONString(), "\\");
+        
+        OutputBufferFilter.append(request, returnString, "application/json");
     }
     
     private FindMeNumber checkForForwarding(Session session, FindMeNumber findMeNumber)
     {
-        FindMeNumber updatedNumber = (FindMeNumber)findMeNumber.copy(false);
+        FindMeNumber updatedNumber = (FindMeNumber)findMeNumber.copy(true);
         AccessNumber accessNumber = AccessNumber.queryByNumber(session, findMeNumber.getNumber());
         if(accessNumber != null)
         {
