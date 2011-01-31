@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'222_25'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'220_114'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_222_20(phoneNumbers,count,loop)
+            function II_SB_JS_function_220_120(cntrlURL)
             {
-	            var result = eval("("+phoneNumbers+")");result[loop].splice(count,1);return iiStringify(result);
+	            var result = cntrlURL.split('/meta');return result[0] + "/api";
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Remove Number</log>
-            <log>INFO: Entered run-javascript.vxml [222_20]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_222_20(phoneNumbers,count,loop)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="phoneNumbers" expr="II_SB_userJava" />   
+            <log target="status">revert cntrlURL</log>
+            <log>INFO: Entered run-javascript.vxml [220_120]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_220_120(cntrlURL)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="cntrlURL" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_222_25(phoneNumbers)
+            function II_SB_JS_function_222_25(phoneNumbers,loop)
             {
-	            var result = eval("("+phoneNumbers+")");return result.length;
+	            var result = eval("("+phoneNumbers+")");return result[loop].length;
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">New Number Count</log>
             <log>INFO: Entered run-javascript.vxml [222_25]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_222_25(phoneNumbers)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_222_25(phoneNumbers,loop)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="countTotal" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

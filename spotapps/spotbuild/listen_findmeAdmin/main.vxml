@@ -50,6 +50,8 @@
 	<var name="SB_UV_maxErr"/>
 	<var name="SB_UV_whichPath"/>
 	<var name="SB_UV_firstThrough"/>
+	<var name="SB_UV_loop"/>
+	<var name="SB_UV_loopNumber"/>
 
     
     <form id="beginDocument">
@@ -155,6 +157,12 @@
 			</if>
 			<if cond="SB_UV_firstThrough != undefined">
 				<assign name="firstThrough" expr="SB_UV_firstThrough" />
+			</if>
+			<if cond="SB_UV_loop != undefined">
+				<assign name="loop" expr="SB_UV_loop" />
+			</if>
+			<if cond="SB_UV_loopNumber != undefined">
+				<assign name="loopNumber" expr="SB_UV_loopNumber" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

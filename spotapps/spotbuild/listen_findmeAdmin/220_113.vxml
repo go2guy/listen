@@ -5,23 +5,20 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'220_58'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'220_26'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Params</log>
-            <log>INFO: Entered assign-variable.vxml [220_55]</log>
-            <log>INFO: Current value [<value expr="params"/>]</log>
-<assign name="params" expr="'/'+number" />
-<log>INFO: Updated value [<value expr="params"/>]</log>
-<log>INFO: Current value [<value expr="userInput"/>]</log>
-<assign name="userInput" expr="''+''" />
-<log>INFO: Updated value [<value expr="userInput"/>]</log>
-<log>INFO: Current value [<value expr="request"/>]</log>
-<assign name="request" expr="'get'+''" />
-<log>INFO: Updated value [<value expr="request"/>]</log>
+	    <log target="status">setup Vars</log>
+            <log>INFO: Entered assign-variable.vxml [220_113]</log>
+            <log>INFO: Current value [<value expr="loop"/>]</log>
+<assign name="loop" expr="'0'+''" />
+<log>INFO: Updated value [<value expr="loop"/>]</log>
+<log>INFO: Current value [<value expr="phoneNumbers"/>]</log>
+<assign name="phoneNumbers" expr="returnVal+''" />
+<log>INFO: Updated value [<value expr="phoneNumbers"/>]</log>
 <log>INFO: Current value [<value expr="firstThrough"/>]</log>
-<assign name="firstThrough" expr="'false'+''" />
+<assign name="firstThrough" expr="'true'+''" />
 <log>INFO: Updated value [<value expr="firstThrough"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

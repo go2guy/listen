@@ -60,6 +60,8 @@
 	<var name="maxErr" expr="'3'" />
 	<var name="whichPath" expr="''" />
 	<var name="firstThrough" expr="'true'" />
+	<var name="loop" expr="'0'" />
+	<var name="loopNumber" expr="''" />
 
 
     <!-- Conference Variables -->

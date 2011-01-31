@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'220_107'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'220_136'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_220_23(returnVal)
+            function II_SB_JS_function_220_23(phoneNumbers,loop)
             {
-	            var result = eval("("+returnVal+")");return result.results.length;
+	            var result = eval("("+phoneNumbers+")");return result[loop].length;
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Number Count</log>
             <log>INFO: Entered run-javascript.vxml [220_23]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_220_23(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_220_23(phoneNumbers,loop)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="countTotal" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
