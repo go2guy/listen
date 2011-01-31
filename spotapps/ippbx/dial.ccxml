@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/28/2011
+    <!-- Last Modified 01/31/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -39,7 +39,8 @@
     <var name="URI" expr="''"/>
     <var name="requestID" expr="''"/>
     <var name="voipDirection" expr="''"/>
-    <var name="voiceMailID" expr="''"/>
+    <var name="userEntry" expr="''"/>
+    <var name="code" expr="''"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -60,7 +61,11 @@
     <var name="NOTIFY_PATH" expr="''"/> 
     <var name="AUDIO_PATH" expr="''"/>      <!-- Audio Path. Directory for audio files -->
     <var name="SIP_SERVER" expr="''"/>      <!-- Name of SIP Trunk server for inbound/outbound calls -->
-    <var name="TO_VOICEMAIL" expr="'*'"/>
+    <var name="VOICEMAIL_XFER" expr="'*1'"/>
+    <var name="BLIND_XFER" expr="'*2'"/>
+    <var name="ATTND_XFER" expr="'*3'"/>
+    <var name="LISTEN_APP" expr="''"/>
+    <var name="CODE_LIST" expr="VOICEMAIL_XFER + ',' + BLIND_XFER + ',' + ATTND_XFER"/>
 
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
@@ -110,7 +115,8 @@
                 <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0))">
                     <!-- If the origDNIS variable is set to a value, we're likely dealing with a
                     blindtransfer request that needs to go to voice mail -->
-                    <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+                    <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                    <send data="'dialog.user.listenApp'" target="session.id"/>
                 <else/>
                     <if cond="importedValue.length &gt; 0">
                         <assign name="state" expr="'chkFwd'"/>
@@ -134,7 +140,8 @@
             <var name="status" expr="evt.values.status"/>
             <if cond="status != 'Failure'">
                 <if cond="result == 'listen_findMe'">
-                    <send data="'dialog.user.listenFindMe'" target="session.id"/>
+                    <assign name="LISTEN_APP" expr="'listen_findme'"/>
+                    <send data="'dialog.user.listenApp'" target="session.id"/>
                 <elseif cond="result != tmpDNIS"/>
                     <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
                     <assign name="origDNIS" expr="DNIS"/> <!-- Let's save off original destination for possible later use -->
@@ -146,7 +153,8 @@
                     <if cond="((tmpANI == DNIS) &amp;&amp; (origDNIS.length &gt; 0))">
                         <!-- This implies that the extension we are forwarded to is calling our extension.
                         In this case, we'll go directly to our voice mail -->
-                        <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+                        <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                        <send data="'dialog.user.listenApp'" target="session.id"/>
                     <else/>
                         <send data="'dialog.user.getCallerID'" target="session.id"/>
                     </if>
@@ -344,32 +352,54 @@
             <!-- In here, we start a dialog that will monitor the call for any 4 digit key press -->
             <log>INFO: Entered [dialog.user.monitor] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'monitor'"/>
-            <assign name="II_SB_promptID" expr="''"/> <!-- Play ringing tone -->
+            <assign name="II_SB_promptID" expr="''"/>
+            <var name="FLD_TERMCHAR" expr="'#'"/>
             <var name="II_SB_FLD_INTERRUPT" expr="'true'"/>
             <var name="II_SB_FLD_TIMEOUT" expr="'3600'"/>
-            <var name="FLD_LENGTH" expr="EXT_LENGTH"/>
+            <var name="FLD_LENGTH" expr="''"/>
             <var name="DGT_TIMEOUT" expr="'3s'"/>
             <var name="II_SB_repeat" expr="''"/>
-            <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
-            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" connectionid="obconnid" namelist="II_SB_promptID II_SB_repeat II_SB_interval DGT_TIMEOUT FLD_LENGTH II_SB_FLD_TIMEOUT II_SB_FLD_INTERRUPT"/>
+            <var name="II_SB_interval" expr="''"/>
+            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" connectionid="obconnid" namelist="FLD_TERMCHAR II_SB_promptID II_SB_repeat II_SB_interval DGT_TIMEOUT FLD_LENGTH II_SB_FLD_TIMEOUT II_SB_FLD_INTERRUPT"/>
 		</transition>
 
         <transition state="monitor" event="dialog.exit" name="evt">
             <!-- Back from monitor dialog -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <assign name="voiceMailID" expr="evt.values.userEntry"/>
-            <if cond="((voiceMailID[0] == TO_VOICEMAIL) &amp;&amp; (voiceMailID.length == EXT_LENGTH))">
-                <assign name="voiceMailID" expr="iiSubstr(voiceMailID,1,voiceMailID.length)"/>
-                <assign name="state" expr="'xferToVoiceMail'"/>
-                <assign name="origDNIS" expr="''"/>
-                <log>INFO: Transfer [<value expr="tmpANI"/>] to voicemail box [<value expr="voiceMailID"/>]</log>
-                <disconnect connectionid="obconnid"/>
+            <assign name="userEntry" expr="evt.values.userEntry"/>
+            <assign name="code" expr="userEntry[0] + userEntry[1]"/>
+            <assign name="userEntry" expr="iiSubstr(userEntry,2,-1)"/>
+            <if cond="inString(code,CODE_LIST,',')">
+                <send data="'dialog.user.chkCode'" target="session.id"/>
             <else/>
+                <log>INFO: Invalid short code [<value expr="code"/>]</log>
     		    <assign name="state" expr="'callConnected'"/>
                 <send data="'dialog.user.monitor'" target="session.id"/>
             </if>
         </transition>
+
+		<transition state="monitor" event="dialog.user.chkCode" name="evt">
+            <!-- -->
+            <log>INFO: Entered [dialog.user.chkCode] with state [<value expr="state"/>]</log>
+            <if cond="((code == VOICEMAIL_XFER) &amp;&amp; (userEntry.length &lt; EXT_LENGTH))">
+                <assign name="state" expr="'xferToVoiceMail'"/>
+                <assign name="origDNIS" expr="''"/>
+                <log>INFO: Transfer [<value expr="tmpANI"/>] to voicemail box [<value expr="userEntry"/>]</log>
+                <disconnect connectionid="obconnid"/>
+            <elseif cond="code == BLIND_XFER"/>
+                <log>INFO: Blind Transfer [<value expr="tmpANI"/>] to [<value expr="userEntry"/>]</log>
+                <log target="status">Blind transfer request</log>
+                <assign name="state" expr="'blindXfer'"/>
+                <assign name="xferConnID" expr="obconnid"/>
+                <assign name="URI" expr="userEntry"/>
+                <send data="'dialog.user.blindXfer'" target="session.id"/>
+            <else/>
+                <log>INFO: Invalid short code [<value expr="code"/>]</log>
+    		    <assign name="state" expr="'callConnected'"/>
+                <send data="'dialog.user.monitor'" target="session.id"/>
+            </if>
+		</transition>
 
         <transition state="xferToVoiceMail" event="connection.disconnected" name="evt" cond="evt.connectionid == obconnid">
             <!-- We've received the disconnect event -->
@@ -384,8 +414,9 @@
             <!-- Back from removing the callee's info from the db -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <assign name="DNIS" expr="voiceMailID"/>
-            <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+            <assign name="DNIS" expr="userEntry"/>
+            <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+            <send data="'dialog.user.listenApp'" target="session.id"/>
         </transition>
 
 		<transition event="blindtransferrequest" name="evt">
@@ -591,14 +622,16 @@
                     <log target="status">Destination busy</log>
                     <assign name="state" expr="'busy'"/>
                     <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
-                        <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+                        <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                        <send data="'dialog.user.listenApp'" target="session.id"/>
                     <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
                         <!-- Remove the caller's record in the db prior to exiting -->
                         <send data="'dialog.user.deleteRecord'" target="session.id"/>
                     </if>
                 <elseif cond="(inString(evt.reason,ERR_NOT_FOUND,',')) &amp;&amp; (callType == 'extension')"/>
                      <!-- Destination not found. Maybe IP Phone is offline. Check if there's a voicemail account -->
-                    <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+                    <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                    <send data="'dialog.user.listenApp'" target="session.id"/>
                 <else/>
                     <!-- Call failed due to some other reason -->
                     <send data="'dialog.user.callFailed'" target="session.id"/>
@@ -620,7 +653,8 @@
             <log>INFO: Call type [<value expr="callType"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
-                <send data="'dialog.user.listenVoiceMail'" target="session.id"/>
+                <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                <send data="'dialog.user.listenApp'" target="session.id"/>
             <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
                 <!-- Remove the caller's record in the db prior to exiting -->
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
@@ -657,10 +691,17 @@
             <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID"/>
         </transition>
 
-        <transition event="dialog.user.listenFindMe" name="evt">
-            <!-- Here we'll pass control to the begin ccxml script which calls the Listen Find Me project -->
-            <log>INFO: Entered [dialog.user.listenFindMe] with state [<value expr="state"/>]</log>
+        <transition event="dialog.user.listenApp" name="evt">
+            <!-- Here we'll pass control to the begin ccxml script of the appropriate Listen project -->
+            <log>INFO: Entered [dialog.user.listenApp] with state [<value expr="state"/>]</log>
             <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
+                <if cond="LISTEN_APP == 'listen_voicemail'">
+                    <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0))">
+                    <!-- If we're dealing with an extension that was forwarded, we need to use the original
+                    voicemail not where the call was forwarded to -->
+                    <assign name="DNIS" expr="origDNIS"/>
+                    </if>
+                </if>            
                 <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
                 <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', 'ippbx')"/>
                 <var name="II_SB_status" expr="''"/>
@@ -677,43 +718,7 @@
                 <var name="II_SB_CODE_DIR" expr="''"/>
                 <var name="II_SB_line" expr="''"/>
                 <var name="II_SB_importedValue" expr="importedValue"/>
-                <fetch next="'file:'+SB_PATH+'listen_findme/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
-            <else/>
-                <!-- Play service error prompts -->
-                <assign name="state" expr="'cntrlDown'"/>
-                <var name="II_SB_repeat" expr="'n'"/>
-                <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceErr.00.wav'+' '+AUDIO_PATH+'tryAgainLater.00.wav'+' '+AUDIO_PATH+'thankYou.00.wav'+' '+AUDIO_PATH+'goodbye.00.wav'"/>
-                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
-            </if>
-        </transition>
-
-        <transition event="dialog.user.listenVoiceMail" name="evt">
-            <!-- Here we'll pass control to the begin ccxml script which calls the Listen Voice Mail project -->
-            <log>INFO: Entered [dialog.user.listenVoiceMail] with state [<value expr="state"/>]</log>
-            <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0))">
-                <!-- If we're dealing with an extension that was forwarded, we need to use the original
-                voicemail not where the call was forwarded to -->
-                <assign name="DNIS" expr="origDNIS"/>
-            </if>
-            <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
-                <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
-                <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', 'ippbx')"/>
-                <var name="II_SB_status" expr="''"/>
-                <var name="II_SB_local" expr="DNIS"/>
-                <var name="II_SB_remote" expr="ANI"/>
-                <var name="II_SB_originator" expr="''"/>
-                <var name="II_SB_protocol" expr="'VOIP'"/>
-                <var name="II_SB_connectionID" expr="ibconnid"/>
-                <var name="II_SB_type" expr="''"/>
-                <var name="II_SB_ibcallid" expr="ibconnid"/>
-                <var name="II_SB_transfer" expr="'yes'"/>
-                <var name="II_SB_projectSource" expr="'ippbx'"/>
-                <var name="II_SB_obcallid" expr="''"/>
-                <var name="II_SB_CODE_DIR" expr="''"/>
-                <var name="II_SB_line" expr="''"/>
-                <var name="II_SB_importedValue" expr="importedValue"/>
-                <fetch next="'file:'+SB_PATH+'listen_voicemail/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+                <fetch next="'file:'+SB_PATH+LISTEN_APP+'/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
             <else/>
                 <!-- Play service error prompts -->
                 <assign name="state" expr="'cntrlDown'"/>
