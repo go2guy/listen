@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_220_23(phoneNumbers,loop)
             {
-	            var result = eval("("+phoneNumbers+")");return result[loop].length;
+	            var result = eval("("+phoneNumbers+")");var length = result[loop].length;if (length == 1){var getHref = getNextElement('L',result[loop][0].href,'/');if (getHref == 'null'){return getHref;}return length;}return length;
             }
         ]]>
     </script>
