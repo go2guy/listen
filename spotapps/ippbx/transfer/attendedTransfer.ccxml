@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/19/2011
+    <!-- Last Modified 02/01/2011
        *   @Name	attendedTransfer.ccxml
        *   @Desc	This script handles the logic for do an attended call transfer-->
 
@@ -97,7 +97,15 @@
             <log>INFO: Entered [dialog.user.moveSuccessful] with state [<value expr="state"/>]</log>
     	    <assign name="state" expr="'joinID'"/>
             <assign name="obconnid" expr="evt.obconnid"/>
-            <join id1="ibconnid" id2="obconnid"/>
+            <if cond="obconnid == undefined">
+                <!-- Assume caller is trying to do an attended transfer without completing a connection.
+                Let's attempt to transfer to destination voicemail box -->
+                <var name="callType" expr="''"/>
+                <var name="origDNIS" expr="tmpDNIS"/>
+                <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH importedValue APP_PATH EXT_LENGTH ibconnid obconnid tmpDNIS DNIS tmpANI ANI callType origDNIS"/>
+            <else/>
+                <join id1="ibconnid" id2="obconnid"/>
+            </if>
         </transition>
 
 		<transition state="joinID" event="conference.joined" name="evt">
