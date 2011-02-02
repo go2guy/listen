@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/18/2011
+    <!-- Last Modified 02/02/2011
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -16,6 +16,7 @@
     <var name="dtmfHotKey" expr="''"/>
     <var name="afterHrsTest" expr="'6'"/>       <!-- Back door for after hours testing -->
     <var name="whichApp" expr="''"/>
+    <var name="PAGE" expr="'799'"/>             <!-- Number dialed to access group page -->
 
 	<form id="beginDocument">
 		<block>
@@ -138,6 +139,11 @@
                 <!-- Caller wants to talk to operator or did not press any keys. 
                 Let's check what prompt to play -->
                 <goto next="#chkOffice"/>
+            <elseif cond="userEntry == PAGE"/>
+                <!-- Caller wants to page all inactive IP Phones -->
+                <log>INFO: Send caller to page app</log>
+                <assign name="status" expr="'PAGE'"/>
+                <goto next="#exit"/>
             <else/>
                 <!-- Caller entered some keys. Check the dnis mapping for associated app -->
                 <goto next="#chkDnisMap"/>

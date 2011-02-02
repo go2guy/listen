@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/21/2011
+    <!-- Last Modified 02/02/2011
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -17,7 +17,7 @@
     <var name="route" expr="''"/>       <!-- Route. Used to route an incoming call to a particular event -->
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
-    <var name="callType" expr="''"/>    <!-- Call Type. Identifies a call as: service, extension, or external -->
+    <var name="callType"/>              <!-- Call Type. Identifies a call as: service, extension, or external -->
     <var name="iiLincoln" expr="'4024768786,8002428649'"/>  <!-- PSTN access for Lincon Office -->
     <var name="importedValue"/>         <!-- Imported Value. Values passed in from Listen application -->
     <var name="remote"/>
@@ -25,6 +25,7 @@
     <var name="clientFlag" expr="''"/>
     <var name="isClosed" expr="'n'"/>   <!-- Flag to determine if the office is closed -->
     <var name="fwdInfo"/>
+    <var name="pbxFlag"/>
     <!-- End global vars -->
 
     <!-- Constants -->
@@ -51,9 +52,11 @@
             <elseif cond="((projectSource == 'VOICEMAIL') || (projectSource == 'MAILBOX'))"/>
                 <assign name="route" expr="'dialog.user.autoAttendant'"/>   <!-- Set route to auto attendant -->
                 <send data="'dialog.user.pbx'" target="session.id"/>
-            <elseif cond="fwdInfo != undefined"/>
+            <elseif cond="pbxFlag == 'forward'"/>
                 <assign name="tmpDNIS" expr="fwdInfo"/>
                 <send data="'dialog.user.forward'" target="session.id"/>
+            <elseif cond="pbxFlag == 'PAGE'"/>
+                <send data="'dialog.user.page'" target="session.id"/>
             <else/>
                 <!-- Nothing else here -->
             </if>
@@ -102,7 +105,7 @@
             <if cond="inString(tmpDNIS,iiLincoln,',')"> <!-- If caller is trying to reach lincoln office -->
                 <assign name="route" expr="'dialog.user.autoAttendant'"/>   <!-- Set route to auto attendant -->
                 <send data="'dialog.user.pbx'" target="session.id"/>
-            <elseif cond="((tmpDNIS == PAGE) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH))"/> <!-- If caller is trying to use page service -->
+            <elseif cond="tmpDNIS == PAGE"/> <!-- If caller is trying to use page service -->
                 <send data="'dialog.user.page'" target="session.id"/>
             <elseif cond="(tmpDNIS[0]+tmpDNIS[1]) == '#3'"/> <!-- Assume caller is trying to use forward service -->
                 <send data="'dialog.user.forward'" target="session.id"/>
