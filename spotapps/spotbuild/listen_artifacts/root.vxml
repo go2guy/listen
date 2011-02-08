@@ -33,6 +33,7 @@
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'delete'" />
 	<var name="status" expr="''" />
+	<var name="nextPath" expr="'CHK_MP3'" />
 
 
     <!-- Conference Variables -->
