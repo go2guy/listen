@@ -1,22 +1,20 @@
 #!/usr/bin/env python
-
-try:
-    import datetime
-    import glob
-    import os
-    import re
-    import rpm
-    import sha
-    import socket
-    import subprocess
-    import sys
-    import time
-    import traceback
-    import urllib
-    import urllib2
-
-except ImportError, e:
-    raise "Unable to import required module: " + str(e)
+from datetime import datetime
+from glob import glob
+import os
+import re
+import rpm
+import md5
+import sha
+import shlex
+import socket
+from StringIO import StringIO
+import subprocess
+import sys
+import time
+import traceback
+import urllib
+import urllib2
 
 
 global myName
@@ -57,7 +55,7 @@ def sftp(remotehost, localfile, remotefile, mode=None, username='root', password
             sys.exit(1)
 
         client = paramiko.SFTPClient.from_transport(connection)
-        now = datetime.datetime.now()
+        now = datetime.now()
         print("%s %s> sftp %s %s:%s" % (str(now), myName, localfile, remotehost, remotefile))
         client.put(localfile, remotefile)
 
@@ -112,7 +110,7 @@ def runRemote(remotehost, command, failonerror=True, username='root', password='
         channel.setblocking(0)
 
         try:
-            now = datetime.datetime.now()
+            now = datetime.now()
             print("%s %s::%s> %s " % (str(now), myName, remotehost, command))
             channel.exec_command(command)
 
@@ -231,42 +229,53 @@ def eraseInteractRpms(pardonrpms=[]):
         run(execute)
 
 
-def removeFiles(rootdir, pardonfiles=[]):
-    # Remove all files ignoring those in the pardonfiles list.
-    # remove everything except xtt and rpms
-    print("Cleaning the [ %s ] directory." % rootdir)
+def removeFiles(rootdir, pardon=[]):
+    # Remove all files ignoring those in the pardon list.
+    # Use glob to allow wildcards
+    expandedPardonFiles = [ ]
+    for pardonFile in pardon:
+        for expandedPardonFile in glob(os.path.join(rootdir, pardonFile)):
+            expandedPardonFiles.append(os.path.abspath(expandedPardonFile))
+    pardon = expandedPardonFiles
+
+    sys.stdout.write("Cleaning the [ %s ] directory.\n" % rootdir)
     deathrowFiles = []
     deathrowDirs = []
     for root, subFolders, files in os.walk(rootdir):
-        if root in pardonfiles:
-            print("Ignoring removal of [ %s ] directory." % root)
+        if root in pardon:
+            sys.stdout.write("Ignoring removal of [ %s ] directory.\n" % root)
+
+            # Remove any subfolders of this one so we exclude them as well.
+            del subFolders[:]
 
         else:
-            print("Adding [ %s ] to list of directories to be removed." % root)
+            sys.stdout.write("Adding [ %s ] to list of directories to be removed.\n" % root)
             deathrowDirs.append(root)
 
             for file in files:
                 file = os.path.join(root,file)
-                if file in pardonfiles:
-                    print("Ignoring removal of [ %s ] file." % file)
+                if file in pardon:
+                    sys.stdout.write("Ignoring removal of [ %s ] file.\n" % file)
 
                 else:
-                    print("Adding [ %s ] to list of files to be removed." % file)
+                    sys.stdout.write("Adding [ %s ] to list of files to be removed.\n" % file)
                     deathrowFiles.append(file)
 
     # Remove all files in deathrowFiles
-    if len(deathrowFiles) > 0:
-        execute = ["rm", "-f"]
-        execute.extend(deathrowFiles)
-        run(execute)
+    deathrowFiles.sort(reverse=True)
+    for deathrowFile in deathrowFiles:
+        sys.stdout.write("%s %s> %s\n" % (str(datetime.now()), myHost, "Removing [ %s ]." % deathrowFile))
+        os.remove(deathrowFile)
 
     # Remove all empty directories in deathrowDirs
-    if len(deathrowDirs) > 0:
-        # sort so we remove sub directories before their parents
-        deathrowDirs.sort(reverse=True)
-        execute = ["rmdir", "--ignore-fail-on-non-empty"]
-        execute.extend(deathrowDirs)
-        run(execute)
+    deathrowDirs.sort(reverse=True)
+    for deathrowDir in deathrowDirs:
+        try:
+            sys.stdout.write("%s %s> %s\n" % (str(datetime.now()), myHost, "Removing [ %s ]." % deathrowDir))
+            os.rmdir(deathrowDir)
+
+        except OSError, e:
+            pass
 
 
 def license(licenseHost):
@@ -337,7 +346,7 @@ def license(licenseHost):
 
 def getLatestFile(filename):
     # get all files which match the filename, sort in reverse, return first entry or None.
-    files = glob.glob(filename)
+    files = glob(filename)
     if len(files) >= 1:
         files.sort(reverse=True)
         return files[0]
@@ -347,7 +356,7 @@ def getLatestFile(filename):
 
 
 def run(command, shell=False, failonerror=True):
-    now=datetime.datetime.now()
+    now=datetime.now()
     print("%s %s> %s " % (str(now), myName, " ".join(command)))
 
     try:

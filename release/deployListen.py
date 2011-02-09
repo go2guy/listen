@@ -155,7 +155,7 @@ def live2stage():
 
     # from prepinstall, but with more pardoned files
     deploy.eraseInteractRpms()
-    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg, "/interact/mysql-connector", "/interact/master/.iiXmlLicense", "/interact/master/iimoap.cfg", "/interact/apps/spotbuild/listen_main/root.vxml"])
+    deploy.removeFiles("/interact/", pardon=[uiapkg, masterpkg, "/interact/mysql-connector", "/interact/master/.iiXmlLicense", "/interact/master/iimoap.cfg", "/interact/apps/spotbuild/listen_main/root.vxml"])
     deploy.removeFiles("/var/lib/com.interact.listen/")
     deploy.removeFiles("/var/lib/mysql/")
     
@@ -170,7 +170,7 @@ def prepinstall():
 
     deploy.eraseInteractRpms()
 
-    deploy.removeFiles("/interact/", pardonfiles=[uiapkg, masterpkg])
+    deploy.removeFiles("/interact/", pardon=[uiapkg, masterpkg])
     deploy.removeFiles("/var/lib/com.interact.listen/")
     deploy.removeFiles("/var/lib/mysql/")
 
