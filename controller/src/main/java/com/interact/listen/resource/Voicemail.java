@@ -366,9 +366,13 @@ public class Voicemail extends Audio implements Serializable
 
         if(voicemailSubscriber.shouldSendNewVoicemailSms())
         {
-            LOG.debug("Sending SMS notification for [" + getId() + "] to subscriber [" + voicemailSubscriber.getSmsAddress() + "]");
-            statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
-            emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
+            //only send this one-off notification if they aren't getting pages every 10 mins already
+            if(!voicemailSubscriber.getIsSubscribedToPaging().booleanValue())
+            {
+                LOG.debug("Sending SMS notification for [" + getId() + "] to subscriber [" + voicemailSubscriber.getSmsAddress() + "]");
+                statSender.send(Stat.VOICEMAIL_SMS_NOTIFICATION);
+                emailService.sendSmsVoicemailNotification(this, voicemailSubscriber);
+            }
         }
     }
     
