@@ -46,7 +46,10 @@ if(id != null && !id.trim().equals("")) { %>
                                           <label for="outdial-number">Phone number to dial:</label> <input type="text" name="outdial-number" id="outdial-number"/>
                                         </div>
                                         <div>
-                                          <label for="outdial-interrupt">Interrupt when answered:</label> <input type="checkbox" id="outdial-interrupt" name="outdial-interrupt" value="interrupt"/>
+                                            <select name="outdial-interrupt" id="outdial-interrupt">
+                                              <option value="false" selected="selected">Have person join conference</option>
+                                              <option value="true">Let me talk to person</option>
+                                            </select>
                                         </div>
                                         <div>
                                           <button type="button" class="button-cancel" name="outdial-cancel" id="outdial-cancel">Cancel</button>
