@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_212_9(subID,calledDNIS)
             {
-	            return '?subscriber=/subscribers/' + subID + '&destination=' + calledDNIS;
+	            return '?subscriber=/subscribers/' + subID + '&destination=' + calledDNIS + '&includeDisabled=false';
             }
         ]]>
     </script>
