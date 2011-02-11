@@ -29,6 +29,7 @@ public class FindMeNumbersServlet extends HttpServlet
     {
         String href = ServletUtil.getNotNullNotEmptyString("subscriber", request, "subscriber");
         String destination = ServletUtil.getNotNullNotEmptyString("destination", request, "destination");
+        String includeDisabled = ServletUtil.getNotNullNotEmptyString("includeDisabled", request, "includeDisabled");
         Long id = Marshaller.getIdFromHref(href);
         
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -38,7 +39,11 @@ public class FindMeNumbersServlet extends HttpServlet
             throw new BadRequestServletException("Subscriber not found");
         }
         
-        TreeMap<Integer, List<FindMeNumber>> groups = FindMeNumber.queryBySubscriberInPriorityGroups(session, subscriber, false);
+        Boolean includeDisabledBoolean = Boolean.valueOf(includeDisabled);
+        
+        TreeMap<Integer, List<FindMeNumber>> groups = FindMeNumber.queryBySubscriberInPriorityGroups(session,
+                                                                                                     subscriber,
+                                                                                                     includeDisabledBoolean);
         
         //No find me configuration for this subscriber, return just the number or where it's forwarded to in 
         //the expected json format.
