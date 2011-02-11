@@ -209,7 +209,7 @@ def doinstall():
     startlist = {}
 
     if hostname == controllerserver:
-        deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", masterpkg, "all"])
+        deploy.run(["/interact/packages/iiInstall.py", "-i", "--noinput", masterpkg, "all"])
         startlist["/etc/init.d/httpd"] = "start"
         startlist["/interact/program/iiMoap"] = ""
         startlist["/interact/program/iiSysSrvr"] = ""
@@ -231,7 +231,7 @@ def doupgrade():
     deploy.run(["service", "mysqld", "start"], failonerror=False)
 
     if hostname == controllerserver:
-        deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacepkgs", masterpkg, "all"])
+        deploy.run(["/interact/packages/iiInstall.py", "-i", "--noinput", "--replacepkgs", masterpkg, "all"])
 
         deploy.run(["service", "httpd", "restart"])
         deploy.run(["service", "vipStart", "start"])

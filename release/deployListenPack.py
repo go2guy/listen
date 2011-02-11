@@ -156,7 +156,7 @@ def install():
     deploy.run(["rpm", "-Uvh", uiapkg])
 
     # install arcade dependencies
-    deploy.run(["/interact/packages/iiInstall.sh", "-i", "--noinput", masterpkg, "arcade"])
+    deploy.run(["/interact/packages/iiInstall.py", "-i", "--noinput", masterpkg, "arcade"])
 
     # License the app so it starts up
     license()

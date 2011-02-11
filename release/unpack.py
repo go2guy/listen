@@ -83,8 +83,8 @@ def default(sipServer):
         supfile.close()
 
     # Create the command that will be used to install listen and Realize
-    listeninst = ["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", listenpkg, "spotbuild-vip", "ivrserver", "webserver"]
-    realizeinst = ["/interact/packages/iiInstall.sh", "-i", "--noinput", "--replacefiles", "--replacepkgs", realizepkg, "iiweb", "tomcat", "tomcat-native", "realize"]
+    listeninst = ["/interact/packages/iiInstall.py", "-i", "--noinput", "--replacefiles", "--replacepkgs", listenpkg, "spotbuild-vip", "ivrserver", "webserver"]
+    realizeinst = ["/interact/packages/iiInstall.py", "-i", "--noinput", "--replacefiles", "--replacepkgs", realizepkg, "iiweb", "tomcat", "tomcat-native", "realize"]
 
     # Only use the default sup if the rpm is not currently installed.
     for rpmpkg, instcmd in ([listenpkg, listeninst], [realizepkg, realizeinst]):
