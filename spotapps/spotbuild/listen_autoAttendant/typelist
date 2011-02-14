@@ -4,6 +4,9 @@ begin - begin
 172_4 - math
 172_5 - decision
 190_4 - data-query
+229_5 - run-javascript
+181_27 - out-dial
+229_3 - switch-application
 172_80 - audio-input
 172_81 - audio-input
 172_82 - audio-input
@@ -36,7 +39,6 @@ hang-up - hang-up
 180_83 - run-javascript
 181_3 - assign-variable
 189_4 - end
-181_7 - out-dial
 172_50 - assign-variable
 170_20 - run-javascript
 170_22 - run-javascript

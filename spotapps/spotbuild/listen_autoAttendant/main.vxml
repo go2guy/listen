@@ -62,6 +62,7 @@
 	<var name="SB_UV_keysPressed"/>
 	<var name="SB_UV_audioDIR"/>
 	<var name="SB_UV_hotKeys"/>
+	<var name="SB_UV_ext"/>
 
     
     <form id="beginDocument">
@@ -204,6 +205,9 @@
 			</if>
 			<if cond="SB_UV_hotKeys != undefined">
 				<assign name="hotKeys" expr="SB_UV_hotKeys" />
+			</if>
+			<if cond="SB_UV_ext != undefined">
+				<assign name="ext" expr="SB_UV_ext" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

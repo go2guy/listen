@@ -11,7 +11,10 @@
         <block>
 	    <log target="status">appDirection To Number</log>
             <log>INFO: Entered assign-variable.vxml [181_3]</log>
-            <log>INFO: Current value [<value expr="appDirection"/>]</log>
+            <log>INFO: Current value [<value expr="ext"/>]</log>
+<assign name="ext" expr="appDirection+''" />
+<log>INFO: Updated value [<value expr="ext"/>]</log>
+<log>INFO: Current value [<value expr="appDirection"/>]</log>
 <assign name="appDirection" expr="sipPrefix+appDirection" />
 <log>INFO: Updated value [<value expr="appDirection"/>]</log>
 <log>INFO: Current value [<value expr="appDirection"/>]</log>
