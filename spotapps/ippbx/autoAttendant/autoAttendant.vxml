@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 02/02/2011
+    <!-- Last Modified 02/07/2011
        *   @Name	autoAttendant.vxml
        *   @Desc	This script controls the auto attendant prompts
                     and options -->
@@ -38,6 +38,7 @@
             			<goto next="#playAudio"/>
                     <else/>
                         <assign name="promptID" expr="'AP1601'"/>
+                        <assign name="gotoForm" expr="'#userKeyPress'"/>
                         <goto next="#setUp"/>
                     </if>
                 </if>
@@ -173,14 +174,16 @@
                 <else/>
                     <assign name="promptID" expr="'AP1605'"/>
                 </if>
-                <assign name="fieldTimeOut" expr="''"/>
-                <assign name="cutIn" expr="'false'"/>
                 <assign name="status" expr="'callExt'"/>
                 <assign name="extension" expr="officeOptr"/>
                 <assign name="gotoForm" expr="'#exit'"/>
                 <log>INFO: Send caller to operator</log>
                 <log target="status">Call operator</log>
             </if>
+            <assign name="digitTimeOut" expr="''"/>
+            <assign name="fieldLength" expr="''"/>
+            <assign name="fieldTimeOut" expr="''"/>
+            <assign name="cutIn" expr="'false'"/>
             <assign name="dtmfHotKey" expr="''"/>
             <goto next="#playAudio"/>
         </block>

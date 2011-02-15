@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/19/2011
+    <!-- Last Modified 02/07/2011
        *   @Name	hold.ccxml
        *   @Desc	This script handles the logic for placing a call on hold -->
 
@@ -163,7 +163,7 @@
             <log>INFO: Entered [dialog.user.pickUp] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'updateSID'"/>
             <assign name="tmpSID" expr="''"/>
-            <send data="'dialog.user.updateRecord'" target="session.id"/> <!-- Before putting party on hold, let's update db -->
+            <send data="'dialog.user.updateRecord'" target="session.id"/> <!-- Before taking party off hold, let's update db -->
         </transition>
 
         <transition state="updateSID" event="dialog.exit" name="evt">

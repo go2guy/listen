@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified: 11/18/2010
+    <!-- Last Modified: 02/08/2010
          @Name: getAttendantEntry.vxml
          @Desc: This script handles playing audio files
                 and receiving user input for the auto attendant. -->
 
-    <property name="termchar" value=""/>    <!-- Default key used to terminate input -->
-    <property name="timeout" value="10ms"/> <!-- Default length of time to wait for first user input -->
+    <property name="termchar" value=""/>     <!-- Default key used to terminate input -->
+    <property name="timeout" value="10ms"/>  <!-- Default length of time to wait for first user input -->
     <property name="bargein" value="true"/> <!-- Default length of time to wait for first user input -->
 
     <!-- Global variables -->
@@ -44,9 +44,27 @@
             <assign name="FLD_INTERRUPT" expr="interrupt"/>
             <assign name="FLD_TIMEOUT" expr="fldTimeOut"/>
             <assign name="HOT_KEY" expr="hotKey"/>
-  			<goto next="#getPrompt"/>
+            <if cond="FLD_INTERRUPT == 'true'">
+      			<goto next="#getPrompt"/>
+            <else/>
+      			<goto next="#setInterrupt"/>
+            </if>
 		</block>
 	</form>
+
+    <form id="setInterrupt">
+        <block>
+            <log>INFO: Entered setInterrupt</log>
+        </block>
+	    <object name="setInt" classid="com.iivip.setproperty">
+            <param name="PropertyName" value="bargein"/>
+            <param name="PropertyValue" expr="FLD_INTERRUPT"/>
+            <param name="PropertyScope" value="Document"/>
+        </object>
+        <block>
+            <goto next="#getPrompt"/>
+        </block>
+    </form>
 
     <form id="getPrompt">
         <!-- Here, we check the format of the audio file that was passed into the subdialog. A pipe

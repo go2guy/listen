@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/31/2011
+    <!-- Last Modified 02/07/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -281,7 +281,7 @@
         </transition>
 
 		<transition event="connection.connected" name="evt">
-            <!-- The out dial attempt was successful. Let's terminate the ring tone on the caller's side -->
+            <!-- The dial attempt was successful. Let's terminate the ring tone on the caller's side -->
             <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
 		    <assign name="state" expr="'callConnected'"/>
             <if cond="inVXML == 'y'">
