@@ -34,10 +34,6 @@ public final class License
      */
     public static boolean isLicensed(Feature feature)
     {
-        if(feature == ListenFeature.ACD)
-        {
-            return true; // FIXME remove this block once ACD is available on Unleash
-        }
         return INSTANCE.license.isFeatureLicensed(feature);
     }
 
