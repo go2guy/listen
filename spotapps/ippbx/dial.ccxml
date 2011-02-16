@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 02/07/2011
+    <!-- Last Modified 02/15/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -61,12 +61,11 @@
     <var name="NOTIFY_PATH" expr="''"/> 
     <var name="AUDIO_PATH" expr="''"/>      <!-- Audio Path. Directory for audio files -->
     <var name="SIP_SERVER" expr="''"/>      <!-- Name of SIP Trunk server for inbound/outbound calls -->
-    <var name="VOICEMAIL_XFER" expr="'*1'"/>
-    <var name="BLIND_XFER" expr="'*2'"/>
-    <var name="ATTND_XFER" expr="'*3'"/>
+    <var name="SHORT_CODE" expr="'**'"/>
+    <var name="VOICEMAIL_XFER" expr="'1'"/>
+    <var name="BLIND_XFER" expr="'2'"/>
+    <var name="ATTND_XFER" expr="'3'"/>
     <var name="LISTEN_APP" expr="''"/>
-    <var name="CODE_LIST" expr="VOICEMAIL_XFER + ',' + BLIND_XFER + ',' + ATTND_XFER"/>
-
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
     <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"/>    <!-- Location of Java script file -->
@@ -369,8 +368,9 @@
             <assign name="inVXML" expr="'n'"/>
             <assign name="userEntry" expr="evt.values.userEntry"/>
             <assign name="code" expr="userEntry[0] + userEntry[1]"/>
-            <assign name="userEntry" expr="iiSubstr(userEntry,2,-1)"/>
-            <if cond="inString(code,CODE_LIST,',')">
+            <if cond="code == SHORT_CODE">
+                <assign name="code" expr="userEntry[2]"/>
+                <assign name="userEntry" expr="iiSubstr(userEntry,3,-1)"/>
                 <send data="'dialog.user.chkCode'" target="session.id"/>
             <else/>
                 <log>INFO: Invalid short code [<value expr="code"/>]</log>
@@ -380,14 +380,14 @@
         </transition>
 
 		<transition state="monitor" event="dialog.user.chkCode" name="evt">
-            <!-- -->
+            <!-- Checks user's short code key press -->
             <log>INFO: Entered [dialog.user.chkCode] with state [<value expr="state"/>]</log>
-            <if cond="((code == VOICEMAIL_XFER) &amp;&amp; (userEntry.length &lt; EXT_LENGTH))">
+            <if cond="((code == VOICEMAIL_XFER) &amp;&amp; (userEntry.length &gt; 0) &amp;&amp; (userEntry.length &lt; EXT_LENGTH))">
                 <assign name="state" expr="'xferToVoiceMail'"/>
                 <assign name="origDNIS" expr="''"/>
                 <log>INFO: Transfer [<value expr="tmpANI"/>] to voicemail box [<value expr="userEntry"/>]</log>
                 <disconnect connectionid="obconnid"/>
-            <elseif cond="code == BLIND_XFER"/>
+            <elseif cond="((code == BLIND_XFER) &amp;&amp; (userEntry.length &gt; 0))"/>
                 <log>INFO: Blind Transfer [<value expr="tmpANI"/>] to [<value expr="userEntry"/>]</log>
                 <log target="status">Blind transfer request</log>
                 <assign name="state" expr="'blindXfer'"/>
