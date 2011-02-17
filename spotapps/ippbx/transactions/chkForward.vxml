@@ -124,11 +124,13 @@
 
             function chkReturn(jsonObj) {
                 var result = eval("("+jsonObj+")");
-                if (result.length > 0)
-                    return 'listen_findMe';
-                else {
-                    return result[0][0].number;
-                }
+                if (result.length == 1) {
+        			var tmp = new String(result[0][0].href);
+		        	if (tmp.split('/')[2] == 'null') {
+				        return result[0][0].number;
+        			}
+		        }
+                return 'listen_findMe';
             }
 
             function getInfo(inString) {

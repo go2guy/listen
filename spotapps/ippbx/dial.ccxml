@@ -111,8 +111,8 @@
             <elseif cond="tmpDNIS.length &lt; EXT_LENGTH"/>
                 <!-- This is part of the forwarding logic. Before dialing an internal extension
                 we need to make sure it is not forwarded -->
-                <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0))">
-                    <!-- If the origDNIS variable is set to a value, we're likely dealing with a
+                <if cond="((origDNIS.length != undefined) &amp;&amp; (origDNIS == tmpDNIS))">
+                    <!-- If the origDNIS variable is equal to the current tmpDNIS, we're likely dealing with a
                     blindtransfer request that needs to go to voice mail -->
                     <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                     <send data="'dialog.user.listenApp'" target="session.id"/>
