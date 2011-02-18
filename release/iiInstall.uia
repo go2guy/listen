@@ -2,28 +2,6 @@
 <uia>
     <iiInstall version="4">
         <system>
-            <name>xmlsecurity</name>
-            <group>webserver</group>
-            <group>ivrserver</group>
-            <group>all</group>
-        </system>
-
-        <system>
-            <name>collector</name>
-            <rpmRegex>statcollector-</rpmRegex>
-            <group>webserver</group>
-            <group>ivrserver</group>
-            <group>all</group>
-        </system>
-
-        <system>
-            <name>collector-dts</name>
-            <rpmRegex>statcollector_dts</rpmRegex>
-            <group>ivrserver</group>
-            <group>all</group>
-        </system>
-
-        <system>
             <name>iiacs</name>
             <rpmRegex>iiacs-V</rpmRegex>
             <group>arcade</group>
@@ -65,6 +43,28 @@
             <name>iixap</name>
             <rpmRegex>iixap-V</rpmRegex>
             <group>arcade</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>xmlsecurity</name>
+            <group>webserver</group>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>collector</name>
+            <rpmRegex>statcollector-</rpmRegex>
+            <group>webserver</group>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>collector-dts</name>
+            <rpmRegex>statcollector_dts</rpmRegex>
+            <group>ivrserver</group>
             <group>all</group>
         </system>
 
