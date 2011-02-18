@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 02/15/2011
+    <!-- Last Modified 02/18/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -41,6 +41,7 @@
     <var name="voipDirection" expr="''"/>
     <var name="userEntry" expr="''"/>
     <var name="code" expr="''"/>
+    <var name="isFwd" expr="'false'"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -144,6 +145,7 @@
                 <elseif cond="result != tmpDNIS"/>
                     <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
                     <assign name="origDNIS" expr="DNIS"/> <!-- Let's save off original destination for possible later use -->
+                    <assign name="isFwd" expr="'true'"/>
                     <if cond="((result.length &gt; EXT_LENGTH) &amp;&amp; (iiNumber(result)))">
                         <assign name="result" expr="OUTSIDE_LINE + result"/>
                     </if>
@@ -696,7 +698,7 @@
             <log>INFO: Entered [dialog.user.listenApp] with state [<value expr="state"/>]</log>
             <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
                 <if cond="LISTEN_APP == 'listen_voicemail'">
-                    <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0))">
+                    <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0) &amp;&amp; (isFwd == 'true'))">
                     <!-- If we're dealing with an extension that was forwarded, we need to use the original
                     voicemail not where the call was forwarded to -->
                     <assign name="DNIS" expr="origDNIS"/>
