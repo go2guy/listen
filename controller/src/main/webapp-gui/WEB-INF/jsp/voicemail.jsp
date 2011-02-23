@@ -23,9 +23,9 @@
     </ol>
   
     <div id="pagination" class="pagination">
-      <a href="#">Prev</a>
+      <button type="button" class="icon-pageleft"></button>
       <span class="pagination-current">0-0</span>of<span class="pagination-total">0</span>
-      <a href="#">Next</a>
+      <button type="button" class="icon-pageright"></button>
     </div>
     
     <ul class="templates">
