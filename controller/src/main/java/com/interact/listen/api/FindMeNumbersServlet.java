@@ -8,20 +8,24 @@ import com.interact.listen.marshal.Marshaller;
 import com.interact.listen.resource.AccessNumber;
 import com.interact.listen.resource.FindMeNumber;
 import com.interact.listen.resource.Subscriber;
+import com.interact.listen.util.DateUtil;
 
 import java.util.*;
- 
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.joda.time.LocalDateTime;
 import org.json.simple.JSONArray;
 
 public class FindMeNumbersServlet extends HttpServlet
 {
+    private static final Logger LOG = Logger.getLogger(FindMeNumbersServlet.class);
     private static final long serialVersionUID = 1L;
     
     @Override
@@ -44,11 +48,26 @@ public class FindMeNumbersServlet extends HttpServlet
         TreeMap<Integer, List<FindMeNumber>> groups = FindMeNumber.queryBySubscriberInPriorityGroups(session,
                                                                                                      subscriber,
                                                                                                      includeDisabledBoolean);
-        
-        //No find me configuration for this subscriber, return just the number or where it's forwarded to in 
-        //the expected json format.
-        if(groups.size() == 0)
+
+        // see if the config is expired (null expiration date == expired) 
+        boolean isExpired = true;
+        if(subscriber.getFindMeExpiration() != null)
         {
+            LocalDateTime now = new LocalDateTime();
+            LocalDateTime expires = DateUtil.toJoda(subscriber.getFindMeExpiration());
+            if(expires.isAfter(now))
+            {
+                isExpired = false;
+            }
+        }
+
+        LOG.debug("Is Find Me configuration expired? " + isExpired);
+
+        if(groups.size() == 0 || isExpired)
+        {
+            // No find me configuration for this subscriber, return just the number or where it's forwarded to in 
+            // the expected json format.
+
             FindMeNumber findmeNumber = new FindMeNumber();
             AccessNumber destinationAccessNumber = AccessNumber.queryByNumber(session, destination);
             if(destinationAccessNumber != null)

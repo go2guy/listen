@@ -100,7 +100,7 @@ public class Subscriber extends Resource implements Serializable
     private String workEmailAddress = "";
 
     @Column(name = "FIND_ME_EXPIRATION", nullable = true)
-    private Date findMeExpiration;
+    private Date findMeExpiration; // null means the configuration IS expired
 
     public enum PlaybackOrder
     {
