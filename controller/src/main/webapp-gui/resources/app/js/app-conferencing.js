@@ -325,7 +325,7 @@ function Conference(id) {
                     $('#outdial-show').hide();
                 }
 
-                var recordHtml = '<button class="button-' + (data.info.isRecording ? 'stop' : 'record') + '" onclick="' + (data.info.isRecording ? 'Server.stopRecording(' + conferenceId + ');return false;' : 'Server.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop' : 'Record') + '</button>';
+                var recordHtml = '<button class="button-' + (data.info.isRecording ? 'stop' : 'record') + '" onclick="' + (data.info.isRecording ? 'Server.stopRecording(' + conferenceId + ');return false;' : 'Server.startRecording(' + conferenceId + ');return false;') + '" title="' + (data.info.isRecording ? 'Stop Recording' : 'Start') + ' recording this conference">' + (data.info.isRecording ? 'Stop Recording' : 'Record') + '</button>';
                 if(recordButton.html() != recordHtml) {
                     recordButton.html(recordHtml);
                 }
