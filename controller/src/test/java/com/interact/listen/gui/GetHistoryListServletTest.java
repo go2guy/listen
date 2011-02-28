@@ -27,15 +27,6 @@ public class GetHistoryListServletTest extends ListenServletTest
     }
 
     @Test
-    public void test_doGet_withNonAdminCurrentUser_throwsUnauthorized() throws ServletException, IOException
-    {
-        TestUtil.setSessionSubscriber(request, false, session);
-
-        request.setMethod("GET");
-        testForListenServletException(servlet, 401, "Unauthorized - Insufficient permissions");
-    }
-    
-    @Test
     public void test_doGet_returnsJsonHistoryList() throws ServletException, IOException
     {
         TestUtil.setSessionSubscriber(request, true, session);

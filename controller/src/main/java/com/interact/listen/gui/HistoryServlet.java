@@ -1,7 +1,6 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.ServletUtil;
-import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.resource.Subscriber;
 
 import java.io.IOException;
