@@ -94,10 +94,25 @@ public abstract class History extends Resource implements Serializable
         criteria.setProjection(Projections.rowCount());
         return (Long)criteria.list().get(0);
     }
+    
+    public static Long countBySubscriber(Session session, Subscriber subscriber)
+    {
+        Criteria criteria = session.createCriteria(History.class);
+        criteria.setProjection(Projections.rowCount());
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        return (Long)criteria.list().get(0);
+    }
 
-    public static final List<History> queryAllPaged(Session session, int first, int max)
+    public static final List<History> queryAllPaged(Session session, int first, int max, Subscriber subscriber)
     {
         DetachedCriteria subquery = DetachedCriteria.forClass(History.class);
+        if(subscriber != null)
+        {
+            subquery.createAlias("subscriber", "subscriber_alias");
+            subquery.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        }
+        
         subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         subquery.setProjection(Projections.id());
 

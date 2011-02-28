@@ -36,11 +36,6 @@ public class GetHistoryListServlet extends HttpServlet
             throw new UnauthorizedServletException("Not logged in");
         }
 
-        if(!subscriber.getIsAdministrator())
-        {
-            throw new UnauthorizedServletException("Insufficient permissions");
-        }
-
         int first = 0;
         int max = Resource.DEFAULT_PAGE_SIZE;
         if(request.getParameter("first") != null)
@@ -53,14 +48,22 @@ public class GetHistoryListServlet extends HttpServlet
         }
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        List<History> results = History.queryAllPaged(session, first, max);
-
+        
+        List<History> results = null;
         long total = 0;
-        if(results.size() > 0)
+        if(!subscriber.getIsAdministrator())
         {
-            total = History.count(session);
+            //Query for the history of the currently logged in subscriber
+            results = History.queryAllPaged(session, first, max, subscriber);
+            total = results.size() > 0 ? History.countBySubscriber(session, subscriber) : 0;
         }
-
+        else
+        {
+            //User is admin, query for all histories
+            results = History.queryAllPaged(session, first, max, null);
+            total = results.size() > 0 ? History.count(session) : 0;
+        }
+        
         Marshaller marshaller = new JsonMarshaller();
         marshaller.registerConverterClass(Date.class, FriendlyIso8601DateConverter.class);
 

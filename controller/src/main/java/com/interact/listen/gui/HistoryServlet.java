@@ -24,10 +24,7 @@ public class HistoryServlet extends HttpServlet
             ServletUtil.redirect("/login", request, response);
             return;
         }
-        else if(!subscriber.getIsAdministrator())
-        {
-            throw new UnauthorizedServletException("Insufficient permissions");
-        }
+        
         ServletUtil.forward("/WEB-INF/jsp/history.jsp", request, response);
     }
 }
