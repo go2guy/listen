@@ -5,6 +5,7 @@
 <%@ page import="com.interact.listen.license.ListenFeature" %>
 <%@ page import="com.interact.listen.resource.Subscriber" %>
 <%@ page import="com.interact.listen.resource.Voicemail" %>
+<%@ page import="org.joda.time.LocalDate" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <decorator:usePage id="decoratedPage"/> 
 <html>
@@ -75,7 +76,7 @@ if(subscriber.getIsAdministrator()) { %>
       </div>
       
       <div id="footer">
-        Listen &copy;2010 Interact Incorporated, <a href="http://www.iivip.com/">iivip.com</a>
+        Listen &copy;2010-<%= new LocalDate().getYear() %> Interact Incorporated, <a href="http://www.iivip.com/">iivip.com</a>
         </div>
     </div>
 
