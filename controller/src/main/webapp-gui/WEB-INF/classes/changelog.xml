@@ -668,4 +668,11 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
+    <changeSet author="development" id="62">
+        <addColumn tableName="SUBSCRIBER">
+            <column name="FIND_ME_EXPIRATION" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

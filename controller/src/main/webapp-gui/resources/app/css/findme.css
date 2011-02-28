@@ -129,3 +129,19 @@ select {
     font-style: italic;
     margin-left: 15px;
 }
+
+#expiration-configuration {
+    margin: 5px 0;
+}
+
+#expiration-configuration #expires {
+    font-weight: bold;
+    padding: 0 5px;
+    width: 275px;
+}
+
+.ui-timepicker-div .ui-widget-header{ margin-bottom: 8px; }
+.ui-timepicker-div dl{ text-align: left; }
+.ui-timepicker-div dl dt{ height: 25px; }
+.ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }

@@ -1,8 +1,23 @@
 var interact = interact || {};
 var FindMe;
 $(document).ready(function() {
+
     $('#findme-save').click(function() {
         FindMe.saveConfiguration();
+    });
+
+    $('#expires').datetimepicker({
+        ampm: true,
+        dateFormat: 'D, MM d, yy',
+        minDate: 0,
+        separator: ' at ',
+        stepMinute: 15,
+        timeFormat: 'h:mm TT'
+    });
+
+    $('#expiration-change').click(function() {
+        $('#expiration-expired').hide();
+        $('#expiration-configuration').show();
     });
 
     FindMe = function() {
@@ -235,7 +250,6 @@ $(document).ready(function() {
                 var groups = [];
                 $('.simultaneous-numbers').each(function(i, it) {
                     var group = [];
-                    interact.util.trace('GROUP ' + it);
                     $('.dialed-number, .dialed-number-disabled', it).each(function(j, dial) {
                         var inputs = $('input', dial);
                         interact.util.trace('  Number: ' + inputs.eq(0).val());
@@ -262,7 +276,8 @@ $(document).ready(function() {
                 Server.post({
                     url: interact.listen.url('/ajax/saveFindMeConfiguration'),
                     properties: {
-                        findme: JSON.stringify(findme)
+                        findme: JSON.stringify(findme),
+                        expires: $('#expires').val()
                     },
                     successCallback: function(data, textStatus, xhr) {
                         saveButton.removeAttr('readonly').removeAttr('disabled');

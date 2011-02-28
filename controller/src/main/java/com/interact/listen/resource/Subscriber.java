@@ -99,6 +99,9 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "WORK_EMAIL_ADDRESS", nullable = false)
     private String workEmailAddress = "";
 
+    @Column(name = "FIND_ME_EXPIRATION", nullable = true)
+    private Date findMeExpiration;
+
     public enum PlaybackOrder
     {
         NEWEST_TO_OLDEST, OLDEST_TO_NEWEST;
@@ -378,6 +381,16 @@ public class Subscriber extends Resource implements Serializable
         this.isActiveDirectory = isActiveDirectory;
     }
 
+    public Date getFindMeExpiration()
+    {
+        return findMeExpiration == null ? null : new Date(findMeExpiration.getTime());
+    }
+
+    public void setFindMeExpiration(Date findMeExpiration)
+    {
+        this.findMeExpiration = findMeExpiration == null ? null : new Date(findMeExpiration.getTime());
+    }
+
     @Override
     public boolean validate()
     {
@@ -454,6 +467,7 @@ public class Subscriber extends Resource implements Serializable
         copy.setVoicemailPin(voicemailPin);
         copy.setVoicemails(voicemails);
         copy.setWorkEmailAddress(workEmailAddress);
+        copy.setFindMeExpiration(findMeExpiration);
         return copy;
     }
 

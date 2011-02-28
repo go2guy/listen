@@ -425,6 +425,24 @@ div.help {
     margin-bottom: 5px;
 }
 
+.warning-message {
+    background-color: #FCFBCC;
+    border: 1px dashed #E8E47B;
+    color: #333333;
+    font-size: 90%;
+    padding: 5px 3px;
+    margin-bottom: 5px;
+}
+
+.error-message {
+    background-color: #FFDBAB;
+    border: 1px dashed #FFAB52;
+    color: #333333;
+    font-size: 90%;
+    padding: 5px 3px;
+    margin-bottom: 5px;
+}
+
 .sort-ascending,
 .sort-descending {
     display: block;

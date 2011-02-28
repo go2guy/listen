@@ -1,6 +1,7 @@
 package com.interact.listen.gui;
 
 import com.interact.listen.*;
+import com.interact.listen.exception.BadRequestServletException;
 import com.interact.listen.exception.UnauthorizedServletException;
 import com.interact.listen.history.Channel;
 import com.interact.listen.license.License;
@@ -10,6 +11,9 @@ import com.interact.listen.resource.FindMeNumber;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -44,6 +48,23 @@ public class SaveFindMeConfigurationServlet extends HttpServlet
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
+
+        // save expiration date
+        String expires = request.getParameter("expires");
+        SimpleDateFormat format = new SimpleDateFormat("EEE, MMMM d, yyyy 'at' K:mm aa");
+        try
+        {
+            Subscriber original = subscriber.copy(false);
+            Date expirationDate = format.parse(expires);
+            subscriber.setFindMeExpiration(expirationDate);
+            persistenceService.update(subscriber, original);
+        }
+        catch(ParseException e)
+        {
+            throw new BadRequestServletException("Expiration date was not formatted correctly");
+        }
+
+        // save numbers
         FindMeNumber.deleteBySubscriber(session, subscriber);
 
         JSONArray groups = (JSONArray)JSONValue.parse(request.getParameter("findme"));
