@@ -65,6 +65,8 @@ public class FindMeNumbersServlet extends HttpServlet
 
         if(groups.size() == 0 || isExpired)
         {
+            groups = new TreeMap<Integer, List<FindMeNumber>>(); // if expired, we want to clear out the groups
+
             // No find me configuration for this subscriber, return just the number or where it's forwarded to in 
             // the expected json format.
 
