@@ -100,6 +100,9 @@
 	<var name="EXT_LENGTH" expr="''" />
 	<var name="afterHourSub" expr="'After Hours'" />
 	<var name="inAfterHrs" expr="'false'" />
+	<var name="EXT_PREFIX" expr="''" />
+	<var name="EXT_SUFFIX" expr="''" />
+	<var name="phoneNumber" expr="''" />
 
 
     <!-- Conference Variables -->

@@ -90,6 +90,9 @@
 	<var name="SB_UV_EXT_LENGTH"/>
 	<var name="SB_UV_afterHourSub"/>
 	<var name="SB_UV_inAfterHrs"/>
+	<var name="SB_UV_EXT_PREFIX"/>
+	<var name="SB_UV_EXT_SUFFIX"/>
+	<var name="SB_UV_phoneNumber"/>
 
     
     <form id="beginDocument">
@@ -316,6 +319,15 @@
 			</if>
 			<if cond="SB_UV_inAfterHrs != undefined">
 				<assign name="inAfterHrs" expr="SB_UV_inAfterHrs" />
+			</if>
+			<if cond="SB_UV_EXT_PREFIX != undefined">
+				<assign name="EXT_PREFIX" expr="SB_UV_EXT_PREFIX" />
+			</if>
+			<if cond="SB_UV_EXT_SUFFIX != undefined">
+				<assign name="EXT_SUFFIX" expr="SB_UV_EXT_SUFFIX" />
+			</if>
+			<if cond="SB_UV_phoneNumber != undefined">
+				<assign name="phoneNumber" expr="SB_UV_phoneNumber" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
