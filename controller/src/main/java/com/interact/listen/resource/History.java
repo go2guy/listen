@@ -97,27 +97,47 @@ public abstract class History extends Resource implements Serializable
     
     public static Long countBySubscriber(Session session, Subscriber subscriber)
     {
-        Criteria criteria = session.createCriteria(History.class);
-        criteria.setProjection(Projections.rowCount());
-        criteria.createAlias("subscriber", "subscriber_alias");
-        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
-        return (Long)criteria.list().get(0);
+        String hql = "select count(*) from History h where h.subscriber = :subscriber or h.onSubscriber = :subscriber";
+        return (Long)session.createQuery(hql).setEntity("subscriber", subscriber).list().get(0);
     }
 
     public static final List<History> queryAllPaged(Session session, int first, int max, Subscriber subscriber)
     {
-        DetachedCriteria subquery = DetachedCriteria.forClass(History.class);
+        //Kind of gross here.  When querying Action Histories, we need any id where either the subscriberId
+        //or the onSubscriberId is the specific subscriber's id.  For call details, we need just the subscriberId
+        //matching records.  If new history types are added, a new subquery for those ids should be made with 
+        //appropriate criteria for what makes it a match with a specific subscriber
+        DetachedCriteria actionHistorySubquery = DetachedCriteria.forClass(ActionHistory.class);
         if(subscriber != null)
         {
-            subquery.createAlias("subscriber", "subscriber_alias");
-            subquery.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+            actionHistorySubquery.createAlias("subscriber", "subscriber_alias", Criteria.LEFT_JOIN);
+            actionHistorySubquery.createAlias("onSubscriber", "on_subscriber_alias", Criteria.LEFT_JOIN);
+            actionHistorySubquery.add(Restrictions.or(Restrictions.eq("subscriber_alias.id", subscriber.getId()),
+                                                      Restrictions.eq("on_subscriber_alias.id", subscriber.getId())));
+            actionHistorySubquery.setFetchMode("subscriber", FetchMode.SELECT);
+            actionHistorySubquery.setFetchMode("onSubscriber", FetchMode.SELECT);
         }
         
-        subquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        subquery.setProjection(Projections.id());
+        actionHistorySubquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        actionHistorySubquery.setProjection(Projections.id());
+        
+        DetachedCriteria callDetailSubquery = DetachedCriteria.forClass(CallDetailRecord.class);
+        if(subscriber != null)
+        {
+            callDetailSubquery.createAlias("subscriber", "subscriber_alias");
+            callDetailSubquery.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+            callDetailSubquery.setFetchMode("subscriber", FetchMode.SELECT);
+        }
+        
+        callDetailSubquery.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        callDetailSubquery.setProjection(Projections.id());
+        
+        Disjunction disjunction = Restrictions.disjunction();
+        disjunction.add(Subqueries.propertyIn("id", actionHistorySubquery));
+        disjunction.add(Subqueries.propertyIn("id", callDetailSubquery));
 
         Criteria criteria = session.createCriteria(History.class);
-        criteria.add(Subqueries.propertyIn("id", subquery));
+        criteria.add(disjunction);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         criteria.setFirstResult(first);
