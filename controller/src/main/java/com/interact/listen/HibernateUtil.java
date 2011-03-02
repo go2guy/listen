@@ -3,6 +3,7 @@ package com.interact.listen;
 import com.interact.listen.attendant.*;
 import com.interact.listen.config.Property;
 import com.interact.listen.history.Channel;
+import com.interact.listen.jobs.FindMeExpirationReminderJob;
 import com.interact.listen.jobs.NewVoicemailPagerJob;
 import com.interact.listen.license.License;
 import com.interact.listen.license.ListenFeature;
@@ -200,7 +201,7 @@ public final class HibernateUtil
                 bootstrap(persistenceService);
             }
             
-            startPagingThread();
+            startBackgroundJobs();
 
             transaction.commit();
         }
@@ -392,14 +393,29 @@ public final class HibernateUtil
         }
     }
     
-    private static void startPagingThread() throws SchedulerException, ParseException
+    private static void startBackgroundJobs() throws SchedulerException, ParseException
     {
-        SchedulerFactory sf = new StdSchedulerFactory();
-        Scheduler sched = sf.getScheduler();
-        JobDetail jobDetail = new JobDetail("job1", "group1", NewVoicemailPagerJob.class);
-        CronTrigger cronTrigger = new CronTrigger("cronTrigger", "group2", "0 0/1 * * * ?");
-        sched.scheduleJob(jobDetail, cronTrigger);
-        sched.start();
+        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        Scheduler scheduler = schedulerFactory.getScheduler();
+        scheduleVoicemailPagerJob(scheduler);
+        scheduleFindMeReminderJob(scheduler);
+        scheduler.start();
+    }
+
+    private static void scheduleVoicemailPagerJob(Scheduler scheduler) throws SchedulerException, ParseException
+    {
+        JobDetail job = new JobDetail("voicemailPager", NewVoicemailPagerJob.class);
+        CronTrigger trigger = new CronTrigger("voicemailPagerTrigger");
+        trigger.setCronExpression("0 0/1 * * * ?");
+        scheduler.scheduleJob(job, trigger);
+    }
+
+    private static void scheduleFindMeReminderJob(Scheduler scheduler) throws SchedulerException, ParseException
+    {
+        JobDetail job = new JobDetail("findMeReminder", FindMeExpirationReminderJob.class);
+        CronTrigger trigger = new CronTrigger("findMeReminderTrigger");
+        trigger.setCronExpression("0 0/30 * * * ?");
+        scheduler.scheduleJob(job, trigger);
     }
 
     private static void resetTransientData(Session session)
