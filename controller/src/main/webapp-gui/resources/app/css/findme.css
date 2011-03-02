@@ -140,6 +140,24 @@ select {
     width: 275px;
 }
 
+#expiration-notify {
+    height: 32px;
+    line-height: 32px;
+    margin-top: 5px;
+}
+
+#notify-enable {
+    display: inline;
+    height: 32px;
+    line-height: 32px;
+    vertical-align: middle;
+}
+
+#notify-destination {
+    padding: 0 5px;
+    width: 150px;
+}
+
 .ui-timepicker-div .ui-widget-header{ margin-bottom: 8px; }
 .ui-timepicker-div dl{ text-align: left; }
 .ui-timepicker-div dl dt{ height: 25px; }

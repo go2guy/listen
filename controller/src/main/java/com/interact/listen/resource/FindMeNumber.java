@@ -115,6 +115,16 @@ public class FindMeNumber extends Resource implements Serializable
         this.dialDuration = dialDuration;
     }
 
+    public static Long countEnabledBySubscriber(Session session, Subscriber subscriber)
+    {
+        Criteria criteria = session.createCriteria(FindMeNumber.class);
+        criteria.setProjection(Projections.rowCount());
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.eq("subscriber_alias.id", subscriber.getId()));
+        criteria.add(Restrictions.eq("enabled", true));
+        return (Long)criteria.list().get(0);
+    }
+
     public static List<FindMeNumber> queryBySubscriberOrderByPriority(Session session, Subscriber subscriber,
                                                                       boolean includeDisabled)
     {

@@ -102,6 +102,12 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "FIND_ME_EXPIRATION", nullable = true)
     private Date findMeExpiration; // null means the configuration IS expired
 
+    @Column(name = "SEND_FIND_ME_REMINDER", nullable = true)
+    private Boolean sendFindMeReminder = Boolean.FALSE;
+
+    @Column(name = "FIND_ME_REMINDER_DESTINATION", nullable = true)
+    private String findMeReminderDestination;
+
     public enum PlaybackOrder
     {
         NEWEST_TO_OLDEST, OLDEST_TO_NEWEST;
@@ -391,6 +397,26 @@ public class Subscriber extends Resource implements Serializable
         this.findMeExpiration = findMeExpiration == null ? null : new Date(findMeExpiration.getTime());
     }
 
+    public Boolean getSendFindMeReminder()
+    {
+        return sendFindMeReminder;
+    }
+
+    public void setSendFindMeReminder(Boolean sendFindMeReminder)
+    {
+        this.sendFindMeReminder = sendFindMeReminder;
+    }
+
+    public String getFindMeReminderDestination()
+    {
+        return findMeReminderDestination;
+    }
+
+    public void setFindMeReminderDestination(String findMeReminderDestination)
+    {
+        this.findMeReminderDestination = findMeReminderDestination;
+    }
+
     @Override
     public boolean validate()
     {
@@ -468,6 +494,8 @@ public class Subscriber extends Resource implements Serializable
         copy.setVoicemails(voicemails);
         copy.setWorkEmailAddress(workEmailAddress);
         copy.setFindMeExpiration(findMeExpiration);
+        copy.setSendFindMeReminder(sendFindMeReminder);
+        copy.setFindMeReminderDestination(findMeReminderDestination);
         return copy;
     }
 

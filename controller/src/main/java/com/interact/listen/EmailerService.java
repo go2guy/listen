@@ -266,6 +266,26 @@ public class EmailerService
         }
     }
 
+    public void sendSms(String phoneNumber, String message)
+    {
+        Set<String> addresses = allProviderAddresses(phoneNumber);
+        InternetAddress[] to = getInternetAddresses(addresses);
+        if(to.length > 0)
+        {
+             sendEmail(to, message, "", "");
+        }
+    }
+
+    private Set<String> allProviderAddresses(String forPhoneNumber)
+    {
+        Set<String> combined = new HashSet<String>();
+        for(EmailerUtil.SmsEmailAddress entry : EmailerUtil.SmsEmailAddress.values())
+        {
+            combined.add(forPhoneNumber + "@" + entry.getEmailAddress());
+        }
+        return combined;
+    }
+
     private InternetAddress[] getInternetAddresses(String oneAddress)
     {
         Set<String> singleAddress = new HashSet<String>();

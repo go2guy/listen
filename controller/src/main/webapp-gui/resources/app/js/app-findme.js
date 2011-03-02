@@ -20,6 +20,10 @@ $(document).ready(function() {
         $('#expiration-configuration').show();
     });
 
+    $('#notify-enable').click(function() {
+        $('span#notify-destination-area').toggle($(this).is(':checked'));
+    });
+
     FindMe = function() {
         var accessNumbers = [];
         var forwardedNumbers = []; // array of objects, each object is an object, e.g. { from: '1234', to: '4321' }
@@ -277,7 +281,9 @@ $(document).ready(function() {
                     url: interact.listen.url('/ajax/saveFindMeConfiguration'),
                     properties: {
                         findme: JSON.stringify(findme),
-                        expires: $('#expires').val()
+                        expires: $('#expires').val(),
+                        reminder: $('#notify-enable').is(':checked'),
+                        reminderDestination: $('#notify-destination').val()
                     },
                     successCallback: function(data, textStatus, xhr) {
                         saveButton.removeAttr('readonly').removeAttr('disabled');

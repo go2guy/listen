@@ -49,14 +49,21 @@ public class SaveFindMeConfigurationServlet extends HttpServlet
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         PersistenceService persistenceService = new DefaultPersistenceService(session, subscriber, Channel.GUI);
 
-        // save expiration date
+        // save expiration date & reminder settings
         String expires = request.getParameter("expires");
         SimpleDateFormat format = new SimpleDateFormat("EEE, MMMM d, yyyy 'at' K:mm aa");
         try
         {
             Subscriber original = subscriber.copy(false);
+
             Date expirationDate = format.parse(expires);
             subscriber.setFindMeExpiration(expirationDate);
+
+            Boolean reminder = ServletUtil.getNotNullBoolean("reminder", request, "reminder");
+            String destination = ServletUtil.getNotNullString("reminderDestination", request, "reminderDestination");
+            subscriber.setSendFindMeReminder(reminder);
+            subscriber.setFindMeReminderDestination(destination);
+
             persistenceService.update(subscriber, original);
         }
         catch(ParseException e)

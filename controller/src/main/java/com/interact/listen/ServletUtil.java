@@ -212,7 +212,18 @@ public final class ServletUtil
         }
         return p;
     }
-    
+
+    public static Boolean getNotNullBoolean(String parameter, HttpServletRequest request, String fieldName)
+        throws BadRequestServletException
+    {
+        String p = request.getParameter(parameter);
+        if(p == null)
+        {
+            throw new BadRequestServletException(fieldName + " cannot be null");
+        }
+        return Boolean.valueOf(p);
+    }
+
     public static PersistenceService getAuthPersistenceService(Session session, HttpServletRequest request) throws UnauthorizedServletException
     {
         Subscriber subscriber = null;

@@ -42,6 +42,9 @@ DateTimeFormatter formatter = DateTimeFormat.forPattern("EEE, MMMM d, yyyy 'at' 
 
     <div id="expiration-configuration" class="warning-message" style="display: <%= expires.isBefore(now) ? "none" : "block" %>;">
       The following Find Me / Follow Me configuration will expire on <input type="text" id="expires" value="<%= formatter.print(value) %>"/>
+      <div id="expiration-notify">
+        <input type="checkbox" id="notify-enable"<%= subscriber.getSendFindMeReminder() ? " checked=\"checked\"" : "" %>> Shortly before the configuration expires, send me an SMS message<span id="notify-destination-area" style="display: <%= subscriber.getSendFindMeReminder() ? "inline" : "none" %>;"> to phone number <input type="text" id="notify-destination" value="<%= subscriber.getFindMeReminderDestination() != null ? subscriber.getFindMeReminderDestination() : "" %>"/></span>
+      </div>
     </div>
 
     <div class="when-somebody-calls">When somebody calls me,</div>

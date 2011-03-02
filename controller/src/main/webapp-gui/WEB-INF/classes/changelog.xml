@@ -675,4 +675,16 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="63">
+        <addColumn tableName="SUBSCRIBER">
+            <column name="SEND_FIND_ME_REMINDER" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="SUBSCRIBER">
+            <column name="FIND_ME_REMINDER_DESTINATION" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
