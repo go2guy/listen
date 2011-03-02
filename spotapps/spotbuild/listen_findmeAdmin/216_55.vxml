@@ -11,9 +11,9 @@
         <block>
 	    <log target="status">User Input</log>
             <log>INFO: Entered assign-variable.vxml [216_55]</log>
-            <log>INFO: Current value [<value expr="subID"/>]</log>
-<assign name="subID" expr="userInput+''" />
-<log>INFO: Updated value [<value expr="subID"/>]</log>
+            <log>INFO: Current value [<value expr="ANI"/>]</log>
+<assign name="ANI" expr="userInput+''" />
+<log>INFO: Updated value [<value expr="ANI"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
