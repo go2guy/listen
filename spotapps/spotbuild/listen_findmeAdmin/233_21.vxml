@@ -20,9 +20,6 @@
 <log>INFO: Current value [<value expr="firstThrough"/>]</log>
 <assign name="firstThrough" expr="'true'+''" />
 <log>INFO: Updated value [<value expr="firstThrough"/>]</log>
-<log>INFO: Current value [<value expr="errCnt"/>]</log>
-<assign name="errCnt" expr="'0'+''" />
-<log>INFO: Updated value [<value expr="errCnt"/>]</log>
 <log>INFO: Current value [<value expr="userInput"/>]</log>
 <assign name="userInput" expr="''+''" />
 <log>INFO: Updated value [<value expr="userInput"/>]</log>
