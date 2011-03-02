@@ -53,6 +53,8 @@
 	<var name="FILE" expr="'defaultApp.cfg'" />
 	<var name="contentType" expr="'application/x-www-form-urlencoded'" />
 	<var name="EXT_LENGTH" expr="'4'" />
+	<var name="EXT_PREFIX" expr="'ext'" />
+	<var name="EXT_SUFFIX" expr="'@iipbx'" />
 
 
     <!-- Conference Variables -->

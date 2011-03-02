@@ -43,6 +43,8 @@
 	<var name="SB_UV_FILE"/>
 	<var name="SB_UV_contentType"/>
 	<var name="SB_UV_EXT_LENGTH"/>
+	<var name="SB_UV_EXT_PREFIX"/>
+	<var name="SB_UV_EXT_SUFFIX"/>
 
     
     <form id="beginDocument">
@@ -129,6 +131,12 @@
 			</if>
 			<if cond="SB_UV_EXT_LENGTH != undefined">
 				<assign name="EXT_LENGTH" expr="SB_UV_EXT_LENGTH" />
+			</if>
+			<if cond="SB_UV_EXT_PREFIX != undefined">
+				<assign name="EXT_PREFIX" expr="SB_UV_EXT_PREFIX" />
+			</if>
+			<if cond="SB_UV_EXT_SUFFIX != undefined">
+				<assign name="EXT_SUFFIX" expr="SB_UV_EXT_SUFFIX" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
