@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.interact.listen.android.voicemail"
-      android:versionCode="16"
-      android:versionName="1.4.3"
-      android:installLocation="auto"
+      android:versionCode="17"
+      android:versionName="1.4.4"
+      android:installLocation="internalOnly"
 >
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
