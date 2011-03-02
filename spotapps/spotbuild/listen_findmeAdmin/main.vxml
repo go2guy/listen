@@ -52,6 +52,8 @@
 	<var name="SB_UV_firstThrough"/>
 	<var name="SB_UV_loop"/>
 	<var name="SB_UV_loopNumber"/>
+	<var name="SB_UV_subInfo"/>
+	<var name="SB_UV_time"/>
 
     
     <form id="beginDocument">
@@ -163,6 +165,12 @@
 			</if>
 			<if cond="SB_UV_loopNumber != undefined">
 				<assign name="loopNumber" expr="SB_UV_loopNumber" />
+			</if>
+			<if cond="SB_UV_subInfo != undefined">
+				<assign name="subInfo" expr="SB_UV_subInfo" />
+			</if>
+			<if cond="SB_UV_time != undefined">
+				<assign name="time" expr="SB_UV_time" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'216_8'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'234_3'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_216_5(ANI)
+            function II_SB_JS_function_234_16()
             {
-	            return "?_fields=subscriber&number=" + ANI;
+	            var temp = new Date().getTime();return iiDateToISO(temp);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Access Number Search</log>
-            <log>INFO: Entered run-javascript.vxml [216_5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_216_5(ANI)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="params" expr="II_SB_userJava" />   
+            <log target="status">Get Time</log>
+            <log>INFO: Entered run-javascript.vxml [234_16]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_234_16()"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="time" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

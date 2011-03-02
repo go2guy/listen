@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_216_72(returnVal)
+            function II_SB_JS_function_216_72(subInfo)
             {
-	            return getJsonVal(returnVal, 'voicemailPin');
+	            return getJsonVal(subInfo, 'voicemailPin');
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Get Passcode</log>
             <log>INFO: Entered run-javascript.vxml [216_72]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_216_72(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_216_72(subInfo)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="pin" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

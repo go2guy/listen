@@ -1,17 +1,23 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_findmeAdmin/root.vxml"> <!--  Set location of root document -->
-    <!-- Last Modified 10/21/2009
-       *   @Name   math.vxml
-       *   @Desc   Sets up simple math operations -->
+    <!-- Last Modified 05/17/2010
+       *   @Name   assign-variable.vxml
+       *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'220_124'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'232_3'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    
-            <log>INFO: Entered math.vxml [220_136]</log>
-            <assign name="loopNumber" expr="parseInt(loop) + parseInt('1') "/>
+	    <log target="status">Reset Vars</log>
+            <log>INFO: Entered assign-variable.vxml [232_6]</log>
+            <log>INFO: Current value [<value expr="userInput"/>]</log>
+<assign name="userInput" expr="''+''" />
+<log>INFO: Updated value [<value expr="userInput"/>]</log>
+<log>INFO: Current value [<value expr="whichPath"/>]</log>
+<assign name="whichPath" expr="'configExpired'+''" />
+<log>INFO: Updated value [<value expr="whichPath"/>]</log>
+
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_nxtOpt + '.vxml'"/>

@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'216_8'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'233_18'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_216_5(ANI)
+            function II_SB_JS_function_233_27(phoneNumbers,loop)
             {
-	            return "?_fields=subscriber&number=" + ANI;
+	            var result = eval("("+phoneNumbers+")");var length = result[loop].length;if (length == 1){var getHref = getNextElement('L',result[loop][0].href,'/');if (getHref == 'null'){return getHref;}return length;}return length;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Access Number Search</log>
-            <log>INFO: Entered run-javascript.vxml [216_5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_216_5(ANI)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="params" expr="II_SB_userJava" />   
+            <log target="status">Number Count</log>
+            <log>INFO: Entered run-javascript.vxml [233_27]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_233_27(phoneNumbers,loop)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="countTotal" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

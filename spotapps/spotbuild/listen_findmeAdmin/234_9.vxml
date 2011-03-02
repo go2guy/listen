@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!-- Load root.vxml which contains global variables and reference to javascript library file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_findmeAdmin/root.vxml"> <!--  Set location of root document -->
+    <!-- Last Modified 05/17/2010
+       *   @Name   assign-variable.vxml
+       *   @Desc   Assigns a value to a global variable -->
+
+    <var name="II_SB_nxtOpt" expr="'234_16'"/>  <!-- Name of next file -->
+
+    <form id="beginDocument">
+        <block>
+	    <log target="status">id resource</log>
+            <log>INFO: Entered assign-variable.vxml [234_9]</log>
+            <log>INFO: Current value [<value expr="request"/>]</log>
+<assign name="request" expr="'put'+''" />
+<log>INFO: Updated value [<value expr="request"/>]</log>
+<log>INFO: Current value [<value expr="id"/>]</log>
+<assign name="id" expr="subID+''" />
+<log>INFO: Updated value [<value expr="id"/>]</log>
+<log>INFO: Current value [<value expr="resource"/>]</log>
+<assign name="resource" expr="'subscribers'+''" />
+<log>INFO: Updated value [<value expr="resource"/>]</log>
+
+            <if cond="II_SB_nxtOpt != ''">
+                <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
+				<goto expr="'file:' + II_SB_APP_PATH + II_SB_nxtOpt + '.vxml'"/>
+			<else/> <!-- Exit to ccxml layer -->
+				<assign name="II_SB_status" expr="'endCall'"/>
+				<log>INFO: Next Node not set. Exit to CCXML.</log>
+				<log>INFO: Return Status [<value expr="II_SB_status"/>]</log>
+				<exit namelist="II_SB_status"/>
+			</if>
+        </block>
+    </form>
+</vxml>

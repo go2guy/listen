@@ -62,6 +62,8 @@
 	<var name="firstThrough" expr="'true'" />
 	<var name="loop" expr="'0'" />
 	<var name="loopNumber" expr="''" />
+	<var name="subInfo" expr="''" />
+	<var name="time" expr="''" />
 
 
     <!-- Conference Variables -->
