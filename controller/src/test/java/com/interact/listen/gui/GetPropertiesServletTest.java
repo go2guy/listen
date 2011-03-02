@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.interact.listen.ListenServletTest;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.TestUtil;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class GetPropertiesServletTest extends ListenServletTest
     public void test_doGet_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        assert request.getSession().getAttribute("subscriber") == null;
+        assert ServletUtil.currentSubscriber(request) == null;
         request.setMethod("GET");
         testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }

@@ -3,6 +3,7 @@ package com.interact.listen.gui;
 import static org.junit.Assert.*;
 
 import com.interact.listen.ListenServletTest;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.TestUtil;
 import com.interact.listen.resource.Conference;
 import com.interact.listen.resource.Pin;
@@ -95,7 +96,7 @@ public class AddSubscriberServletTest extends ListenServletTest
     public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        assert request.getSession().getAttribute("subscriber") == null;
+        assert ServletUtil.currentSubscriber(request) == null;
 
         request.setMethod("POST");
         request.setParameter("username", TestUtil.randomString());

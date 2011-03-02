@@ -1,6 +1,7 @@
 <%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
 <%@ taglib prefix="listen" uri="http://www.iivip.com/taglibs/listen" %>
 <%@ page import="com.interact.listen.HibernateUtil" %>
+<%@ page import="com.interact.listen.ServletUtil" %>
 <%@ page import="com.interact.listen.license.License" %>
 <%@ page import="com.interact.listen.license.ListenFeature" %>
 <%@ page import="com.interact.listen.resource.Subscriber" %>
@@ -34,7 +35,7 @@ var CONTEXT = '<%= request.getContextPath() %>';
   </head>
   <body class="<%= decoratedPage.getProperty("meta.body-class") %>"><%
 /* FIXME replace this with a tag */
-Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
+Subscriber subscriber = ServletUtil.currentSubscriber(request); %>
     <div id="container" class="clearfix">
       <ul id="user-info">
         <li class="first"><%= subscriber.friendlyName() %></li>

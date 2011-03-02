@@ -101,7 +101,7 @@ public class StopRecordingServletTest extends ListenServletTest
         subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
 
-        request.getSession().setAttribute("subscriber", subscriber);
+        request.getSession().setAttribute("subscriber", subscriber.getId());
 
         Conference conference = new Conference();
         conference.setIsStarted(false);
@@ -136,7 +136,7 @@ public class StopRecordingServletTest extends ListenServletTest
         subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
 
-        request.getSession().setAttribute("subscriber", subscriber);
+        request.getSession().setAttribute("subscriber", subscriber.getId());
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
@@ -173,7 +173,7 @@ public class StopRecordingServletTest extends ListenServletTest
         subscriber.setIsAdministrator(true);
         session.save(subscriber);
 
-        request.getSession().setAttribute("subscriber", subscriber);
+        request.getSession().setAttribute("subscriber", subscriber.getId());
 
         Conference conference = new Conference();
         conference.setIsStarted(true);

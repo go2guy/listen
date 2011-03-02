@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.interact.listen.ListenServletTest;
+import com.interact.listen.TestUtil;
 import com.interact.listen.resource.Subscriber;
 import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatSender;
@@ -26,9 +27,8 @@ public class LogoutServletTest extends ListenServletTest
     @Test
     public void test_doGet_removesSubscriberFromSessionAndReturns200() throws IOException, ServletException
     {
-        Subscriber subscriber = new Subscriber();
+        TestUtil.setSessionSubscriber(request, false, session);
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute(SESSION_SUBSCRIBER_KEY, subscriber);
 
         request.setMethod("GET");
         servlet.service(request, response);
@@ -41,9 +41,8 @@ public class LogoutServletTest extends ListenServletTest
     public void test_doPost_removesSubscriberFromSessionAndReturns200() throws IOException, ServletException
     {
         // put a subscriber in the session first
-        Subscriber subscriber = new Subscriber();
+        TestUtil.setSessionSubscriber(request, false, session);
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute(SESSION_SUBSCRIBER_KEY, subscriber);
 
         request.setMethod("POST");
         servlet.service(request, response);

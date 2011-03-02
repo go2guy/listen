@@ -42,7 +42,13 @@ public final class ServletUtil
 
     public static Subscriber currentSubscriber(HttpServletRequest request)
     {
-        return (Subscriber)request.getSession().getAttribute("subscriber");
+        Long id = (Long)request.getSession().getAttribute("subscriber");
+        if(id == null)
+        {
+            return null;
+        }
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        return Subscriber.queryById(session, id);
     }
 
     /**

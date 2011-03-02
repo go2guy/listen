@@ -25,7 +25,7 @@ public final class TestUtil
         subscriber.setIsAdministrator(isAdministrator);
         session.save(subscriber);
 
-        request.getSession().setAttribute("subscriber", subscriber);
+        request.getSession().setAttribute("subscriber", subscriber.getId());
         return subscriber;
     }
 

@@ -70,7 +70,7 @@ public class MuteParticipantServletTest extends ListenServletTest
         subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
 
-        request.getSession().setAttribute("subscriber", subscriber);
+        request.getSession().setAttribute("subscriber", subscriber.getId());
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
@@ -153,7 +153,7 @@ public class MuteParticipantServletTest extends ListenServletTest
         subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
 
-        request.getSession().setAttribute("subscriber", subscriber);
+        request.getSession().setAttribute("subscriber", subscriber.getId());
 
         Conference conference = new Conference();
         conference.setIsStarted(true);
@@ -201,7 +201,7 @@ public class MuteParticipantServletTest extends ListenServletTest
         subscriber.setVoicemailPin(TestUtil.randomNumeric(4).toString());
         session.save(subscriber);
 
-        request.getSession().setAttribute("subscriber", subscriber);
+        request.getSession().setAttribute("subscriber", subscriber.getId());
 
         Conference conference = new Conference();
         conference.setIsStarted(true);

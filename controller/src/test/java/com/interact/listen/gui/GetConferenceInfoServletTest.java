@@ -45,11 +45,7 @@ public class GetConferenceInfoServletTest extends ListenServletTest
     public void test_doGet_withNonexistentConference_throwsListenServletExceptionWith500() throws IOException,
         ServletException
     {
-        Subscriber subscriber = new Subscriber();
-
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
-
+        TestUtil.setSessionSubscriber(request, false, session);
         request.setMethod("GET");
 
         testForListenServletException(servlet, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Conference not found");
@@ -76,7 +72,7 @@ public class GetConferenceInfoServletTest extends ListenServletTest
         session.save(subscriber);
 
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("subscriber", subscriber);
+        httpSession.setAttribute("subscriber", subscriber.getId());
 
         request.setMethod("GET");
         servlet.service(request, response);

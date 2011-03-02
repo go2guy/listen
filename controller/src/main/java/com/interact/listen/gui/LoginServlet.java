@@ -80,7 +80,7 @@ public class LoginServlet extends HttpServlet
                 boolean adLogin = result.getRealm() == AuthenticationService.Realm.ACTIVE_DIRECTORY;
                 writeLoginHistory(hibernateSession, subscriber, adLogin);
 
-                httpSession.setAttribute("subscriber", subscriber);
+                httpSession.setAttribute("subscriber", subscriber.getId());
             }
         }
 

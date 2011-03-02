@@ -1,6 +1,7 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="listen" uri="http://www.iivip.com/taglibs/listen" %>
 <%@ page import="com.interact.listen.EmailerUtil" %>
+<%@ page import="com.interact.listen.ServletUtil" %>
 <%@ page import="com.interact.listen.resource.Subscriber" %>
 <html>
   <head>
@@ -14,7 +15,7 @@
   </head>
   <body>
   <%
-Subscriber subscriber = (Subscriber)session.getAttribute("subscriber"); %>
+Subscriber subscriber = ServletUtil.currentSubscriber(request); %>
     <div class="tab-container">
       <ul class="tabs">
         <li><a href="#">General</a></li>

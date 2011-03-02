@@ -3,6 +3,7 @@ package com.interact.listen.gui;
 import static org.junit.Assert.assertEquals;
 
 import com.interact.listen.ListenServletTest;
+import com.interact.listen.ServletUtil;
 import com.interact.listen.TestUtil;
 import com.interact.listen.config.Configuration;
 import com.interact.listen.config.Property;
@@ -22,7 +23,7 @@ public class SetPropertiesServletTest extends ListenServletTest
     public void test_doPost_withNoSessionSubscriber_throwsListenServletExceptionWithUnauthorized()
         throws ServletException, IOException
     {
-        assert request.getSession().getAttribute("subscriber") == null;
+        assert ServletUtil.currentSubscriber(request) == null;
 
         request.setMethod("POST");
         testForListenServletException(servlet, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
