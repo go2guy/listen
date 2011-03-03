@@ -5,18 +5,21 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'103_161'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'231_17'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Reset menuOption</log>
-            <log>INFO: Entered assign-variable.vxml [103_187]</log>
-            <log>INFO: Current value [<value expr="menuOption"/>]</log>
-<assign name="menuOption" expr="''+''" />
-<log>INFO: Updated value [<value expr="menuOption"/>]</log>
-<log>INFO: Current value [<value expr="nxtPath"/>]</log>
-<assign name="nxtPath" expr="'MbxMenuA'+''" />
-<log>INFO: Updated value [<value expr="nxtPath"/>]</log>
+	    <log target="status">set phone number</log>
+            <log>INFO: Entered assign-variable.vxml [231_5]</log>
+            <log>INFO: Current value [<value expr="phoneNumber"/>]</log>
+<assign name="phoneNumber" expr="EXT_PREFIX+subFwd" />
+<log>INFO: Updated value [<value expr="phoneNumber"/>]</log>
+<log>INFO: Current value [<value expr="phoneNumber"/>]</log>
+<assign name="phoneNumber" expr="phoneNumber+EXT_SUFFIX" />
+<log>INFO: Updated value [<value expr="phoneNumber"/>]</log>
+<log>INFO: Current value [<value expr="userInput"/>]</log>
+<assign name="userInput" expr="''+''" />
+<log>INFO: Updated value [<value expr="userInput"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

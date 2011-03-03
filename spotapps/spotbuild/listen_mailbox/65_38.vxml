@@ -9,9 +9,9 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Increment noInputCnt</log>
+	    <log target="status">Increment errCnt</log>
             <log>INFO: Entered math.vxml [65_38]</log>
-            <assign name="noInputCnt" expr="parseInt(noInputCnt) + parseInt('1') "/>
+            <assign name="errCnt" expr="parseInt(errCnt) + parseInt('1') "/>
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_nxtOpt + '.vxml'"/>

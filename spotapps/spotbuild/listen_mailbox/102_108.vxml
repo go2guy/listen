@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'56_105'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'102_33'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_56_110(passValues)
+            function II_SB_JS_function_102_108(result)
             {
-	            return getJsonVal(passValues, 'EXT_SUFFIX');
+	            return getJsonVal(result, 'leftBy');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get EXT_SUFFEX</log>
-            <log>INFO: Entered run-javascript.vxml [56_110]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_56_110(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="EXT_SUFFIX" expr="II_SB_userJava" />   
+            <log target="status">Get File Location</log>
+            <log>INFO: Entered run-javascript.vxml [102_108]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_102_108(result)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="phoneNumber" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
