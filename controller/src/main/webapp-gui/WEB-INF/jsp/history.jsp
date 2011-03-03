@@ -1,15 +1,27 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="listen" uri="http://www.iivip.com/taglibs/listen" %>
+<%@ page import="com.interact.listen.ServletUtil" %>
+<%@ page import="com.interact.listen.resource.Subscriber" %>
 <html>
   <head>
     <title>History</title>
-    <script type="text/javascript" src="<listen:resource path="/resources/app/js/app-history-min.js"/>"></script>
+    <script type="text/javascript" src="<listen:resource path="/resources/app/js/app-history-min.js"/>"></script><%
+Subscriber subscriber = ServletUtil.currentSubscriber(request);
+/* this is ugly. the ideal solution would be to have a separate history-admin.js file that
+   adds on the filtering functionality to the regular history application javascript. */ %>
+
+    <script type="text/javascript">var allowFilter = <%= subscriber.getIsAdministrator() ? "true" : "false" %>;</script>
     <link rel="stylesheet" type="text/css" href="<listen:resource path="/resources/app/css/history-min.css"/>">
 
     <meta name="body-class" content="application-history"/>
     <meta name="page-title" content="History"/>
   </head>
-  <body>
+  <body><%
+if(subscriber.getIsAdministrator()) { %>
+    <fieldset>
+        Filter by name <input type="text" id="username-filter"/> <button type="button" class="button-save" id="filter-submit">Filter</button><button type="button" class="button-delete" id="filter-clear">Clear</button>
+    </fieldset><%
+} %>
     <ul id="history-list">
       <li class="placeholder">No history records</li>
     </ul>

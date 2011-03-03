@@ -1,14 +1,25 @@
 var interact = interact || {};
 var History;
 $(document).ready(function() {
+
+    $('#filter-submit').click(function() {
+        History.usernameFilter($('#username-filter').val());
+    });
+    
+    $('#filter-clear').click(function() {
+        $('#username-filter').val('');
+        History.usernameFilter('');
+    });
+
     History = function() {
+        var historyList;
         return {
             Application: function() {
                 interact.util.trace('History.Application [construct]');
                 var first = 0;
                 var max = 25;
 
-                var historyList = new interact.util.DynamicTable({
+                historyList = new interact.util.DynamicTable({
                     url: interact.listen.url('/ajax/getHistoryList'),
                     tableId: 'history-list',
                     isList: true,
@@ -54,7 +65,40 @@ $(document).ready(function() {
                 this.load = function() {
                     interact.util.trace('History.Application.load');
                     historyList.pollAndSet();
+
+                    if(allowFilter === true) {
+                        $.ajax({
+                            url: interact.listen.url('/ajax/getSubscriberList?max=1000'),
+                            dataType: 'json',
+                            cache: false,
+                            success: function(data, textStatus, xhr) {
+                                var subscriberNames = [];
+                                for(var i = 0, len = data.results.length; i < len; i++) {
+                                    var subscriber = data.results[i];
+                                    subscriberNames.push(subscriber.username);
+                                }
+    
+                                $('#username-filter').autocomplete({
+                                    source: subscriberNames,
+                                    delay: 0,
+                                    minLength: -1
+                                });
+                            }
+                        });
+                    }
                 };
+            },
+
+            allowFilter: function() {
+                allowFilter = true;
+            },
+
+            usernameFilter: function(username) {
+                interact.util.trace('History.usernameFilter');
+                
+                historyList.setQueryParameter('usernameFilter', username);
+                historyList.clear();
+                historyList.pollAndSet();
             }
         }
     }();

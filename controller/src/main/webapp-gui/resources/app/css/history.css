@@ -53,3 +53,8 @@ li#menu-history a {
 .history-call-description, .history-action-description {
     width: 500px;
 }
+
+fieldset {
+    background-color: #EEEEEE;
+    padding: 10px;
+}

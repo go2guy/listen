@@ -59,8 +59,15 @@ public class GetHistoryListServlet extends HttpServlet
         }
         else
         {
-            //User is admin, query for all histories
-            results = History.queryAllPaged(session, first, max, null);
+            // User is admin, query for all histories
+            String filter = request.getParameter("usernameFilter");
+            Subscriber filterSubscriber = null;
+            if(filter != null && !filter.trim().equals(""))
+            {
+                filterSubscriber = Subscriber.queryByUsername(session, filter);
+            }
+
+            results = History.queryAllPaged(session, first, max, filterSubscriber);
             total = results.size() > 0 ? History.count(session) : 0;
         }
         
