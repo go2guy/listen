@@ -74,7 +74,8 @@ public class EmailerService
 
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(fromAddress);
-            
+            message.setHeader("From", "Listen");
+
             String s = subject;
             if(subjectPrepend.trim().length() > 0)
             {
