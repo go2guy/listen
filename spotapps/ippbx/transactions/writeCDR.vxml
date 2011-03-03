@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 03/02/2011
+    <!-- Last Modified 03/03/2011
        *   @Name	writeCDR.vxml
        *   @Desc	This script is part of the logic for writing CDRs
                     to the web controller -->
@@ -10,6 +10,7 @@
     <var name="endTime"/>
     <var name="callType"/>
     <var name="importedValue"/>
+    <var name="getDNISInfo" expr="'n'"/>
     <var name="callDirection" expr="''"/>
 
 	<form id="beginDocument">
@@ -23,30 +24,36 @@
     </form>
 
     <form id="setAccessID">
-        <block>
+        <block cond="callType == 'extension'">
             <log>INFO: Entered setAccessID</log>
-            <if cond="callType == 'extension'">
-                <assign name="EXT_LENGTH" expr="getJsonVal(listenArgs, 'EXT_LENGTH')"/>
-                <if cond="ANI &lt; EXT_LENGTH">
-                    <!-- Assume call originated from inside pbx. Attempt to locate subscriber ID of caller -->
-                    <assign name="callDirection" expr="'OUTBOUND'"/>
-                    <assign name="params" expr="setAccess(ANI)"/>
-                <else/>
-                    <!-- Assume call originated from outside pbx. Attempt to locate subscriber ID of called party -->
-                    <assign name="callDirection" expr="'INBOUND'"/>
-                    <assign name="params" expr="setAccess(DNIS)"/>
-                </if>
-            <else/>
-                <!-- This call was either a page or external call. Attempt to locate subscriber ID of caller -->
+            <assign name="EXT_LENGTH" expr="getJsonVal(listenArgs, 'EXT_LENGTH')"/>
+            <if cond="ANI &lt; EXT_LENGTH">
+                <log>INFO: Call originated from another pbx extension</log>
+                <!-- Assume call originated from inside pbx. Attempt to locate subscriber ID of caller and called party -->
                 <assign name="callDirection" expr="'OUTBOUND'"/>
                 <assign name="params" expr="setAccess(ANI)"/>
+                <assign name="getDNISInfo" expr="'y'"/>
+            <else/>
+                <log>INFO: Call originated from outside pbx</log>
+                <!-- Assume call originated from outside pbx. Attempt to locate subscriber ID of called party -->
+                <assign name="callDirection" expr="'INBOUND'"/>
+                <assign name="params" expr="setAccess(DNIS)"/>
             </if>
+            <goto next="#getAccessNum"/>
+        </block>
+        <block cond="callType != 'extension'"> <!-- CallType is either 'external' or 'page' -->
+            <log>INFO: Entered setAccessID</log>
+            <!-- This call was either a page or external call. Attempt to locate subscriber ID of caller -->
+            <assign name="callDirection" expr="'OUTBOUND'"/>
+            <assign name="params" expr="setAccess(ANI)"/>
             <goto next="#getAccessNum"/>
         </block>
     </form>
 
     <form id="getAccessNum">
         <block>
+            <log>INFO: Entered getAccessNum</log>
+            <log>INFO: Get Access Number for [<value expr="getNumber(params)"/>]</log>
             <assign name="resource" expr="'accessNumbers'"/>
             <assign name="request"  expr="'get'"/>
             <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
@@ -75,7 +82,14 @@
             <elseif cond="resource == 'accessNumbers'"/>
                 <goto next="#setParams"/>
             <else/>
-                <goto next="#exit"/>
+                <if cond="getDNISInfo == 'y'">
+                    <assign name="callDirection" expr="'INBOUND'"/>
+                    <assign name="params" expr="setAccess(DNIS)"/>
+                    <assign name="getDNISInfo" expr="'n'"/>
+                    <goto next="#getAccessNum"/>
+                <else/>
+                    <goto next="#exit"/>
+                </if>
             </if>
         </block>
     </form>
@@ -121,6 +135,10 @@
         <![CDATA[
             function setAccess(inStr) {
                 return "?_fields=subscriber&number=" + inStr;
+            }
+
+            function getNumber(inStr) {
+                return inStr.split('=')[2];
             }
 
             function setParams(resultsObj, endTime, listenArgs, callType, callDirection, ANI, DNIS) {

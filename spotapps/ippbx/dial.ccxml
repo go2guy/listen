@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 03/02/2011
+    <!-- Last Modified 03/03/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -42,6 +42,7 @@
     <var name="userEntry" expr="''"/>
     <var name="code" expr="''"/>
     <var name="isFwd" expr="'false'"/>
+    <var name="newSID" expr="''"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -625,7 +626,7 @@
                     <assign name="state" expr="'busy'"/>
                     <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
                         <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                        <send data="'dialog.user.listenApp'" target="session.id"/>
+                        <send data="'dialog.user.createccxml'" target="session.id"/>
                     <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
                         <!-- Remove the caller's record in the db prior to exiting -->
                         <send data="'dialog.user.deleteRecord'" target="session.id"/>
@@ -633,7 +634,7 @@
                 <elseif cond="(inString(evt.reason,ERR_NOT_FOUND,',')) &amp;&amp; (callType == 'extension')"/>
                      <!-- Destination not found. Maybe IP Phone is offline. Check if there's a voicemail account -->
                     <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                    <send data="'dialog.user.listenApp'" target="session.id"/>
+                    <send data="'dialog.user.createccxml'" target="session.id"/>
                 <else/>
                     <!-- Call failed due to some other reason -->
                     <send data="'dialog.user.callFailed'" target="session.id"/>
@@ -656,7 +657,7 @@
             <assign name="inVXML" expr="'n'"/>
             <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
                 <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                <send data="'dialog.user.listenApp'" target="session.id"/>
+                <send data="'dialog.user.createccxml'" target="session.id"/>
             <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
                 <!-- Remove the caller's record in the db prior to exiting -->
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
@@ -874,6 +875,28 @@
             <assign name="record" expr="ibconnid + '|' + tmpANI"/>
             <send data="'dialog.user.updateClientRecord'" target="session.id"/>
         </transition>
+
+        <transition event="dialog.user.createccxml" name="evt">
+            <!-- Create new ccxml session -->
+            <log>INFO: Entered [dialog.user.createccxml] with state [<value expr="state"/>]</log>
+		    <assign name="state" expr="'createCCXML'"/>
+            <var name="endTime" expr="getTimeStamp(3)"/>
+            <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
+            <createccxml sessionid="newSID" next="'file:'+APP_PATH+'cdr.ccxml'" namelist="APP_PATH DNIS ANI endTime callType importedValue"/>
+        </transition>
+
+		<!-- Catch ccxml.created event -->
+		<transition state="createCCXML" event="ccxml.created" name="evt">
+            <log>INFO: Entered [ccxml.created] with state [<value expr="state"/>]</log>
+			<log>INFO: session ID [<value expr="newSID"/>]</log>
+            <send data="'dialog.user.listenApp'" target="session.id"/>
+		</transition>
+
+		<!-- Catch error.createccxml event -->
+		<transition state="createCCXML" event="error.createccxml">
+            <log>INFO: Entered [error.createccxml] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.listenApp'" target="session.id"/>
+		</transition>
 
         <transition event="dialog.user.endCall" name="evt">
             <!-- Exit CCXML session -->
