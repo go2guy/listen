@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 02/02/2011
+    <!-- Last Modified 03/02/2011
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -139,7 +139,8 @@
         <transition event="dialog.user.page" name="evt">
             <!-- Here we'll pass control to the page ccxml script -->
             <log>INFO: Entered [dialog.user.page] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'page.ccxml'" namelist="SB_PATH APP_PATH ibconnid tmpANI tmpDNIS DNIS ANI EXT_LENGTH"/>
+            <assign name="callType" expr="'page'"/>
+            <fetch next="'file:'+APP_PATH+'page.ccxml'" namelist="SB_PATH APP_PATH ibconnid tmpANI tmpDNIS DNIS ANI EXT_LENGTH callType importedValue"/>                                                                  
         </transition>
 
         <transition event="dialog.user.forward" name="evt">

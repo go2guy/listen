@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
+<ccxml version="1.0">
+    <!-- Last Modified 02/02/2011
+       *   @Name	cdr.ccxml
+       *   @Desc	This script handles the CDR writing logic -->
+
+    <!-- Values passed in from other ccxml -->
+    <var name="ANI"/>       <!-- ANI. Origination ID of current call -->
+    <var name="DNIS"/>      <!-- DNIS. Destination ID -->
+    <var name="APP_PATH"/>  <!-- App Path. Base application directory -->
+    <var name="endTime"/>
+    <var name="callType"/>
+    <var name="importedValue"/>
+
+    <!-- Global Vars -->
+    <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
+    <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
+    <var name="TRANS_PATH" expr="''"/>  <!-- Transaction Path. Directory for transaction files -->
+    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
+
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+
+    <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
+        <transition state="idle" event="ccxml.loaded" name="evt">
+            <!-- Load ccxml document. Set variables -->
+            <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
+            <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
+            <assign name="state" expr="'loaded'"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.writeCDR" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
+   		    <dialogstart src="'file:'+TRANS_PATH+'writeCDR.vxml'" namelist="ANI DNIS endTime callType importedValue"/>
+        </transition>
+
+        <transition event="dialog.started" name="evt">
+            <!-- Save off ID of VXML dialog that was started -->
+            <log>INFO: Entered [dialog.started] with state [<value expr="state"/>]</log>
+            <assign name="dialogID" expr="evt.dialogid"/>
+            <assign name="inVXML" expr="'y'"/>
+        </transition>
+
+        <transition event="dialog.exit" name="evt">
+            <!-- Back from writing the cdr. Let's exit -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="error.*" name="evt">
+            <!-- Use catch all error for now -->
+            <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- TODO: Write an error log file and notify someone? -->
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.endCall" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
+            <exit/>
+        </transition>
+
+	</eventprocessor>
+</ccxml>

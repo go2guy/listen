@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 02/02/2011
+    <!-- Last Modified 03/02/2011
        *   @Name	page.ccxml
        *   @Desc	This script handles the group paging logic -->
 
@@ -14,6 +14,8 @@
     <var name="SB_PATH"/>
     <var name="tmpANI"/>
     <var name="tmpDNIS"/>
+    <var name="callType"/>
+    <var name="importedValue"/>
 
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
@@ -142,10 +144,16 @@
             <send data="'dialog.user.updateDB'" target="session.id"/>
         </transition>
 
+        <transition event="fetch.done" name="evt">
+            <log>INFO: Fetched document [<value expr="evt.uri"/>]</log>
+            <goto fetchid="evt.fetchid" />
+        </transition>
+
         <transition event="dialog.user.endCall" name="evt">
             <!-- Exit CCXML session -->
             <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
-            <exit/>
+            <var name="endTime" expr="getTimeStamp(3)"/>
+            <fetch next="'file:'+APP_PATH+'cdr.ccxml'" namelist="APP_PATH DNIS ANI endTime callType importedValue"/>
         </transition>
 
 	</eventprocessor>

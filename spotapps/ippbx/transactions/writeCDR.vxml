@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 03/02/2011
+       *   @Name	writeCDR.vxml
+       *   @Desc	This script is part of the logic for writing CDRs
+                    to the web controller -->
+
+    <var name="ANI"/>
+    <var name="DNIS"/>
+    <var name="endTime"/>
+    <var name="callType"/>
+    <var name="importedValue"/>
+    <var name="callDirection" expr="''"/>
+
+	<form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <assign name="listenArgs" expr="importedValue"/>
+            <assign name="ANI" expr="getnum(ANI)"/>
+            <assign name="DNIS" expr="getnum(DNIS)"/>
+            <goto next="#setAccessID"/>
+        </block>
+    </form>
+
+    <form id="setAccessID">
+        <block>
+            <log>INFO: Entered setAccessID</log>
+            <if cond="callType == 'extension'">
+                <assign name="EXT_LENGTH" expr="getJsonVal(listenArgs, 'EXT_LENGTH')"/>
+                <if cond="ANI &lt; EXT_LENGTH">
+                    <!-- Assume call originated from inside pbx. Attempt to locate subscriber ID of caller -->
+                    <assign name="callDirection" expr="'OUTBOUND'"/>
+                    <assign name="params" expr="setAccess(ANI)"/>
+                <else/>
+                    <!-- Assume call originated from outside pbx. Attempt to locate subscriber ID of called party -->
+                    <assign name="callDirection" expr="'INBOUND'"/>
+                    <assign name="params" expr="setAccess(DNIS)"/>
+                </if>
+            <else/>
+                <!-- This call was either a page or external call. Attempt to locate subscriber ID of caller -->
+                <assign name="callDirection" expr="'OUTBOUND'"/>
+                <assign name="params" expr="setAccess(ANI)"/>
+            </if>
+            <goto next="#getAccessNum"/>
+        </block>
+    </form>
+
+    <form id="getAccessNum">
+        <block>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="request"  expr="'get'"/>
+            <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="sendEvent">
+        <block>
+            <log>INFO: Entered sendEvent</log>
+            <data name="apiObj" srcexpr="getJsonVal(listenArgs, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="result" expr="apiObj.Result" />
+            <if cond="status == 'Failure'">
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <goto next="#serviceError"/>
+                <elseif cond="resource == 'accessNumbers'"/>
+                    <log>INFO: No information on controller</log>
+                     <goto next="#setParams"/>
+                <else/>
+                    <assign name="status" expr="'Failure'"/>
+                    <goto next="#exit"/>
+                </if>
+            <elseif cond="resource == 'accessNumbers'"/>
+                <goto next="#setParams"/>
+            <else/>
+                <goto next="#exit"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="setParams">
+        <!-- Set CDR Params -->
+        <block>
+            <log>INFO: Entered setParams</log>
+            <log target="status">Set Params</log>
+            <assign name="request"  expr="'post'"/>
+            <assign name="resource" expr="'CallDetailRecords'"/>
+            <assign name="params" expr="setParams(result, endTime, listenArgs, callType, callDirection, ANI, DNIS)"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'">
+            <param name="id" expr="cntrlErrID"/>
+            <param name="statServer" expr="getJsonVal(listenArgs, 'STATcontroller')"/>
+        </subdialog>
+        <block>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <exit namelist="status result"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
+        <log>ERROR: Unable to connect with local webserver</log>
+        <assign name="status" expr="'Failure'"/>
+        <goto next="#exit"/>
+    </catch>
+
+    <script>
+        <![CDATA[
+            function setAccess(inStr) {
+                return "?_fields=subscriber&number=" + inStr;
+            }
+
+            function setParams(resultsObj, endTime, listenArgs, callType, callDirection, ANI, DNIS) {
+                var index = 0;
+                var key = 'subscriber';
+                var subscriber = getResultsKeyValue(resultsObj,index,key);
+                if (subscriber.length != 0) {
+                    subscriber =  subscriber.href.split('/')[2];
+                }
+                else {
+                    subscriber =  null;
+                }
+                var sysAccessTime = getJsonVal(listenArgs, 'sysAccessTime');
+                var duration = endTime - sysAccessTime;
+                return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"subscriber\": {\"href\":\"/subscribers/"+subscriber+"\"}, \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\""+callDirection+"\"}";
+            }
+
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
+            }
+        ]]>
+    </script>
+
+</vxml>
