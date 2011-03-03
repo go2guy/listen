@@ -6,7 +6,6 @@
 53_67 - run-javascript
 199_50 - audio-input
 183_31 - run-javascript
-120_62 - data-query
 183_37 - run-javascript
 173_51 - data-query
 53_77 - run-javascript
@@ -22,8 +21,6 @@
 120_58 - data-query
 120_108 - switch-application
 173_38 - decision
-120_47 - assign-variable
-120_48 - run-javascript
 146_52 - run-javascript
 142_33 - run-javascript
 53_100 - assign-variable
@@ -106,12 +103,10 @@ hang-up - hang-up
 120_110 - audio-input
 120_91 - decision
 174_30 - assign-variable
-174_22 - decision
 201_3 - data-query
 174_27 - run-javascript
 201_4 - audio-input
 201_8 - assign-variable
 54_31 - run-javascript
-120_81 - assign-variable
 120_87 - assign-variable
 120_84 - run-javascript
