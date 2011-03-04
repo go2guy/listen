@@ -174,6 +174,7 @@ public final class HibernateUtil
             config.addAnnotatedClass(TimeRestriction.class);
             config.addAnnotatedClass(Voicemail.class);
             config.addAnnotatedClass(GroupMember.class);
+            config.addAnnotatedClass(CallRestriction.class);
 
             SESSION_FACTORY = config.buildSessionFactory();
 
