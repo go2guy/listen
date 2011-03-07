@@ -1,0 +1,73 @@
+li#menu-pbx a {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+fieldset {
+    border: 2px solid #CCC;
+    display: block;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+label.restricted-subscriber {
+    display: block;
+    margin-left: 30px;
+}
+
+input {
+    font-weight: bold;
+    width: 200px;
+}
+
+select {
+    width: 150px;
+}
+
+button {
+    font-weight: normal;
+    width: auto;
+}
+
+label {
+    margin: 5px 5px 5px 0;
+}
+
+label input,
+label select,
+label.restricted-subscriber button {
+    margin-left: 5px;
+}
+
+label.first select {
+    font-weight: bold;
+    margin-left: 0;
+    width: 100px;
+}
+
+select.target {
+    width: 150px;
+}
+
+.more-subscribers {
+    display: none; /* initially hidden */
+}
+
+.delete-restriction {
+    display: block;
+    float: right;
+}
+
+#template {
+    display: none;
+}
+
+.deny {
+    background-color: #F5DDDA;
+    border-color: #FC6442;
+}
+
+.allow {
+    background-color: #DAF5DD;
+    border-color: #4DBD5E;
+}

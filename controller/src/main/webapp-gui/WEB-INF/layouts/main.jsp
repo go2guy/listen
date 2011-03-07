@@ -60,6 +60,7 @@ if(subscriber.getIsAdministrator()) { %>
           <li id="menu-attendant"><a href="<listen:resource path="/attendant"/>">Attendant</a></li>
         </listen:ifLicensed>
         <li id="menu-configuration"><a href="<listen:resource path="/configuration"/>">Configuration</a></li>
+        <li id="menu-pbx"><a href="<listen:resource path="/pbx"/>">PBX</a></li>
         <listen:ifLicensed feature="CONFERENCING">
           <li id="menu-conferences"><a href="<listen:resource path="/conferences"/>">Conferences</a></li>
         </listen:ifLicensed>

@@ -409,6 +409,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>PbxServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.PbxServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>PingServlet</servlet-name>
         <servlet-class>com.interact.listen.api.PingServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -811,6 +817,11 @@
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>PbxServlet</servlet-name>
+        <url-pattern>/pbx</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

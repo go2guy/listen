@@ -33,15 +33,15 @@ fieldset.vertical button {
 }
 
 /* standardize borders for all "text-y" fields (i.e. not checkboxes, radios) */
-fieldset.vertical input[type=text],
-fieldset.vertical input[type=password],
-fieldset.vertical input[type=submit],
-fieldset.vertical input[type=reset],
-fieldset.vertical input[type=file],
-fieldset.vertical button,
-fieldset.vertical .button,
-fieldset.vertical select,
-fieldset.vertical textarea {
+fieldset input[type=text],
+fieldset input[type=password],
+fieldset input[type=submit],
+fieldset input[type=reset],
+fieldset input[type=file],
+fieldset button,
+fieldset .button,
+fieldset select,
+fieldset textarea {
     border: 1px solid #666666;
     font-size: 16px;
     font-weight: bold;
@@ -49,32 +49,32 @@ fieldset.vertical textarea {
 }
 
 /* most of the input types, except buttons, get a fixed width */
-fieldset.vertical input[type=text],
-fieldset.vertical input[type=password],
-fieldset.vertical input[type=file],
-fieldset.vertical select,
-fieldset.vertical textarea {
+fieldset input[type=text],
+fieldset input[type=password],
+fieldset input[type=file],
+fieldset select,
+fieldset textarea {
     width: 240px;
 }
 
 /* bold font for buttons and selects is a little overwhelming, so remove it */
-fieldset.vertical select,
-fieldset.vertical button,
-fieldset.vertical .button,
-fieldset.vertical input[type=submit],
-fieldset.vertical input[type=reset] {
+fieldset select,
+fieldset button,
+fieldset .button,
+fieldset input[type=submit],
+fieldset input[type=reset] {
     font-weight: normal;
 }
 
-fieldset.vertical button:hover,
-fieldset.vertical .button:hover,
-fieldset.vertical input[type=submit]:hover,
-fieldset.vertical input[type=reset]:hover {
+fieldset button:hover,
+fieldset .button:hover,
+fieldset input[type=submit]:hover,
+fieldset input[type=reset]:hover {
     background-color: #FFFFFF;
     cursor: pointer;
 }
 
-fieldset.vertical input.disabled {
+fieldset input.disabled {
     background-color: #DDDDDD;
     color: #111111;
 }

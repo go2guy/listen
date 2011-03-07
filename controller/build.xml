@@ -242,6 +242,7 @@
     <minify in="${war.staging.dir}/resources/app/js/app-conferencing.js" out="${war.staging.dir}/resources/app/js/app-conferencing-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-findme.js" out="${war.staging.dir}/resources/app/js/app-findme-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-history.js" out="${war.staging.dir}/resources/app/js/app-history-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-pbx.js" out="${war.staging.dir}/resources/app/js/app-pbx-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-profile.js" out="${war.staging.dir}/resources/app/js/app-profile-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-system-configuration.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-subscribers.js" out="${war.staging.dir}/resources/app/js/app-subscribers-min.js"/>
@@ -260,6 +261,7 @@
     <minify in="${war.staging.dir}/resources/app/css/history.css" out="${war.staging.dir}/resources/app/css/history-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/listen.css" out="${war.staging.dir}/resources/app/css/listen-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/login.css" out="${war.staging.dir}/resources/app/css/login-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/pbx.css" out="${war.staging.dir}/resources/app/css/pbx-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/subscribers.css" out="${war.staging.dir}/resources/app/css/subscribers-min.css"/>
     <minify in="${war.staging.dir}/resources/app/css/voicemail.css" out="${war.staging.dir}/resources/app/css/voicemail-min.css"/>
 
