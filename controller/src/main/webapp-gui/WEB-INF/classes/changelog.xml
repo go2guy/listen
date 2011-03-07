@@ -687,4 +687,27 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="development" id="64">
+        <createTable tableName="CALL_RESTRICTION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VERSION" type="INT"/>
+            <column name="DIRECTIVE" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FOR_EVERYONE" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBSCRIBER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESTINATION" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
 </databaseChangeLog>

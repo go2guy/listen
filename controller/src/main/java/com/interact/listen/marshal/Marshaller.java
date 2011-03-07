@@ -57,6 +57,7 @@ public abstract class Marshaller
         DEFAULT_CONVERTERS.put(PlaybackOrder.class, PlaybackOrderConverter.class);
         DEFAULT_CONVERTERS.put(String.class, StringConverter.class);
         DEFAULT_CONVERTERS.put(TimeRestriction.Action.class, TimeRestrictionActionConverter.class);
+        DEFAULT_CONVERTERS.put(CallRestriction.Directive.class, CallRestrictionDirectiveConverter.class);
     }
 
     /**

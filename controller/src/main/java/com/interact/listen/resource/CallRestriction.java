@@ -1,8 +1,13 @@
 package com.interact.listen.resource;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 @Entity
 @Table(name = "CALL_RESTRICTION")
@@ -112,6 +117,18 @@ public class CallRestriction extends Resource implements Serializable
         }
         
         return !hasErrors();
+    }
+    
+    public static List<CallRestriction> queryEveryoneAndSubscriberSpecficByDirective(Session session, Subscriber subscriber,
+                                                                                     Directive directive)
+    {
+        Criteria criteria = session.createCriteria(CallRestriction.class);
+        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.add(Restrictions.or(Restrictions.eq("subscriber_alias.id", subscriber.getId()),
+                                     Restrictions.eq("forEveryone", true)));
+        criteria.add(Restrictions.eq("directive", directive));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return (List<CallRestriction>)criteria.list();
     }
     
     @Override
