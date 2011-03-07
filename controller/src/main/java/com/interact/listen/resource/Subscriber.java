@@ -870,8 +870,6 @@ public class Subscriber extends Resource implements Serializable
         List<CallRestriction> denyRestrictions = CallRestriction.queryEveryoneAndSubscriberSpecficByDirective(session, this,
                                                                  CallRestriction.Directive.DENY);
         
-        LOG.debug("TONY denyRestrictions = " + denyRestrictions.toString());
-        
         //if a deny record exists, check if it applies to this sub
         if(denyRestrictions.size() > 0)
         {
@@ -881,8 +879,6 @@ public class Subscriber extends Resource implements Serializable
             {
                 denyRestrictionsMap.put(restriction.getDestination(), restriction.getDestination());
             }
-            
-            LOG.debug("TONY denyRestrictionsMap = " + denyRestrictionsMap.toString());
             
             String match = numberMatcher.findMatch(destination, denyRestrictionsMap);
             

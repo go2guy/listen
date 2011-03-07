@@ -39,8 +39,6 @@ public class WildcardNumberMatcherImpl implements WildcardNumberMatcher
             }
         }
         
-        LOG.debug("TONY wildcards contains " + wildcards.toString());
-        
         for(Map.Entry<String, String> entry : wildcards.entrySet())
         {
             // length of 1 has to be a single '*'; if we got this far, we matched the '*'
