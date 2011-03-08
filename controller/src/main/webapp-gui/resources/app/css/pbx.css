@@ -12,16 +12,12 @@ fieldset {
 
 label.restricted-subscriber {
     display: block;
-    margin-left: 30px;
+    margin-left: 95px; /* rather arbitrary, but makes it at least sort of line up with the destination number */
 }
 
 input {
     font-weight: bold;
     width: 200px;
-}
-
-select {
-    width: 150px;
 }
 
 button {
@@ -39,14 +35,8 @@ label.restricted-subscriber button {
     margin-left: 5px;
 }
 
-label.first select {
-    font-weight: bold;
-    margin-left: 0;
-    width: 100px;
-}
-
 select.target {
-    width: 150px;
+    width: 200px;
 }
 
 .more-subscribers {
@@ -62,12 +52,13 @@ select.target {
     display: none;
 }
 
-.deny {
+.deny-everyone,
+.deny-subscribers {
     background-color: #F5DDDA;
     border-color: #FC6442;
 }
 
-.allow {
-    background-color: #DAF5DD;
-    border-color: #4DBD5E;
+.deny-everyone-except {
+    background-color: #F7E6C8;
+    border-color: #E0981B;
 }

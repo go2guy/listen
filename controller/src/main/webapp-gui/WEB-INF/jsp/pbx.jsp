@@ -21,7 +21,7 @@
         <form>
           <fieldset id="page-buttons">
             <button type="submit" class="button-save">Save</button>
-            <button type="button" class="button-add" id="new-restriction">Add Another Restriction</button>
+            <button type="button" class="button-add" id="new-restriction">Add Restriction</button>
           </fieldset>
         </form>
       </div>
@@ -29,16 +29,9 @@
 
     <fieldset id="template" class="restriction">
       <button type="button" class="button-delete delete-restriction">Delete</button>
-          
-      <label class="first">
-        <select class="directive">
-          <option value="deny">Deny</option>
-          <option value="allow">Allow</option>
-        </select>
-      </label>
 
       <label>
-        destination number
+        Deny destination number
         <input type="text" class="destination"/>
       </label>
 
@@ -46,7 +39,8 @@
         for
         <select class="target">
           <option value="Everyone">Everyone</option>
-          <option value="Subscribers">Subscriber(s)</option>
+          <option value="EveryoneExcept">Everyone Except...</option>
+          <option value="Subscribers">Subscriber(s)...</option>
         </select>
       </label>
 

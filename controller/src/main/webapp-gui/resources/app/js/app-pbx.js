@@ -51,18 +51,18 @@ interact.pbx = {
         var copy = $('#template').clone(true, true);
         copy.removeAttr('id');
         $('.target', copy).val('Everyone');
-        interact.pbx.toggleFieldsetStyle($('.directive', copy));
+        interact.pbx.toggleFieldsetStyle(copy);
         $('#page-buttons').before(copy);
 
         $('.destination', copy).focus();
     },
     
-    toggleFieldsetStyle: function(directiveSelect) {
-        var directive = $(directiveSelect);
-        var fieldset = directive.parent().parent();
-        var current = directive.val();
-        fieldset.toggleClass('deny', current == 'deny');
-        fieldset.toggleClass('allow', current == 'allow');
+    toggleFieldsetStyle: function(fieldset) {
+        var target = $('.target', fieldset);
+        var current = target.val();
+        fieldset.toggleClass('deny-everyone', current == 'Everyone');
+        fieldset.toggleClass('deny-everyone-except', current == 'EveryoneExcept');
+        fieldset.toggleClass('deny-subscribers', current == 'Subscribers');
     }
 };
 
@@ -71,9 +71,11 @@ $(document).ready(function() {
     $('.target').change(function(e) {
         var sel = $(e.target);
         var fieldset = sel.parents('fieldset').eq(0); // first fieldset ancestor
-        if(sel.val() == 'Subscribers') {
+        if(sel.val() == 'Subscribers' || sel.val() == 'EveryoneExcept') {
             var before = $('.more-subscribers', fieldset)
-            interact.pbx.moreSubscribers(before, 1); // add one, we don't know that they want more than that
+            if($('.restricted-subscriber', fieldset).length == 0) {
+                interact.pbx.moreSubscribers(before, 1); // add one, we don't know that they want more than that
+            }
             $('.more-subscribers', fieldset).show();
             $('.restricted-subscriber:first input', fieldset).focus();
         } else {
@@ -98,8 +100,8 @@ $(document).ready(function() {
         $(e.target).parent().remove();
     });
     
-    $('.directive').change(function(e) {
-        interact.pbx.toggleFieldsetStyle(e.target);
+    $('.target').change(function(e) {
+        interact.pbx.toggleFieldsetStyle($(e.target).parent().parent());
     });
     
     $.ajax({
