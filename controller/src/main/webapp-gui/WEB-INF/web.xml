@@ -164,6 +164,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>CanDialServlet</servlet-name>
+        <servlet-class>com.interact.listen.api.CanDialServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>ConferencesServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.ConferencesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -523,6 +529,11 @@
     <servlet-mapping>
         <servlet-name>ApiServlet</servlet-name>
         <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>CanDialServlet</servlet-name>
+        <url-pattern>/meta/canDial</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>
