@@ -373,6 +373,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>IsBlacklistedServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.IsBlacklistedServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.LoginServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -718,6 +724,11 @@
     <servlet-mapping>
         <servlet-name>GetVoicemailListServlet</servlet-name>
         <url-pattern>/ajax/getVoicemailList</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>IsBlacklistedServlet</servlet-name>
+        <url-pattern>/ajax/isBlacklisted</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -1,15 +1,23 @@
 package com.interact.listen.util;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.apache.log4j.Logger;
+import java.util.*;
 
 public class WildcardNumberMatcherImpl implements WildcardNumberMatcher
 {
-    private static final Logger LOG = Logger.getLogger(WildcardNumberMatcherImpl.class);
-    
+    @Override
+    public boolean findMatch(String number, List<String> conditions)
+    {
+        Map<String, String> map = new HashMap<String, String>();
+        for(String condition : conditions)
+        {
+            map.put(condition, condition);
+        }
+
+        String result = findMatch(number, map);
+        return result != null;
+    }
+
+    @Override
     public String findMatch(String number, Map<String, String> mappings)
     {
         // if we have a specific mapping for the number, simply return it
@@ -38,7 +46,7 @@ public class WildcardNumberMatcherImpl implements WildcardNumberMatcher
                 wildcards.put(entry.getKey(), entry.getValue());
             }
         }
-        
+
         for(Map.Entry<String, String> entry : wildcards.entrySet())
         {
             // length of 1 has to be a single '*'; if we got this far, we matched the '*'

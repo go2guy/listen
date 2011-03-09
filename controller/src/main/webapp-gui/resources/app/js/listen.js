@@ -35,6 +35,39 @@ $(document).ready(function() {
             setTimeout(function() {
                 div.slideUp(250);
             }, 4000);
+        },
+        
+        checkBlacklist: function(inputEl) {
+            var input = $(inputEl);
+            var destination = $.trim(input.val());
+            interact.util.trace('Checking blacklist for destination [' + destination + ']');
+            
+            var clearIndicator = function(input) {
+                input.next('.blacklisted-indicator').remove();
+                input.removeClass('is-blacklisted');
+            }
+            
+            if(destination == '') {
+                clearIndicator(input);
+            } else {
+                $.ajax({
+                    url: interact.listen.url('/ajax/isBlacklisted?destination=' + destination),
+                    dataType: 'json',
+                    cache: 'false',
+                    success: function(data, textStatus, xhr) {
+                        if(data.isBlacklisted) {
+                            interact.util.trace('Destination [' + destination + '] is blacklisted');
+                            input.addClass('is-blacklisted');
+                            if(input.next('.blacklisted-indicator').length == 0) {
+                                input.after('<span class="blacklisted-indicator" style="left: 229px;" title="You are not allowed to dial this number.">!</span>');
+                            }
+                        } else {
+                            interact.util.trace('Destination [' + destination + '] is allowed');
+                            clearIndicator(input);
+                        }
+                    }
+                });
+            }
         }
     };
     
@@ -124,5 +157,11 @@ $(document).ready(function() {
     $('label.required').each(function(index, elem) {
         var text = $(elem).text();
         $(elem).text(text + '*');
+    });
+
+    $('input.possibly-blacklisted').each(function(i, el) {
+        $(el).change(function(e) {
+            interact.listen.checkBlacklist(e.target);
+        });
     });
 });

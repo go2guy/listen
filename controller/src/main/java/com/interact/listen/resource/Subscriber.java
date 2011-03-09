@@ -6,6 +6,7 @@ import com.interact.listen.c2dm.C2DMessaging;
 import com.interact.listen.exception.NumberAlreadyInUseException;
 import com.interact.listen.exception.UnauthorizedModificationException;
 import com.interact.listen.history.HistoryService;
+import com.interact.listen.resource.CallRestriction.Directive;
 import com.interact.listen.resource.DeviceRegistration.DeviceType;
 import com.interact.listen.resource.TimeRestriction.Action;
 import com.interact.listen.spot.SpotCommunicationException;
@@ -863,60 +864,54 @@ public class Subscriber extends Resource implements Serializable
 
         return isNotificationAllowedForTime(Action.NEW_VOICEMAIL_SMS, new LocalDateTime());
     }
-    
+
     public boolean canDial(Session session, String destination)
     {
-        //query to see if any deny records exist for this subscriber or for everyone
-        List<CallRestriction> denyRestrictions = CallRestriction.queryEveryoneAndSubscriberSpecficByDirective(session, this,
-                                                                 CallRestriction.Directive.DENY);
-        
-        //if a deny record exists, check if it applies to this sub
-        if(denyRestrictions.size() > 0)
+        List<CallRestriction> all = CallRestriction.queryAll(session);
+        for(CallRestriction r : all)
         {
-            WildcardNumberMatcher numberMatcher = new WildcardNumberMatcherImpl();
-            Map<String, String> denyRestrictionsMap = new HashMap<String, String>();
-            for(CallRestriction restriction : denyRestrictions)
-            {
-                denyRestrictionsMap.put(restriction.getDestination(), restriction.getDestination());
-            }
-            
-            String match = numberMatcher.findMatch(destination, denyRestrictionsMap);
-            
-            //if null, no deny match, the subscriber can call
-            if(match == null)
-            {
-                return true;
-            }
-            else
-            {
-                //There was a match, now query all the allow records to see if they have an overriding allow
-                List<CallRestriction> allowRestrictions = CallRestriction.queryEveryoneAndSubscriberSpecficByDirective(
-                                                                        session, this, CallRestriction.Directive.ALLOW);
-                
-                Map<String, String> allowRestrictionsMap = new HashMap<String, String>();
-                for(CallRestriction restriction : allowRestrictions)
-                {
-                    allowRestrictionsMap.put(restriction.getDestination(), restriction.getDestination());
-                }
-                
-                String allowMatch = numberMatcher.findMatch(destination, allowRestrictionsMap);
-                
-                if(allowMatch == null)
-                {
-                    //No allow record found, they are denied from making the call
-                    return false;
-                }
-                
-                //An allow record was found which overrides the deny, call allowed
-                return true;
-            }
+            LOG.debug(r.getDestination() + "; " + r.getDirective() + "; " + r.getForEveryone() + "; " + r.getSubscriber());
         }
-        else
+
+        // query to see if any deny records exist for this subscriber or for everyone
+        List<String> denied = queryRestrictions(session, Directive.DENY);
+        LOG.debug("Found [" + denied.size() + "] denied numbers");
+        if(denied.size() == 0)
         {
-            return true;
+            return true; // no restrictions in place, everything is allowed
         }
+
+        WildcardNumberMatcher matcher = new WildcardNumberMatcherImpl();
+
+        boolean isDenied = matcher.findMatch(destination, denied);
+        if(!isDenied)
+        {
+            return true; // if no deny match, the subscriber can call
+        }
+
+        // There was a match, now query all the allow records to see if they have an overriding allow
+        List<String> allowed = queryRestrictions(session, Directive.ALLOW);
+        LOG.debug("Found [" + allowed.size() + "] allowed numbers");
+        return matcher.findMatch(destination, allowed);
     }
-    
+
+    private List<String> queryRestrictions(Session session, Directive directive)
+    {
+        LOG.debug("Sub = [" + this.getId() + "], dir = [" + directive + "]");
+        List<CallRestriction> res = CallRestriction.queryEveryoneAndSubscriberSpecficByDirective(session, this, directive);
+        return extractDestinationsFromRestrictions(res);
+    }
+
+    private List<String> extractDestinationsFromRestrictions(List<CallRestriction> restrictions)
+    {
+        List<String> destinations = new ArrayList<String>();
+        for(CallRestriction restriction : restrictions)
+        {
+            destinations.add(restriction.getDestination());
+        }
+        return destinations;
+    }
+
     /**
      * Whether or not the subscriber has allowed notifications for the specified action during the specified time.
      * 

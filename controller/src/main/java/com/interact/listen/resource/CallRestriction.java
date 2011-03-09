@@ -8,7 +8,7 @@ import javax.persistence.*;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 
 @Entity
 @Table(name = "CALL_RESTRICTION")
@@ -129,10 +129,9 @@ public class CallRestriction extends Resource implements Serializable
         criteria.add(Restrictions.or(Restrictions.eq("subscriber_alias.id", subscriber.getId()),
                                      Restrictions.eq("forEveryone", true)));
         criteria.add(Restrictions.eq("directive", directive));
-        
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setFetchMode("subscriber", FetchMode.SELECT);
-        
+
         return (List<CallRestriction>)criteria.list();
     }
 
@@ -156,7 +155,7 @@ public class CallRestriction extends Resource implements Serializable
         return destinations;
     }
 
-    private static List<CallRestriction> queryAll(Session session)
+    public static List<CallRestriction> queryAll(Session session)
     {
         Criteria criteria = session.createCriteria(CallRestriction.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);

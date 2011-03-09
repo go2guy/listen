@@ -691,3 +691,20 @@ table.data-table td, table.data-table th {
 table.data-table tr.odd {
     background-color: #EEEEEE;
 }
+
+input.is-blacklisted {
+    background-color: #FCD695;
+}
+
+span.blacklisted-indicator {
+    background-color: #EB372A;
+    color: #FFFFFF;
+    display: block;
+    font-weight: bold;
+    height: 16px;
+    opacity: .5;
+    position: relative;
+    text-align: center;
+    top: -17px;
+    width: 16px;
+}

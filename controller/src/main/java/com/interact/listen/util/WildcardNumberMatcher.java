@@ -1,5 +1,6 @@
 package com.interact.listen.util;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,4 +17,6 @@ public interface WildcardNumberMatcher
      * @param mappings parameters to be sent in request body
      */
     public String findMatch(String number, Map<String, String> mappings);
+
+    public boolean findMatch(String number, List<String> conditions);
 }

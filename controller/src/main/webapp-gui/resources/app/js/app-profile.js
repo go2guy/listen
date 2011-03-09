@@ -207,14 +207,14 @@ $(document).ready(function() {
             },
             
             addPhoneNumber: function(number, forwardedTo, messageLight, numberType, publicNumber) {
-                var clone = $('#phoneNumberTemplate').clone();
+                var clone = $('#phoneNumberTemplate').clone(true);
                 clone.removeAttr('id');
                 
                 $('.phone-number', clone).val(number);
                 $('.forwarded-to', clone).val(forwardedTo);
                 $('.message-light', clone).attr('checked', messageLight);
                 $('.public-number', clone).attr('checked', publicNumber);
-                
+
                 if(numberType == 'EXTENSION' || numberType == 'VOICEMAIL') {
                     clone.addClass('system');
                     $('input, select', clone).not('.forwarded-to').attr('disabled', 'disabled').attr('readonly', 'readonly').addClass('disabled');
@@ -232,6 +232,8 @@ $(document).ready(function() {
 
                 $('.phone-number-category', clone).val(numberType);
                 $('#phoneNumbersButtons').before(clone);
+                
+                interact.listen.checkBlacklist($('.forwarded-to', clone));
             },
 
             addTimeRestriction: function(before, from, to, days) {

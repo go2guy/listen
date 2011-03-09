@@ -235,22 +235,13 @@ Subscriber subscriber = ServletUtil.currentSubscriber(request); %>
             </select>
           </label>
 
-<!--          <label class="phone-number-service-provider">
-            Service Provider
-            <listen:mobileProviderSelect/>
-          </label>-->
         </fieldset>
 
         <label>
           Forward this number to
-          <input type="text" class="forwarded-to"/>
+          <input type="text" class="forwarded-to possibly-blacklisted"/>
           <span class="annotation">Leave blank to disable forwarding</span>
         </label>
-
-<!--        <label>
-          <input type="checkbox" class="inline message-light"/>
-          Supports message light indicator
-        </label>-->
 
         <label>
           <input type="checkbox" class="inline public-number"/>
