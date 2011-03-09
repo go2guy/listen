@@ -17,6 +17,9 @@
 <log>INFO: Current value [<value expr="nxtPath"/>]</log>
 <assign name="nxtPath" expr="'ResponseDial'+''" />
 <log>INFO: Updated value [<value expr="nxtPath"/>]</log>
+<log>INFO: Current value [<value expr="blackListOpt"/>]</log>
+<assign name="blackListOpt" expr="'msgMenu'+''" />
+<log>INFO: Updated value [<value expr="blackListOpt"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

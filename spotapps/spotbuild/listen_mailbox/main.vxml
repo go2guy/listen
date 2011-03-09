@@ -93,6 +93,7 @@
 	<var name="SB_UV_EXT_PREFIX"/>
 	<var name="SB_UV_EXT_SUFFIX"/>
 	<var name="SB_UV_phoneNumber"/>
+	<var name="SB_UV_blackListOpt"/>
 
     
     <form id="beginDocument">
@@ -328,6 +329,9 @@
 			</if>
 			<if cond="SB_UV_phoneNumber != undefined">
 				<assign name="phoneNumber" expr="SB_UV_phoneNumber" />
+			</if>
+			<if cond="SB_UV_blackListOpt != undefined">
+				<assign name="blackListOpt" expr="SB_UV_blackListOpt" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

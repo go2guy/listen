@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'231_51'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'231_71'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_231_54(subscriber,subFwd)
+            function II_SB_JS_function_231_69(returnVal)
             {
-	            return '?subscriber=/subscribers/' + subscriber + '&destination=' + subFwd;
+	            return getJsonVal(returnVal, 'canDial');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">params</log>
-            <log>INFO: Entered run-javascript.vxml [231_54]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_231_54(subscriber,subFwd)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="params" expr="II_SB_userJava" />   
+            <log target="status">Get sipURL</log>
+            <log>INFO: Entered run-javascript.vxml [231_69]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_231_69(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

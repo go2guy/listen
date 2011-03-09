@@ -12,7 +12,7 @@
 	    <log target="status">set resource</log>
             <log>INFO: Entered assign-variable.vxml [231_53]</log>
             <log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'blackList'+''" />
+<assign name="resource" expr="'canDial'+''" />
 <log>INFO: Updated value [<value expr="resource"/>]</log>
 <log>INFO: Current value [<value expr="request"/>]</log>
 <assign name="request" expr="'get'+''" />

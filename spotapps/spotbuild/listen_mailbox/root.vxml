@@ -103,6 +103,7 @@
 	<var name="EXT_PREFIX" expr="''" />
 	<var name="EXT_SUFFIX" expr="''" />
 	<var name="phoneNumber" expr="''" />
+	<var name="blackListOpt" expr="''" />
 
 
     <!-- Conference Variables -->

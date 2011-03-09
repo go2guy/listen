@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_231_19(passValues,phoneNumber)
+            function II_SB_JS_function_231_19(passValues,subFwd)
             {
-	            return phoneNumber + '@' + getJsonVal(passValues, 'sipURL');
+	            return subFwd + '@' + getJsonVal(passValues, 'sipURL');
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Get sipURL</log>
             <log>INFO: Entered run-javascript.vxml [231_19]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_231_19(passValues,phoneNumber)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_231_19(passValues,subFwd)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="phoneNumber" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
