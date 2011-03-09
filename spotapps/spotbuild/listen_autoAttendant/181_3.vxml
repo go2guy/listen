@@ -15,14 +15,14 @@
 <assign name="ext" expr="appDirection+''" />
 <log>INFO: Updated value [<value expr="ext"/>]</log>
 <log>INFO: Current value [<value expr="appDirection"/>]</log>
-<assign name="appDirection" expr="sipPrefix+appDirection" />
+<assign name="appDirection" expr="EXT_PREFIX+appDirection" />
 <log>INFO: Updated value [<value expr="appDirection"/>]</log>
 <log>INFO: Current value [<value expr="appDirection"/>]</log>
-<assign name="appDirection" expr="appDirection+'@'" />
+<assign name="appDirection" expr="appDirection+EXT_SUFFIX" />
 <log>INFO: Updated value [<value expr="appDirection"/>]</log>
-<log>INFO: Current value [<value expr="appDirection"/>]</log>
-<assign name="appDirection" expr="appDirection+sipServer" />
-<log>INFO: Updated value [<value expr="appDirection"/>]</log>
+<log>INFO: Current value [<value expr="status"/>]</log>
+<assign name="status" expr="ANI+EXT_SUFFIX" />
+<log>INFO: Updated value [<value expr="status"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

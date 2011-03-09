@@ -49,20 +49,20 @@
 	<var name="SB_UV_appOption"/>
 	<var name="SB_UV_appDirection"/>
 	<var name="SB_UV_appString"/>
-	<var name="SB_UV_sipServer"/>
-	<var name="SB_UV_sipPrefix"/>
+	<var name="SB_UV_EXT_SUFFIX"/>
+	<var name="SB_UV_EXT_PREFIX"/>
 	<var name="SB_UV_application"/>
 	<var name="SB_UV_dtmfLength"/>
 	<var name="SB_UV_timeout"/>
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_appStartTime"/>
 	<var name="SB_UV_appEndTime"/>
-	<var name="SB_UV_whichPathStat"/>
 	<var name="SB_UV_menuId"/>
 	<var name="SB_UV_keysPressed"/>
 	<var name="SB_UV_audioDIR"/>
 	<var name="SB_UV_hotKeys"/>
 	<var name="SB_UV_ext"/>
+	<var name="SB_UV_EXT_LENGTH"/>
 
     
     <form id="beginDocument">
@@ -167,11 +167,11 @@
 			<if cond="SB_UV_appString != undefined">
 				<assign name="appString" expr="SB_UV_appString" />
 			</if>
-			<if cond="SB_UV_sipServer != undefined">
-				<assign name="sipServer" expr="SB_UV_sipServer" />
+			<if cond="SB_UV_EXT_SUFFIX != undefined">
+				<assign name="EXT_SUFFIX" expr="SB_UV_EXT_SUFFIX" />
 			</if>
-			<if cond="SB_UV_sipPrefix != undefined">
-				<assign name="sipPrefix" expr="SB_UV_sipPrefix" />
+			<if cond="SB_UV_EXT_PREFIX != undefined">
+				<assign name="EXT_PREFIX" expr="SB_UV_EXT_PREFIX" />
 			</if>
 			<if cond="SB_UV_application != undefined">
 				<assign name="application" expr="SB_UV_application" />
@@ -191,9 +191,6 @@
 			<if cond="SB_UV_appEndTime != undefined">
 				<assign name="appEndTime" expr="SB_UV_appEndTime" />
 			</if>
-			<if cond="SB_UV_whichPathStat != undefined">
-				<assign name="whichPathStat" expr="SB_UV_whichPathStat" />
-			</if>
 			<if cond="SB_UV_menuId != undefined">
 				<assign name="menuId" expr="SB_UV_menuId" />
 			</if>
@@ -208,6 +205,9 @@
 			</if>
 			<if cond="SB_UV_ext != undefined">
 				<assign name="ext" expr="SB_UV_ext" />
+			</if>
+			<if cond="SB_UV_EXT_LENGTH != undefined">
+				<assign name="EXT_LENGTH" expr="SB_UV_EXT_LENGTH" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

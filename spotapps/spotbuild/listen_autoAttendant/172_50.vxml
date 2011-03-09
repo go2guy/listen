@@ -17,9 +17,9 @@
 <log>INFO: Current value [<value expr="id"/>]</log>
 <assign name="id" expr="'LSTNAPP_SERVICE_ERROR'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
-<log>INFO: Current value [<value expr="whichPathStat"/>]</log>
-<assign name="whichPathStat" expr="'Service Error'+''" />
-<log>INFO: Updated value [<value expr="whichPathStat"/>]</log>
+<log>INFO: Current value [<value expr="nxtPath"/>]</log>
+<assign name="nxtPath" expr="'Service Error'+''" />
+<log>INFO: Updated value [<value expr="nxtPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

@@ -59,20 +59,20 @@
 	<var name="appOption" expr="''" />
 	<var name="appDirection" expr="''" />
 	<var name="appString" expr="''" />
-	<var name="sipServer" expr="'iipbx'" />
-	<var name="sipPrefix" expr="'ext'" />
+	<var name="EXT_SUFFIX" expr="''" />
+	<var name="EXT_PREFIX" expr="''" />
 	<var name="application" expr="''" />
 	<var name="dtmfLength" expr="''" />
 	<var name="timeout" expr="''" />
 	<var name="sysAccessTime" expr="''" />
 	<var name="appStartTime" expr="''" />
 	<var name="appEndTime" expr="''" />
-	<var name="whichPathStat" expr="''" />
 	<var name="menuId" expr="''" />
 	<var name="keysPressed" expr="''" />
 	<var name="audioDIR" expr="'/interact/apps/spotbuild/listen_autoAttendant/audio/'" />
 	<var name="hotKeys" expr="''" />
 	<var name="ext" expr="''" />
+	<var name="EXT_LENGTH" expr="''" />
 
 
     <!-- Conference Variables -->
