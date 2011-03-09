@@ -26,6 +26,10 @@ $(document).ready(function() {
         $('#outdial-number').focus();
     });
 
+    $('#outdial-number').change(function(e) {
+        interact.listen.checkBlacklist(e.target);
+    });
+
     $('#outdial-form').submit(function() { return false });
 
     $('#outdial-cancel').click(function() {
