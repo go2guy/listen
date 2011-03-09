@@ -6,6 +6,7 @@ import java.util.*;
 import javax.persistence.*;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
@@ -124,11 +125,14 @@ public class CallRestriction extends Resource implements Serializable
                                                                                      Directive directive)
     {
         Criteria criteria = session.createCriteria(CallRestriction.class);
-        criteria.createAlias("subscriber", "subscriber_alias");
+        criteria.createAlias("subscriber", "subscriber_alias", Criteria.LEFT_JOIN);
         criteria.add(Restrictions.or(Restrictions.eq("subscriber_alias.id", subscriber.getId()),
                                      Restrictions.eq("forEveryone", true)));
         criteria.add(Restrictions.eq("directive", directive));
+        
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setFetchMode("subscriber", FetchMode.SELECT);
+        
         return (List<CallRestriction>)criteria.list();
     }
 
