@@ -43,7 +43,6 @@ $(document).ready(function() {
             interact.util.trace('Checking blacklist for destination [' + destination + ']');
             
             var clearIndicator = function(input) {
-                input.next('.blacklisted-indicator').remove();
                 input.removeClass('is-blacklisted');
             }
             
@@ -58,9 +57,6 @@ $(document).ready(function() {
                         if(data.isBlacklisted) {
                             interact.util.trace('Destination [' + destination + '] is blacklisted');
                             input.addClass('is-blacklisted');
-                            if(input.next('.blacklisted-indicator').length == 0) {
-                                input.after('<span class="blacklisted-indicator" style="left: 229px;" title="You are not allowed to dial this number.">!</span>');
-                            }
                         } else {
                             interact.util.trace('Destination [' + destination + '] is allowed');
                             clearIndicator(input);

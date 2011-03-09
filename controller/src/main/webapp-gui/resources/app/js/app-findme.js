@@ -157,16 +157,22 @@ $(document).ready(function() {
                 html += '<button type="button" class="icon-delete" title="Remove this number"></button>';
                 html += '<button type="button" class="icon-toggle-off" title="Re-enable this number"></button>';
                 html += '<button type="button" class="icon-toggle-on" title="Temporarily disable this number"></button>';
-                html += '<input type="text"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + forNumber + '"/>';
+                html += '<input type="text"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + forNumber + '"  class="possibly-blacklisted"/>';
                 html += '<span>for</span><input type="text" class="ring-seconds"' + (isDisabled === true ? ' readonly="readonly"' : '') + ' value="' + ringTime + '"/><span>seconds</span>';
                 html += '</div>';
 
                 var el = $(html);
+                var numberInput = $('input:first', el);
                 FindMe.toggleForwardedIndicator(el);
-                $('input:first', el).autocomplete({source: accessNumbers, delay: 0, minLength: -1}).change(function() {
+                numberInput.autocomplete({source: accessNumbers, delay: 0, minLength: -1}).change(function() {
                     FindMe.toggleForwardedIndicator($(this).parent());
                 });
-                
+
+                numberInput.change(function(e) {
+                    interact.listen.checkBlacklist(e.target);
+                });
+                interact.listen.checkBlacklist(numberInput);
+
                 $('.icon-delete', el).click(function(e) {
                     var number = $(e.target).parent();
                     var group = number.parent();
