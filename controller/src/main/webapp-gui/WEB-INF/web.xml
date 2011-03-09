@@ -260,6 +260,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>GetCallRestrictionsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.GetCallRestrictionsServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>GetContactInformationServlet</servlet-name>
         <servlet-class>com.interact.listen.api.GetContactInformationServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -447,6 +453,12 @@
     <servlet>
         <servlet-name>SaveAttendantMenuServlet</servlet-name>
         <servlet-class>com.interact.listen.gui.SaveAttendantMenuServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveCallRestrictionsServlet</servlet-name>
+        <servlet-class>com.interact.listen.gui.SaveCallRestrictionsServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -639,6 +651,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>GetCallRestrictionsServlet</servlet-name>
+        <url-pattern>/ajax/getCallRestrictions</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>GetConferenceInfoServlet</servlet-name>
         <url-pattern>/ajax/getConferenceInfo</url-pattern>
     </servlet-mapping>
@@ -741,6 +758,11 @@
     <servlet-mapping>
         <servlet-name>SaveAttendantMenuServlet</servlet-name>
         <url-pattern>/ajax/saveAttendantMenu</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveCallRestrictionsServlet</servlet-name>
+        <url-pattern>/ajax/saveCallRestrictions</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

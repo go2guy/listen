@@ -1,7 +1,7 @@
 package com.interact.listen.resource;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -118,8 +118,9 @@ public class CallRestriction extends Resource implements Serializable
         
         return !hasErrors();
     }
-    
-    public static List<CallRestriction> queryEveryoneAndSubscriberSpecficByDirective(Session session, Subscriber subscriber,
+
+    public static List<CallRestriction> queryEveryoneAndSubscriberSpecficByDirective(Session session,
+                                                                                     Subscriber subscriber,
                                                                                      Directive directive)
     {
         Criteria criteria = session.createCriteria(CallRestriction.class);
@@ -130,7 +131,40 @@ public class CallRestriction extends Resource implements Serializable
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (List<CallRestriction>)criteria.list();
     }
-    
+
+    public static Map<String, List<CallRestriction>> queryAllGroupedByDestination(Session session)
+    {
+        List<CallRestriction> all = queryAll(session);
+        Map<String, List<CallRestriction>> destinations = new HashMap<String, List<CallRestriction>>();
+
+        for(CallRestriction restriction : all)
+        {
+            String destination = restriction.getDestination();
+            List<CallRestriction> destinationList = destinations.get(destination);
+            if(destinationList == null)
+            {
+                destinationList = new ArrayList<CallRestriction>();
+            }
+
+            destinationList.add(restriction);
+            destinations.put(destination, destinationList);
+        }
+        return destinations;
+    }
+
+    private static List<CallRestriction> queryAll(Session session)
+    {
+        Criteria criteria = session.createCriteria(CallRestriction.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return (List<CallRestriction>)criteria.list();
+    }
+
+    public static void deleteAll(Session session)
+    {
+        org.hibernate.Query query = session.createQuery("delete from CallRestriction");
+        query.executeUpdate();
+    }
+
     @Override
     public CallRestriction copy(boolean withIdAndVersion)
     {

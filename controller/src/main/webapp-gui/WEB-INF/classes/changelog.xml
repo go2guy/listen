@@ -710,4 +710,12 @@
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
+    <changeSet author="development" id="65">
+        <modifyColumn tableName="CALL_RESTRICTION">
+            <column name="SUBSCRIBER_ID" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </modifyColumn>
+        <addForeignKeyConstraint baseTableName="CALL_RESTRICTION" baseColumnNames="SUBSCRIBER_ID" referencedTableName="SUBSCRIBER" referencedColumnNames="ID" constraintName="FK_CALL_RESTRICTION_SUBSCRIBER_1" deferrable="false" initiallyDeferred="false"/>
+    </changeSet>
 </databaseChangeLog>

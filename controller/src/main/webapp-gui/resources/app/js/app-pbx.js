@@ -2,28 +2,45 @@ var interact = interact || {};
 interact.pbx = {
     subscriberNames: [],
 
+    loadRestrictions: function() {
+        $.ajax({
+            url: interact.listen.url('/ajax/getCallRestrictions'),
+            dataType: 'json',
+            cache: false,
+            success: function(data, textStatus, xhr) {
+                if(data.length > 0) {
+                    for(var i = 0; i < data.length; i++) {
+                        interact.pbx.newRestriction(data[i].destination, data[i].target, data[i].subscribers);
+                    }
+                } else {
+                    interact.pbx.newRestriction(); // blank restriction
+                }
+            }
+        });
+    },
+
+    addSubscriber: function(beforeElement, number, focus) {
+        var markup = '';
+        markup += '<label class="restricted-subscriber">';
+        markup += 'Subscriber <input type="text"/>';
+        markup += '</label>';
+        var label = $(markup);
+
+        $('input', label).val(number).autocomplete({
+            source: interact.pbx.subscriberNames,
+            delay: 0,
+            minLength: -1
+        });
+        $(beforeElement).before(label);
+        if(focus) {
+            $('input', label).focus();
+        }
+    },
+
     moreSubscribers: function(beforeElement, num) {
         var n = num || 3;
         for(var i = n; i > 0; i--) {
-            var markup = '';
-            markup += '<label class="restricted-subscriber">';
-            markup += 'Subscriber <input type="text"/>';
-            if(n > 1) {
-                markup += '<button type="button" class="button-delete remove-subscriber" tabindex="-1">Remove</button>';
-            }
-            markup += '</label>';
-            var label = $(markup);
-
-            $('input', label).autocomplete({
-                source: interact.pbx.subscriberNames,
-                delay: 0,
-                minLength: -1
-            });
-            
-            $(beforeElement).before(label);
-            if(i == n) {
-                $('input', label).focus();
-            }
+            interact.pbx.addSubscriber(beforeElement, '', i == n);
         }
         interact.pbx.toggleRemoveButtons($(beforeElement).parent());
     },
@@ -47,22 +64,60 @@ interact.pbx = {
         });
     },
 
-    newRestriction: function() {
+    newRestriction: function(destination, target, subscribers) {
         var copy = $('#template').clone(true, true);
         copy.removeAttr('id');
-        $('.target', copy).val('Everyone');
-        interact.pbx.toggleFieldsetStyle(copy);
-        $('#page-buttons').before(copy);
+        $('.target', copy).val(target !== undefined ? target : 'EVERYONE');
+        if(destination !== undefined) {
+            $('.destination', copy).val(destination);
+        }
+        
+        if(subscribers !== undefined) {
+            var before = $('.more-subscribers', copy);
+            for(var i = 0; i < subscribers.length; i++) {
+                interact.pbx.addSubscriber(before, subscribers[i]);
+            }
+        }
 
+        $('#page-buttons').before(copy);
+        interact.pbx.toggleFieldsetStyle(copy);
         $('.destination', copy).focus();
     },
     
     toggleFieldsetStyle: function(fieldset) {
         var target = $('.target', fieldset);
         var current = target.val();
-        fieldset.toggleClass('deny-everyone', current == 'Everyone');
-        fieldset.toggleClass('deny-everyone-except', current == 'EveryoneExcept');
-        fieldset.toggleClass('deny-subscribers', current == 'Subscribers');
+        fieldset.toggleClass('deny-everyone', current == 'EVERYONE');
+        fieldset.toggleClass('deny-everyone-except', current == 'EVERYONE_EXCEPT');
+        fieldset.toggleClass('deny-subscribers', current == 'SUBSCRIBERS');
+    },
+    
+    buildJson: function() {
+        var restrictions = [];
+        $('.restriction').each(function(i, it) {
+            var restriction = {
+                destination: $.trim($('.destination', it).val())
+            };
+            restriction.target = $('.target', it).val();
+            restriction.subscribers = [];
+            $('.restricted-subscriber input').each(function(j, input) {
+                var val = $.trim($(input).val());
+                if(val != '') {
+                    restriction.subscribers.push(val);
+                }
+            });
+            
+            // only add the restriction if it's populated correctly
+            if(restriction.destination == '') return;
+            if((restriction.target == 'SUBSCRIBERS' || restriction.target == 'EVERYONE_EXCEPT') &&
+                    restriction.subscribers.length == 0) {
+                // if it's 'SUBSCRIBERS' or 'EVERYONE_EXCEPT', we expect at least one subscriber value
+                return;
+            }
+
+            restrictions.push(restriction);
+        });
+        return restrictions;
     }
 };
 
@@ -71,7 +126,7 @@ $(document).ready(function() {
     $('.target').change(function(e) {
         var sel = $(e.target);
         var fieldset = sel.parents('fieldset').eq(0); // first fieldset ancestor
-        if(sel.val() == 'Subscribers' || sel.val() == 'EveryoneExcept') {
+        if(sel.val() == 'SUBSCRIBERS' || sel.val() == 'EVERYONE_EXCEPT') {
             var before = $('.more-subscribers', fieldset)
             if($('.restricted-subscriber', fieldset).length == 0) {
                 interact.pbx.moreSubscribers(before, 1); // add one, we don't know that they want more than that
@@ -104,6 +159,27 @@ $(document).ready(function() {
         interact.pbx.toggleFieldsetStyle($(e.target).parent().parent());
     });
     
+    $('#save-configuration').click(function() {
+        var saveButton = $('#findme-save');
+        saveButton.attr('readonly', 'readonly').attr('disabled', 'disabled');
+        var restrictions = interact.pbx.buildJson();
+
+        Server.post({
+            url: interact.listen.url('/ajax/saveCallRestrictions'),
+            properties: {
+                restrictions: JSON.stringify(restrictions)
+            },
+            successCallback: function(data, textStatus, xhr) {
+                saveButton.removeAttr('readonly').removeAttr('disabled');
+                interact.listen.notifySuccess('Call restrictions saved');
+            },
+            errorCallback: function(message) {
+                saveButton.removeAttr('readonly').removeAttr('disabled');
+                interact.listen.notifyError(message);
+            }
+        });
+    });
+    
     $.ajax({
         url: interact.listen.url('/ajax/getSubscriberList?max=1000'),
         dataType: 'json',
@@ -122,6 +198,6 @@ $(document).ready(function() {
             });
         }
     });
-    
-    interact.pbx.newRestriction();
+
+    interact.pbx.loadRestrictions();
 });

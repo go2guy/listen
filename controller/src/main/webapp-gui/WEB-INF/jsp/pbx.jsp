@@ -18,9 +18,14 @@
       </ul>
 
       <div class="tab-content-default">
+        <div class="help">
+            By default, the system allows any number to be dialed by any subscriber. Using the configuration below,
+            you may restrict the dialed numbers that are allowed. Restrictions can be configured both globally and
+            per-subscriber.
+        </div>
         <form>
           <fieldset id="page-buttons">
-            <button type="submit" class="button-save">Save</button>
+            <button type="button" class="button-save" id="save-configuration">Save</button>
             <button type="button" class="button-add" id="new-restriction">Add Restriction</button>
           </fieldset>
         </form>
@@ -38,9 +43,9 @@
       <label>
         for
         <select class="target">
-          <option value="Everyone">Everyone</option>
-          <option value="EveryoneExcept">Everyone Except...</option>
-          <option value="Subscribers">Subscriber(s)...</option>
+          <option value="EVERYONE">Everyone</option>
+          <option value="EVERYONE_EXCEPT">Everyone Except...</option>
+          <option value="SUBSCRIBERS">Subscriber(s)...</option>
         </select>
       </label>
 
