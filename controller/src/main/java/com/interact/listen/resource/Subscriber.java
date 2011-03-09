@@ -867,14 +867,16 @@ public class Subscriber extends Resource implements Serializable
 
     public boolean canDial(Session session, String destination)
     {
-        List<CallRestriction> all = CallRestriction.queryAll(session);
-        for(CallRestriction r : all)
-        {
-            LOG.debug(r.getDestination() + "; " + r.getDirective() + "; " + r.getForEveryone() + "; " + r.getSubscriber());
-        }
-
-        // query to see if any deny records exist for this subscriber or for everyone
         List<String> denied = queryRestrictions(session, Directive.DENY);
+        List<String> allowed = queryRestrictions(session, Directive.ALLOW);
+        
+        return canDial(session, destination, denied, allowed);
+    }
+    
+    public boolean canDial(Session session, String destination, List<String> denied, List<String> allowed)
+    {
+        // query to see if any deny records exist for this subscriber or for everyone
+        
         LOG.debug("Found [" + denied.size() + "] denied numbers");
         if(denied.size() == 0)
         {
@@ -890,7 +892,6 @@ public class Subscriber extends Resource implements Serializable
         }
 
         // There was a match, now query all the allow records to see if they have an overriding allow
-        List<String> allowed = queryRestrictions(session, Directive.ALLOW);
         LOG.debug("Found [" + allowed.size() + "] allowed numbers");
         return matcher.findMatch(destination, allowed);
     }
