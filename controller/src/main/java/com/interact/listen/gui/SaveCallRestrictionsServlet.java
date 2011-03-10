@@ -73,7 +73,7 @@ public class SaveCallRestrictionsServlet extends HttpServlet
                 continue;
             }
 
-            if(target == Target.EVERYONE)
+            if(target == Target.EVERYONE || target == Target.EVERYONE_EXCEPT)
             {
                 CallRestriction restriction = new CallRestriction();
                 restriction.setDestination(destination);
@@ -81,7 +81,8 @@ public class SaveCallRestrictionsServlet extends HttpServlet
                 restriction.setForEveryone(true);
                 ps.save(restriction);
             }
-            else
+            
+            if(target != Target.EVERYONE)
             {
                 for(String username : subscribers)
                 {
