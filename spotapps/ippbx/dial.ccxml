@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 03/03/2011
+    <!-- Last Modified 03/10/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -121,8 +121,9 @@
                 <else/>
                     <if cond="importedValue.length &gt; 0">
                         <assign name="state" expr="'chkFwd'"/>
-                        <var name="mBox" expr="tmpDNIS"/>
-       	   		        <dialogstart src="'file:'+TRANS_PATH+'chkForward.vxml'" namelist="importedValue mBox"/>
+                        <var name="accessNum" expr="tmpDNIS"/>
+                        <var name="whichRsrc" expr="'findMeNumbers'"/>
+       	   		        <dialogstart src="'file:'+TRANS_PATH+'chkForward.vxml'" namelist="importedValue whichRsrc accessNum"/>
                     <else/>
                         <send data="'dialog.user.getCallerID'" target="session.id"/>
                     </if>
@@ -200,7 +201,34 @@
                 <!-- Implies ID has not been set previousely -->
                 <assign name="CALL_ANI" expr="ANI"/>
             </if>
-            <send data="'dialog.user.call'" target="session.id"/>
+            <if cond="(iiNumber(tmpDNIS)) &amp;&amp; (tmpDNIS[0] == OUTSIDE_LINE)">
+                <!-- Assume we are attempting to reach a pstn number through SIP Trunk. 
+                Let's verify caller has permission to dial number -->
+                <assign name="state" expr="'chkBlackList'"/>
+                <var name="destination" expr="iiSubstr(tmpDNIS,1,-1)"/>
+                <var name="accessNum" expr="tmpANI"/>
+                <var name="whichRsrc" expr="'canDial'"/>
+       	   		<dialogstart src="'file:'+TRANS_PATH+'chkForward.vxml'" namelist="importedValue whichRsrc accessNum destination"/>
+            <else/>
+                <send data="'dialog.user.call'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition state="chkBlackList" event="dialog.exit" name="evt">
+            <!-- Back from checking if caller has permission to dial number -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <if cond="((evt.values.status == 'Failure') || (evt.values.result == 'true'))">
+                <send data="'dialog.user.call'" target="session.id"/>
+            <else/>
+                <log target="status">[<value expr="tmpDNIS"/>] not permitted</log>
+                <log>INFO: [<value expr="ANI"/>] not permitted to dial [<value expr="tmpDNIS"/>]</log>
+                <assign name="state" expr="'blackListNum'"/>
+                <var name="II_SB_repeat" expr="'n'"/>
+                <var name="II_SB_interval" expr="''"/>
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'blackListNum.00.wav'"/>
+                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+            </if>
         </transition>
 
         <transition event="dialog.user.call" name="evt">
@@ -769,7 +797,7 @@
             </if>
 		</transition>
 
-        <transition state="invalidExt cntrlDown" event="dialog.exit" name="evt">
+        <transition state="invalidExt cntrlDown hangUp blackListNum" event="dialog.exit" name="evt">
             <!-- We've informed the caller that extension they tried to reach does not exist,
              or we're experiencing a technical difficulty. -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
@@ -818,14 +846,6 @@
                 <!-- Remove the records associated with this call in the db prior to exiting -->
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
             </if>
-        </transition>
-
-        <transition state="hangUp" event="dialog.exit" name="evt">
-            <!-- We're back from terminating the vxml after receiving a hang up -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <!-- Remove the records associated with this call in the db prior to exiting -->
-            <send data="'dialog.user.deleteRecord'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.deleteRecord" name="evt">

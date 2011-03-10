@@ -50,6 +50,7 @@
     <var name="errID" expr="''"/>
     <var name="cntrlErrID" expr="'LSTNAPP_SERVICE_ERROR'"/>
     <var name="recErrID" expr="'LSTNAPP_RECORD_ERROR'"/>
+    <var name="blkListID" expr="'LSTNAPP_BLACK_LIST'"/>
 
     <!-- DB vars -->
     <var name="extension" expr="''"/>

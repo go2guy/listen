@@ -1,12 +1,15 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/24/2011
+    <!-- Last Modified 03/10/2011
        *   @Name	chkForward.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we check if an extension is forwarded -->
 
+    <!-- Passed in from ccxml -->
     <var name="importedValue"/>
-    <var name="mBox"/>
+    <var name="accessNum"/>
+    <var name="whichRsrc"/>
+    <var name="destination"/>
 
 	<form id="beginDocument">
 		<block>
@@ -19,9 +22,10 @@
     <form id="getAccessNum">
         <block>
             <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="gotoForm" expr="'#accessInfo'"/>
             <assign name="request"  expr="'get'"/>
             <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
-            <assign name="params" expr="setAccess(mBox)"/>
+            <assign name="params" expr="setAccess(accessNum)"/>
             <goto next="#sendEvent"/>
         </block>
     </form>
@@ -41,36 +45,54 @@
                 <else/>
                     <log>INFO: No information on controller</log>
                     <assign name="status" expr="'Failure'"/>
-                    <goto next="#exit"/>
+                    <if cond="whichRsrc == 'canDial'">
+                        <assign name="errID" expr="blkListID"/>
+                        <goto next="#serviceError"/>
+                    <else/>
+                        <goto next="#exit"/>
+                    </if>
                 </if>
             <else/>
-                <goto next="#chkResult"/>
+                <goto expr="gotoForm"/>
             </if>
         </block>
     </form>
 
-    <form id="chkResult">
-        <!-- Check Results -->
-        <block cond="resource == 'accessNumbers'">
-            <log>INFO: Entered chkResult</log>
+    <form id="accessInfo">
+        <block>
+            <log>INFO: Entered accessInfo</log>
             <var name="count" expr="getJsonVal(result, 'count')"/>
             <if cond="count == 1">
                 <log target="status">Get Sub Info</log>
                 <assign name="accessNumID" expr="getResultsKeyValue(result, 0, 'href')"/>
                 <assign name="accessNumID" expr="getNextElement('L',accessNumID, '/')"/>
                 <assign name="params" expr="getID(result)"/>
-                <assign name="params" expr="setFindMe(params, mBox)"/>
-                <assign name="resource" expr="'findMeNumbers'"/>
+                <assign name="resource" expr="whichRsrc"/>
+                <if cond="resource == 'canDial'">
+                    <assign name="params" expr="setParams(params, destination, whichRsrc)"/>
+                <else/>
+                    <assign name="params" expr="setParams(params, accessNum, whichRsrc)"/>
+                </if>
                 <assign name="cntrlURL" expr="setCNTRL(listenArgs)"/>
+                <assign name="gotoForm" expr="'#chkResult'"/>
                 <goto next="#sendEvent"/>
             <else/>
                 <assign name="status" expr="'Failure'"/>
                 <goto next="#exit"/>
             </if>        
         </block>
+    </form>
+
+    <form id="chkResult">
+        <!-- Check Results -->
         <block cond="resource == 'findMeNumbers'">
             <log>INFO: Entered chkResult</log>
-            <assign name="result" expr="chkReturn(result)"/>
+            <assign name="result" expr="findMeResult(result)"/>
+            <goto next="#exit"/>
+        </block>
+        <block cond="resource == 'canDial'">
+            <log>INFO: Entered chkResult</log>
+            <assign name="result" expr="blkListResult(result)"/>
             <goto next="#exit"/>
         </block>
     </form>
@@ -80,7 +102,7 @@
             <log>INFO: Entered serviceError</log>
         </block>
         <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'">
-            <param name="id" expr="cntrlErrID"/>
+            <param name="id" expr="errID"/>
             <param name="statServer" expr="getJsonVal(listenArgs, 'STATcontroller')"/>
         </subdialog>
         <block>
@@ -106,8 +128,11 @@
                 return "?_fields=subscriber&number=" + inStr;
             }
 
-            function setFindMe(inStr, ext) {
-                return "?subscriber=/subscribers/" + inStr + "&destination=" + ext + '&includeDisabled=false';
+            function setParams(inStr, ext, resource) {
+                if (resource == 'findMeNumbers')
+                    return "?subscriber=/subscribers/" + inStr + "&destination=" + ext + '&includeDisabled=false';
+                else
+                    return "?subscriber=/subscribers/" + inStr + "&destination=" + ext;
             }
 
             function setCNTRL(inStr) {
@@ -122,7 +147,7 @@
                 return subscriber;
             }
 
-            function chkReturn(jsonObj) {
+            function findMeResult(jsonObj) {
                 var result = eval("("+jsonObj+")");
                 if (result.length == 1) {
         			var tmp = new String(result[0][0].href);
@@ -131,6 +156,14 @@
         			}
 		        }
                 return 'listen_findMe';
+            }
+
+            function blkListResult(jsonObj) {
+                var result = getJsonVal(jsonObj, 'canDial');
+                if (result)
+                    return 'true';
+                else
+                    return 'false';
             }
 
             function getInfo(inString) {
