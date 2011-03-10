@@ -44,6 +44,7 @@ $(document).ready(function() {
             
             var clearIndicator = function(input) {
                 input.removeClass('is-blacklisted');
+                input.removeAttr('title');
             }
             
             if(destination == '') {
@@ -57,6 +58,7 @@ $(document).ready(function() {
                         if(data.isBlacklisted) {
                             interact.util.trace('Destination [' + destination + '] is blacklisted');
                             input.addClass('is-blacklisted');
+                            input.attr('title', 'You are not allowed to use that number.');
                         } else {
                             interact.util.trace('Destination [' + destination + '] is allowed');
                             clearIndicator(input);
