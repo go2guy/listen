@@ -83,6 +83,7 @@ interact.pbx = {
         $('#page-buttons').before(copy);
         if(target !== undefined && target != 'EVERYONE') $('.more-subscribers', copy).show();
         interact.pbx.toggleFieldsetStyle(copy);
+        interact.pbx.toggleRemoveButtons(copy);
         $('.destination', copy).focus();
     },
     
