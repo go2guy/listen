@@ -77,9 +77,11 @@ interact.pbx = {
             for(var i = 0; i < subscribers.length; i++) {
                 interact.pbx.addSubscriber(before, subscribers[i]);
             }
+            
         }
 
         $('#page-buttons').before(copy);
+        if(target !== undefined && target != 'EVERYONE') $('.more-subscribers', copy).show();
         interact.pbx.toggleFieldsetStyle(copy);
         $('.destination', copy).focus();
     },
@@ -100,7 +102,7 @@ interact.pbx = {
             };
             restriction.target = $('.target', it).val();
             restriction.subscribers = [];
-            $('.restricted-subscriber input').each(function(j, input) {
+            $('.restricted-subscriber input', it).each(function(j, input) {
                 var val = $.trim($(input).val());
                 if(val != '') {
                     restriction.subscribers.push(val);
@@ -163,6 +165,8 @@ $(document).ready(function() {
         var saveButton = $('#findme-save');
         saveButton.attr('readonly', 'readonly').attr('disabled', 'disabled');
         var restrictions = interact.pbx.buildJson();
+
+        interact.util.trace('Sending: ' + JSON.stringify(restrictions));
 
         Server.post({
             url: interact.listen.url('/ajax/saveCallRestrictions'),
