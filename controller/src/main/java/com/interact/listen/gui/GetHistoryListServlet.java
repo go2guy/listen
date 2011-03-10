@@ -65,6 +65,15 @@ public class GetHistoryListServlet extends HttpServlet
             if(filter != null && !filter.trim().equals(""))
             {
                 filterSubscriber = Subscriber.queryByUsername(session, filter);
+                
+                //The passed in username doesn't map to a subscriber in our system, so we want to return
+                //zero results.  Passing a null sub will return all results, so we create a sub with a
+                //non-existant id here.  Could be improved.
+                if(filterSubscriber == null)
+                {
+                    filterSubscriber = new Subscriber();
+                    filterSubscriber.setId(-1L);
+                }
             }
 
             results = History.queryAllPaged(session, first, max, filterSubscriber);
