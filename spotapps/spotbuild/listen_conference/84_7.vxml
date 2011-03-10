@@ -17,9 +17,9 @@
 <log>INFO: Current value [<value expr="id"/>]</log>
 <assign name="id" expr="'LSTNAPP_SERVICE_ERROR'+''" />
 <log>INFO: Updated value [<value expr="id"/>]</log>
-<log>INFO: Current value [<value expr="whichPathStat"/>]</log>
-<assign name="whichPathStat" expr="'serviceError'+''" />
-<log>INFO: Updated value [<value expr="whichPathStat"/>]</log>
+<log>INFO: Current value [<value expr="whichPath"/>]</log>
+<assign name="whichPath" expr="'serviceError'+''" />
+<log>INFO: Updated value [<value expr="whichPath"/>]</log>
 <log>INFO: Current value [<value expr="operation"/>]</log>
 <assign name="operation" expr="'increment'+''" />
 <log>INFO: Updated value [<value expr="operation"/>]</log>

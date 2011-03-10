@@ -5,16 +5,19 @@
        *   @Name   data-query.vxml
        *   @Desc   Makes http requests and checks for success or failure -->
 
-    <var name="II_SB_succeed" expr="'81_3'"/>			<!-- Next file to go to if HttpRequest Works -->
-    <var name="II_SB_failed" expr="'81_3'"/>				<!-- Next file to go to if HttpRequest Fails -->
+    <var name="II_SB_succeed" expr="'125_116'"/>			<!-- Next file to go to if HttpRequest Works -->
+    <var name="II_SB_failed" expr="'125_114'"/>				<!-- Next file to go to if HttpRequest Fails -->
     <var name="II_SB_dataTimeOut" expr="'5s'"/>	<!-- Specifies length of time to wait before throwing badfetch error -->
     <var name="II_SB_nxtOpt" expr="''"/>						<!-- Variable to hold next option -->
 	
     <form id="beginDocument">
         <block>
-    	    <log target="status">Send Stat</log>
-            <log>INFO: Entered data-query.vxml [188_2]</log>
-            <data name="stat" srcexpr="STATcontroller" method="post" namelist="id source value operation " fetchtimeout="II_SB_dataTimeOut"/>
+    	    <log target="status">Get Numbers</log>
+            <log>INFO: Entered data-query.vxml [125_104]</log>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="get" namelist="cntrlURL params resource request " fetchtimeout="II_SB_dataTimeOut"/>
+			<assign name="status" expr="apiObj.Status" />
+			<assign name="returnVal" expr="apiObj.Result" />
+			<assign name="returnStr" expr="apiObj.Reason" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>

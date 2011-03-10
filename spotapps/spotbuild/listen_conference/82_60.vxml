@@ -20,9 +20,9 @@
 <log>INFO: Current value [<value expr="operation"/>]</log>
 <assign name="operation" expr="'set'+''" />
 <log>INFO: Updated value [<value expr="operation"/>]</log>
-<log>INFO: Current value [<value expr="whichPathStat"/>]</log>
-<assign name="whichPathStat" expr="'appEndTotalTime'+''" />
-<log>INFO: Updated value [<value expr="whichPathStat"/>]</log>
+<log>INFO: Current value [<value expr="whichPath"/>]</log>
+<assign name="whichPath" expr="'appEndTotalTime'+''" />
+<log>INFO: Updated value [<value expr="whichPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
