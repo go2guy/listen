@@ -8,6 +8,7 @@ import com.interact.listen.marshal.xml.XmlMarshaller;
 import com.interact.listen.resource.*;
 import com.interact.listen.resource.DeviceRegistration.DeviceType;
 import com.interact.listen.resource.Subscriber.PlaybackOrder;
+import com.interact.listen.resource.Subscriber.Role;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -58,6 +59,7 @@ public abstract class Marshaller
         DEFAULT_CONVERTERS.put(String.class, StringConverter.class);
         DEFAULT_CONVERTERS.put(TimeRestriction.Action.class, TimeRestrictionActionConverter.class);
         DEFAULT_CONVERTERS.put(CallRestriction.Directive.class, CallRestrictionDirectiveConverter.class);
+        DEFAULT_CONVERTERS.put(Role.class, RoleConverter.class);
     }
 
     /**

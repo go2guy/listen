@@ -68,8 +68,8 @@ public class Subscriber extends Resource implements Serializable
     @Column(name = "LAST_LOGIN")
     private Date lastLogin;
 
-    @Column(name = "IS_ADMINISTRATOR")
-    private Boolean isAdministrator = Boolean.FALSE;
+    /*@Column(name = "IS_ADMINISTRATOR")
+    private Boolean isAdministrator = Boolean.FALSE;*/
 
     @OneToMany(mappedBy = "subscriber", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, fetch = FetchType.EAGER)
     private Set<Conference> conferences = new HashSet<Conference>();
@@ -110,10 +110,19 @@ public class Subscriber extends Resource implements Serializable
 
     @Column(name = "FIND_ME_REMINDER_DESTINATION", nullable = true)
     private String findMeReminderDestination;
+    
+    @Column(name = "ROLE", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
     public enum PlaybackOrder
     {
         NEWEST_TO_OLDEST, OLDEST_TO_NEWEST;
+    }
+    
+    public enum Role
+    {
+        CUSTODIAN, ADMINISTRATOR, USER;
     }
 
     public Set<AccessNumber> getAccessNumbers()
@@ -274,14 +283,23 @@ public class Subscriber extends Resource implements Serializable
         this.lastLogin = lastLogin == null ? null : new Date(lastLogin.getTime());
     }
 
+    @Deprecated
     public Boolean getIsAdministrator()
     {
-        return isAdministrator;
+        return role.equals(Role.ADMINISTRATOR);
     }
 
+    @Deprecated
     public void setIsAdministrator(Boolean isAdministrator)
     {
-        this.isAdministrator = isAdministrator;
+        if(isAdministrator)
+        {
+            this.role = Role.ADMINISTRATOR;
+        }
+        else
+        {
+            this.role = Role.USER;
+        }
     }
 
     public Set<Conference> getConferences()
@@ -420,17 +438,22 @@ public class Subscriber extends Resource implements Serializable
         this.findMeReminderDestination = findMeReminderDestination;
     }
 
+    public Role getRole()
+    {
+        return role;
+    }
+
+    public void setRole(Role role)
+    {
+        this.role = role;
+    }
+
     @Override
     public boolean validate()
     {
         if(username == null || username.trim().equals(""))
         {
             addToErrors("Please provide a Username");
-        }
-
-        if(isAdministrator == null)
-        {
-            addToErrors("Please provide a value for isAdministrator");
         }
 
         if(isSubscribedToTranscription == null)
@@ -471,7 +494,7 @@ public class Subscriber extends Resource implements Serializable
             copy.setVersion(version);
         }
 
-        copy.setIsAdministrator(isAdministrator);
+        copy.setIsAdministrator(role.equals(Role.ADMINISTRATOR) ? true : false);
         copy.setLastLogin(lastLogin);
         for(AccessNumber accessNumber : accessNumbers)
         {
@@ -499,6 +522,7 @@ public class Subscriber extends Resource implements Serializable
         copy.setFindMeExpiration(findMeExpiration);
         copy.setSendFindMeReminder(sendFindMeReminder);
         copy.setFindMeReminderDestination(findMeReminderDestination);
+        copy.setRole(role);
         return copy;
     }
 
