@@ -1,21 +1,45 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/02/2010
+    <!-- Last Modified 03/14/2011
        *   @Name	getCallerID.vxml
        *   @Desc	This script checks the name of the party attempting
                     a pbx or voip call -->
 
     <!-- Passed in from ccxml -->
+    <var name="DNIS"/>    
     <var name="tmpANI"/>
     <var name="importedValue"/>
+    <var name="flag" expr="'accessNum'"/>
 
 	<form id="beginDocument">
 		<block>
 	        <log>INFO: Entered beginDocument</log>
-            <assign name="resource" expr="'accessNumbers'"/>
-            <assign name="params" expr="setParam(tmpANI)"/>
             <assign name="request"  expr="'get'"/>
             <assign name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <if cond="tmpANI != undefined">
+                <goto next="#getAccessInfo"/>
+            <else/>
+                <goto next="#getSubscriberInfo"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="getAccessInfo">
+        <block>
+            <log>INFO: Entered getAccessInfo</log>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="params" expr="setAccessParams(tmpANI, flag)"/>
+            <assign name="gotoForm" expr="'#chkSubObj'"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="getSubscriberInfo">
+        <block>
+            <log>INFO: Entered getSubscriberInfo</log>
+            <assign name="resource" expr="'subscribers'"/>
+            <assign name="params" expr="getSubInfo(DNIS)"/>
+            <assign name="gotoForm" expr="'#getAccessID'"/>
             <goto next="#sendEvent"/>
         </block>
     </form>
@@ -38,30 +62,67 @@
                     <goto next="#exit"/>
                 </if>
             <else/>
-                <goto next="#chkResult"/>
+                <goto expr="gotoForm"/>
             </if>
         </block>
     </form>
 
-    <form id="chkResult">
+    <form id="chkSubObj">
         <block>
-            <log>INFO: Entered chkResult</log>
-            <if cond="resource == 'accessNumbers'">
-                <var name="tmpVal" expr="getJsonVal(result, 'count')"/>
-                <if cond="tmpVal == 1">
-                    <assign name="resource" expr="'subscribers/'"/>
-                    <assign name="params" expr="getSubID(result)"/>
-                    <assign name="request"  expr="'get'"/>
-                    <goto next="#sendEvent"/>
-                </if>
+            <log>INFO: Entered chkSubObj</log>
+            <var name="tmpVal" expr="getJsonVal(result, 'count')"/>
+            <if cond="tmpVal == 1">
+                <assign name="request"  expr="'get'"/>
+                <assign name="gotoForm" expr="'#getName'"/>
+                <assign name="resource" expr="'subscribers/'"/>
+                <assign name="params" expr="getSubID(result)"/>
+                <goto next="#sendEvent"/>
             <else/>
-                <var name="tmpVal" expr="getJsonVal(result, 'realName')"/>                
-                <if cond="tmpVal.length != 0">
-                    <assign name="result" expr="tmpVal"/>
-                    <goto next="#exit"/>
-                </if>
+                <assign name="result" expr="''"/>
+                <goto next="#exit"/>
             </if>
-            <assign name="result" expr="''"/>
+        </block>
+    </form>
+
+    <form id="getName">
+        <block>
+            <log>INFO: Entered getName</log>
+            <var name="tmpVal" expr="getJsonVal(result, 'realName')"/>
+            <if cond="tmpVal.length &gt; 0">
+                <assign name="result" expr="tmpVal"/>
+            <else/>
+                <assign name="result" expr="''"/>
+            </if>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="getAccessID">
+        <block>
+            <log>INFO: Entered getAccessID</log>
+            <var name="tmpVal" expr=" getResultsKeyValue(result, 0, 'href')"/>                
+            <if cond="tmpVal.length &gt; 0">
+                <assign name="flag" expr="'accessID'"/>
+                <assign name="gotoForm" expr="'#getNumber'"/>
+                <assign name="resource" expr="'accessNumbers'"/>
+                <assign name="params" expr="setAccessParams(tmpVal, flag)"/>
+                <goto next="#sendEvent"/>
+            <else/>
+                <assign name="result" expr="''"/>
+            </if>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="getNumber">
+        <block>
+            <log>INFO: Entered getNumber</log>
+            <var name="tmpVal" expr="getResultsKeyValue(result, 0, 'number')"/>
+            <if cond="tmpVal.length &gt; 0">
+                <assign name="result" expr="tmpVal"/>
+            <else/>
+                <assign name="result" expr="''"/>
+            </if>
             <goto next="#exit"/>
         </block>
     </form>
@@ -100,8 +161,16 @@
                 return result[2];
             }
 
-            function setParam(ani) {
-             return "?_fields=subscriber&number="+ani;
+            function getSubInfo(dnis) {
+                var subName = dnis.split('@')[0].split('sip:')[1];
+                 return "?_fields=subscriber&realName="+escape(subName);
+            }
+
+            function setAccessParams(whichID, flag) {
+                if (flag == 'accessNum')
+                    return "?_fields=subscriber&number="+whichID;
+                else
+                    return "?_fields=number&subscriber="+whichID+"&_max=1";
             }
 
             function getInfo(inString) {

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 03/10/2011
+    <!-- Last Modified 03/14/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -72,6 +72,18 @@
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
     <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"/>    <!-- Location of Java script file -->
 
+    <script>
+        <![CDATA[
+            function isDigits (DNIS) {
+                var dnis = getnum(DNIS);
+                if (iiNumber(dnis))
+                    return 'true';
+                else
+                    return 'false';
+            }
+        ]]>
+    </script>
+
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
 
         <transition state="idle" event="ccxml.loaded" name="evt">
@@ -96,7 +108,39 @@
             </if>
             <log>INFO: DNIS [<value expr="tmpDNIS"/>]</log>
             <log>INFO: Orig DNIS [<value expr="origDNIS"/>]</log>
-            <send data="'dialog.user.chkCallType'" target="session.id"/>
+            <send data="'dialog.user.chkRedial'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.chkRedial" name="evt">
+            <!-- If the dialed number is a string of characters, we're possibly dealing with a 
+            redial. Let's attempt to get an access number for the characters --> 
+            <log>INFO: Entered [dialog.user.chkRedial] with state [<value expr="state"/>]</log>
+            <if cond="isDigits(DNIS) == 'false'"> <!-- Implies destination is a name. Assume a redial -->
+                <assign name="state" expr="'getExtID'"/>
+       	   		<dialogstart src="'file:'+TRANS_PATH+'getCallerID.vxml'" namelist="DNIS importedValue"/>
+            <else/>
+                <send data="'dialog.user.chkCallType'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition state="getExtID" event="dialog.exit" name="evt">
+            <!-- Back from getting the call ID -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <var name="result" expr="evt.values.result"/>
+            <if cond="result.length &gt; 0">
+                <log>INFO: Set destination to [<value expr="result"/>]</log>
+                <assign name="tmpDNIS" expr="result"/>
+                <assign name="DNIS" expr="result"/>
+                <send data="'dialog.user.chkCallType'" target="session.id"/>
+            <else/>
+                <log>ERROR: Unable to dial [<value expr="DNIS"/>]</log>
+                <assign name="state" expr="'endCall'"/>
+                <!-- Remove the caller's record in the db -->
+                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
+                <assign name="clientFlag" expr="'delete'"/>
+                <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            </if>
         </transition>
 
         <transition event="dialog.user.chkCallType" name="evt">
