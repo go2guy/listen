@@ -133,7 +133,7 @@
                     <description>Minimum Digits Length</description>
                     <tag>var</tag>
                     <attribute>expr</attribute>
-                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
+                    <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
                 </property>
             </question>
 
