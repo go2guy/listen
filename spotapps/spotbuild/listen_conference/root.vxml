@@ -12,7 +12,7 @@
     <var name="II_SB_VXML_LIB" expr="II_SB_LIB_PATH +'vxml/'"/>        	<!-- VXML LIB_PATH. VXML script directory -->
     <var name="II_SB_CGI_LIB" expr="II_SB_LIB_PATH +'cgi-bin/'"/>      	<!-- CGI LIB_PATH. PHP script directory -->
     <var name="II_SB_AUDIO_PATH" expr="'audio/'"/>     	                <!--  AUDIO_PATH. Audio directory. Contains all audio files -->
-    <var name="II_SB_PROMPT_GRP" expr="'00'"/>          	            <!-- Prompt Group. Controls what language is used on the platform -->
+    <var name="II_SB_PROMPT_GRP" expr="'00'"/>          	<!-- Prompt Group. Controls what language is used on the platform -->
     <var name="II_SB_PRMT_CODE" expr="'wav'"/>                    		<!-- Prompt Code. Specifies audio file type. Currently only 'wav' type is available-->
 
     <!-- Application vars -->
@@ -74,7 +74,7 @@
 	<var name="whichEvent" expr="''" />
 	<var name="hostName" expr="''" />
 	<var name="outBoundID" expr="''" />
-	<var name="pstnLength" expr="'10'" /> <!-- Config PSTN Minimum Digits Length -->
+	<var name="pstnLength" expr="'10'" />
 	<var name="DNIS" expr="'local'" />
 	<var name="isRecording" expr="'false'" />
 	<var name="recLoopAttempt" expr="'false'" />

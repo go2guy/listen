@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_91_52(phoneNumber,sipURL,ANI)
+            function II_SB_JS_function_91_52(phoneNumber,passValues,ANI)
             {
-	            return setCallerID (phoneNumber, sipURL, ANI);
+	            return setCallerID (phoneNumber, passValues, ANI);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set ID</log>
             <log>INFO: Entered run-javascript.vxml [91_52]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_91_52(phoneNumber,sipURL,ANI)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_91_52(phoneNumber,passValues,ANI)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="outBoundID" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

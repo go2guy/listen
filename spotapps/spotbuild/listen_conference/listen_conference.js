@@ -95,33 +95,50 @@ function rollCallKeyPress(keyPress, returnVal, index, isAdmin) {
     return result;
 }
 
-function chkDestinationEntry (phoneNumber, maxHelp, helpCnt, isInteractiveCall, pstnLength) {
+function chkDestinationEntry (phoneNumber, maxHelp, helpCnt, isInteractiveCall, passValues) {
     var ipAddSect = 4;
     var num = /^\d+$/;
     if ((phoneNumber == '*') && (helpCnt < maxHelp))
         return "HELP";
-    else if (num.test(phoneNumber) && (phoneNumber.length >= pstnLength))
-        return isInteractiveCall;
+    else if (num.test(phoneNumber)) {
+        var tmpPstn = getJsonVal(passValues, 'pstnLength');
+        var tmpExtLength = getJsonVal(passValues, 'EXT_LENGTH');
+        if ((phoneNumber.length >= tmpPstn) || (phoneNumber.length < tmpExtLength))
+            return isInteractiveCall;
+        else
+            return "ERROR";
+    }
     else if (iiStrCnt(phoneNumber,'*') >= ipAddSect)
         return isInteractiveCall;
     else
         return "ERROR";
 }
 
-function setCallerID (phoneNumber, sipURL, ANI) {
+function setCallerID (phoneNumber, passValues, ANI) {
     var str = new String(phoneNumber);
     var num = /^\d+$/;
-    if ((num.test(str)) && (sipURL != 'null'))
-        return ANI + "@" + sipURL;
+    var tmpSipURL = getJsonVal(passValues, 'sipURL');
+    var tmpPstn = getJsonVal(passValues, 'pstnLength');
+    if ((num.test(str)) && (phoneNumber.length >= tmpPstn) && (tmpSipURL.length > 0))
+        return ANI + "@" + tmpSipURL;
     else
-        return ANI + "@iipbx";
+        return ANI + getJsonVal(passValues, 'EXT_SUFFIX');
 }
 
-function setDestination (phoneNumber, sipURL) {
+function setDestination (phoneNumber, passValues) {
     var str = new String(phoneNumber);
     var num = /^\d+$/;
-    if ((num.test(str)) && (sipURL != 'null'))
-        return phoneNumber + "@" + sipURL;
+    if (num.test(str)) {
+        var tmpSipURL = getJsonVal(passValues, 'sipURL');
+        var tmpPstn = getJsonVal(passValues, 'pstnLength');
+        var tmpExtLength = getJsonVal(passValues, 'EXT_LENGTH');
+        if ((phoneNumber.length >= tmpPstn) && (tmpSipURL.length > 0))
+            return phoneNumber + "@" + tmpSipURL;
+        else if (phoneNumber.length < tmpExtLength)
+            return getJsonVal(passValues, 'EXT_PREFIX') + phoneNumber + getJsonVal(passValues, 'EXT_SUFFIX');
+        else
+            return phoneNumber;
+    }
     else
         return phoneNumber;
 }
@@ -196,3 +213,4 @@ function isConfRecording (isRecording, isAdmin) {
     else
         return "false";
 }
+

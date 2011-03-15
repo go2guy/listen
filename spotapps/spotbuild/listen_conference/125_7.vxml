@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_125_7(phoneNumber,maxHelp,helpCnt,isInteractiveCall,pstnLength)
+            function II_SB_JS_function_125_7(phoneNumber,maxHelp,helpCnt,isInteractiveCall,passValues)
             {
-	            return chkDestinationEntry(phoneNumber, maxHelp, helpCnt, isInteractiveCall, pstnLength);
+	            return chkDestinationEntry(phoneNumber, maxHelp, helpCnt, isInteractiveCall, passValues);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Eval Destination Entry</log>
             <log>INFO: Entered run-javascript.vxml [125_7]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_125_7(phoneNumber,maxHelp,helpCnt,isInteractiveCall,pstnLength)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_125_7(phoneNumber,maxHelp,helpCnt,isInteractiveCall,passValues)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
