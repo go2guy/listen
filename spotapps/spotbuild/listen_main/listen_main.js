@@ -56,3 +56,11 @@ function extendAppObject(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroll
     result.EXT_LENGTH = EXT_LENGTH;
     return iiStringify(result);
 }
+
+function setDNIS (DNIS) {
+    var dnis = getnum(DNIS);
+    if (iiNumber(dnis))
+        return "getDnis?number=" + escape(dnis);
+    else
+        return "ippbx";
+}

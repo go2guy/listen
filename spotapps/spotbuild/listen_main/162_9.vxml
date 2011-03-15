@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'162_23'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'162_32'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function_162_9(DNIS)
             {
-	            return "getDnis?number=" + escape(getnum(DNIS));
+	            return setDNIS(DNIS);
             }
         ]]>
     </script>
