@@ -11,8 +11,14 @@ function getNextDestination(argList, index) {
         var sipURL = tmpVal.sipURL;
         var str = new String(phoneNumber);
         var num = /^\d+$/;
-        if ((num.test(str)) && (sipURL != 'null'))
-            result = phoneNumber + "@" + sipURL;
+        if (num.test(str)) {
+            if ((phoneNumber.length >= tmpVal.pstnLength) && (sipURL.length > 0))
+                result = phoneNumber + "@" + sipURL;
+            else if (phoneNumber.length < tmpVal.EXT_LENGTH)
+                result = tmpVal.EXT_PREFIX + phoneNumber + tmpVal.EXT_SUFFIX;
+            else
+                result = phoneNumber;
+        }
         else
             result = phoneNumber;
     }
@@ -27,7 +33,7 @@ function setCallingID(phoneNumber, argList) {
     var sipURL = tmpVal.sipURL;
     var str = new String(phoneNumber);
     var num = /^\d+$/;
-    if ((num.test(str)) && (sipURL != 'null'))
+    if ((num.test(str)) && (phoneNumber >= tmpVal.pstnLength) && (sipURL.length > 0))
         result = getnum(tmpVal.ani) + "@" + sipURL;
     else
         result = getnum(tmpVal.ani) + "@" + tmpVal.hostName;
