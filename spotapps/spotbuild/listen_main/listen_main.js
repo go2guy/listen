@@ -44,7 +44,7 @@ function getAppName(passValues) {
     return result;
 }
 
-function extendAppObject(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH) {
+function extendAppObject(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX) {
     var result = eval("("+passValues+")");
     result.cntrlURL = cntrlURL + "/api";
     result.hostName = hostName;
@@ -54,6 +54,9 @@ function extendAppObject(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroll
     result.STATcontroller = STATcontroller;
     result.artifactsDIR = artifactsDIR;
     result.EXT_LENGTH = EXT_LENGTH;
+    result.pstnLength = pstnLength;
+    result.EXT_PREFIX = EXT_PREFIX;
+    result.EXT_SUFFIX = EXT_SUFFIX;
     return iiStringify(result);
 }
 

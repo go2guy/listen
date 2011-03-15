@@ -45,11 +45,13 @@
 	<var name="SB_UV_EXT_LENGTH"/>
 	<var name="SB_UV_EXT_PREFIX"/>
 	<var name="SB_UV_EXT_SUFFIX"/>
+	<var name="SB_UV_VM_DIAL"/>
+	<var name="SB_UV_pstnLength"/>
 
     
     <form id="beginDocument">
         <block>
-	        
+	        <log target="status">Begin</log>
             <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
             <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
@@ -137,6 +139,12 @@
 			</if>
 			<if cond="SB_UV_EXT_SUFFIX != undefined">
 				<assign name="EXT_SUFFIX" expr="SB_UV_EXT_SUFFIX" />
+			</if>
+			<if cond="SB_UV_VM_DIAL != undefined">
+				<assign name="VM_DIAL" expr="SB_UV_VM_DIAL" />
+			</if>
+			<if cond="SB_UV_pstnLength != undefined">
+				<assign name="pstnLength" expr="SB_UV_pstnLength" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -39,7 +39,7 @@
 	<var name="resource" expr="'meta/registerSpotSystem'" />
 	<var name="request" expr="'post'" />
 	<var name="status" expr="''" />
-	<var name="sipURL" expr="'null'" /> <!-- Config SIP Server Name -->
+	<var name="sipURL" expr="''" /> <!-- Config SIP Server Name -->
 	<var name="sysAccessTime" expr="''" />
 	<var name="ANI" expr="'remote'" />
 	<var name="HTTPcontroller" expr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" />
@@ -55,6 +55,8 @@
 	<var name="EXT_LENGTH" expr="'4'" />
 	<var name="EXT_PREFIX" expr="'ext'" />
 	<var name="EXT_SUFFIX" expr="'@iipbx'" />
+	<var name="VM_DIAL" expr="'yes'" />
+	<var name="pstnLength" expr="'10'" /> <!-- Config PSTN Minimum Digits Length -->
 
 
     <!-- Conference Variables -->
