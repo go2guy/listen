@@ -56,3 +56,59 @@ function createVoiceMailObj(result, subFwd, hostName, FILE2, subscriber) {
     var result = eval("("+result+")");
     return "{\"uri\": \"http://"+hostName+FILE2+"\",\"duration\":\""+result.duration+"\",\"fileSize\":\""+result.fileSize+"\",\"leftBy\":\""+result.leftBy+"\",\"subscriber\": { \"href\": \"/subscribers/"+subFwd+"\"},\"forwardedBy\": { \"href\": \"/subscribers/"+subscriber+"\"}}";
 }
+
+function setupMbxMenu(enableOutDial, enablePagingSupport)
+{
+    var menu;
+    var used = false;
+
+    if(enableOutDial == true)
+    {
+        used = true;
+            menu = "mbxMenuDial";
+    }
+
+    if (enablePagingSupport == true)
+    {
+        if (used == true) {
+            menu = menu + "|PmbxMenuPaging";
+        }
+        else {
+            menu = "mbxMenuPaging";
+        }
+        used = true;
+    }
+
+    if (used == true)
+    {
+            menu = menu + "|PmbxMenuEnd";
+    }
+    else
+    {
+            menu = "mbxMenuEnd";
+    }
+    return menu;
+}
+
+function checkMbxMenuInput(enableOutDial, enablePagingSupport, userInput)
+{
+    if (userInput == '8')
+    {
+        if(enableOutDial == true)
+        {
+            return userInput;
+        }
+        return 'DISABLED';
+    }
+
+    if (userInput == '9')
+    {
+        if (enablePagingSupport == true)
+        {
+            return userInput;
+        }
+        return 'DISABLED';
+    }        
+
+    return userInput;
+}

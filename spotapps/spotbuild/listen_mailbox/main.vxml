@@ -93,7 +93,10 @@
 	<var name="SB_UV_EXT_PREFIX"/>
 	<var name="SB_UV_EXT_SUFFIX"/>
 	<var name="SB_UV_phoneNumber"/>
+	<var name="SB_UV_enableOutDial"/>
 	<var name="SB_UV_blackListOpt"/>
+	<var name="SB_UV_enablePagingSupp"/>
+	<var name="SB_UV_menuPrompt"/>
 
     
     <form id="beginDocument">
@@ -330,8 +333,17 @@
 			<if cond="SB_UV_phoneNumber != undefined">
 				<assign name="phoneNumber" expr="SB_UV_phoneNumber" />
 			</if>
+			<if cond="SB_UV_enableOutDial != undefined">
+				<assign name="enableOutDial" expr="SB_UV_enableOutDial" />
+			</if>
 			<if cond="SB_UV_blackListOpt != undefined">
 				<assign name="blackListOpt" expr="SB_UV_blackListOpt" />
+			</if>
+			<if cond="SB_UV_enablePagingSupp != undefined">
+				<assign name="enablePagingSupp" expr="SB_UV_enablePagingSupp" />
+			</if>
+			<if cond="SB_UV_menuPrompt != undefined">
+				<assign name="menuPrompt" expr="SB_UV_menuPrompt" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

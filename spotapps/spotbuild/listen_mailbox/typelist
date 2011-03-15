@@ -199,6 +199,8 @@ begin - begin
 157_43 - decision
 157_40 - audio-input
 66_103 - assign-variable
+66_109 - run-javascript
+66_107 - run-javascript
 101_70 - run-javascript
 65_11 - decision
 143_55 - decision
