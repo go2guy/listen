@@ -24,7 +24,10 @@
 145_16 - end
 51_67 - run-javascript
 begin - begin
+162_40 - math
+162_41 - decision
 51_125 - data-query
+145_60 - assign-variable
 145_22 - data-query
 145_21 - assign-variable
 162_19 - switch-application

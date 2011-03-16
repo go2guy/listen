@@ -47,6 +47,8 @@
 	<var name="SB_UV_EXT_SUFFIX"/>
 	<var name="SB_UV_VM_DIAL"/>
 	<var name="SB_UV_pstnLength"/>
+	<var name="SB_UV_errorCnt"/>
+	<var name="SB_UV_errorTot"/>
 
     
     <form id="beginDocument">
@@ -145,6 +147,12 @@
 			</if>
 			<if cond="SB_UV_pstnLength != undefined">
 				<assign name="pstnLength" expr="SB_UV_pstnLength" />
+			</if>
+			<if cond="SB_UV_errorCnt != undefined">
+				<assign name="errorCnt" expr="SB_UV_errorCnt" />
+			</if>
+			<if cond="SB_UV_errorTot != undefined">
+				<assign name="errorTot" expr="SB_UV_errorTot" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

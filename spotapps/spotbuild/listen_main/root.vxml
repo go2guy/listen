@@ -57,6 +57,8 @@
 	<var name="EXT_SUFFIX" expr="'@iipbx'" />
 	<var name="VM_DIAL" expr="'yes'" />
 	<var name="pstnLength" expr="'10'" /> <!-- Config PSTN Minimum Digits Length -->
+	<var name="errorCnt" expr="'0'" />
+	<var name="errorTot" expr="'2'" />
 
 
     <!-- Conference Variables -->
