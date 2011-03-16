@@ -725,7 +725,4 @@
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="development" id="67">
-    	<dropColumn tableName="SUBSCRIBER" columnName="IS_ADMINISTRATOR"/>
-    </changeSet>
 </databaseChangeLog>
