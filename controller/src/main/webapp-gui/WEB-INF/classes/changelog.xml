@@ -724,5 +724,6 @@
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+        <sql>update SUBSCRIBER set role = 'ADMINISTRATOR' where IS_ADMINISTRATOR = 1</sql>
     </changeSet>
 </databaseChangeLog>
