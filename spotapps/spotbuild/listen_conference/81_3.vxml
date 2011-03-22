@@ -16,7 +16,7 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'getPin'+',79_79|=,'+'startMenu'+',115_70|=,'+'confMenu'+',90_64|=,'+'mainMenu'+',104_62|=,'+'enterDestination'+',125_81|=,'+'rejoinConf'+',116_14|=,'+'getOnDemand'+',125_78|else,81_21'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_expList" expr="'=,'+'getPin'+',79_79|=,'+'startMenu'+',115_70|=,'+'confMenu'+',90_64|=,'+'mainMenu'+',104_62|=,'+'enterDestination'+',125_81|=,'+'rejoinConf'+',116_14|=,'+'getOnDemand'+',236_48|else,81_21'"/>	<!-- List of expression to be evaluated -->
     <var name="II_SB_operand1" expr="whichPath"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
