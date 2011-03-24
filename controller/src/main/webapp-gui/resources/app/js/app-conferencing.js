@@ -41,7 +41,9 @@ $(document).ready(function() {
         if(data.interrupt) {                        
              $('#outdial-number').attr('checked', true);
         }
+        $('#outdial-dialog').slideUp(200);
         Server.outdial($('#outdial-number').val(), currentConference.getConferenceId(), $('#outdial-interrupt').val()); // FIXME referencing a global here is gross
+        $('#outdial-number').val('');
         return false;
     });
 });
