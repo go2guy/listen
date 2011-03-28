@@ -114,9 +114,12 @@
 
             <question level="not_in_backup" severity="ask">
                 <text>Enter the server name of the SIP trunk</text>
-                <default>null</default>
-                <validateRegex>^${HOSTNAME}$|^$</validateRegex>
-                <validateInfo>The value may be any number of letters, numbers, dashes, or periods or the value may be blank.</validateInfo>
+                <default>
+                    #!/bin/bash
+                    hostname
+                </default>
+                <validateRegex>^${HOSTNAME}$</validateRegex>
+                <validateInfo>The value may be any number of letters, numbers, dashes, or periods. The value may not be blank.</validateInfo>
 
                 <property format="ccvxml" action="update" quotes="yes">
                     <name>sipURL</name>
@@ -131,8 +134,8 @@
             <question level="not_in_backup" severity="ask">
                 <text>Enter the phone number to use if the controller is unreachable</text>
                 <default></default>
-                <validateRegex>^${HOSTNAME}$|^$</validateRegex>
-                <validateInfo>The value may be any number of letters, numbers, dashes, or periods or the value may be blank.</validateInfo>
+                <validateRegex>^${HOSTNAME}$</validateRegex>
+                <validateInfo>The value may be any number of letters, numbers, dashes, or periods. The value may not be blank.</validateInfo>
 
                 <property format="ccvxml" action="update" quotes="yes">
                     <name>phoneNumber</name>
