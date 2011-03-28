@@ -2,7 +2,13 @@
 <uia>
     <iiLoader>
         <TYPES></TYPES>
-        <PATH>/interact/apps/spotbuild/listen_main/root.vxml:/interact/apps/spotbuild/listen_conference/root.vxml:/interact/listen/artifacts/defaultApp.cfg:/interact/apps/spotbuild/listen_voicemail/root.vxml:/interact/apps/spotbuild/listen_mailbox/root.vxml</PATH>
+        <PATH>
+            <ENTRY>/interact/apps/spotbuild/listen_main/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_conference/root.vxml</ENTRY>
+            <ENTRY>/interact/listen/artifacts/defaultApp.cfg</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_voicemail/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_mailbox/root.vxml</ENTRY>
+        </PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
 
@@ -10,7 +16,7 @@
         <pre>
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.0.0</version>
+                <version>4.5.1</version>
             </rpm>
 
             <rpm state="less-than-or-equal">
@@ -175,7 +181,7 @@
         <pre>
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.0.0</version>
+                <version>4.5.1</version>
             </rpm>
 
             <rpm state="less-than-or-equal">
@@ -189,7 +195,7 @@
         <pre>
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.0.0</version>
+                <version>4.5.1</version>
             </rpm>
 
             <rpm state="less-than-or-equal">

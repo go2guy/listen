@@ -1,16 +1,25 @@
 <?xml version = "1.0"?>
 <uia>
     <iiLoader>
-        <TYPES>noextcfg</TYPES>
-        <PATH>/etc/init.d/listen-controller</PATH>
+        <TYPES>
+            <ENTRY>noextcfg</ENTRY>
+        </TYPES>
+        <PATH>
+            <ENTRY>/etc/init.d/listen-controller</ENTRY>
+        </PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
 
     <install>
         <pre>
+            <process state="stopped">
+                <name>listen controller</name>
+                <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
+            </process>
+
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.0.0</version>
+                <version>4.5.1</version>
             </rpm>
 
             <rpm state="less-than-or-equal">
@@ -40,10 +49,14 @@
 
     <rollback>
         <pre>
+            <process state="stopped">
+                <name>listen controller</name>
+                <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
+            </process>
 
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.0.0</version>
+                <version>4.5.1</version>
             </rpm>
 
             <rpm state="less-than-or-equal">
@@ -61,9 +74,14 @@
 
     <uninstall>
         <pre>
+            <process state="stopped">
+                <name>listen controller</name>
+                <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
+            </process>
+
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.0.0</version>
+                <version>4.5.1</version>
             </rpm>
 
             <rpm state="less-than-or-equal">
