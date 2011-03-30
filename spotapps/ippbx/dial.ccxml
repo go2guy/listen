@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 03/14/2011
+    <!-- Last Modified 03/15/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -47,8 +47,7 @@
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
     <var name="CALL_DNIS" expr="''"/>
-    <var name="LOCAL_CALL" expr="7"/>       <!-- Number of digits in a local call -->
-    <var name="AREA_CODE" expr="'402'"/>    <!-- Local area code -->
+    <var name="TEN_DIGITS" expr="10"/>      <!-- Number of digits for an outbound call -->
     <var name="OUT_BOUND_ID" expr="'14024768786'"/>         <!-- Caller ID used for outbound calls -->
     <var name="OUTSIDE_LINE" expr="'9'"/>
 
@@ -192,9 +191,6 @@
                     <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
                     <assign name="origDNIS" expr="DNIS"/> <!-- Let's save off original destination for possible later use -->
                     <assign name="isFwd" expr="'true'"/>
-                    <if cond="((result.length &gt; EXT_LENGTH) &amp;&amp; (iiNumber(result)))">
-                        <assign name="result" expr="OUTSIDE_LINE + result"/>
-                    </if>
                     <assign name="DNIS" expr="result"/>
                     <assign name="tmpDNIS" expr="result"/>
                     <if cond="((tmpANI == DNIS) &amp;&amp; (origDNIS.length &gt; 0))">
@@ -245,11 +241,14 @@
                 <!-- Implies ID has not been set previousely -->
                 <assign name="CALL_ANI" expr="ANI"/>
             </if>
-            <if cond="(iiNumber(tmpDNIS)) &amp;&amp; (tmpDNIS[0] == OUTSIDE_LINE)">
+            <if cond="iiNumber(tmpDNIS)">
                 <!-- Assume we are attempting to reach a pstn number through SIP Trunk. 
                 Let's verify caller has permission to dial number -->
                 <assign name="state" expr="'chkBlackList'"/>
-                <var name="destination" expr="iiSubstr(tmpDNIS,1,-1)"/>
+                <var name="destination" expr="tmpDNIS"/>
+                <if cond="tmpDNIS[0] == OUTSIDE_LINE">
+                    <assign name="destination" expr="iiSubstr(tmpDNIS,1,-1)"/>
+                </if>
                 <var name="accessNum" expr="tmpANI"/>
                 <var name="whichRsrc" expr="'canDial'"/>
        	   		<dialogstart src="'file:'+TRANS_PATH+'chkForward.vxml'" namelist="importedValue whichRsrc accessNum destination"/>
@@ -282,18 +281,16 @@
             <var name="TIME_OUT" expr="'25s'"/>
             <var name="OBCALL.noproxy" expr="'false'"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
-                <assign name="CALL_DNIS" expr="'sip:ext' + tmpDNIS + '@iipbx'"/>
+                <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
             <else/> <!-- Call to an external number (outside PBX) -->
                 <assign name="TIME_OUT" expr="'60s'"/>
-                <if cond="(iiNumber(tmpDNIS)) &amp;&amp; (tmpDNIS[0] == OUTSIDE_LINE)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
-                    <assign name="tmpDNIS" expr="iiSubstr(tmpDNIS,1,-1)"/>  <!-- Strip off outside line prefix -->
+                <if cond="iiNumber(tmpDNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
+                    <if cond="tmpDNIS[0] == OUTSIDE_LINE">
+                        <assign name="tmpDNIS" expr="iiSubstr(tmpDNIS,1,-1)"/>  <!-- Strip off outside line prefix -->
+                    </if>
                     <assign name="SIP_SERVER" expr="getJsonVal(importedValue, 'sipURL')"/>
                     <assign name="CALL_ANI" expr="'sip:' + OUT_BOUND_ID + '@' + SIP_SERVER"/>  <!-- Make caller ID office number -->
-                    <if cond="tmpDNIS.length == LOCAL_CALL">
-                        <assign name="CALL_DNIS" expr="'sip:' + AREA_CODE + tmpDNIS + '@' + SIP_SERVER"/>  <!-- Need to prefix dest with area code -->
-                    <else/>
-                        <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS + '@' + SIP_SERVER"/>
-                    </if>
+                    <assign name="CALL_DNIS" expr="'sip:' + tmpDNIS + '@' + SIP_SERVER"/>
                 <elseif cond="(inString('*',tmpDNIS,'')) || (inString('.',tmpDNIS,''))"/>   <!-- Check if destination is an IP address -->
                     <assign name="OBCALL.noproxy" expr="'true'"/>
                     <if cond="inString('*',tmpDNIS,'')">
