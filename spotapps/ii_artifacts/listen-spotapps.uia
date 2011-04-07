@@ -46,7 +46,10 @@
 
             <question level="not_in_backup" severity="ask">
                 <text>Enter the host running the listen controller</text>
-                <default>defaultcontroller</default>
+                <default>
+                    #!/bin/bash
+                    hostname
+                </default>
                 <validateRegex preset="HOSTNAME"/>
 
                 <property format="propsh" action="upsert">
