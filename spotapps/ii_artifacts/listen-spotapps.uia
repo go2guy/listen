@@ -136,7 +136,7 @@
 
             <question level="not_in_backup" severity="ask">
                 <text>Enter the phone number to use if the controller is unreachable</text>
-                <default></default>
+                <default>101</default>
                 <validateRegex>^${HOSTNAME}$</validateRegex>
                 <validateInfo>The value may be any number of letters, numbers, dashes, or periods. The value may not be blank.</validateInfo>
 
