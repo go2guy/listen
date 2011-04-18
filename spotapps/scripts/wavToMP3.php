@@ -10,7 +10,7 @@
 
     $tmpFile = substr($inputFile,0, -4);
     $convertToPCM  = "/interact/listen/bin/logtolinwav < $inputFile > $tmpFile.pcm.wav";
-    $convertToMP3  = "/interact/listen/bin/lame --resample 44.1 -b 48 --silent $tmpFile.pcm.wav $tmpFile.mp3";
+    $convertToMP3  = "/interact/listen/bin/lame --resample 32 -b 32 --silent $tmpFile.pcm.wav $tmpFile.mp3";
 
     // Execute 
     @exec("$convertToPCM", $output, $return_var);
