@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'169_26'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'242_19'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_169_25(argList,audioURL)
+            function II_SB_JS_function_242_21(project,line,returnStr)
             {
-	            return setAudioURL(argList, audioURL);
+	            logText = 'Get Sub Info: Load Conference Info Chk Status is [Failure]. Reason [ ' + returnStr + ']';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set audioURL</log>
-            <log>INFO: Entered run-javascript.vxml [169_25]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_169_25(argList,audioURL)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="audioURL" expr="II_SB_userJava" />   
+            <log target="status">Set Log</log>
+            <log>INFO: Entered run-javascript.vxml [242_21]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_242_21(project,line,returnStr)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

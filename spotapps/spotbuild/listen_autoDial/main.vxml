@@ -57,6 +57,11 @@
 	<var name="SB_UV_sipURL"/>
 	<var name="SB_UV_lstnChannel"/>
 	<var name="SB_UV_lstnSub"/>
+	<var name="SB_UV_project"/>
+	<var name="SB_UV_line"/>
+	<var name="SB_UV_exceptionLog"/>
+	<var name="SB_UV_logText"/>
+	<var name="SB_UV_sipDirect"/>
 
     
     <form id="beginDocument">
@@ -68,6 +73,7 @@
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="ConfName" expr="II_SB_connectionID" />
+			<assign name="line" expr="II_SB_line" />
 			<assign name="SessionID" expr="II_SB_sessionID" />
 			<assign name="argList" expr="II_SB_importedValue" />
 
@@ -184,6 +190,21 @@
 			</if>
 			<if cond="SB_UV_lstnSub != undefined">
 				<assign name="lstnSub" expr="SB_UV_lstnSub" />
+			</if>
+			<if cond="SB_UV_project != undefined">
+				<assign name="project" expr="SB_UV_project" />
+			</if>
+			<if cond="SB_UV_line != undefined">
+				<assign name="line" expr="SB_UV_line" />
+			</if>
+			<if cond="SB_UV_exceptionLog != undefined">
+				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />
+			</if>
+			<if cond="SB_UV_logText != undefined">
+				<assign name="logText" expr="SB_UV_logText" />
+			</if>
+			<if cond="SB_UV_sipDirect != undefined">
+				<assign name="sipDirect" expr="SB_UV_sipDirect" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

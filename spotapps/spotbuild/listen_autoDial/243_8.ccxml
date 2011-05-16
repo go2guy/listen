@@ -49,7 +49,7 @@
     <eventprocessor statevariable="II_SB_state">
 
 	    <transition state="idle" event="ccxml.loaded" name="evt">  <!-- Load CCXML file. Log status and update state -->
-            <log>INFO: Entered create-session.ccxml [169_30]</log>
+            <log>INFO: Entered create-session.ccxml [243_8]</log>
             <log>INFO: transition event [ccxml.loaded] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="evt.sessionid"/>
             <assign name="II_SB_oldNxtOpt" expr="getNextElement(0,II_SB_passValues,'|')"/>
@@ -70,10 +70,10 @@
             <!-- In this transition, we return to the vxml layer to grab variables that will be passed
             to the new session -->
 			<log>INFO: transition event [dialog.user.getVariables] state [<value expr="II_SB_state"/>]</log>
-            <log>INFO: Get variables from [<value expr="'169_30.vxml'"/>]</log>
+            <log>INFO: Get variables from [<value expr="'243_8.vxml'"/>]</log>
             <assign name="II_SB_state" expr="'getVariables'"/>
             <var name="II_SB_action" expr="'assign'"/>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + '169_30.vxml'" namelist="II_SB_action"/>
+            <dialogstart src="'file:' + II_SB_CODE_DIR + '243_8.vxml'" namelist="II_SB_action"/>
         </transition>
 
         <transition state="getVariables" event="dialog.exit" name="evt">
@@ -234,7 +234,7 @@
 		<transition state="nextOptionRun" event="dialog.user.startDialog">
 			<log>INFO: transition event ["dialog.user.startDialog] state [<value expr="II_SB_state"/>]</log>
             <var name="II_SB_action" expr="'nextOpt'"/>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + '169_30.vxml'" namelist="II_SB_newSID II_SB_action II_SB_whichOpt"/>
+            <dialogstart src="'file:' + II_SB_CODE_DIR + '243_8.vxml'" namelist="II_SB_newSID II_SB_action II_SB_whichOpt"/>
         </transition>
 
         <transition state="nextOptionRun endCall" event="dialog.exit" name="evt">
