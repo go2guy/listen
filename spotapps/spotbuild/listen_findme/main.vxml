@@ -68,6 +68,10 @@
 	<var name="SB_UV_appEndTime"/>
 	<var name="SB_UV_confName"/>
 	<var name="SB_UV_talkingSession"/>
+	<var name="SB_UV_exceptionLog"/>
+	<var name="SB_UV_logText"/>
+	<var name="SB_UV_line"/>
+	<var name="SB_UV_project"/>
 
     
     <form id="beginDocument">
@@ -80,6 +84,7 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
+			<assign name="line" expr="II_SB_line" />
 			<assign name="session" expr="II_SB_sessionID" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
@@ -229,6 +234,18 @@
 			</if>
 			<if cond="SB_UV_talkingSession != undefined">
 				<assign name="talkingSession" expr="SB_UV_talkingSession" />
+			</if>
+			<if cond="SB_UV_exceptionLog != undefined">
+				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />
+			</if>
+			<if cond="SB_UV_logText != undefined">
+				<assign name="logText" expr="SB_UV_logText" />
+			</if>
+			<if cond="SB_UV_line != undefined">
+				<assign name="line" expr="SB_UV_line" />
+			</if>
+			<if cond="SB_UV_project != undefined">
+				<assign name="project" expr="SB_UV_project" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

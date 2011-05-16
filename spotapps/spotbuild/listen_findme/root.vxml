@@ -78,6 +78,10 @@
 	<var name="appEndTime" expr="''" />
 	<var name="confName" expr="''" />
 	<var name="talkingSession" expr="''" />
+	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
+	<var name="logText" expr="''" />
+	<var name="line" expr="'line'" />
+	<var name="project" expr="'LISTEN_FINDME'" />
 
 
     <!-- Conference Variables -->
