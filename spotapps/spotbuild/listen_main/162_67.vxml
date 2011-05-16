@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'145_40'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'162_62'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_145_48(appToAccess)
+            function II_SB_JS_function_162_67(project,line,logText)
             {
-	            return getNextElement(1,appToAccess,':');
+	            logText = 'Chk Access: Check Access Number returned [Failure]. Reason [ ' + logText + ']';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get App Name</log>
-            <log>INFO: Entered run-javascript.vxml [145_48]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_145_48(appToAccess)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="appToAccess" expr="II_SB_userJava" />   
+            <log target="status">Set Log</log>
+            <log>INFO: Entered run-javascript.vxml [162_67]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_162_67(project,line,logText)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

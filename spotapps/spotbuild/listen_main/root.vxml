@@ -50,7 +50,6 @@
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
 	<var name="artifactsDIR" expr="'/interact/listen/artifacts/'" />
-	<var name="FILE" expr="'defaultApp.cfg'" />
 	<var name="contentType" expr="'application/x-www-form-urlencoded'" />
 	<var name="EXT_LENGTH" expr="'4'" />
 	<var name="EXT_PREFIX" expr="'ext'" />
@@ -59,6 +58,13 @@
 	<var name="pstnLength" expr="'10'" /> <!-- Config PSTN Minimum Digits Length -->
 	<var name="errorCnt" expr="'0'" />
 	<var name="errorTot" expr="'2'" />
+	<var name="MODE" expr="'APPEND'" />
+	<var name="DATA" expr="''" />
+	<var name="project" expr="'LISTEN_MAIN'" />
+	<var name="line" expr="'line'" />
+	<var name="nextPath" expr="''" />
+	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
+	<var name="logText" expr="''" />
 
 
     <!-- Conference Variables -->
