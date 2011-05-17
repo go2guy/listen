@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_242_21(project,line,returnStr)
             {
-	            logText = 'Get Sub Info: Load Conference Info Chk Status is [Failure]. Reason [ ' + returnStr + ']';return writeLog(project,line,logText);
+	            var logText = 'Get Sub Info: Load Conference Info Chk Status is [Failure]. Reason [ ' + returnStr + ']';return writeLog(project,line,logText);
             }
         ]]>
     </script>
