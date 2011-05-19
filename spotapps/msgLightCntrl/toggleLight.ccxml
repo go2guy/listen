@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 05/16/2011
+    <!-- Last Modified 05/19/2011
        *   @Name	toggleLight.ccxml
        *   @Desc	This script handles toggling the message notification
                     light on the IP phones -->
@@ -42,7 +42,7 @@
             <var name="logText" expr="'Attempt to turn message light ['+getJsonVal(importedValue,'action')+'] for [ext'+getNextElement(1,action,'|')+'] failed'"/>
             <assign name="logText" expr="writeLog('MSG_LIGHT','N/A',logText)"/>
             <assign name="state" expr="'endCall'"/>
-            <dialogstart src="'file:/interact/apps/spotbuild/msgLightCntrl/writeExceptionLog.vxml'" namelist="logText"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
 
         <transition event="dialog.exit">
