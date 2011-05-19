@@ -269,7 +269,7 @@
                 <log target="status">[<value expr="tmpDNIS"/>] not permitted</log>
                 <log>INFO: [<value expr="ANI"/>] not permitted to dial [<value expr="tmpDNIS"/>]</log>
                 <assign name="state" expr="'error'"/>
-                <var name="logText" expr="'dial.ccxml: ANI ['+ ANI +'] attempted to dial blacklist destination ['+ tmpDNIS + ']'"/>
+                <var name="logText" expr="'dial.ccxml: Caller [ext'+ tmpANI +'] attempted to dial blacklisted destination ['+ tmpDNIS + ']'"/>
                 <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
                 <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
             </if>
@@ -319,7 +319,7 @@
                 <send data="'dialog.user.storeInfo'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
             <else/>
                 <assign name="state" expr="'hangUp'"/>
-                <var name="logText" expr="'dial.ccxml: Invalid outdial attempt. ANI ['+ ANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
+                <var name="logText" expr="'dial.ccxml: Invalid outdial attempt. Caller [ext'+ tmpANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
                 <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
                 <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
             </if>
@@ -689,7 +689,7 @@
             <log>ERROR: Entered [error.conference.join] with state [<value expr="state"/>]</log>
             <!-- TODO: How do we handle this? Allow a retry? Play a prompt and end? -->
             <assign name="state" expr="'hangUp'"/>
-            <var name="logText" expr="'dial.ccxml: Error while attmpting to join caller ['+ ANI +'] destination ['+ tmpDNIS + ']. Reason ['+ evt.reason +']'"/>
+            <var name="logText" expr="'dial.ccxml: Error while attmpting to join caller ['+ tmpANI +'] to destination ['+ tmpDNIS + ']. Reason ['+ evt.reason +']'"/>
             <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
             <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
 		</transition>
@@ -722,7 +722,7 @@
 
         <transition state="writeBusyLog callFailedLog noRingToneFail" event="dialog.user.writeCallFailedLog" name="evt">
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <var name="logText" expr="'dial.ccxml: Call failed. Caller ['+ ANI +'] attempting to reach destination ['+ tmpDNIS + ']. Reason ['+ errorCode(dialFailReason) +']'"/>
+            <var name="logText" expr="'dial.ccxml: Call failed. Caller ['+ tmpANI +'] attempting to reach destination ['+ tmpDNIS + ']. Reason ['+ errorCode(dialFailReason) +']'"/>
             <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
             <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
