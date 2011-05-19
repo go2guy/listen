@@ -39,7 +39,7 @@
         <transition event="dialog.user.messagelight.failed" name="evt">
             <log>INFO: Entered [dialog.user.messagelight.failed] with state [<value expr="state"/>]</log>
             <log>INFO: Attempt failed</log>
-            <var name="logText" expr="'Attempt to turn message light ['+getJsonVal(importedValue,'action')+'] for [ext'+getNextElement(1,action,'|')+'] failed'"/>
+            <var name="logText" expr="'toggleLight.ccxml: Attempt to turn message light ['+getJsonVal(importedValue,'action')+'] for [ext'+getNextElement(1,action,'|')+'] failed'"/>
             <assign name="logText" expr="writeLog('MSG_LIGHT','N/A',logText)"/>
             <assign name="state" expr="'endCall'"/>
             <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
@@ -56,7 +56,10 @@
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
             <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <var name="logText" expr="'toggleLight.ccxml: Global error catch. Reason [' + evt.reason + ']'"/>
+            <assign name="logText" expr="writeLog('MSG_LIGHT','N/A',logText)"/>
+            <assign name="state" expr="'endCall'"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">

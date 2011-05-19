@@ -141,7 +141,7 @@
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
-            <var name="logText" expr="'Error while ANI ['+ tmpANI +'] was attempting broadcast. Reason ['+ evt.reason +']'"/>
+            <var name="logText" expr="'page.ccxml: Global error catch. ANI ['+ tmpANI +']. Reason ['+ evt.reason +']'"/>
             <assign name="logText" expr="writeLog('BROADCAST','N/A',logText)"/>
             <assign name="state" expr="'error'"/>
             <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
