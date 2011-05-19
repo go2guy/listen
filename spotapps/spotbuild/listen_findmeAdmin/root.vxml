@@ -64,6 +64,11 @@
 	<var name="loopNumber" expr="''" />
 	<var name="subInfo" expr="''" />
 	<var name="time" expr="''" />
+	<var name="project" expr="'LISTEN_FINDME_ADMIN'" />
+	<var name="line" expr="'line'" />
+	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
+	<var name="logText" expr="''" />
+	<var name="isActivating" expr="'false'" />
 
 
     <!-- Conference Variables -->
@@ -74,6 +79,7 @@
     <!-- Call to java scripts -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	<!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_APP_PATH + 'listen_findmeAdmin.js'"></script>	<!-- Location of java script file -->
 
     <!-- Catch hang up event. User must have hung up -->
     <catch event="connection.disconnect.hangup">
