@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 04/12/2011
+    <!-- Last Modified 05/19/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -55,6 +55,7 @@
     <var name="ERR_BUSY" expr="'486,600'"/>     <!-- Dialed destination return a busy response -->
     <var name="ERR_NOT_FOUND" expr="'404'"/>    <!-- Dialed destination was not found -->
     <var name="REQUEST_TIMEOUT" expr="'408'"/>  <!-- Dialed attempt timed out -->
+    <var name="dialFailReason" expr="''"/>
 
     <!-- Constants -->
     <var name="LIB_PATH" expr="''"/>        <!-- Lib Path. Direcotry for lib files -->
@@ -267,12 +268,21 @@
             <else/>
                 <log target="status">[<value expr="tmpDNIS"/>] not permitted</log>
                 <log>INFO: [<value expr="ANI"/>] not permitted to dial [<value expr="tmpDNIS"/>]</log>
-                <assign name="state" expr="'blackListNum'"/>
-                <var name="II_SB_repeat" expr="'n'"/>
-                <var name="II_SB_interval" expr="''"/>
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'blackListNum.00.wav'"/>
-                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+                <assign name="state" expr="'error'"/>
+                <var name="logText" expr="'dial.ccxml: ANI ['+ ANI +'] attempted to dial blacklist destination ['+ tmpDNIS + ']'"/>
+                <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+                <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
             </if>
+        </transition>
+
+        <transition state="error" event="dialog.exit" name="evt">
+            <!-- Back from checking if caller has permission to dial number -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'blackListNum'"/>
+            <var name="II_SB_repeat" expr="'n'"/>
+            <var name="II_SB_interval" expr="''"/>
+            <assign name="II_SB_promptID" expr="AUDIO_PATH+'blackListNum.00.wav'"/>
+            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
         </transition>
 
         <transition event="dialog.user.call" name="evt">
@@ -308,7 +318,10 @@
                 <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
                 <send data="'dialog.user.storeInfo'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
             <else/>
-                <send data="'dialog.user.deleteRecord'" target="session.id"/>                
+                <assign name="state" expr="'hangUp'"/>
+                <var name="logText" expr="'dial.ccxml: Invalid outdial attempt. ANI ['+ ANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
+                <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+                <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
             </if>
         </transition>
 
@@ -675,15 +688,18 @@
             <!-- Our join attempt failed -->
             <log>ERROR: Entered [error.conference.join] with state [<value expr="state"/>]</log>
             <!-- TODO: How do we handle this? Allow a retry? Play a prompt and end? -->
-            <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <assign name="state" expr="'hangUp'"/>
+            <var name="logText" expr="'dial.ccxml: Error while attmpting to join caller ['+ ANI +'] destination ['+ tmpDNIS + ']. Reason ['+ evt.reason +']'"/>
+            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
 		</transition>
 
         <transition event="connection.failed" name="evt">
             <!-- The out dial attempt failed for some reason -->
             <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
             <log>ERROR: Call failed to connect. Reason [<value expr="errorCode(evt.reason)"/>]</log>
-            <if cond="((evt.reason == 'DIALTIMEOUT') || (evt.reason == REQUEST_TIMEOUT))"> <!-- Reached max ring time -->
+            <assign name="dialFailReason" expr="evt.reason"/>
+            <if cond="((dialFailReason == 'DIALTIMEOUT') || (dialFailReason == REQUEST_TIMEOUT))"> <!-- Reached max ring time -->
                 <log target="status">Call not answered</log>
                 <assign name="state" expr="'noAns'"/>
                 <send data="'dialog.user.terminate'" target="session.id"/> <!-- Stop ringing tone on caller side -->
@@ -691,25 +707,9 @@
                 <!-- Implies call failed immediately (before we started playing the ring tone). Here, we'll
                 cancel our attempt to play the ring tone and proceed with the call failed logic -->
                 <cancel sendid="ringToneID"/>
-                <if cond="inString(evt.reason,ERR_BUSY,',')"> <!-- Destination was busy -->
-                    <log target="status">Destination busy</log>
-                    <assign name="state" expr="'busy'"/>
-                    <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
-                        <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                        <send data="'dialog.user.createccxml'" target="session.id"/>
-                    <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
-                        <!-- Remove the caller's record in the db prior to exiting -->
-                        <send data="'dialog.user.deleteRecord'" target="session.id"/>
-                    </if>
-                <elseif cond="(inString(evt.reason,ERR_NOT_FOUND,',')) &amp;&amp; (callType == 'extension')"/>
-                     <!-- Destination not found. Maybe IP Phone is offline. Check if there's a voicemail account -->
-                    <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                    <send data="'dialog.user.createccxml'" target="session.id"/>
-                <else/>
-                    <!-- Call failed due to some other reason -->
-                    <send data="'dialog.user.callFailed'" target="session.id"/>
-                </if>
-            <elseif cond="inString(evt.reason,ERR_BUSY,',')"/> <!-- Destination was busy -->
+                <assign name="state" expr="'noRingToneFail'"/>
+                <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
+            <elseif cond="inString(dialFailReason,ERR_BUSY,',')"/> <!-- Destination was busy -->
                 <log target="status">Destination busy</log>
                 <assign name="state" expr="'busy'"/>
                 <send data="'dialog.user.terminate'" target="session.id"/> <!-- Stop ringing tone on caller side -->
@@ -720,7 +720,45 @@
             </if>
         </transition>
 
-        <transition state="noAns busy" event="dialog.exit" name="evt">
+        <transition state="writeBusyLog callFailedLog noRingToneFail" event="dialog.user.writeCallFailedLog" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <var name="logText" expr="'dial.ccxml: Call failed. Caller ['+ ANI +'] attempting to reach destination ['+ tmpDNIS + ']. Reason ['+ errorCode(dialFailReason) +']'"/>
+            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+        </transition>
+
+        <transition state="busy callFailed noRingToneFail" event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <if cond="state == 'noRingToneFail'">
+                <if cond="inString(dialFailReason,ERR_BUSY,',')"> <!-- Destination was busy -->
+                    <log target="status">Destination busy</log>
+                    <assign name="state" expr="'busy'"/>
+                    <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+                        <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                        <send data="'dialog.user.createccxml'" target="session.id"/>
+                    <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
+                        <!-- Remove the caller's record in the db prior to exiting -->
+                        <send data="'dialog.user.deleteRecord'" target="session.id"/>
+                    </if>
+                <elseif cond="(inString(dialFailReason,ERR_NOT_FOUND,',')) &amp;&amp; (callType == 'extension')"/>
+                     <!-- Destination not found. Maybe IP Phone is offline. Check if there's a voicemail account -->
+                    <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                    <send data="'dialog.user.createccxml'" target="session.id"/>
+                <else/>
+                    <!-- Call failed due to some other reason -->
+                    <send data="'dialog.user.callFailed'" target="session.id"/>
+                </if>
+            <elseif cond="state == busy"/>
+                <assign name="state" expr="'busyLog'"/>
+                <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
+            <else/>
+                <assign name="state" expr="'callFailedLog'"/>
+                <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
+            </if>
+        </transition>
+
+        <transition state="noAns writeBusyLog" event="dialog.exit" name="evt">
             <!-- We've stopped the ring tone. Next action is determined by the type of call we were attempting -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
@@ -802,7 +840,7 @@
             </if>
         </transition>
 
-        <transition state="callFailed" event="dialog.exit" name="evt">
+        <transition state="callFailedLog" event="dialog.exit" name="evt">
             <!-- We've stopped the ring tone. Next action is determined by the type of call we were attempting -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
@@ -810,7 +848,7 @@
             <send data="'dialog.user.callFailed'" target="session.id"/>
         </transition>
 
-		<transition state="storeInfo callFailed" event="dialog.user.callFailed" name="evt">
+		<transition state="storeInfo callFailedLog" event="dialog.user.callFailed" name="evt">
             <log>INFO: Entered [dialog.user.callFailed] with state [<value expr="state"/>]</log>
             <if cond="callType == 'external'">  <!-- Caller tried to reach an invalid external (outside IP PBX) destination -->
                 <!-- Nothing to do here. Just end the call -->
@@ -839,7 +877,7 @@
             </if>
 		</transition>
 
-        <transition state="invalidExt cntrlDown hangUp blackListNum" event="dialog.exit" name="evt">
+        <transition state="invalidExt cntrlDown hangUp blackListNum errorEnd" event="dialog.exit" name="evt">
             <!-- We've informed the caller that extension they tried to reach does not exist,
              or we're experiencing a technical difficulty. -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
@@ -932,10 +970,10 @@
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
             <!-- Remove the caller's record in the db prior to exiting -->
-            <assign name="state" expr="'endCall'"/>
-            <assign name="clientFlag" expr="'delete'"/>
-            <assign name="record" expr="ibconnid + '|' + tmpANI"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            <assign name="state" expr="'errorEnd'"/>
+            <var name="logText" expr="'dial.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
+            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
 
         <transition event="dialog.user.createccxml" name="evt">

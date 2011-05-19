@@ -119,7 +119,10 @@
                 <send data="'dialog.user.dial'" target="session.id"/>
             <else/> <!-- We've encountered an unusual error, since we couldn't match any known case. End the call -->
                 <!-- TODO: Write an error log file and notify someone? -->
-                <send data="'dialog.user.endCall'" target="session.id"/>
+                <var name="logText" expr="'ippbx_main.ccxml: Invalid access number ['+ tmpDNIS +'] dialed by ['+ tmpANI + ']. DNIS does not map to any ippbx feature'"/>
+                <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+                <assign name="state" expr="'endCall'"/>
+                <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
             </if>
 		</transition>
 
@@ -175,7 +178,7 @@
             </if>
         </transition>
 
-        <transition state="fwd hangUp" event="dialog.exit" name="evt">
+        <transition state="fwd hangUp error" event="dialog.exit" name="evt">
             <!-- This transition handles the return from a VXML dialog -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
@@ -207,22 +210,16 @@
             <goto fetchid="evt.fetchid" />
         </transition>
 
-        <transition event="error.dialog.notstarted" name="evt">
-            <!-- Catch dialog not started error -->
-            <log>ERROR: Entered [error.dialog.notstarted] with state [<value expr="state"/>]</log>
-            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
-            <!-- TODO: Write an error log file and notify someone? -->
-            <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
-        </transition>
-
         <transition event="error.*" name="evt">
             <!-- Use catch all error for now -->
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
+            <assign name="state" expr="'error'"/>
+            <var name="logText" expr="'ippbx_main.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
+            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
             <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
 
         <!-- End call -->

@@ -172,7 +172,10 @@
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
             <!-- Reset user's status in db b/4 exiting -->
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            <var name="logText" expr="'pbx.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
+            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+            <assign name="state" expr="'hangUp'"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">
