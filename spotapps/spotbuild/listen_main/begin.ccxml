@@ -62,7 +62,6 @@
 	<var name="SB_UV_DATA"/>
 	<var name="SB_UV_project"/>
 	<var name="SB_UV_line"/>
-	<var name="SB_UV_nextPath"/>
 	<var name="SB_UV_exceptionLog"/>
 	<var name="SB_UV_logText"/>
 
@@ -112,7 +111,7 @@
             <assign name="II_SB_state" expr="'alerted'"/>
             <if cond="((II_SB_transfer == undefined) &amp;&amp; (II_SB_status == undefined))">
                 <assign name="II_SB_ibcallid" expr="II_SB_connectionID"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_FILE SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_MODE SB_UV_DATA SB_UV_project SB_UV_line SB_UV_nextPath SB_UV_exceptionLog SB_UV_logText"/> <!-- Start vxml dialog -->
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_FILE SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_MODE SB_UV_DATA SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText"/> <!-- Start vxml dialog -->
             <else/>
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
@@ -156,12 +155,12 @@
 
         <transition event="dialog.user.startMain" name="alertEV" cond="II_SB_ibcallid.length &gt; 0">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_FILE SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_MODE SB_UV_DATA SB_UV_project SB_UV_line SB_UV_nextPath SB_UV_exceptionLog SB_UV_logText"/> <!-- Start vxml dialog -->
+            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_FILE SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_MODE SB_UV_DATA SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.user.startMain" name="alertEV">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_FILE SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_MODE SB_UV_DATA SB_UV_project SB_UV_line SB_UV_nextPath SB_UV_exceptionLog SB_UV_logText"/> <!-- Start vxml dialog -->
+            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_FILE SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_MODE SB_UV_DATA SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->

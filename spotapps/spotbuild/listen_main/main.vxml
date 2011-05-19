@@ -53,7 +53,6 @@
 	<var name="SB_UV_DATA"/>
 	<var name="SB_UV_project"/>
 	<var name="SB_UV_line"/>
-	<var name="SB_UV_nextPath"/>
 	<var name="SB_UV_exceptionLog"/>
 	<var name="SB_UV_logText"/>
 
@@ -173,9 +172,6 @@
 			</if>
 			<if cond="SB_UV_line != undefined">
 				<assign name="line" expr="SB_UV_line" />
-			</if>
-			<if cond="SB_UV_nextPath != undefined">
-				<assign name="nextPath" expr="SB_UV_nextPath" />
 			</if>
 			<if cond="SB_UV_exceptionLog != undefined">
 				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />

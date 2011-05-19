@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_162_67(project,line,logText)
+            function II_SB_JS_function_162_67(project,line,logText,DNIS,ANI)
             {
-	            logText = 'Chk Access: Check Access Number returned [Failure]. Reason [ ' + logText + ']';return writeLog(project,line,logText);
+	            logText = 'Chk Access: Check Access Number for DNIS ['+ getnum(DNIS) + '] returned [Failure]. Reason [ ' + logText + ']. ANI was ['+ getnum(ANI) + ']';return writeLog(project,line,logText);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Log</log>
             <log>INFO: Entered run-javascript.vxml [162_67]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_162_67(project,line,logText)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_162_67(project,line,logText,DNIS,ANI)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

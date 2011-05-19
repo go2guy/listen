@@ -62,7 +62,6 @@
 	<var name="DATA" expr="''" />
 	<var name="project" expr="'LISTEN_MAIN'" />
 	<var name="line" expr="'line'" />
-	<var name="nextPath" expr="''" />
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 	<var name="logText" expr="''" />
 
