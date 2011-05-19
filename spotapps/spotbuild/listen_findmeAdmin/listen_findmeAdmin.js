@@ -6,7 +6,7 @@ function findMeConfigCount(findMeConfigObj, index) {
         configCount = result[index].length;
     }
     if (configCount == 1) {
-        var hrefID = getNextElement('L',result[index][0].href,'/');
+        var hrefID = getNextElement('L',result[0][0].href,'/');
         if (hrefID == 'null') {
             configCount = 0;
         }
@@ -49,7 +49,9 @@ function removeNumber(findMeConfigObj, configIndex, groupIndex) {
 function isFindMeExpired(findMeObj) {
     var isExpired = 'true';
     var tmpVal = getResultsKeyValue(findMeObj, 0, 'findMeExpiration');
-    if (typeof(tmpVal != 'undefined') && (tmpVal != 'null') && (tmpVal.length > 0)) {
+    if (tmpVal.length == 0)
+        isExpired = 'false';
+    else if (typeof(tmpVal != 'undefined') && (tmpVal.length > 0)) {
         var date = tmpVal.split('T')[0];
         var time = tmpVal.split('T')[1].split('.')[0];
         var year = date.split('-')[0];
