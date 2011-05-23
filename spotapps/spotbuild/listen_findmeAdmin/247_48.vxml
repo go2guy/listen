@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_247_48(project,line,returnStr,subID,ANI)
             {
-	            var logText = 'Get Numbers: Get Numbers returned [Failure]. Unable to get findMe numbers for subscriber ID [' + subID + '] with ANI [' + getnum(ANI) + ']. Reason [ ' + returnStr + ']';return writeLog(project,line,logText);
+	            var logText = 'Get Numbers: Get Numbers returned [Failure]. Unable to get findMe numbers for subscriber ID [' + subID + '] with ANI [' + ANI + ']. Reason [ ' + returnStr + ']';return writeLog(project,line,logText);
             }
         ]]>
     </script>
