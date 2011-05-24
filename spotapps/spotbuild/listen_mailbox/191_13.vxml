@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_191_13(appStartTime,appEndTime)
             {
-	            return getTimeDifference(appEndTime, appStartTime);
+	            return getTimeDifference(appStartTime, appEndTime);
             }
         ]]>
     </script>
