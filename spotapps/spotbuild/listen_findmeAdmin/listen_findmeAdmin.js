@@ -6,7 +6,10 @@ function findMeConfigCount(findMeConfigObj, index) {
         configCount = result[index].length;
     }
     if (configCount == 1) {
-        var hrefID = getNextElement('L',result[0][0].href,'/');
+        if (index == 'all') {
+            index = 0;
+        }
+        var hrefID = getNextElement('L',result[index][0].href,'/');
         if (hrefID == 'null') {
             configCount = 0;
         }
