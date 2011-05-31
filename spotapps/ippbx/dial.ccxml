@@ -116,7 +116,7 @@
             <!-- If the dialed number is a string of characters, we're possibly dealing with a 
             redial. Let's attempt to get an access number for the characters --> 
             <log>INFO: Entered [dialog.user.chkRedial] with state [<value expr="state"/>]</log>
-            <if cond="isDigits(DNIS) == 'false'"> <!-- Implies destination is a name. Assume a redial -->
+            <if cond="((callType != 'fromXfer') &amp;&amp; (isDigits(tmpDNIS) == 'false'))"> <!-- Implies destination is a name. Assume a redial -->
                 <assign name="state" expr="'getExtID'"/>
        	   		<dialogstart src="'file:'+TRANS_PATH+'getCallerID.vxml'" namelist="DNIS importedValue"/>
             <else/>
