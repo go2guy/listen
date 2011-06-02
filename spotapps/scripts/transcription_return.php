@@ -34,53 +34,82 @@ foreach ($vmID as $value)
     $count = $count + 1;
 }
 
-$data = "{\"transcription\":\"$voicemail\"}";
-$ID = "$number\n";
+$data = "{\"transcription\":\"$spacerWord $voicemail\"}";
+$newNumber = substr($word, 1);
+$ID = "$newNumber\n";
+
+echo file_put_contents("log","destURL: $destURL\nID: $ID\ndata: $data\n");
+echo "\n-----------------\n";
 
 $curlResult = curlPostCommand($destURL, $ID, $data);
+echo "$ID";
+echo "$curlResult\n";
 
 if ($curlResult != 'Success') {
-    $newNumber = substr($number, 0, -1);
-    $ID = "$newNumber\n";
+    $ID = "$word\n";
     $curlResult = curlPostCommand($destURL, $ID, $data);
-    if ($curlResult != 'Success') {
-        switch ($word) {
+    echo "$ID";
+    echo "$curlResult\n";
 
-	    case "Zero":
-                $word = 0;
-		break;
-            case "One":
-                $word = 1;
-		break;
-            case "Two":
-                $word = 2;
-                break;
-            case "Three":
-                $word = 3;
-                break;
-            case "Four":
-                $word = 4;
-                break;
-            case "Five":
-                $word = 5;
-                break;
-            case "Six":
-                $word = 6;
-                break;
-            case "Seven":
-                $word = 7;
-                break;
-            case "Eight":
-                $word = 8;
-                break;
-            case "Nine":
-                $word = 9;
-                break;
-            default:
-                break;
+    $data = "{\"transcription\":\"$voicemail\"}";
+    
+    if ($curlResult != 'Success') {
+        $newNumber = substr($number, 0, -1);
+        $ID = "$newNumber\n";
+        $curlResult = curlPostCommand($destURL, $ID, $data);
+        echo "$ID";
+        echo "$curlResult\n";
+
+        if ($curlResult != 'Success') {
+            $ID = "$number\n";
+                
+            $curlResult = curlPostCommand($destURL, $ID, $data);
+            echo "$ID";
+            echo "$curlResult\n";
+
+            if ($curlResult != 'Success') {
+                switch ($word) {
+            
+    	        case "Zero":
+                    $word = 0;
+    		        break;
+            	case "One":
+                    $word = 1;
+		            break;
+            	case "Two":
+                    $word = 2;
+		            break;
+        	    case "Three":
+                    $word = 3;
+	    	        break;
+            	case "Four":
+                    $word = 4;
+                    break;
+            	case "Five":
+                    $word = 5;
+		            break;
+        	    case "Six":
+                    $word = 6;
+	    	        break;
+            	case "Seven":
+                    $word = 7;
+		            break;
+            	case "Eight":
+                    $word = 8;
+		            break;
+        	    case "Nine":
+                    $word = 9;
+           	        break;
+                default:
+                    break;
+                }
+
+                $ID = "$word$number\n";
+                $curlResult = curlPostCommand($destURL, $ID, $data);
+                echo "$ID";
+                echo "$curlResult\n";
+            }
         }
-    $ID = "$word$number\n";
-    $curlResult = curlPostCommand($destURL, $ID, $data);
     }
 }
 
@@ -138,6 +167,7 @@ function exitresult ($objname, $status, $string, $reason="",$deleteStatus,$messa
     echo "  <Status>$status</Status>\n";
     echo "  <Result>$reason</Result>\n";
     echo "</{$objname}>\n";
+    echo file_put_contents("error_log","FAILURE\n");
     exit;
 }
 
