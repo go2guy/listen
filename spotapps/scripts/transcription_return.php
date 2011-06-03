@@ -51,63 +51,72 @@ if ($curlResult != 'Success') {
     echo "$ID";
     echo "$curlResult\n";
 
-    $data = "{\"transcription\":\"$voicemail\"}";
-    
     if ($curlResult != 'Success') {
-        $newNumber = substr($number, 0, -1);
+        $newNumber = substr($word, 1);
+        $newNumber = substr($newNumber, 0, -1);
         $ID = "$newNumber\n";
         $curlResult = curlPostCommand($destURL, $ID, $data);
         echo "$ID";
         echo "$curlResult\n";
-
+    
+        $data = "{\"transcription\":\"$voicemail\"}";
+    
         if ($curlResult != 'Success') {
-            $ID = "$number\n";
-                
+            $newNumber = substr($number, 0, -1);
+            $ID = "$newNumber\n";
             $curlResult = curlPostCommand($destURL, $ID, $data);
             echo "$ID";
             echo "$curlResult\n";
 
             if ($curlResult != 'Success') {
-                switch ($word) {
-            
-    	        case "Zero":
-                    $word = 0;
-    		        break;
-            	case "One":
-                    $word = 1;
-		            break;
-            	case "Two":
-                    $word = 2;
-		            break;
-        	    case "Three":
-                    $word = 3;
-	    	        break;
-            	case "Four":
-                    $word = 4;
-                    break;
-            	case "Five":
-                    $word = 5;
-		            break;
-        	    case "Six":
-                    $word = 6;
-	    	        break;
-            	case "Seven":
-                    $word = 7;
-		            break;
-            	case "Eight":
-                    $word = 8;
-		            break;
-        	    case "Nine":
-                    $word = 9;
-           	        break;
-                default:
-                    break;
-                }
-
-                $ID = "$word$number\n";
+                $ID = "$number\n";
+                    
                 $curlResult = curlPostCommand($destURL, $ID, $data);
                 echo "$ID";
                 echo "$curlResult\n";
+
+                if ($curlResult != 'Success') {
+                    switch ($word) {
+            
+    	            case "Zero":
+                        $word = 0;
+        		        break;
+                	case "One":
+                        $word = 1;
+		                break;
+                	case "Two":
+                        $word = 2;
+		                break;
+        	        case "Three":
+                        $word = 3;
+	    	            break;
+                	case "Four":
+                        $word = 4;
+                        break;
+                	case "Five":
+                        $word = 5;
+	    	            break;
+            	    case "Six":
+                        $word = 6;
+	    	            break;
+                	case "Seven":
+                        $word = 7;
+		                break;
+                	case "Eight":
+                        $word = 8;
+    		            break;
+            	    case "Nine":
+                        $word = 9;
+           	            break;
+                    default:
+                        break;
+                    }
+
+                    $ID = "$word$number\n";
+                    $curlResult = curlPostCommand($destURL, $ID, $data);
+                    echo "$ID";
+                    echo "$curlResult\n";
+                }
             }
         }
     }
