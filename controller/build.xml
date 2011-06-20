@@ -349,5 +349,5 @@
   </target>
 
 
-  <target name="hudson" depends="test, javadoc, hudson-plots, rpm" description="target for hudson"/>
+  <target name="hudson" depends="rpm" description="target for hudson"/>
 </project>
