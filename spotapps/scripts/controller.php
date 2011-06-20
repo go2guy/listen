@@ -11,7 +11,12 @@
     #Grab inputs
     $method     = @$_REQUEST['request']     or exitresult ($objName,$status,$string,"'request' argument missing from request");
     $rsrc       = @$_REQUEST['resource']    or exitresult ($objName,$status,$string,"'resource' argument missing from request");
-    $data       = @$_REQUEST['params']      or exitresult ($objName,$status,$string,"'params' argument missing from request");
+    $data       = @$_REQUEST['params'];
+
+    if (strlen($data) == 0) {
+        exitresult ($objName,$status,$string,"'params' argument missing from request");
+    }
+    
     $ID         = @$_REQUEST['id']          or $ID="";
     $ContentType= @$_REQUEST['contentType'] or $ContentType="application/json";
     $destURL    = @$_REQUEST['cntrlURL']    or exitresult ($objName,$status,$string,"'cntrlURL' argument missing from request");
