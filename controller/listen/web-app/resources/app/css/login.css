@@ -1,0 +1,130 @@
+/* LOGIN-SPECIFIC */
+
+#left {
+    background-color: #E9E9E9;
+    border-right: 2px solid #CCCCCC;
+    float: left;
+    height: 100%;
+    width: 50%;
+}
+
+#right {
+    width: 50%;
+    float: left;
+}
+
+#logo, #login {
+    position: absolute;
+    text-align: center;
+    top: 50%;
+}
+
+#logo {
+    left: 25%;
+    margin-left: -150px;
+    margin-top: -100px;
+    width: 300px;
+}
+
+#logo img {
+    height: 73px;
+    width: 172px;
+}
+
+#login {
+    border: 1px solid #DAE4EE;
+    left: 75%;
+    margin-left: -150px;
+    margin-top: -100px;
+    padding: 10px;
+    width: 300px;
+}
+
+/* FORMS (SPECIFIC TO LOGIN) */
+
+fieldset {
+    display: block;
+    border-width: 0;
+    font-size: 125%;
+}
+
+fieldset label {
+    color: #333333;
+    display: block;
+    font-weight: bold;
+    margin: .5em 0 0 0;
+    padding: 0;
+    text-align: left;
+}
+
+fieldset input,
+fieldset select {
+    display: block;
+    font-size: 150%;
+    font-weight: bold;
+    margin: .25em 0 0 0;
+}
+
+fieldset .text {
+    display: block;
+    font-size: 150%;
+    padding-left: 5px;
+    width: 250px;
+}
+
+#username, #password {
+    background-color: #FFFFFF;
+    background-position: 5px center;
+    background-repeat: no-repeat;
+}
+
+fieldset input.button {
+    color: #333333;
+    display: block;
+    margin-top: .5em;
+    padding: 3px .25em;
+}
+
+fieldset input.error {
+    border-color: #FF0000 #CC0000 #CC0000 #FF0000;
+}
+
+fieldset div.error {
+    color: #CC0000;
+    padding: 0;
+    margin: .25em 0 0 .25em;
+    text-align: left;
+}
+
+fieldset div.exclamation {
+    background-color: #FFFFFF;
+    border: 2px solid #CC0000;
+    border-radius: 1.33em;
+    color: #CC0000;
+    float: left;
+    font-size: 75%;
+    font-weight: bold;
+    height: 1.33em;
+    margin-right: 1em;
+    -moz-border-radius: 1.33em;
+    text-align: center;
+    width: 1.33em;
+}
+
+/* error message style, copied from main.gsp */
+
+ul.messages {
+    border-style: dashed;
+    border-width: 1px;
+    display: block;
+    font: 12px Arial, sans-serif;
+    margin-bottom: 10px;
+    padding: 5px 5px 5px 30px;
+    text-align: left;
+}
+
+.messages.error {
+    border-color: #A6650A;
+    background-color: #FFD9A3;
+    color: #A6650A;
+}

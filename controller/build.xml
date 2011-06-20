@@ -244,10 +244,12 @@
     <minify in="${war.staging.dir}/resources/app/js/app-history.js" out="${war.staging.dir}/resources/app/js/app-history-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-pbx.js" out="${war.staging.dir}/resources/app/js/app-pbx-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-profile.js" out="${war.staging.dir}/resources/app/js/app-profile-min.js"/>
-    <minify in="${war.staging.dir}/resources/app/js/app-system-configuration.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-system-configuration-admin.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-admin-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-system-configuration-custodian.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-custodian-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-subscribers.js" out="${war.staging.dir}/resources/app/js/app-subscribers-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/app-voicemail.js" out="${war.staging.dir}/resources/app/js/app-voicemail-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/listen.js" out="${war.staging.dir}/resources/app/js/listen-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/custodian.js" out="${war.staging.dir}/resources/app/js/custodian-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/server.js" out="${war.staging.dir}/resources/app/js/server-min.js"/>
     <minify in="${war.staging.dir}/resources/app/js/util.js" out="${war.staging.dir}/resources/app/js/util-min.js"/>
     
@@ -293,6 +295,21 @@
   </target>
 
 
+  <target name="deploy-grails-war" description="--> Deploys the Grails version of the application">
+    <exec executable="grails" dir="${basedir}/listen">
+      <arg value="prod executable-war"/>
+    </exec>
+
+    <mkdir dir="${deploy.dir}"/>
+    <mkdir dir="${deploy.dir}/logs"/>
+
+    <copy todir="${deploy.dir}/lib" verbose="true">
+      <fileset dir="listen/target" includes="*.war"/>
+    </copy>
+    <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts" verbose="true"/>
+  </target>
+
+
   <target name="deploy" depends="war" description="--> Deploys the application">
     <mkdir dir="${deploy.dir}"/>
     <mkdir dir="${deploy.dir}/logs"/>
@@ -307,7 +324,7 @@
   </target>
 
 
-  <target name="-rpmbuild" depends="deploy">
+  <target name="-rpmbuild" depends="deploy-grails-war">
 
     <exec executable="rpmbuild" failonerror="true">
       <env key="VERSION" value="${deploy.version}"/>
