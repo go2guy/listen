@@ -5,16 +5,18 @@
        *   @Name   data-query.vxml
        *   @Desc   Makes http requests and checks for success or failure -->
 
-    <var name="II_SB_succeed" expr="'164_24'"/>			<!-- Next file to go to if HttpRequest Works -->
-    <var name="II_SB_failed" expr="'164_8'"/>				<!-- Next file to go to if HttpRequest Fails -->
-    <var name="II_SB_dataTimeOut" expr="'3s'"/>	<!-- Specifies length of time to wait before throwing badfetch error -->
+    <var name="II_SB_succeed" expr="'290_17'"/>			<!-- Next file to go to if HttpRequest Works -->
+    <var name="II_SB_failed" expr="'290_15'"/>				<!-- Next file to go to if HttpRequest Fails -->
+    <var name="II_SB_dataTimeOut" expr="'2s'"/>	<!-- Specifies length of time to wait before throwing badfetch error -->
     <var name="II_SB_nxtOpt" expr="''"/>						<!-- Variable to hold next option -->
 	
     <form id="beginDocument">
         <block>
     	    <log target="status">Delete Artifact</log>
-            <log>INFO: Entered data-query.vxml [164_7]</log>
+            <log>INFO: Entered data-query.vxml [290_3]</log>
             <data name="fileOBJ" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="post" namelist="FILE1 OPERATION " fetchtimeout="II_SB_dataTimeOut"/>
+			<assign name="status" expr="fileOBJ.Result" />
+			<assign name="reason" expr="fileOBJ.Reason" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>

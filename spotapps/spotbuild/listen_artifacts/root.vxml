@@ -34,6 +34,11 @@
 	<var name="OPERATION" expr="'delete'" />
 	<var name="status" expr="''" />
 	<var name="nextPath" expr="'CHK_MP3'" />
+	<var name="line" expr="'line'" />
+	<var name="logText" expr="''" />
+	<var name="project" expr="'LISTEN_ARTIFACTS'" />
+	<var name="reason" expr="''" />
+	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 
 
     <!-- Conference Variables -->

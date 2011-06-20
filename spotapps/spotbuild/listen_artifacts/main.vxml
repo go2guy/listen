@@ -24,16 +24,22 @@
 	<var name="SB_UV_OPERATION"/>
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_nextPath"/>
+	<var name="SB_UV_line"/>
+	<var name="SB_UV_logText"/>
+	<var name="SB_UV_project"/>
+	<var name="SB_UV_reason"/>
+	<var name="SB_UV_exceptionLog"/>
 
     
     <form id="beginDocument">
         <block>
-	        
+	        <log target="status">Begin</log>
             <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
             <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
             <assign name="II_SB_TRANSFER" expr="II_SB_transfer"/>
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
+			<assign name="line" expr="II_SB_line" />
 			<assign name="argList" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_argList != undefined">
@@ -50,6 +56,21 @@
 			</if>
 			<if cond="SB_UV_nextPath != undefined">
 				<assign name="nextPath" expr="SB_UV_nextPath" />
+			</if>
+			<if cond="SB_UV_line != undefined">
+				<assign name="line" expr="SB_UV_line" />
+			</if>
+			<if cond="SB_UV_logText != undefined">
+				<assign name="logText" expr="SB_UV_logText" />
+			</if>
+			<if cond="SB_UV_project != undefined">
+				<assign name="project" expr="SB_UV_project" />
+			</if>
+			<if cond="SB_UV_reason != undefined">
+				<assign name="reason" expr="SB_UV_reason" />
+			</if>
+			<if cond="SB_UV_exceptionLog != undefined">
+				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
