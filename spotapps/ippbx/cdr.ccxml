@@ -10,7 +10,9 @@
     <var name="DNIS"/>      <!-- DNIS. Destination ID -->
     <var name="APP_PATH"/>  <!-- App Path. Base application directory -->
     <var name="endTime"/>
+    <var name="startTime"/>
     <var name="callType"/>
+    <var name="callResult"/>
     <var name="importedValue"/>
 
     <!-- Global Vars -->
@@ -34,7 +36,7 @@
             <!-- Exit CCXML session -->
             <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'cdr'"/>
-   		    <dialogstart src="'file:'+TRANS_PATH+'writeCDR.vxml'" namelist="ANI DNIS endTime callType importedValue"/>
+   		    <dialogstart src="'file:'+TRANS_PATH+'writeCDR.vxml'" namelist="ANI DNIS startTime endTime callType callResult importedValue"/>
         </transition>
 
         <transition event="dialog.started" name="evt">

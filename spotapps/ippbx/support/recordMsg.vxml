@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 11/04/2010
+    <!-- Last Modified 05/26/2011
        *   @Name	recordMsg.vxml
        *   @Desc	This script handles all recording activities for the after
                     hours mailbox -->
@@ -22,7 +22,7 @@
 	        <log>INFO: Entered beginDocument</log>
             <if cond="listenArgs.length &gt; 0">
                 <assign name="REQUEST"  expr="'get'"/>
-                <assign name="RESOURCE" expr="'subscribers'"/>
+                <assign name="RESOURCE" expr="'getUser'"/>
                 <assign name="PARAMS" expr="setParam(aftHrsMbxName)"/>
                 <assign name="gotoForm" expr="'#chkPath'"/>
                 <goto next="#sendEvent"/>
@@ -45,12 +45,15 @@
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <if cond="status == 'Failure'">
+                <assign name="logText" expr="'recordMsg.vxml: sendEvent returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+']  at ['+cntrlURL+'] using ['+params+'].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
                 <assign name="reason" expr="getInfo(apiObj.Reason)" />
                 <if cond="reason == 'CNTRL_DOWN'">
                     <log>ERROR: Unable to connect with controller</log>
                     <assign name="errID" expr="cntrlErrID"/>
                     <goto next="#serviceError"/>
-                <elseif cond="RESOURCE == 'subscribers'"/>
+                <elseif cond="RESOURCE == 'getUser'"/>
                     <log>INFO: No information about after hrs mbx on controller</log>
                     <assign name="msgPath" expr="altDir"/>
                     <goto next="#recMsg"/>
@@ -58,7 +61,7 @@
                     <goto next="#exit"/>
                 </if>
             <else/>
-                <if cond="RESOURCE == 'subscribers'">
+                <if cond="RESOURCE == 'getUser'">
                     <assign name="subID" expr="getID(result)" />
                     <goto next="#chkPath"/>
                 <else/>
@@ -104,8 +107,11 @@
 		</block>
         <error>
             <log target="status">Record Error</log>
-            <log>Error: [<value expr='_event'/>]</log>
+            <log>Error: [<value expr="_event"/>]</log>
             <assign name="errID" expr="recErrID"/>
+            <assign name="logText" expr="'recordMsg.vxml: Attempt to record after hours support message failed. Reason [' + _event + '].'"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
             <if cond="listenArgs.length &gt; 0">
                 <goto next="#serviceError"/>
             <else/>

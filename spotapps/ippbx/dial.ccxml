@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 05/19/2011
+    <!-- Last Modified 06/15/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -20,7 +20,6 @@
     <var name="importedValue"/>     <!-- Imported Value. Values passed in from Listen application -->
     <var name="origDNIS"/>          <!-- Stores the original DNIS in a forwarded scenario -->
 
-
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>       <!-- State. Used to track which state a transition is in -->
     <var name="dialogID" expr="''"/>        <!-- Dialog ID. Stores value of last VXML dialog that was started -->
@@ -32,7 +31,6 @@
     <var name="II_SB_promptID" expr="''"/>
     <var name="clientFlag" expr="''"/>
     <var name="record" expr="''"/>
-    <var name="officeOptr" expr="'101'"/>   <!-- Operator's extension -->
     <var name="moveRequestSID" expr="''"/>  <!-- Session ID involved in an attended transfer -->
     <var name="xferConnID" expr="''"/>
     <var name="xferSID" expr="''"/>
@@ -43,6 +41,9 @@
     <var name="code" expr="''"/>
     <var name="isFwd" expr="'false'"/>
     <var name="newSID" expr="''"/>
+    <var name="LINE_NUMBER" expr="''"/>
+    <var name="startTime" expr="getTimeStamp(3)"/>
+    <var name="endTime" expr="'0'"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -50,6 +51,7 @@
     <var name="TEN_DIGITS" expr="10"/>      <!-- Number of digits for an outbound call -->
     <var name="OUT_BOUND_ID" expr="'14024768786'"/>         <!-- Caller ID used for outbound calls -->
     <var name="OUTSIDE_LINE" expr="'9'"/>
+    <var name="callResult" expr="'Call Failed'"/>
 
     <!-- Dial Errors -->
     <var name="ERR_BUSY" expr="'486,600'"/>     <!-- Dialed destination return a busy response -->
@@ -103,12 +105,9 @@
             <log>INFO: Origination [<value expr="ANI"/>]</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
             <log>INFO: Inbound connection ID [<value expr="ibconnid"/>]</log>
-            <if cond="tmpDNIS == '0'">
-                <!-- If caller dialed zero, we'll call the operator's extension -->
-                <assign name="tmpDNIS" expr="officeOptr"/>
-            </if>
             <log>INFO: DNIS [<value expr="tmpDNIS"/>]</log>
             <log>INFO: Orig DNIS [<value expr="origDNIS"/>]</log>
+            <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
             <send data="'dialog.user.chkRedial'" target="session.id"/>
         </transition>
 
@@ -136,11 +135,10 @@
                 <send data="'dialog.user.chkCallType'" target="session.id"/>
             <else/>
                 <log>ERROR: Unable to dial [<value expr="DNIS"/>]</log>
-                <assign name="state" expr="'endCall'"/>
-                <!-- Remove the caller's record in the db -->
-                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
-                <assign name="clientFlag" expr="'delete'"/>
-                <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+                <assign name="state" expr="'errorEnd'"/>
+                <var name="logText" expr="'dial.ccxml: Unable to find access number for ['+ DNIS + ']. Caller ext['+ tmpANI +'] was attempting to dial this party'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
             </if>
         </transition>
 
@@ -167,8 +165,8 @@
                     <if cond="importedValue.length &gt; 0">
                         <assign name="state" expr="'chkFwd'"/>
                         <var name="accessNum" expr="tmpDNIS"/>
-                        <var name="whichRsrc" expr="'findMeNumbers'"/>
-       	   		        <dialogstart src="'file:'+TRANS_PATH+'chkForward.vxml'" namelist="importedValue whichRsrc accessNum"/>
+                        <var name="whichRsrc" expr="'dial'"/>
+       	   		        <dialogstart src="'file:'+TRANS_PATH+'chkPhoneConfig.vxml'" namelist="importedValue whichRsrc accessNum"/>
                     <else/>
                         <send data="'dialog.user.getCallerID'" target="session.id"/>
                     </if>
@@ -253,7 +251,7 @@
                 </if>
                 <var name="accessNum" expr="tmpANI"/>
                 <var name="whichRsrc" expr="'canDial'"/>
-       	   		<dialogstart src="'file:'+TRANS_PATH+'chkForward.vxml'" namelist="importedValue whichRsrc accessNum destination"/>
+       	   		<dialogstart src="'file:'+TRANS_PATH+'chkPhoneConfig.vxml'" namelist="importedValue whichRsrc accessNum destination"/>
             <else/>
                 <send data="'dialog.user.call'" target="session.id"/>
             </if>
@@ -270,7 +268,7 @@
                 <log>INFO: [<value expr="ANI"/>] not permitted to dial [<value expr="tmpDNIS"/>]</log>
                 <assign name="state" expr="'error'"/>
                 <var name="logText" expr="'dial.ccxml: Caller [ext'+ tmpANI +'] attempted to dial blacklisted destination ['+ tmpDNIS + ']'"/>
-                <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
                 <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
             </if>
         </transition>
@@ -320,7 +318,7 @@
             <else/>
                 <assign name="state" expr="'hangUp'"/>
                 <var name="logText" expr="'dial.ccxml: Invalid outdial attempt. Caller [ext'+ tmpANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
-                <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
                 <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
             </if>
         </transition>
@@ -397,6 +395,7 @@
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <log>INFO: Call in progress...</log>
             <log target="status">Call in progress</log>
+            <assign name="callResult" expr="'Call Answered'"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to update a record into the db -->
     		    <assign name="state" expr="'updateClient'"/>
                 <var name="flag" expr="'update'"/>
@@ -688,10 +687,8 @@
             <!-- Our join attempt failed -->
             <log>ERROR: Entered [error.conference.join] with state [<value expr="state"/>]</log>
             <!-- TODO: How do we handle this? Allow a retry? Play a prompt and end? -->
-            <assign name="state" expr="'hangUp'"/>
-            <var name="logText" expr="'dial.ccxml: Error while attmpting to join caller ['+ tmpANI +'] to destination ['+ tmpDNIS + ']. Reason ['+ evt.reason +']'"/>
-            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
-            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+            <assign name="state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
 		</transition>
 
         <transition event="connection.failed" name="evt">
@@ -701,6 +698,7 @@
             <assign name="dialFailReason" expr="evt.reason"/>
             <if cond="((dialFailReason == 'DIALTIMEOUT') || (dialFailReason == REQUEST_TIMEOUT))"> <!-- Reached max ring time -->
                 <log target="status">Call not answered</log>
+                <assign name="callResult" expr="'No Answer'"/>
                 <assign name="state" expr="'noAns'"/>
                 <send data="'dialog.user.terminate'" target="session.id"/> <!-- Stop ringing tone on caller side -->
             <elseif cond="ringToneID.length &gt; 0"/>
@@ -711,6 +709,7 @@
                 <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
             <elseif cond="inString(dialFailReason,ERR_BUSY,',')"/> <!-- Destination was busy -->
                 <log target="status">Destination busy</log>
+                <assign name="callResult" expr="'Destination Busy'"/>
                 <assign name="state" expr="'busy'"/>
                 <send data="'dialog.user.terminate'" target="session.id"/> <!-- Stop ringing tone on caller side -->
             <else/>
@@ -723,7 +722,7 @@
         <transition state="writeBusyLog callFailedLog noRingToneFail" event="dialog.user.writeCallFailedLog" name="evt">
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <var name="logText" expr="'dial.ccxml: Call failed. Caller ['+ tmpANI +'] attempting to reach destination ['+ tmpDNIS + ']. Reason ['+ errorCode(dialFailReason) +']'"/>
-            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
             <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
 
@@ -806,6 +805,9 @@
             <!-- Here we'll pass control to the begin ccxml script of the appropriate Listen project -->
             <log>INFO: Entered [dialog.user.listenApp] with state [<value expr="state"/>]</log>
             <if cond="importedValue.length &gt; 0"> <!-- Send call to voicemail app (if controller is up) -->
+	        <var  name="cntrlURL" expr="getJsonVal(importedValue,'cntrlURL')"/>
+	        <assign  name="cntrlURL" expr="changeSuffix(cntrlURL,'/','api')"/>
+        	<assign name="importedValue" expr="extendJsonObject(importedValue, 'cntrlURL', cntrlURL)"/>
                 <if cond="LISTEN_APP == 'listen_voicemail'">
                     <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0) &amp;&amp; (isFwd == 'true'))">
                     <!-- If we're dealing with an extension that was forwarded, we need to use the original
@@ -814,7 +816,6 @@
                     </if>
                 </if>            
                 <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
-                <assign name="importedValue" expr="extendJsonObject(importedValue, 'application', 'ippbx')"/>
                 <var name="II_SB_status" expr="''"/>
                 <var name="II_SB_local" expr="DNIS"/>
                 <var name="II_SB_remote" expr="ANI"/>
@@ -824,7 +825,7 @@
                 <var name="II_SB_type" expr="''"/>
                 <var name="II_SB_ibcallid" expr="ibconnid"/>
                 <var name="II_SB_transfer" expr="'yes'"/>
-                <var name="II_SB_projectSource" expr="'ippbx'"/>
+                <var name="II_SB_projectSource" expr="'attendant'"/>
                 <var name="II_SB_obcallid" expr="''"/>
                 <var name="II_SB_CODE_DIR" expr="''"/>
                 <var name="II_SB_line" expr="''"/>
@@ -856,20 +857,13 @@
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
             <else/>
                 <log target="status">Unknown EXT [<value expr="tmpDNIS"/>]</log>
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'1851'+'.00'+'.wav'"/>
                 <if cond="tmpANI.length &lt; EXT_LENGTH">
                     <!-- Assume this is from inside IP PBX. Notify caller that extension doesn't exist -->
                     <assign name="state" expr="'invalidExt'"/>
-                    <assign name="II_SB_promptID" expr="AUDIO_PATH+'1851'+'.00'+'.wav'"/>
                 <else/>
-                    <!-- Assume this is from outside PBX. If office is closed, send caller to after hrs.
-                    Else, ask caller to hold for operator -->
-                    <if cond="isClosed == 'y'">
-                        <assign name="state" expr="'afterHrs'"/>
-                        <assign name="II_SB_promptID" expr="AUDIO_PATH+'1851'+'.00'+'.wav'"/>
-                    <else/>
-                        <assign name="state" expr="'operator'"/>
-                        <assign name="II_SB_promptID" expr="AUDIO_PATH+'1850'+'.00'+'.wav'"/>
-                    </if>
+                    <!-- Assume this is from outside PBX. After playing prompt, return to Auto Attendant application -->
+                    <assign name="state" expr="'attendant'"/>
                 </if>
                 <var name="II_SB_repeat" expr="'n'"/>
                 <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
@@ -886,25 +880,19 @@
             <send data="'dialog.user.deleteRecord'" target="session.id"/>
         </transition>
 
-        <transition state="operator" event="dialog.exit" name="evt">
-            <!-- Caller is holding for operator, Set variables and attempt to call operator's extension -->
+        <transition state="attendant" event="dialog.exit" name="evt">
+            <!-- Return caller to Auto Attendant application -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <assign name="tmpDNIS" expr="officeOptr"/>
-            <send data="'dialog.user.call'" target="session.id"/>
-        </transition>
-
-        <transition state="afterHrs" event="dialog.exit" name="evt">
-            <!-- Go to after hrs -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <dialogstart src="'file:'+SUP_PATH+'afterHrsMain.vxml'" namelist="setForm"/>
+            <assign name="LISTEN_APP" expr="'listen_autoAttendant'"/>
+            <send data="'dialog.user.createccxml'" target="session.id"/>
         </transition>
 
         <transition state="storeInfo dialing monitor" event="connection.disconnected" name="evt">
             <!-- We've detected a hang up while dialing the destination number -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
+            <var name="endTime" expr="getTimeStamp(3)"/>
             <if cond="inVXML == 'y'">   <!-- This should be true -->
                 <assign name="state" expr="'hangUp'"/>
                 <send data="'dialog.user.terminate'" target="session.id"/> <!-- Stop ringing tone on caller side -->
@@ -968,11 +956,10 @@
             <!-- Use catch all error for now -->
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
-            <!-- TODO: Write an error log file and notify someone? -->
             <!-- Remove the caller's record in the db prior to exiting -->
             <assign name="state" expr="'errorEnd'"/>
             <var name="logText" expr="'dial.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
-            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
             <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
 
@@ -980,9 +967,8 @@
             <!-- Create new ccxml session -->
             <log>INFO: Entered [dialog.user.createccxml] with state [<value expr="state"/>]</log>
 		    <assign name="state" expr="'createCCXML'"/>
-            <var name="endTime" expr="getTimeStamp(3)"/>
             <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
-            <createccxml sessionid="newSID" next="'file:'+APP_PATH+'cdr.ccxml'" namelist="APP_PATH DNIS ANI endTime callType importedValue"/>
+            <createccxml sessionid="newSID" next="'file:'+APP_PATH+'cdr.ccxml'" namelist="APP_PATH DNIS ANI startTime endTime callType callResult importedValue"/>
         </transition>
 
 		<!-- Catch ccxml.created event -->
@@ -1003,7 +989,7 @@
             <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
             <var name="endTime" expr="getTimeStamp(3)"/>
             <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
-            <fetch next="'file:'+APP_PATH+'cdr.ccxml'" namelist="APP_PATH DNIS ANI endTime callType importedValue"/>
+            <fetch next="'file:'+APP_PATH+'cdr.ccxml'" namelist="APP_PATH DNIS ANI startTime endTime callType callResult importedValue"/>
         </transition>
 
 	</eventprocessor>

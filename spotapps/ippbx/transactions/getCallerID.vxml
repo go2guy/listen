@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 03/14/2011
+    <!-- Last Modified 06/07/2011
        *   @Name	getCallerID.vxml
        *   @Desc	This script checks the name of the party attempting
                     a pbx or voip call -->
@@ -27,7 +27,7 @@
     <form id="getAccessInfo">
         <block>
             <log>INFO: Entered getAccessInfo</log>
-            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="resource" expr="'listPhoneNumbers'"/>
             <assign name="params" expr="setAccessParams(tmpANI, flag)"/>
             <assign name="gotoForm" expr="'#chkSubObj'"/>
             <goto next="#sendEvent"/>
@@ -37,7 +37,7 @@
     <form id="getSubscriberInfo">
         <block>
             <log>INFO: Entered getSubscriberInfo</log>
-            <assign name="resource" expr="'subscribers'"/>
+            <assign name="resource" expr="'getUser'"/>
             <assign name="params" expr="getSubInfo(DNIS)"/>
             <assign name="gotoForm" expr="'#getAccessID'"/>
             <goto next="#sendEvent"/>
@@ -51,6 +51,9 @@
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <if cond="status == 'Failure'">
+                <assign name="logText" expr="'getCallerID.vxml: sendEvent returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+']  at ['+cntrlURL+'] using ['+params+']. ANI ['+ tmpANI +'] DNIS ['+ getnum(DNIS) + '].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
                 <assign name="reason" expr="getInfo(apiObj.Reason)" />
                 <if cond="reason == 'CNTRL_DOWN'">
                     <log>ERROR: Unable to connect with controller</log>
@@ -74,8 +77,9 @@
             <if cond="tmpVal == 1">
                 <assign name="request"  expr="'get'"/>
                 <assign name="gotoForm" expr="'#getName'"/>
-                <assign name="resource" expr="'subscribers/'"/>
-                <assign name="params" expr="getSubID(result)"/>
+                <assign name="resource" expr="'getUser/'"/>
+                <assign name="params" expr="getResultsKeyValue(result, 0, 'href')"/>
+                <assign name="params" expr="getNextElement('L',params, '/')"/>
                 <goto next="#sendEvent"/>
             <else/>
                 <assign name="result" expr="''"/>
@@ -104,7 +108,7 @@
             <if cond="tmpVal.length &gt; 0">
                 <assign name="flag" expr="'accessID'"/>
                 <assign name="gotoForm" expr="'#getNumber'"/>
-                <assign name="resource" expr="'accessNumbers'"/>
+                <assign name="resource" expr="'listPhoneNumbers'"/>
                 <assign name="params" expr="setAccessParams(tmpVal, flag)"/>
                 <goto next="#sendEvent"/>
             <else/>
@@ -155,12 +159,6 @@
 
     <script>
         <![CDATA[
-            function getSubID(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                var result = tmpVal.results[0].subscriber.href.split('/');
-                return result[2];
-            }
-
             function getSubInfo(dnis) {
                 var subName = dnis.split('@')[0].split('sip:')[1];
                  return "?_fields=subscriber&realName="+escape(subName);

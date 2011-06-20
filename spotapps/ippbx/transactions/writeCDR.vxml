@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 03/03/2011
+    <!-- Last Modified 05/31/2011
        *   @Name	writeCDR.vxml
        *   @Desc	This script is part of the logic for writing CDRs
                     to the web controller -->
 
     <var name="ANI"/>
     <var name="DNIS"/>
+    <var name="startTime"/>
     <var name="endTime"/>
     <var name="callType"/>
     <var name="importedValue"/>
-    <var name="getDNISInfo" expr="'n'"/>
-    <var name="callDirection" expr="''"/>
+    <var name="callResult"/>
+    <var name="organization" expr="''"/>
 
 	<form id="beginDocument">
 		<block>
@@ -19,44 +20,11 @@
             <assign name="listenArgs" expr="importedValue"/>
             <assign name="ANI" expr="getnum(ANI)"/>
             <assign name="DNIS" expr="getnum(DNIS)"/>
-            <goto next="#setAccessID"/>
-        </block>
-    </form>
-
-    <form id="setAccessID">
-        <block cond="callType == 'extension'">
-            <log>INFO: Entered setAccessID</log>
-            <assign name="EXT_LENGTH" expr="getJsonVal(listenArgs, 'EXT_LENGTH')"/>
-            <if cond="ANI &lt; EXT_LENGTH">
-                <log>INFO: Call originated from another pbx extension</log>
-                <!-- Assume call originated from inside pbx. Attempt to locate subscriber ID of caller and called party -->
-                <assign name="callDirection" expr="'OUTBOUND'"/>
-                <assign name="params" expr="setAccess(ANI)"/>
-                <assign name="getDNISInfo" expr="'y'"/>
-            <else/>
-                <log>INFO: Call originated from outside pbx</log>
-                <!-- Assume call originated from outside pbx. Attempt to locate subscriber ID of called party -->
-                <assign name="callDirection" expr="'INBOUND'"/>
-                <assign name="params" expr="setAccess(DNIS)"/>
-            </if>
-            <goto next="#getAccessNum"/>
-        </block>
-        <block cond="callType != 'extension'"> <!-- CallType is either 'external' or 'page' -->
-            <log>INFO: Entered setAccessID</log>
-            <!-- This call was either a page or external call. Attempt to locate subscriber ID of caller -->
-            <assign name="callDirection" expr="'OUTBOUND'"/>
-            <assign name="params" expr="setAccess(ANI)"/>
-            <goto next="#getAccessNum"/>
-        </block>
-    </form>
-
-    <form id="getAccessNum">
-        <block>
-            <log>INFO: Entered getAccessNum</log>
-            <log>INFO: Get Access Number for [<value expr="getNumber(params)"/>]</log>
-            <assign name="resource" expr="'accessNumbers'"/>
-            <assign name="request"  expr="'get'"/>
+            <assign name="request"  expr="'post'"/>
+            <assign name="resource" expr="'addCallHistory'"/>
             <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
+            <assign name="organization" expr="getJsonVal(listenArgs, 'organization')"/>
+            <assign name="params" expr="setParams(startTime, endTime, listenArgs, callType, ANI, DNIS, callResult,organization)"/>
             <goto next="#sendEvent"/>
         </block>
     </form>
@@ -68,41 +36,16 @@
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <if cond="status == 'Failure'">
+                <assign name="logText" expr="'writeCDR.vxml: sendEvent returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+']  at ['+cntrlURL+'] using ['+params+']. ANI ['+ ANI +'] DNIS ['+ DNIS + '].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
                 <assign name="reason" expr="getInfo(apiObj.Reason)" />
                 <if cond="reason == 'CNTRL_DOWN'">
                     <log>ERROR: Unable to connect with controller</log>
                     <goto next="#serviceError"/>
-                <elseif cond="resource == 'accessNumbers'"/>
-                    <log>INFO: No information on controller</log>
-                     <goto next="#setParams"/>
-                <else/>
-                    <assign name="status" expr="'Failure'"/>
-                    <goto next="#exit"/>
-                </if>
-            <elseif cond="resource == 'accessNumbers'"/>
-                <goto next="#setParams"/>
-            <else/>
-                <if cond="getDNISInfo == 'y'">
-                    <assign name="callDirection" expr="'INBOUND'"/>
-                    <assign name="params" expr="setAccess(DNIS)"/>
-                    <assign name="getDNISInfo" expr="'n'"/>
-                    <goto next="#getAccessNum"/>
-                <else/>
-                    <goto next="#exit"/>
                 </if>
             </if>
-        </block>
-    </form>
-
-    <form id="setParams">
-        <!-- Set CDR Params -->
-        <block>
-            <log>INFO: Entered setParams</log>
-            <log target="status">Set Params</log>
-            <assign name="request"  expr="'post'"/>
-            <assign name="resource" expr="'CallDetailRecords'"/>
-            <assign name="params" expr="setParams(result, endTime, listenArgs, callType, callDirection, ANI, DNIS)"/>
-            <goto next="#sendEvent"/>
+            <goto next="#exit"/>
         </block>
     </form>
 
@@ -133,27 +76,13 @@
 
     <script>
         <![CDATA[
-            function setAccess(inStr) {
-                return "?_fields=subscriber&number=" + inStr;
-            }
-
-            function getNumber(inStr) {
-                return inStr.split('=')[2];
-            }
-
-            function setParams(resultsObj, endTime, listenArgs, callType, callDirection, ANI, DNIS) {
-                var index = 0;
-                var key = 'subscriber';
-                var subscriber = getResultsKeyValue(resultsObj,index,key);
-                if (subscriber.length != 0) {
-                    subscriber =  subscriber.href.split('/')[2];
+            function setParams(startTime, endTime, listenArgs, callType, ANI, DNIS, callResult, organization) {
+                var duration = endTime - startTime;
+                if(endTime == '0')
+                {
+                    duration = '0';
                 }
-                else {
-                    subscriber =  null;
-                }
-                var sysAccessTime = getJsonVal(listenArgs, 'sysAccessTime');
-                var duration = endTime - sysAccessTime;
-                return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"subscriber\": {\"href\":\"/subscribers/"+subscriber+"\"}, \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"direction\":\""+callDirection+"\"}";
+                return "{\"date\": \""+iiDateToISO(startTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
             }
 
             function getInfo(inString) {

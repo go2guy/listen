@@ -49,15 +49,15 @@ Requires: spotbuild-vip
 # The build section is used to compile the code.
 #######################################################################
 %build
-    cd ../spotbuild/rhinounit/
-    /usr/local/ant/bin/ant
-    if [ $? -ne 0 ]
-    then
-        echo -e "\nJava script unit tests failed!\n"
-    else
-        echo -e "\nPassed all Javascript tests\n"
-    fi
-    cd -
+#    cd ../spotbuild/rhinounit/
+#    /usr/local/ant/bin/ant
+#    if [ $? -ne 0 ]
+#    then
+#        echo -e "\nJava script unit tests failed!\n"
+#    else
+#        echo -e "\nPassed all Javascript tests\n"
+#    fi
+#    cd -
     cd ../wavconvert
     make
     if [ $? -ne 0 ]
@@ -83,6 +83,7 @@ Requires: spotbuild-vip
 
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
     cp -r %{STARTDIR}/ippbx %{buildroot}/interact/apps/spotbuild
+    cp -r %{STARTDIR}/broadcast %{buildroot}/interact/apps/spotbuild
     mv %{buildroot}/interact/apps/spotbuild/ippbx/defaultApp.cfg %{buildroot}/interact/listen/artifacts/
     cp -r %{STARTDIR}/msgLightCntrl %{buildroot}/interact/apps/spotbuild
     cp -r %{STARTDIR}/ippbx/php/* %{buildroot}/var/www/html/ippbx/
@@ -100,6 +101,7 @@ Requires: spotbuild-vip
     /interact/program/iiXMLcrypt -e "Listen Voice Mail" %{buildroot}/interact/apps/spotbuild/listen_voicemail/ %{buildroot}/interact/apps/spotbuild/listen_mailbox/ %{buildroot}/interact/apps/spotbuild/msgLightCntrl/ %{buildroot}/interact/apps/spotbuild/listen_transcription/
     /interact/program/iiXMLcrypt -e "Listen Find Me" %{buildroot}/interact/apps/spotbuild/listen_findme/ %{buildroot}/interact/apps/spotbuild/listen_findmeAdmin/
     /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/
+    /interact/program/iiXMLcrypt -e "Listen Broadcast" %{buildroot}/interact/apps/spotbuild/broadcast/
     /interact/program/iiXMLcrypt -e "Listen Attendant" %{buildroot}/interact/apps/spotbuild/listen_autoAttendant/
 
     # Add root.vxml
@@ -129,6 +131,7 @@ Requires: spotbuild-vip
     %defattr(777,interact,operator)
     /interact/apps/spotbuild/listen*
     /interact/apps/spotbuild/ippbx*
+    /interact/apps/spotbuild/broadcast*
     /interact/apps/spotbuild/msgLightCntrl*
     /interact/apps/spotbuild/lib/cgi-bin/listen
     /interact/listen/artifacts

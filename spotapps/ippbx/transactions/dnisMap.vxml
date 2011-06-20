@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/02/2010
+    <!-- Last Modified 05/26/2010
        *   @Name	dnisMap.vxml
        *   @Desc	This script checks the DNIS mapping on the controller  -->
 
@@ -9,11 +9,11 @@
         <var name="argList"/>
 		<block>
 	        <log>INFO: Entered beginDocument</log>
-            <assign name="resource" expr="'meta/'"/>
-            <assign name="params" expr="'getDnis?number=' + dnis"/>
+            <assign name="resource" expr="dnisLookup'"/>
+            <assign name="params" expr="'/getDnis?number=' + dnis"/>
             <assign name="request"  expr="'get'"/>
             <assign name="listenArgs" expr="argList"/>
-            <assign name="cntrlURL" expr="getCntrl(listenArgs)"/>
+            <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
             <goto next="#sendEvent"/>
         </block>
     </form>
@@ -25,6 +25,9 @@
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <if cond="status == 'Failure'">
+                <assign name="logText" expr="'dnisMap.vxml: sendEvent returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+']. DNIS ['+ getnum(dnis) + '].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
                 <assign name="reason" expr="getInfo(apiObj.Reason)" />
                 <if cond="reason == 'CNTRL_DOWN'">
                     <log>ERROR: Unable to connect with controller</log>
@@ -64,13 +67,6 @@
 
     <script>
         <![CDATA[
-            function getCntrl(jsonObj) {
-                var tmpVal = eval("("+jsonObj+")");
-                var result = new String(tmpVal.cntrlURL);
-                tmpVal = result.split('/api');
-                return tmpVal[0];
-            }
-
             function getInfo(inString) {
                 var result = 'CNTRL_DOWN';
                 var tmpVal = new String(inString);

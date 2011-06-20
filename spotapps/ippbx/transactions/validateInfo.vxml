@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/24/2011
+    <!-- Last Modified 05/26/2011
        *   @Name	validateInfo.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we validate the information associated with an extension -->
@@ -30,6 +30,9 @@
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <if cond="status == 'Failure'">
+                <assign name="logText" expr="'validateInfo.vxml: sendEvent returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+']  at ['+cntrlURL+'] using ['+params+'].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
                 <assign name="reason" expr="getInfo(apiObj.Reason)" />
                 <if cond="reason == 'CNTRL_DOWN'">
                     <log>ERROR: Unable to connect with controller</log>

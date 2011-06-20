@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 03/10/2011
-       *   @Name	chkForward.vxml
+    <!-- Last Modified 06/07/2011
+       *   @Name	chkPhoneConfig.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we check if an extension is forwarded -->
 
@@ -15,14 +15,14 @@
 		<block>
 	        <log>INFO: Entered beginDocument</log>
             <assign name="listenArgs" expr="importedValue"/>
-            <goto next="#getAccessNum"/>
+            <goto next="#getSubscriberID"/>
         </block>
     </form>
 
-    <form id="getAccessNum">
+    <form id="getSubscriberID">
         <block>
-            <assign name="resource" expr="'accessNumbers'"/>
-            <assign name="gotoForm" expr="'#accessInfo'"/>
+            <assign name="resource" expr="'listPhoneNumbers'"/>
+            <assign name="gotoForm" expr="'#chkSubInfo'"/>
             <assign name="request"  expr="'get'"/>
             <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
             <assign name="params" expr="setAccess(accessNum)"/>
@@ -37,6 +37,9 @@
             <assign name="status" expr="apiObj.Status" />
             <assign name="result" expr="apiObj.Result" />
             <if cond="status == 'Failure'">
+                <assign name="logText" expr="'chkPhoneConfig.vxml: sendEvent returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+']  at ['+cntrlURL+'] using ['+params+'].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
                 <assign name="reason" expr="getInfo(apiObj.Reason)" />
                 <if cond="reason == 'CNTRL_DOWN'">
                     <log>ERROR: Unable to connect with controller</log>
@@ -58,22 +61,20 @@
         </block>
     </form>
 
-    <form id="accessInfo">
+    <form id="chkSubInfo">
         <block>
-            <log>INFO: Entered accessInfo</log>
+            <log>INFO: Entered chkSubInfo</log>
             <var name="count" expr="getJsonVal(result, 'count')"/>
             <if cond="count == 1">
                 <log target="status">Get Sub Info</log>
-                <assign name="accessNumID" expr="getResultsKeyValue(result, 0, 'href')"/>
-                <assign name="accessNumID" expr="getNextElement('L',accessNumID, '/')"/>
-                <assign name="params" expr="getID(result)"/>
+                <assign name="subID" expr="getResultsKeyValue(result, 0, 'href')"/>
+                <assign name="subID" expr="getNextElement('L',subID, '/')"/>
                 <assign name="resource" expr="whichRsrc"/>
                 <if cond="resource == 'canDial'">
-                    <assign name="params" expr="setParams(params, destination, whichRsrc)"/>
+                    <assign name="params" expr="setParams(subID, destination, whichRsrc)"/>
                 <else/>
-                    <assign name="params" expr="setParams(params, accessNum, whichRsrc)"/>
+                    <assign name="params" expr="setParams(subID, accessNum, whichRsrc)"/>
                 </if>
-                <assign name="cntrlURL" expr="setCNTRL(listenArgs)"/>
                 <assign name="gotoForm" expr="'#chkResult'"/>
                 <goto next="#sendEvent"/>
             <else/>
@@ -85,9 +86,9 @@
 
     <form id="chkResult">
         <!-- Check Results -->
-        <block cond="resource == 'findMeNumbers'">
+        <block cond="resource == 'dial'">
             <log>INFO: Entered chkResult</log>
-            <assign name="result" expr="findMeResult(result)"/>
+            <assign name="result" expr="dialResult(result)"/>
             <goto next="#exit"/>
         </block>
         <block cond="resource == 'canDial'">
@@ -129,33 +130,18 @@
             }
 
             function setParams(inStr, ext, resource) {
-                if (resource == 'findMeNumbers')
+                if (resource == 'dial')
                     return "?subscriber=/subscribers/" + inStr + "&destination=" + ext + '&includeDisabled=false';
                 else
                     return "?subscriber=/subscribers/" + inStr + "&destination=" + ext;
             }
 
-            function setCNTRL(inStr) {
-                var result = getJsonVal(inStr, 'cntrlURL').split('/api');
-                return result[0] + "/meta";
-            }
-
-            function getID(jsonObj) {
+            function dialResult(jsonObj) {
                 var result = eval("("+jsonObj+")");
-                var subscriber = result.results[0].subscriber.href;
-                subscriber = getNextElement('L',subscriber,'/');
-                return subscriber;
-            }
-
-            function findMeResult(jsonObj) {
-                var result = eval("("+jsonObj+")");
-                if (result.length == 1) {
-        			var tmp = new String(result[0][0].href);
-		        	if (tmp.split('/')[2] == 'null') {
-				        return result[0][0].number;
-        			}
-		        }
-                return 'listen_findMe';
+                if ((result.length == 1) && (result[0].length == 1))
+                    return result[0][0].number;
+                else
+                    return 'listen_findMe';
             }
 
             function blkListResult(jsonObj) {

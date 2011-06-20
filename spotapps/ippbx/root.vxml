@@ -38,6 +38,8 @@
     <var name="fwdFlag" expr="''"/>
     <var name="fwdCode" expr="''"/>
     <var name="firstAccessChk" expr="'false'"/>
+    <var name="logText" expr="''"/>
+    <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
 
     <!-- Controller vars -->
     <var name="cntrlURL" expr="''"/>

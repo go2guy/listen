@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 01/19/2011
+    <!-- Last Modified 05/26/2011
        *   @Name	blindTransfer.ccxml
        *   @Desc	This script handles the logic for doing a blind call transfer -->
 
@@ -27,6 +27,7 @@
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
     <var name="blindXferID" expr="''"/> <!-- Blind Tranfer ID. ID involved in a blind transfer -->
+    <var name="LINE_NUMBER" expr="''"/>
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
 
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
@@ -36,6 +37,7 @@
             <assign name="state" expr="'loaded'"/>
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <log target="status">Blind transfer signal</log>
+            <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
             <send data="'dialog.user.blindTransfer'" target="session.id"/>
         </transition>
 
@@ -133,8 +135,16 @@
             <!-- Use catch all error for now -->
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <assign name="state" expr="'errorEnd'"/>
+            <var name="logText" expr="'blindTransfer.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+        </transition>
+
+        <transition state="errorEnd" event="dialog.exit" name="evt">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
             <!-- Remove user's info from db b/4 exiting -->
-            <!-- TODO: Write an error log file and notify someone? -->
     	    <assign name="state" expr="'endCall'"/>
             <assign name="record" expr="ibconnid + '|' + tmpANI"/>
             <send data="'dialog.user.updateClientRecord'" target="session.id"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 11/29/2010
+    <!-- Last Modified 06/09/2011
        *   @Name   begin.ccxml
        *   @Desc   This ccxml script acts as a transition between the Listen project and
                    the ippbx project. Here, we collect values exported from Listen
@@ -33,18 +33,24 @@
 
         <transition state="idle" event="ccxml.loaded" name="loadEv">
             <!-- This transition contains the first event encountered when this file is loaded.
-                 In here we the appropriate variables for ippbx and transition to that application -->
+                 In here we configure the appropriate variables for ippbx and transition
+                 to that application -->
             <log>INFO: Entered begin.ccxml</log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="state"/>]</log>
             <var name="local" expr="II_SB_local"/>
             <var name="remote" expr="II_SB_remote"/>
             <var name="connectionid" expr="II_SB_ibcallid"/>
             <var name="importedValue" expr="II_SB_importedValue"/>
+            <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','spotApi')"/>
+            <assign name="importedValue" expr="extendJsonObject(importedValue, 'cntrlURL', cntrlURL)"/>
             <var name="application" expr="getJsonVal(importedValue, 'application')"/>
-            <if cond="application == 'voicemail'">
+            <if cond="application == 'listen_voicemail'">
                 <assign name="projectSource" expr="'VOICEMAIL'"/>
-            <elseif cond="application == 'mailbox'"/>
+            <elseif cond="application == 'listen_mailbox'"/>
                 <assign name="projectSource" expr="'MAILBOX'"/>
+            <elseif cond="application == 'listen_autoAttendant'"/>
+                <assign name="projectSource" expr="'ATTENDANT'"/>
             <else/>
                 <assign name="projectSource" expr="'LISTEN'"/>
             </if>

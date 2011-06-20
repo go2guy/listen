@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 01/25/2011
+    <!-- Last Modified 06/09/2011
        *   @Name	processInfo.vxml
        *   @Desc	This script is part of the logic for forwarding / cancelling
                     a forwarded extension. -->
@@ -12,9 +12,9 @@
         number ID from the web controller -->
         <block>
             <log>INFO: Entered accessNum</log>
-            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="resource" expr="'lookupAccessNumber'"/>
             <assign name="request" expr="'get'"/>
-            <assign name="params"  expr="setAccess(extension)"/>
+            <assign name="params"  expr="setAccess(extension, listenArgs)"/>
             <goto next="#validateInfo"/>
         </block>
     </form>
@@ -23,7 +23,7 @@
         <!-- Set up variable for getting to the subscriber resource -->
         <block>
             <log>INFO: Entered passCode</log>
-            <assign name="resource" expr="'subscribers/'"/>
+            <assign name="resource" expr="'getUser/'"/>
             <goto next="#validateInfo"/>
         </block>
     </form>
@@ -32,7 +32,7 @@
         <!-- Set up variables for updating the access number resource -->
         <block>
             <log>INFO: Entered forward</log>
-            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="resource" expr="'updatePhoneNumber'"/>
             <assign name="request" expr="'put'"/>
             <assign name="params"  expr="setFwd(destination)"/>
             <goto next="#validateInfo"/>
@@ -73,7 +73,7 @@
 
     <form id="chkResult">
         <!-- Check Results -->
-        <block cond="resource == 'accessNumbers'">
+        <block cond="(resource == 'lookupAccessNumber') || (resource == 'updatePhoneNumber')">
             <log>INFO: Entered chkResult</log>
             <var name="count" expr="getJsonVal(result, 'count')"/>
             <if cond="count == 1">
@@ -81,10 +81,11 @@
                 <assign name="accessNumID" expr="getNextElement('L',accessNumID, '/')"/>
                 <assign name="params" expr="getID(result)"/>
                 <assign name="subID" expr="params"/>
+                <assign name="params" expr="subID"/>
                 <if cond="status == 'mailBox'">
                     <if cond="fwdFlag == 'CANCEL_FWD'">
                         <assign name="status" expr="'endCall'"/>
-                        <assign name="destination" expr="'&quot;&quot;'"/>
+                        <assign name="destination" expr="''"/>
                         <goto next="#forward"/>
                     <else/>
                         <goto expr="'file:'+FWD_PATH+'getCallerInfo.vxml#getPasscode'"/>
@@ -98,7 +99,7 @@
                 <goto next="#error"/>
             </if>
         </block>
-        <block cond="resource == 'subscribers/'">
+        <block cond="resource == 'getUser/'">
             <log>INFO: Entered chkResult</log>
             <var name="pin" expr="getJsonVal(result, 'voicemailPin')"/>
             <if cond="pin == passcode">
@@ -180,15 +181,8 @@
 
     <script>
         <![CDATA[
-            function setAccess(inStr) {
-                return "?_fields=subscriber&number=" + inStr;
-            }
-
-            function setFwd(inStr) {
-                if (inString('.',inStr,''))
-                    return "{\"forwardedTo\":\"" + inStr +"\"}";
-                else
-                    return "{\"forwardedTo\":" + inStr +"}";
+            function setAccess(inStr, listenArgs) {
+                return "?number=" + inStr + "&organization=" + getJsonVal(listenArgs, 'organization');
             }
 
             function getID(jsonObj) {
@@ -196,6 +190,10 @@
                 var subscriber = result.results[0].subscriber.href;
                 subscriber = getNextElement('L',subscriber,'/');
                 return subscriber;
+            }
+
+            function setFwd(inStr) {
+                return "{\"forwardedTo\":\"" + inStr +"\"}";
             }
         ]]>
     </script>

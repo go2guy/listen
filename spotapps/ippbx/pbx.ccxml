@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 02/02/2011
+    <!-- Last Modified 05/26/2011
        *   @Name	pbx.ccxml
        *   @Desc	This script handles all the control logic for the PBX application -->
 
@@ -25,6 +25,7 @@
     <var name="extension" expr="''"/>   <!-- Extension. Stores value of PBX extension -->
     <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
     <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
+    <var name="LINE_NUMBER" expr="''"/>
 
     <!-- Location of Java script file -->
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>
@@ -40,6 +41,7 @@
             <log>INFO: APP Path [<value expr="APP_PATH"/>]</log>
             <log>INFO: Origination [<value expr="ANI"/>]</log>
             <log>INFO: Route [<value expr="route"/>]</log>
+            <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
             <send data="route" target="session.id"/>    <!-- The "route" variable is set in the ippbx_main.ccxml script -->
         </transition>
 
@@ -170,10 +172,8 @@
             <!-- Use catch all error for now -->
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
-            <!-- TODO: Write an error log file and notify someone? -->
-            <!-- Reset user's status in db b/4 exiting -->
             <var name="logText" expr="'pbx.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
-            <assign name="logText" expr="writeLog('IPPBX','N/A',logText)"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
             <assign name="state" expr="'hangUp'"/>
             <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
