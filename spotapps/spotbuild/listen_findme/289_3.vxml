@@ -5,18 +5,21 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'214_29'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'289_10'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">resource</log>
-            <log>INFO: Entered assign-variable.vxml [214_9]</log>
-            <log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'getAccessNumber'+''" />
-<log>INFO: Updated value [<value expr="resource"/>]</log>
-<log>INFO: Current value [<value expr="request"/>]</log>
-<assign name="request" expr="'get'+''" />
+	    <log target="status">Setting Variables</log>
+            <log>INFO: Entered assign-variable.vxml [289_3]</log>
+            <log>INFO: Current value [<value expr="request"/>]</log>
+<assign name="request" expr="'post'+''" />
 <log>INFO: Updated value [<value expr="request"/>]</log>
+<log>INFO: Current value [<value expr="resource"/>]</log>
+<assign name="resource" expr="'callDetailRecords'+''" />
+<log>INFO: Updated value [<value expr="resource"/>]</log>
+<log>INFO: Current value [<value expr="callType"/>]</log>
+<assign name="callType" expr="'extension'+''" />
+<log>INFO: Updated value [<value expr="callType"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

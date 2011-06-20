@@ -68,10 +68,16 @@
 	<var name="SB_UV_appEndTime"/>
 	<var name="SB_UV_confName"/>
 	<var name="SB_UV_talkingSession"/>
-	<var name="SB_UV_exceptionLog"/>
-	<var name="SB_UV_logText"/>
-	<var name="SB_UV_line"/>
-	<var name="SB_UV_project"/>
+	<var name="SB_UV_callDirection"/>
+	<var name="SB_UV_callType"/>
+	<var name="SB_UV_organization"/>
+	<var name="SB_UV_callStartTime"/>
+	<var name="SB_UV_sipDirect"/>
+	<var name="SB_UV_FILE"/>
+	<var name="SB_UV_MODE"/>
+	<var name="SB_UV_DATA"/>
+	<var name="SB_UV_logNxtPath"/>
+	<var name="SB_UV_callResult"/>
 
     
     <form id="beginDocument">
@@ -84,7 +90,6 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
-			<assign name="line" expr="II_SB_line" />
 			<assign name="session" expr="II_SB_sessionID" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
@@ -235,17 +240,35 @@
 			<if cond="SB_UV_talkingSession != undefined">
 				<assign name="talkingSession" expr="SB_UV_talkingSession" />
 			</if>
-			<if cond="SB_UV_exceptionLog != undefined">
-				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />
+			<if cond="SB_UV_callDirection != undefined">
+				<assign name="callDirection" expr="SB_UV_callDirection" />
 			</if>
-			<if cond="SB_UV_logText != undefined">
-				<assign name="logText" expr="SB_UV_logText" />
+			<if cond="SB_UV_callType != undefined">
+				<assign name="callType" expr="SB_UV_callType" />
 			</if>
-			<if cond="SB_UV_line != undefined">
-				<assign name="line" expr="SB_UV_line" />
+			<if cond="SB_UV_organization != undefined">
+				<assign name="organization" expr="SB_UV_organization" />
 			</if>
-			<if cond="SB_UV_project != undefined">
-				<assign name="project" expr="SB_UV_project" />
+			<if cond="SB_UV_callStartTime != undefined">
+				<assign name="callStartTime" expr="SB_UV_callStartTime" />
+			</if>
+			<if cond="SB_UV_sipDirect != undefined">
+				<assign name="sipDirect" expr="SB_UV_sipDirect" />
+			</if>
+			<if cond="SB_UV_FILE != undefined">
+				<assign name="FILE" expr="SB_UV_FILE" />
+			</if>
+			<if cond="SB_UV_MODE != undefined">
+				<assign name="MODE" expr="SB_UV_MODE" />
+			</if>
+			<if cond="SB_UV_DATA != undefined">
+				<assign name="DATA" expr="SB_UV_DATA" />
+			</if>
+			<if cond="SB_UV_logNxtPath != undefined">
+				<assign name="logNxtPath" expr="SB_UV_logNxtPath" />
+			</if>
+			<if cond="SB_UV_callResult != undefined">
+				<assign name="callResult" expr="SB_UV_callResult" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

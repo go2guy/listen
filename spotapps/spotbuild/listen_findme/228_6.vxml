@@ -18,7 +18,7 @@
 <assign name="operation" expr="'increment'+''" />
 <log>INFO: Updated value [<value expr="operation"/>]</log>
 <log>INFO: Current value [<value expr="nxtPath"/>]</log>
-<assign name="nxtPath" expr="'toVoicemailTotalCall'+''" />
+<assign name="nxtPath" expr="'toCDRfailed'+''" />
 <log>INFO: Updated value [<value expr="nxtPath"/>]</log>
 <log>INFO: Current value [<value expr="value"/>]</log>
 <assign name="value" expr="'1'+''" />

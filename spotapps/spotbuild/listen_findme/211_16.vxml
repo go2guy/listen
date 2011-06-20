@@ -10,7 +10,7 @@
 
     <!-- Edge Variables -->
     <var name="II_SB_oldNxtOpt" expr="'211_101'"/>       <!-- Next option for original session -->
-    <var name="II_SB_newNxtOpt" expr="'224_15'"/>        <!-- Next option for new session -->
+    <var name="II_SB_newNxtOpt" expr="'224_103'"/>        <!-- Next option for new session -->
     <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
     <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
 
@@ -27,7 +27,7 @@
             <log>INFO: Entered create-session.vxml [211_16]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>
-                <exit namelist="phoneNumber outBoundID startSession passValues duration isLongest STATcontroller sysAccessTime confName"/>
+                <exit namelist="phoneNumber outBoundID startSession passValues duration isLongest STATcontroller sysAccessTime confName cntrlURL subID organization HTTPcontroller"/>
             <elseif cond="II_SB_action == 'nextOpt'"/>
     	    <assign name="createdSession" expr="II_SB_newSID" />
 

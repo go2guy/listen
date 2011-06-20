@@ -86,10 +86,18 @@
 			<var name="SB_UV_confName" expr="evt.values.confName"/>
 			<var name="SB_UV_startSession" expr="evt.values.startSession"/>
 			<var name="SB_UV_answeredLine" expr="evt.values.answeredLine"/>
+			<var name="SB_UV_cntrlURL" expr="evt.values.cntrlURL"/>
+			<var name="SB_UV_subID" expr="evt.values.subID"/>
+			<var name="SB_UV_organization" expr="evt.values.organization"/>
+			<var name="SB_UV_HTTPcontroller" expr="evt.values.HTTPcontroller"/>
+			<var name="SB_UV_phoneNumber" expr="evt.values.phoneNumber"/>
+			<var name="SB_UV_ANI" expr="evt.values.ANI"/>
+			<var name="SB_UV_outBoundID" expr="evt.values.outBoundID"/>
+			<var name="SB_UV_passValues" expr="evt.values.passValues"/>
         
             <assign name="II_SB_state" expr="'createSession'"/>
 	        <assign name="II_SB_status" expr="'createSession'"/>
-    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_STATcontroller SB_UV_sysAccessTime SB_UV_confName SB_UV_startSession SB_UV_answeredLine"/>
+    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_STATcontroller SB_UV_sysAccessTime SB_UV_confName SB_UV_startSession SB_UV_answeredLine SB_UV_cntrlURL SB_UV_subID SB_UV_organization SB_UV_HTTPcontroller SB_UV_phoneNumber SB_UV_ANI SB_UV_outBoundID SB_UV_passValues"/>
 	    </transition>
 
 	    <transition state="createSession" event="ccxml.created" name="evt" cond="(II_SB_whichID == II_SB_obcallid) &amp;&amp; (II_SB_obcallid.length != 0)">

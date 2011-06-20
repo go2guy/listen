@@ -78,10 +78,16 @@
 	<var name="appEndTime" expr="''" />
 	<var name="confName" expr="''" />
 	<var name="talkingSession" expr="''" />
-	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
-	<var name="logText" expr="''" />
-	<var name="line" expr="'line'" />
-	<var name="project" expr="'LISTEN_FINDME'" />
+	<var name="callDirection" expr="''" />
+	<var name="callType" expr="''" />
+	<var name="organization" expr="''" />
+	<var name="callStartTime" expr="''" />
+	<var name="sipDirect" expr="''" />
+	<var name="FILE" expr="'/interact/logs/listen-exceptionLog'" />
+	<var name="MODE" expr="'APPEND'" />
+	<var name="DATA" expr="''" />
+	<var name="logNxtPath" expr="''" />
+	<var name="callResult" expr="''" />
 
 
     <!-- Conference Variables -->
@@ -92,6 +98,7 @@
     <!-- Call to java scripts -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'lib.js'"></script>	<!-- Location of java script file -->
     <script srcexpr="'file:' + II_SB_JS_LIB + 'stringify.js'"></script>	<!-- Location of java script file -->
+    <script srcexpr="'file:' + II_SB_APP_PATH + 'listen_findme.js'"></script>	<!-- Location of java script file -->
 
     <!-- Catch hang up event. User must have hung up -->
     <catch event="connection.disconnect.hangup">

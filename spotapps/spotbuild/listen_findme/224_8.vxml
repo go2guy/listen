@@ -13,7 +13,7 @@
     <var name="II_SB_valueToPass" expr="answeredLine"/>   <!-- Config: Name of file confrence creates -->
     <var name="II_SB_eventToPass" expr="'Notify Admin'"/>
     <var name="II_SB_sessionID" expr="startSession"/>        <!-- Config: Session ID for the message to send -->
-    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'210_4'"/>
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'210_28'"/>
     <var name="II_SB_NEXT_OPTION_FAILURE" expr="'213_3'"/>
     <var name="II_SB_nextOpt" expr="'224_8'"/>
 

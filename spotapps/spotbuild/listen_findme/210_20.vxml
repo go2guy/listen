@@ -13,8 +13,8 @@
     <var name="II_SB_valueToPass" expr="''"/>   <!-- Config: Name of file confrence creates -->
     <var name="II_SB_eventToPass" expr="'Stop Call Caller'"/>
     <var name="II_SB_sessionID" expr="startSession"/>        <!-- Config: Session ID for the message to send -->
-    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'213_3'"/>
-    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'213_3'"/>
+    <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'289_37'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'289_37'"/>
     <var name="II_SB_nextOpt" expr="'210_20'"/>
 
     <var name="II_SB_returnValues" expr="''"/>

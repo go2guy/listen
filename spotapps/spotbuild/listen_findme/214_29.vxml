@@ -9,19 +9,19 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_214_29(project,line)
+            function II_SB_JS_function_214_29(passValues)
             {
-	            var logText = 'Get Info: Get Sub Info bad fetch';return writeLog(project,line,logText);
+	            return getJsonVal(passValues, 'destination');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Log</log>
+            <log target="status">Get Destination</log>
             <log>INFO: Entered run-javascript.vxml [214_29]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_214_29(project,line)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="logText" expr="II_SB_userJava" />   
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_214_29(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="accessNum" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

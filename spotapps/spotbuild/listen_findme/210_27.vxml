@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'214_30'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'210_5'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_214_37(project,line,params,returnStr)
+            function II_SB_JS_function_210_27()
             {
-	            var logText = 'Get Info: Get Sub Info status failure - passed [' + params + '] reason [' + returnStr + ']';return writeLog(project,line,logText);
+	            return (new Date().getTime());
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Log</log>
-            <log>INFO: Entered run-javascript.vxml [214_37]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_214_37(project,line,params,returnStr)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="logText" expr="II_SB_userJava" />   
+            <log target="status">Admin Call Start Time</log>
+            <log>INFO: Entered run-javascript.vxml [210_27]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_210_27()"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="callStartTime" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

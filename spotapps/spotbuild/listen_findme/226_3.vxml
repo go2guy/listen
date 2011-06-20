@@ -16,7 +16,7 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'appEndTotalTime'+',213_18|=,'+'statConnected'+',224_75|=,'+'endCallStats'+',213_26|=,'+'toVoicemail'+',228_4|=,'+'toVoicemailTotalCall'+',228_17|=,'+'externalCall'+',224_18|=,'+'internalCall'+',224_17|=,'+'dial'+',211_47|else,213_3'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_expList" expr="'=,'+'appEndTotalTime'+',213_18|=,'+'statConnected'+',224_75|=,'+'endCallStats'+',213_26|=,'+'toVoicemail'+',228_4|=,'+'toVoicemailTotalCall'+',228_17|=,'+'externalCall'+',224_18|=,'+'internalCall'+',224_17|=,'+'dial'+',211_47|=,'+'ipCall'+',224_40|else,226_28'"/>	<!-- List of expression to be evaluated -->
     <var name="II_SB_operand1" expr="nxtPath"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->

@@ -12,7 +12,7 @@
     <form id="beginDocument">
         <block>
 	    <log target="status">Write Log</log>
-            <log>INFO: Entered log.vxml [212_53]</log>
+            <log>INFO: Entered log.vxml [214_44]</log>
             <if cond="II_SB_filePath != ''">
                 <if cond="II_SB_filePath[0] != '/'"> <!-- If file path is not absolute, then write log file under project directory -->
                     <assign name="II_SB_filePath" expr="II_SB_APP_PATH + II_SB_filePath"/>

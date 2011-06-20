@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'214_34'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'214_38'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_214_7(accessNum,organization)
+            function II_SB_JS_function_214_40(project,line,params,returnStr,request,resource,cntrlURL)
             {
-	            return "?number=" + accessNum + "&organization=" + organization;
+	            var logText = 'Get Info: Get Sub Info returned Failure. Reason [' + returnStr  + ']. Attempted ['+request+'] on ['+resource+']  at ['+cntrlURL+'] using ['+params+'].';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Access Number Search</log>
-            <log>INFO: Entered run-javascript.vxml [214_7]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_214_7(accessNum,organization)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="params" expr="II_SB_userJava" />   
+            <log target="status">Set Log</log>
+            <log>INFO: Entered run-javascript.vxml [214_40]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_214_40(project,line,params,returnStr,request,resource,cntrlURL)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
