@@ -6,31 +6,39 @@
        *   @Desc	This script handles the group paging logic -->
 
     <!-- Values passed in from other ccxml -->
-    <var name="ANI"/>       <!-- ANI. Origination ID of current call -->
-    <var name="DNIS"/>      <!-- DNIS. Destination ID -->
-    <var name="APP_PATH"/>  <!-- App Path. Base application directory -->
-    <var name="ibconnid"/>  <!-- Inbound connection ID -->
-    <var name="EXT_LENGTH"/>
-    <var name="SB_PATH"/>
-    <var name="tmpANI"/>
-    <var name="tmpDNIS"/>
-    <var name="callType"/>
+    <var name="local"/>
+    <var name="remote"/>
+    <var name="connectionid"/>
     <var name="importedValue"/>
 
     <!-- Global Vars -->
-    <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
+    <var name="ANI" expr="''"/>         <!-- ANI. Origination ID of current call -->
+    <var name="DNIS" expr="''"/>         <!-- DNIS. Destination ID -->
+    <var name="tmpANI" expr="''"/>
+    <var name="tmpDNIS" expr="''"/>
+    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="LIB_PATH" expr="''"/>    <!-- Lib Path. Directory for lib files -->
-    <var name="TRANS_PATH" expr="''"/>  <!-- Transaction Path. Directory for transaction files -->
     <var name="clientCnt" expr="0"/>    <!-- Client Count. Number of sip clients registred with SPOT server -->
+    <var name="ibconnid" expr="''"/>    <!-- Inbound connection ID -->
+    <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
+    <var name="pageMaxID" expr="''"/>   <!-- Page Max ID. ID of delayed event that terminates a group page connection -->
+    <var name="phoneType" expr="''"/>
+    <var name="TRANS_PATH" expr="''"/>  <!-- Transaction Path. Directory for transaction files -->
     <var name="clientList" expr="''"/>  <!-- Client List. Comma delimited list of client names -->
     <var name="clientIndex" expr="0"/>  <!-- Client Index. Index used to loop through client list -->
-    <var name="activeList" expr="'|'"/> <!-- Active List. List of active sip clients -->
-    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
-    <var name="pageMaxID" expr="''"/>   <!-- Page Max ID. ID of delayed event that terminates a group page connection -->
-    <var name="PAGE_MAX_TIME" expr="'30s'"/>    <!-- Max number of seconds allowed for a page -->
+    <var name="activeList" expr="'|'"/>         <!-- Active List. List of active sip clients -->
     <var name="II_SB_promptID" expr="''"/>      <!-- ID/URL of audio to be played -->
-    <var name="phoneType" expr="''"/>
+    <var name="EXT_SUFFIX" expr="'@iipbx'"/>
+
+    <!-- Constants -->
+    <var name="EXT_LENGTH" expr="'4'"/>
+    <var name="callType" expr="'page'"/>
+    <var name="DND" expr="'372,323'"/>                    <!-- Do not disturb list -->
+    <var name="PAGE_MAX_TIME" expr="'30s'"/>                    <!-- Max number of seconds allowed for a page -->
+    <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>    <!-- Base directory for Spotbuild -->
+    <var name="APP_PATH" expr="SB_PATH+'ippbx/'"/>              <!-- Base directory for PBX application -->
+    <var name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>    <!-- Direcotry for transaction files -->
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
 
@@ -42,6 +50,13 @@
             <assign name="LIB_PATH" expr="SB_PATH+'lib/vxml/'"/>
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <assign name="state" expr="'loaded'"/>
+            <assign name="ibconnid" expr="connectionid"/>   <!-- Get connection id for incoming call -->
+	    	<assign name="ANI" expr="iiUnescape(remote)"/>  <!-- Get origin of incoming call -->
+	    	<assign name="DNIS" expr="iiUnescape(local)"/>  <!-- Get destination of incoming call -->
+	    	<assign name="tmpDNIS" expr="getnum(DNIS)"/>
+            <assign name="tmpANI" expr="getnum(ANI)"/>
+       	    <assign name="EXT_LENGTH" expr="getJsonVal(importedValue, 'EXT_LENGTH')"/>
+       	    <assign name="EXT_SUFFIX" expr="getJsonVal(importedValue, 'EXT_SUFFIX')"/>
             <log>INFO: APP Path [<value expr="APP_PATH"/>]</log>
             <log>INFO: Origination [<value expr="ANI"/>]</log>
             <send data="'listclients'" targettype="'x-iievent'" target="'iisip'"/>
@@ -67,13 +82,12 @@
             <log>INFO: Entered [dialog.user.call] with state [<value expr="state"/>]</log>
             <if cond="clientIndex &lt; clientCnt">  <!-- Found a client to call -->
                 <var name="dest" expr="getNextElement(clientIndex,clientList,',')"/>
-                <if cond="((dest == 'ext372') || (dest == 'ext323'))">
-                    <assign name="phoneType" expr="'poly501.'"/>
-                    <!-- NOTE: These extensions map to the conference room phones. We don't want to page them.
-                    For now, the application will skip these. -->
+                <var name="tmp" expr="getnum(dest)"/>
+                <if cond="(inString(tmp,DND,','))">
+                    <!-- NOTE: These extensions are designated as do not call. We don't want to page them. -->
                 <else/>
                     <assign name="phoneType" expr="'spa941.'"/>
-                    <createcall dest="'sip:aa.' + phoneType + dest + '@iipbx'" callerid="ANI" timeout="'1s'"/>
+                    <createcall dest="'sip:aa.' + phoneType + dest + EXT_SUFFIX" callerid="ANI" timeout="'1s'"/>
                 </if>
                 <assign name="clientIndex" expr="clientIndex + 1"/>
                 <send data="'dialog.user.call'" target="session.id"/>
