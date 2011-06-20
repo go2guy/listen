@@ -73,5 +73,5 @@
   </target>
 
 
-  <target name="hudson" depends="rpm" description="target for hudson"/>
+  <target name="hudson" depends="test-with-coverage rpm" description="target for hudson"/>
 </project>
