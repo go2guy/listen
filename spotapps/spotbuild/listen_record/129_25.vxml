@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'127_36'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'129_24'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_127_34(argList)
+            function II_SB_JS_function_129_25(project,line)
             {
-	            return getChannelInfo(argList, 'initiatingChannel')
+	            var logText = 'Update Interface: Update Conf returned bad fetch';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Chk Initiating Channel</log>
-            <log>INFO: Entered run-javascript.vxml [127_34]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_127_34(argList)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="status" expr="II_SB_userJava" />   
+            <log target="status">Set Fetch Log</log>
+            <log>INFO: Entered run-javascript.vxml [129_25]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_129_25(project,line)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

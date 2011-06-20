@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'133_61'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'167_89'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_133_5(id,hostName,recSize,recFile,recLength,recInfo)
+            function II_SB_JS_function_167_78(project,line)
             {
-	            return "{\"conference\": {\"href\": \"/conferences/"+id+"\"}, \"uri\":\"http://"+hostName+recFile+"\", \"description\":\""+recInfo+"\", \"duration\":\""+recLength+"\", \"fileSize\":\""+recSize+"\"}";
+	            var logText = 'Get SID: Get Conference Info returned bad fetch';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
-            <log>INFO: Entered run-javascript.vxml [133_5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_133_5(id,hostName,recSize,recFile,recLength,recInfo)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="params" expr="II_SB_userJava" />   
+            <log target="status">Set Fetch Log</log>
+            <log>INFO: Entered run-javascript.vxml [167_78]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_167_78(project,line)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

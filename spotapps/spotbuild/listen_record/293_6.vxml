@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'133_61'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'293_7'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_133_5(id,hostName,recSize,recFile,recLength,recInfo)
+            function II_SB_JS_function_293_6(argList)
             {
-	            return "{\"conference\": {\"href\": \"/conferences/"+id+"\"}, \"uri\":\"http://"+hostName+recFile+"\", \"description\":\""+recInfo+"\", \"duration\":\""+recLength+"\", \"fileSize\":\""+recSize+"\"}";
+	            return getChannelInfo(argList, 'initiatingChannel')
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
-            <log>INFO: Entered run-javascript.vxml [133_5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_133_5(id,hostName,recSize,recFile,recLength,recInfo)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="params" expr="II_SB_userJava" />   
+            <log target="status">Chk Initiating Channel</log>
+            <log>INFO: Entered run-javascript.vxml [293_6]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_293_6(argList)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

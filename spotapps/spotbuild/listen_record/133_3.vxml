@@ -15,7 +15,7 @@
 <assign name="request" expr="'post'+''" />
 <log>INFO: Updated value [<value expr="request"/>]</log>
 <log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'conferenceRecordings'+''" />
+<assign name="resource" expr="'addConferenceRecording'+''" />
 <log>INFO: Updated value [<value expr="resource"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
