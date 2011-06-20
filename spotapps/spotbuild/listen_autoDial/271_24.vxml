@@ -5,22 +5,22 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'243_8'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'271_17'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_243_18(argList,phoneNumber)
+            function II_SB_JS_function_271_24(argList,index)
             {
-	            var number = getNextElement(0,phoneNumber,'@');return extendJsonObject(argList,'phoneNumber',number);
+	            return saveSipDirect(argList, index);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Save phone Number</log>
-            <log>INFO: Entered run-javascript.vxml [243_18]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_243_18(argList,phoneNumber)"/>   <!-- Call Javascript funtion and store result -->
+            <log target="status">Save Sip Direct</log>
+            <log>INFO: Entered run-javascript.vxml [271_24]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_271_24(argList,index)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="argList" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

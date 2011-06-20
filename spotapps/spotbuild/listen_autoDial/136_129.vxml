@@ -5,24 +5,21 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'243_3'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'285_4'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Assign Check Filepath</log>
-            <log>INFO: Entered assign-variable.vxml [242_5]</log>
-            <log>INFO: Current value [<value expr="audioURL"/>]</log>
-<assign name="audioURL" expr="artifactsDIR+subscriber" />
-<log>INFO: Updated value [<value expr="audioURL"/>]</log>
-<log>INFO: Current value [<value expr="audioURL"/>]</log>
-<assign name="audioURL" expr="audioURL+audioURLsuf" />
-<log>INFO: Updated value [<value expr="audioURL"/>]</log>
-<log>INFO: Current value [<value expr="FILE1"/>]</log>
-<assign name="FILE1" expr="audioURL+''" />
-<log>INFO: Updated value [<value expr="FILE1"/>]</log>
-<log>INFO: Current value [<value expr="OPERATION"/>]</log>
-<assign name="OPERATION" expr="'create'+''" />
-<log>INFO: Updated value [<value expr="OPERATION"/>]</log>
+	    <log target="status">Connected Stat</log>
+            <log>INFO: Entered assign-variable.vxml [136_129]</log>
+            <log>INFO: Current value [<value expr="value"/>]</log>
+<assign name="value" expr="'1'+''" />
+<log>INFO: Updated value [<value expr="value"/>]</log>
+<log>INFO: Current value [<value expr="id"/>]</log>
+<assign name="id" expr="'LSTNAPP_0045'+''" />
+<log>INFO: Updated value [<value expr="id"/>]</log>
+<log>INFO: Current value [<value expr="nextPath"/>]</log>
+<assign name="nextPath" expr="'callConnected'+''" />
+<log>INFO: Updated value [<value expr="nextPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

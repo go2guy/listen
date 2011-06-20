@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'270_16'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'271_4'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_135_78(argList)
+            function II_SB_JS_function_271_3(argList,audioURL)
             {
-	            return getJsonVal(argList, "initiatingSubscriber");
+	            return setAudioURL(argList, audioURL);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get lstnSub</log>
-            <log>INFO: Entered run-javascript.vxml [135_78]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_135_78(argList)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="lstnSub" expr="II_SB_userJava" />   
+            <log target="status">Set audioURL</log>
+            <log>INFO: Entered run-javascript.vxml [271_3]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_271_3(argList,audioURL)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="audioURL" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

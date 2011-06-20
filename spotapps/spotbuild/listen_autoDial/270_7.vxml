@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'243_4'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'270_5'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_243_3(argList,audioURL)
+            function II_SB_JS_function_270_7(returnVal)
             {
-	            return setAudioURL(argList, audioURL);
+	            var key = 'subscriber';return getHrefId(returnVal, key);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set audioURL</log>
-            <log>INFO: Entered run-javascript.vxml [243_3]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_243_3(argList,audioURL)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="audioURL" expr="II_SB_userJava" />   
+            <log target="status">Get Subscriber</log>
+            <log>INFO: Entered run-javascript.vxml [270_7]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_270_7(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="subscriber" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

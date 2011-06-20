@@ -9,11 +9,16 @@ function getNextDestination(argList, index) {
     var phoneNumber = getNextElement(index,tmpVal.destination,',');
     if(phoneNumber != '-1') {
         var sipURL = tmpVal.sipURL;
+        var sipDirect = tmpVal.sipDirect;
         var str = new String(phoneNumber);
         var num = /^\d+$/;
         if (num.test(str)) {
-            if ((phoneNumber.length >= tmpVal.pstnLength) && (sipURL.length > 0))
-                result = phoneNumber + "@" + sipURL;
+            if ((phoneNumber.length >= tmpVal.pstnLength) && (sipURL.length > 0)) {
+                if (sipDirect == 'n')
+                    result = 'F' + phoneNumber + "@" + sipURL;
+                else
+                    result = phoneNumber + "@" + sipURL;
+            }
             else if (phoneNumber.length < tmpVal.EXT_LENGTH)
                 result = tmpVal.EXT_PREFIX + phoneNumber + tmpVal.EXT_SUFFIX;
             else
@@ -31,11 +36,41 @@ function setCallingID(phoneNumber, argList) {
     var result = '';
     var tmpVal = eval("("+argList+")");
     var sipURL = tmpVal.sipURL;
-    var str = new String(phoneNumber);
+    var str = getNextElement(0,phoneNumber,'@');
     var num = /^\d+$/;
     if ((num.test(str)) && (phoneNumber >= tmpVal.pstnLength) && (sipURL.length > 0))
         result = getnum(tmpVal.ani) + "@" + sipURL;
     else
         result = getnum(tmpVal.ani) + "@" + tmpVal.hostName;
     return result;
+}
+
+
+function saveSipDirect(argList, index)
+{
+    var result = '';
+    var tmpVal = eval("("+argList+")");
+    var phoneNumber = getNextElement(index,tmpVal.destination,',');
+    if(phoneNumber != '-1') {
+        var sipURL = tmpVal.sipURL;
+        var sipDirect = tmpVal.sipDirect;
+        var str = new String(phoneNumber);
+        var num = /^\d+$/;
+        if (num.test(str)) {
+            if ((phoneNumber.length >= tmpVal.pstnLength) && (sipURL.length > 0)) {
+            }
+            else if (phoneNumber.length < tmpVal.EXT_LENGTH)
+                return extendJsonObject(argList,'sipDirect','y');
+            else
+                return argList;
+        }
+    }
+    return argList;
+}
+
+function saveNumber(argList, phoneNumber) {
+    var number = getNextElement(0,phoneNumber,'@');
+    if (number[0] == 'F')
+        number = getNextElement(1,number,'F');
+    return extendJsonObject(argList,'phoneNumber',number);
 }

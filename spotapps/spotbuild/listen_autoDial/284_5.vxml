@@ -1,23 +1,17 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_autoDial/root.vxml"> <!--  Set location of root document -->
-    <!-- Last Modified 05/17/2010
-       *   @Name   assign-variable.vxml
-       *   @Desc   Assigns a value to a global variable -->
+    <!-- Last Modified 10/21/2009
+       *   @Name   math.vxml
+       *   @Desc   Sets up simple math operations -->
 
-    <var name="II_SB_nxtOpt" expr="'137_25'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'284_7'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Assign STAT Vars</log>
-            <log>INFO: Entered assign-variable.vxml [137_24]</log>
-            <log>INFO: Current value [<value expr="value"/>]</log>
-<assign name="value" expr="'1'+''" />
-<log>INFO: Updated value [<value expr="value"/>]</log>
-<log>INFO: Current value [<value expr="id"/>]</log>
-<assign name="id" expr="'LSTNAPP_SERVICE_ERROR'+''" />
-<log>INFO: Updated value [<value expr="id"/>]</log>
-
+	    <log target="status">Increment Count</log>
+            <log>INFO: Entered math.vxml [284_5]</log>
+            <assign name="errCnt" expr="parseInt(errCnt) + parseInt('1') "/>
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
 				<goto expr="'file:' + II_SB_APP_PATH + II_SB_nxtOpt + '.vxml'"/>

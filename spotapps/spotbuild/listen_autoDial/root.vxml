@@ -65,13 +65,14 @@
 	<var name="SessionID" expr="'sessionID'" />
 	<var name="ANI" expr="''" />
 	<var name="sipURL" expr="''" />
+	<var name="sipDirect" expr="''" />
 	<var name="lstnChannel" expr="''" />
 	<var name="lstnSub" expr="''" />
 	<var name="project" expr="'LISTEN_AUTO_DIAL'" />
 	<var name="line" expr="'line'" />
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 	<var name="logText" expr="''" />
-	<var name="sipDirect" expr="''" />
+	<var name="nextPath" expr="''" />
 
 
     <!-- Conference Variables -->

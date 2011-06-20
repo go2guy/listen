@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'243_10'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'270_20'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_243_4(argList,index)
+            function II_SB_JS_function_270_19(project,line,returnStr,request,resource,cntrlURL,lstnChannel,lstnSub)
             {
-	            return getNextDestination(argList, index);
+	            var logText = 'Get Sub Info: Load Conference Info returned Failure. Reason [' + returnStr  + ']. Attempted ['+request+'] on ['+resource+'] with channel ['+lstnChannel+'] and Subscriber ['+lstnSub+'] at ['+cntrlURL+'] using ['+params+'].';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Destination</log>
-            <log>INFO: Entered run-javascript.vxml [243_4]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_243_4(argList,index)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="phoneNumber" expr="II_SB_userJava" />   
+            <log target="status">Set Log</log>
+            <log>INFO: Entered run-javascript.vxml [270_19]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_270_19(project,line,returnStr,request,resource,cntrlURL,lstnChannel,lstnSub)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
