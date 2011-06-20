@@ -23,6 +23,12 @@
     </delete>
   </target>
 
+  <target name="test-with-coverage">
+    <exec executable="grails" dir="${basedir}/listen">
+      <arg value="test-app -coverage -xml"/>
+    </exec>
+  </target>
+
   <target name="deploy" description="--> Deploys the application">
     <exec executable="grails" dir="${basedir}/listen">
       <arg value="prod executable-war"/>
