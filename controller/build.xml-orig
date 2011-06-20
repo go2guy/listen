@@ -1,0 +1,353 @@
+<project name="listen" default="war">
+  <property name="src.dir"         value="${basedir}/src"/>
+  <property name="build.dir"       value="${basedir}/build"/>
+  <property name="lib.dir"         value="${basedir}/lib"/>
+  <property name="target.dir"      value="${basedir}/target"/>
+  <property name="deploy.dir"      value="/interact/listen"/>
+  <property name="war.staging.dir" value="${target.dir}/staging/war"/>
+  <property name="rpm.staging.dir" value="${target.dir}/staging/rpm"/>
+  <property name="tools.dir"       value="${basedir}/tools"/>
+  <property name="doc.dir"         value="${basedir}/docs"/>
+
+  <import file=".build-import-tools.xml"/><!-- import for tools like findbugs, checkstyle, and plots -->
+
+  <path id="javac.classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    <pathelement path="${build.dir}/main"/>
+  </path>
+
+  <property name="deploy.version" value="0.2"/>
+  <exec outputproperty="deploy.release" executable="svnversion">
+    <arg line="-n -c"/>
+    <redirector>
+      <outputfilterchain>
+        <tokenfilter>
+          <replaceregex pattern="^[0-9]*:?" replace="" flags="g"/>
+        </tokenfilter>
+      </outputfilterchain>
+    </redirector>
+  </exec>
+
+  <taskdef resource="tasks.properties" classpathref="javac.classpath"/>
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${lib.dir}/build/ant-contrib-1.0b3.jar"/>
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="src/build/findbugs-1.3.9/lib/findbugs-ant.jar"/>
+  <taskdef resource="checkstyletask.properties" classpath="${lib.dir}/build/checkstyle-all-5.1.jar"/>
+
+  <macrodef name="minify">
+    <attribute name="in"/>
+    <attribute name="out"/>
+    <sequential>
+      <echo message="Minifying @{in}"/>
+      <java jar="${lib.dir}/build/yuicompressor-2.4.2.jar" classpathref="javac.classpath" fork="true" failonerror="true">
+        <arg line="@{in} -o @{out}"/>
+      </java>
+    </sequential>
+  </macrodef>
+
+
+  <target name="clean" description="--> Removes build artifacts created by this script">
+    <delete dir="${build.dir}" failonerror="false"/>
+    <delete dir="${target.dir}" failonerror="false"/>
+    <delete dir="${rpm.staging.dir}" failonerror="false"/>
+    <delete failonerror="false">
+      <fileset dir="ii_artifacts" includes="**/*.rpm"/>
+    </delete>
+    <delete dir="${doc.dir}/javadoc" failonerror="false"/>
+  </target>
+
+
+  <target name="compile" description="--> Compiles source code into bytecode">
+    <mkdir dir="${build.dir}/main"/>
+    <javac destdir="${build.dir}/main"
+           failonerror="true"
+           includeAntRuntime="false"
+           debug="true"
+           source="6"
+           target="6">
+       <src path="${src.dir}/main/java"/>
+       <src path="${src.dir}/test/jmeter"/>
+       <classpath refid="javac.classpath"/>
+    </javac>
+  </target>
+
+
+  <target name="javadoc" description="--> Generates Javadoc documentation">
+    <delete dir="${doc.dir}/javadoc"/>
+    <mkdir dir="${doc.dir}/javadoc"/>
+    <javadoc use="true"
+             destdir="${doc.dir}/javadoc"
+             sourcepath="${src.dir}/main/java"
+             defaultexcludes="yes"
+             classpathref="javac.classpath"/>
+  </target>
+
+
+  <target name="test" depends="compile" description="--> Runs unit tests">
+    <mkdir dir="${target.dir}/junit"/>
+    <mkdir dir="${build.dir}/test"/>
+
+    <delete dir="${build.dir}/cobertura" failonerror="false"/>
+    <mkdir dir="${build.dir}/cobertura"/>
+
+    <javac destdir="${build.dir}/test"
+           failonerror="true"
+           includeAntRuntime="false"
+           debug="true"
+           source="6"
+           target="6">
+      <src path="${src.dir}/test/java"/>
+      <classpath refid="javac.classpath"/>
+    </javac>
+
+    <cobertura-instrument todir="${build.dir}/cobertura">
+      <fileset dir="${build.dir}/main" includes="**/*.class" excludes="com/interact/listen/jmeter/**/*,com/interact/listen/server/EmbeddedJettyServer.class,com/interact/listen/HibernateUtil.class"/>
+    </cobertura-instrument>
+
+    <junit printsummary="on"
+           fork="yes"
+           forkmode="once"
+           showoutput="true">
+      <sysproperty key="net.sourceforge.cobertura.datafile" file="${basedir}/cobertura.ser"/>
+      <sysproperty key="com.interact.listen.env" value="TEST"/>
+      <formatter type="xml"/>
+      <classpath>
+        <pathelement location="${build.dir}/cobertura"/>
+        <path refid="javac.classpath"/>
+        <pathelement location="${build.dir}/test"/>
+        <pathelement location="${src.dir}/main/webapp-gui/WEB-INF/classes"/>
+      </classpath>
+
+      <batchtest fork="yes"
+                 todir="${target.dir}/junit">
+        <fileset dir="${src.dir}/test/java" includes="**/*Test.java" excludes="**/ListenTest.java,**/ListenServletTest.java"/>
+      </batchtest>
+    </junit>
+
+    <junitreport todir="${target.dir}/junit">
+      <fileset dir="${target.dir}/junit" includes="TEST-*.xml"/>
+      <report format="frames" todir="${target.dir}/junit"/>
+    </junitreport>
+
+    <mkdir dir="${target.dir}/cobertura"/>
+    <cobertura-report srcdir="${src.dir}/main/java"
+                      destdir="${target.dir}/cobertura"
+                      format="html"
+                      datafile="${basedir}/cobertura.ser"/>
+    <cobertura-report srcdir="${src.dir}/main/java"
+                      destdir="${target.dir}/cobertura"
+                      format="xml"
+                      datafile="${basedir}/cobertura.ser"/>
+    <delete file="${basedir}/cobertura.ser"/>
+    <delete dir="${build.dir}/cobertura"/>
+  </target>
+
+
+  <target name="-verify-integration-environment">
+    <condition property="integration.environment.okay">
+      <and>
+        <isset property="integration.host"/>
+        <isset property="integration.port"/>
+        <http url="http://${integration.host}:${integration.port}/meta/ping?auth=false"/>
+      </and>
+    </condition>
+  </target>
+
+
+  <target name="-jmeter-init">
+    <mkdir dir="${build.dir}/main"/>
+    <javac destdir="${build.dir}/main"
+           failonerror="true"
+           includeAntRuntime="false"
+           debug="true"
+           source="6"
+           target="6">
+       <src path="${src.dir}/test/jmeter"/>
+       <classpath refid="javac.classpath"/>
+    </javac>
+  </target>
+
+
+  <target name="-jmeter-fail" depends="-verify-integration-environment" unless="integration.environment.okay">
+    <fail message="Please set the [integration.host] and [integration.port] properties to run jmeter tests"/>
+  </target>
+
+
+  <target name="jmeter" depends="-jmeter-init, -verify-integration-environment, -jmeter-fail" if="integration.environment.okay">
+    <echo message="integration.host: ${integration.host}"/>
+    <echo message="integration.port: ${integration.port}"/>
+
+    <property name="jmeter.target.dir" value="${target.dir}/jmeter"/>
+    <property name="jmeter.work.dir" value="${jmeter.target.dir}/work"/>
+
+    <!-- test input parameters -->
+    <property name="jmeter.provision.numberOfSubscribers" value="50"/>
+    <property name="jmeter.provision.voicemailsPerSubscriber" value="50"/>
+    <property name="jmeter.provision.accessNumbersPerSubscriber" value="2"/>
+    <property name="jmeter.combined.guiVoicemailUsers" value="25"/>
+    <property name="jmeter.combined.guiConferenceUsers" value="2"/>
+    <property name="jmeter.combined.ivrVoicemailUsers" value="5"/>
+    <property name="jmeter.combined.duration" value="600"/><!-- in seconds -->
+
+    <delete dir="${jmeter.target.dir}"/>
+    <mkdir dir="${jmeter.target.dir}"/>
+
+    <!-- run provisioning test -->
+    <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
+      <arg line="-n -t ${src.dir}/test/jmeter/api-provisionaccounts.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-provision.jtl -Jtest.numberOfSubscribers=${jmeter.provision.numberOfSubscribers} -Jtest.voicemailsPerSubscriber=${jmeter.provision.voicemailsPerSubscriber} -Jtest.accessNumbersPerSubscriber=${jmeter.provision.accessNumbersPerSubscriber}"/>
+    </exec>
+
+    <!-- retrieve provisioned data -->
+    <delete dir="${jmeter.work.dir}"/>
+    <mkdir dir="${jmeter.work.dir}"/>
+    <java classpathref="javac.classpath"
+          classname="com.interact.listen.jmeter.GetApiList"
+          fork="true"
+          failonerror="true"
+          output="${jmeter.work.dir}/subscribers.csv">
+      <arg line="http://${integration.host}:${integration.port}/api /subscribers?_fields=username&amp;_first=0&amp;_max=25 username"/>
+    </java>
+    <java classpathref="javac.classpath"
+          classname="com.interact.listen.jmeter.GetApiList"
+          fork="true"
+          failonerror="true"
+          output="${jmeter.work.dir}/accessNumbers.csv">
+      <arg line="http://${integration.host}:${integration.port}/api /accessNumbers?_fields=number&amp;_first=0&amp;_max=25 number"/>
+    </java>
+
+    <!-- run combined test -->
+    <exec executable="${basedir}/tools/jakarta-jmeter-2.3.4/bin/jmeter">
+      <arg line="-n -t ${src.dir}/test/jmeter/gui-api-combined.jmx -Jcontroller.host=${integration.host} -Jcontroller.port=${integration.port} -Jtest.outputFile=${target.dir}/jmeter/jtl/jmeter-combined.jtl -Jgui.voicemailUsers=${jmeter.combined.guiVoicemailUsers} -Jgui.conferenceUsers=${jmeter.combined.guiConferenceUsers} -Japi.voicemailUsers=${jmeter.combined.ivrVoicemailUsers} -Jtest.duration=${jmeter.combined.duration} -Jtest.subscribersCsv=${jmeter.work.dir}/subscribers.csv -Jtest.accessNumbersCsv=${jmeter.work.dir}/accessNumbers.csv"/>
+    </exec>
+
+    <!-- report -->
+    <mkdir dir="${target.dir}/jmeter/html"/>
+    <xslt basedir="${target.dir}/jmeter/jtl"
+          destdir="${target.dir}/jmeter/html"
+          includes="*.jtl"
+          style="${basedir}/tools/jakarta-jmeter-2.3.4/extras/jmeter-results-detail-report_21.xsl"/>
+  </target>
+
+
+  <target name="war" depends="compile" description="--> Packages distributable war file">
+    <mkdir dir="${target.dir}"/>
+
+    <mkdir dir="${war.staging.dir}"/>
+    <copy todir="${war.staging.dir}">
+      <fileset dir="${src.dir}/main/webapp-gui" includes="**/*"/>
+    </copy>
+    
+    <minify in="${war.staging.dir}/resources/app/js/app-acdgroups.js" out="${war.staging.dir}/resources/app/js/app-acdgroups-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-attendant.js" out="${war.staging.dir}/resources/app/js/app-attendant-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-conference-list.js" out="${war.staging.dir}/resources/app/js/app-conference-list-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-conferencing.js" out="${war.staging.dir}/resources/app/js/app-conferencing-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-findme.js" out="${war.staging.dir}/resources/app/js/app-findme-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-history.js" out="${war.staging.dir}/resources/app/js/app-history-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-pbx.js" out="${war.staging.dir}/resources/app/js/app-pbx-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-profile.js" out="${war.staging.dir}/resources/app/js/app-profile-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-system-configuration-admin.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-admin-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-system-configuration-custodian.js" out="${war.staging.dir}/resources/app/js/app-system-configuration-custodian-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-subscribers.js" out="${war.staging.dir}/resources/app/js/app-subscribers-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/app-voicemail.js" out="${war.staging.dir}/resources/app/js/app-voicemail-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/listen.js" out="${war.staging.dir}/resources/app/js/listen-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/custodian.js" out="${war.staging.dir}/resources/app/js/custodian-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/server.js" out="${war.staging.dir}/resources/app/js/server-min.js"/>
+    <minify in="${war.staging.dir}/resources/app/js/util.js" out="${war.staging.dir}/resources/app/js/util-min.js"/>
+    
+    <minify in="${war.staging.dir}/resources/app/css/acdgroups.css" out="${war.staging.dir}/resources/app/css/acdgroups-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/all.css" out="${war.staging.dir}/resources/app/css/all-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/attendant.css" out="${war.staging.dir}/resources/app/css/attendant-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/conferences.css" out="${war.staging.dir}/resources/app/css/conferences-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/conferencing.css" out="${war.staging.dir}/resources/app/css/conferencing-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/configuration.css" out="${war.staging.dir}/resources/app/css/configuration-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/findme.css" out="${war.staging.dir}/resources/app/css/findme-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/history.css" out="${war.staging.dir}/resources/app/css/history-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/listen.css" out="${war.staging.dir}/resources/app/css/listen-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/login.css" out="${war.staging.dir}/resources/app/css/login-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/pbx.css" out="${war.staging.dir}/resources/app/css/pbx-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/subscribers.css" out="${war.staging.dir}/resources/app/css/subscribers-min.css"/>
+    <minify in="${war.staging.dir}/resources/app/css/voicemail.css" out="${war.staging.dir}/resources/app/css/voicemail-min.css"/>
+
+    <minify in="${war.staging.dir}/resources/json.org/json2.js" out="${war.staging.dir}/resources/json.org/json2-min.js"/>
+    <unjar dest="${war.staging.dir}">
+      <patternset>
+        <exclude name="META-INF/**/*"/>
+        <exclude name="images/**/*"/>
+        <exclude name=".options"/>
+        <exclude name="about.html"/>
+        <exclude name="jdtCompilerAdapter.jar"/>
+        <exclude name="plugin*"/>
+      </patternset>
+      <fileset dir="${lib.dir}/build/jetty" includes="*.jar"/>
+    </unjar>
+    <copy todir="${war.staging.dir}">
+      <fileset dir="${build.dir}/main" includes="com/interact/listen/server/EmbeddedJettyServer.class"/>
+    </copy>
+    <war destfile="${target.dir}/listen-controller.war" webxml="${war.staging.dir}/WEB-INF/web.xml">
+      <fileset dir="${war.staging.dir}" includes="**/*"/>
+      <classes dir="${build.dir}/main" excludes="**/*Test.class,**/jmeter/**/*"/>
+      <lib dir="${lib.dir}/runtime"/>
+
+      <manifest>
+        <attribute name="Main-Class" value="com.interact.listen.server.EmbeddedJettyServer"/>
+      </manifest>
+    </war>
+    <delete dir="${war.staging.dir}"/>
+  </target>
+
+
+  <target name="deploy-grails-war" description="--> Deploys the Grails version of the application">
+    <exec executable="grails" dir="${basedir}/listen">
+      <arg value="prod executable-war"/>
+    </exec>
+
+    <mkdir dir="${deploy.dir}"/>
+    <mkdir dir="${deploy.dir}/logs"/>
+
+    <copy todir="${deploy.dir}/lib" verbose="true">
+      <fileset dir="listen/target" includes="*.war"/>
+    </copy>
+    <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts" verbose="true"/>
+  </target>
+
+
+  <target name="deploy" depends="war" description="--> Deploys the application">
+    <mkdir dir="${deploy.dir}"/>
+    <mkdir dir="${deploy.dir}/logs"/>
+
+    <copy file="${target.dir}/listen-controller.war" todir="${deploy.dir}/lib" verbose="true"/>
+    <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts/" verbose="true"/>
+  </target>
+
+
+  <target name="undeploy" description="--> Removes any deployed artifacts">
+    <delete dir="${deploy.dir}"/>
+  </target>
+
+
+  <target name="-rpmbuild" depends="deploy-grails-war">
+
+    <exec executable="rpmbuild" failonerror="true">
+      <env key="VERSION" value="${deploy.version}"/>
+      <env key="RELEASE" value="${deploy.release}"/>
+      <env key="TOPDIR" value="${rpm.staging.dir}"/>
+      <arg line="-bb --buildroot ${rpm.staging.dir}/BUILD ${basedir}/controller.spec"/>
+    </exec>
+
+    <copy todir="ii_artifacts" overwrite="true" flatten="true">
+      <fileset dir="${rpm.staging.dir}" includes="**/*.rpm"/>
+    </copy>
+
+    <delete dir="${rpm.staging.dir}"/>
+  </target>
+
+
+  <target name="rpm" description="--> Creates rpm">
+    <!-- hack to override properties -->
+    <antcall target="-rpmbuild">
+      <param name="deploy.dir" value="${rpm.staging.dir}/BUILD/interact/listen"/>
+    </antcall>
+  </target>
+
+
+  <target name="hudson" depends="rpm" description="target for hudson"/>
+</project>
