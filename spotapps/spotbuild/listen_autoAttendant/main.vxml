@@ -63,11 +63,37 @@
 	<var name="SB_UV_hotKeys"/>
 	<var name="SB_UV_ext"/>
 	<var name="SB_UV_EXT_LENGTH"/>
+	<var name="SB_UV_FILE1"/>
+	<var name="SB_UV_OPERATION"/>
+	<var name="SB_UV_promptBefore"/>
+	<var name="SB_UV_organization"/>
+	<var name="SB_UV_action"/>
+	<var name="SB_UV_destination"/>
+	<var name="SB_UV_callType"/>
+	<var name="SB_UV_outBoundID"/>
+	<var name="SB_UV_pbxEnabled"/>
+	<var name="SB_UV_vmEnabled"/>
+	<var name="SB_UV_promptVar"/>
+	<var name="SB_UV_oldMenuId"/>
+	<var name="SB_UV_oldKeyPress"/>
+	<var name="SB_UV_callDirection"/>
+	<var name="SB_UV_accessNum"/>
+	<var name="SB_UV_CDRvar"/>
+	<var name="SB_UV_findMeEnabled"/>
+	<var name="SB_UV_subID"/>
+	<var name="SB_UV_exceptionLog"/>
+	<var name="SB_UV_logText"/>
+	<var name="SB_UV_line"/>
+	<var name="SB_UV_project"/>
+	<var name="SB_UV_FailedMenu"/>
+	<var name="SB_UV_Licenses"/>
+	<var name="SB_UV_callResult"/>
+	<var name="SB_UV_callStartTime"/>
 
     
     <form id="beginDocument">
         <block>
-	        
+	        <log target="status">Begin</log>
             <log>INFO: Entered main.vxml</log> <!-- Set up call information -->
             <assign name="II_SB_APP_PATH" expr="II_SB_CODE_DIR"/>
             <assign name="II_SB_AUDIO_PATH" expr="II_SB_APP_PATH + II_SB_AUDIO_PATH"/>
@@ -75,6 +101,8 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
+			<assign name="callType" expr="II_SB_type" />
+			<assign name="line" expr="II_SB_line" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_ANI != undefined">
@@ -208,6 +236,84 @@
 			</if>
 			<if cond="SB_UV_EXT_LENGTH != undefined">
 				<assign name="EXT_LENGTH" expr="SB_UV_EXT_LENGTH" />
+			</if>
+			<if cond="SB_UV_FILE1 != undefined">
+				<assign name="FILE1" expr="SB_UV_FILE1" />
+			</if>
+			<if cond="SB_UV_OPERATION != undefined">
+				<assign name="OPERATION" expr="SB_UV_OPERATION" />
+			</if>
+			<if cond="SB_UV_promptBefore != undefined">
+				<assign name="promptBefore" expr="SB_UV_promptBefore" />
+			</if>
+			<if cond="SB_UV_organization != undefined">
+				<assign name="organization" expr="SB_UV_organization" />
+			</if>
+			<if cond="SB_UV_action != undefined">
+				<assign name="action" expr="SB_UV_action" />
+			</if>
+			<if cond="SB_UV_destination != undefined">
+				<assign name="destination" expr="SB_UV_destination" />
+			</if>
+			<if cond="SB_UV_callType != undefined">
+				<assign name="callType" expr="SB_UV_callType" />
+			</if>
+			<if cond="SB_UV_outBoundID != undefined">
+				<assign name="outBoundID" expr="SB_UV_outBoundID" />
+			</if>
+			<if cond="SB_UV_pbxEnabled != undefined">
+				<assign name="pbxEnabled" expr="SB_UV_pbxEnabled" />
+			</if>
+			<if cond="SB_UV_vmEnabled != undefined">
+				<assign name="vmEnabled" expr="SB_UV_vmEnabled" />
+			</if>
+			<if cond="SB_UV_promptVar != undefined">
+				<assign name="promptVar" expr="SB_UV_promptVar" />
+			</if>
+			<if cond="SB_UV_oldMenuId != undefined">
+				<assign name="oldMenuId" expr="SB_UV_oldMenuId" />
+			</if>
+			<if cond="SB_UV_oldKeyPress != undefined">
+				<assign name="oldKeyPress" expr="SB_UV_oldKeyPress" />
+			</if>
+			<if cond="SB_UV_callDirection != undefined">
+				<assign name="callDirection" expr="SB_UV_callDirection" />
+			</if>
+			<if cond="SB_UV_accessNum != undefined">
+				<assign name="accessNum" expr="SB_UV_accessNum" />
+			</if>
+			<if cond="SB_UV_CDRvar != undefined">
+				<assign name="CDRvar" expr="SB_UV_CDRvar" />
+			</if>
+			<if cond="SB_UV_findMeEnabled != undefined">
+				<assign name="findMeEnabled" expr="SB_UV_findMeEnabled" />
+			</if>
+			<if cond="SB_UV_subID != undefined">
+				<assign name="subID" expr="SB_UV_subID" />
+			</if>
+			<if cond="SB_UV_exceptionLog != undefined">
+				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />
+			</if>
+			<if cond="SB_UV_logText != undefined">
+				<assign name="logText" expr="SB_UV_logText" />
+			</if>
+			<if cond="SB_UV_line != undefined">
+				<assign name="line" expr="SB_UV_line" />
+			</if>
+			<if cond="SB_UV_project != undefined">
+				<assign name="project" expr="SB_UV_project" />
+			</if>
+			<if cond="SB_UV_FailedMenu != undefined">
+				<assign name="FailedMenu" expr="SB_UV_FailedMenu" />
+			</if>
+			<if cond="SB_UV_Licenses != undefined">
+				<assign name="Licenses" expr="SB_UV_Licenses" />
+			</if>
+			<if cond="SB_UV_callResult != undefined">
+				<assign name="callResult" expr="SB_UV_callResult" />
+			</if>
+			<if cond="SB_UV_callStartTime != undefined">
+				<assign name="callStartTime" expr="SB_UV_callStartTime" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

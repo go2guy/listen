@@ -5,7 +5,7 @@
        *   @Name   hang-up.vxml
        *   @Desc   Handels hang up logic -->
 
-    <var name="II_SB_nxtOpt" expr="'189_9'"/>  <!--  Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'249_5'"/>  <!--  Name of next file -->
 
 	<!-- Passed in from CCXML -->
 	<var name="II_SB_discOriginator"/>	<!-- Identity of party that triggered disconnect event -->
@@ -14,8 +14,8 @@
 
     <form id="beginDocument">
         <block>
-	    
-            <log>INFO: Entered hang-up.vxml [189_19]</log>
+	    <log target="status">Hang Up</log>
+            <log>INFO: Entered hang-up.vxml [249_2]</log>
 			<log>INFO: Originator [<value expr="II_SB_discOriginator"/>]</log>
 			<log>INFO: Connection ID [<value expr="II_SB_discID"/>]</log>
 			<log>INFO: Reason [<value expr="II_SB_discReason"/>]</log>

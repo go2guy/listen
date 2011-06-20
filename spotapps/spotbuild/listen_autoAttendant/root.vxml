@@ -47,7 +47,7 @@
 	<var name="passValues" expr="'importedValue'" />
 	<var name="HTTPcontroller" expr="''" />
 	<var name="STATcontroller" expr="''" />
-	<var name="source" expr="'pbx'" />
+	<var name="source" expr="'Attendant'" />
 	<var name="value" expr="''" />
 	<var name="operation" expr="'increment'" />
 	<var name="hostName" expr="''" />
@@ -73,6 +73,32 @@
 	<var name="hotKeys" expr="''" />
 	<var name="ext" expr="''" />
 	<var name="EXT_LENGTH" expr="''" />
+	<var name="FILE1" expr="''" />
+	<var name="OPERATION" expr="''" />
+	<var name="promptBefore" expr="''" />
+	<var name="organization" expr="''" />
+	<var name="action" expr="''" />
+	<var name="destination" expr="''" />
+	<var name="callType" expr="'type'" />
+	<var name="outBoundID" expr="''" />
+	<var name="pbxEnabled" expr="'false'" />
+	<var name="vmEnabled" expr="'false'" />
+	<var name="promptVar" expr="''" />
+	<var name="oldMenuId" expr="''" />
+	<var name="oldKeyPress" expr="''" />
+	<var name="callDirection" expr="''" />
+	<var name="accessNum" expr="''" />
+	<var name="CDRvar" expr="''" />
+	<var name="findMeEnabled" expr="'false'" />
+	<var name="subID" expr="''" />
+	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
+	<var name="logText" expr="''" />
+	<var name="line" expr="'line'" />
+	<var name="project" expr="'LISTEN_AUTOATTENDANT'" />
+	<var name="FailedMenu" expr="'false'" />
+	<var name="Licenses" expr="''" />
+	<var name="callResult" expr="''" />
+	<var name="callStartTime" expr="''" />
 
 
     <!-- Conference Variables -->

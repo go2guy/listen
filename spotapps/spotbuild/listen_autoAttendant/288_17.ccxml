@@ -1,0 +1,607 @@
+<?xml version="1.0" ?>
+<ccxml version="1.0">
+    <!-- Last Modified 10/15/2010
+       *   @Name   out-dial.ccxml
+       *   @Desc   Creates an out dial -->
+
+    <!-- These variables are passed in from begin.ccxml -->
+    <var name="II_SB_status"/>
+    <var name="II_SB_NEXT_OPTION"/>
+    <var name="II_SB_remote"/>
+    <var name="II_SB_local"/>
+    <var name="II_SB_originator"/>
+    <var name="II_SB_protocol"/>
+    <var name="II_SB_connectionID"/>
+    <var name="II_SB_type"/>
+    <var name="II_SB_CODE_DIR"/>
+    <var name="II_SB_BASE_DIR"/>
+    <var name="II_SB_passValues"/>
+    <var name="II_SB_ibcallid"/>
+    <var name="II_SB_VXML_LIB"/>
+    <var name="II_SB_projectSource"/>
+
+    <!-- Global variables -->
+    <var name="II_SB_state" expr="'idle'"/>     <!-- state. This variable holds the ccxml dialog state -->
+    <var name="II_SB_dialogID" expr="''"/>      <!-- dialogID. Contains the ID for the last vxml dialog that was started -->
+    <var name="II_SB_sessionID" expr="''"/>     <!-- sessionID. Contains the ID of the ccxml session -->
+    <var name="II_SB_userEntry" expr="''"/>     <!-- Drop key presses -->
+    <var name="II_SB_indialog" expr="'false'"/> <!-- Indicates when application is in vxml dialog -->
+    <var name="II_SB_nxtOpt" expr="''"/>        <!-- Next vxml template to be called -->
+    <var name="II_SB_maxTimeID" expr="''"/>     <!-- Stores the ID of a BridgeTimeout event -->
+    <var name="II_SB_hangUp" expr="'n'"/>       <!-- Flag to determine when a hang up has been received -->
+
+    <!-- Option variables -->
+    <var name="II_SB_inbDiscOpt" expr="''"/>    <!-- Next option when caller hangs up -->
+    <var name="II_SB_outbDiscOpt" expr="''"/>   <!-- Next option when callee hangs up -->
+    <var name="II_SB_ansOpt" expr="''"/>        <!-- Next option when call is answered -->
+    <var name="II_SB_notAnsOpt" expr="''"/>     <!-- Next option when call is not answered -->
+    <var name="II_SB_failedOpt" expr="''"/>     <!-- Next option when call attempt fails -->
+    <var name="II_SB_drpKeyEnabled" expr="''"/> <!-- Identifies if application should acknowledge key presses during call -->
+    <var name="II_SB_drpKeyOpt" expr="''"/>     <!-- Next option when drop key is enabled and key press happens -->
+	<var name="II_SB_firstPass" expr="''"/>     <!-- Identifies if ccxml file is being loaded for the first time -->
+    <var name="II_SB_maxTimeOpt" expr="''"/>    <!-- Next option when call reaches maximum allowed time -->
+    <var name="II_SB_callerID" expr="II_SB_remote"/>  <!-- ID of Caller -->
+
+    <!-- Call information -->
+    <var name="II_SB_dialType" expr="''"/>      <!-- Type of call to be made -->
+    <var name="II_SB_obcallid"/>                <!-- Connection ID of call -->
+    <var name="II_SB_destination" expr="''"/>   <!-- Destination to call -->
+    <var name="II_SB_callLength" expr="''"/>    <!-- Determines the Max Call Length for the call -->
+    <var name="II_SB_ringTime" expr="''"/>      <!-- Time limit for number of rings -->
+    <var name="II_SB_drpKeyLength" expr="''"/>  <!-- Number of keys in a drop key -->
+    <var name="II_SB_drpKeyTime" expr="''"/>    <!-- Number of seconds between drop key presses -->
+    <var name="II_SB_connectTime" expr="''"/>   <!-- Epoch time stamp of when call gets connected -->
+    <var name="II_SB_failTime" expr="''"/>      <!-- Epoch time stamp of when call fails -->
+    <var name="II_SB_startTime" expr="''"/>     <!-- Epoch time stamp of when destination was dialed -->
+
+	<!-- Disconnect variables -->
+	<var name="II_SB_discID" expr="''"/>			<!-- Contains the connection id of party that triggered connection.disconnected event -->
+	<var name="II_SB_discReason" expr="''"/>		<!-- Contains platform specific reason for disconnect -->
+	<var name="II_SB_discOriginator" expr="''"/>    <!-- Identifies party that triggered connection.disconnected event -->
+
+    <!-- load javascript library -->
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"></script>
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"></script>
+
+    <eventprocessor statevariable="II_SB_state">  <!-- Begin executable code -->
+
+        <transition state="idle" event="ccxml.loaded" name="loadEv">
+            <!-- This transition contains the first event encountered when this file is loaded.
+                 If this is the first time we've loaded the file, we need to set up the parameters
+                 for making a call. Otherwise there's no action required. -->
+            <log>INFO: Entered out-dial.ccxml [288_17]</log>
+            <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
+            <log>INFO: Values passed in [<value expr="II_SB_passValues"/>]</log>
+			<assign name="II_SB_firstPass" expr="getNextElement(9,II_SB_passValues,'|')"/>
+            <log>INFO: First pass [<value expr="II_SB_firstPass"/>]</log>
+			<if cond="II_SB_firstPass == 'yes'">    <!-- Set up parameters necessary for a call -->
+				<assign name="II_SB_state" expr="'waitDial'"/>
+				<assign name="II_SB_dialType" expr="getNextElement(0,II_SB_passValues,'|')"/>
+				<assign name="II_SB_destination" expr="getNextElement(1,II_SB_passValues,'|')"/>
+				<assign name="II_SB_inbDiscOpt" expr="getNextElement(2,II_SB_passValues,'|')"/>
+				<assign name="II_SB_outbDiscOpt" expr="getNextElement(3,II_SB_passValues,'|')"/>
+				<assign name="II_SB_ansOpt" expr="getNextElement(4,II_SB_passValues,'|')"/>
+				<assign name="II_SB_failedOpt" expr="getNextElement(5,II_SB_passValues,'|')"/>
+				<assign name="II_SB_callLength" expr="getNextElement(6,II_SB_passValues,'|')"/>
+				<assign name="II_SB_drpKeyOpt" expr="getNextElement(7,II_SB_passValues,'|')"/>
+				<assign name="II_SB_drpKeyEnabled" expr="getNextElement(8,II_SB_passValues,'|')"/>
+                <assign name="II_SB_ringTime" expr="getNextElement(10,II_SB_passValues,'|')"/>
+                <assign name="II_SB_drpKeyLength" expr="getNextElement(11,II_SB_passValues,'|')"/>
+                <assign name="II_SB_drpKeyTime" expr="getNextElement(12,II_SB_passValues,'|')"/>
+                <assign name="II_SB_notAnsOpt" expr="getNextElement(13,II_SB_passValues,'|')"/>
+                <assign name="II_SB_maxTimeOpt" expr="getNextElement(14,II_SB_passValues,'|')"/>
+                <var name="II_SB_tmpID" expr="getNextElement(15,II_SB_passValues,'|')"/>
+                <if cond="II_SB_tmpID != ''">
+                    <log>INFO: Current caller ID [<value expr="II_SB_callerID"/>]</log>
+                    <assign name="II_SB_callerID" expr="II_SB_tmpID"/>
+                    <log>INFO: Updated  to [<value expr="II_SB_callerID"/>]</log>
+                </if>
+				<log>INFO: Dial type [<value expr="II_SB_dialType"/>]</log>
+				<log>INFO: Destination [<value expr="II_SB_destination"/>]</log>
+				<log>INFO: Caller hangup next option [<value expr="II_SB_inbDiscOpt"/>]</log>
+				<log>INFO: Callee hangup next option [<value expr="II_SB_outbDiscOpt"/>]</log>
+				<log>INFO: Call answered next option [<value expr="II_SB_ansOpt"/>]</log>
+				<log>INFO: Call failed next option [<value expr="II_SB_failedOpt"/>]</log>
+				<log>INFO: Max call length [<value expr="II_SB_callLength"/>]</log>
+				<log>INFO: Drop key next option [<value expr="II_SB_drpKeyOpt"/>]</log>
+				<log>INFO: Drop key enabled [<value expr="II_SB_drpKeyEnabled"/>]</log>
+				<log>INFO: Current connection ID [<value expr="II_SB_obcallid"/>]</log>
+				<log>INFO: Ring time out [<value expr="II_SB_ringTime"/>]</log>
+				<log>INFO: Drop key length [<value expr="II_SB_drpKeyLength"/>]</log>
+				<log>INFO: Inter digit timeout [<value expr="II_SB_drpKeyTime"/>]</log>
+				<log>INFO: Call not answered next option [<value expr="II_SB_notAnsOpt"/>]</log>
+				<log>INFO: Max call time next option [<value expr="II_SB_maxTimeOpt"/>]</log>
+				<log>INFO: Caller ID [<value expr="II_SB_callerID"/>]</log>
+                <send data="'dialog.user.createcall'" target="II_SB_sessionID"/>
+            <else/> <!-- No action -->
+			</if>
+        </transition>
+
+        <transition state="waitDial" event="dialog.user.createcall" name="evt">
+            <!-- In this transition, we decide whether to make a new call or join an existing one.
+                 If we need to make a new VOIP call, we'll have to play a ring tone to the caller while
+                 the call is in progress. -->
+            <log>INFO: transition event [dialog.user.createcall] state [<value expr="II_SB_state"/>]</log>
+			<if cond="II_SB_obcallid == ''">    <!-- Assume there is no previous call on hold -->
+				<if cond="II_SB_dialType == 'PSTN'"> <!-- Create PSTN call -->
+					<log>INFO: Trying PSTN call</log>
+                    <assign name="II_SB_startTime" expr="getTimeStamp(2)"/>
+					<createcall dest="'tel://'+II_SB_destination+';'" connectionid="II_SB_obcallid" callerid="II_SB_callerID" timeout="II_SB_ringTime"/>
+				<else/> <!-- Create VOIP call and play ringing tone to caller -->
+					<log>INFO: Trying VOIP call</log>
+                    <var name="OBCALL.noproxy" expr="'true'"/>
+                    <var name="tmpVal" expr="getnum(II_SB_destination)"/>
+                    <if cond="iiNumber(tmpVal)">
+                        <assign name="OBCALL.noproxy" expr="'false'"/>
+                    </if>
+                    <assign name="II_SB_startTime" expr="getTimeStamp(2)"/>
+					<createcall dest="'sip:'+II_SB_destination" connectionid="II_SB_obcallid" callerid="'sip:'+II_SB_callerID" hints="OBCALL" timeout="II_SB_ringTime"/>
+                    <var name="II_SB_promptID" expr="II_SB_BASE_DIR+'audio/system/ringing.00.wav'"/>
+                    <var name="II_SB_repeat" expr="'y'"/>
+                    <var name="II_SB_interval" expr="'2000'"/> <!-- Number of milliseconds repeat -->
+                    <dialogstart src="'file:'+II_SB_VXML_LIB+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+				</if>
+			<else/> <!-- Assume there is a previous call on hold. Reconnect caller and callee-->
+				<log>INFO: Call Exists. Reconnect Call...</log>
+				<assign name="II_SB_state" expr="'reconnect'"/>
+				<join id1="II_SB_ibcallid" id2="II_SB_obcallid"/>
+			</if>
+        </transition>
+
+        <transition state="endRing" event="dialog.started" name="evt">
+            <!-- This transition is there to stop the caller side
+                 ring tone if a call attempt fails immediately -->
+            <log>INFO: transition event [dialog.started] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'true'"/>
+            <assign name="II_SB_dialogID" expr="evt.dialogid"/>
+            <assign name="II_SB_state" expr="'callFailed'"/>
+            <dialogterminate dialogid="II_SB_dialogID" immediate="true"/> <!-- Stop ringing tone -->
+        </transition>
+
+        <transition state="reconnect" event="conference.joined" name="evt" cond="evt.id1 == II_SB_ibcallid">
+            <!-- Our reconnect attempt was successful. We then decide if we need to monitor the call for key presses -->
+            <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Call reconnected</log>
+            <if cond="II_SB_drpKeyEnabled == 'true'">
+                <log>INFO: Drop key enabled. Going to monitor call</log>
+                <send data="'dialog.user.chkMonitor'" target="II_SB_sessionID"/>
+            <else/>
+                <log>INFO: Drop key not enabled. Waiting while call proceeds...</log>
+            </if>
+        </transition>
+
+        <transition state="waitDial" event="connection.connected" name="evt">
+            <!-- Our inital call is connected. If user set a max call time, we'll send a delayed
+                 event to end the call once that time elapses. Also, if we are doing a VOIP
+                 call, we need to stop the ring tone the caller is hearing. -->
+            <log>INFO: transition event [connection.connected] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Call connected</log>
+            <assign name="II_SB_state" expr="'answered'"/>
+            <assign name="II_SB_connectTime" expr="getTimeStamp(2)"/>
+            <if cond="II_SB_callLength != ''">
+                <log>INFO: Max timer is set. Will end call after [<value expr="II_SB_callLength"/>]</log>
+                <send data="'BridgeTimeout'" target="II_SB_sessionID" delay="II_SB_callLength" sendid="II_SB_maxTimeID"/>
+            </if>
+            <if cond="II_SB_indialog == 'true'">  <!-- Terminate ring tone -->
+                <send data="'dialog.user.termDialog'" target="II_SB_sessionID"/>
+            <else/>
+                <log>INFO: Joinning caller and callee...</log>
+                <if cond="II_SB_ibcallid != ''">
+                    <join id1="II_SB_ibcallid" id2="II_SB_obcallid"/>
+                <else/>
+                    <join id1="II_SB_obcallid" id2="'VXML_CHANNEL'"/>
+                </if>
+            </if>
+        </transition>
+
+        <transition state="answered" event="dialog.exit" name="evt">
+            <!-- Handles return from terminating ring tone after call is connected -->
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <log>INFO: Joinning caller and callee...</log>
+            <if cond="II_SB_ibcallid != ''">
+                <join id1="II_SB_ibcallid" id2="II_SB_obcallid"/>
+            <else/>
+                <join id1="II_SB_obcallid" id2="'VXML_CHANNEL'"/>
+            </if>
+        </transition>
+
+        <transition state="answered" event="conference.joined" name="evt" cond="((evt.id1 == II_SB_ibcallid) || (evt.id2 == II_SB_obcallid) || (evt.id1 == II_SB_obcallid))">
+            <!-- Our join attempt was successful. We then decide if we need to monitor the call for key presses -->
+            <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
+            <send data="'dialog.user.chkMonitor'" target="II_SB_sessionID"/>
+        </transition>
+
+        <transition event="dialog.user.chkMonitor">
+            <!-- In this event, we transition to the call answered option if it is set. Otherwise,
+                 we check the drop key flag. If its enabled, we'll monitor the call for key presses.
+                 If not, well just wait in here for the next event from ccxml -->
+            <log>INFO: transition event [dialog.user.chkMonitor] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Call Answered Option [<value expr="II_SB_ansOpt"/>]</log>
+            <if cond="II_SB_ansOpt == ''">
+                <if cond="II_SB_drpKeyEnabled == 'true'">
+                    <assign name="II_SB_state" expr="'monitor'"/>
+                    <join id1="'VXML_CHANNEL'" id2="II_SB_ibcallid" duplex="'half'"/>
+                    <log>INFO: Drop key enabled. Going to monitor call</log>
+                    <log>INFO: Monitoring call...</log>
+                <else/>
+                    <log>INFO: Drop key not enabled. Waiting while call proceeds...</log>
+                </if>
+            <else/>
+                <assign name="II_SB_nxtOpt" expr="II_SB_ansOpt"/>
+                <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="monitor" event="conference.joined" name="evt" cond="evt.id2 == II_SB_ibcallid">
+            <!-- Our join attempt was successful. We then decide if we need to monitor the call for key presses -->
+            <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
+            <dialogstart src="'file:'+II_SB_VXML_LIB+'dropKey.vxml'" namelist="II_SB_drpKeyLength II_SB_drpKeyTime"/>
+        </transition>
+
+        <transition state="waitDial" event="connection.failed" name="evt">
+            <!-- This event is triggered when a call fails to connect. If this failure is due to
+                 the fact that the ring timer elapsed, we set the next option to call not answered.
+                 Otherwise, we set the next option to call failed. If the call type is VOIP, we need
+                 to terminate the ring tone before going to the next option -->
+            <log>INFO: transition event [connection.failed] state [<value expr="II_SB_state"/>]</log>
+            <log>ERROR: Call failed to connect. Reason [<value expr="errorCode(evt.reason)"/>]</log>
+            <assign name="II_SB_failTime" expr="getTimeStamp(2)"/>
+            <assign name="II_SB_obcallid" expr="''"/> <!-- Reset connection ID -->
+            <if cond="evt.reason == 'DIALTIMEOUT'"> <!-- Ring timer expired -->
+                <log>INFO: Max ring time expired</log>
+                <assign name="II_SB_state" expr="'noAns'"/>
+                <assign name="II_SB_nxtOpt" expr="II_SB_notAnsOpt"/>
+                <if cond="II_SB_dialType != 'PSTN'">
+                    <dialogterminate dialogid="II_SB_dialogID" immediate="true"/> <!-- Stop ringing tone -->
+                <else/>
+                    <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+                </if>
+            <else/>
+                <assign name="II_SB_nxtOpt" expr="II_SB_failedOpt"/>
+                <if cond="II_SB_dialType != 'PSTN'">
+                    <if cond="II_SB_dialogID.length == 0"> <!-- Implies call failed immediately -->
+                        <log>INFO: Waiting for dialogID...</log>
+                        <assign name="II_SB_state" expr="'endRing'"/>
+                    <else/>
+                        <dialogterminate dialogid="II_SB_dialogID" immediate="true"/> <!-- Stop ringing tone -->
+                        <assign name="II_SB_state" expr="'callFailed'"/>
+                    </if>
+                <else/>
+                    <assign name="II_SB_state" expr="'callFailed'"/>
+                    <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+                </if>
+            </if>
+        </transition>
+
+        <transition state="noAns callFailed endRing" event="dialog.exit" name="evt">
+            <!-- Handles return from terminating ring tone after call fails -->
+            <log>INFO: transition event dialog.exit state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+        </transition>
+
+        <transition event="BridgeTimeout" name="evt">
+            <!-- This event is triggered when a call has reached its max time allowed. If we're in the monitor,
+                 we need to end that vxml dialog. Otherwise we just transition to disconnecting the call -->
+            <log>INFO: transition event [BridgeTimeout] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Reached maximum time allowed for this call</log>
+            <assign name="II_SB_state" expr="'endBridge'"/>
+            <if cond="II_SB_indialog == 'true'">
+                <send data="'dialog.user.termDialog'" target="II_SB_sessionID"/>
+            <else/>
+                <send data="'dialog.user.disconnectOB'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="endBridge" event="dialog.exit" name="evt">
+            <!-- Handles return from terminating vxml dialog after max call time expired -->
+            <log>INFO: transition event dialog.exit state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <send data="'dialog.user.disconnectOB'" target="II_SB_sessionID"/>
+        </transition>
+
+        <transition state="endBridge" event="dialog.user.disconnectOB" name="evt">
+            <!-- In here we perform the disconnect because the time allowed for the call has expired -->
+            <log>INFO: transition event [dialog.user.disconnectOB] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Disconnect call</log>
+            <!-- <disconnect> Throws event connection.disconnected -->
+            <disconnect connectionid="II_SB_obcallid"/>
+        </transition>
+
+        <transition state="endBridge" event="connection.disconnected" name="evt">
+            <!-- Our disconnect attempt was successful. If the max time option is set, we'll
+                 use that as our next option. Otherwise, we need to end the call (since we
+                 don't have a next option to go to. -->
+            <log>INFO: transition event [connection.disconnected] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Max time option [<value expr="II_SB_maxTimeOpt"/>]</log>
+            <assign name="II_SB_obcallid" expr="''"/>
+            <if cond="II_SB_maxTimeOpt != ''">
+                <assign name="II_SB_nxtOpt" expr="II_SB_maxTimeOpt"/>
+                <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+            <else/>
+                <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="monitor" event="dialog.exit" name="evt">
+            <!-- In here we handle the return from our monitor after a key press. If
+                 there isn't a drop key press option, we'll just go back into the monitor
+                 and continue the call. If we have an option, we'll transition to it -->
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <assign name="II_SB_userEntry" expr="evt.values.userInput"/>
+            <log>INFO: Drop key pressed [<value expr="II_SB_userEntry"/>]</log>
+            <log>INFO: Drop key option [<value expr="II_SB_drpKeyOpt"/>]</log>
+            <if cond="II_SB_drpKeyOpt != ''">
+                <assign name="II_SB_nxtOpt" expr="II_SB_drpKeyOpt"/>
+                <unjoin id1="II_SB_ibcallid" id2="II_SB_obcallid"/>
+            <else/>
+                <log>INFO: Return to monitor...</log>
+                <send data="'dialog.user.chkMonitor'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="monitor" event="conference.unjoined" name="evt" cond="evt.id1 == II_SB_ibcallid">
+            <!-- Our unjoin from the call was successful. We need to check what our next action should be -->
+            <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
+            <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+        </transition>
+
+        <transition state="nextOptionRun" event="connection.disconnected" name="evt" cond="evt.connectionid == II_SB_obcallid">
+            <!-- In this event, we catch a hang up that was triggered by the callee. For the application to be in this state,
+                 the callee is likely not conversing with the caller. The caller is probably outside this ccxml script. To
+                 determine the next action, we check if the callee hang up option has been set. If so, we'll take that path.
+                 Otherwise, we'll just reset the outbound connection id. This will prevent any attempt to rejoin a call that is
+                 no longer active. -->
+            <log>INFO: transition event [connection.disconnected] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_obcallid" expr="''"/>
+            <if cond="II_SB_outbDiscOpt.length != 0">
+                <assign name="II_SB_nxtOpt" expr="II_SB_outbDiscOpt"/>
+                <if cond="II_SB_indialog == 'true'">
+                    <assign name="II_SB_state" expr="'inbound.disconnected'"/>
+                    <dialogterminate dialogid="II_SB_dialogID"/>
+                <else/>
+                    <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+                </if>
+            </if>
+        </transition>
+
+		<transition event="connection.disconnected" name="evt">
+            <!-- This event is triggered when either caller or callee hangs up. If we sent
+                 a delayed event for the max call time, we need to cancel that event since the
+                 call has ended. Also, we need to save off the information about who hung up and
+                 take the appropriate next option -->
+            <log>INFO: transition event [connection.disconnected] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_hangUp" expr="'y'"/>
+			<assign name="II_SB_discID" expr="evt.connectionid"/>
+			<assign name="II_SB_discReason" expr="evt.reason"/>
+			<assign name="II_SB_discOriginator" expr="evt.connection.originator"/>
+            <if cond="II_SB_callLength != ''">
+                <cancel sendid="II_SB_maxTimeID"/>
+            </if>
+            <if cond="evt.connectionid != II_SB_obcallid">
+                <log>INFO: Caller hung up</log>
+                <assign name="II_SB_nxtOpt" expr="II_SB_inbDiscOpt"/>
+                <assign name="II_SB_ibcallid" expr="''"/>
+            <else/>
+                <log>INFO: Callee hung up</log>
+                <assign name="II_SB_nxtOpt" expr="II_SB_outbDiscOpt"/>
+                <assign name="II_SB_obcallid" expr="''"/>
+            </if>
+            <if cond="II_SB_indialog == 'true'">
+                <assign name="II_SB_state" expr="'inbound.disconnected'"/>
+                <dialogterminate dialogid="II_SB_dialogID"/>
+            <else/>
+                <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="inbound.disconnected" event="dialog.exit" name="evt">
+            <!-- Handles return from terminating vxml dialog after a hangup has been received -->
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
+        </transition>
+
+        <transition event="dialog.user.nextVXML">
+            <!-- The logic in this transition determines how the we react to a previous event that
+                 happened. If we've already been in this transition before, we're just going to call the 
+                 next vxml template. If this is the first time we're coming here, we need to call the 
+                 out-dial.vxml template. We are going to pass some values into that template and from
+                 that template, we'll transition into the next vxml template. The only other option
+                 available is that we received a hang up (caller or callee) but we don't have a next option
+                 set. At this point, we need to check if we have a hang up node. -->
+            <log>INFO: transition event [dialog.user.nextVXML] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>]</log>
+            <log>INFO: First Pass [<value expr="II_SB_firstPass"/>]</log>
+            <assign name="II_SB_state" expr="'nextOptionRun'"/>
+            <if cond="(II_SB_nxtOpt != '') &amp;&amp; (II_SB_nxtOpt != undefined) &amp;&amp; II_SB_firstPass == 'no'">
+                <if cond="II_SB_ibcallid.length != 0">      <!-- If caller hung up, don't attempt to connect to vxml voice channel -->
+                    <join id1="II_SB_ibcallid" id2="'VXML_CHANNEL'"/>    <!-- Join caller to vxml voice channel -->
+                </if>
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_nxtOpt + '.vxml'"/>
+            <elseif cond="(II_SB_nxtOpt != '') &amp;&amp; (II_SB_nxtOpt != undefined) &amp;&amp; II_SB_firstPass == 'yes'"/>
+                <log>INFO: Returning to out-dial.vxml to set values of variables</log>
+                <assign name="II_SB_firstPass" expr="'no'"/>
+                <var name="II_SB_outBoundID" expr="II_SB_obcallid"/>
+                <var name="II_SB_callerIdentity" expr="II_SB_remote"/>
+                <log>INFO: Connection ID [<value expr="II_SB_outBoundID"/>]</log>
+                <log>INFO: Caller ID [<value expr="II_SB_callerIdentity"/>]</log>
+                <if cond="II_SB_nxtOpt != II_SB_inbDiscOpt">    <!-- If caller hung up, don't attempt to connect to vxml voice channel -->
+                    <if cond="II_SB_ibcallid.length != 0">
+                        <join id1="II_SB_ibcallid" id2="'VXML_CHANNEL'"/>
+                    </if>
+                </if>
+                <dialogstart src="'file:' + II_SB_CODE_DIR + '288_17'+ '.vxml'" namelist="II_SB_firstPass II_SB_callerIdentity II_SB_outBoundID II_SB_userEntry II_SB_nxtOpt II_SB_connectTime II_SB_failTime II_SB_startTime"/>
+            <else/>
+                <if cond="II_SB_hangUp == 'y'">
+                    <send data="'dialog.user.hangup'" target="II_SB_sessionID"/>
+                <else/>
+                    <assign name="II_SB_state" expr="'endCall'"/>
+                    <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+                </if>
+            </if>
+        </transition>
+
+		<transition event="dialog.user.hangup" name="evt">
+            <!-- This event checks for the hang up template. If we find one, we'll transition to it -->
+			<log>INFO: transition event [dialog.user.hangup] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Checking for hang up logic</log>
+            <var name="II_SB_file1" expr="II_SB_CODE_DIR + 'hang-up.vxml'"/>
+            <var name="II_SB_file2" expr="''"/>
+            <var name="II_SB_fileOprtn" expr="'stat'"/>
+			<assign name="II_SB_state" expr="'hangUp'"/>
+            <dialogstart src="'file:' + II_SB_BASE_DIR + 'lib/vxml/fileUtil.vxml'" namelist="II_SB_file1 II_SB_file2 II_SB_fileOprtn"/> <!-- Check for Hangup logic -->
+		</transition>
+
+        <transition state="hangUp" event="dialog.exit" name="evt">
+            <!-- Handles return from vxml dialog after checking for hang up template -->
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <if cond="evt.values.II_SB_status != 'Failure'">
+                <if cond="evt.values.II_SB_fileSize != ''">
+                    <log>INFO: Found hang up logic</log>
+                    <dialogstart src="'file:' + II_SB_CODE_DIR + 'hang-up.vxml'" namelist="II_SB_discID II_SB_discReason II_SB_discOriginator"/>
+                <else/>
+                    <log>INFO: Did not find hang up logic</log>
+                    <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+                </if>
+            <else/>
+                <log>INFO: Did not find hang up logic</log>
+                <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            </if>
+        </transition>
+
+        <transition state="nextOptionRun endCall" event="dialog.exit" name="evt">
+            <!-- Handles return from vxml dialog. This transition is used when we need to
+                 end the call, transfer control to a new application or start a different
+                 ccxml file. -->
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <assign name="II_SB_indialog" expr="'false'"/>
+            <assign name="II_SB_status" expr="evt.values.II_SB_status"/>
+            <assign name="II_SB_NEXT_OPTION" expr="evt.values.II_SB_nextOpt"/>
+
+            <if cond="(II_SB_status == 'endCall') || (II_SB_state == 'endCall')">
+                <log>INFO: End call</log>
+                <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+            <elseif cond="II_SB_status == 'outDialCheck'"/>
+                <log>INFO: Checking Out Dial status</log>
+                <var name="II_SB_fromCCXML" expr="'true'"/>
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.vxml'" namelist="II_SB_obcallid II_SB_fromCCXML"/>
+            <elseif cond="II_SB_status == 'transfer'"/>
+                <log>INFO: Transfering to a new program</log>
+                <log>INFO: Next option [<value expr="II_SB_NEXT_OPTION"/>]</log>
+                <var name="II_SB_transfer" expr="'yes'"/>
+                <assign name="II_SB_projectSource" expr="'listen_autoAttendant'"/>
+                <var name="II_SB_importedValue" expr="evt.values.II_SB_valueToPass"/>
+                <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+            <else/>
+				<assign name="II_SB_passValues" expr="evt.values.II_SB_returnValues"/>
+                <log>INFO: Fectching new ccxml file</log>
+				<log>INFO: Next option [<value expr="II_SB_NEXT_OPTION"/>]</log>
+                <log>INFO: Values passed out [<value expr="II_SB_passValues"/>]</log>
+				<fetch next="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_NEXT_OPTION II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_CODE_DIR II_SB_BASE_DIR II_SB_ibcallid II_SB_obcallid II_SB_passValues II_SB_projectSource"/>
+            </if>
+        </transition>
+
+        <transition event="dialog.user.basichttp" name="evt">
+            <!-- This transition is triggered when an external component sends an event to the ccxml session.
+            Here, we grab the data associated with the event and attempt to process it at the ccxml layer. NOTE:
+            the expected input items are II_SB_basichttpEvent, II_SB_URI and II_SB_argument. The URI should be
+            a relative file path to the first ccxml file of the project. So, /interact/apps/spotbuild/II_SB_URI will be
+            full path to the file. II_SB_argument is assumed to be a string delimited by question marks ('?')-->
+            <log>INFO: transition event [dialog.user.basichttp] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Event [<value expr="evt.II_SB_basichttpEvent"/>]</log>
+            <if cond="evt.II_SB_basichttpEvent == 'CREATESESSION'">
+                <log>INFO: uri [<value expr="evt.II_SB_URI"/>]</log>
+                <log>INFO: argument [<value expr="evt.II_SB_argument"/>]</log>
+                <var name="uri" expr="'file:' + II_SB_BASE_DIR + evt.II_SB_URI"/>
+                <var name="II_SB_tmpArray" expr="'ConnectionID:'+II_SB_outBoundID"/>
+                <assign name="II_SB_importedValue" expr="extendJsonObj(evt.II_SB_argument,II_SB_tmpArray)"/>
+                <log>INFO: Sending: [<value expr="uri + ' ' + II_SB_importedValue"/>]</log>
+                <send data="'httpCreateSession'" targettype="'basichttp'" target="'http://localhost/spot/ccxml/createsession'" namelist="uri II_SB_importedValue"/>
+            <else/>
+                <!-- Future events -->
+            </if>
+        </transition>
+
+        <transition event="dialog.user.customEvent" name="evt">
+            <!-- This transition handles events thrown from the send-custom-event.ccxml file.
+                 We essentially grab the event name and arguments and call the customEvent.vxml file -->
+            <log>INFO: transition event [dialog.user.customEvent] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Received custom event [<value expr="evt.II_SB_eventToPass"/>]</log>
+            <assign name="II_SB_state" expr="'customEvent'"/>
+            <assign name="II_SB_passValues" expr="evt.II_SB_eventToPass + '|' + evt.II_SB_valueToPass"/>
+            <unjoin id1="II_SB_ibcallid" id2="II_SB_obcallid"/>
+        </transition>
+
+        <transition state="customEvent" event="conference.unjoined" name="evt" cond="evt.id1 == II_SB_ibcallid">
+            <!-- Our unjoin from the conference was successful. We need to check what our next action should be -->
+            <log>INFO: transition event [conference.joined] state [<value expr="II_SB_state"/>]</log>
+            <if cond="II_SB_indialog == 'true'">    <!-- If we're in a vxml dialog when the event comes in, let's terminate the dialog -->
+                <send data="'dialog.user.termDialog'" target="II_SB_sessionID"/>
+            <else/>
+              	<assign name="II_SB_state" expr="'nextOptionRun'"/>
+	        	<dialogstart src="'file:' + II_SB_CODE_DIR + 'customEvent.vxml'" namelist="II_SB_ibcallid II_SB_passValues"/>
+            </if>
+        </transition>
+
+        <transition state="customEvent" event="dialog.exit">
+            <!-- Handles the return from the vxml dialog when a custom event is received -->
+            <log>INFO: transition event [dialog.exit] state [<value expr="II_SB_state"/>]</log>
+            <var name="II_SB_indialog" expr="'false'"/>
+          	<assign name="II_SB_state" expr="'nextOptionRun'"/>
+        	<dialogstart src="'file:' + II_SB_CODE_DIR + 'customEvent.vxml'" namelist="II_SB_ibcallid II_SB_passValues"/>
+        </transition>
+
+        <transition event="dialog.user.termDialog"> <!-- Terminates the currently running dialog -->
+            <log>INFO: transition event [dialog.user.termDialog] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Terminating dialog [ <value expr="II_SB_dialogID"/>]</log>
+            <dialogterminate dialogid="II_SB_dialogID"/>
+        </transition>
+
+        <transition event="fetch.done" name="evt">  <!-- Fetched ccxml document -->
+            <log>INFO: transition event [fetch.done] state [<value expr="II_SB_state"/>]</log>
+            <goto fetchid="evt.fetchid"/> <!-- Go to ccxml document -->
+        </transition>
+
+        <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->
+            <assign name="II_SB_indialog" expr="'true'"/>
+            <assign name="II_SB_dialogID" expr="evt.dialogid"/>
+            <log>INFO: Started dialogID [<value expr="II_SB_dialogID"/>]</log>
+        </transition>
+
+        <transition event="error.dialog.notstarted" name="evt"> <!-- Catch dialog not started -->
+            <log>INFO: transition event [<value expr="evt.name"/>] state [<value expr="II_SB_state"/>]</log>
+            <log>ERROR: Unable to start Dialog. REASON [<value expr="evt.reason"/>]</log>
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+        </transition>
+
+        <transition event="error.fetch" name="evt"> <!-- Catch fetch error -->
+            <log>INFO: transition event [<value expr="evt.name"/>] state [<value expr="II_SB_state"/>]</log>
+            <log>ERROR: Unable to fetch document. REASON [<value expr="evt.reason"/>]</log>
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+        </transition>
+
+        <!-- Catch errors -->
+        <transition event="err*" name="errEV">
+            <log>INFO: transition event [err*] state [<value expr="II_SB_state"/>]</log>
+            <log>ERROR: [<value expr="errEV.reason"/>]</log>
+            <assign name="II_SB_state" expr="'endCall'"/>
+            <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
+        </transition>
+
+        <!-- Exit ccxml layer -->
+        <transition event="dialog.user.endCall">
+            <log>INFO: transition event [dialog.user.endCall] state [<value expr="II_SB_state"/>]</log>
+            <log>INFO: Exit CCXML</log>
+            <exit/>
+        </transition>
+
+    </eventprocessor>
+</ccxml>
