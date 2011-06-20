@@ -68,10 +68,13 @@
 	<var name="SB_UV_recDtmf"/>
 	<var name="SB_UV_recAction"/>
 	<var name="SB_UV_callerHungup"/>
+	<var name="SB_UV_application"/>
+	<var name="SB_UV_organization"/>
 	<var name="SB_UV_exceptionLog"/>
 	<var name="SB_UV_logText"/>
 	<var name="SB_UV_line"/>
 	<var name="SB_UV_project"/>
+	<var name="SB_UV_transcriptionOpts"/>
 
     
     <form id="beginDocument">
@@ -234,6 +237,12 @@
 			<if cond="SB_UV_callerHungup != undefined">
 				<assign name="callerHungup" expr="SB_UV_callerHungup" />
 			</if>
+			<if cond="SB_UV_application != undefined">
+				<assign name="application" expr="SB_UV_application" />
+			</if>
+			<if cond="SB_UV_organization != undefined">
+				<assign name="organization" expr="SB_UV_organization" />
+			</if>
 			<if cond="SB_UV_exceptionLog != undefined">
 				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />
 			</if>
@@ -245,6 +254,9 @@
 			</if>
 			<if cond="SB_UV_project != undefined">
 				<assign name="project" expr="SB_UV_project" />
+			</if>
+			<if cond="SB_UV_transcriptionOpts != undefined">
+				<assign name="transcriptionOpts" expr="SB_UV_transcriptionOpts" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

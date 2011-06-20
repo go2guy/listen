@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'183_45'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'183_9'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_183_44(project,line)
+            function II_SB_JS_function_183_44(cntrlURL)
             {
-	            var logText = 'Caller Info: Get ANI ID bad fetch';return writeLog(project,line,logText);
+	            return changeSuffix(cntrlURL,'/','api');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Log</log>
+            <log target="status">Change cntrlURL</log>
             <log>INFO: Entered run-javascript.vxml [183_44]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_183_44(project,line)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="logText" expr="II_SB_userJava" />   
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_183_44(cntrlURL)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="cntrlURL" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

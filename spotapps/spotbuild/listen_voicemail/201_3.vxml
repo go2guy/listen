@@ -16,6 +16,7 @@
             <log>INFO: Entered data-query.vxml [201_3]</log>
             <data name="fileOBJ" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="get" namelist="FILE1 OPERATION " fetchtimeout="II_SB_dataTimeOut"/>
 			<assign name="status" expr="fileOBJ.Result" />
+			<assign name="returnStr" expr="fileOBJ.Reason" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>

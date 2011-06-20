@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'194_23'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'194_25'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_194_24(project,line,FILE1,status)
+            function II_SB_JS_function_194_24(project,line,FILE1,status,returnStr,OPERATION)
             {
-	            var logText = 'Get File Size: Chk For Msg failure - passed [' + FILE1 + '] reason [' + status + ']';return writeLog(project,line,logText);
+	            var logText = 'Get File Size: Chk For Msg returned Failure. Reason [' + returnStr  + ']. Attempted ['+OPERATION+'] on ['+FILE1+'].';return writeLog(project,line,logText);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Log</log>
             <log>INFO: Entered run-javascript.vxml [194_24]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_194_24(project,line,FILE1,status)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_194_24(project,line,FILE1,status,returnStr,OPERATION)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

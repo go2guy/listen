@@ -16,11 +16,12 @@ function setCallerName (jsonObj, status, ANI) {
     return result;
 }
 
-function createTranscriptionObj(returnVal, fileLocation, passValues) {
+function createTranscriptionObj(returnVal, fileLocation, passValues, transcriptionOpts) {
     var number = eval("("+returnVal+")");
     var result = eval("("+passValues+")");
     result.fileLocation = fileLocation;
     result.fileNumber = number.id;
+    result.phoneNumber = getJsonVal(transcriptionOpts, 'phoneNumber');
     return iiStringify(result);
 }
 

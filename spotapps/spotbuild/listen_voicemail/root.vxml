@@ -40,7 +40,7 @@
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'stat'" />
 	<var name="request" expr="'get'" />
-	<var name="resource" expr="'accessNumbers'" />
+	<var name="resource" expr="''" />
 	<var name="params" expr="''" />
 	<var name="cntrlURL" expr="''" />
 	<var name="audioURL" expr="''" />
@@ -78,10 +78,13 @@
 	<var name="recDtmf" expr="''" />
 	<var name="recAction" expr="''" />
 	<var name="callerHungup" expr="'false'" />
+	<var name="application" expr="''" />
+	<var name="organization" expr="''" />
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 	<var name="logText" expr="''" />
 	<var name="line" expr="'line'" />
 	<var name="project" expr="'LISTEN_VOICEMAIL'" />
+	<var name="transcriptionOpts" expr="''" />
 
 
     <!-- Conference Variables -->
