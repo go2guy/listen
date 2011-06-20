@@ -71,7 +71,4 @@
       <param name="deploy.dir" value="${rpm.staging.dir}/BUILD/interact/listen"/>
     </antcall>
   </target>
-
-
-  <target name="hudson" depends="test-with-coverage rpm" description="target for hudson"/>
 </project>
