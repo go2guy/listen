@@ -46,10 +46,7 @@
 
             <question level="not_in_backup" severity="ask">
                 <text>Enter the host running the listen controller</text>
-                <default>
-                    #!/bin/bash
-                    hostname
-                </default>
+                <default>defaultcontroller</default>
                 <validateRegex preset="HOSTNAME"/>
 
                 <property format="propsh" action="upsert">
@@ -70,18 +67,6 @@
                     <tag>var</tag>
                     <attribute>expr</attribute>
                     <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
-                </property>
-            </question>
-
-            <question level="not_in_backup" severity="ask">
-                <text>Enter default custom application name</text>
-                <default></default>
-                <validateRegex>.*</validateRegex>
-                <validateInfo>This value may be left blank. Otherwise the directory MUST currently exist under /interact/apps/spotbuild/</validateInfo>
-
-                <property format="cfg" action="update">
-                    <name>application</name>
-                    <location>/interact/listen/artifacts/defaultApp.cfg</location>
                 </property>
             </question>
 
@@ -135,9 +120,25 @@
             </question>
 
             <question level="not_in_backup" severity="ask">
+                <text>Will this system make calls directly to the SIP trunk</text>
+                <default>n</default>
+                <validateRegex>^(y|n)$</validateRegex>
+                <validateInfo>The value may only be y/n</validateInfo>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>sipDirect</name>
+                    <group>SIP</group>
+                    <description>Direct</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="ask">
                 <text>Enter the phone number to use if the controller is unreachable</text>
-                <default>101</default>
-                <validateRegex>^${HOSTNAME}$</validateRegex>
+                <default>''</default>
+                <validateRegex>^${HOSTNAME}|''$</validateRegex>
                 <validateInfo>The value may be any number of letters, numbers, dashes, or periods. The value may not be blank.</validateInfo>
 
                 <property format="ccvxml" action="update" quotes="yes">
