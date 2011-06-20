@@ -10,7 +10,7 @@
 
     <!-- Edge Variables -->
     <var name="II_SB_oldNxtOpt" expr="'182_9'"/>       <!-- Next option for original session -->
-    <var name="II_SB_newNxtOpt" expr="'182_64'"/>        <!-- Next option for new session -->
+    <var name="II_SB_newNxtOpt" expr="'182_91'"/>        <!-- Next option for new session -->
     <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
     <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
 
@@ -27,7 +27,7 @@
             <log>INFO: Entered create-session.vxml [182_11]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>
-                <exit namelist="fileLocation fileNumber count passValues STATcontroller"/>
+                <exit namelist="fileLocation fileNumber count passValues STATcontroller sipDirect"/>
             <elseif cond="II_SB_action == 'nextOpt'"/>
     	    
                 <log>INFO: Next option [<value expr="II_SB_whichOpt"/>.vxml]</log>

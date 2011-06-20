@@ -35,7 +35,7 @@
 	<var name="fileNumber" expr="''" />
 	<var name="status" expr="''" />
 	<var name="result" expr="''" />
-	<var name="outDialNum" expr="'14026083919'" />
+	<var name="outDialNum" expr="''" />
 	<var name="count" expr="'0'" />
 	<var name="tries" expr="'1'" />
 	<var name="STATcontroller" expr="''" />
@@ -50,6 +50,12 @@
 	<var name="cntrlURL" expr="''" />
 	<var name="HTTPcontroller" expr="''" />
 	<var name="transcriptionTxt" expr="''" />
+	<var name="sipDirect" expr="''" />
+	<var name="line" expr="'line'" />
+	<var name="logText" expr="''" />
+	<var name="exceptionLog" expr="''" />
+	<var name="project" expr="'LISTEN_TRANSCRIPTION'" />
+	<var name="returnStr" expr="''" />
 
 
     <!-- Conference Variables -->

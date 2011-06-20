@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'182_89'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'196_30'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_182_71(passValues,outDialNum)
+            function II_SB_JS_function_196_29(project,line)
             {
-	            return outDialNum + '@' + getJsonVal(passValues, 'sipURL');
+	            var logText = 'Update Voicemail: Update Voicemail bad fetch';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get sipURL</log>
-            <log>INFO: Entered run-javascript.vxml [182_71]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_182_71(passValues,outDialNum)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="outDialNum" expr="II_SB_userJava" />   
+            <log target="status">Set Fetch Log</log>
+            <log>INFO: Entered run-javascript.vxml [196_29]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_196_29(project,line)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

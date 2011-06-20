@@ -86,10 +86,11 @@
 			<var name="SB_UV_count" expr="evt.values.count"/>
 			<var name="SB_UV_passValues" expr="evt.values.passValues"/>
 			<var name="SB_UV_STATcontroller" expr="evt.values.STATcontroller"/>
+			<var name="SB_UV_sipDirect" expr="evt.values.sipDirect"/>
         
             <assign name="II_SB_state" expr="'createSession'"/>
 	        <assign name="II_SB_status" expr="'createSession'"/>
-    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_fileLocation SB_UV_fileNumber SB_UV_count SB_UV_passValues SB_UV_STATcontroller"/>
+    		<createccxml sessionid="II_SB_startedSID" next="'file:'+II_SB_CODE_DIR+'begin.ccxml'" namelist="II_SB_status II_SB_type II_SB_newNxtOpt II_SB_whichID II_SB_VXML_LIB II_SB_projectSource SB_UV_fileLocation SB_UV_fileNumber SB_UV_count SB_UV_passValues SB_UV_STATcontroller SB_UV_sipDirect"/>
 	    </transition>
 
 	    <transition state="createSession" event="ccxml.created" name="evt" cond="(II_SB_whichID == II_SB_obcallid) &amp;&amp; (II_SB_obcallid.length != 0)">
