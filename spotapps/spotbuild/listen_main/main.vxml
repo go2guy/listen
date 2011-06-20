@@ -30,6 +30,7 @@
 	<var name="SB_UV_request"/>
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_sipURL"/>
+	<var name="SB_UV_sipDirect"/>
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_HTTPcontroller"/>
@@ -40,7 +41,6 @@
 	<var name="SB_UV_value"/>
 	<var name="SB_UV_operation"/>
 	<var name="SB_UV_artifactsDIR"/>
-	<var name="SB_UV_FILE"/>
 	<var name="SB_UV_contentType"/>
 	<var name="SB_UV_EXT_LENGTH"/>
 	<var name="SB_UV_EXT_PREFIX"/>
@@ -49,12 +49,14 @@
 	<var name="SB_UV_pstnLength"/>
 	<var name="SB_UV_errorCnt"/>
 	<var name="SB_UV_errorTot"/>
-	<var name="SB_UV_MODE"/>
-	<var name="SB_UV_DATA"/>
+	<var name="SB_UV_organization"/>
 	<var name="SB_UV_project"/>
 	<var name="SB_UV_line"/>
 	<var name="SB_UV_exceptionLog"/>
 	<var name="SB_UV_logText"/>
+	<var name="SB_UV_appLicense"/>
+	<var name="SB_UV_returnStr"/>
+	<var name="SB_UV_returnVal"/>
 
     
     <form id="beginDocument">
@@ -104,6 +106,9 @@
 			<if cond="SB_UV_sipURL != undefined">
 				<assign name="sipURL" expr="SB_UV_sipURL" />
 			</if>
+			<if cond="SB_UV_sipDirect != undefined">
+				<assign name="sipDirect" expr="SB_UV_sipDirect" />
+			</if>
 			<if cond="SB_UV_sysAccessTime != undefined">
 				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />
 			</if>
@@ -134,9 +139,6 @@
 			<if cond="SB_UV_artifactsDIR != undefined">
 				<assign name="artifactsDIR" expr="SB_UV_artifactsDIR" />
 			</if>
-			<if cond="SB_UV_FILE != undefined">
-				<assign name="FILE" expr="SB_UV_FILE" />
-			</if>
 			<if cond="SB_UV_contentType != undefined">
 				<assign name="contentType" expr="SB_UV_contentType" />
 			</if>
@@ -161,11 +163,8 @@
 			<if cond="SB_UV_errorTot != undefined">
 				<assign name="errorTot" expr="SB_UV_errorTot" />
 			</if>
-			<if cond="SB_UV_MODE != undefined">
-				<assign name="MODE" expr="SB_UV_MODE" />
-			</if>
-			<if cond="SB_UV_DATA != undefined">
-				<assign name="DATA" expr="SB_UV_DATA" />
+			<if cond="SB_UV_organization != undefined">
+				<assign name="organization" expr="SB_UV_organization" />
 			</if>
 			<if cond="SB_UV_project != undefined">
 				<assign name="project" expr="SB_UV_project" />
@@ -178,6 +177,15 @@
 			</if>
 			<if cond="SB_UV_logText != undefined">
 				<assign name="logText" expr="SB_UV_logText" />
+			</if>
+			<if cond="SB_UV_appLicense != undefined">
+				<assign name="appLicense" expr="SB_UV_appLicense" />
+			</if>
+			<if cond="SB_UV_returnStr != undefined">
+				<assign name="returnStr" expr="SB_UV_returnStr" />
+			</if>
+			<if cond="SB_UV_returnVal != undefined">
+				<assign name="returnVal" expr="SB_UV_returnVal" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

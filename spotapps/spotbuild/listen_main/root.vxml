@@ -40,6 +40,7 @@
 	<var name="request" expr="'post'" />
 	<var name="status" expr="''" />
 	<var name="sipURL" expr="''" /> <!-- Config SIP Server Name -->
+	<var name="sipDirect" expr="'n'" /> <!-- Config SIP Direct -->
 	<var name="sysAccessTime" expr="''" />
 	<var name="ANI" expr="'remote'" />
 	<var name="HTTPcontroller" expr="'http://localhost/spot/cgi-bin/spotbuild/listen/controller.php'" />
@@ -58,12 +59,14 @@
 	<var name="pstnLength" expr="'10'" /> <!-- Config PSTN Minimum Digits Length -->
 	<var name="errorCnt" expr="'0'" />
 	<var name="errorTot" expr="'2'" />
-	<var name="MODE" expr="'APPEND'" />
-	<var name="DATA" expr="''" />
+	<var name="organization" expr="''" />
 	<var name="project" expr="'LISTEN_MAIN'" />
 	<var name="line" expr="'line'" />
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 	<var name="logText" expr="''" />
+	<var name="appLicense" expr="''" />
+	<var name="returnStr" expr="''" />
+	<var name="returnVal" expr="''" />
 
 
     <!-- Conference Variables -->
