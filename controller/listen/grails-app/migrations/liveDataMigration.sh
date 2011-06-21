@@ -94,7 +94,7 @@ mysql -u root -e "insert into listen2.call_history (ani, date_time, dnis, durati
 mysql -u root -e "update listen2.action_history set action = 'CHANGED_VOICEMAIL_PIN' where action = 'Changed voicemail PIN';"
 mysql -u root -e "update listen2.action_history set action = 'CREATED_USER' where action = 'Created subscriber';"
 mysql -u root -e "update listen2.action_history set action = 'DELETED_FINDMENUMBER' where action = 'Deleted find me number';"
-mysql -u root -e "update listen2.action_history set action = 'DELETED_SUBSCRIBER' where action = 'Deleted subscriber';"
+mysql -u root -e "update listen2.action_history set action = 'DELETED_USER' where action = 'Deleted subscriber';"
 mysql -u root -e "update listen2.action_history set action = 'DELETED_VOICEMAIL' where action = 'Deleted voicemail';"
 mysql -u root -e "update listen2.action_history set action = 'DOWNLOADED_VOICEMAIL' where action = 'Downloaded voicemail';"
 mysql -u root -e "update listen2.action_history set action = 'DROPPED_CONFERENCE_CALLER' where action = 'Dropped conference caller';"
