@@ -166,19 +166,19 @@ div.options li {
         <div class="options">
           <ul>
             <li>
-              <form action="/listen/voicemail/delete" method="post" class="delete-form">
+              <form action="delete" method="post" class="delete-form">
                 <input type="hidden" name="id" id="id">
                 <input type="submit" name="delete" value="<g:message code="default.button.delete.label"/>" id="delete">
               </form>
             </li>
             <li>
-              <form action="/listen/voicemail/toggleStatus" method="post">
+              <form action="toggleStatus" method="post">
                 <input type="hidden" name="id" id="id">
                 <input type="submit" name="toggleStatus" value="${g.message(code: 'page.voicemail.inbox.button.markNew')}" id="toggleStatus">
               </form>
             </li>
             <li>
-              <form action="/listen/voicemail/download" method="get">
+              <form action="download" method="get">
                 <input type="hidden" name="id" id="id">
                 <input type="submit" name="download" value="<g:message code="default.button.download.label"/>" id="download">
               </form>
