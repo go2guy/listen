@@ -178,58 +178,66 @@ ul.tab-menu li.current a {
 /* special coloring for meta menus */
 
 #meta-menu li a {
-    background: #DED3D3;
-    border-color: #917474;
-    color: #705454;
+    background: #FAEDD5;
+    border-color: #E4A634;
+    color: #574D3E;
 }
 
 #meta-menu li a:hover,
 #meta-menu li.current a {
-    color: #573E3E;
+    color: #574D3E;
     background: #FFFFFF;
 }
 
 #content-area.meta {
-    border-color: #917474;
+    border-color: #E4A634;
 }
 
 #content-area.meta ul.button-menu li a {
     background: #FFFFFF;
-    border-color: #917474;
-    color: #705454;
+    border-color: #E4A634;
+    color: #574D3E;
 }
 
 #content-area.meta ul.button-menu li a:hover,
 #content-area.meta ul.button-menu li.current a {
-    background: #DED3D3;
-    border-color: #705454;
-    color: #573E3E;
+    background: #FAEDD5;
+    border-color: #574D3E;
+    color: #574D3E;
 }
 
 #content-area.meta tr.even { background-color: #EDE8DF; }
 #content-area.meta tr.odd { background-color: #E3DDD3; }
 #content-area.meta tr.highlighted,
 #content-area.meta table.highlighted tbody tr {
-    background-color: #917474;
+    background-color: #E4A634;
 }
 
 #content-area.meta a,
 #content-area.meta table thead th {
-    color: #573E3E;
+    color: #574D3E;
 }
 
 #content-area.meta caption,
 #content-area.meta h3 {
-    border-color: #705454;
-    color: #705454;
+    border-color: #574D3E;
+    color: #574D3E;
 }
 
 #content-area.meta input[type=submit],
 #content-area.meta input[type=button],
 #content-area.meta input[type=reset],
 #content-area.meta button {
-    border-color: #573E3E;
-    color: #573E3E;
+    border-color: #574D3E;
+    color: #574D3E;
+}
+
+#content-area.meta input[type=submit]:hover,
+#content-area.meta input[type=button]:hover,
+#content-area.meta input[type=reset]:hover,
+#content-area.meta button:hover {
+    background-color: #574D3E;
+    color: #FFFFFF;
 }
 
 /* end special coloring */
