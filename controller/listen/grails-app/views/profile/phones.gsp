@@ -11,10 +11,10 @@ table { margin-bottom: 10px; }
 #system-phones .col-type { width: 30%; }
 #system-phones .col-button { width: 5%; }
 
-#user-phones .col-number { width: 20%; }
-#user-phones .col-type { width: 30%; }
-#user-phones .col-public { width: 45%; }
-#user-phones .col-button { width: 5%; }
+.user-phones .col-number { width: 20%; }
+.user-phones .col-type { width: 30%; }
+.user-phones .col-public { width: 45%; }
+.user-phones .col-button { width: 5%; }
 
 .col-forward input[type=text] { width: 150px; }
 .col-number input[type=text] { width: 150px; }
@@ -61,8 +61,23 @@ td.col-public {
       </table>
     </g:if>
 
-    <table id="user-phones">
+    <table class="user-phones">
       <caption><g:message code="page.profile.phones.caption.personal"/></caption>
+      <tbody>
+        <tr class="add highlighted">
+          <g:form controller="profile" action="addUserPhoneNumber" method="post">
+            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newPhoneNumber, field: 'number')}"/></td>
+            <td class="col-type"><g:select name="type" from="${com.interact.listen.PhoneNumberType.userTypes()}" optionKey="key" value="${newPhoneNumber?.type?.name()}"/></td>
+            <td class="col-public"><g:checkBox name="isPublic" value="${newPhoneNumber?.isPublic}"/></td>
+            <td class="col-button" colspan="2">
+              <g:submitButton name="add" value="${g.message(code: 'default.add.label', args: [g.message(code: 'phoneNumber.label')])}"/>
+            </td>
+          </g:form>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="user-phones">
       <thead>
         <th class="col-number"><g:message code="phoneNumber.number.label"/></th>
         <th class="col-type"><g:message code="phoneNumber.type.label"/></th>
@@ -95,16 +110,6 @@ td.col-public {
         <g:else>
           <tr class="even"><td colspan="5"><g:message code="page.profile.phones.noPersonalPhones"/></td></tr>
         </g:else>
-        <tr class="add highlighted">
-          <g:form controller="profile" action="addUserPhoneNumber" method="post">
-            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newPhoneNumber, field: 'number')}"/></td>
-            <td class="col-type"><g:select name="type" from="${com.interact.listen.PhoneNumberType.userTypes()}" optionKey="key" value="${newPhoneNumber?.type?.name()}"/></td>
-            <td class="col-public"><g:checkBox name="isPublic" value="${newPhoneNumber?.isPublic}"/></td>
-            <td class="col-button" colspan="2">
-              <g:submitButton name="add" value="${g.message(code: 'default.add.label', args: [g.message(code: 'phoneNumber.label')])}"/>
-            </td>
-          </g:form>
-        </tr>
       </tbody>
     </table>
   </body>
