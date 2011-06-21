@@ -12,7 +12,7 @@
 	    <log target="status">Set Variables</log>
             <log>INFO: Entered assign-variable.vxml [117_86]</log>
             <log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'CallDetailRecords'+''" />
+<assign name="resource" expr="'callDetailRecords'+''" />
 <log>INFO: Updated value [<value expr="resource"/>]</log>
 <log>INFO: Current value [<value expr="request"/>]</log>
 <assign name="request" expr="'post'+''" />

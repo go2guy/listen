@@ -102,10 +102,12 @@
 	<var name="SB_UV_subHref"/>
 	<var name="SB_UV_initiatingObj"/>
 	<var name="SB_UV_argList"/>
+	<var name="SB_UV_organization"/>
 	<var name="SB_UV_exceptionLog"/>
 	<var name="SB_UV_logText"/>
 	<var name="SB_UV_line"/>
 	<var name="SB_UV_project"/>
+	<var name="SB_UV_application"/>
 
     
     <form id="beginDocument">
@@ -373,6 +375,9 @@
 			<if cond="SB_UV_argList != undefined">
 				<assign name="argList" expr="SB_UV_argList" />
 			</if>
+			<if cond="SB_UV_organization != undefined">
+				<assign name="organization" expr="SB_UV_organization" />
+			</if>
 			<if cond="SB_UV_exceptionLog != undefined">
 				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />
 			</if>
@@ -384,6 +389,9 @@
 			</if>
 			<if cond="SB_UV_project != undefined">
 				<assign name="project" expr="SB_UV_project" />
+			</if>
+			<if cond="SB_UV_application != undefined">
+				<assign name="application" expr="SB_UV_application" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

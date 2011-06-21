@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set resource</log>
+	    <log target="status">Set Variables</log>
             <log>INFO: Entered assign-variable.vxml [197_13]</log>
             <log>INFO: Current value [<value expr="resource"/>]</log>
 <assign name="resource" expr="'accessNumbers'+''" />

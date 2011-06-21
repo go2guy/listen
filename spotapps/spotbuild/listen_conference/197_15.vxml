@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'197_25'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'197_46'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function_197_15(returnVal)
             {
-	            var key = 'subscriber';return getHrefId(returnVal, key);
+	            var index = 0;var key = 'href';var result = getResultsKeyValue(returnVal, index, key);return getNextElement('L', result, '/');
             }
         ]]>
     </script>

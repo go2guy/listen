@@ -21,7 +21,7 @@
             <log target="status">Get Application</log>
             <log>INFO: Entered run-javascript.vxml [109_30]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_109_30(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="status" expr="II_SB_userJava" />   
+            <assign name="application" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

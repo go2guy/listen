@@ -17,9 +17,6 @@
 <log>INFO: Current value [<value expr="playHelp"/>]</log>
 <assign name="playHelp" expr="'false'+''" />
 <log>INFO: Updated value [<value expr="playHelp"/>]</log>
-<log>INFO: Current value [<value expr="lstnSub"/>]</log>
-<assign name="lstnSub" expr="subHref+''" />
-<log>INFO: Updated value [<value expr="lstnSub"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

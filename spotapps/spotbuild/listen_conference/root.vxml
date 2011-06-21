@@ -112,10 +112,12 @@
 	<var name="subHref" expr="''" />
 	<var name="initiatingObj" expr="''" />
 	<var name="argList" expr="''" />
+	<var name="organization" expr="''" />
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 	<var name="logText" expr="''" />
 	<var name="line" expr="'line'" />
 	<var name="project" expr="'LISTEN_CONFERENCE'" />
+	<var name="application" expr="''" />
 
 
     <!-- Conference Variables -->
