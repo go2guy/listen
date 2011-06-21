@@ -5,15 +5,24 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'319_11'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'322_17'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Update Rec Var</log>
-            <log>INFO: Entered assign-variable.vxml [127_27]</log>
-            <log>INFO: Current value [<value expr="isRecording"/>]</log>
-<assign name="isRecording" expr="'true'+''" />
-<log>INFO: Updated value [<value expr="isRecording"/>]</log>
+	    <log target="status">Assign Check Filepath</log>
+            <log>INFO: Entered assign-variable.vxml [322_7]</log>
+            <log>INFO: Current value [<value expr="recPath"/>]</log>
+<assign name="recPath" expr="artifactsDIR+subscriber" />
+<log>INFO: Updated value [<value expr="recPath"/>]</log>
+<log>INFO: Current value [<value expr="recPath"/>]</log>
+<assign name="recPath" expr="recPath+recPathSuf" />
+<log>INFO: Updated value [<value expr="recPath"/>]</log>
+<log>INFO: Current value [<value expr="FILE1"/>]</log>
+<assign name="FILE1" expr="recPath+''" />
+<log>INFO: Updated value [<value expr="FILE1"/>]</log>
+<log>INFO: Current value [<value expr="OPERATION"/>]</log>
+<assign name="OPERATION" expr="'create'+''" />
+<log>INFO: Updated value [<value expr="OPERATION"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

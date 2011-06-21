@@ -5,15 +5,21 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'319_11'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'322_14'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Update Rec Var</log>
-            <log>INFO: Entered assign-variable.vxml [127_27]</log>
-            <log>INFO: Current value [<value expr="isRecording"/>]</log>
-<assign name="isRecording" expr="'true'+''" />
-<log>INFO: Updated value [<value expr="isRecording"/>]</log>
+	    <log target="status">Set Variables</log>
+            <log>INFO: Entered assign-variable.vxml [322_3]</log>
+            <log>INFO: Current value [<value expr="params"/>]</log>
+<assign name="params" expr="'/'+id" />
+<log>INFO: Updated value [<value expr="params"/>]</log>
+<log>INFO: Current value [<value expr="resource"/>]</log>
+<assign name="resource" expr="'conferences'+''" />
+<log>INFO: Updated value [<value expr="resource"/>]</log>
+<log>INFO: Current value [<value expr="request"/>]</log>
+<assign name="request" expr="'get'+''" />
+<log>INFO: Updated value [<value expr="request"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
