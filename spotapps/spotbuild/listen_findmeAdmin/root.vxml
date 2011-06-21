@@ -64,11 +64,17 @@
 	<var name="loopNumber" expr="''" />
 	<var name="subInfo" expr="''" />
 	<var name="time" expr="''" />
+	<var name="DNIS" expr="'local'" />
+	<var name="callStartTime" expr="''" />
+	<var name="callEndTime" expr="''" />
+	<var name="callDirection" expr="''" />
+	<var name="callType" expr="''" />
+	<var name="organization" expr="''" />
 	<var name="project" expr="'LISTEN_FINDME_ADMIN'" />
 	<var name="line" expr="'line'" />
-	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 	<var name="logText" expr="''" />
 	<var name="isActivating" expr="'false'" />
+	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 
 
     <!-- Conference Variables -->
