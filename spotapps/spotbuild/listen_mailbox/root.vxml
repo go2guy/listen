@@ -107,6 +107,7 @@
 	<var name="blackListOpt" expr="''" />
 	<var name="enablePagingSupp" expr="'1'" />
 	<var name="menuPrompt" expr="''" />
+	<var name="organization" expr="''" />
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 	<var name="logText" expr="''" />
 	<var name="line" expr="'line'" />

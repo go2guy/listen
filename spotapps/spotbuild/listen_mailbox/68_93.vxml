@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'68_94'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'68_91'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_68_93(project,line)
+            function II_SB_JS_function_68_93(project,line,FILE1,status,FILE2,returnStr,OPERATION)
             {
-	            var logText = 'Save Grtng: Dlt tmp Grtng bad fetch';return writeLog(project,line,logText);
+	            var logText = 'Save Grtng: Update Grtng returned Failure. Reason [' + returnStr  + ']. Attempted ['+OPERATION+'] of ['+FILE1+']  to ['+FILE2+'].';return writeLog(project,line,logText);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Log</log>
             <log>INFO: Entered run-javascript.vxml [68_93]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_68_93(project,line)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_68_93(project,line,FILE1,status,FILE2,returnStr,OPERATION)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

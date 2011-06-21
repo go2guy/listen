@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_205_3(passValues,application,subID)
             {
-	            var result = eval("("+passValues+")");result.application = 'after hours';result.originalApp = application;result.myID = subID;return iiStringify(result);
+	            var result = eval("("+passValues+")");result.application = 'after hours';result.originatingApp = application;result.myID = subID;return iiStringify(result);
             }
         ]]>
     </script>

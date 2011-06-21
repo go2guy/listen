@@ -5,20 +5,20 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'143_139'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'143_146'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function_143_144(project,line)
             {
-	            var logText = 'Get Access Num: Get Greeting URL bad fetch';return writeLog(project,line,logText);
+	            var logText = 'Get Access Num: Get Greeting URL returned bad fetch';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Log</log>
+            <log target="status">Set Fetch Log</log>
             <log>INFO: Entered run-javascript.vxml [143_144]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_143_144(project,line)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="logText" expr="II_SB_userJava" />   

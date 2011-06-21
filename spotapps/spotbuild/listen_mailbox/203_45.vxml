@@ -1,51 +1,42 @@
 <?xml version="1.0"?>
 <!-- Load root.vxml which contains global variables and reference to javascript library file -->
-<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_mailbox/root.vxml"> <!--  Set location of root document -->
-    <!-- Last Modified 10/21/2009
-       *   @Name   log.vxml
-       *   @Desc   Allows a log to be appended to a designated file -->
+<vxml version="2.0" application="file:/interact/apps/spotbuild/listen_mailbox/root.vxml"> <!-- Set location of root document -->
+    <!-- Last Modified 10/14/2010
+       *   @Name   runJavaScript.vxml
+       *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'65_54'"/>    <!--  Name of next file -->
-    <var name="II_SB_filePath" expr="exceptionLog"/> <!--  Location of the log file -->
-    <var name="II_SB_logText" expr="logText"/>   <!--  Contents to write to the log file -->
+    <var name="II_SB_nxtOpt" expr="'203_44'"/> <!-- The next vxml template -->
+
+    <script>    <!-- User's Javascript function will be written here -->
+        <![CDATA[
+            function II_SB_JS_function_203_45(project,line)
+            {
+	            var logText = 'Save Voicemail: Save Voicemail bad fetch';return writeLog(project,line,logText);
+            }
+        ]]>
+    </script>
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Write Log</log>
-            <log>INFO: Entered log.vxml [203_45]</log>
-            <if cond="II_SB_filePath != ''">
-                <if cond="II_SB_filePath[0] != '/'"> <!-- If file path is not absolute, then write log file under project directory -->
-                    <assign name="II_SB_filePath" expr="II_SB_APP_PATH + II_SB_filePath"/>
-                </if>
-                <assign name="II_SB_filePath" expr="'file:' + II_SB_filePath"/>
-                <log>INFO: Log file [<value expr="II_SB_filePath"/>]</log>
-                <log>INFO: Log text [<value expr="II_SB_logText"/>]</log>
-                <log target="II_SB_filePath"><value expr="II_SB_logText"/></log>    <!-- Write log to designated file -->
-            <else/>
-                <log>ERROR: Log file not set</log>
-                <log>INFO: Will not write log [<value expr="II_SB_logText"/>]</log>
-            </if>
-            <goto next="#exit"/>
+            <log target="status">Set Fetch Log</log>
+            <log>INFO: Entered run-javascript.vxml [203_45]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_203_45(project,line)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
+	        <goto next="#exit"/>
         </block>
     </form>
 
     <form id="exit">
-        <block>
-            <if cond="II_SB_nxtOpt != ''">
+	    <block>
+		    <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
-				<goto expr="'file:' + II_SB_APP_PATH + II_SB_nxtOpt + '.vxml'"/>
-			<else/> <!-- Exit to ccxml layer -->
-				<assign name="II_SB_status" expr="'endCall'"/>
-				<log>INFO: Next Node not set. Exit to CCXML.</log>
-				<log>INFO: Return status [<value expr="II_SB_status"/>]</log>
-				<exit namelist="II_SB_status"/>
-			</if>
-        </block>
+			    <goto expr="'file:' + II_SB_APP_PATH + II_SB_nxtOpt + '.vxml'"/>
+		    <else/> <!-- Exit to ccxml layer -->
+			    <assign name="II_SB_status" expr="'endCall'"/>
+			    <log>INFO: Next Node not set. Exit to CCXML</log>
+			    <log>INFO: Return status [<value expr="II_SB_status"/>]</log>
+			    <exit namelist="II_SB_status"/>
+		    </if>
+	    </block>
     </form>
-
-    <catch event="error.log.fileopenfail">  <!-- Catch error if file open failed -->
-		<log>ERROR: Unable to open [<value expr="II_SB_filePath"/>]</log>
-        <log>INFO: Will not write log [<value expr="II_SB_logText"/>]</log>
-        <goto next="#exit"/>
-    </catch>
 </vxml>

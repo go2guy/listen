@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'144_130'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'144_127'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_144_129(project,line)
+            function II_SB_JS_function_144_129(project,line,params,returnStr,request,resource,cntrlURL)
             {
-	            var logText = 'Forward Msg: Create Filepath bad fetch';return writeLog(project,line,logText);
+	            var logText = 'Forward Msg: Load Access Info returned Failure. Reason ['+returnStr+']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+'].';return writeLog(project,line,logText);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Log</log>
             <log>INFO: Entered run-javascript.vxml [144_129]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_144_129(project,line)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_144_129(project,line,params,returnStr,request,resource,cntrlURL)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

@@ -12,7 +12,7 @@
 	    <log target="status">Setup for Controller</log>
             <log>INFO: Entered assign-variable.vxml [144_12]</log>
             <log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'accessNumbers'+''" />
+<assign name="resource" expr="'getAccessNumber'+''" />
 <log>INFO: Updated value [<value expr="resource"/>]</log>
 <log>INFO: Current value [<value expr="request"/>]</log>
 <assign name="request" expr="'get'+''" />

@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_203_3(subFwd)
+            function II_SB_JS_function_203_3(subFwd,organization)
             {
-	            return "?_fields=subscriber&number=" + subFwd;
+	            return "?number=" + subFwd + "&organization=" + organization;
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Params</log>
             <log>INFO: Entered run-javascript.vxml [203_3]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_203_3(subFwd)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_203_3(subFwd,organization)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_206_10(passValues)
             {
-	            var result = eval("("+passValues+")");result.application = 'from mailbox';return iiStringify(result);
+	            var result = eval("("+passValues+")");result.originatingApp = 'from mailbox';return iiStringify(result);
             }
         ]]>
     </script>

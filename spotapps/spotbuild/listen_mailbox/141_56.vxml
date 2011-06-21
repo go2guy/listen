@@ -12,7 +12,7 @@
 	    <log target="status">Set resource</log>
             <log>INFO: Entered assign-variable.vxml [141_56]</log>
             <log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'accessNumbers'+''" />
+<assign name="resource" expr="'getAccessNumber'+''" />
 <log>INFO: Updated value [<value expr="resource"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

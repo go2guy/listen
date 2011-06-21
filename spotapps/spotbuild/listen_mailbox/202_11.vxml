@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_202_11(passValues,application,subID)
+            function II_SB_JS_function_202_11(passValues,subID)
             {
-	            var result = eval("("+passValues+")");result.application = 'from mailbox';result.originalApp = application;result.myID = subID;return iiStringify(result);
+	            passValues = extendJsonObject(passValues, 'myID', subID);return extendJsonObject(passValues,'originatingApp', 'from mailbox');
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Update appObject</log>
             <log>INFO: Entered run-javascript.vxml [202_11]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_202_11(passValues,application,subID)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_202_11(passValues,subID)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

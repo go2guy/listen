@@ -5,22 +5,22 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'141_67'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'141_68'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_141_69(project,line,params,returnStr)
+            function II_SB_JS_function_141_69(project,line)
             {
-	            var logText = 'Get Sub ID: Load Access Info Chk Status failure - passed [' + params + '] reason [' + returnStr + ']';return writeLog(project,line,logText);
+	            var logText = 'Get Sub ID: Load Access Info bad fetch';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Log</log>
+            <log target="status">Set Fetch Log</log>
             <log>INFO: Entered run-javascript.vxml [141_69]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_141_69(project,line,params,returnStr)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_141_69(project,line)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

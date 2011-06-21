@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'141_56'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'141_66'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_141_47(subID)
+            function II_SB_JS_function_141_47(subID,organization)
             {
-	            return '?_fields=subscriber&number=' + subID;
+	            return '?number=' + subID + '&organization=' + organization;
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Access Number Search</log>
             <log>INFO: Entered run-javascript.vxml [141_47]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_141_47(subID)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_141_47(subID,organization)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

@@ -97,6 +97,7 @@
 	<var name="SB_UV_blackListOpt"/>
 	<var name="SB_UV_enablePagingSupp"/>
 	<var name="SB_UV_menuPrompt"/>
+	<var name="SB_UV_organization"/>
 	<var name="SB_UV_exceptionLog"/>
 	<var name="SB_UV_logText"/>
 	<var name="SB_UV_line"/>
@@ -349,6 +350,9 @@
 			</if>
 			<if cond="SB_UV_menuPrompt != undefined">
 				<assign name="menuPrompt" expr="SB_UV_menuPrompt" />
+			</if>
+			<if cond="SB_UV_organization != undefined">
+				<assign name="organization" expr="SB_UV_organization" />
 			</if>
 			<if cond="SB_UV_exceptionLog != undefined">
 				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />

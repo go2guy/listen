@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_67_146(passValues)
             {
-	            return getJsonVal(passValues, 'originalApp');
+	            return getJsonVal(passValues, 'originatingApp');
             }
         ]]>
     </script>
