@@ -10,9 +10,9 @@
     <form id="beginDocument">
         <block>
 	    <log target="status">Set Next Path</log>
-            <log>INFO: Entered assign-variable.vxml [292_8]</log>
+            <log>INFO: Entered assign-variable.vxml [323_12]</log>
             <log>INFO: Current value [<value expr="nextPath"/>]</log>
-<assign name="nextPath" expr="'endCall'+''" />
+<assign name="nextPath" expr="'GET_FILE'+''" />
 <log>INFO: Updated value [<value expr="nextPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

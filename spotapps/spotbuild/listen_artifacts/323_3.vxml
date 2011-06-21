@@ -5,22 +5,22 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'292_6'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'323_5'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_292_5(argList)
+            function II_SB_JS_function_323_3(FILE1,fileType,index)
             {
-	            return findMP3(argList);
+	            return getFileName(FILE1, fileType, index);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Find MP3</log>
-            <log>INFO: Entered run-javascript.vxml [292_5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_292_5(argList)"/>   <!-- Call Javascript funtion and store result -->
+            <log target="status">Next File</log>
+            <log>INFO: Entered run-javascript.vxml [323_3]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_323_3(FILE1,fileType,index)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="FILE1" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

@@ -29,6 +29,9 @@
 	<var name="SB_UV_project"/>
 	<var name="SB_UV_reason"/>
 	<var name="SB_UV_exceptionLog"/>
+	<var name="SB_UV_action"/>
+	<var name="SB_UV_fileType"/>
+	<var name="SB_UV_index"/>
 
     
     <form id="beginDocument">
@@ -71,6 +74,15 @@
 			</if>
 			<if cond="SB_UV_exceptionLog != undefined">
 				<assign name="exceptionLog" expr="SB_UV_exceptionLog" />
+			</if>
+			<if cond="SB_UV_action != undefined">
+				<assign name="action" expr="SB_UV_action" />
+			</if>
+			<if cond="SB_UV_fileType != undefined">
+				<assign name="fileType" expr="SB_UV_fileType" />
+			</if>
+			<if cond="SB_UV_index != undefined">
+				<assign name="index" expr="SB_UV_index" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

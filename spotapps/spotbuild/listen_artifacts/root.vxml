@@ -33,12 +33,15 @@
 	<var name="FILE1" expr="''" />
 	<var name="OPERATION" expr="'delete'" />
 	<var name="status" expr="''" />
-	<var name="nextPath" expr="'CHK_MP3'" />
+	<var name="nextPath" expr="''" />
 	<var name="line" expr="'line'" />
 	<var name="logText" expr="''" />
 	<var name="project" expr="'LISTEN_ARTIFACTS'" />
 	<var name="reason" expr="''" />
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
+	<var name="action" expr="''" />
+	<var name="fileType" expr="'wav|mp3'" />
+	<var name="index" expr="'0'" />
 
 
     <!-- Conference Variables -->
