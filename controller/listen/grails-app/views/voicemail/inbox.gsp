@@ -109,7 +109,7 @@ div.options li {
           <li class="<g:if test="${voicemail.isNew}">new </g:if>voicemail-row" id="${voicemail.id}">
             <div class="from">${voicemail?.from().encodeAsHTML()}</div>
             <div class="received" title="${joda.format(value: voicemail.dateCreated, style: 'LL')}"><listen:prettytime date="${voicemail.dateCreated}"/></div>
-            <div style="display:none;" class="playLink" id="playLink${voicemail.id}"><a href="#" onclick="playVoicemail(${voicemail.id},'${voicemail.audio.uri}');return false;">Play</a> <listen:prettyduration duration="${voicemail.audio.duration}"/></div>
+            <div style="display:none;" class="playLink" id="playLink${voicemail.id}"><a href="#" onclick="playVoicemail(${voicemail.id},'<listen:mp3uri voicemail="${voicemail}"/>');return false;">Play</a> <listen:prettyduration duration="${voicemail.audio.duration}"/></div>
             <div class="play"></div>
             <div class="duration"><listen:prettyduration duration="${voicemail.audio.duration}"/></div>
             <div class="status">${voicemail.isNew ? 'new' : 'old'}</div>

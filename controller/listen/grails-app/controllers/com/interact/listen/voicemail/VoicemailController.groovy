@@ -91,10 +91,6 @@ class VoicemailController {
         params.order = params.order ? params.order : 'desc'
         def list = Voicemail.findAllByOwner(user, params)
 
-        list.each {
-            it.audio.uri = getMp3Uri(it.audio.uri)
-        }
-
         render(view: 'inbox', model: [voicemailList: list, voicemailTotal: count])
     }
 
