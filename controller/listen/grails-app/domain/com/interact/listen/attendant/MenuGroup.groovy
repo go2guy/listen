@@ -22,7 +22,7 @@ class MenuGroup {
     def menusInDisplayOrder() {
         return menus.sort { a, b ->
             if(a.isEntry != b.isEntry) {
-                return a.name.compareTo(b.name)
+                return a.name <=> b.name
             } else {
                 return a.isEntry ? -1 : 1
             }

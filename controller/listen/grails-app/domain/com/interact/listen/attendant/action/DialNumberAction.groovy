@@ -14,7 +14,7 @@ class DialNumberAction extends Action {
 
         return [
             action: 'DIAL_NUMBER',
-            promptBefore: !promptBefore || promptBefore.trim().equals('') ? '' : promptDirectory + '/' + promptBefore,
+            promptBefore: !promptBefore || promptBefore.trim() == '' ? '' : promptDirectory + '/' + promptBefore,
             args: args
         ]
     }

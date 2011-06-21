@@ -13,7 +13,7 @@ class LaunchApplicationAction extends Action {
         ]
 
         return [
-            promptBefore: !promptBefore || promptBefore.trim().equals('') ? '' : promptDirectory + '/' + promptBefore,
+            promptBefore: !promptBefore || promptBefore.trim() == '' ? '' : promptDirectory + '/' + promptBefore,
             action: 'LAUNCH_APPLICATION',
             args: args
         ]

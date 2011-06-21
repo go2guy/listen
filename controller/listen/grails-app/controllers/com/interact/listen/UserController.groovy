@@ -88,11 +88,11 @@ class UserController {
 
     def save = {
         def user = userCreationService.createUser(params, springSecurityService.getCurrentUser().organization)
-        if(!user.hasErrors()) {
+        if(user.hasErrors()) {
+            render(view: 'create', model: [user: user])
+        } else {
             flash.successMessage = 'User Created'
             redirect(action: 'edit', params: [id: user.id])
-        } else {
-            render(view: 'create', model: [user: user])
         }
     }
 

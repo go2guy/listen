@@ -1,7 +1,5 @@
 package com.interact.listen
 
-import com.interact.listen.User
-
 class OutdialRestriction {
     Organization organization
     String pattern

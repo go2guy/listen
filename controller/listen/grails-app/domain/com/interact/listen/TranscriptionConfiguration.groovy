@@ -1,7 +1,5 @@
 package com.interact.listen
 
-import com.interact.listen.Organization
-
 class TranscriptionConfiguration {
     boolean isEnabled = false
     Organization organization
@@ -11,7 +9,7 @@ class TranscriptionConfiguration {
         organization unique: true
         phoneNumber blank: true, validator: { val, obj ->
             // can only be blank if transcriptions are not enabled
-            if(obj.isEnabled && (!val || val.trim().equals(''))) {
+            if(obj.isEnabled && (!val || val.trim() == '')) {
                 return 'missing'
             }
             return true

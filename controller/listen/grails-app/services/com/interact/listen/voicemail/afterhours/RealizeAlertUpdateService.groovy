@@ -24,10 +24,10 @@ class RealizeAlertUpdateService {
                 def params = [
                     name: afterHours.realizeAlertName
                 ]
-                if(originalNumber && !originalNumber.trim().equals('')) {
+                if(originalNumber && originalNumber.trim() != '') {
                     params.remove = originalNumber
                 }
-                if(afterHours.alternateNumber != null && !afterHours.alternateNumber.trim().equals('')) {
+                if(afterHours.alternateNumber != null && afterHours.alternateNumber.trim() != '') {
                     params.add = afterHours.alternateNumber
                 }
 

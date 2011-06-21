@@ -32,14 +32,13 @@ class ProfileController {
 
     def addUserPhoneNumber = {
         def phoneNumber = createPhoneNumberService.createPhoneNumberByUser(params)
-
-        if(!phoneNumber.hasErrors()) {
-            flash.successMessage = 'Phone saved'
-            redirect(action: 'phones')
-        } else {
+        if(phoneNumber.hasErrors()) {
             def model = phonesModel()
             model.newPhoneNumber = phoneNumber
             render(view: 'phones', model: model)
+        } else {
+            flash.successMessage = 'Phone saved'
+            redirect(action: 'phones')
         }
     }
 
@@ -173,13 +172,13 @@ class ProfileController {
         }
 
         phoneNumber = updatePhoneNumberService.updateSystemPhoneNumberByUser(phoneNumber, params)
-        if(!phoneNumber.hasErrors()) {
-            flash.successMessage = 'Phone updated'
-            redirect(action: 'phones')
-        } else {
+        if(phoneNumber.hasErrors()) {
             def model = phonesModel()
             model.updatedPhoneNumber = phoneNumber
             render(view: 'phones', model: model)
+        } else {
+            flash.successMessage = 'Phone updated'
+            redirect(action: 'phones')
         }
     }
 
@@ -192,13 +191,13 @@ class ProfileController {
         }
 
         phoneNumber = updatePhoneNumberService.updateUserPhoneNumberByUser(phoneNumber, params)
-        if(!phoneNumber.hasErrors()) {
-            flash.successMessage = 'Phone saved'
-            redirect(action: 'phones')
-        } else {
+        if(phoneNumber.hasErrors()) {
             def model = phonesModel()
             model.updatedPhoneNumber = phoneNumber
             render(view: 'phones', model: model)
+        } else {
+            flash.successMessage = 'Phone saved'
+            redirect(action: 'phones')
         }
     }
 

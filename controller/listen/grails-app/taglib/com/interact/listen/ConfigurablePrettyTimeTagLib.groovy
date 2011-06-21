@@ -18,7 +18,7 @@ class ConfigurablePrettyTimeTagLib {
 
         if (!date) throw new PrettyTimeException(
                 "There must be a 'date' attribute included in the prettytime tag.")
-        if ('org.joda.time.DateTime'.equals(date.class.name)) {
+        if ('org.joda.time.DateTime' == date.class.name) {
             date = date.toDate()
         }
 

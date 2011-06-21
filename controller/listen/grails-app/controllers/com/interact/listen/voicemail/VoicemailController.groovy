@@ -1,16 +1,12 @@
 package com.interact.listen.voicemail
 
-import grails.converters.*
-import grails.plugins.springsecurity.Secured
 import com.interact.listen.*
 import com.interact.listen.pbx.*
-import com.interact.listen.voicemail.Voicemail
+import grails.converters.*
+import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
-import org.joda.time.Duration
-import org.joda.time.LocalTime
 import org.joda.time.format.PeriodFormatterBuilder
 
-//@Licensed(ListenFeature.VOICEMAIL) // TODO licensed annotation
 @Secured(['ROLE_VOICEMAIL_USER'])
 class VoicemailController {
     static allowedMethods = [
@@ -94,7 +90,6 @@ class VoicemailController {
         params.sort = params.sort ? params.sort : 'dateCreated'
         params.order = params.order ? params.order : 'desc'
         def list = Voicemail.findAllByOwner(user, params)
-        def count = Voicemail.countByOwner(user)
 
         list.each {
             it.audio.uri = getMp3Uri(it.audio.uri)
@@ -230,7 +225,6 @@ class VoicemailController {
         params.sort = params.sort ? params.sort : 'dateCreated'
         params.order = params.order ? params.order : 'desc'
         def list = Voicemail.findAllByOwner(user, params)
-        def count = Voicemail.countByOwner(user)
         def visibleIds = params.visibleIds.trim()
         if(visibleIds.length() > 0) {
             visibleIds = visibleIds.split(",")

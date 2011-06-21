@@ -29,6 +29,12 @@
     </exec>
   </target>
 
+  <target name="codenarc">
+    <exec executable="grails" dir="${basedir}/listen">
+      <arg value="codenarc"/>
+    </exec>
+  </target>
+
   <target name="deploy" description="--> Deploys the application">
     <exec executable="grails" dir="${basedir}/listen">
       <arg value="prod executable-war"/>

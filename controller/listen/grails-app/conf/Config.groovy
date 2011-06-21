@@ -154,6 +154,13 @@ environments {
     }
 }
 
+// Codenarc plugin
+codenarc.propertiesFile = 'grails-app/conf/codenarc/codenarc.properties'
+codenarc.extraIncludeDirs = ['grails-app/jobs']
+codenarc.maxPriority1Violations = 0
+codenarc.maxPriority2Violations = 0
+codenarc.maxPriority3Violations = 0
+
 // Listen configuration
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
 com.interact.listen.conferencing.pinLength = 6 // FIXME hard-coded number

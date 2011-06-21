@@ -1,6 +1,5 @@
 package com.interact.listen
 
-import com.interact.listen.TranscriptionConfiguration
 import com.interact.listen.android.GoogleAuthConfiguration
 import com.interact.listen.history.*
 import com.interact.listen.pbx.NumberRoute
@@ -78,13 +77,13 @@ class AdministrationController {
 
     def addPhoneNumber = {
         def phoneNumber = createPhoneNumberService.createPhoneNumberByOperator(params)
-        if(!phoneNumber.hasErrors()) {
-            flash.successMessage = 'Phone number created'
-            redirect(action: 'phones')
-        } else {
+        if(phoneNumber.hasErrors()) {
             def model = phonesModel()
             model.newPhoneNumber = phoneNumber
             render(view: 'phones', model: model)
+        } else {
+            flash.successMessage = 'Phone number created'
+            redirect(action: 'phones')
         }
     }
 
@@ -400,13 +399,13 @@ class AdministrationController {
         }
 
         phoneNumber = updatePhoneNumberService.updatePhoneNumberByOperator(phoneNumber, params)
-        if(!phoneNumber.hasErrors()) {
-            flash.successMessage = 'Phone number saved'
-            redirect(action: 'phones')
-        } else {
+        if(phoneNumber.hasErrors()) {
             def model = phonesModel()
             model.updatedPhoneNumber = phoneNumber
             render(view: 'phones', model: model)
+        } else {
+            flash.successMessage = 'Phone number saved'
+            redirect(action: 'phones')
         }
     }
 

@@ -7,6 +7,7 @@ class CloudToDeviceService {
     static scope = 'singleton'
     static transactional = true
 
+    @SuppressWarnings('GrailsStatelessService')
     def cloudToDeviceMessaging
 
     def sendContactSync() {

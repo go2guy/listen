@@ -1,6 +1,5 @@
 package com.interact.listen
 
-import com.interact.listen.PhoneNumberType
 import com.interact.listen.conferencing.Conference
 import com.interact.listen.conferencing.PinType
 import com.interact.listen.voicemail.VoicemailPreferences

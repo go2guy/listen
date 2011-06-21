@@ -111,11 +111,11 @@ class AttendantController {
                 }
             }
 
-            if(!valid) {
-                render(view: 'menu', model: [groups: groups])
-            } else {
+            if(valid) {
                 flash.successMessage = 'Menu saved'
                 redirect(action: 'menu')
+            } else {
+                render(view: 'menu', model: [groups: groups])
             }
         }
     }
@@ -135,32 +135,32 @@ class AttendantController {
 
     private Action keyToAction(String key)
     {
-        if(key.equals("Go To A Menu..."))
+        if(key == 'Go To A Menu...')
         {
             return new GoToMenuAction()
         }
-        else if(key.equals("Dial A Number..."))
+        else if(key == 'Dial A Number...')
         {
             return new DialNumberAction()
         }
-        else if(key.equals("Dial What They Pressed"))
+        else if(key == 'Dial What They Pressed')
         {
             return new DialPressedNumberAction()
         }
-        else if(key.equals("Launch An Application..."))
+        else if(key == 'Launch An Application...')
         {
             return new LaunchApplicationAction()
         }
-        else if(key.equals("Replay This Menu"))
+        else if(key == 'Replay This Menu')
         {
             return new ReplayMenuAction()
         }
-        else if(key.equals("End The Call"))
+        else if(key == 'End The Call')
         {
             return new EndCallAction()
         }
 
-        throw new IllegalArgumentException("Cannot create Action from unknown key [" + key + "]")
+        throw new IllegalArgumentException("Cannot create Action from unknown key [${key}]")
     }
 
     private void populateAction(JSONObject json, def groupName, Action action)
@@ -186,8 +186,7 @@ class AttendantController {
 
         if(action == null)
         {
-            throw new RuntimeException("Action [" + directive + "] for keypress [" + keypress +
-                                           "] is not a valid action")
+            throw new AssertionError("Action [${directive}] for keypress [${keypress}] is not a valid action")
         }
 
         action.promptBefore = promptBefore

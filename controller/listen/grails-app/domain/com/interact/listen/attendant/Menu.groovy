@@ -1,7 +1,5 @@
 package com.interact.listen.attendant
 
-
-import com.interact.listen.Organization
 import com.interact.listen.attendant.action.Action
 
 class Menu {
@@ -26,12 +24,12 @@ class Menu {
                 list.add(action.keysPressed)
                 return list
             },
-            audioFile: optionsPrompt && !optionsPrompt.trim().equals('') ? promptDirectory + '/' + optionsPrompt : ''
+            audioFile: optionsPrompt && !optionsPrompt.trim() == '' ? promptDirectory + '/' + optionsPrompt : ''
         ]
 
         return [
             action: 'PROMPT',
-            promptBefore: !promptBefore || promptBefore.trim().equals('') ? '' : promptDirectory + '/' + promptBefore,
+            promptBefore: !promptBefore || promptBefore.trim() == '' ? '' : promptDirectory + '/' + promptBefore,
             args: args
         ]
     }

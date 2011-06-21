@@ -327,8 +327,6 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidGetDeviceRegistration = {
-        boolean enabled = googleAuthService.isEnabled()
-
         def user = springSecurityService.getCurrentUser()
         def deviceType = DeviceRegistration.DeviceType.valueOf(params.deviceType)
 
@@ -507,13 +505,7 @@ class SpotApiController {
     }
 
     def canAccessFeature = {
-        def feature
-        try {
-            feature = ListenFeature.valueOf(params.feature)
-        } catch(IllegalArgumentException e) {
-            response.sendError(HSR.SC_BAD_REQUEST, "Feature not found with name [${params.feature}]")
-            return
-        }
+        def feature = ListenFeature.valueOf(params.feature)
 
         if(!params.organization) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [organization]')
@@ -703,20 +695,20 @@ class SpotApiController {
         statWriterService.send(StatId.LISTEN_CONTROLLER_META_API_GET_DNIS)
 
         def number = params.number
-        if(!number || number.trim().equals('')) {
+        if(!number || number.trim() == '') {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
             return
         }
 
         def id = getIdFromHref(params.organization)
         def mappings = [:]
-        if(!id) {
-            NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
+        if(id) {
+            def organization = Organization.get(id)
+            NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.INTERNAL).each {
                 mappings.put(it.pattern, it)
             }
         } else {
-            def organization = Organization.get(id)
-            NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.INTERNAL).each {
+            NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
                 mappings.put(it.pattern, it)
             }
         }
@@ -1208,7 +1200,7 @@ class SpotApiController {
         // only need keysPressed param if a menu id was provided
         def doAction
         def keysPressed = params.keysPressed
-        if(!keysPressed || keysPressed.trim().equals('')) {
+        if(!keysPressed || keysPressed.trim() == '') {
             doAction = menu.timeoutAction
         } else {
             def mappings = menu.keypressActions.inject([:]) { map, keypressAction ->
@@ -1258,7 +1250,7 @@ class SpotApiController {
             int matchedWildcards = StringUtils.countMatches(k, '?')
             int position = length - matchedWildcards
 
-            if(k.substring(0, position).equals(keysPressed.substring(0, position))) {
+            if(k.substring(0, position) == keysPressed.substring(0, position)) {
                 match = v
                 return
             }
@@ -1272,13 +1264,14 @@ class SpotApiController {
 
         if(!params.system) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [system]')
-        } else {
-            def system = SpotSystem.findByName(params.system)
-            if(!system) {
-                new SpotSystem(name: params.system).save()
-            }
-            response.flushBuffer()
+            return
         }
+
+        def system = SpotSystem.findByName(params.system)
+        if(!system) {
+            new SpotSystem(name: params.system).save()
+        }
+        response.flushBuffer()
     }
 
     // sets the SPOT system phone number (for display in notifications)
@@ -1578,16 +1571,14 @@ class SpotApiController {
         }
 
         def transcription = TranscriptionConfiguration.findByOrganization(organization)
-
-        if(!transcription)
-        {
-            render(contentType: 'application/json') {
-                isEnabled = false     
-            }
-        } else {
+        if(transcription) {
             render(contentType: 'application/json') {
                 phoneNumber = transcription.phoneNumber    
                 isEnabled = transcription?.isEnabled
+            }
+        } else {
+            render(contentType: 'application/json') {
+                isEnabled = false     
             }
         }
     }

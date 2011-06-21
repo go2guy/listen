@@ -2,8 +2,6 @@ package com.interact.listen.conferencing
 
 import com.interact.listen.pbx.NumberRoute
 
-import java.util.UUID
-
 import org.apache.commons.validator.EmailValidator
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.ISODateTimeFormat
@@ -135,48 +133,48 @@ ${phoneNumberHtml}\
         def emails = getValidEmails(sc)
         def iso = ISODateTimeFormat.basicDateTimeNoMillis()
 
-        b << 'BEGIN:VCALENDAR' + "\n"
-        b << 'PRODID:-//Interact Incorporated//Listen//EN' + "\n"
-        b << 'VERSION:2.0' + "\n"
-        b << 'METHOD:REQUEST' + "\n"
-        b << 'X-MS-OLK-FORCEINSPECTOROPEN:TRUE' + "\n"
-        b << 'BEGIN:VEVENT' + "\n"
+        b << 'BEGIN:VCALENDAR\n'
+        b << 'PRODID:-//Interact Incorporated//Listen//EN\n'
+        b << 'VERSION:2.0\n'
+        b << 'METHOD:REQUEST\n'
+        b << 'X-MS-OLK-FORCEINSPECTOROPEN:TRUE\n'
+        b << 'BEGIN:VEVENT\n'
         emails.active.each {
-            b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}" + "\n"
+            b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}\n"
         }
         emails.passive.each {
-            b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}" + "\n"
+            b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}\n"
         }
-        b << 'CLASS:PUBLIC' + "\n"
-        b << "CREATED:${iso.print(sc.dateCreated)}" + "\n"
-        b << "DESCRIPTION:${getEmailBody(sc, pinType)}" + "\n"
-        b << "DTEND:${iso.print(sc.endsAt())}" + "\n"
-        b << "DTSTAMP:${iso.print(sc.dateCreated)}" + "\n"
-        b << "DTSTART:${iso.print(sc.startsAt())}" + "\n"
-        b << "LAST-MODIFIED:${iso.print(sc.dateCreated)}" + "\n"
-        b << 'LOCATION:Listen' + "\n"
-        b << "ORGANIZER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}" + "\n"
-        b << 'PRIORITY:5' + "\n"
-        b << 'SEQUENCE:0' + "\n"
-        b << "SUMMARY;LANGUAGE=en-us:${sc.emailSubject}" + "\n"
-        b << 'TRANSP:OPAQUE' + "\n"
-        b << "UID:${uid(sc)}" + "\n"
-        b << "X-ALT-DESC;FMTTYPE=text/html:${getEmailBody(sc, pinType)}" + "\n"
-        b << 'X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE' + "\n"
-        b << 'X-MICROSOFT-CDO-IMPORTANCE:1' + "\n"
-        b << 'X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY' + "\n"
-        b << 'X-MICROSOFT-DISALLOW-COUNTER:FALSE' + "\n"
-        b << 'X-MS-OLK-ALLOWEXTERNCHECK:TRUE' + "\n"
-        b << 'X-MS-OLK-AUTOSTARTCHECK:FALSE' + "\n"
-        b << 'X-MS-OLK-CONFTYPE:0' + "\n"
-        b << "X-MS-OLK-SENDER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}" + "\n"
-        b << 'BEGIN:VALARM' + "\n"
-        b << 'TRIGGER:-PT15M' + "\n"
-        b << 'ACTION:DISPLAY' + "\n"
-        b << 'DESCRIPTION:Reminder' + "\n"
-        b << 'END:VALARM' + "\n"
-        b << 'END:VEVENT' + "\n"
-        b << 'END:VCALENDAR' + "\n"
+        b << 'CLASS:PUBLIC\n'
+        b << "CREATED:${iso.print(sc.dateCreated)}\n"
+        b << "DESCRIPTION:${getEmailBody(sc, pinType)}\n"
+        b << "DTEND:${iso.print(sc.endsAt())}\n"
+        b << "DTSTAMP:${iso.print(sc.dateCreated)}\n"
+        b << "DTSTART:${iso.print(sc.startsAt())}\n"
+        b << "LAST-MODIFIED:${iso.print(sc.dateCreated)}\n"
+        b << 'LOCATION:Listen\n'
+        b << "ORGANIZER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
+        b << 'PRIORITY:5\n'
+        b << 'SEQUENCE:0\n'
+        b << "SUMMARY;LANGUAGE=en-us:${sc.emailSubject}\n"
+        b << 'TRANSP:OPAQUE\n'
+        b << "UID:${uid()}\n"
+        b << "X-ALT-DESC;FMTTYPE=text/html:${getEmailBody(sc, pinType)}\n"
+        b << 'X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\n'
+        b << 'X-MICROSOFT-CDO-IMPORTANCE:1\n'
+        b << 'X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY\n'
+        b << 'X-MICROSOFT-DISALLOW-COUNTER:FALSE\n'
+        b << 'X-MS-OLK-ALLOWEXTERNCHECK:TRUE\n'
+        b << 'X-MS-OLK-AUTOSTARTCHECK:FALSE\n'
+        b << 'X-MS-OLK-CONFTYPE:0\n'
+        b << "X-MS-OLK-SENDER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
+        b << 'BEGIN:VALARM\n'
+        b << 'TRIGGER:-PT15M\n'
+        b << 'ACTION:DISPLAY\n'
+        b << 'DESCRIPTION:Reminder\n'
+        b << 'END:VALARM\n'
+        b << 'END:VEVENT\n'
+        b << 'END:VCALENDAR\n'
         return b.toString()
     }
 
@@ -187,7 +185,7 @@ ${phoneNumberHtml}\
         ]
     }
 
-    private def uid(ScheduledConference sc) {
+    private def uid() {
         return UUID.randomUUID().toString()
     }
 }

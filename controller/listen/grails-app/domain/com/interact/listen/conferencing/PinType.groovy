@@ -10,10 +10,6 @@ enum PinType {
     }
 
     static PinType fromDisplayName(def displayName) {
-        try {
-            PinType.valueOf(displayName.toUpperCase())
-        } catch(NullPointerException e) {
-            throw new IllegalArgumentException(e)
-        }
+        PinType.valueOf(displayName.toUpperCase())
     }
 }

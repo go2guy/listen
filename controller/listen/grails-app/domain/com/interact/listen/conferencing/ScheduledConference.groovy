@@ -20,7 +20,7 @@ class ScheduledConference {
         emailBody maxSize: 2048
         emailSubject blank: false
         ends validator: { val, obj ->
-            if(obj.starts && (val.isAfter(obj.starts) || val.equals(obj.starts))) {
+            if(obj.starts && (val.isAfter(obj.starts) || val == obj.starts)) {
                 return true
             }
             return 'before.starts'

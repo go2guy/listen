@@ -11,12 +11,10 @@ import javax.naming.ldap.InitialLdapContext
 import javax.naming.ldap.LdapContext
 
 import org.apache.log4j.Logger
-import org.joda.time.DateTime
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.security.authentication.*
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, ApplicationContextAware {
@@ -88,8 +86,6 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
         try {
             LdapContext context = new InitialLdapContext(props, null)
             SearchResult searchResult = queryUserRecord(domain, principal, context)
-
-            def groups = extractUserGroups(searchResult, context)
 
             try {
                 return [
@@ -204,32 +200,6 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
                 throw new AuthenticationServiceException("Cannot locate user information for [" + principal + "]");
             }
             return results.next();
-        }
-        catch(NamingException e)
-        {
-            throw new AuthenticationServiceException('Authentication error', e);
-        }
-    }
-
-    private Set<String> extractUserGroups(SearchResult result, DirContext context)
-    {
-        try
-        {
-            Set<String> groups = new HashSet<String>();
-            Attribute memberOf = result.getAttributes().get("memberOf");
-            // null if this user belongs to no group at all
-            if(memberOf != null)
-            {
-                for(int i = 0; i < memberOf.size(); i++)
-                {
-                    String[] commonName = new String[1];
-                    commonName[0] = "CN";
-                    Attributes attributes = context.getAttributes(memberOf.get(i).toString(), commonName);
-                    Attribute attribute = attributes.get("CN");
-                    groups.add(attribute.get().toString());
-                }
-            }
-            return groups;
         }
         catch(NamingException e)
         {

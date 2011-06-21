@@ -75,12 +75,12 @@ class FindmeController {
 
             success = success && preferences.validate() && preferences.save()
 
-            if(!success) {
-                status.setRollbackOnly()
-                render(view: 'configure', model: [groups: groups, preferences: preferences])
-            } else {
+            if(success) {
                 flash.successMessage = 'Your Find Me / Follow Me configuration has been saved'
                 redirect(action: 'configure')
+            } else {
+                status.setRollbackOnly()
+                render(view: 'configure', model: [groups: groups, preferences: preferences])
             }
         }
     }

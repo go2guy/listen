@@ -19,7 +19,6 @@ class CustodianAdministrationController {
     }
 
     def addRestriction = {
-        def user = springSecurityService.getCurrentUser()
         def restriction = new GlobalOutdialRestriction()
         restriction.pattern = params.pattern
 

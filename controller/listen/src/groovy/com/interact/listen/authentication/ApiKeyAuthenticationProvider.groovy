@@ -12,7 +12,7 @@ class ApiKeyAuthenticationProvider implements AuthenticationProvider {
 
     Authentication authenticate(Authentication auth) {
         def expected = Signature.create(auth.credentials.date)
-        if(!expected.equals(auth.credentials.signature)) {
+        if(expected != auth.credentials.signature) {
             log.warn 'API signature did not match expected signature'
             log.debug "  Expected: [${expected}]"
             log.debug "  Actual:   [${auth.credentials.signature}]"

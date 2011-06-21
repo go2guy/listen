@@ -48,7 +48,7 @@ class TimeRestriction {
         def end = new LocalTime(endTime.hourOfDay, endTime.minuteOfHour, 59, 999)
         def time = now.toLocalTime()
 
-        if(time.equals(start) || time.equals(end) || (time.isAfter(start) && time.isBefore(end))) {
+        if(time == start || time == end || (time.isAfter(start) && time.isBefore(end))) {
             return true
         }
 

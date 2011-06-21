@@ -4,7 +4,6 @@ import com.interact.listen.*
 import com.interact.listen.conferencing.*
 import com.interact.listen.voicemail.*
 import com.interact.listen.pbx.findme.*
-import java.text.SimpleDateFormat
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.springframework.web.context.request.RequestContextHolder as RCH
@@ -16,9 +15,9 @@ class HistoryService {
     def springSecurityService // injected
     // TODO handle service (if necessary)
 
-    def changedAlternatePagerNumber(def newNumber) {
-        // TODO later
-    }
+//    def changedAlternatePagerNumber(def newNumber) {
+//        // TODO later
+//    }
 
     void changedVoicemailPin(User onUser, def oldPin, def newPin) {
         def properties = [
@@ -47,9 +46,9 @@ class HistoryService {
         write(new ActionHistory(properties))
     }
 
-    def deletedUser(User user) {
-        // TODO?
-    }
+//    def deletedUser(User user) {
+//        // TODO?
+//    }
 
     def deletedVoicemail(Voicemail voicemail) {
         def properties = [
@@ -95,9 +94,9 @@ class HistoryService {
         write(new ActionHistory(properties))
     }
 
-    def listenedToVoicemail(Voicemail voicemail) {
-        // TODO?
-    }
+//    def listenedToVoicemail(Voicemail voicemail) {
+//        // TODO?
+//    }
 
     def loggedIn(User user) {
         def properties = [
@@ -125,9 +124,9 @@ class HistoryService {
         write(new ActionHistory(properties))
     }
 
-    def sentVoicemailAlternatePage(Voicemail voicemail) {
-        // TODO later
-    }
+//    def sentVoicemailAlternatePage(Voicemail voicemail) {
+//        // TODO later
+//    }
 
     def sentNewVoicemailEmail(Voicemail voicemail) {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)

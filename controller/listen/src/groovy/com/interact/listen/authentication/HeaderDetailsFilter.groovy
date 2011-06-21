@@ -24,6 +24,7 @@ class HeaderDetailsFilter extends GenericFilterBean {
 
     def authenticationManager
 
+    @SuppressWarnings('ReturnNullFromCatchBlock')
     void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
         if(!SecurityContextHolder.context.authentication) {
             def date = ((HttpServletRequest)request).getHeader(DATE_HEADER)

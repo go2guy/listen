@@ -24,12 +24,12 @@ class Audio {
         if(uri.indexOf(".") >= 0)
         {
             String extension = uri.substring(uri.lastIndexOf(".") + 1);
-            if(extension.equals("wav"))
+            if(extension == 'wav')
             {
                 return "audio/x-wav";
             }
 
-            if(extension.equals("mp3"))
+            if(extension == 'mp3')
             {
                 return "audio/mpeg";
             }

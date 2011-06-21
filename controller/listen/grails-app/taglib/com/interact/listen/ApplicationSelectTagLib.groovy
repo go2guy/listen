@@ -26,7 +26,7 @@ class ApplicationSelectTagLib {
 
         if(!organization) log.warn "Null organization used for tag [applicationSelect]"
 
-        out << '<select' + (name ? ' name="' + name + '"' : '') + (id ? ' id="' + id + '"' : '') + ' class="application-select"' + (attrs.hide ? ' style="display: none;"' : '') + ' class="application-select">'
+        out << '<select' + (name ? ' name="' + name + '"' : '') + (id ? ' id="' + id + '"' : '') + ' class="application-select"' + (hide ? ' style="display: none;"' : '') + ' class="application-select">'
         apps.each { application ->
             out << '<option' + (value == application ? ' selected="selected"' : '') + ">${application}</option>"
         }

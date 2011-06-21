@@ -48,9 +48,9 @@ You received a new voicemail from ${voicemail.from()} at ${voicemail.dateCreated
 
 ${retrieve}
 
-${voicemail.audio.transcription != '' ? '<i>' + voicemail.audio.transcription + '</i><br/><br/>' : ''}
+${voicemail.audio.transcription == '' ? '': '<i>' + voicemail.audio.transcription + '</i><br/><br/>'}
 
-You currently have ${newCount} new message${newCount != 1 ? 's' : ''}.<br/><br/>
+You currently have ${newCount} new message${newCount == 1 ? '' : 's'}.<br/><br/>b
 
 ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to this message. Contact a system administrator for assistance.)'}
 </body></html>
@@ -186,7 +186,7 @@ You have correctly configured your settings to receive Listen email notification
 
     private def directVoicemailNumber(def organization) {
         // TODO hard-coded destination application
-        def routes = NumberRoute.findAllByDestination('Mailbox').findAll { !it.pattern.contains('*') }
+        def routes = NumberRoute.findAllByDestinationAndOrganization('Mailbox', organization).findAll { !it.pattern.contains('*') }
         if(routes.size() == 0) {
             return null
         }

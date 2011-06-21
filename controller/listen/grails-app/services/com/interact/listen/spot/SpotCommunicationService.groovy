@@ -3,7 +3,6 @@ package com.interact.listen.spot
 import com.interact.listen.User
 import com.interact.listen.history.Channel
 import com.interact.listen.httpclient.HttpClientImpl
-import com.interact.listen.spot.SpotCommunicationException
 import org.joda.time.format.DateTimeFormat
 
 class SpotCommunicationService {
