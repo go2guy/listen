@@ -1,5 +1,6 @@
 package com.interact.listen
 
+import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import com.interact.listen.history.*
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
@@ -16,7 +17,9 @@ class ProfileController {
         index: 'GET',
         addUserPhoneNumber: 'POST',
         afterHours: 'GET',
+        canDial: 'GET',
         deleteUserPhoneNumber: 'POST',
+        listPhones: 'GET',
         settings: 'GET',
         history: 'GET',
         phones: 'GET',
@@ -48,6 +51,21 @@ class ProfileController {
         render(view: 'afterHours', model: [afterHoursConfiguration: afterHoursConfiguration])
     }
 
+    // ajax
+    def canDial = {
+        def number = params.number
+        boolean canDial = true
+
+        if(number) {
+            def user = springSecurityService.getCurrentUser()
+            canDial = user.canDial(number)
+        }
+
+        render(contentType: 'application/json') {
+            delegate.canDial = canDial
+        }
+    }
+
     def deleteUserPhoneNumber = {
         def phoneNumber = PhoneNumber.get(params.id)
         if(!phoneNumber) {
@@ -59,6 +77,22 @@ class ProfileController {
         deletePhoneNumberService.deleteUserPhoneNumberByUser(phoneNumber)
         flash.successMessage = 'Phone deleted'
         redirect(action: 'phones')
+    }
+
+    // ajax
+    def listPhones = {
+        def user = springSecurityService.getCurrentUser()
+        def phones = PhoneNumber.findAllByOwner(user)
+        
+        def json = []
+        phones.each { phone ->
+            json << [
+                number: phone.number,
+                forwardedTo: phone.forwardedTo
+            ]
+        }
+
+        render json as JSON
     }
 
     def settings = {

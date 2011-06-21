@@ -360,6 +360,20 @@ ul.button-menu li.current a {
     margin-bottom: 3px;
 }
 
+.blocked-number {
+    background-color: #FFC7C7;
+    border: 1px dashed #A81818;
+    color: #A81818;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    height: 21px;
+    line-height: 21px;
+    margin-left: 5px;
+    padding: 0 2px;
+    vertical-align: text-top;
+}
+
 /* END MESSAGES */
 
 
@@ -690,6 +704,39 @@ $(document).ready(function() {
         }
         return false; // prevent browser from submitting the form
     });
+
+    ${/* FIXME globally namespaced function */}
+    function checkAndIndicateBlocked(el) {
+       var field = $(el);
+       var number = field.val();
+       $.ajax({
+           type: 'GET',
+           url: '${request.contextPath}/profile/canDial',
+           data: {
+               number: number
+           },
+           success: function(data) {
+               var hasIndicator = field.next('.blocked-number').length > 0;
+               if(data.canDial && hasIndicator) {
+                   field.next('.blocked-number').remove()
+               } else if(!data.canDial && !hasIndicator) {
+                   field.after('<span class="blocked-number" title="You are not allowed to dial ' + number + '">Blocked</span>');
+               }
+           },
+           dataType: 'json'
+       }); 
+    }
+    $('.check-for-blocked').keyup(function(e) {
+        util.typewatch(function() {
+            checkAndIndicateBlocked(e.target);
+        }, 500);
+    }).bind('paste', function(e) {
+        // delay since it takes time for the text to actually paste
+        setTimeout(checkAndIndicateBlocked(e.target), 100);
+    }).change(function(e) {
+        checkAndIndicateBlocked(e.target);
+    });
+
 <sec:ifAllGranted roles="ROLE_VOICEMAIL_USER">
     setInterval(function() {
         $.ajax({

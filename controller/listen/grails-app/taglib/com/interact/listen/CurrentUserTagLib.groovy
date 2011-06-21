@@ -13,4 +13,13 @@ class CurrentUserTagLib {
     def newVoicemailCount = { attrs ->
         out << newVoicemailCountService.count()
     }
+
+    def ifCannotDial = { attrs, body ->
+        def user = springSecurityService.getCurrentUser()
+        def number = attrs.number as String
+
+        if(number && !user.canDial(number)) {
+            out << body()
+        }
+    }
 }

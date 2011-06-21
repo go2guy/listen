@@ -7,8 +7,10 @@
     <style type="text/css">
 table { margin-bottom: 10px; }
 
-#system-phones .col-number { width: 20%; }
-#system-phones .col-type { width: 30%; }
+#system-phones .col-number { width: 30%; }
+#system-phones .col-type { width: 20%; }
+#system-phones .col-public { width: 10%; }
+#system-phones .col-forward { width: 35%; }
 #system-phones .col-button { width: 5%; }
 
 .user-phones .col-number { width: 20%; }
@@ -47,7 +49,10 @@ td.col-public {
                 <td class="col-public"><listen:checkMark value="true"/></td>
                 <td class="col-forward">
                   <g:if test="${phoneNumber.type == com.interact.listen.PhoneNumberType.EXTENSION}">
-                    <g:textField name="forwardedTo" value="${fieldValue(bean: phoneNumber, field: 'forwardedTo')}"/>
+                    <g:textField class="check-for-blocked" name="forwardedTo" value="${fieldValue(bean: phoneNumber, field: 'forwardedTo')}"/>
+                    <listen:ifCannotDial number="${fieldValue(bean: phoneNumber, field: 'forwardedTo')}">
+                      <span class="blocked-number" title="You are not allowed to dial ${fieldValue(bean: phoneNumber, field: 'forwardedTo')}">Blocked</span>
+                    </listen:ifCannotDial>
                   </g:if>
                 </td>
                 <td class="col-button">
