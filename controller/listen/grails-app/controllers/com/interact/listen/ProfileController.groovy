@@ -19,7 +19,6 @@ class ProfileController {
         afterHours: 'GET',
         canDial: 'GET',
         deleteUserPhoneNumber: 'POST',
-        listPhones: 'GET',
         settings: 'GET',
         history: 'GET',
         phones: 'GET',
@@ -77,22 +76,6 @@ class ProfileController {
         deletePhoneNumberService.deleteUserPhoneNumberByUser(phoneNumber)
         flash.successMessage = 'Phone deleted'
         redirect(action: 'phones')
-    }
-
-    // ajax
-    def listPhones = {
-        def user = springSecurityService.getCurrentUser()
-        def phones = PhoneNumber.findAllByOwner(user)
-        
-        def json = []
-        phones.each { phone ->
-            json << [
-                number: phone.number,
-                forwardedTo: phone.forwardedTo
-            ]
-        }
-
-        render json as JSON
     }
 
     def settings = {

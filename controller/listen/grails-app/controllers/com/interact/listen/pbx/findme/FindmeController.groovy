@@ -1,13 +1,16 @@
 package com.interact.listen.pbx.findme
 
+import com.interact.listen.PhoneNumber
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
+import javax.servlet.http.HttpServletResponse as HSR
 
 @Secured(['ROLE_FINDME_USER'])
 class FindmeController {
     static allowedMethods = [
         index: 'GET',
         configure: 'GET',
+        numberDetails: 'GET',
         save: 'POST'
     ]
 
@@ -22,6 +25,26 @@ class FindmeController {
         def preferences = FindMePreferences.findByUser(user)
         def groups = FindMeNumber.findAllByUserGroupedByPriority(user)
         render(view: 'configure', model: [groups: groups, preferences: preferences])
+    }
+
+    // ajax
+    def numberDetails = {
+        def number = params.number
+        if(!number) {
+            response.sendError(HSR.SC_NOT_FOUND)
+            return
+        }
+
+        def user = springSecurityService.getCurrentUser()
+        def phoneNumber = PhoneNumber.findByOwnerAndNumber(user, number)
+        def forwardedTo = phoneNumber?.forwardedTo
+        def canDial = user.canDial(forwardedTo ?: number)
+        
+        render(contentType: 'application/json') {
+            delegate.isForwarded = forwardedTo ? true : false
+            delegate.result = forwardedTo ?: number
+            delegate.canDial = canDial
+        }
     }
 
     def save = {

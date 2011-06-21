@@ -307,35 +307,33 @@ ul.button-menu li.current a {
 /* MESSAGES */
 
 #content-area ul.messages {
-    border-style: dashed;
-    border-width: 1px;
     display: block;
     font: 12px Arial, sans-serif;
     margin-bottom: 10px;
     padding: 5px 5px 5px 30px;
 }
 
-.messages.success {
+.success {
     background-color: #D1FFC9;
-    border-color: #437A3A;
+    border: 1px dashed #437A3A;
     color: #437A3A; /* same as border color */
 }
 
-.messages.info {
+.info {
     background-color: #E4F0FB;
-    border-color: #176BA3;
+    border: 1px dashed #176BA3;
     color: #176BA3;
 }
 
-.messages.warning {
+.warning {
     background-color: #FFDEB0;
-    border-color: #D17B02;
+    border: 1px dashed #D17B02;
     color: #D17B02;
 }
 
-.messages.error {
-    border-color: #A81818;
+.error {
     background-color: #FFC7C7;
+    border: 1px dashed #A81818;
     color: #A81818;
 }
 
@@ -361,16 +359,13 @@ ul.button-menu li.current a {
 }
 
 .blocked-number {
-    background-color: #FFC7C7;
-    border: 1px dashed #A81818;
-    color: #A81818;
     display: inline-block;
     font-size: 12px;
     font-weight: bold;
     height: 21px;
     line-height: 21px;
     margin-left: 5px;
-    padding: 0 2px;
+    padding: 0 4px;
     vertical-align: text-top;
 }
 
@@ -703,38 +698,6 @@ $(document).ready(function() {
             delayedEnable();
         }
         return false; // prevent browser from submitting the form
-    });
-
-    ${/* FIXME globally namespaced function */}
-    function checkAndIndicateBlocked(el) {
-       var field = $(el);
-       var number = field.val();
-       $.ajax({
-           type: 'GET',
-           url: '${request.contextPath}/profile/canDial',
-           data: {
-               number: number
-           },
-           success: function(data) {
-               var hasIndicator = field.next('.blocked-number').length > 0;
-               if(data.canDial && hasIndicator) {
-                   field.next('.blocked-number').remove()
-               } else if(!data.canDial && !hasIndicator) {
-                   field.after('<span class="blocked-number" title="You are not allowed to dial ' + number + '">Blocked</span>');
-               }
-           },
-           dataType: 'json'
-       }); 
-    }
-    $('.check-for-blocked').keyup(function(e) {
-        util.typewatch(function() {
-            checkAndIndicateBlocked(e.target);
-        }, 500);
-    }).bind('paste', function(e) {
-        // delay since it takes time for the text to actually paste
-        setTimeout(checkAndIndicateBlocked(e.target), 100);
-    }).change(function(e) {
-        checkAndIndicateBlocked(e.target);
     });
 
 <sec:ifAllGranted roles="ROLE_VOICEMAIL_USER">

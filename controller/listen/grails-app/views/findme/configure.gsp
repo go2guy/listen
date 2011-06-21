@@ -80,8 +80,14 @@ div.buttons {
 }
 
 span.forwarded-to {
-    margin-left: 15px;
-    font-size: 14px;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    height: 21px;
+    line-height: 21px;
+    margin-left: 5px;
+    padding: 0 4px;
+    vertical-align: text-top;
 }
 
 div.inputs input {
@@ -91,7 +97,7 @@ div.inputs input {
 
 input.seconds {
     text-align: center;
-    width: 75px;
+    width: 40px;
 }
 
 .delete-group,
@@ -181,8 +187,6 @@ input.seconds {
 
     <script type="text/javascript">
 var findme = {
-    forwardedPhones: [],
-
     deleteGroup: function(group) {
         var groups = group.parent();
         var count = groups.children('li').length;
@@ -259,21 +263,39 @@ var findme = {
         form.submit();
     },
 
-    toggleForwarded: function(destination) {
+    toggleNumberInformation: function(destination) {
         var number = $('.number', destination).val();
         var forwardedTo = '';
-        for(var i = 0; i < findme.forwardedPhones.length; i++) {
-            console.log('Phone [' + findme.forwardedPhones[i].from + '] to [' + findme.forwardedPhones[i].to + ']');
-            if(findme.forwardedPhones[i].from == number) {
-                forwardedTo = findme.forwardedPhones[i].to;
-                break;
-            }
-        }
-        if(forwardedTo != '') {
-            $('.inputs', destination).append('<span class="forwarded-to">( <b>' + number + '</b> is forwarded to <b>' + forwardedTo + '</b> )</span>');
-        } else {
-            $('.forwarded-to', destination).remove();
-        }
+        $.ajax({
+            type: 'GET',
+            url: '${request.contextPath}/findme/numberDetails',
+            data: {
+                number: number
+            },
+            success: function(data) {
+                var hasBlockedIndicator = $('.blocked-number', destination).length > 0;
+                var hasForwardedIndicator = $('.forwarded-to', destination).length > 0;
+                if(data.canDial && hasBlockedIndicator) {
+                    $('.blocked-number', destination).remove();
+                } else if(!data.canDial && !hasBlockedIndicator) {
+                    var indicator = '<span class="blocked-number error" title="You are not allowed to dial ' + data.result + '">Blocked</span>';
+                    if(hasForwardedIndicator) {
+                        $('.forwarded-to', destination).before(indicator);
+                    } else {
+                        $('.inputs', destination).append(indicator);
+                    }
+                } else if(!data.canDial && hasBlockedIndicator) {
+                    $('.blocked-number', destination).attr('title', 'You are not allowed to dial ' + data.result);
+                }
+
+                if(!data.isForwarded && hasForwardedIndicator) {
+                    $('.forwarded-to', destination).remove();
+                } else if(data.isForwarded && !hasForwardedIndicator) {
+                    $('.inputs', destination).append('<span class="forwarded-to info">Forwarded to ' + data.result + '</span>');
+                }
+            },
+            dataType: 'json'
+        });
     }
 };
 
@@ -323,25 +345,15 @@ $(document).ready(function() {
         return false;
     });
 
-    $('.number').change(function(e) {
-        findme.toggleForwarded($(e.target).closest('.destination'));
-    });
-
-    $.ajax({
-        url: '${request.contextPath}/profile/listPhones',
-        dataType: 'json',
-        cache: false,
-        success: function(data) {
-            for(var i = 0, len = data.length; i < len; ++i) {
-                var number = data[i];
-                if(number.forwardedTo) {
-                    findme.forwardedPhones.push({
-                        from: number.number,
-                        to: number.forwardedTo
-                    });
-                }
-            }
-        }
+    $('.number').keyup(function(e) {
+        util.typewatch(function() {
+            findme.toggleNumberInformation($(e.target).closest('.destination'));
+        }, 500);
+    }).bind('paste', function(e) {
+        // delay since it takes time for the text to actually paste
+        setTimeout(findme.toggleNumberInformation($(e.target).closest('.destination')), 100);
+    }).change(function(e) {
+        findme.toggleNumberInformation($(e.target).closest('.destination'));
     });
 });
     </script>
