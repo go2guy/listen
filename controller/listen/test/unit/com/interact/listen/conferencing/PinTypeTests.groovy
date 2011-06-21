@@ -14,14 +14,4 @@ class PinTypeTests extends GroovyTestCase {
         assertEquals PinType.ADMIN, PinType.fromDisplayName('Admin')
         assertEquals PinType.PASSIVE, PinType.fromDisplayName('Passive')
     }
-
-    // failure: fromDisplayName() with unknown name or null name yields exception
-    void testFromDisplayName1() {
-        shouldFail(IllegalArgumentException) {
-            PinType.fromDisplayName(String.valueOf(System.currentTimeMillis()))
-        }
-        shouldFail(IllegalArgumentException) {
-            PinType.fromDisplayName(null)
-        }
-    }
 }
