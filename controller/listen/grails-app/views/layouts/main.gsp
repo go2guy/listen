@@ -618,7 +618,7 @@ div.listTotal {
       </ul>
 
       <g:set var="tab" value="${pageProperty(name: 'meta.tab')}"/>
-      <g:set var="isMeta" value="${['administration', 'users', 'profile'].contains(tab)}"/>
+      <g:set var="isMeta" value="${['administration', 'users', 'profile', 'custodianAdministration'].contains(tab)}"/>
       <div id="content-area" class="${tab}${isMeta ? ' meta' : ''}">
         <listen:buttonMenu tab="${pageProperty(name: 'meta.tab')}" button="${pageProperty(name: 'meta.button')}"/>
 
