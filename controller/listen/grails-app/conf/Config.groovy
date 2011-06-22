@@ -91,7 +91,7 @@ log4j = {
            'net.sf.ehcache.hibernate'
 
     warn   'org.mortbay.log',
-           'com.energizedwork.grails.plugins.jodatime'
+           'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
 
     debug  'grails.app',
            'com.interact'
