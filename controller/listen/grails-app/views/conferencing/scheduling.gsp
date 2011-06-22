@@ -141,6 +141,9 @@ $(document).ready(function() {
 
         linkCell.append(link);
     });
+    $('.cancel-form').submit(function() {
+        return confirm('Are you sure? Calendar cancellations will be sent to all invited callers.');
+    });
 });
     </script>
   </body>

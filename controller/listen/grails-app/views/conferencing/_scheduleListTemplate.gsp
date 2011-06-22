@@ -19,7 +19,7 @@
       </tr>
       <tr class="${i % 2 == 0 ? 'even' : 'odd'} schedule-details-row">
         <td colspan="5">
-          <g:form controller="conferencing" action="cancel" method="post">
+          <g:form controller="conferencing" action="cancel" method="post" class="cancel-form">
             <g:hiddenField name="id" value="${scheduledConference.id}"/>
             <g:submitButton name="cancel" value="${g.message(code: 'page.conferencing.scheduling.cancel.button.label')}"/>
           </g:form>
