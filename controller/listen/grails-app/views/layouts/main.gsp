@@ -15,7 +15,11 @@ var util = {
             clearTimeout(timer);
             timer = setTimeout(callback, ms);
         };
-    })()
+    })(),
+
+    selectFirst: function(selectList) {
+        $('option:first', selectList).attr('selected', 'selected');
+    }
 };
 
 var log = {

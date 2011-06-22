@@ -319,10 +319,6 @@ $(document).ready(function() {
 
             attendant.rebuildMenuSelects(group);
         },
-
-        selectFirst: function(selectList) {
-            $('option:first', selectList).attr('selected', 'selected');
-        },
         
         rebuildMenuSelects: function(group) {
             var available = [];
@@ -352,7 +348,7 @@ $(document).ready(function() {
                 if(attendant.arrayContains(current, available)) {
                     sel.val(current);
                 } else {
-                    attendant.selectFirst(sel);
+                    util.selectFirst(sel);
                 }
             });
         },
@@ -638,7 +634,7 @@ $(document).ready(function() {
         var sel = $(e.target);
         if(sel.val() == 'Create New Menu...') {
             attendant.addMenu(sel.closest('.menu-group'));
-            attendant.selectFirst(sel);
+            util.selectFirst(sel);
             //sel.val($('option:first', sel).val());
         }
     });
@@ -687,7 +683,7 @@ $(document).ready(function() {
             var close = function(selectFirst) {
                 form.unbind(); // unbind, we'll re-bind when the option is selected again
                 input.unbind();
-                if(selectFirst === true) attendant.selectFirst(sel);
+                if(selectFirst === true) util.selectFirst(sel);
                 dialog.dialog('close');
 
                 // clear fields in the dialog

@@ -93,13 +93,13 @@ $(document).ready(function() {
                     sel.prepend('<option>' + name + '</option>');
                     sel.val(name);
                 } else {
-                    attendant.selectFirst(sel);
+                    util.selectFirst(sel);
                 }
                 close();
             }
 
             var cancel = function() {
-                attendant.selectFirst(sel);
+                util.selectFirst(sel);
                 close();
             }
 
