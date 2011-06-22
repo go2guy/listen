@@ -5,7 +5,7 @@ echo "Creating Interact organization"
 mysql -u root -e "insert into listen2.organization (id, version, name) values (1, 0, 'Interact Incorporated');"
 mysql -u root -e "insert into listen2.menu_group (id, version, name, organization_id, is_default) values (1, 0, 'Default', 1, true);"
 #Add enabled features
-mysql -u root -e "insert into listen2.organization_enabled_features (organization_id, listen_feature) values (1, 'VOICEMAIL'), (1, 'FINDME'), (1, 'CUSTOM_APPLICATIONS'), (1, 'CONFERENCING'), (1, 'BROADCAST'), (1, 'IPPBX');"
+mysql -u root -e "insert into listen2.organization_enabled_features (organization_id, listen_feature) values (1, 'VOICEMAIL'), (1, 'FINDME'), (1, 'CUSTOM_APPLICATIONS'), (1, 'CONFERENCING'), (1, 'BROADCAST'), (1, 'IPPBX'), (1, 'ATTENDANT'), (1, 'AFTERHOURS');"
 
 echo "Migrating users"
 mysql -u root -e "insert into listen2.user (id, version, email_address, last_login, password, real_name, username, enabled, is_active_directory) select id, version, work_email_address, last_login, password, real_name, username, 1, is_active_directory from listen.SUBSCRIBER where id > 1;"
@@ -17,6 +17,9 @@ mysql -u root -e "insert into listen2.user_role (role_id, user_id) select 6, id 
 
 #change passwords to 'super' for all non-AD accounts
 mysql -u root -e "update listen2.user set password = '73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c' where is_active_directory = false;"
+
+#update custodian password
+mysql -u root -e "update listen2.user set password = '8dae8d123d105b32a221556061bd271a6411347af781392ed7f67d1294e95e5e' where id = 1;"
 
 #Grant Operator permissions for various users
 mysql -u root -e "insert into listen2.user_role (role_id, user_id) values (2, (select id from listen2.user where username = 'tbritson')), (3, (select id from listen2.user where username = 'tbritson'));"
@@ -56,7 +59,7 @@ mysql -u root -e "insert into listen2.recording (id, version, audio_id, conferen
 
 echo "Migrating Access numbers"
 #insert an audio record for each greeting location
-mysql -u root -e "insert into listen2.audio (uri) select distinct greeting_location from listen.ACCESS_NUMBER where greeting_location IS NOT NULL;"
+mysql -u root -e "insert into listen2.audio (uri, duration, file_size, transcription) select distinct greeting_location, 'PT0S', 0, '' from listen.ACCESS_NUMBER where greeting_location IS NOT NULL;"
 
 mysql -u root -e "insert into listen2.phone_number (id, version, forwarded_to, greeting_id, is_public, number, owner_id, supports_message_light, type) select b.id, b.version, b.forwarded_to, (select a.id from listen2.audio a where a.uri = b.greeting_location), b.is_public, b.number, b.subscriber_id, b.supports_message_light, b.number_type from listen.ACCESS_NUMBER b;"
 
@@ -117,7 +120,7 @@ mysql -u root -e "update listen2.action_history set action = 'UPDATED_FINDMENUMB
 mysql -u root -e "update listen2.action_history set action = 'CHANGED_PAGER_ALTERNATE_NUMBER' where action = 'Changed pager alternate number';"
 
 echo "Migrating DNIS Mappings"
-mysql -u root -e "insert into listen2.number_route (destination, label, organization_id, pattern, type) values ('Conferencing', 'Local and International #', 1, '4024203951', 'EXTERNAL'), ('IP PBX', NULL, 1, '4024768786', 'EXTERNAL'), ('Mailbox', NULL, 1, '4024203907', 'EXTERNAL'), ('Conferencing', 'Toll Free #', 1, '8002143520', 'EXTERNAL'), ('Direct Voicemail', NULL, 1, '4024203934', 'EXTERNAL'), ('Voicemail', NULL, 1, '40242039*', 'EXTERNAL'), ('Conferencing', 'In Office #', 1, '990', 'EXTERNAL'), ('Mailbox', NULL, 1, '770', 'EXTERNAL'), ('IP PBX', NULL, 1, '*', 'EXTERNAL'), ('Find Me Config', NULL, 1, '880', 'EXTERNAL');"
+mysql -u root -e "insert into listen2.number_route (destination, label, organization_id, pattern, type) values ('Conferencing', 'Local and International #', 1, '4024203951', 'EXTERNAL'), ('Attendant', NULL, 1, '4024768786', 'EXTERNAL'), ('Mailbox', NULL, 1, '4024203907', 'EXTERNAL'), ('Conferencing', 'Toll Free #', 1, '8002143520', 'EXTERNAL'), ('Direct Voicemail', NULL, 1, '4024203934', 'EXTERNAL'), ('Voicemail', NULL, 1, '40242039*', 'EXTERNAL'), ('Conferencing', 'In Office #', 1, '990', 'EXTERNAL'), ('Mailbox', NULL, 1, '770', 'EXTERNAL'), ('IP PBX', NULL, 1, '*', 'EXTERNAL'), ('Find Me Config', NULL, 1, '880', 'EXTERNAL');"
 
 echo "Migrating Google Auth configurations"
 mysql -u root -e "insert into listen2.google_auth_configuration (auth_token, auth_user, is_enabled, retry_timeout) values ('DQAAAMkAAACSYZRKTlhGFk82HsEKu67vP-tmO1HPGzvSehT_3XBpd8qOMWjYIkWfjB78DcSa3y0pYri0YnMGxDudCnZCN_rITRdbyXWXtQ4CbywfmlSfqp07b2BSgzRer5OCjdkcK8rMM9AWA2ClPXoeHkPbJdwtmgNX23wBBHERn79TotwamX4OC36Atj2JOrNrJjw6bc-rhrs0qEudAREd5O5Q4clwgQz-kSEW0kbwxtAPOTfppC9GFeUNhn6cWm3O9YA9Ja92XN4t5yoH9yNevg82RTj4', 'interactincorporated@gmail.com', true, 1000);"
