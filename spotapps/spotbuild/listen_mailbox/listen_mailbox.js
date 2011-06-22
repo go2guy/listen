@@ -54,7 +54,7 @@ function setFwdFileName(FILE1, subscriber, subFwd) {
 
 function createVoiceMailObj(result, subFwd, hostName, FILE2, subscriber) {
     var result = eval("("+result+")");
-    return "{\"uri\": \"http://"+hostName+FILE2+"\",\"duration\":\""+result.duration+"\",\"fileSize\":\""+result.fileSize+"\",\"leftBy\":\""+result.leftBy+"\",\"subscriber\": { \"href\": \"/subscribers/"+subFwd+"\"},\"forwardedBy\": { \"href\": \"/subscribers/"+subscriber+"\"}}";
+    return "{\"uri\": \"http://"+hostName+FILE2+"\",\"duration\":\""+result.duration+"\",\"fileSize\":\""+result.fileSize+"\",\"leftBy\":\""+result.leftBy+"\", \"transcription\":\"\", \"subscriber\": { \"href\": \"/subscribers/"+subFwd+"\"},\"forwardedBy\": { \"href\": \"/subscribers/"+subscriber+"\"}}";
 }
 
 function setupMbxMenu(enableOutDial, enablePagingSupport)
