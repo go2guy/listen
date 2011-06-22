@@ -9,6 +9,7 @@ class ConferencingController {
     static allowedMethods = [
         index: 'GET',
         ajaxPagination: 'GET',
+        cancel: 'POST',
         deleteRecording: 'POST',
         downloadRecording: 'GET',
         dropCaller: 'POST',
@@ -25,6 +26,8 @@ class ConferencingController {
     ]
 
     def audioDownloadService
+    def cancelInvitationService
+    def createInvitationService
     def deleteRecordingService
     def grailsApplication
     def scheduledConferenceNotificationService
@@ -37,6 +40,19 @@ class ConferencingController {
 
     def ajaxPagination = {
         render listen.paginateTotal(total: params.total, messagePrefix: 'paginate.total.callers') + g.paginate(controller: params.c, action: params.a, total: params.total, max: params.max, offset: params.offset, params: [sort: params.sort, order: params.order], maxsteps: 5)
+    }
+
+    def cancel = {
+        def invitation = ScheduledConference.get(params.id)
+        if(!invitation) {
+            flash.errorMessage = 'Invitation not found'
+            redirect(action: 'scheduling')
+            return
+        }
+
+        cancelInvitationService.cancel(invitation)
+        flash.successMessage = 'Cancellation has been sent to invited callers'
+        redirect(action: 'scheduling')
     }
 
     def deleteRecording = {
@@ -268,26 +284,12 @@ class ConferencingController {
     }
 
     def schedule = {
-        def user = springSecurityService.getCurrentUser()
-        // TODO doesnt work with multiple conferences per user
-        def conference = Conference.findByOwner(user)
-        if(!conference) {
-            flash.errorMessage = 'User does not have a conference to schedule'
-            redirect(action: 'scheduling')
-            return
-        }
-
-        def scheduledConference = new ScheduledConference()
-        scheduledConference.properties = params
-        scheduledConference.forConference = conference
-        scheduledConference.scheduledBy = user
-
-        if(scheduledConference.validate() && scheduledConference.save()) {
-            scheduledConferenceNotificationService.sendEmails(scheduledConference)
+        def invitation = createInvitationService.createInvitation(params)
+        if(invitation.hasErrors()) {
+            render(view: 'scheduling', model: [scheduledConference: scheduledConference, scheduleLists: scheduleLists(user)])
+        } else {
             flash.successMessage = 'Conference has been scheduled and email invitations have been sent'
             redirect(action: 'scheduling')
-        } else {
-            render(view: 'scheduling', model: [scheduledConference: scheduledConference, scheduleLists: scheduleLists(user)])
         }
     }
 

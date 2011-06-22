@@ -19,6 +19,15 @@ class HistoryService {
 //        // TODO later
 //    }
 
+    void cancelledConferenceInvitation(ScheduledConference invitation) {
+        def properties = [
+            action: Action.CANCELLED_CONFERENCE_INVITATION,
+            description: "Cancelled conference invitation for [${invitation.forConference.description}] starting [${formatDate(invitation.startsAt())}]",
+            onUser: invitation.scheduledBy
+        ]
+        write(new ActionHistory(properties))
+    }
+
     void changedVoicemailPin(User onUser, def oldPin, def newPin) {
         def properties = [
             action: Action.CHANGED_VOICEMAIL_PIN,
@@ -27,6 +36,15 @@ class HistoryService {
         ]
         write(new ActionHistory(properties))
      }
+
+    void createdConferenceInvitation(ScheduledConference invitation) {
+        def properties = [
+            action: Action.CREATED_CONFERENCE_INVITATION,
+            description: "Created conference invitation for [${invitation.forConference.description}] starting [${formatDate(invitation.startsAt())}]",
+            onUser: invitation.scheduledBy
+        ]
+        write(new ActionHistory(properties))
+    }
 
     void createdUser(User user) {
         def properties = [
@@ -242,7 +260,7 @@ class HistoryService {
         return request?.getAttribute('tui-channel') ?: Channel.GUI
     }
 
-    private def formatDate(DateTime date) {
+    private def formatDate(def date) {
         def formatter = DateTimeFormat.forPattern('yyyy-MM-dd HH:mm')
         return formatter.print(date)
     }
