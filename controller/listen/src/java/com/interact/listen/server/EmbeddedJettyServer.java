@@ -1,11 +1,13 @@
 package com.interact.listen.server;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
@@ -17,6 +19,8 @@ import org.mortbay.jetty.webapp.WebAppContext;
  */
 public final class EmbeddedJettyServer
 {
+    private static final String EXTRACT_DIR = "/interact/listen/.jetty-webapp";
+
     private EmbeddedJettyServer()
     {
         throw new AssertionError("Cannot instantiate main() class EmbeddedJettyServer");
@@ -55,10 +59,35 @@ public final class EmbeddedJettyServer
         }
         webapp.setServer(server);
         webapp.setWar(location.toExternalForm());
-        webapp.setTempDirectory(new File("/interact/listen/.webapp-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
+
+        File dir = createWebappExtractDirectory(EXTRACT_DIR);
+        webapp.setTempDirectory(dir);
 
         server.setHandler(webapp);
         server.start();
         server.join();
+    }
+
+    private static File createWebappExtractDirectory(String path) {
+        File dir = new File(path);
+        if(dir.exists() && !FileUtils.deleteQuietly(dir))
+        {
+            System.out.println("Unable to delete pre-existing extraction directory [" + path + "]");
+            System.exit(1);
+        }
+        else if(!dir.exists())
+        {
+            try
+            {
+                FileUtils.forceMkdir(dir);
+            }
+            catch(IOException e)
+            {
+                System.out.println("Unable to create extraction directory [" + path +"]");
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+        return dir;
     }
 }

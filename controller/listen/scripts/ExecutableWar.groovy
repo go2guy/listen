@@ -23,6 +23,7 @@ target(main: "Builds a self-executing war file") {
             exclude(name: 'plugin*')
         }
         fileset(dir: 'lib-jetty', includes: '*.jar')
+        fileset(dir: 'lib', includes: 'commons-io-1.4.jar')
     }
     ant.copy(todir: 'target/war-stage') {
         fileset(dir: 'target/classes', includes: 'com/interact/listen/server/EmbeddedJettyServer.class')
