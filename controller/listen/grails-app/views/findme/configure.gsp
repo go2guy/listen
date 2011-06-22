@@ -80,6 +80,7 @@ div.buttons {
 }
 
 span.forwarded-to {
+    border-style: solid;
     display: inline-block;
     font-size: 12px;
     font-weight: bold;
@@ -88,6 +89,10 @@ span.forwarded-to {
     margin-left: 5px;
     padding: 0 4px;
     vertical-align: text-top;
+
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 
 div.inputs input {

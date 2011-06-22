@@ -51,7 +51,7 @@ td.col-public {
                   <g:if test="${phoneNumber.type == com.interact.listen.PhoneNumberType.EXTENSION}">
                     <g:textField class="check-for-blocked" name="forwardedTo" value="${fieldValue(bean: phoneNumber, field: 'forwardedTo')}"/>
                     <listen:ifCannotDial number="${fieldValue(bean: phoneNumber, field: 'forwardedTo')}">
-                      <span class="blocked-number" title="You are not allowed to dial ${fieldValue(bean: phoneNumber, field: 'forwardedTo')}">Blocked</span>
+                      <span class="blocked-number error" title="You are not allowed to dial ${fieldValue(bean: phoneNumber, field: 'forwardedTo')}">Blocked</span>
                     </listen:ifCannotDial>
                   </g:if>
                 </td>
@@ -134,7 +134,7 @@ $(document).ready(function() {
                if(data.canDial && hasIndicator) {
                    field.next('.blocked-number').remove()
                } else if(!data.canDial && !hasIndicator) {
-                   field.after('<span class="blocked-number" title="You are not allowed to dial ' + number + '">Blocked</span>');
+                   field.after('<span class="blocked-number error" title="You are not allowed to dial ' + number + '">Blocked</span>');
                }
            },
            dataType: 'json'

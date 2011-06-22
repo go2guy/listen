@@ -359,6 +359,7 @@ ul.button-menu li.current a {
 }
 
 .blocked-number {
+    border-style: solid;
     display: inline-block;
     font-size: 12px;
     font-weight: bold;
@@ -367,6 +368,10 @@ ul.button-menu li.current a {
     margin-left: 5px;
     padding: 0 4px;
     vertical-align: text-top;
+
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 
 /* END MESSAGES */
