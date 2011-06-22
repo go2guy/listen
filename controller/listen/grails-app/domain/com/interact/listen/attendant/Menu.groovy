@@ -24,7 +24,7 @@ class Menu {
                 list.add(action.keysPressed)
                 return list
             },
-            audioFile: optionsPrompt && !optionsPrompt.trim() == '' ? promptDirectory + '/' + optionsPrompt : ''
+            audioFile: optionsPrompt && optionsPrompt.trim() != '' ? promptDirectory + '/' + optionsPrompt : ''
         ]
 
         return [
