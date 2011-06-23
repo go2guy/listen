@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'321_4'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'320_5'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_321_6(argList)
+            function II_SB_JS_function_320_28(lstnChannel,recEvent)
             {
-	            return getJsonVal(argList, 'recordingSessionId');
+	            return getTuiEvent(lstnChannel, recEvent);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Recording SessionID</log>
-            <log>INFO: Entered run-javascript.vxml [321_6]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_321_6(argList)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="recSID" expr="II_SB_userJava" />   
+            <log target="status">Get Event</log>
+            <log>INFO: Entered run-javascript.vxml [320_28]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_320_28(lstnChannel,recEvent)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="recEvent" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

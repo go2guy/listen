@@ -1,12 +1,13 @@
 127_9 - record-audio
 322_29 - run-javascript
 320_3 - send-custom-event
+321_23 - assign-variable
 320_5 - decision
 126_85 - decision
 127_3 - create-session
 126_88 - run-javascript
 127_7 - run-javascript
-320_8 - send-custom-event
+320_28 - run-javascript
 126_135 - run-javascript
 126_136 - run-javascript
 126_139 - run-javascript
@@ -20,6 +21,7 @@
 193_5 - assign-variable
 126_127 - run-javascript
 193_6 - decision
+127_47 - assign-variable
 126_121 - run-javascript
 319_25 - decision
 319_22 - run-javascript
@@ -58,6 +60,5 @@ begin - begin
 133_54 - run-javascript
 133_53 - log
 133_55 - decision
-320_18 - send-custom-event
 322_53 - run-javascript
 322_52 - run-javascript

@@ -14,7 +14,7 @@
     <var name="II_SB_eventToPass" expr="'STOP_RECORDING'"/>
     <var name="II_SB_sessionID" expr="recSID"/>        <!-- Config: Session ID for the message to send -->
     <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'321_8'"/>
-    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'320_5'"/>
+    <var name="II_SB_NEXT_OPTION_FAILURE" expr="'321_23'"/>
     <var name="II_SB_nextOpt" expr="'321_4'"/>
 
     <var name="II_SB_returnValues" expr="''"/>

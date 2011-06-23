@@ -11,8 +11,8 @@
     -->
 
     <var name="II_SB_valueToPass" expr="''"/>   <!-- Config: Name of file confrence creates -->
-    <var name="II_SB_eventToPass" expr="'ERR_REC_STOP'"/>
-    <var name="II_SB_sessionID" expr="status"/>        <!-- Config: Session ID for the message to send -->
+    <var name="II_SB_eventToPass" expr="recEvent"/>
+    <var name="II_SB_sessionID" expr="sessionID"/>        <!-- Config: Session ID for the message to send -->
     <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'132_37'"/>
     <var name="II_SB_NEXT_OPTION_FAILURE" expr="'132_37'"/>
     <var name="II_SB_nextOpt" expr="'320_3'"/>
@@ -22,7 +22,7 @@
     
     <form id="beginDocument">
         <block>
-    	    <log target="status">Record Stop Error</log>
+    	    <log target="status">Send TUI Event</log>
             <log>INFO: Entered send-custom-event.vxml [320_3]</log>
             <log>INFO: Entered beginDocument</log>
             <var name="II_SB_returnValues" expr="II_SB_sessionID + '|' + II_SB_eventToPass + '|' + II_SB_valueToPass + '|' + II_SB_NEXT_OPTION_SUCCESS + '|' + II_SB_NEXT_OPTION_FAILURE"/>

@@ -10,10 +10,15 @@ function getArcadeId(argList) {
     return result;
 }
 
-function getChannelInfo(argList, key) {
-    var result = eval("("+argList+")");
-    if (result[key]== 'TUI') 
-        return result.adminSID;
-    else 
-        return "GUI";
+function getTuiEvent(channel, recEvent) {
+    var result;
+    if (channel == 'GUI' && recEvent == 'START')
+        result = 'IS_RECORDING';
+    else if (channel == 'TUI' && recEvent == 'START_ERROR')
+        result = 'ERR_REC_START';
+    else if (channel == 'TUI' && recEvent == 'STOP_ERROR')
+        result = 'ERR_REC_STOP';
+    else
+        result = '';
+    return result;
 }
