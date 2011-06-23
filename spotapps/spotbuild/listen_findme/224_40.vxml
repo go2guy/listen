@@ -19,7 +19,7 @@
     <var name="II_SB_drpKeyOpt" expr="''"/>        <!--  Where to go if a drop key is pressed -->
     <var name="II_SB_ansOpt" expr="'224_93'"/>            <!--  Next option when call is answered -->
     <var name="II_SB_notAnsOpt" expr="'224_33'"/>  	<!--  Next option when call is not answered -->
-    <var name="II_SB_failedOpt" expr="''"/>     <!--  Next option when connection attempt fails -->
+    <var name="II_SB_failedOpt" expr="'224_114'"/>     <!--  Next option when connection attempt fails -->
     <var name="II_SB_maxTimeOpt" expr="''"/>      <!--  Next option when max time for call is reached -->
     <var name="II_SB_inbDiscOpt" expr="''"/>  <!--  Next option when caller hangs up -->
     <var name="II_SB_outbDiscOpt" expr="''"/> <!--  Next option when called party hangs up -->
