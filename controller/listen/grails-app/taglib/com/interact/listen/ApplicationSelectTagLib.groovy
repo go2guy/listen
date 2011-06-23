@@ -15,6 +15,8 @@ class ApplicationSelectTagLib {
         def value = attrs.value ?: ''
         def hide = attrs.hide as boolean ? true : false
 
+        def exclude = (attrs.exclude ? attrs.exclude.split(',') : []) as Set
+
         def apps = applicationService.listApplications()
 
         def organization = attrs.organization
@@ -28,7 +30,9 @@ class ApplicationSelectTagLib {
 
         out << '<select' + (name ? ' name="' + name + '"' : '') + (id ? ' id="' + id + '"' : '') + ' class="application-select"' + (hide ? ' style="display: none;"' : '') + ' class="application-select">'
         apps.each { application ->
-            out << '<option' + (value == application ? ' selected="selected"' : '') + ">${application}</option>"
+            if(!exclude.contains(application)) {
+                out << '<option' + (value == application ? ' selected="selected"' : '') + ">${application}</option>"
+            }
         }
         if(value.trim().length() > 0 && !apps.contains(value)) {
             out << '<option selected="selected">' + value + '</option>'

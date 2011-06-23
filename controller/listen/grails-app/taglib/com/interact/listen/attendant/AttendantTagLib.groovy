@@ -41,7 +41,7 @@ class AttendantTagLib {
         def hide = !action?.instanceOf(LaunchApplicationAction)
         def value = action?.instanceOf(LaunchApplicationAction) && action?.applicationName ? action?.applicationName : ''
 
-        out << listen.applicationSelect(value: value, hide: hide)
+        out << listen.applicationSelect(value: value, hide: hide, exclude: 'IP PBX')
     }
 
     def dialNumberInput = { attrs ->
