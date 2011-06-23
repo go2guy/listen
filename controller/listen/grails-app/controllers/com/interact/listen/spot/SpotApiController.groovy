@@ -586,8 +586,24 @@ class SpotApiController {
             return
         }
 
+        if(!params.organization) {
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [organization]')
+            return
+        }
+
         def destination = params.destination
-        def userPhoneNumber = PhoneNumber.findByNumber(params.destination)
+        def organization = Organization.get(getIdFromHref(params.organization))
+        if(!organization) {
+            response.sendError(HSR.SC_BAD_REQUEST, "organization not found with id [${getIdFromHref(params.organization)}]")
+            return
+        }
+
+        def userPhoneNumber = PhoneNumber.createCriteria().get {
+            eq('number', destination)
+            owner {
+                eq('organization', organization)
+            }
+        }
         def user = userPhoneNumber?.owner
 
         if(!user) {
