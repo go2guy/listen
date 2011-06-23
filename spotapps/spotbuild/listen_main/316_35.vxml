@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_316_35(project,line,params,resource,request,cntrlURL,returnStr)
             {
-	            logText = 'Chk Access: Check Access Number returned Failure. Reason [' + returnStr  + ']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+'].';return writeLog(project,line,logText);
+	            logText = 'Chk Access: Check Access Number returned Failure. Reason [' + returnStr + ']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+'].';return writeLog(project,line,logText);
             }
         ]]>
     </script>
