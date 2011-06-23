@@ -24,7 +24,7 @@ enum Stat {
     TEST_VOICEMAIL_SMS                    ('2016'),
     TEST_VOICEMAIL_EMAIL                  ('2017'),
     CONFERENCE_INVITE_EMAIL               ('2014'),
-    CONFERENCE_CANCEL_EMAIL               ('2015'), // TODO still needs to be written
+    CONFERENCE_CANCEL_EMAIL               ('2015'),
 
     // Listen -> SPOT communication
     SPOT_AUTO_DIAL_DIAL                   ('5000'),
