@@ -57,6 +57,47 @@ class ScheduledConferenceNotificationService {
         statWriterService.send(Stat.CONFERENCE_INVITE_EMAIL)
     }
 
+    void sendCancellation(ScheduledConference scheduledConference) {
+        def adminBody = vcalCancelMarkup(scheduledConference, PinType.ADMIN)
+        def activeBody = vcalCancelMarkup(scheduledConference, PinType.ACTIVE)
+        def passiveBody = vcalCancelMarkup(scheduledConference, PinType.PASSIVE)
+        def vcalHeaders = vcalCancelHeaders()
+
+        backgroundService.execute("Cancel conference invitation email for ${scheduledConference}", {
+            def addresses = getValidEmails(scheduledConference)
+            if(addresses.active.size() > 0) {
+                log.debug "Sending conference cancel invitation (active) to ${addresses.active}"
+                sendMail {
+                    headers vcalHeaders
+                    from 'Listen'
+                    to addresses.active.toArray()
+                    subject "Canceled: ${scheduledConference.emailSubject}"
+                    body activeBody
+                }
+            }
+
+            if(addresses.passive.size() > 0) {
+                log.debug "Sending conference cancel invitation (passive) to ${addresses.passive}"
+                sendMail {
+                    headers vcalHeaders
+                    from 'Listen'
+                    to addresses.passive.toArray()
+                    subject "Canceled: ${scheduledConference.emailSubject}"
+                    body passiveBody
+                }
+            }
+
+            log.debug "Sending conference cancel invitation (admin) to ${scheduledConference.scheduledBy.emailAddress}"
+            sendMail {
+                headers vcalHeaders
+                from 'Listen'
+                to scheduledConference.scheduledBy.emailAddress
+                subject "Canceled: ${scheduledConference.emailSubject}"
+                body adminBody
+            }
+        })
+    }
+
     private def getEmailBody(ScheduledConference scheduledConference, PinType pinType) {
         def organization = scheduledConference.forConference.owner.organization
         // TODO hard-coded destination application
@@ -161,7 +202,7 @@ ${phoneNumberHtml}\
         b << 'SEQUENCE:0\n'
         b << "SUMMARY;LANGUAGE=en-us:${sc.emailSubject}\n"
         b << 'TRANSP:OPAQUE\n'
-        b << "UID:${uid()}\n"
+        b << "UID:${sc.uid}\n"
         b << "X-ALT-DESC;FMTTYPE=text/html:${getEmailBody(sc, pinType)}\n"
         b << 'X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\n'
         b << 'X-MICROSOFT-CDO-IMPORTANCE:1\n'
@@ -181,14 +222,63 @@ ${phoneNumberHtml}\
         return b.toString()
     }
 
+    private def vcalCancelMarkup(ScheduledConference sc, PinType pinType) {
+        def b = new StringBuilder()
+
+        def emails = getValidEmails(sc)
+        def iso = ISODateTimeFormat.basicDateTimeNoMillis()
+
+        b << 'BEGIN:VCALENDAR\n'
+        b << 'PRODID:-//Interact Incorporated//Listen//EN\n'
+        b << 'VERSION:2.0\n'
+        b << 'METHOD:CANCEL\n'
+        b << 'X-MS-OLK-FORCEINSPECTOROPEN:TRUE\n'
+        b << 'BEGIN:VEVENT\n'
+        emails.active.each {
+            b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}\n"
+        }
+        emails.passive.each {
+            b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}\n"
+        }
+        b << 'CLASS:PUBLIC\n'
+        b << "CREATED:${iso.print(sc.dateCreated)}\n"
+        b << "DESCRIPTION:${getEmailBody(sc, pinType)}\n"
+        b << "DTEND:${iso.print(sc.endsAt())}\n"
+        b << "DTSTAMP:${iso.print(sc.dateCreated)}\n"
+        b << "DTSTART:${iso.print(sc.startsAt())}\n"
+        b << "LAST-MODIFIED:${iso.print(sc.dateCreated)}\n"
+        b << 'LOCATION:Listen\n'
+        b << "ORGANIZER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
+        b << 'PRIORITY:1\n'
+        b << 'SEQUENCE:1\n'
+        b << "SUMMARY;LANGUAGE=en-us:Canceled: ${sc.emailSubject}\n"
+        b << 'TRANSP:TRANSPARENT\n'
+        b << "UID:${sc.uid}\n"
+        b << "X-ALT-DESC;FMTTYPE=text/html:${getEmailBody(sc, pinType)}\n"
+        b << 'X-MICROSOFT-CDO-BUSYSTATUS:FREE\n'
+        b << 'X-MICROSOFT-CDO-IMPORTANCE:2\n'
+        b << 'X-MICROSOFT-DISALLOW-COUNTER:FALSE\n'
+        b << 'X-MS-OLK-ALLOWEXTERNCHECK:TRUE\n'
+        b << 'X-MS-APPTSEQTIME:${iso.print(new DateTime())}\n'
+        b << 'X-MS-OLK-AUTOSTARTCHECK:FALSE\n'
+        b << 'X-MS-OLK-CONFTYPE:0\n'
+        b << "X-MS-OLK-SENDER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
+        b << 'END:VEVENT\n'
+        b << 'END:VCALENDAR\n'
+        return b.toString()
+    }
+
     private def vcalHeaders() {
         return [
             'Content-Type': 'text/calendar; method=REQUEST; charset="UTF-8"',
             'Content-Transfer-Encoding': '7bit'
         ]
     }
-
-    private def uid() {
-        return UUID.randomUUID().toString()
+    
+    private def vcalCancelHeaders() {
+        return [
+            'Content-Type': 'text/calendar; method=CANCEL; charset="UTF-8"',
+            'Content-Transfer-Encoding': '7bit'
+        ]
     }
 }

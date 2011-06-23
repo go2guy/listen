@@ -1529,4 +1529,16 @@ databaseChangeLog = {
 			}
 		}
 	}
+
+    changeSet(author: "root (generated)", id: "1308759117297-1") {
+        addColumn(tableName: "scheduled_conference") {
+            column(name: "uid", type: "varchar(255)") {
+                constraints(nullable: "true")
+            }
+        }
+    }
+
+    changeSet(author: "root (generated)", id: "1308759117297-2") {
+        addNotNullConstraint(columnDataType: "bigint", columnName: "organization_id", tableName: "organization_enabled_features")
+    }
 }

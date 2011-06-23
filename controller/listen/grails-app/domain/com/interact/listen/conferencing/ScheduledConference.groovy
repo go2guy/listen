@@ -14,6 +14,7 @@ class ScheduledConference {
     String passiveCallerAddresses
     User scheduledBy
     LocalTime starts
+    String uid
 
     static constraints = {
         activeCallerAddresses maxSize: 2048
@@ -26,6 +27,7 @@ class ScheduledConference {
             return 'before.starts'
         }
         passiveCallerAddresses maxSize: 2048
+        uid nullable: true
     }
 
     LocalDateTime startsAt() {

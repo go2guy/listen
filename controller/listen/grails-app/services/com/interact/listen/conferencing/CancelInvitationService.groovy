@@ -18,7 +18,7 @@ class CancelInvitationService {
         invitation.delete()
 
         // FIXME uncomment after implemented
-        //scheduledConferenceNotificationService.sendCancellation(invitation)
+        scheduledConferenceNotificationService.sendCancellation(invitation)
         historyService.cancelledConferenceInvitation(invitation)
         // TODO stat?
     }

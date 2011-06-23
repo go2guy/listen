@@ -20,6 +20,7 @@ class CreateInvitationService {
         invitation.properties = params
         invitation.forConference = conference
         invitation.scheduledBy = user
+        invitation.uid = UUID.randomUUID().toString()
 
         if(invitation.validate() && invitation.save()) {
             scheduledConferenceNotificationService.sendEmails(invitation)
