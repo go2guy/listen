@@ -3,6 +3,7 @@ package com.interact.listen.spot
 import com.interact.listen.User
 import com.interact.listen.history.Channel
 import com.interact.listen.httpclient.HttpClientImpl
+import com.interact.listen.stats.Stat
 import org.joda.time.format.DateTimeFormat
 
 class SpotCommunicationService {
@@ -10,21 +11,26 @@ class SpotCommunicationService {
     static transactional = false
 
     def springSecurityService
+    def statWriterService
 
     def deleteArtifact(def filePath) throws IOException, SpotCommunicationException {
         sendDeleteArtifactEvent("FILE", filePath)
+        statWriterService.send(Stat.SPOT_DEL_ARTIFACT_FILE)
     }
 
     def deleteAllSubscriberArtifacts(def user) throws IOException, SpotCommunicationException {
         sendDeleteArtifactEvent("SUB", String.valueOf(user.id));
+        statWriterService.send(Stat.SPOT_DEL_ARTIFACT_SUB)
     }
 
     def dropParticipant(def participant) throws IOException, SpotCommunicationException {
         sendConferenceParticipantEvent("DROP", participant);
+        statWriterService.send(Stat.SPOT_CONF_EVENT_DROP)
     }
 
     def muteParticipant(def participant) throws IOException, SpotCommunicationException {
         sendConferenceParticipantEvent("MUTE", participant);
+        statWriterService.send(Stat.SPOT_CONF_EVENT_MUTE)
     }
 
     def outdial(def numbers, def conference, def requestingNumber) throws IOException, SpotCommunicationException {
@@ -36,6 +42,7 @@ class SpotCommunicationService {
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
         buildAndSendRequest(importedValue);
+        statWriterService.send(Stat.SPOT_AUTO_DIAL_DIAL)
     }
 
     def interactiveOutdial(def numbers, def conference, def requestingNumber) throws IOException, SpotCommunicationException
@@ -47,22 +54,27 @@ class SpotCommunicationService {
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
         buildAndSendRequest(importedValue);
+        statWriterService.send(Stat.SPOT_CONF_EVENT_BRIDGE_DIAL)
     }
 
     def startRecording(def conference) throws IOException, SpotCommunicationException {
         sendConferenceRecordingEvent("START", conference);
+        statWriterService.send(Stat.SPOT_RECORD_START)
     }
 
     def stopRecording(def conference) throws IOException, SpotCommunicationException {
         sendConferenceRecordingEvent("STOP", conference);
+        statWriterService.send(Stat.SPOT_RECORD_STOP)
     }
 
     def toggleMessageLight(def number, boolean on) throws IOException, SpotCommunicationException {
         sendMessageLightEvent(on ? 'ON' : 'OFF', number)
+        statWriterService.send(on ? Stat.SPOT_MSG_LIGHT_ON : Stat.SPOT_MSG_LIGHT_OFF)
     }
 
     def unmuteParticipant(def participant) throws IOException, SpotCommunicationException {
         sendConferenceParticipantEvent("UNMUTE", participant);
+        statWriterService.send(Stat.SPOT_CONF_EVENT_UNMUTE)
     }
 
     def sendConferenceParticipantEvent(def action, def participant) throws IOException, SpotCommunicationException {

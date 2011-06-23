@@ -1,6 +1,7 @@
 package com.interact.listen.conferencing
 
 import com.interact.listen.pbx.NumberRoute
+import com.interact.listen.stats.Stat
 
 import org.apache.commons.validator.EmailValidator
 import org.joda.time.format.DateTimeFormat
@@ -12,6 +13,7 @@ class ScheduledConferenceNotificationService {
 
     def backgroundService
     def grailsApplication
+    def statWriterService
 
     void sendEmails(ScheduledConference scheduledConference) {
         def adminBody = vcalMarkup(scheduledConference, PinType.ADMIN)
@@ -52,6 +54,7 @@ class ScheduledConferenceNotificationService {
                 body adminBody
             }
         })
+        statWriterService.send(Stat.CONFERENCE_INVITE_EMAIL)
     }
 
     private def getEmailBody(ScheduledConference scheduledConference, PinType pinType) {

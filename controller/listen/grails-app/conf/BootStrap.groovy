@@ -1,22 +1,25 @@
 import com.interact.listen.*
 import com.interact.listen.attendant.*
 import com.interact.listen.conferencing.*
-import com.interact.listen.pbx.*
-import com.interact.listen.voicemail.Voicemail
 import com.interact.listen.history.*
+import com.interact.listen.pbx.*
+import com.interact.listen.stats.Stat
+import com.interact.listen.voicemail.Voicemail
 import org.codehaus.groovy.grails.commons.ApplicationAttributes
-import org.joda.time.Duration
 import org.joda.time.DateTime
+import org.joda.time.Duration
 
 class BootStrap {
 
     def customMailMessageBuilderFactory
     def mailService
     def springSecurityService
+    def statWriterService
     def userCreationService
     def licenseService
 
     def init = { servletContext ->
+        statWriterService.send(Stat.CONTROLLER_STARTUP)
 
         // override mail service factory bean
         mailService.mailMessageBuilderFactory = customMailMessageBuilderFactory

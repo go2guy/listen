@@ -1,6 +1,5 @@
 package com.interact.listen.conferencing
 
-import com.interact.insa.client.StatId
 import org.joda.time.DateTime
 import org.joda.time.Period
 
@@ -59,7 +58,7 @@ class ConferenceService {
 
     boolean startConference(Conference conference) {
         // TODO user validation?
-        statWriterService.send(StatId.LISTEN_CONTROLLER_CONFERENCE_START)
+        statWriterService.send(Stat.CONFERENCE_START)
         
         if(conference.isStarted) {
             // TODO warn log
@@ -81,7 +80,7 @@ class ConferenceService {
             return false
         }*/
 
-        statWriterService.send(StatId.LISTEN_CONTROLLER_CONFERENCE_RECORDING_START)
+        statWriterService.send(Stat.CONFERENCE_RECORDING_START)
 
         conference.isRecording = true
         boolean success = conference.validate() && conference.save()
@@ -93,12 +92,12 @@ class ConferenceService {
         // TODO user validation?
         
         def seconds = new Period(conference.startTime, new DateTime()).toStandardSeconds().seconds
-        statWriterService.send(StatId.LISTEN_CONTROLLER_CONFERENCE_LENGTH, seconds)
+        statWriterService.send(Stat.CONFERENCE_LENGTH, seconds)
 
         conference.isStarted = false
 
         if(conference.isRecording) {
-            statWriterService.send(StatId.LISTEN_CONTROLLER_CONFERENCE_RECORDING_STOP)
+            statWriterService.send(Stat.CONFERENCE_RECORDING_STOP)
             conference.isRecording = false
             conference.recordingSessionId = null
             historyService.stoppedRecordingConference(conference)
@@ -116,7 +115,7 @@ class ConferenceService {
             return false
         }*/
 
-        statWriterService.send(StatId.LISTEN_CONTROLLER_CONFERENCE_RECORDING_STOP)
+        statWriterService.send(Stat.CONFERENCE_RECORDING_STOP)
 
         conference.isRecording = false
         conference.recordingSessionId = null

@@ -1,5 +1,6 @@
 package com.interact.listen.voicemail
 
+import com.interact.listen.stats.Stat
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import org.joda.time.DateTime
 import org.joda.time.Minutes
@@ -28,7 +29,7 @@ class NewVoicemailRecurringNotificationJob {
                         if(pref.user == config.phoneNumber.owner) {
                             if(config.alternateNumber && config.alternateNumber != '') {
                                 log.debug "Sending alternate-number page to ${config.alternateNumber}"
-                                voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber)
+                                voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber, Stat.NEW_VOICEMAIL_RECURRING_SMS_ALTERNATE)
                             }
                         }
                     }
@@ -39,6 +40,6 @@ class NewVoicemailRecurringNotificationJob {
 
     private void sendSms(Voicemail voicemail) {
         log.debug "Sending recurring notification for user [${voicemail.owner}] for voicemail received [${voicemail.dateCreated}]"
-        voicemailNotificationService.sendNewVoicemailSms(voicemail)
+        voicemailNotificationService.sendNewVoicemailSms(voicemail, null, Stat.NEW_VOICEMAIL_RECURRING_SMS)
     }
 }

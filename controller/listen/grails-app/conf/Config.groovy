@@ -121,6 +121,7 @@ grails.plugins.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, con
         user.save(flush: true)
 
         context.historyService.loggedIn(user)
+        context.statWriterService.send(com.interact.listen.stats.Stat.GUI_LOGIN)
     }
 }
 

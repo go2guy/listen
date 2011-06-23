@@ -1,8 +1,8 @@
 package com.interact.listen.android;
 
-import com.interact.insa.client.StatId;
 import com.interact.listen.android.DeviceRegistration;
 import com.interact.listen.android.DeviceRegistration.DeviceType;
+import com.interact.listen.stats.Stat;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,30 +36,30 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
         
         if(retryCount == 0 || retryCount == Integer.MAX_VALUE)
         {
-            messaging.writeStat(StatId.LISTEN_C2DM_QUEUED_MESSAGE);
+            messaging.writeStat(Stat.C2DM_QUEUED_MESSAGE);
         }
         try
         {
             C2DError error = messaging.send(message, useToken);
             if(error == null)
             {
-                messaging.writeStat(StatId.LISTEN_C2DM_SENT_SUCCESFULLY);
+                messaging.writeStat(Stat.C2DM_SENT_SUCCESFULLY);
                 LOG.info("sent message succesfully");
             }
             else
             {
-                messaging.writeStat(error.getStatId());
+                messaging.writeStat(error.getStat());
                 LOG.info("Error result " + error + " for " + message.getRegistrationId());
                 if(error.isRetryable())
                 {
                     if(++retryCount >= MAX_RETRIES)
                     {
-                        messaging.writeStat(StatId.LISTEN_C2DM_DISCARD_DUE_TO_RETRYS);
+                        messaging.writeStat(Stat.C2DM_DISCARD_DUE_TO_RETRYS);
                         LOG.error("Maximum retries reached: " + message.getRegistrationId());
                     }
                     else
                     {
-                        messaging.writeStat(StatId.LISTEN_C2DM_QUEUED_RETRY);
+                        messaging.writeStat(Stat.C2DM_QUEUED_RETRY);
                         messaging.scheduleRetry(this, retryCount);
                     }
                 }
@@ -71,7 +71,7 @@ class RetryC2DM implements Runnable // can be the first time too if queuing the 
         }
         catch(IOException e)
         {
-            messaging.writeStat(StatId.LISTEN_C2DM_UNKNOWN_ERROR);
+            messaging.writeStat(Stat.C2DM_UNKNOWN_ERROR);
             LOG.error("un-retryable error: + " + message.getRegistrationId(), e);
         }
     }

@@ -1,6 +1,7 @@
 package com.interact.listen.voicemail
 
 import com.interact.listen.pbx.NumberRoute
+import com.interact.listen.stats.Stat
 
 class VoicemailNotificationService {
     static scope = 'singleton'
@@ -9,6 +10,7 @@ class VoicemailNotificationService {
     def backgroundService
     def grailsApplication
     def historyService
+    def statWriterService
 
     void sendNewVoicemailEmail(Voicemail voicemail) {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)
@@ -73,7 +75,7 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
                 }
             }
 
-            // TODO send stat
+            statWriterService.send(Stat.NEW_VOICEMAIL_EMAIL)
             historyService.sentNewVoicemailEmail(voicemail)
 
             if(file) {
@@ -97,9 +99,10 @@ You have correctly configured your settings to receive Listen email notification
 """
             }
         })
+        statWriterService.send(Stat.TEST_VOICEMAIL_EMAIL)
     }
 
-    void sendNewVoicemailSms(Voicemail voicemail, def toAddress = null) {
+    void sendNewVoicemailSms(Voicemail voicemail, def toAddress = null, Stat stat = Stat.NEW_VOICEMAIL_SMS) {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)
         if(!preferences) {
             log.warn "No VoicemailPreferences configured for user [${voicemail.owner}]"
@@ -142,9 +145,10 @@ You have correctly configured your settings to receive Listen email notification
                 subject "New voicemail from ${voicemailFrom}"
                 body message
             }
-
-            // TODO send stat
         })
+        if(stat) {
+            statWriterService.send(stat)
+        }
         historyService.sentNewVoicemailSms(voicemail)
     }
 
@@ -157,6 +161,7 @@ You have correctly configured your settings to receive Listen email notification
                 body 'You have correctly configured your settings to receive SMS notifications at this address'
             }
         })
+        statWriterService.send(Stat.TEST_VOICEMAIL_SMS)
     }
 
     private boolean emailTimeRestrictionsAllow(VoicemailPreferences preferences) {

@@ -2,6 +2,7 @@ package com.interact.listen.android;
 
 import com.interact.listen.android.DeviceRegistration.DeviceType;
 import com.interact.listen.android.DeviceRegistration.RegisteredType;
+import com.interact.listen.stats.Stat;
 import com.interact.listen.stats.StatWriterService;
 
 import java.io.IOException;
@@ -227,7 +228,7 @@ public class C2DMessaging
         cloudToDeviceService.deleteRegistration(registrationId);
     }
 
-    void writeStat(String stat)
+    void writeStat(Stat stat)
     {
         statWriterService.send(stat);
     }

@@ -1,6 +1,5 @@
 package com.interact.listen.spot
 
-import com.interact.insa.client.StatId
 import com.interact.listen.*
 import com.interact.listen.android.DeviceRegistration
 import com.interact.listen.attendant.*
@@ -83,8 +82,6 @@ class SpotApiController {
     def licenseService
 
     def addCallHistory = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_CALLDETAILRECORD_POST)
-
         def formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
@@ -111,8 +108,6 @@ class SpotApiController {
     }
 
     def addConferenceRecording = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_CONFERENCERECORDING_POST)
-
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
 
@@ -141,8 +136,6 @@ class SpotApiController {
     }
 
     def addParticipant = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_PARTICIPANT_POST)
-
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
         
@@ -181,6 +174,14 @@ class SpotApiController {
                 return
             }
 
+            if(participant.isAdmin) {
+                statWriterService.send(Stat.CONFERENCE_ADMIN_JOIN)
+            } else if(participant.isPassive) {
+                statWriterService.send(Stat.CONFERENCE_PASSIVE_JOIN)
+            } else {
+                statWriterService.send(Stat.CONFERENCE_ACTIVE_JOIN)
+            }
+
             render(contentType: 'application/json') {
                 href = "/participants/${participant.id}"
                 audioResource = participant.recordedName.uri
@@ -199,8 +200,6 @@ class SpotApiController {
     }
 
     def addVoicemail = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_VOICEMAIL_POST)
-
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
 
@@ -258,7 +257,7 @@ class SpotApiController {
                 def config = AfterHoursConfiguration.findByOrganization(voicemail.owner.organization)
                 if(config && voicemail.owner == config.phoneNumber?.owner && config.alternateNumber?.length() > 0) {
                     log.debug "Sending alternate-number page to ${config.alternateNumber}"
-                    voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber)
+                    voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber, Stat.NEW_VOICEMAIL_SMS_ALTERNATE)
                 }
             }
 
@@ -268,8 +267,6 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidEmailContact = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_META_API_GET_EMAIL_CONTACTS)
-
         def user = springSecurityService.getCurrentUser()
         def contact = User.get(params.id)
 
@@ -292,8 +289,6 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidEmailContacts = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_META_API_GET_EMAIL_CONTACTS)
-
         def user = springSecurityService.getCurrentUser()
 
         params.offset = params['_first'] ?: 0
@@ -349,8 +344,6 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidNumberContact = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_META_API_GET_NUMBER_CONTACTS)
-
         def user = springSecurityService.getCurrentUser()
         def number = PhoneNumber.get(params.id)
 
@@ -372,8 +365,6 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidNumberContacts = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_META_API_GET_NUMBER_CONTACTS)
-
         def user = springSecurityService.getCurrentUser()
 
         params.offset = params['_first'] ?: 0
@@ -524,8 +515,6 @@ class SpotApiController {
     }
 
     def canDial = {
-        // TODO stat? (didnt write a stat in the old version)
-
         def user = User.get(getIdFromHref(params.subscriber))
         def destination = params.destination
         if(!destination) {
@@ -539,8 +528,6 @@ class SpotApiController {
     }
 
     def deleteFindMeNumber = {
-        // TODO stat?
-
         def findMeNumber = FindMeNumber.get(params.id)
         if(!findMeNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -554,8 +541,6 @@ class SpotApiController {
     }
 
     def deleteParticipant = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_PARTICIPANT_DELETE)
-
         def participant = Participant.get(params.id)
         if(!participant) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -568,8 +553,6 @@ class SpotApiController {
 
     @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
     def deleteVoicemail = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_VOICEMAIL_DELETE)
-
         def voicemail = Voicemail.get(params.id)
         if(!voicemail) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -597,8 +580,6 @@ class SpotApiController {
     def dial = {
         // TODO this does not consider find me configurations yet, since 
         // find me has not yet been migrated. after migrating, add find me lookups
-
-        // TODO stat?
 
         if(!params.destination) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [destination]')
@@ -692,8 +673,6 @@ class SpotApiController {
 
     // looks up the appropriate DNIS mapping/route for the provided number
     def dnisLookup = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_META_API_GET_DNIS)
-
         def number = params.number
         if(!number || number.trim() == '') {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
@@ -849,8 +828,6 @@ class SpotApiController {
     }
 
     def getPhoneNumber = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_ACCESSNUMBER_GET)
-
         def phoneNumber = PhoneNumber.get(params.id)
         if(!phoneNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -870,8 +847,6 @@ class SpotApiController {
     }
 
     def getPin = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_PIN_GET)
-
         if(!params.number) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
             return
@@ -895,8 +870,6 @@ class SpotApiController {
     }
 
     def getUser = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_SUBSCRIBER_GET)
-
         def user = User.get(params.id)
         if(!user) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -914,8 +887,6 @@ class SpotApiController {
     }
 
     def getVoicemail = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_VOICEMAIL_GET)
-
         def voicemail = Voicemail.get(params.id)
         if(!voicemail) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -926,8 +897,6 @@ class SpotApiController {
     }
 
     def listFindMeConfiguration = {
-        // TODO stat?
-
         if(!params.subscriber) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [subscriber]')
             return
@@ -961,8 +930,6 @@ class SpotApiController {
     }
 
     def listPhoneNumbers = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_ACCESSNUMBER_GET)
-
         if(!params.number) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
             return
@@ -989,8 +956,6 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER', 'ROLE_SPOT_API'])
     def listUsers = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_SUBSCRIBER_GET)
-
         def organization = Organization.get(getIdFromHref(params.organization))
 
         if(!organization) {
@@ -1035,8 +1000,6 @@ class SpotApiController {
 
     @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
     def listVoicemails = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_VOICEMAIL_GET)
-
         // TODO it would be ideal if we could separate this out into two different APIs,
         //   one for SPOT systems and another for the Android app
 
@@ -1132,8 +1095,6 @@ class SpotApiController {
 
     // given an access number and an organization, looks up the user owning the number
     def lookupAccessNumber = {
-        // TODO stat?
-
         def number = params.number
         if(!number) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
@@ -1169,8 +1130,6 @@ class SpotApiController {
     }
 
     def menuAction = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_META_API_GET_MENU_ACTION)
-
         def id = params.menuId
         if(!id) {
             // this is a request for the entry menu for a specific organization
@@ -1260,8 +1219,6 @@ class SpotApiController {
 
     // registers a SPOT system with the controller
     def register = {
-        // TODO stat?
-
         if(!params.system) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [system]')
             return
@@ -1276,8 +1233,6 @@ class SpotApiController {
 
     // sets the SPOT system phone number (for display in notifications)
     def setPhoneNumber = {
-        // TODO stat?
-
         // TODO phone number wont get persisted, and wont be available if application is restarted
         if(!params.phoneNumber) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [phoneNumber]')
@@ -1300,8 +1255,6 @@ class SpotApiController {
     }
 
     def updateConference = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_CONFERENCE_PUT)
-
         def conference = Conference.get(params.id)
         if(!conference) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1347,8 +1300,6 @@ class SpotApiController {
     }
 
     def updateFindMeNumber = {
-        // TODO stat?
-
         def findMeNumber = FindMeNumber.get(params.id)
         if(!findMeNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1372,7 +1323,6 @@ class SpotApiController {
     }
 
     def updateFindMeExpiration = {
-        // TODO stat?
         // TODO Action History?
 
         def user = User.get(params.id)
@@ -1398,8 +1348,6 @@ class SpotApiController {
     }
 
     def updateParticipant = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_PARTICIPANT_PUT)
-
         def participant = Participant.get(params.id)
         if(!participant) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1430,8 +1378,6 @@ class SpotApiController {
     }
 
     def updatePhoneNumber = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_ACCESSNUMBER_PUT)
-
         def phoneNumber = PhoneNumber.get(params.id)
         if(!phoneNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1470,8 +1416,6 @@ class SpotApiController {
     }
 
     def updateUser = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_SUBSCRIBER_PUT)
-
         def user = User.get(params.id)
         if(!user) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1494,8 +1438,6 @@ class SpotApiController {
 
     @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
     def updateVoicemail = {
-        statWriterService.send(StatId.LISTEN_CONTROLLER_API_VOICEMAIL_PUT)
-
         def voicemail = Voicemail.get(params.id)
         if(!voicemail) {
             response.sendError(HSR.SC_NOT_FOUND)
