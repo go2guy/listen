@@ -96,6 +96,7 @@ class ScheduledConferenceNotificationService {
                 body adminBody
             }
         })
+        statWriterService.send(Stat.CONFERENCE_CANCEL_EMAIL)
     }
 
     private def getEmailBody(ScheduledConference scheduledConference, PinType pinType) {
