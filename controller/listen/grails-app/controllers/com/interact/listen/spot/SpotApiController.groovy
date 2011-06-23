@@ -1413,34 +1413,46 @@ class SpotApiController {
             return
         }
 
-        def json = JSON.parse(request)
+        PhoneNumber.withTransaction { status ->
+            def json = JSON.parse(request)
         
-        if(json.subscriber?.href) {
-            def user = User.get(getIdFromHref(json.subscriber.href))
-            if(!user) {
-                response.sendError(HSR.SC_BAD_REQUEST, "Property [subscriber] with value [${json.subscriber}] references a non-existent entity")
-                return
+            if(json.subscriber?.href) {
+                def user = User.get(getIdFromHref(json.subscriber.href))
+                if(!user) {
+                    response.sendError(HSR.SC_BAD_REQUEST, "Property [subscriber] with value [${json.subscriber}] references a non-existent entity")
+                    return
+                }
+                phoneNumber.owner = user
             }
-            phoneNumber.owner = user
-        }
 
-        if(json.greetingLocation) {
-            phoneNumber.greeting.uri = json.greetingLocation
-        }
+            if(json.greetingLocation) {
+                if(!phoneNumber.greeting) {
+                    phoneNumber.greeting = new Audio(duration: new Duration(0), fileSize: '0')
+                }
+                phoneNumber.greeting.uri = json.greetingLocation
 
-        if(json.number) {
-            phoneNumber.number = json.number
-        }
+                if(!(phoneNumber.greeting.validate() && phoneNumber.greeting.save())) {
+                    status.setRollbackOnly()
+                    response.sendError(HSR.SC_BAD_REQUEST, beanErrors(phoneNumber.greeting))
+                    return
+                }
+            }
 
-        if(!json.isNull('forwardedTo')) {
-            phoneNumber.forwardedTo = json.forwardedTo.length() > 0 ? json.forwardedTo : null
-        }
+            if(json.number) {
+                phoneNumber.number = json.number
+            }
 
-        if(phoneNumber.validate() && phoneNumber.save()) {
-            response.status = HSR.SC_OK
-            response.flushBuffer()
-        } else {
-            response.sendError(HSR.SC_BAD_REQUEST, beanErrors(phoneNumber))
+            if(!json.isNull('forwardedTo')) {
+                phoneNumber.forwardedTo = json.forwardedTo.length() > 0 ? json.forwardedTo : null
+            }
+
+            if(phoneNumber.validate() && phoneNumber.save()) {
+                response.status = HSR.SC_OK
+                response.flushBuffer()
+            } else {
+                status.setRollbackOnly()
+                response.sendError(HSR.SC_BAD_REQUEST, beanErrors(phoneNumber))
+            }
         }
     }
 
