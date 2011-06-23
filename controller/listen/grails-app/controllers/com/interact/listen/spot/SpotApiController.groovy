@@ -930,28 +930,57 @@ class SpotApiController {
     }
 
     def listPhoneNumbers = {
-        if(!params.number) {
-            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
+        if(!params.number && !params.subscriber) {
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number] or [subscriber] (or both)')
             return
         }
 
-        def phoneNumber = PhoneNumber.findByNumber(params.number)
-
-        def total = PhoneNumber.countByNumber(params.number)
-
-        def results = phoneNumber?.inject([]) { list, p ->
-            def subscriber = [:]
-            subscriber.put("href", "/subscribers/${p.owner.id}")
-            list.add(subscriber)
-            return list
+        def user
+        if(params.subscriber) {
+            user = User.get(getIdFromHref(params.subscriber))
+            if(!user) {
+                response.sendError(HSR.SC_BAD_REQUEST, "Parameter [subscriber] with value [${params.subscriber}] references a non-existent entity")
+                return
+            }
         }
 
-        render(contentType: 'application/json') {
-            href = "/accessNumbers?_fields=subscriber&number=${params.number}"
-            count = phoneNumber == null ? 0 : 1
-            delegate.total = total
-            delegate.results = (results == null ? [] : results)
+        def list = PhoneNumber.createCriteria().list {
+            if(params.number) {
+                eq('number', params.number)
+            }
+            if(user) {
+                eq('owner', user)
+            }
         }
+
+        def total = PhoneNumber.createCriteria().get {
+            projections {
+                count('id')
+            }
+            if(params.number) {
+                eq('number', params.number)
+            }
+            if(user) {
+                eq('owner', user)
+            }
+        }
+
+        def results = list.collect {
+            return [
+                'subscriber': "/subscribers/${it.owner.id}",
+                'href': "/accessNumbers/${it.id}",
+                'number': it.number
+            ]
+        }
+
+        def json = [
+            href: '/accessNumbers?_fields=subscriber,number' + (params.number ? "&number=${params.number}" : '') + (user ? "&subscriber=/subscribers/${user.id}" : ''),
+            count: results.size(),
+            total: total,
+            results: results
+        ]
+
+        render json as JSON
     }
 
     @Secured(['ROLE_VOICEMAIL_USER', 'ROLE_SPOT_API'])
