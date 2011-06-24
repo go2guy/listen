@@ -1,5 +1,6 @@
 package com.interact.listen.conferencing
 
+import com.interact.listen.stats.Stat
 import org.joda.time.DateTime
 import org.joda.time.Period
 
