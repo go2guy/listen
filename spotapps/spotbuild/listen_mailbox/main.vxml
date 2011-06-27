@@ -102,6 +102,7 @@
 	<var name="SB_UV_logText"/>
 	<var name="SB_UV_line"/>
 	<var name="SB_UV_project"/>
+	<var name="SB_UV_afterHoursSub"/>
 
     
     <form id="beginDocument">
@@ -365,6 +366,9 @@
 			</if>
 			<if cond="SB_UV_project != undefined">
 				<assign name="project" expr="SB_UV_project" />
+			</if>
+			<if cond="SB_UV_afterHoursSub != undefined">
+				<assign name="afterHoursSub" expr="SB_UV_afterHoursSub" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

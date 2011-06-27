@@ -112,6 +112,7 @@
 	<var name="logText" expr="''" />
 	<var name="line" expr="'line'" />
 	<var name="project" expr="'LISTEN_MAILBOX'" />
+	<var name="afterHoursSub" expr="''" />
 
 
     <!-- Conference Variables -->

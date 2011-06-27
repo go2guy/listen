@@ -12,7 +12,7 @@
 	    <log target="status">Reset Subscriber</log>
             <log>INFO: Entered assign-variable.vxml [67_165]</log>
             <log>INFO: Current value [<value expr="subscriber"/>]</log>
-<assign name="subscriber" expr="id+''" />
+<assign name="subscriber" expr="afterHoursSub+''" />
 <log>INFO: Updated value [<value expr="subscriber"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
