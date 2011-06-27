@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/11/2010
+    <!-- Last Modified 06/27/2011
        *   @Name	dbCall.vxml
        *   @Desc	This script performs two functions. It is used to insert/delete an
                     active client into/from the database. It also retreives the list of
@@ -66,8 +66,14 @@
                 <data name="update" srcexpr="DB_PATH+'activeClients.php'" namelist="extension id flag sessionID maxTime" fetchtimeout="1s" method="post"/>
                 <assign name="result" expr="update.result"/>
                 <log>INFO: Result [<value expr="result"/>]</log>
-                <if cond="((flag == 'getList') &amp;&amp; (result != 'Failure'))">
+                <if cond="result == 'Failure'">
+                    <assign name="logText" expr="'dbCall.vxml: dbAccess returned Failure. Reason [' + update.reason + ']. Attempted ['+flag+'] on [activeClients.php] extension ['+extension+'] connection_id ['+id+'] session_id ['+sessionID+'].'"/>
+                    <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                    <log target="logFile"><value expr="logText"/></log>
+                <elseif cond="flag == 'getList'"/>
                     <assign name="result" expr="update.clients"/>
+                <else/>
+                    <!-- Nothing to do here -->
                 </if>
             <else/>
                 <log>ERROR: Invalid extension [<value expr="extension"/>]</log>
@@ -83,9 +89,10 @@
     </form>
 
     <!-- Catch bad fetch event -->
-    <catch event="error.badfetch">
-        <assign name="result" expr="'Failure'"/>
-        <log>ERROR: Status [<value expr="'badfetch'"/>]</log>
+    <catch event='error'>
+        <assign name="logText" expr="'dbCall.vxml: dbAccess Failed. Reason [' + _event + '].'"/>
+        <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+        <log target="logFile"><value expr="logText"/></log>
         <goto next="#exit"/>
     </catch>
 </vxml>
