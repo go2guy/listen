@@ -1,6 +1,6 @@
 package com.interact.listen.pbx.findme
 
-import com.interact.listen.PhoneNumber
+import com.interact.listen.pbx.Extension
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
@@ -36,8 +36,8 @@ class FindmeController {
         }
 
         def user = springSecurityService.getCurrentUser()
-        def phoneNumber = PhoneNumber.findByOwnerAndNumber(user, number)
-        def forwardedTo = phoneNumber?.forwardedTo
+        def extension = Extension.findByOwnerAndNumber(user, number)
+        def forwardedTo = extension?.forwardedTo
         def canDial = user.canDial(forwardedTo ?: number)
         
         render(contentType: 'application/json') {

@@ -357,7 +357,7 @@ class SpotApiController {
             subscriberId: number.owner.id,
             name: number.owner.realName,
             number: number.number,
-            type: number.type
+            type: number.type()
         ]
 
         render json as JSON
@@ -370,6 +370,8 @@ class SpotApiController {
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 100
 
+        // FIXME untested, not sure if isPublic will work on the parent class
+        // (isPublic is defined on MobileNumber, which extends PhoneNumber)
         def list = PhoneNumber.createCriteria().list(params) {
             eq('isPublic', true)
                 owner {
@@ -394,7 +396,7 @@ class SpotApiController {
                 subscriberId: number.owner.id,
                 name: number.owner.realName,
                 number: number.number,
-                type: number.type
+                type: number.type()
             ]
         }
         def count = results.size()
@@ -631,8 +633,10 @@ class SpotApiController {
             findMeNumber.enabled = true
 
             def destinationPhoneNumber = PhoneNumber.findByNumber(destination)
-            if(destinationPhoneNumber && destinationPhoneNumber.forwardedTo && destinationPhoneNumber.owner.canDial(destinationPhoneNumber.forwardedTo)) {
-                findMeNumber.number = destinationPhoneNumber.forwardedTo
+            if(destinationPhoneNumber?.instanceOf(Extension)) {
+                if(destinationPhoneNumber.forwardedTo && destinationPhoneNumber.owner.canDial(destinationPhoneNumber.forwardedTo)) {
+                    findMeNumber.number = destinationPhoneNumber.forwardedTo
+                }
             }
 
             def findMeNumbers = []
@@ -650,8 +654,10 @@ class SpotApiController {
                     updatedNumber.enabled = it.isEnabled
 
                     def phoneNumber = PhoneNumber.findByNumber(updatedNumber.number)
-                    if(phoneNumber && phoneNumber.forwardedTo && phoneNumber.owner.canDial(phoneNumber.forwardedTo)) {
-                        updatedNumber.number = phoneNumber.forwardedTo
+                    if(phoneNumber?.instanceOf(Extension)) {
+                        if(phoneNumber.forwardedTo && phoneNumber.owner.canDial(phoneNumber.forwardedTo)) {
+                            updatedNumber.number = phoneNumber.forwardedTo
+                        }
                     }
 
                     if(user.canDial(updatedNumber.number)) {
@@ -850,16 +856,30 @@ class SpotApiController {
             return
         }
 
-        render(contentType: 'application/json') {
-            href = '/accessNumbers/' + phoneNumber.id
-            forwardedTo = phoneNumber.forwardedTo ?: ''
-            greetingLocation = phoneNumber.greeting?.uri ?: ''
-            id = phoneNumber.id
-            number = phoneNumber.number
-            numberType = phoneNumber.type.name()
-            publicNumber = phoneNumber.isPublic
-            subscriber = '/subscribers/' + phoneNumber.owner.id
+        def result = [
+            href: "/accessNumbers/${phoneNumber.id}",
+            id: phoneNumber.id,
+            number: phoneNumber.number,
+            type: phoneNumber.type(),
+            subscriber: "/subscribers/${phoneNumber.owner.id}"
+        ]
+
+        if(phoneNumber.instanceOf(MobileNumber)) {
+            result.forwardedTo = ''
+            result.greetingLocation = ''
+            result.publicNumber = phoneNumber.isPublic
+        } else {
+            result.greetingLocation = phoneNumber.greeting?.uri ?: ''
+            if(phoneNumber.instanceOf(Extension)) {
+                result.forwardedTo = phoneNumber.forwardedTo ?: ''
+                result.publicNumber = true
+            } else {
+                result.forwardedTo = ''
+                result.publicNumber = false
+            }
         }
+
+        render(result as JSON)
     }
 
     def getPin = {
@@ -1441,7 +1461,7 @@ class SpotApiController {
                 phoneNumber.owner = user
             }
 
-            if(json.greetingLocation) {
+            if((phoneNumber.instanceOf(Extension) || phoneNumber.instanceOf(DirectVoicemailNumber)) && json.greetingLocation) {
                 if(!phoneNumber.greeting) {
                     phoneNumber.greeting = new Audio(duration: new Duration(0), fileSize: '0')
                 }
@@ -1458,7 +1478,7 @@ class SpotApiController {
                 phoneNumber.number = json.number
             }
 
-            if(!json.isNull('forwardedTo')) {
+            if(phoneNumber.instanceOf(Extension) && !json.isNull('forwardedTo')) {
                 phoneNumber.forwardedTo = json.forwardedTo.length() > 0 ? json.forwardedTo : null
             }
 

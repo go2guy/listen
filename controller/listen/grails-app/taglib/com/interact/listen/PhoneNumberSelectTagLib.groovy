@@ -5,30 +5,24 @@ class PhoneNumberSelectTagLib {
 
     def springSecurityService
 
-    def phoneNumberSelect = { attrs ->
-        if(!attrs.name) throwTagError "Tag [phoneNumberSelect] is missing required attribute [name]"
-
-        def type = attrs.type ? PhoneNumberType.valueOf(attrs.type) : null
+    def mobilePhoneSelect = { attrs ->
+        if(!attrs.name) throwTagError "Tag [mobilePhoneSelect] is missing required attribute [name]"
 
         def organization = attrs.organization
         if(!organization) {
             def user = springSecurityService.getCurrentUser()
-            if(!user) throwTagError 'Tag [phoneNumberSelect] is missing required attribute [organization] (no current user)'
+            if(!user) throwTagError 'Tag [mobilePhoneSelect] is missing required attribute [organization] (no current user)'
             organization = user.organization
         }
 
-        def phoneNumbers = PhoneNumber.withCriteria {
+        def mobilePhones = MobilePhone.withCriteria { 
             owner {
                 eq('organization', organization)
-            }
-            if(type) {
-                eq('type', type)
             }
             order('number', 'asc')
         }
 
-        attrs.from = phoneNumbers
-
+        attrs.from = mobilePhones
         out << g.select(attrs)
     }
 }

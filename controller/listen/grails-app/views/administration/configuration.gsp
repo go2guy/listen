@@ -29,8 +29,8 @@
       <fieldset class="vertical">
         <h3>After Hours Support</h3>
 
-        <label for="afterHours.phoneNumber.id"><g:message code="afterHoursConfiguration.phoneNumber.label"/></label>
-        <listen:phoneNumberSelect name="afterHours.phoneNumber.id" type="MOBILE" optionKey="id" optionValue="number" noSelection="['': 'None']" value="${afterHours?.phoneNumber?.id}"/>
+        <label for="afterHours.mobilePhone.id"><g:message code="afterHoursConfiguration.mobilePhone.label"/></label>
+        <listen:mobilePhoneSelect name="afterHours.mobilePhone.id" optionKey="id" optionValue="number" noSelection="['': 'None']" value="${afterHours?.mobilePhone?.id}"/>
 
         <label for="afterHours.alternateNumber"><g:message code="afterHoursConfiguration.alternateNumber.label"/></label>
         <g:textField name="afterHours.alternateNumber" value="${afterHours?.alternateNumberComponents()?.number?.encodeAsHTML()}"/>

@@ -5,11 +5,10 @@ import com.interact.listen.conferencing.PinType
 import com.interact.listen.voicemail.VoicemailPreferences
 
 class UserCreationService {
-    static scope = 'singleton'
     static transactional = true
 
     def cloudToDeviceService
-    def createPhoneNumberService
+    def extensionService
     def historyService
     def randomPinGeneratorService
     def springSecurityService
@@ -41,15 +40,12 @@ class UserCreationService {
         if(!user.errors.hasErrors()) {
             if(params.extension) {
                 def p = [
-                    isPublic: true,
                     number: params.extension,
-                    supportsMessageLight: true,
-                    type: PhoneNumberType.EXTENSION,
                     'owner.id': user.id
                 ]
-                def phoneNumber = createPhoneNumberService.createPhoneNumberByOperator(p)
-                if(!phoneNumber.hasErrors()) {
-                    user.addToPhoneNumbers(phoneNumber)
+                def extension = extensionService.create(p)
+                if(!extension.hasErrors()) {
+                    user.addToExtensions(extension)
                 }
             }
 

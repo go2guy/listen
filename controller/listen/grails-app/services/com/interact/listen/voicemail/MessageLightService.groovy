@@ -1,24 +1,23 @@
 package com.interact.listen.voicemail
 
-import com.interact.listen.PhoneNumber
 import com.interact.listen.User
+import com.interact.listen.pbx.Extension
 import com.interact.listen.spot.SpotCommunicationException
 
 class MessageLightService {
-    static scope = 'singleton'
     static transactional = true
 
     def spotCommunicationService
 
     void toggle(User user) {
-        PhoneNumber.findAllByOwnerAndSupportsMessageLight(user, true).each { phoneNumber ->
-            toggle(phoneNumber)
+        Extension.findAllByOwner(user).each { extension ->
+            toggle(extension)
         }
     }
 
-    void toggle(PhoneNumber phoneNumber) {
-        boolean hasNew = Voicemail.countByOwnerAndIsNew(phoneNumber.owner, true) > 0
-        toggle(phoneNumber.number, hasNew)
+    void toggle(Extension extension) {
+        boolean hasNew = Voicemail.countByOwnerAndIsNew(extension.owner, true) > 0
+        toggle(extension.number, hasNew)
     }
 
     void toggle(def number, boolean on) {

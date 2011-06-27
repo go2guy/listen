@@ -17,8 +17,8 @@ class ButtonMenuTagLib {
 
                 out << '<ul class="button-menu">'
                 button(attrs.button == 'routing', 'administration', 'routing', 'button.menu.administration.routing')
-                button(attrs.button == 'outdialing', 'administration', 'outdialing', 'button.menu.administration.outdialing')
                 button(attrs.button == 'phones', 'administration', 'phones', 'button.menu.administration.phones')
+                button(attrs.button == 'outdialing', 'administration', 'outdialing', 'button.menu.administration.outdialing')
                 button(attrs.button == 'configuration', 'administration', 'configuration', 'button.menu.administration.configuration')
                 button(attrs.button == 'android', 'administration', 'android', 'button.menu.administration.android')
                 button(attrs.button == 'history', 'administration', 'history', 'button.menu.administration.history')
@@ -64,7 +64,7 @@ class ButtonMenuTagLib {
 
                 if(user.organization) {
                     def afterHours = AfterHoursConfiguration.findByOrganization(user.organization)
-                    if(afterHours?.phoneNumber) {
+                    if(afterHours?.mobilePhone) {
                         button(attrs.button == 'afterHours', 'profile', 'afterHours', 'button.menu.profile.afterHours')
                     }
                 }

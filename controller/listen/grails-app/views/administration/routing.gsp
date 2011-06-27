@@ -7,7 +7,10 @@
     <style type="text/css">
 table { margin-bottom: 10px; }
 
-tr.add td.col-button { text-align: center; }
+tr.add td.col-button {
+    text-align: center;
+    width: 14%;
+}
 
 .col-pattern {
     padding-left: 5px;
@@ -23,7 +26,10 @@ tr.add td.col-button { text-align: center; }
 }
 
 #external .col-button { width: 14%; }
-#internal .col-button { width: 7%; }
+#internal .col-button,
+#direct .col-button {
+    width: 7%;
+}
     </style>
   </head>
   <body>
@@ -62,7 +68,7 @@ tr.add td.col-button { text-align: center; }
             <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: newRoute, field: 'pattern')}" placeholder="${g.message(code: 'page.administration.routing.internal.add.pattern.placeholder')}"/></td>
             <td class="col-destination"><listen:applicationSelect name="destination" value="${newRoute?.destination}"/></td>
             <td class="col-label"><g:textField name="label" value="${fieldValue(bean: newRoute, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}"/></td>
-            <td class="col-button" colspan="2"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.internal.add.addButton')}"/></td>
+            <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.internal.add.addButton')}"/></td>
           </g:form>
         </tr>
       </tbody>
@@ -100,6 +106,51 @@ tr.add td.col-button { text-align: center; }
         </tbody>
       </table>
     </g:if>
+
+    <table>
+      <caption><g:message code="page.administration.routing.direct.caption"/></caption>
+      <tbody>
+        <tr class="add highlighted">
+          <g:form controller="administration" action="addDirectVoicemailNumber" method="post">
+            <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: newDirectVoicemailNumber, field: 'number')}" placeholder="${g.message(code: 'page.administration.routing.direct.add.number.placeholder')}"/></td>
+            <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${newDirectVoicemailNumber?.owner?.id}"/></td>
+            <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.direct.add.addButton')}"/>
+          </g:form>
+        </tr>
+      </tbody>
+    </table>
+
+    <g:if test="${directVoicemailNumbers.size() > 0}">
+      <table id="direct">
+        <thead>
+          <th class="col-pattern"><g:message code="page.administration.routing.direct.column.number"/></th>
+          <th class="col-owner"><g:message code="page.administration.routing.direct.column.owner"/></th>
+          <th class="col-button"></th>
+          <th class="col-button"></th>
+        </thead>
+        <tbody>
+          <g:each in="${directVoicemailNumbers}" var="directVoicemailNumber" status="i">
+            <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
+              <g:form controller="administration" action="updateDirectVoicemailNumber" method="post">
+                <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: directVoicemailNumber, field: 'number')}"/></td>
+                <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${directVoicemailNumber.owner.id}"/></td>
+                <td class="col-button">
+                  <g:hiddenField name="id" value="${directVoicemailNumber.id}"/>
+                  <g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/>
+                </td>
+              </g:form>
+              <g:form controller="administration" action="deleteDirectVoicemailNumber" method="post">
+                <td class="col-button">
+                  <g:hiddenField name="id" value="${directVoicemailNumber.id}"/>
+                  <g:submitButton name="submit" value="${g.message(code: 'default.button.delete.label')}"/>
+                </td>
+              </g:form>
+            </tr>
+          </g:each>
+        </tbody>
+      </table>
+    </g:if>
+
     <script type="text/javascript">
 var routing = {
     toggleLabelVisibility: function(row) {

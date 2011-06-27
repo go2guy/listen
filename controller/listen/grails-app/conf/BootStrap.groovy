@@ -79,31 +79,26 @@ class BootStrap {
                                   description: 'Deleting Subscriber',
                                   channel: Channel.GUI).save(flush: true)
 
-                new PhoneNumber(greeting: greeting,
-                                number: '378',
-                                owner: user,
-                                type: PhoneNumberType.EXTENSION).save(flush: true)
+                new Extension(greeting: greeting,
+                              number: '378',
+                              owner: user).save(flush: true)
 
                 for(i in 1..30) {
-                    new PhoneNumber(greeting: greeting,
-                                    number: "290-$i",
-                                    owner: rob,
-                                    isPublic: false,
-                                    type: PhoneNumberType.EXTENSION).save(flush: true)
+                    new Extension(greeting: greeting,
+                                  number: "290-$i",
+                                  owner: rob).save(flush: true)
                 }
 
-                new PhoneNumber(greeting: greeting,
-                                number: '101',
-                                owner: operator,
-                                type: PhoneNumberType.EXTENSION).save(flush: true)
-                new PhoneNumber(greeting: greeting,
-                                number: '102',
-                                owner: operator,
-                                type: PhoneNumberType.EXTENSION).save(flush: true)
-                new PhoneNumber(greeting: greeting,
+                new Extension(greeting: greeting,
+                              number: '101',
+                              owner: operator).save(flush: true)
+                new Extension(greeting: greeting,
+                              number: '102',
+                              owner: operator).save(flush: true)
+                new MobilePhone(greeting: greeting,
                                 number: '4025604557',
-                                owner: operator,
-                                type: PhoneNumberType.VOICEMAIL).save(flush: true)
+                                smsDomain: 'messaging.sprintpcs.com',
+                                owner: operator).save(flush: true)
 
                 def a0 = new Audio(description: 'Test Voicemail',
                                    duration: new Duration(1000000),

@@ -1541,4 +1541,64 @@ databaseChangeLog = {
     changeSet(author: "root (generated)", id: "1308759117297-2") {
         addNotNullConstraint(columnDataType: "bigint", columnName: "organization_id", tableName: "organization_enabled_features")
     }
+
+	changeSet(author: "rob", id: "1309205752211-2") {
+		addColumn(tableName: "phone_number") {
+			column(name: "class", type: "varchar(255)") {
+				constraints(nullable: "false")
+			}
+		}
+		addColumn(tableName: "phone_number") {
+			column(name: "ip", type: "varchar(50)") {
+				constraints(unique: "true", uniqueConstraintName: 'uk_phone_number_ip')
+			}
+		}
+		addColumn(tableName: "phone_number") {
+			column(name: "sms_domain", type: "varchar(50)")
+		}
+
+        update(tableName: 'phone_number') {
+            column(name: 'class', value: 'com.interact.listen.pbx.Extension')
+            where "type='EXTENSION'"
+        }
+
+        update(tableName: 'phone_number') {
+            column(name: 'class', value: 'com.interact.listen.voicemail.DirectVoicemailNumber')
+            where "type='VOICEMAIL'"
+        }
+
+        update(tableName: 'phone_number') {
+            column(name: 'class', value: 'com.interact.listen.MobilePhone')
+            where "type='MOBILE'"
+        }
+
+        update(tableName: 'phone_number') {
+            column(name: 'class', value: 'com.interact.listen.MobilePhone')
+            where "type='OTHER'"
+        }
+
+        update(tableName: 'phone_number') {
+            column(name: 'class', value: 'com.interact.listen.MobilePhone')
+            where "type='HOME'"
+        }
+
+		dropNotNullConstraint(columnDataType: "bit", columnName: "is_public", tableName: "phone_number")
+		dropColumn(columnName: "supports_message_light", tableName: "phone_number")
+		dropColumn(columnName: "type", tableName: "phone_number")
+	}
+
+	changeSet(author: "root (generated)", id: "1309205752211-1") {
+		addColumn(tableName: "after_hours_configuration") {
+			column(name: "mobile_phone_id", type: "bigint")
+		}
+
+		createIndex(indexName: "FK7C7614E359C40479", tableName: "after_hours_configuration") {
+			column(name: "mobile_phone_id")
+		}
+
+		addForeignKeyConstraint(baseColumnNames: "mobile_phone_id", baseTableName: "after_hours_configuration", constraintName: "FK7C7614E359C40479", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "phone_number", referencesUniqueColumn: "false")
+
+		dropForeignKeyConstraint(baseTableName: "after_hours_configuration", constraintName: "after_hours_conf_phone_nu_fk")
+		dropColumn(columnName: "phone_number_id", tableName: "after_hours_configuration")
+	}
 }

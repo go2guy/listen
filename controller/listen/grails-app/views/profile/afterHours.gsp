@@ -17,8 +17,8 @@ fieldset.vertical select {
     </style>
   </head>
   <body>
-    <g:if test="${afterHoursConfiguration?.phoneNumber}">
-      <span>The after hours phone number is <b>${afterHoursConfiguration?.phoneNumber?.number?.encodeAsHTML()}</b></span>
+    <g:if test="${afterHoursConfiguration?.mobilePhone}">
+      <span>The after hours mobile phone number is <b>${afterHoursConfiguration?.mobilePhone?.number?.encodeAsHTML()}</b></span>
 
       <g:form controller="profile" action="saveAfterHours">
         <fieldset class="vertical">
@@ -39,7 +39,7 @@ fieldset.vertical select {
       </g:form>
     </g:if>
     <g:else>
-      The administrator has not configured the After Hours phone number; the After Hours service is disabled.
+      The administrator has not configured the After Hours mobile phone number; the After Hours service is disabled.
     </g:else>
   </body>
 </html>

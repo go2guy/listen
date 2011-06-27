@@ -2,30 +2,33 @@ package com.interact.listen
 
 import com.interact.listen.android.GoogleAuthConfiguration
 import com.interact.listen.history.*
+import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
+import com.interact.listen.voicemail.DirectVoicemailNumber
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
     def applicationService
-    def createPhoneNumberService
-    def deleteExtensionService
+    def directVoicemailNumberService
+    def extensionService
     def realizeAlertUpdateService
     def springSecurityService
-    def updatePhoneNumberService
 
     static allowedMethods = [
         index: 'GET',
+        addDirectVoicemailNumber: 'POST',
         addException: 'POST',
+        addExtension: 'POST',
         addInternalRoute: 'POST',
-        addPhoneNumber: 'POST',
         addRestriction: 'POST',
         android: 'GET',
         configuration: 'GET',
+        deleteDirectVoicemailNumber: 'POST',
         deleteException: 'POST',
+        deleteExtension: 'POST',
         deleteInternalRoute: 'POST',
-        deletePhoneNumber: 'POST',
         deleteRestriction: 'POST',
         history: 'GET',
         outdialing: 'GET',
@@ -33,16 +36,29 @@ class AdministrationController {
         routing: 'GET',
         saveAndroid: 'POST',
         saveConfiguration: 'POST',
+        updateDirectVoicemailNumber: 'POST',
         updateException: 'POST',
+        updateExtension: 'POST',
         updateExternalRoute: 'POST',
         updateInternalRoute: 'POST',
-        updatePhoneNumber: 'POST',
         updateRestriction: 'POST',
         users: 'GET'
     ]
 
     def index = {
         redirect(action: 'routing')
+    }
+
+    def addDirectVoicemailNumber = {
+        def directVoicemailNumber = directVoicemailNumberService.create(params)
+        if(directVoicemailNumber.hasErrors()) {
+            def model = routingModel()
+            model.newDirectVoicemailNumber = directVoicemailNumber
+            render(view: 'routing', model: model)
+        } else {
+            flash.successMessage = 'Direct voicemail number created'
+            redirect(action: 'routing')
+        }
     }
 
     def addException = {
@@ -75,14 +91,14 @@ class AdministrationController {
         }
     }
 
-    def addPhoneNumber = {
-        def phoneNumber = createPhoneNumberService.createPhoneNumberByOperator(params)
-        if(phoneNumber.hasErrors()) {
+    def addExtension = {
+        def extension = extensionService.create(params)
+        if(extension.hasErrors()) {
             def model = phonesModel()
-            model.newPhoneNumber = phoneNumber
+            model.newExtension = extension
             render(view: 'phones', model: model)
         } else {
-            flash.successMessage = 'Phone number created'
+            flash.successMessage = 'Extension created'
             redirect(action: 'phones')
         }
     }
@@ -130,6 +146,19 @@ class AdministrationController {
         render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours])
     }
 
+    def deleteDirectVoicemailNumber = {
+        def directVoicemailNumber = DirectVoicemailNumber.get(params.id)
+        if(!directVoicemailNumber) {
+            flash.errorMessage = 'Direct voicemail number not found'
+            redirect(action: 'routing')
+            return
+        }
+
+        directVoicemailNumberService.delete(directVoicemailNumber)
+        flash.successMessage = 'Direct voicemail number deleted'
+        redirect(action: 'routing')
+    }
+
     def deleteException = {
         def exception = OutdialRestrictionException.get(params.id)
         if(!exception) {
@@ -144,12 +173,6 @@ class AdministrationController {
     }
 
     def deleteInternalRoute = {
-        if(!params.id) {
-            flash.errorMessage = 'Route not found'
-            redirect(action: 'routing')
-            return
-        }
-
         def route = NumberRoute.get(params.id)
         if(!route) {
             flash.errorMessage = 'Route not found'
@@ -162,32 +185,20 @@ class AdministrationController {
         redirect(action: 'routing')
     }
 
-    def deletePhoneNumber = {
-        if(!params.id) {
-            flash.errorMessage = 'Phone not found'
+    def deleteExtension = {
+        def extension = Extension.get(params.id)
+        if(!extension) {
+            flash.errorMessage = 'Extension not found'
             redirect(action: 'phones')
             return
         }
 
-        def phoneNumber = PhoneNumber.get(params.id)
-        if(!phoneNumber) {
-            flash.errorMessage = 'Phone not found'
-            redirect(action: 'phones')
-            return
-        }
-
-        deleteExtensionService.deleteExtension(phoneNumber)
-        flash.successMessage = 'Phone deleted'
+        extensionService.delete(extension)
+        flash.successMessage = 'Extension deleted'
         redirect(action: 'phones')
     }
 
     def deleteRestriction = {
-        if(!params.id) {
-            flash.errorMessage = 'Restriction not found'
-            redirect(action: 'outdialing')
-            return
-        }
-
         def restriction = OutdialRestriction.get(params.id)
         if(!restriction) {
             flash.errorMessage = 'Restriction not found'
@@ -277,10 +288,10 @@ class AdministrationController {
         }
 
         def originalAlternateNumber = afterHours.alternateNumber
-        if(params['afterHours.phoneNumber.id'] == '') {
-            afterHours.phoneNumber = null
+        if(params['afterHours.mobilePhone.id'] == '') {
+            afterHours.mobilePhone = null
         } else {
-            bindData(afterHours, params['afterHours'], 'phoneNumber')
+            bindData(afterHours, params['afterHours'], 'mobilePhone')
         }
         bindData(afterHours, params['afterHours'], 'realizeAlertName')
         bindData(afterHours, params['afterHours'], 'realizeUrl')
@@ -300,6 +311,25 @@ class AdministrationController {
             redirect(action: 'configuration')
         } else {
             render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours])
+        }
+    }
+
+    def updateDirectVoicemailNumber = {
+        def directVoicemailNumber = DirectVoicemailNumber.get(params.id)
+        if(!directVoicemailNumber) {
+            flash.errorMessage = 'Direct voicemail number not found'
+            redirect(action: 'routing')
+            return
+        }
+
+        directVoicemailNumber = directVoicemailNumberService.update(directVoicemailNumber, params)
+        if(directVoicemailNumber.hasErrors()) {
+            def model = routingModel()
+            model.updatedDirectVoicemailNumber = directVoicemailNumber
+            render(view: 'routing', model: model)
+        } else {
+            flash.successMessage = 'Direct voicemail saved'
+            redirect(action: 'routing')
         }
     }
 
@@ -323,12 +353,6 @@ class AdministrationController {
     }
 
     def updateExternalRoute = {
-        if(!params.id) {
-            flash.errorMessage = 'Route not found'
-            redirect(action: 'routing')
-            return
-        }
-
         def route = NumberRoute.get(params.id)
         if(!route) {
             flash.errorMessage = 'Route not found'
@@ -354,12 +378,6 @@ class AdministrationController {
     }
 
     def updateInternalRoute = {
-        if(!params.id) {
-            flash.errorMessage = 'Route not found'
-            redirect(action: 'routing')
-            return
-        }
-
         def route = NumberRoute.get(params.id)
         if(!route) {
             flash.errorMessage = 'Route not found'
@@ -384,38 +402,26 @@ class AdministrationController {
         }
     }
 
-    def updatePhoneNumber = {
-        if(!params.id) {
-            flash.errorMessage = 'Phone not found'
+    def updateExtension = {
+        def extension = Extension.get(params.id)
+        if(!extension) {
+            flash.errorMessage = 'Extension not found'
             redirect(action: 'phones')
             return
         }
 
-        def phoneNumber = PhoneNumber.get(params.id)
-        if(!phoneNumber) {
-            flash.errorMessage = 'Phone not found'
-            redirect(action: 'phones')
-            return
-        }
-
-        phoneNumber = updatePhoneNumberService.updatePhoneNumberByOperator(phoneNumber, params)
-        if(phoneNumber.hasErrors()) {
+        extension = extensionService.update(extension, params)
+        if(extension.hasErrors()) {
             def model = phonesModel()
-            model.updatedPhoneNumber = phoneNumber
+            model.updatedExtension = extension
             render(view: 'phones', model: model)
         } else {
-            flash.successMessage = 'Phone number saved'
+            flash.successMessage = 'Extension saved'
             redirect(action: 'phones')
         }
     }
 
     def updateRestriction = {
-        if(!params.id) {
-            flash.errorMessage = 'Restriction not found'
-            redirect(action: 'restrictions')
-            return
-        }
-
         def restriction = OutdialRestriction.get(params.id)
         if(!restriction) {
             flash.errorMessage = 'Restriction not found'
@@ -462,12 +468,12 @@ class AdministrationController {
         params.sort = params.sort ?: 'number'
         params.order = params.order ?: 'asc'
         def user = springSecurityService.getCurrentUser()
-        def phoneNumbers = PhoneNumber.createCriteria().list(params) {
+        def extensionList = Extension.createCriteria().list(params) {
             owner {
                 eq('organization', user.organization)
             }
         }
-        def phoneNumberTotal = PhoneNumber.createCriteria().get {
+        def extensionTotal = Extension.createCriteria().get {
             projections {
                 count('id')
             }
@@ -475,10 +481,10 @@ class AdministrationController {
                 eq('organization', user.organization)
             }
         }
-        def users = User.findAllByOrganization(user.organization)
+        def users = User.findAllByOrganization(user.organization, [sort: 'realName', order: 'asc'])
         return [
-            phoneNumberList: phoneNumbers,
-            phoneNumberTotal: phoneNumberTotal,
+            extensionList: extensionList,
+            extensionTotal: extensionTotal,
             users: users
         ]
     }
@@ -511,11 +517,20 @@ class AdministrationController {
         def user = springSecurityService.getCurrentUser()
         def external = NumberRoute.findAllByOrganizationAndType(user.organization, NumberRoute.Type.EXTERNAL, [sort: 'pattern', order: 'asc'])
         def internal = NumberRoute.findAllByOrganizationAndType(user.organization, NumberRoute.Type.INTERNAL, [sort: 'pattern', order: 'asc'])
+        def directVoicemailNumbers = DirectVoicemailNumber.withCriteria {
+            owner {
+                eq('organization', user.organization)
+            }
+            order('number', 'asc')
+        }
+        def users = User.findAllByOrganization(user.organization, [sort: 'realName', order: 'asc'])
         def destinations = applicationService.listApplications()
         return [
             destinations: destinations,
             external: external,
-            internal: internal
+            internal: internal,
+            directVoicemailNumbers: directVoicemailNumbers,
+            users: users
         ]
     }
 }

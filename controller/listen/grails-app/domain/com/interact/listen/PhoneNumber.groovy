@@ -1,20 +1,19 @@
 package com.interact.listen
 
-class PhoneNumber {
-    String forwardedTo
-    Audio greeting
-    boolean isPublic = true
+import com.interact.listen.pbx.Extension
+import com.interact.listen.voicemail.DirectVoicemailNumber
+
+// Note: do not create new instances of PhoneNumber
+// This class should be marked abstract, but cannot because of http://jira.grails.org/browse/GRAILS-6780
+
+/*abstract*/ class PhoneNumber {
     String number
     User owner
-    boolean supportsMessageLight = false
-    PhoneNumberType type = PhoneNumberType.OTHER
 
     static belongsTo = User
 
     static constraints = {
-        forwardedTo nullable: true, blank: false, maxSize: 50
-        greeting nullable: true
-        number blank: false, maxSize: 50, validator: { val, obj ->
+        number blank: false, maxSize: 100, validator: { val, obj ->
             def existing = PhoneNumber.createCriteria().get {
                 owner {
                     eq('organization', obj.owner.organization)
@@ -28,15 +27,14 @@ class PhoneNumber {
         }
     }
 
-    def beforeInsert() {
-        supportsMessageLight = (type == PhoneNumberType.EXTENSION)
-    }
+    // legacy, for returning to un-migrated APIs
+    def type() {
+        if(this.instanceOf(DirectVoicemailNumber)) {
+            return 'VOICEMAIL'
+        } else if(this.instanceOf(Extension)) {
+            return 'EXTENSION'
+        }
 
-    def beforeUpdate() {
-        supportsMessageLight = (type == PhoneNumberType.EXTENSION)
-        // encountered a strange error where the type property wouldnt get saved
-        // returning true from this hook fixes it. possible recurrence of:
-        //   http://jira.grails.org/browse/GRAILS-3903 (thats where the workaround came from)
-        return true
+        return 'MOBILE'
     }
 }

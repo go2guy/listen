@@ -27,7 +27,7 @@
         <g:textField name="emailAddress" value="${fieldValue(bean: user, field: 'emailAddress')}"/>
 
         <h3>Office Phone (Optional)</h3>
-        <label for="extension"><g:message code="phoneNumber.number.label"/></label>
+        <label for="extension"><g:message code="extension.number.label"/></label>
         <g:textField name="extension" value="${params.extension?.encodeAsHTML()}"/>
 
         <ul class="form-buttons">

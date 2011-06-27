@@ -1,6 +1,6 @@
 package com.interact.listen.pbx.findme
 
-import com.interact.listen.PhoneNumber
+import com.interact.listen.pbx.Extension
 import com.interact.listen.User
 
 class FindMeNumber {
@@ -37,6 +37,6 @@ class FindMeNumber {
     }
 
     def forwardedTo() {
-        return PhoneNumber.findByOwnerAndNumber(user, number)?.forwardedTo
+        return Extension.findByOwnerAndNumber(user, number)?.forwardedTo
     }
 }

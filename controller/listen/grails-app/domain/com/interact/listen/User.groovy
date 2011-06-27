@@ -1,5 +1,6 @@
 package com.interact.listen
 
+import com.interact.listen.pbx.Extension
 import org.joda.time.DateTime
 
 class User {
@@ -53,7 +54,7 @@ class User {
     }
 
     static def lookupByPhoneNumber(def number) {
-        PhoneNumber.findByNumber(number)?.owner
+        Extension.findByNumber(number)?.owner ?: MobilePhone.findByNumber(number)?.owner
     }
 
     boolean canDial(def destination) {

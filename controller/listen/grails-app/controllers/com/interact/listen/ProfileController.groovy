@@ -1,45 +1,45 @@
 package com.interact.listen
 
+import com.interact.listen.history.ActionHistory
+import com.interact.listen.pbx.Extension
+import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
-import com.interact.listen.history.*
-import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
-    def createPhoneNumberService
-    def deletePhoneNumberService
+    def mobilePhoneService
     def realizeAlertUpdateService
     def springSecurityService
-    def updatePhoneNumberService
+    def updateExtensionService
 
     static allowedMethods = [
         index: 'GET',
-        addUserPhoneNumber: 'POST',
+        addMobilePhone: 'POST',
         afterHours: 'GET',
         canDial: 'GET',
-        deleteUserPhoneNumber: 'POST',
+        deleteMobilePhone: 'POST',
         settings: 'GET',
         history: 'GET',
         phones: 'GET',
         saveAfterHours: 'POST',
         saveSettings: 'POST',
-        updateSystemPhoneNumber: 'POST',
-        updateUserPhoneNumber: 'POST'
+        updateExtension: 'POST',
+        updateMobilePhone: 'POST'
     ]
 
     def index = {
         redirect(action: 'settings')
     }
 
-    def addUserPhoneNumber = {
-        def phoneNumber = createPhoneNumberService.createPhoneNumberByUser(params)
-        if(phoneNumber.hasErrors()) {
+    def addMobilePhone = {
+        def mobilePhone = mobilePhoneService.create(params)
+        if(mobilePhone.hasErrors()) {
             def model = phonesModel()
-            model.newPhoneNumber = phoneNumber
+            model.newMobilePhone = mobilePhone
             render(view: 'phones', model: model)
         } else {
-            flash.successMessage = 'Phone saved'
+            flash.successMessage = 'Mobile phone saved'
             redirect(action: 'phones')
         }
     }
@@ -65,16 +65,16 @@ class ProfileController {
         }
     }
 
-    def deleteUserPhoneNumber = {
-        def phoneNumber = PhoneNumber.get(params.id)
-        if(!phoneNumber) {
-            flash.errorMessage = 'Phone not found'
+    def deleteMobilePhone = {
+        def mobilePhone = MobilePhone.get(params.id)
+        if(!mobilePhone) {
+            flash.errorMessage = 'Mobile phone not found'
             redirect(action: 'phone')
             return
         }
 
-        deletePhoneNumberService.deleteUserPhoneNumberByUser(phoneNumber)
-        flash.successMessage = 'Phone deleted'
+        mobilePhoneService.delete(mobilePhone)
+        flash.successMessage = 'Mobile phone deleted'
         redirect(action: 'phones')
     }
 
@@ -180,65 +180,55 @@ class ProfileController {
         }
     }
 
-    def updateSystemPhoneNumber = {
-        def phoneNumber = PhoneNumber.get(params.id)
-        if(!phoneNumber) {
-            flash.errorMessage = 'Phone not found'
+    def updateExtension = {
+        def extension = Extension.get(params.id)
+        if(!extension) {
+            flash.errorMessage = 'Extension not found'
             redirect(action: 'phone')
             return
         }
 
-        phoneNumber = updatePhoneNumberService.updateSystemPhoneNumberByUser(phoneNumber, params)
-        if(phoneNumber.hasErrors()) {
+        extension = updateExtensionService.updateExtension(extension, params)
+        if(extension.hasErrors()) {
             def model = phonesModel()
-            model.updatedPhoneNumber = phoneNumber
+            model.updatedExtension = extension
             render(view: 'phones', model: model)
         } else {
-            flash.successMessage = 'Phone updated'
+            flash.successMessage = 'Extension updated'
             redirect(action: 'phones')
         }
     }
 
-    def updateUserPhoneNumber = {
-        def phoneNumber = PhoneNumber.get(params.id)
-        if(!phoneNumber) {
-            flash.errorMessage = 'Phone not found'
+    def updateMobilePhone = {
+        def mobilePhone = MobilePhone.get(params.id)
+        if(!mobilePhone) {
+            flash.errorMessage = 'Mobile phone not found'
             redirect(action: 'phone')
             return
         }
 
-        phoneNumber = updatePhoneNumberService.updateUserPhoneNumberByUser(phoneNumber, params)
-        if(phoneNumber.hasErrors()) {
+        mobilePhone = mobilePhoneService.update(mobilePhone, params)
+        if(mobilePhone.hasErrors()) {
             def model = phonesModel()
-            model.updatedPhoneNumber = phoneNumber
+            model.updatedMobilePhone = mobilePhone
             render(view: 'phones', model: model)
         } else {
-            flash.successMessage = 'Phone saved'
+            flash.successMessage = 'Mobile phone saved'
             redirect(action: 'phones')
         }
     }
 
     private def phonesModel() {
         def user = springSecurityService.getCurrentUser()
-        def systemPhoneNumberList = PhoneNumber.withCriteria {
+        def extensionList = Extension.withCriteria {
             eq('owner', user)
-            or {
-                PhoneNumberType.systemTypes().each {
-                    eq('type', it)
-                }
-            }
         }
-        def userPhoneNumberList = PhoneNumber.withCriteria {
+        def mobilePhoneList = MobilePhone.withCriteria {
             eq('owner', user)
-            or {
-                PhoneNumberType.userTypes().each {
-                    eq('type', it)
-                }
-            }
         }
         return [
-            systemPhoneNumberList: systemPhoneNumberList,
-            userPhoneNumberList: userPhoneNumberList
+            extensionList: extensionList,
+            mobilePhoneList: mobilePhoneList
         ]
     }
 }

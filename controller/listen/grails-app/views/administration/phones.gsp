@@ -25,18 +25,16 @@ tbody .col-light { text-align: center; }
       <caption><g:message code="page.administration.phones.add.caption"/></caption>
       <thead>
         <th class="col-number"><g:message code="page.administration.phones.column.number"/></th>
-        <th class="col-type"><g:message code="page.administration.phones.column.type"/></th>
         <th class="col-owner"><g:message code="page.administration.phones.column.owner"/></th>
         <th class="col-button"></th>
       </thead>
       <tbody>
         <tr>
-          <g:form controller="administration" action="addPhoneNumber" method="post">
+          <g:form controller="administration" action="addExtension" method="post">
             <!-- TODO number needs focus on page load -->
-            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newPhoneNumber, field: 'number')}"/></td>
-            <td class="col-type"><g:select name="type" from="${com.interact.listen.PhoneNumberType.values()}" optionKey="key" value="${newPhoneNumber?.type?.name()}"/></td>
-            <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${newPhoneNumber?.owner?.id}"/></td>
-            <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.phones.add.button.addPhone')}"/></td>
+            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newExtension, field: 'number')}"/></td>
+            <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${newExtension?.owner?.id}"/></td>
+            <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.phones.add.button.addExtension')}"/></td>
           </g:form>
         </tr>
       </tbody>
@@ -46,27 +44,25 @@ tbody .col-light { text-align: center; }
       <caption><g:message code="page.administration.phones.current.caption"/></caption>
       <thead>
         <g:sortableColumn property="number" title="${g.message(code: 'page.administration.phones.column.number')}" class="col-number"/>
-        <g:sortableColumn property="type" title="${g.message(code: 'page.administration.phones.column.type')}" class="col-type"/>
         <g:sortableColumn property="owner" title="${g.message(code: 'page.administration.phones.column.owner')}" class="col-owner"/>
         <th class="col-button"></th>
         <th class="col-button"></th>
       </thead>
       <tbody>
-        <g:if test="${phoneNumberList.size() > 0}">
-          <g:each in="${phoneNumberList}" var="phoneNumber" status="i">
+        <g:if test="${extensionList.size() > 0}">
+          <g:each in="${extensionList}" var="extension" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
-              <g:form controller="administration" action="updatePhoneNumber" method="post">
-                <td class="col-number"><g:textField name="number" value="${fieldValue(bean: phoneNumber, field: 'number')}"/></td>
-                <td class="col-type"><g:select name="type" from="${com.interact.listen.PhoneNumberType.values()}" optionKey="key" value="${phoneNumber.type.name()}"/></td>
-                <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${phoneNumber.owner.id}"/></td>
+              <g:form controller="administration" action="updateExtension" method="post">
+                <td class="col-number"><g:textField name="number" value="${fieldValue(bean: extension, field: 'number')}"/></td>
+                <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${extension.owner.id}"/></td>
                 <td class="col-button">
-                  <g:hiddenField name="id" value="${phoneNumber.id}"/>
+                  <g:hiddenField name="id" value="${extension.id}"/>
                   <g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/>
                 </td>
               </g:form>
-              <g:form controller="administration" action="deletePhoneNumber" method="post">
+              <g:form controller="administration" action="deleteExtension" method="post">
                 <td class="col-button">
-                  <g:hiddenField name="id" value="${phoneNumber.id}"/>
+                  <g:hiddenField name="id" value="${extension.id}"/>
                   <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}"/>
                 </td>
               </g:form>
@@ -74,14 +70,14 @@ tbody .col-light { text-align: center; }
           </g:each>
         </g:if>
         <g:else>
-          <tr class="even"><td colspan="6"><g:message code="page.administration.phones.current.noPhones"/></td></tr>
+          <tr class="even"><td colspan="6"><g:message code="page.administration.phones.current.noExtensions"/></td></tr>
         </g:else>
       </tbody>
     </table>
-    <g:if test="${phoneNumberList.size() > 0}">
-      <listen:paginateTotal total="${phoneNumberTotal}" messagePrefix="paginate.total.phones"/>
+    <g:if test="${extensionList.size() > 0}">
+      <listen:paginateTotal total="${extensionTotal}" messagePrefix="paginate.total.extensions"/>
       <div class="pagination">
-        <g:paginate total="${phoneNumberTotal}" maxsteps="5"/>
+        <g:paginate total="${extensionTotal}" maxsteps="5"/>
       </div>
     </g:if>
     <script type="text/javascript">

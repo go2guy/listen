@@ -1,18 +1,18 @@
 package com.interact.listen.voicemail.afterhours
 
+import com.interact.listen.MobilePhone
 import com.interact.listen.Organization
-import com.interact.listen.PhoneNumber
 
 class AfterHoursConfiguration {
     String alternateNumber
     Organization organization
-    PhoneNumber phoneNumber
+    MobilePhone mobilePhone
     String realizeAlertName
     String realizeUrl
 
     static constraints = {
         alternateNumber blank: true, email: true
-        phoneNumber nullable: true
+        mobilePhone nullable: true
         realizeAlertName blank: true
         realizeUrl blank: true
     }
