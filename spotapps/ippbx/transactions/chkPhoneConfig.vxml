@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 06/07/2011
+    <!-- Last Modified 06/27/2011
        *   @Name	chkPhoneConfig.vxml
        *   @Desc	This script is part of the logic for forwarding an extension.
                     Here, we check if an extension is forwarded -->
@@ -67,7 +67,7 @@
             <var name="count" expr="getJsonVal(result, 'count')"/>
             <if cond="count == 1">
                 <log target="status">Get Sub Info</log>
-                <assign name="subID" expr="getResultsKeyValue(result, 0, 'href')"/>
+                <assign name="subID" expr="getResultsKeyValue(result, 0, 'subscriber')"/>
                 <assign name="subID" expr="getNextElement('L',subID, '/')"/>
                 <assign name="resource" expr="whichRsrc"/>
                 <if cond="resource == 'canDial'">
