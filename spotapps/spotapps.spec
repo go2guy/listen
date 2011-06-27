@@ -217,12 +217,16 @@ Requires: spotbuild-vip
 
     if [ ! -e /var/lib/mysql/ip_pbx ]
     then
-        echo "No ip_pbx database found. Run [ mysql -u root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql ] to initialize one."
+        echo "******ALERT******"
+        echo -e "\tNo ip_pbx database found in mysql. Run [ mysql -u root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql ] to initialize one."
+        echo "*****************"
     fi
 
     if [ ! -f /usr/local/bin/lame ]
     then
-       echo "lame is not installed under [/usr/local/bin/]"
+        echo "******ALERT******"
+        echo -e "\tlame is not installed under [/usr/local/bin/]. Install the application to enable conversation of audio files from wav to mp3."
+        echo "*****************"
     else
        echo "lame is installed under [/usr/local/bin/]"
        if [ ! -L /interact/listen/bin/lame ]
