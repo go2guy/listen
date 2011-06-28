@@ -284,9 +284,10 @@ class ConferencingController {
     }
 
     def schedule = {
+        def user = springSecurityService.getCurrentUser()
         def invitation = createInvitationService.createInvitation(params)
         if(invitation.hasErrors()) {
-            render(view: 'scheduling', model: [scheduledConference: scheduledConference, scheduleLists: scheduleLists(user)])
+            render(view: 'scheduling', model: [scheduledConference: invitation, scheduleLists: scheduleLists(user)])
         } else {
             flash.successMessage = 'Conference has been scheduled and email invitations have been sent'
             redirect(action: 'scheduling')

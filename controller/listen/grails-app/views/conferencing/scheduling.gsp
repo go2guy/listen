@@ -89,14 +89,20 @@ table.schedule-details ul li {
     <h3>Schedule a Conference</h3>
     <g:form controller="conferencing" action="schedule" method="post">
       <fieldset class="vertical">
-        <label>Date &amp; Time</label>
-        <joda:datePicker id="date" name="date" value="${scheduledConference?.date}"/>
+        <div class="date-fields">
+          <label>Date &amp; Time</label>
+          <joda:datePicker id="date" name="date" value="${scheduledConference?.date}"/>
 
-        <label class="inline-label">from</label>
-        <listen:timePicker name="starts" value="${scheduledConference?.starts}"/>
+          <label class="inline-label">from</label>
+          <listen:timePicker name="starts" value="${scheduledConference?.starts}"/>
 
-        <label class="inline-label">to</label>
-        <listen:timePicker name="ends" value="${scheduledConference?.ends}"/>
+          <label class="inline-label">to</label>
+          <listen:timePicker name="ends" value="${scheduledConference?.ends}"/>
+
+          <g:if test="${scheduledConference?.isPast()}">
+            <ul class="messages warning"><li>This conference is in the past</li></ul>
+          </g:if>
+        </div>
 
         <h3>Email Invitations</h3>
 
@@ -127,6 +133,31 @@ table.schedule-details ul li {
     <g:render template="scheduleListTemplate" model="${[list: scheduleLists.future, caption: 'Upcoming Conferences', placeholder: 'You do not have any upcoming conferences', showCancel: true]}"/>
     <g:render template="scheduleListTemplate" model="${[list: scheduleLists.past, caption: 'Past Conferences', placeholder: 'You do not have any past conferences', showCancel: false]}"/>
     <script type="text/javascript">
+var invitations = {
+    checkAndWarnHistoricDate: function() {
+        var y = $('#date_year').val();
+        var mo = parseInt($('#date_month').val(), 10) - 1;
+        var d = $('#date_day').val();
+        var h = $('#starts_hour').val();
+        var mn = $('#starts_minute').val();
+
+        var date = new Date(y, mo, d, h, mn, 0, 0);
+        var now = new Date();
+
+        log.debug('date ' + date + ', now ' + now);
+
+        var isPast = date.getTime() < now.getTime();
+        var hasWarning = $('.date-fields .warning').size() > 0;
+
+        log.debug('isPast? ' + isPast + ', hasWarning? ' + hasWarning);
+
+        if(isPast && !hasWarning) {
+            $('.date-fields').append('<ul class="messages warning"><li>This conference is in the past.</li></ul>');
+        } else if(!isPast && hasWarning) {
+            $('.date-fields .warning').remove();
+        }
+    }
+};
 $(document).ready(function() {
     $('tr.schedule-details-row').each(function() {
         var row = $(this);
@@ -144,6 +175,8 @@ $(document).ready(function() {
     $('.cancel-form').submit(function() {
         return confirm('Are you sure? Calendar cancellations will be sent to all invited callers.');
     });
+
+    $('.date-fields select').change(invitations.checkAndWarnHistoricDate);
 });
     </script>
   </body>

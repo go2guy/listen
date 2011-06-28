@@ -54,6 +54,10 @@ class ScheduledConference {
         stringToSet(passiveCallerAddresses, includeOrganizer)
     }
 
+    def isPast() {
+        startsAt().isBefore(new LocalDateTime())
+    }
+
     private Set stringToSet(def commaDelimited, boolean includeOrganizer = true) {
         def s = [] as Set
         commaDelimited.split(/[,\s]/).each {
