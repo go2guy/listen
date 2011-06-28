@@ -22,7 +22,7 @@
           <g:if test="${showCancel}">
             <g:form controller="conferencing" action="cancel" method="post" class="cancel-form">
               <g:hiddenField name="id" value="${scheduledConference.id}"/>
-              <g:submitButton name="cancel" value="${g.message(code: 'page.conferencing.scheduling.cancel.button.label')}"/>
+              <g:submitButton name="cancel" value="${g.message(code: 'page.conferencing.invitations.cancel.button.label')}"/>
             </g:form>
           </g:if>
           <table class="schedule-details">
