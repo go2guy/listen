@@ -18,8 +18,8 @@ class ConferencingController {
         outdial: 'POST',
         polledConference: 'GET',
         recordings: 'GET',
-        schedule: 'POST',
-        scheduling: 'GET',
+        invite: 'POST',
+        invitations: 'GET',
         startRecording: 'POST',
         stopRecording: 'POST',
         unmuteCaller: 'POST'
@@ -46,13 +46,13 @@ class ConferencingController {
         def invitation = ScheduledConference.get(params.id)
         if(!invitation) {
             flash.errorMessage = 'Invitation not found'
-            redirect(action: 'scheduling')
+            redirect(action: 'invitations')
             return
         }
 
         cancelInvitationService.cancel(invitation)
         flash.successMessage = 'Cancellation has been sent to invited callers'
-        redirect(action: 'scheduling')
+        redirect(action: 'invitations')
     }
 
     def deleteRecording = {
@@ -283,19 +283,19 @@ class ConferencingController {
         render(view: 'recordings', model: [recordingList: recordingList, recordingTotal: recordingTotal])
     }
 
-    def schedule = {
+    def invite = {
         def user = springSecurityService.getCurrentUser()
         def invitation = createInvitationService.createInvitation(params)
         if(invitation.hasErrors()) {
-            render(view: 'scheduling', model: [scheduledConference: invitation, scheduleLists: scheduleLists(user)])
+            render(view: 'invitations', model: [scheduledConference: invitation, scheduleLists: scheduleLists(user)])
         } else {
             flash.successMessage = 'Conference has been scheduled and email invitations have been sent'
-            redirect(action: 'scheduling')
+            redirect(action: 'invitations')
         }
     }
 
-    def scheduling = {
-        render(view: 'scheduling', model: [scheduleLists: scheduleLists(springSecurityService.getCurrentUser())])
+    def invitations = {
+        render(view: 'invitations', model: [scheduleLists: scheduleLists(springSecurityService.getCurrentUser())])
     }
 
     private def scheduleLists(def user) {

@@ -1,9 +1,9 @@
 <html>
   <head>
-    <title><g:message code="page.conferencing.scheduling.title"/></title>
+    <title><g:message code="page.conferencing.invitations.title"/></title>
     <meta name="layout" content="main"/>
     <meta name="tab" content="conferencing"/>
-    <meta name="button" content="scheduling"/>
+    <meta name="button" content="invitations"/>
     <style type="text/css">
 fieldset.vertical select {
     display: inline;
@@ -84,27 +84,27 @@ table.schedule-details ul li {
     </style>
   </head>
   <body>
-    <listen:infoSnippet summaryCode="page.conferencing.scheduling.snippet.summary" contentCode="page.conferencing.scheduling.snippet.content"/>
+    <listen:infoSnippet summaryCode="page.conferencing.invitations.snippet.summary" contentCode="page.conferencing.invitations.snippet.content"/>
 
-    <h3>Schedule a Conference</h3>
-    <g:form controller="conferencing" action="schedule" method="post">
+    <h3><g:message code="page.conferencing.invitations.header"/></h3>
+    <g:form controller="conferencing" action="invite" method="post">
       <fieldset class="vertical">
         <div class="date-fields">
-          <label>Date &amp; Time</label>
+          <label><g:message code="page.conferencing.invitations.header.datetime"/></label>
           <joda:datePicker id="date" name="date" value="${scheduledConference?.date}"/>
 
-          <label class="inline-label">from</label>
+          <label class="inline-label"><g:message code="page.conferencing.invitations.from.time.label"/></label>
           <listen:timePicker name="starts" value="${scheduledConference?.starts}"/>
 
-          <label class="inline-label">to</label>
+          <label class="inline-label"><g:message code="page.conferencing.invitations.to.time.label"/></label>
           <listen:timePicker name="ends" value="${scheduledConference?.ends}"/>
 
           <g:if test="${scheduledConference?.isPast()}">
-            <ul class="messages warning"><li>This conference is in the past</li></ul>
+            <ul class="messages warning"><li><g:message code="page.conferencing.invitations.historic.warning"/></li></ul>
           </g:if>
         </div>
 
-        <h3>Email Invitations</h3>
+        <h3><g:message code="page.conferencing.invitations.header.email"/></h3>
 
         <!-- TODO add a little info blurb here about what will happen -->
 
@@ -117,15 +117,15 @@ table.schedule-details ul li {
         </div>
 
         <div id="emailCallers">
-            <label for="activeCallerAddresses">Active caller email addresses</label>
+            <label for="activeCallerAddresses"><g:message code="page.conferencing.invitations.active.email.label"/></label>
             <g:textArea name="activeCallerAddresses" value="${fieldValue(bean: scheduledConference, field: 'activeCallerAddresses')}"/>
 
-            <label for="passiveCallerAddresses">Passive caller email addresses</label>
+            <label for="passiveCallerAddresses"><g:message code="page.conferencing.invitations.passive.email.label"/></label>
             <g:textArea name="passiveCallerAddresses" value="${fieldValue(bean: scheduledConference, field: 'passiveCallerAddresses')}"/>
         </div>
 
         <ul class="form-buttons">
-          <li><g:submitButton name="submit" value="Schedule & Send Emails"/></li>
+          <li><g:submitButton name="submit" value="${g.message(code: 'page.conferencing.invitations.send.button.label')}"/></li>
         </ul>
       </fieldset>
     </g:form>
@@ -152,7 +152,7 @@ var invitations = {
         log.debug('isPast? ' + isPast + ', hasWarning? ' + hasWarning);
 
         if(isPast && !hasWarning) {
-            $('.date-fields').append('<ul class="messages warning"><li>This conference is in the past.</li></ul>');
+            $('.date-fields').append('<ul class="messages warning"><li><g:message code="page.conferencing.invitations.historic.warning"/></li></ul>');
         } else if(!isPast && hasWarning) {
             $('.date-fields .warning').remove();
         }
