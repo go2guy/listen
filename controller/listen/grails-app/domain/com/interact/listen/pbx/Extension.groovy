@@ -14,6 +14,7 @@ class Extension extends PhoneNumber {
         // all fields must be nullable since we extend PhoneNumber
         forwardedTo nullable: true, blank: false, maxSize: 50
         greeting nullable: true
-        ip nullable: true, blank: false, unique: true, maxSize: 50
+        // NOTE: ip cannot have a 'unique' constraint, it causes grails/hibernate to segfault. :(
+        ip nullable: true, blank: false, /*unique: true,*/ maxSize: 50
     }
 }
