@@ -19,10 +19,12 @@
       </tr>
       <tr class="${i % 2 == 0 ? 'even' : 'odd'} schedule-details-row">
         <td colspan="5">
+          <g:if test="${showCancel}">
           <g:form controller="conferencing" action="cancel" method="post" class="cancel-form">
             <g:hiddenField name="id" value="${scheduledConference.id}"/>
             <g:submitButton name="cancel" value="${g.message(code: 'page.conferencing.scheduling.cancel.button.label')}"/>
           </g:form>
+          </g:if>
           <table class="schedule-details">
             <tr><th>Date</th><td><joda:format value="${scheduledConference.date}"/></td></tr>
             <tr><th>Time</th><td><joda:format value="${scheduledConference.starts}" pattern="h:mm a"/> to <joda:format value="${scheduledConference.ends}" pattern="h:mm a"/></td></tr>

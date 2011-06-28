@@ -124,8 +124,8 @@ table.schedule-details ul li {
       </fieldset>
     </g:form>
 
-    <g:render template="scheduleListTemplate" model="${[list: scheduleLists.future, caption: 'Upcoming Conferences', placeholder: 'You do not have any upcoming conferences']}"/>
-    <g:render template="scheduleListTemplate" model="${[list: scheduleLists.past, caption: 'Past Conferences', placeholder: 'You do not have any past conferences']}"/>
+    <g:render template="scheduleListTemplate" model="${[list: scheduleLists.future, caption: 'Upcoming Conferences', placeholder: 'You do not have any upcoming conferences', showCancel: true]}"/>
+    <g:render template="scheduleListTemplate" model="${[list: scheduleLists.past, caption: 'Past Conferences', placeholder: 'You do not have any past conferences', showCancel: false]}"/>
     <script type="text/javascript">
 $(document).ready(function() {
     $('tr.schedule-details-row').each(function() {
