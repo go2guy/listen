@@ -60,6 +60,7 @@ class UrlMappings {
                 PUT: 'updateVoicemail'
             ]
         }
+        "/api/routeCall"(controller: 'callRouting', action: 'routeCall')
 
         "/meta/canAccessFeature"(controller: 'spotApi', action: 'canAccessFeature')
         "/meta/canDial"(controller: 'spotApi', action: 'canDial')

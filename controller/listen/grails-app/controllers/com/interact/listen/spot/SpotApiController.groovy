@@ -861,10 +861,11 @@ class SpotApiController {
             id: phoneNumber.id,
             number: phoneNumber.number,
             type: phoneNumber.type(),
-            subscriber: "/subscribers/${phoneNumber.owner.id}"
+            subscriber: "/subscribers/${phoneNumber.owner.id}",
+            ip: (phoneNumber.instanceOf(Extension) ? phoneNumber.ip : '')
         ]
 
-        if(phoneNumber.instanceOf(MobileNumber)) {
+        if(phoneNumber.instanceOf(MobilePhone)) {
             result.forwardedTo = ''
             result.greetingLocation = ''
             result.publicNumber = phoneNumber.isPublic
@@ -1005,7 +1006,8 @@ class SpotApiController {
             return [
                 'subscriber': "/subscribers/${it.owner.id}",
                 'href': "/accessNumbers/${it.id}",
-                'number': it.number
+                'number': it.number,
+                'ip': (it.instanceOf(Extension) ? it.ip : '')
             ]
         }
 
