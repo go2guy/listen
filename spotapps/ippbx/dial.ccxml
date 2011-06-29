@@ -21,6 +21,7 @@
     <var name="origDNIS"/>          <!-- Stores the original DNIS in a forwarded scenario -->
 
     <!-- Global Vars -->
+    <var name="ip" expr="''"/>              <!-- IP. IP Address of phone client -->
     <var name="state" expr="'idle'"/>       <!-- State. Used to track which state a transition is in -->
     <var name="dialogID" expr="''"/>        <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="status" expr="''"/>          <!-- Status. Stores application status -->
@@ -77,9 +78,9 @@
 
     <script>
         <![CDATA[
-            function isDigits (DNIS) {
-                var dnis = getnum(DNIS);
-                if (iiNumber(dnis))
+            function isName (DNIS) {
+                var dnis = new String(getnum(DNIS)).replace(/[0-9*]/g,'');
+                if (dnis.length > 0)
                     return 'true';
                 else
                     return 'false';
@@ -115,7 +116,7 @@
             <!-- If the dialed number is a string of characters, we're possibly dealing with a 
             redial. Let's attempt to get an access number for the characters --> 
             <log>INFO: Entered [dialog.user.chkRedial] with state [<value expr="state"/>]</log>
-            <if cond="((callType != 'fromXfer') &amp;&amp; (isDigits(tmpDNIS) == 'false'))"> <!-- Implies destination is a name. Assume a redial -->
+            <if cond="((callType != 'fromXfer') &amp;&amp; (isName(tmpDNIS) == 'true'))"> <!-- Implies destination is a name. Assume a redial -->
                 <assign name="state" expr="'getExtID'"/>
        	   		<dialogstart src="'file:'+TRANS_PATH+'getCallerID.vxml'" namelist="DNIS importedValue"/>
             <else/>
@@ -130,8 +131,9 @@
             <var name="result" expr="evt.values.result"/>
             <if cond="result.length &gt; 0">
                 <log>INFO: Set destination to [<value expr="result"/>]</log>
-                <assign name="tmpDNIS" expr="result"/>
-                <assign name="DNIS" expr="result"/>
+                <assign name="tmpDNIS" expr="getResultsKeyValue(result, 0, 'number')"/>
+                <assign name="DNIS" expr="tmpDNIS"/>
+                <assign name="ip" expr="getResultsKeyValue(result, 0, 'ip')"/>
                 <send data="'dialog.user.chkCallType'" target="session.id"/>
             <else/>
                 <log>ERROR: Unable to dial [<value expr="DNIS"/>]</log>
@@ -154,8 +156,6 @@
                 <assign name="state" expr="'callConnected'"/>
                 <send data="'dialog.user.keyPress'" target="session.id"/>
             <elseif cond="tmpDNIS.length &lt; EXT_LENGTH"/>
-                <!-- This is part of the forwarding logic. Before dialing an internal extension
-                we need to make sure it is not forwarded -->
                 <if cond="((origDNIS.length != undefined) &amp;&amp; (origDNIS == tmpDNIS))">
                     <!-- If the origDNIS variable is equal to the current tmpDNIS, we're likely dealing with a
                     blindtransfer request that needs to go to voice mail -->
@@ -163,6 +163,8 @@
                     <send data="'dialog.user.listenApp'" target="session.id"/>
                 <else/>
                     <if cond="importedValue.length &gt; 0">
+                        <!-- This is part of the forwarding logic. Before dialing an internal extension
+                        we need to make sure it is not forwarded -->
                         <assign name="state" expr="'chkFwd'"/>
                         <var name="accessNum" expr="tmpDNIS"/>
                         <var name="whichRsrc" expr="'dial'"/>
@@ -229,7 +231,7 @@
             <var name="result" expr="evt.values.result"/>
             <if cond="result.length &gt; 0">
                 <log>INFO: Set caller ID to [<value expr="result"/>]</log>
-                <assign name="CALL_ANI" expr="'sip:'+result+'@iipbx'"/>
+                <assign name="CALL_ANI" expr="'sip:' + result + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
             </if>
             <send data="'dialog.user.setCallerID'" target="session.id"/>
         </transition>
@@ -242,8 +244,7 @@
                 <assign name="CALL_ANI" expr="ANI"/>
             </if>
             <if cond="iiNumber(tmpDNIS)">
-                <!-- Assume we are attempting to reach a pstn number through SIP Trunk. 
-                Let's verify caller has permission to dial number -->
+                <!-- Let's verify caller has permission to dial number -->
                 <assign name="state" expr="'chkBlackList'"/>
                 <var name="destination" expr="tmpDNIS"/>
                 <if cond="tmpDNIS[0] == OUTSIDE_LINE">
@@ -262,7 +263,13 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <if cond="((evt.values.status == 'Failure') || (evt.values.result == 'true'))">
-                <send data="'dialog.user.call'" target="session.id"/>
+                <if cond="((tmpDNIS &lt; EXT_LENGTH) &amp;&amp; (ip.length == 0))">
+                    <!-- Assume this is a pbx call. Get the IP address associated with DNIS -->
+                    <assign name="state" expr="'getIP'"/>
+          	   		<dialogstart src="'file:'+TRANS_PATH+'getCallerID.vxml'" namelist="tmpDNIS importedValue"/>
+                <else/>
+                    <send data="'dialog.user.call'" target="session.id"/>
+                </if>
             <else/>
                 <log target="status">[<value expr="tmpDNIS"/>] not permitted</log>
                 <log>INFO: [<value expr="ANI"/>] not permitted to dial [<value expr="tmpDNIS"/>]</log>
@@ -273,9 +280,19 @@
             </if>
         </transition>
 
+        <transition state="getIP" event="dialog.exit" name="evt">
+            <!-- Back from getting destination IP address -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
+            <var name="result" expr="evt.values.result"/>
+            <assign name="ip" expr="getResultsKeyValue(result, 0, 'ip')"/>
+            <send data="'dialog.user.call'" target="session.id"/>
+        </transition>
+
         <transition state="error" event="dialog.exit" name="evt">
             <!-- Back from checking if caller has permission to dial number -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="inVXML" expr="'n'"/>
             <assign name="state" expr="'blackListNum'"/>
             <var name="II_SB_repeat" expr="'n'"/>
             <var name="II_SB_interval" expr="''"/>
@@ -290,7 +307,11 @@
             <var name="TIME_OUT" expr="'25s'"/>
             <var name="OBCALL.noproxy" expr="'false'"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
-                <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
+                <if cond="ip.length &gt; 0">
+                    <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + '@' + ip"/>
+                <else/>
+                    <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
+                </if>
             <else/> <!-- Call to an external number (outside PBX) -->
                 <assign name="TIME_OUT" expr="'60s'"/>
                 <if cond="iiNumber(tmpDNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
@@ -314,7 +335,12 @@
                 <log target="status">Dialing [<value expr="tmpDNIS"/>]</log>
                 <assign name="state" expr="'storeInfo'"/>
                 <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
-                <send data="'dialog.user.storeInfo'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
+                <if cond="tmpDNIS.length &lt; EXT_LENGTH">
+                    <send data="'dialog.user.storeInfo'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
+                <else/>
+                    <assign name="state" expr="'dialing'"/> <!-- Not an ippbx call. Play ring tone -->
+                    <send data="'dialog.user.ringTone'" target="session.id"/>
+                </if>
             <else/>
                 <assign name="state" expr="'hangUp'"/>
                 <var name="logText" expr="'dial.ccxml: Invalid outdial attempt. Caller [ext'+ tmpANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
@@ -327,15 +353,10 @@
             <!-- In here, we check if the dialed destination is within ippbx. If it is, there's a possibility of the call
             being "pickup" from another extension. Therefore, we need to update the db with information about this call -->
             <log>INFO: Entered [dialog.user.storeInfo] with state [<value expr="state"/>]</log>
-            <if cond="tmpDNIS.length &lt; EXT_LENGTH">
-                <var name="flag" expr="'insert'"/>
-                <var name="sessionID" expr="session.id"/>
-                <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
-   	   		    <dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record sessionID EXT_LENGTH"/>
-            <else/>
-                <assign name="state" expr="'dialing'"/> <!-- Not an ippbx call. Play ring tone -->
-                <send data="'dialog.user.ringTone'" target="session.id"/>
-            </if>
+            <var name="flag" expr="'insert'"/>
+            <var name="sessionID" expr="session.id"/>
+            <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
+   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record sessionID EXT_LENGTH"/>
 		</transition>
 
         <transition state="storeInfo" event="dialog.exit" name="evt">
@@ -720,7 +741,7 @@
         </transition>
 
         <transition state="writeBusyLog callFailedLog noRingToneFail" event="dialog.user.writeCallFailedLog" name="evt">
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <log>INFO: Entered [dialog.user.writeCallFailedLog] with state [<value expr="state"/>]</log>
             <var name="logText" expr="'dial.ccxml: Call failed. Caller ['+ tmpANI +'] attempting to reach destination ['+ tmpDNIS + ']. Reason ['+ errorCode(dialFailReason) +']'"/>
             <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
             <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
