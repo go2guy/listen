@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 05/19/2011
+    <!-- Last Modified 06/29/2010
        *   @Name	toggleLight.ccxml
        *   @Desc	This script handles toggling the message notification
                     light on the IP phones -->
@@ -23,9 +23,10 @@
             <if cond="action == 'EXIT'">
                 <send data="'dialog.user.endCall'" target="session.id"/>
             <else/>
-                <var name="dest" expr="'sip:ext' + getNextElement(1,action,'|') + '@iipbx'"/>
                 <var name="messages" expr="getNextElement(0,action,'|')"/>
-                <send data="'messagelightcontrol'" target="'iisip'" targettype="'x-iievent'" namelist="dest messages"/>
+                <var name="dest" expr="'sip:' + getNextElement(1,action,'|')"/>
+                <var name="VOIP_NO_PROXY" expr="getNextElement(2,action,'|') + ''"/>
+                <send data="'messagelightcontrol'" target="'iisip'" targettype="'x-iievent'"  namelist="dest messages VOIP_NO_PROXY"/>
             </if>
         </transition>
 
@@ -39,14 +40,7 @@
         <transition event="dialog.user.messagelight.failed" name="evt">
             <log>INFO: Entered [dialog.user.messagelight.failed] with state [<value expr="state"/>]</log>
             <log>INFO: Attempt failed</log>
-            <var name="logText" expr="'toggleLight.ccxml: Attempt to turn message light ['+getJsonVal(importedValue,'action')+'] for [ext'+getNextElement(1,action,'|')+'] failed'"/>
-            <assign name="logText" expr="writeLog('MSG_LIGHT','N/A',logText)"/>
             <assign name="state" expr="'endCall'"/>
-            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
-        </transition>
-
-        <transition event="dialog.exit">
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <send data="'dialog.user.endCall'" target="session.id"/>
         </transition>
 
@@ -56,10 +50,7 @@
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- TODO: Write an error log file and notify someone? -->
             <assign name="state" expr="'endCall'"/>
-            <var name="logText" expr="'toggleLight.ccxml: Global error catch. Reason [' + evt.reason + ']'"/>
-            <assign name="logText" expr="writeLog('MSG_LIGHT','N/A',logText)"/>
-            <assign name="state" expr="'endCall'"/>
-            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+            <send data="'dialog.user.endCall'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">
@@ -74,17 +65,25 @@
         <![CDATA[
             function getAction(passValues)
             {
+                var result = 'EXIT';
                 var tmpVal = eval("("+passValues+")");
-                var result = tmpVal.destination;
-                switch (tmpVal.action) {
-                    case "ON":
-                        result = 1 + '|' + result;
-                        break;
-                    case "OFF":
-                        result = 0 + '|' + result;
-                        break;
-                    default:
-                        result = "EXIT";
+
+                if ((tmpVal.destination != '') && (tmpVal.destination != null)) {
+                    if ((tmpVal.ip != '') && (tmpVal.ip != null))
+                        result = tmpVal.EXT_PREFIX + tmpVal.destination + '@' + tmpVal.ip + '|true';
+                    else
+                        result = tmpVal.EXT_PREFIX + tmpVal.destination + tmpVal.EXT_SUFFIX + '|';
+
+                    switch (tmpVal.action) {
+                        case "ON":
+                            result = 1 + '|' + result;
+                            break;
+                        case "OFF":
+                            result = 0 + '|' + result;
+                            break;
+                        default:
+                            result = "EXIT";
+                    }
                 }
                 return result;
             }
