@@ -9,7 +9,7 @@ table { margin-bottom: 10px; }
 
 .add tbody td.button { text-align: center; }
 
-.col-number input[type=text] { width: 150px; }
+.col-number input[type=text], .col-ip input[type=text] { width: 150px; }
 
 .col-button { width: 50px; }
 .add .col-button {
@@ -26,6 +26,7 @@ tbody .col-light { text-align: center; }
       <thead>
         <th class="col-number"><g:message code="page.administration.phones.column.number"/></th>
         <th class="col-owner"><g:message code="page.administration.phones.column.owner"/></th>
+        <th class="col-ip"><g:message code="page.administration.phones.column.ip"/></th>
         <th class="col-button"></th>
       </thead>
       <tbody>
@@ -34,6 +35,7 @@ tbody .col-light { text-align: center; }
             <!-- TODO number needs focus on page load -->
             <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newExtension, field: 'number')}"/></td>
             <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${newExtension?.owner?.id}"/></td>
+            <td class="col-ip"><g:textField name="ip" value="${fieldValue(bean: newExtension, field: 'ip')}"/></td>
             <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.phones.add.button.addExtension')}"/></td>
           </g:form>
         </tr>
@@ -45,6 +47,7 @@ tbody .col-light { text-align: center; }
       <thead>
         <g:sortableColumn property="number" title="${g.message(code: 'page.administration.phones.column.number')}" class="col-number"/>
         <g:sortableColumn property="owner" title="${g.message(code: 'page.administration.phones.column.owner')}" class="col-owner"/>
+        <g:sortableColumn property="ip" title="${g.message(code: 'page.administration.phones.column.ip')}" class="col-ip"/>
         <th class="col-button"></th>
         <th class="col-button"></th>
       </thead>
@@ -55,6 +58,7 @@ tbody .col-light { text-align: center; }
               <g:form controller="administration" action="updateExtension" method="post">
                 <td class="col-number"><g:textField name="number" value="${fieldValue(bean: extension, field: 'number')}"/></td>
                 <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${extension.owner.id}"/></td>
+                <td class="col-ip"><g:textField name="ip" value="${fieldValue(bean: extension, field: 'ip')}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${extension.id}"/>
                   <g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/>
