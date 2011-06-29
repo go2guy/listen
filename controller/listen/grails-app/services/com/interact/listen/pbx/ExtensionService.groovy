@@ -37,7 +37,7 @@ class ExtensionService {
         // TODO history?
 
         cloudToDeviceService.sendContactSync()
-        messageLightService.toggle(extension.number, false)
+        messageLightService.toggle(extension.number, extension.ip, false)
         if(extension.greeting) {
             spotCommunicationService.deleteArtifact(extension.greeting.uri)
         }
@@ -47,6 +47,7 @@ class ExtensionService {
         def user = springSecurityService.getCurrentUser()
 
         def originalNumber = extension.number
+        def originalIp = extension.ip
 
         if(user.hasRole('ROLE_ORGANIZATION_ADMIN')) {
             extension.properties = params
@@ -57,8 +58,8 @@ class ExtensionService {
         if(extension.validate() && extension.save()) {
             cloudToDeviceService.sendContactSync()
 
-            if(originalNumber != extension.number) {
-                messageLightService.toggle(originalNumber, false)
+            if(originalNumber != extension.number || originalIp != extension.ip) {
+                messageLightService.toggle(originalNumber, originalIp, false)
                 messageLightService.toggle(extension)
             }
             // TODO history?

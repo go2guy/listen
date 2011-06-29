@@ -67,8 +67,8 @@ class SpotCommunicationService {
         statWriterService.send(Stat.SPOT_RECORD_STOP)
     }
 
-    def toggleMessageLight(def number, boolean on) throws IOException, SpotCommunicationException {
-        sendMessageLightEvent(on ? 'ON' : 'OFF', number)
+    def toggleMessageLight(def number, def ip, boolean on) throws IOException, SpotCommunicationException {
+        sendMessageLightEvent(on ? 'ON' : 'OFF', number, ip)
         statWriterService.send(on ? Stat.SPOT_MSG_LIGHT_ON : Stat.SPOT_MSG_LIGHT_OFF)
     }
 
@@ -107,11 +107,12 @@ class SpotCommunicationService {
         buildAndSendRequest(importedValue);
     }
 
-    private void sendMessageLightEvent(def action, def number) throws IOException, SpotCommunicationException {
+    private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "MSG_LIGHT"); // monosodium glutimate light, on!
         importedValue.put("action", action);
         importedValue.put("destination", number);
+        importedValue.put('ip', ip)
         buildAndSendRequest(importedValue);
     }
 
