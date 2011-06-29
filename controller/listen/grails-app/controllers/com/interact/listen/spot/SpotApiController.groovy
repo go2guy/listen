@@ -255,7 +255,7 @@ class SpotApiController {
                 voicemailNotificationService.sendNewVoicemailSms(voicemail)
 
                 def config = AfterHoursConfiguration.findByOrganization(voicemail.owner.organization)
-                if(config && voicemail.owner == config.phoneNumber?.owner && config.alternateNumber?.length() > 0) {
+                if(config && voicemail.owner == config.mobilePhone?.owner && config.alternateNumber?.length() > 0) {
                     log.debug "Sending alternate-number page to ${config.alternateNumber}"
                     voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber, Stat.NEW_VOICEMAIL_SMS_ALTERNATE)
                 }
