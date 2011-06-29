@@ -42,7 +42,7 @@ function setOutBoundID (phoneNumber, passValues, ANI) {
         return ANI + getJsonVal(passValues, 'EXT_SUFFIX');
 }
 
-function setDestValue (phoneNumber, passValues) {
+function setDestValue (phoneNumber, passValues, EXT_SUFFIX) {
     var str = new String(phoneNumber);
     var num = /^\d+$/;
     if (num.test(str)) {
@@ -52,7 +52,10 @@ function setDestValue (phoneNumber, passValues) {
         if ((phoneNumber.length >= tmpPstn) && (tmpSipURL.length > 0))
             return phoneNumber + "@" + tmpSipURL;
         else if (phoneNumber.length < tmpExtLength)
-            return getJsonVal(passValues, 'EXT_PREFIX') + phoneNumber + getJsonVal(passValues, 'EXT_SUFFIX');
+            if (EXT_SUFFIX == '')
+                return getJsonVal(passValues, 'EXT_PREFIX') + phoneNumber + getJsonVal(passValues, 'EXT_SUFFIX');
+            else
+                return getJsonVal(passValues, 'EXT_PREFIX') + phoneNumber + '@' + EXT_SUFFIX;
         else
             return phoneNumber;
     }
@@ -67,4 +70,15 @@ function setParamsForCallEnd(sysAccessTime, callType, ANI, DNIS, callResult, org
     duration = 0;
     }
     return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+}
+
+function getResultsKey(jsonObj, key) {
+    var result = "";
+    var tmpVal = eval("("+jsonObj+")");
+    if (tmpVal.results.length != 0) {
+        result = tmpVal.results[key];
+        if (result == null)
+            result = "";
+    }
+    return result;
 }
