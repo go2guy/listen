@@ -967,8 +967,8 @@ class SpotApiController {
     }
 
     def listPhoneNumbers = {
-        if(!params.number && !params.subscriber) {
-            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number] or [subscriber] (or both)')
+        if((!params.number || !params.organization) && !params.subscriber) {
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameters [number] and [organization] or [subscriber] (or all of them)')
             return
         }
 
@@ -981,9 +981,20 @@ class SpotApiController {
             }
         }
 
+        def organization = Organization.get(getIdFromHref(params.organization))
+        if(params.organization && !organization) {
+            response.sendError(HSR.SC_BAD_REQUEST, "Organization not found with href [${params.organization}]")
+            return
+        }
+
         def list = PhoneNumber.createCriteria().list {
             if(params.number) {
                 eq('number', params.number)
+            }
+            if(organization) {
+                owner {
+                    eq('organization', organization)
+                }
             }
             if(user) {
                 eq('owner', user)
@@ -996,6 +1007,11 @@ class SpotApiController {
             }
             if(params.number) {
                 eq('number', params.number)
+            }
+            if(organization) {
+                owner {
+                    eq('organization', organization)
+                }
             }
             if(user) {
                 eq('owner', user)
@@ -1012,7 +1028,7 @@ class SpotApiController {
         }
 
         def json = [
-            href: '/accessNumbers?_fields=subscriber,number' + (params.number ? "&number=${params.number}" : '') + (user ? "&subscriber=/subscribers/${user.id}" : ''),
+            href: '/accessNumbers?_fields=subscriber,number' + (params.number ? "&number=${params.number}" : '') + (user ? "&subscriber=/subscribers/${user.id}" : '') + (params.organization ? "&organization=${params.organization}" : ''),
             count: results.size(),
             total: total,
             results: results
