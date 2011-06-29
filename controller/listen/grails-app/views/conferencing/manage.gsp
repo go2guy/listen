@@ -368,10 +368,10 @@ var conference = {
 
             var h3 = $('#conference-status');
             if(data.conference.isStarted && !h3.hasClass('conference-status-started')) {
-                h3.removeClass('conference-status-stopped').addClass('conference-status-started').html('Started (' + data.conference.started + ')');
+                h3.removeClass('conference-status-waiting').addClass('conference-status-started').html('Started (' + data.conference.started + ')');
                 $('#outdialing, #recording').fadeIn(1000);
-            } else if(!data.conference.isStarted && !h3.hasClass('conference-status-stopped')) {
-                h3.removeClass('conference-status-started').addClass('conference-status-stopped').text('Waiting for administrator');
+            } else if(!data.conference.isStarted && !h3.hasClass('conference-status-waiting')) {
+                h3.removeClass('conference-status-started').addClass('conference-status-waiting').text('Waiting for administrator');
                 $('#outdialing, #recording').fadeOut(1000);
             } else if(data.conference.isStarted && h3.text() != 'Started (' + data.conference.started + ')') {
                 h3.text('Started (' + data.conference.started + ')');
