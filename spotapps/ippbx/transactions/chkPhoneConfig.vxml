@@ -25,7 +25,7 @@
             <assign name="gotoForm" expr="'#chkSubInfo'"/>
             <assign name="request"  expr="'get'"/>
             <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
-            <assign name="params" expr="setAccess(accessNum)"/>
+            <assign name="params" expr="setAccess(accessNum, listenArgs)"/>
             <goto next="#sendEvent"/>
         </block>
     </form>
@@ -71,9 +71,9 @@
                 <assign name="subID" expr="getNextElement('L',subID, '/')"/>
                 <assign name="resource" expr="whichRsrc"/>
                 <if cond="resource == 'canDial'">
-                    <assign name="params" expr="setParams(subID, destination, whichRsrc)"/>
+                    <assign name="params" expr="setParams(subID, destination, whichRsrc, listenArgs)"/>
                 <else/>
-                    <assign name="params" expr="setParams(subID, accessNum, whichRsrc)"/>
+                    <assign name="params" expr="setParams(subID, accessNum, whichRsrc, listenArgs)"/>
                 </if>
                 <assign name="gotoForm" expr="'#chkResult'"/>
                 <goto next="#sendEvent"/>
@@ -125,15 +125,15 @@
 
     <script>
         <![CDATA[
-            function setAccess(inStr) {
-                return "?_fields=subscriber&number=" + inStr;
+            function setAccess(inStr, importedValue) {
+                return "?_fields=subscriber&number=" + inStr + "&organization=" + getJsonVal(importedValue, 'organization');
             }
 
-            function setParams(inStr, ext, resource) {
+            function setParams(inStr, ext, resource, importedValue) {
                 if (resource == 'dial')
-                    return "?subscriber=/subscribers/" + inStr + "&destination=" + ext + '&includeDisabled=false';
+                    return "?subscriber=/subscribers/" + inStr + "&destination=" + ext + "&includeDisabled=false&organization=" + getJsonVal(importedValue, 'organization');
                 else
-                    return "?subscriber=/subscribers/" + inStr + "&destination=" + ext;
+                    return "?subscriber=/subscribers/" + inStr + "&destination=" + ext + "&organization=" + getJsonVal(importedValue, 'organization');
             }
 
             function dialResult(jsonObj) {
