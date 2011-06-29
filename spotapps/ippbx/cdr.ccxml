@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 02/02/2011
+    <!-- Last Modified 06/22/2011
        *   @Name	cdr.ccxml
        *   @Desc	This script handles the CDR writing logic -->
 
@@ -79,7 +79,7 @@
                 <!-- Assume call originated from outside pbx. Attempt to locate subscriber ID of called party -->
                 <var name="id" expr="'LSTNAPP_0013'"/>
             </if>
-            <var name="statServer" expr="'http://localhost:9413/collect/stat'"/>
+            <var name="statServer" expr="getJsonVal(importedValue, 'STATcontroller')"/>
             <var name="operation" expr="'set'"/>
             <var name="value" expr="getTimeDifference(startTime,endTime)"/>
             <var name="state" expr="'stat'"/>
@@ -97,8 +97,11 @@
             <!-- Use catch all error for now -->
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
-            <!-- TODO: Write an error log file and notify someone? -->
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <var name="logText" expr="'cdr.ccxml: Global error catch. ANI ['+ ANI +'] DNIS ['+ DNIS +']. Reason ['+ evt.reason +']'"/>
+            <var name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+            <assign name="state" expr="'error'"/>
+            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">
