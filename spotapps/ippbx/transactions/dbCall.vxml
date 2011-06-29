@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 06/27/2011
+    <!-- Last Modified 06/29/2011
        *   @Name	dbCall.vxml
        *   @Desc	This script performs two functions. It is used to insert/delete an
                     active client into/from the database. It also retreives the list of
@@ -35,8 +35,12 @@
             <else/>
                 <assign name="id" expr="getNextElement(0,record,'|')"/>
                 <assign name="extension" expr="getNextElement(1,record,'|')"/>
-                <assign name="gotoForm" expr="'#exit'"/>
-                <goto next="#dbAccess"/>
+                <if cond="extension == -1">
+                    <goto next="#exit"/>
+                <else/>
+                    <assign name="gotoForm" expr="'#exit'"/>
+                    <goto next="#dbAccess"/>
+                </if>
             </if>
         </block>
     </form>
@@ -46,7 +50,7 @@
         <block>
             <log>INFO: Entered parseRecord</log>
             <var name="tmpVal" expr="getNextElement(index,record,',')"/>
-            <if cond="extension != '-1'">
+            <if cond="tmpVal != -1">
                 <assign name="id" expr="getNextElement(0,tmpVal,'|')"/>
                 <assign name="extension" expr="getNextElement(1,tmpVal,'|')"/>
                 <assign name="index" expr="index + 1"/>
