@@ -745,7 +745,7 @@ class SpotApiController {
             return
         }
 
-        def subscriber = afterHoursConfig.phoneNumber?.owner
+        def subscriber = afterHoursConfig.mobilePhone?.owner
         if(!subscriber) {
             response.sendError(HSR.SC_NOT_FOUND)
             return
