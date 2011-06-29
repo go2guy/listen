@@ -7,7 +7,6 @@ import java.security.ProtectionDomain;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.io.FileUtils;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
@@ -68,26 +67,32 @@ public final class EmbeddedJettyServer
         server.join();
     }
 
-    private static File createWebappExtractDirectory(String path) {
+    private static File createWebappExtractDirectory(String path)
+    {
         File dir = new File(path);
-        if(dir.exists() && !FileUtils.deleteQuietly(dir))
+        if(dir.exists() && !deleteRecursively(dir))
         {
             System.out.println("Unable to delete pre-existing extraction directory [" + path + "]");
             System.exit(1);
         }
-        else if(!dir.exists())
+        else if(!dir.exists() && !dir.mkdirs())
         {
-            try
-            {
-                FileUtils.forceMkdir(dir);
-            }
-            catch(IOException e)
-            {
-                System.out.println("Unable to create extraction directory [" + path +"]");
-                e.printStackTrace();
-                System.exit(1);
-            }
+            System.out.println("Unable to create extraction directory [" + path +"]");
+            System.exit(1);
         }
         return dir;
+    }
+
+    private static boolean deleteRecursively(File dir)
+    {
+        boolean result = true;
+        if(dir.isDirectory())
+        {
+            for(File file : dir.listFiles())
+            {
+                result &= deleteRecursively(file);
+            }
+        }
+        return result && dir.delete();
     }
 }
