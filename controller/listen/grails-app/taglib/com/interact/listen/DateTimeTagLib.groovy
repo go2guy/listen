@@ -8,6 +8,7 @@ class DateTimeTagLib {
 
     def prettyduration = { attrs ->
         if(!attrs.duration) throwTagError 'Tag [prettyduration] is missing required attribute [duration]'
+
         def formatter = new PeriodFormatterBuilder()
             .printZeroNever()
             .appendHours()
@@ -19,6 +20,27 @@ class DateTimeTagLib {
             .minimumPrintedDigits(1)
             .appendSeconds()
             .appendSuffix('s')
+            .toFormatter()
+        out << formatter.print(attrs.duration.toPeriod())
+    }
+
+    def millisduration = { attrs ->
+        if(!attrs.duration) throwTagError 'Tag [millisduration] is missing required attribute [duration]'
+
+        def formatter = new PeriodFormatterBuilder()
+            .printZeroAlways()
+            .appendHours()
+            .appendSuffix(':')
+            .printZeroAlways()
+            .minimumPrintedDigits(2)
+            .appendMinutes()
+            .appendSuffix(':')
+            .printZeroAlways()
+            .minimumPrintedDigits(2)
+            .appendSeconds()
+            .appendSuffix('.')
+            .printZeroAlways()
+            .appendMillis3Digit()
             .toFormatter()
         out << formatter.print(attrs.duration.toPeriod())
     }

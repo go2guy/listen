@@ -11,14 +11,19 @@ table tbody { font-size: 12px; }
 .col-dateTime { width: 20%; }
 .col-ani { width: 25%; }
 .col-dnis { width: 25%; }
-.col-duration { width: 15%; }
-.col-result { width: 15%; }
+.col-duration { width: 10%; }
+.col-result { width: 20%; }
 
 .col-dateCreated { width: 15%; }
 .col-byUser { width: 18%; }
 .col-onUser { width: 18%; }
 .col-description { width: 44%; }
 .col-channel { width: 5%; }
+
+tbody .col-duration {
+    padding-right: 20px;
+    text-align: right;
+}
     </style>
   </head>
   <body>

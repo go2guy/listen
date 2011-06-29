@@ -14,7 +14,7 @@
             <td class="col-dateTime"><joda:format value="${callHistory.dateTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             <td class="col-ani"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'ani')}" user="${callHistory.fromUser}" personalize="${personalize}"/></td>
             <td class="col-dnis"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'dnis')}" user="${callHistory.toUser}" personalize="${personalize}"/></td>
-            <td class="col-duration">${fieldValue(bean: callHistory, field: 'duration')}</td>
+            <td class="col-duration"><listen:millisduration duration="${callHistory.duration}"/></td>
             <td class="col-result">${fieldValue(bean: callHistory, field: 'result')}</td>
           </tr>
         </g:each>
