@@ -41,6 +41,7 @@ class UserCreationService {
             if(params.extension) {
                 def p = [
                     number: params.extension,
+                    ip: params.ip,
                     'owner.id': user.id
                 ]
                 def extension = extensionService.create(p)

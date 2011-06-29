@@ -30,6 +30,9 @@
         <label for="extension"><g:message code="extension.number.label"/></label>
         <g:textField name="extension" value="${params.extension?.encodeAsHTML()}"/>
 
+        <label for="ip"><g:message code="extension.ip.label"/></label>
+        <g:textField name="ip" value="${params.ip?.encodeAsHTML()}"/>
+
         <ul class="form-buttons">
           <li><g:submitButton name="submit" value="${g.message(code: 'default.button.create.label')}"/></li>
         </ul>
