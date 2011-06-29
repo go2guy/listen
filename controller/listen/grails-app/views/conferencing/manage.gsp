@@ -362,105 +362,110 @@ span.recording-status.started {
 
 var conference = {
     poll: function() {
-        $.get('${createLink(action: 'polledConference', params: [id: conference.id, sort: params.sort, order: params.order, max: params.max, offset: params.offset])}', function(data) {
+        $.ajax({
+            url: '${createLink(action: 'polledConference', params: [id: conference.id, sort: params.sort, order: params.order, max: params.max, offset: params.offset])}',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
 
-            // 0. update conference details
+                // 0. update conference details
 
-            var h3 = $('#conference-status');
-            if(data.conference.isStarted && !h3.hasClass('conference-status-started')) {
-                h3.removeClass('conference-status-waiting').addClass('conference-status-started').html('Started (' + data.conference.started + ')');
-                $('#outdialing, #recording').fadeIn(1000);
-            } else if(!data.conference.isStarted && !h3.hasClass('conference-status-waiting')) {
-                h3.removeClass('conference-status-started').addClass('conference-status-waiting').text('Waiting for administrator');
-                $('#outdialing, #recording').fadeOut(1000);
-            } else if(data.conference.isStarted && h3.text() != 'Started (' + data.conference.started + ')') {
-                h3.text('Started (' + data.conference.started + ')');
-            }
-
-            var recordingStatus = $('span.recording-status');
-            if(data.conference.isRecording && !recordingStatus.hasClass('started')) {
-                recordingStatus.removeClass('stopped').addClass('started').html('started &#9679;');
-                $('.start-recording-form').hide();
-                $('.stop-recording-form').show();
-            } else if(!data.conference.isRecording && !recordingStatus.hasClass('stopped')) {
-                recordingStatus.removeClass('started').addClass('stopped').html('stopped &#9632;');
-                $('.stop-recording-form').hide();
-                $('.start-recording-form').show();
-            }
-
-            var placeholder = $('#no-caller-placeholder');
-            var table = $('#callers > table, #callers > div.pagination');
-            if(data.participants.list.length == 0 && !placeholder.is(':visible')) {
-                table.hide(0, function() {
-                    placeholder.show();
-                });
-            } else if(data.participants.list.length > 0 && placeholder.is(':visible')) {
-                placeholder.hide(0, function() {
-                    table.show();
-                });
-            }
-
-            // 1. loop through table rows and remove rows that dont exist in the new data
-
-            var tbody = $('#callers table tbody');
-
-            $('tr', tbody).each(function() {
-                var tr = $(this);
-                var rowId = parseInt(tr.attr('data-id'), 10);
-                if($.inArray(rowId, data.participants.ids) === -1) {
-                    tr.remove();
+                var h3 = $('#conference-status');
+                if(data.conference.isStarted && !h3.hasClass('conference-status-started')) {
+                    h3.removeClass('conference-status-waiting').addClass('conference-status-started').html('Started (' + data.conference.started + ')');
+                    $('#outdialing, #recording').fadeIn(1000);
+                } else if(!data.conference.isStarted && !h3.hasClass('conference-status-waiting')) {
+                    h3.removeClass('conference-status-started').addClass('conference-status-waiting').text('Waiting for administrator');
+                    $('#outdialing, #recording').fadeOut(1000);
+                } else if(data.conference.isStarted && h3.text() != 'Started (' + data.conference.started + ')') {
+                    h3.text('Started (' + data.conference.started + ')');
                 }
-            });
 
-            // 2. loop through new rows and move existing rows / add new rows
+                var recordingStatus = $('span.recording-status');
+                if(data.conference.isRecording && !recordingStatus.hasClass('started')) {
+                    recordingStatus.removeClass('stopped').addClass('started').html('started &#9679;');
+                    $('.start-recording-form').hide();
+                    $('.stop-recording-form').show();
+                } else if(!data.conference.isRecording && !recordingStatus.hasClass('stopped')) {
+                    recordingStatus.removeClass('started').addClass('stopped').html('stopped &#9632;');
+                    $('.stop-recording-form').hide();
+                    $('.start-recording-form').show();
+                }
 
-            for(var i = 0; i < data.participants.list.length; i++) {
-                var participant = data.participants.list[i];
+                var placeholder = $('#no-caller-placeholder');
+                var table = $('#callers > table, #callers > div.pagination');
+                if(data.participants.list.length == 0 && !placeholder.is(':visible')) {
+                    table.hide(0, function() {
+                        placeholder.show();
+                    });
+                } else if(data.participants.list.length > 0 && placeholder.is(':visible')) {
+                    placeholder.hide(0, function() {
+                        table.show();
+                    });
+                }
 
-                // 2a. find position of participant in existing table
+                // 1. loop through table rows and remove rows that dont exist in the new data
 
-                var position = -1;
-                var tr; // will be set if a table row is found for this participant
-                $('tr', tbody).each(function(index) {
-                    var rowId = parseInt($(this).attr('data-id'), 10);
-                    if(rowId === participant.id) {
-                        position = index;
-                        tr = $(this);
+                var tbody = $('#callers table tbody');
+
+                $('tr', tbody).each(function() {
+                    var tr = $(this);
+                    var rowId = parseInt(tr.attr('data-id'), 10);
+                    if($.inArray(rowId, data.participants.ids) === -1) {
+                        tr.remove();
                     }
                 });
 
-                // 2b. if position is the same, move onto next participant
+                // 2. loop through new rows and move existing rows / add new rows
 
-                if(position === i) {
-                    conference.populate(tr, participant, true);
-                    continue;
-                }
+                for(var i = 0; i < data.participants.list.length; i++) {
+                    var participant = data.participants.list[i];
 
-                // 2c. if participant wasn't found, add it to the table
-                // 2d. (else) if participant did exist, it needs to be moved
+                    // 2a. find position of participant in existing table
 
-                if(position === -1) {
-                    tr = $('#participant-row-template').clone(true).removeAttr('id');
-                    conference.populate(tr, participant, false);
+                    var position = -1;
+                    var tr; // will be set if a table row is found for this participant
+                    $('tr', tbody).each(function(index) {
+                        var rowId = parseInt($(this).attr('data-id'), 10);
+                        if(rowId === participant.id) {
+                            position = index;
+                            tr = $(this);
+                        }
+                    });
+
+                    // 2b. if position is the same, move onto next participant
+
+                    if(position === i) {
+                        conference.populate(tr, participant, true);
+                        continue;
+                    }
+
+                    // 2c. if participant wasn't found, add it to the table
+                    // 2d. (else) if participant did exist, it needs to be moved
+
+                    if(position === -1) {
+                        tr = $('#participant-row-template').clone(true).removeAttr('id');
+                        conference.populate(tr, participant, false);
                     
-                    if(i === 0 || $('tr', tbody).length === 0) {
-                        tbody.prepend(tr);
+                        if(i === 0 || $('tr', tbody).length === 0) {
+                            tbody.prepend(tr);
+                        } else {
+                            $('tr:eq(' + (i - 1) + ')', tbody).after(tr);
+                        }
+
+                        conference.highlight(tr);
                     } else {
+                        // participant did exist in table , but needs to be moved
+                        conference.populate(tr, participant, false);
                         $('tr:eq(' + (i - 1) + ')', tbody).after(tr);
                     }
-
-                    conference.highlight(tr);
-                } else {
-                    // participant did exist in table , but needs to be moved
-                    conference.populate(tr, participant, false);
-                    $('tr:eq(' + (i - 1) + ')', tbody).after(tr);
                 }
+
+                conference.redrawPagination(data.participants.total, data.participants.max, data.participants.offset, data.participants.sort, data.participants.order);
+
+                // TODO destroy/create pagination and page user to the appropriate page
+                // - participant dropped removes the currently viewed page --> user should see the previous page
             }
-
-            conference.redrawPagination(data.participants.total, data.participants.max, data.participants.offset, data.participants.sort, data.participants.order);
-
-            // TODO destroy/create pagination and page user to the appropriate page
-            // - participant dropped removes the currently viewed page --> user should see the previous page
         });
     },
 
@@ -518,13 +523,18 @@ var conference = {
     },
 
     redrawPagination: function(total, max, offset, sort, order) {
-        $.get('${createLink(action: 'ajaxPagination')}?c=conferencing&a=manage&total=' + total + '&max=' + max + '&offset=' + offset + '&sort=' + sort + '&order=' + order, function(data) {
-            var current = $('div.pagination');
-            if(current.html() != data) {
-                $('div.pagination > *').remove();
-                current.html(data);
+        $.ajax({
+            url: '${createLink(action: 'ajaxPagination')}?c=conferencing&a=manage&total=' + total + '&max=' + max + '&offset=' + offset + '&sort=' + sort + '&order=' + order,
+            dataType: 'html',
+            cache: false,
+            success: function(data) {
+                var current = $('div.pagination');
+                if(current.html() != data) {
+                    $('div.pagination > *').remove();
+                    current.html(data);
+                }
             }
-        }, 'html');
+        });
     },
 
     toggleOutdialButton: function() {
