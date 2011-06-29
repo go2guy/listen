@@ -45,7 +45,7 @@ class UserCreationService {
                 ]
                 def extension = extensionService.create(p)
                 if(!extension.hasErrors()) {
-                    user.addToExtensions(extension)
+                    user.addToPhoneNumbers(extension)
                 }
             }
 
