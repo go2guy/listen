@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'315_30'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'324_13'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_316_20(returnVal)
+            function II_SB_JS_function_324_12(returnVal)
             {
-	            return getJsonVal(returnVal, 'application');
+	            return getOrganization(returnVal);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get AppToAccess</log>
-            <log>INFO: Entered run-javascript.vxml [316_20]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_316_20(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="appToAccess" expr="II_SB_userJava" />   
+            <log target="status">Get Organization</log>
+            <log>INFO: Entered run-javascript.vxml [324_12]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_324_12(returnVal)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="organization" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

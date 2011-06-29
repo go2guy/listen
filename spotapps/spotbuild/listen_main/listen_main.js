@@ -75,9 +75,20 @@ function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,s
     }
 }
 
-function setDNIS (DNIS) {
+function setRouteRequest(ANI, DNIS) {
+    var ani = getnum(ANI);
     var dnis = getnum(DNIS);
-    return "getDnis?number=" + escape(dnis);
+    return "?ani=" + escape(ani) + "&dnis=" + escape(dnis);
+}
+
+function getOrganization(jsonObj) {
+    var result =  eval("("+jsonObj+")");
+    var orgHref = result.organization.id;
+    if ((orgHref != null) && (orgHref != undefined))
+        result = "/organization/" + orgHref;
+    else
+        result = "";
+    return result;
 }
 
 function chkAppLicense(appName, organization) {

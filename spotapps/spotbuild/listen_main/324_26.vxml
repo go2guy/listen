@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'315_30'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'324_24'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_316_20(returnVal)
+            function II_SB_JS_function_324_26(project,line)
             {
-	            return getJsonVal(returnVal, 'application');
+	            var logText = 'Get Route: Get Call Route HTTP Failed';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get AppToAccess</log>
-            <log>INFO: Entered run-javascript.vxml [316_20]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_316_20(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="appToAccess" expr="II_SB_userJava" />   
+            <log target="status">Set Log</log>
+            <log>INFO: Entered run-javascript.vxml [324_26]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_324_26(project,line)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
