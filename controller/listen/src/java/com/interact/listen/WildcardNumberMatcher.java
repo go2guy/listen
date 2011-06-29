@@ -34,7 +34,7 @@ public class WildcardNumberMatcher
                 if(a.length() == b.length()) {
                     return a.compareTo(b);
                 } 
-                return Integer.valueOf(a.length()).compareTo(b.length());
+                return Integer.valueOf(b.length()).compareTo(a.length());
             }
         });
 
