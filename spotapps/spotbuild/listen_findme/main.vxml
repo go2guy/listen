@@ -21,8 +21,8 @@
     <var name="II_SB_importedValue"/>
 	<var name="SB_UV_phoneNumber"/>
 	<var name="SB_UV_outBoundID"/>
-	<var name="SB_UV_userID"/>
 	<var name="SB_UV_phoneNumbers"/>
+	<var name="SB_UV_userID"/>
 	<var name="SB_UV_count"/>
 	<var name="SB_UV_sessionList"/>
 	<var name="SB_UV_startSession"/>
@@ -99,11 +99,11 @@
 			<if cond="SB_UV_outBoundID != undefined">
 				<assign name="outBoundID" expr="SB_UV_outBoundID" />
 			</if>
-			<if cond="SB_UV_userID != undefined">
-				<assign name="userID" expr="SB_UV_userID" />
-			</if>
 			<if cond="SB_UV_phoneNumbers != undefined">
 				<assign name="phoneNumbers" expr="SB_UV_phoneNumbers" />
+			</if>
+			<if cond="SB_UV_userID != undefined">
+				<assign name="userID" expr="SB_UV_userID" />
 			</if>
 			<if cond="SB_UV_count != undefined">
 				<assign name="count" expr="SB_UV_count" />

@@ -31,8 +31,8 @@
     <!-- User Dertermined Globals -->
 	<var name="phoneNumber" expr="''" />
 	<var name="outBoundID" expr="''" />
-	<var name="userID" expr="''" />
 	<var name="phoneNumbers" expr="''" />
+	<var name="userID" expr="''" />
 	<var name="count" expr="'0'" />
 	<var name="sessionList" expr="''" />
 	<var name="startSession" expr="''" />
@@ -63,8 +63,8 @@
 	<var name="duration" expr="''" />
 	<var name="enabled" expr="''" />
 	<var name="phoneNumLength" expr="''" />
-	<var name="extPrefix" expr="'ext'" />
-	<var name="extSuffix" expr="'@iipbx'" />
+	<var name="extPrefix" expr="''" />
+	<var name="extSuffix" expr="''" />
 	<var name="maxDuration" expr="''" />
 	<var name="longestCall" expr="''" />
 	<var name="isLongest" expr="'false'" />
