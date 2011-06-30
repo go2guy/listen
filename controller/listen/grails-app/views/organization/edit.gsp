@@ -13,7 +13,7 @@
         <g:hiddenField name="id" value="${organization.id}"/>
 
         <label for="name"><g:message code="organization.name.label"/></label>
-        <g:textField name="name" value="${fieldValue(bean: organization, field: 'name')}" maxlength="100"/>
+        <g:textField name="name" value="${fieldValue(bean: organization, field: 'name')}" maxlength="100" class="${listen.validationClass(bean: organization, field: 'name')}"/>
 
         <h3><g:message code="page.organization.edit.features.header"/></h3>
 

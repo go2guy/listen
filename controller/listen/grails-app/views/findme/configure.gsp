@@ -149,7 +149,7 @@ input.seconds {
       <div id="smsDetails">
         <label for="smsNumber">
           Mobile Number
-          <g:textField name="smsNumber" value="${preferences?.reminderNumberComponents()?.number?.encodeAsHTML()}"/>
+          <g:textField name="smsNumber" value="${preferences?.reminderNumberComponents()?.number?.encodeAsHTML()}" class="${listen.validationClass(bean: preferences, field: 'reminderNumber')}"/>
         </label>
 
         <label for="smsProvider">

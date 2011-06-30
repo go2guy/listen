@@ -19,17 +19,17 @@
         </g:if>
         <g:else>
           <label for="pass"><g:message code="user.new.pass.label"/></label>
-          <g:passwordField name="pass"/>
+          <g:passwordField name="pass" class="${listen.validationClass(bean: user, field: 'pass')}"/>
 
           <label for="confirm"><g:message code="user.new.confirm.label"/></label>
-          <g:passwordField name="confirm"/>
+          <g:passwordField name="confirm" class="${listen.validationClass(bean: user, field: 'confirm')}"/>
         </g:else>
 
         <label for="realName"><g:message code="user.realName.label"/></label>
-        <g:textField name="realName" value="${fieldValue(bean: user, field: 'realName')}" maxlength="50"/>
+        <g:textField name="realName" value="${fieldValue(bean: user, field: 'realName')}" maxlength="50" class="${listen.validationClass(bean: user, field: 'realName')}"/>
 
         <label for="emailAddress"><g:message code="user.emailAddress.label"/></label>
-        <g:textField name="emailAddress" value="${fieldValue(bean: user, field: 'emailAddress')}"/>
+        <g:textField name="emailAddress" value="${fieldValue(bean: user, field: 'emailAddress')}" class="${listen.validationClass(bean: user, field: 'emailAddress')}"/>
 
         <ul class="form-buttons">
           <li><g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/></li>

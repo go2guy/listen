@@ -110,18 +110,18 @@ table.schedule-details ul li {
 
         <div id="emailDetails">
             <label for="emailSubject"><g:message code="scheduledConference.emailSubject.label"/></label>
-            <g:textField name="emailSubject" value="${fieldValue(bean: scheduledConference, field: 'emailSubject')}"/>
+            <g:textField name="emailSubject" value="${fieldValue(bean: scheduledConference, field: 'emailSubject')}" class="${listen.validationClass(bean: scheduledConference, field: 'emailSubject')}"/>
 
             <label for="emailBody"><g:message code="scheduledConference.emailBody.label"/></label>
-            <g:textArea name="emailBody" value="${fieldValue(bean: scheduledConference, field: 'emailBody')}"/>
+            <g:textArea name="emailBody" value="${fieldValue(bean: scheduledConference, field: 'emailBody')}" class="${listen.validationClass(bean: scheduledConference, field: 'emailBody')}"/>
         </div>
 
         <div id="emailCallers">
             <label for="activeCallerAddresses"><g:message code="page.conferencing.invitations.active.email.label"/></label>
-            <g:textArea name="activeCallerAddresses" value="${fieldValue(bean: scheduledConference, field: 'activeCallerAddresses')}"/>
+            <g:textArea name="activeCallerAddresses" value="${fieldValue(bean: scheduledConference, field: 'activeCallerAddresses')}" class="${listen.validationClass(bean: scheduledConference, field: 'activeCallerAddresses')}"/>
 
             <label for="passiveCallerAddresses"><g:message code="page.conferencing.invitations.passive.email.label"/></label>
-            <g:textArea name="passiveCallerAddresses" value="${fieldValue(bean: scheduledConference, field: 'passiveCallerAddresses')}"/>
+            <g:textArea name="passiveCallerAddresses" value="${fieldValue(bean: scheduledConference, field: 'passiveCallerAddresses')}" class="${listen.validationClass(bean: scheduledConference, field: 'passiveCallerAddresses')}"/>
         </div>
 
         <ul class="form-buttons">

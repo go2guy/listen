@@ -30,18 +30,18 @@ fieldset.vertical .auth-option,
 
         <div id="auth-settings">
           <label for="authUser"><g:message code="googleAuthConfiguration.authUser.label"/></label>
-          <g:textField name="authUser" value="${fieldValue(bean: googleAuthConfiguration, field: 'authUser')}"/>
+          <g:textField name="authUser" value="${fieldValue(bean: googleAuthConfiguration, field: 'authUser')}" class="${listen.validationClass(bean: googleAuthConfiguration, field: 'authUser')}"/>
 
           <label for="authPass" class="auth-option">
             <g:message code="googleAuthConfiguration.authPass.label"/>
-            <g:passwordField name="authPass" value="${fieldValue(bean: googleAuthConfiguration, field: 'authPass')}"/>
+            <g:passwordField name="authPass" value="${fieldValue(bean: googleAuthConfiguration, field: 'authPass')}" class="${listen.validationClass(bean: googleAuthConfiguration, field: 'authPass')}"/>
           </label>
 
           <div class="or-separator">-or-</div>
 
           <label for="authToken" class="auth-option">
             <g:message code="googleAuthConfiguration.authToken.label"/>
-            <g:textArea name="authToken" value="${fieldValue(bean: googleAuthConfiguration, field: 'authToken')}"/>
+            <g:textArea name="authToken" value="${fieldValue(bean: googleAuthConfiguration, field: 'authToken')}" class="${listen.validationClass(bean: googleAuthConfiguration, field: 'authToken')}"/>
           </label>
         </div>
 

@@ -24,7 +24,7 @@ fieldset.vertical select {
         <fieldset class="vertical">
           <label for="alternateNumber">
             <g:message code="afterHoursConfiguration.alternateNumber.label"/>
-            <g:textField name="alternateNumber" value="${afterHoursConfiguration?.alternateNumberComponents()?.number?.encodeAsHTML()}"/>
+            <g:textField name="alternateNumber" value="${afterHoursConfiguration?.alternateNumberComponents()?.number?.encodeAsHTML()}" class="${listen.validationClass(bean: afterHoursConfiguration, field: 'alternateNumber')}"/>
           </label>
 
           <label for="provider">

@@ -26,7 +26,7 @@ table { margin-bottom: 10px; }
       <tbody>
         <tr>
           <g:form controller="organization" action="addRoute" method="post">
-            <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: newRoute, field: 'pattern')}" placeholder="${g.message(code: 'page.organization.routing.add.pattern.placeholder')}"/></td>
+            <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: newRoute, field: 'pattern')}" placeholder="${g.message(code: 'page.organization.routing.add.pattern.placeholder')}" class="${listen.validationClass(bean: newRoute, field: 'pattern')}"/></td>
             <td class="col-organization"><listen:organizationSelect name="organization.id" value="${newRoute?.organization?.id}"/></td>
             <td class="col-destination"><listen:applicationSelect name="destination" value="${newRoute?.destination}"/></td>
             <td class="col-button" colspan="2"><g:submitButton name="add" value="${g.message(code: 'page.organization.routing.add.addButton')}"/></td>
@@ -51,7 +51,7 @@ table { margin-bottom: 10px; }
           <g:each in="${routes}" var="route" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="organization" action="updateRoute" method="post">
-                <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: route, field: 'pattern')}"/></td>
+                <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: route, field: 'pattern')}" class="${listen.validationClass(bean: route, field: 'pattern')}"/></td>
                 <td class="col-organization"><listen:organizationSelect name="organization.id" value="${route.organization?.id}"/></td>
                 <td class="col-destination"><listen:applicationSelect name="destination" value="${route.destination}"/></td>
                 <td class="col-button">

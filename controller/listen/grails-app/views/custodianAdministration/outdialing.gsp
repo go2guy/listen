@@ -25,7 +25,7 @@ table { margin-bottom: 10px; }
       <tbody>
         <tr>
           <g:form controller="custodianAdministration" action="addRestriction" method="post">
-            <td class="pattern"><g:textField name="pattern" value="${fieldValue(bean: newRestriction, field: 'pattern')}" placeholder="${g.message(code: 'page.custodianAdministration.outdialing.add.pattern.placeholder')}"/></td>
+            <td class="pattern"><g:textField name="pattern" value="${fieldValue(bean: newRestriction, field: 'pattern')}" placeholder="${g.message(code: 'page.custodianAdministration.outdialing.add.pattern.placeholder')}" class="${listen.validationClass(bean: newRestriction, field: 'pattern')}"/></td>
             <td class="button" colspan="2"><g:submitButton name="add" value="${g.message(code: 'page.custodianAdministration.outdialing.add.addButton')}"/></td>
           </g:form>
         </tr>
@@ -46,7 +46,7 @@ table { margin-bottom: 10px; }
           <g:each in="${restrictions}" var="restriction" status="i">
             <tr class="<%= i % 2 == 0 ? 'even' : 'odd' %>">
               <g:form controller="custodianAdministration" action="updateRestriction" method="post">
-                <td class="pattern"><g:textField name="pattern" value="${fieldValue(bean: restriction, field: 'pattern')}"/></td>
+                <td class="pattern"><g:textField name="pattern" value="${fieldValue(bean: restriction, field: 'pattern')}" class="${listen.validationClass(bean: restriction, field: 'pattern')}"/></td>
                 <td class="button">
                   <g:hiddenField name="id" value="${restriction.id}"/>
                   <g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/>

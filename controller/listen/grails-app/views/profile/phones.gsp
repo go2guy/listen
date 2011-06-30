@@ -50,7 +50,7 @@ td.col-public {
                 <td class="col-number">${fieldValue(bean: extension, field: 'number')}</td>
                 <td class="col-public"><listen:checkMark value="true"/></td>
                 <td class="col-forward">
-                  <g:textField class="check-for-blocked" name="forwardedTo" value="${fieldValue(bean: extension, field: 'forwardedTo')}"/>
+                  <g:textField class="check-for-blocked" name="forwardedTo" value="${fieldValue(bean: extension, field: 'forwardedTo')}" class="${listen.validationClass(bean: extension, field: 'forwardedTo')}"/>
                   <listen:ifCannotDial number="${fieldValue(bean: extension, field: 'forwardedTo')}">
                     <span class="blocked-number error" title="You are not allowed to dial ${fieldValue(bean: extension, field: 'forwardedTo')}">Blocked</span>
                   </listen:ifCannotDial>
@@ -71,7 +71,7 @@ td.col-public {
       <tbody>
         <tr class="add highlighted">
           <g:form controller="profile" action="addMobilePhone" method="post">
-            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newMobilePhone, field: 'number')}"/></td>
+            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newMobilePhone, field: 'number')}" class="${listen.validationClass(bean: newMobilePhone, field: 'number')}"/></td>
             <td class="col-provider"><listen:mobileProviderSelect name="smsDomain" value="${newMobilePhone?.smsDomain}"/></td>
             <td class="col-public"><g:checkBox name="isPublic" value="${newMobilePhone?.isPublic}"/></td>
             <td class="col-button">
@@ -95,7 +95,7 @@ td.col-public {
           <g:each in="${mobilePhoneList}" var="mobilePhone" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="profile" action="updateMobilePhone" method="post">
-                <td class="col-number"><g:textField name="number" value="${fieldValue(bean: mobilePhone, field: 'number')}"/></td>
+                <td class="col-number"><g:textField name="number" value="${fieldValue(bean: mobilePhone, field: 'number')}" class="${listen.validationClass(bean: mobilePhone, field: 'number')}"/></td>
                 <td class="col-provider"><listen:mobileProviderSelect name="smsDomain" value="${mobilePhone.smsDomain}"/></td>
                 <td class="col-public"><g:checkBox name="isPublic" value="${mobilePhone.isPublic}"/></td>
                 <td class="col-button">
@@ -123,7 +123,7 @@ td.col-public {
       <tbody>
         <tr class="add highlighted">
           <g:form controller="profile" action="addOtherPhone" method="post">
-            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newOtherPhone, field: 'number')}"/></td>
+            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newOtherPhone, field: 'number')}" class="${listen.validationClass(bean: newOtherPhone, field: 'number')}"/></td>
             <td class="col-public"><g:checkBox name="isPublic" value="${newOtherPhone?.isPublic}"/></td>
             <td class="col-button">
               <g:submitButton name="add" value="${g.message(code: 'page.profile.phones.otherPhones.addButton')}"/>
@@ -145,7 +145,7 @@ td.col-public {
           <g:each in="${otherPhoneList}" var="otherPhone" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="profile" action="updateOtherPhone" method="post">
-                <td class="col-number"><g:textField name="number" value="${fieldValue(bean: otherPhone, field: 'number')}"/></td>
+                <td class="col-number"><g:textField name="number" value="${fieldValue(bean: otherPhone, field: 'number')}" class="${listen.validationClass(bean: newOtherPhone, field: 'number')}"/></td>
                 <td class="col-public"><g:checkBox name="isPublic" value="${otherPhone.isPublic}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${otherPhone.id}"/>

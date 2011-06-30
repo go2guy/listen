@@ -21,7 +21,7 @@
 
         <div class="transcriptionDetails">
           <label for="transcription.phoneNumber"><g:message code="transcriptionConfiguration.phoneNumber.label"/></label>
-          <g:textField name="transcription.phoneNumber" value="${fieldValue(bean: transcription, field: 'phoneNumber')}"/>
+          <g:textField name="transcription.phoneNumber" value="${fieldValue(bean: transcription, field: 'phoneNumber')}" class="${listen.validationClass(bean: transcription, field: 'phoneNumber')}"/>
         </div>
       </fieldset>
      </listen:canAccess>
@@ -33,16 +33,16 @@
         <listen:mobilePhoneSelect name="afterHours.mobilePhone.id" optionKey="id" optionValue="number" noSelection="['': 'None']" value="${afterHours?.mobilePhone?.id}"/>
 
         <label for="afterHours.alternateNumber"><g:message code="afterHoursConfiguration.alternateNumber.label"/></label>
-        <g:textField name="afterHours.alternateNumber" value="${afterHours?.alternateNumberComponents()?.number?.encodeAsHTML()}"/>
+        <g:textField name="afterHours.alternateNumber" value="${afterHours?.alternateNumberComponents()?.number?.encodeAsHTML()}" class="${listen.validationClass(bean: afterHours, field: 'alternateNumber')}"/>
 
         <label for="afterHours.provider"><g:message code="page.administration.configuration.afterHours.alternateNumberProvider.label"/></label>
         <listen:mobileProviderSelect name="afterHours.provider" value="${afterHours?.alternateNumberComponents()?.provider}"/>
 
         <label for="afterHours.realizeUrl"><g:message code="afterHoursConfiguration.realizeUrl.label"/></label>
-        <g:textField name="afterHours.realizeUrl" value="${fieldValue(bean: afterHours, field: 'realizeUrl')}"/>
+        <g:textField name="afterHours.realizeUrl" value="${fieldValue(bean: afterHours, field: 'realizeUrl')}" class="${listen.validationClass(bean: afterHours, field: 'realizeUrl')}"/>
         
         <label for="afterHours.realizeAlertName"><g:message code="afterHoursConfiguration.realizeAlertName.label"/></label>
-        <g:textField name="afterHours.realizeAlertName" value="${fieldValue(bean: afterHours, field: 'realizeAlertName')}"/>
+        <g:textField name="afterHours.realizeAlertName" value="${fieldValue(bean: afterHours, field: 'realizeAlertName')}" class="${listen.validationClass(bean: afterHours, field: 'realizeAlertName')}"/>
 
       </fieldset>
 
@@ -50,7 +50,7 @@
         <h3>Conferencing</h3>
 
         <label for="conferencing.pinLength"><g:message code="conferencingConfiguration.pinLength.label"/></label>
-        <g:textField name="conferencing.pinLength" value="${fieldValue(bean: conferencing, field: 'pinLength')}"/>
+        <g:textField name="conferencing.pinLength" value="${fieldValue(bean: conferencing, field: 'pinLength')}" class="${listen.validationClass(bean: conferencing, field: 'pinLength')}"/>
       </fieldset>
 
       <ul class="form-buttons">

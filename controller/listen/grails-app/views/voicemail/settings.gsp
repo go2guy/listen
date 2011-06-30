@@ -49,10 +49,10 @@ fieldset.vertical .time-restriction select {
     <g:form controller="voicemail" action="saveSettings">
       <fieldset class="vertical">
         <label for="passcode"><g:message code="voicemailPreferences.passcode.label"/></label>
-        <g:textField name="passcode" value="${fieldValue(bean: preferences, field: 'passcode')}"/>
+        <g:textField name="passcode" value="${fieldValue(bean: preferences, field: 'passcode')}" class="${listen.validationClass(bean: preferences, field: 'passcode')}"/>
 
         <label for="playbackOrder"><g:message code="voicemailPreferences.playbackOrder.label"/></label>
-        <g:select name="playbackOrder" from="${com.interact.listen.voicemail.PlaybackOrder.values()}" optionKey="key" value="${preferences?.playbackOrder?.name()}"/>
+        <g:select name="playbackOrder" from="${com.interact.listen.voicemail.PlaybackOrder.values()}" optionKey="key" value="${preferences?.playbackOrder?.name()}" class="${listen.validationClass(bean: preferences, field: 'playbackOrder')}"/>
 
         <label><g:message code="page.voicemail.settings.newVoicemail"/></label>
 
@@ -77,7 +77,7 @@ fieldset.vertical .time-restriction select {
             <g:radio name="emailSource" value="custom" checked="${!userEmail}"/>
             <g:message code="page.voicemail.settings.useAnotherEmail"/>
           </label>
-          <g:textField name="emailNotificationAddress" style="display: inline-block; margin-left: 10px;" value="${!userEmail ? preferences.emailNotificationAddress?.encodeAsHTML() : ''}"/>
+          <g:textField name="emailNotificationAddress" style="display: inline-block; margin-left: 10px;" value="${!userEmail ? preferences.emailNotificationAddress?.encodeAsHTML() : ''}" class="${listen.validationClass(bean: preferences, field: 'emailNotificationAddress')}"/>
 
           <button type="button" id="sendTestEmail"><g:message code="page.voicemail.settings.button.sendTestEmail"/></button>
 
@@ -105,7 +105,7 @@ fieldset.vertical .time-restriction select {
         <fieldset>
           <label for="smsNotificationNumber" class="inline-label">
             <g:message code="page.voicemail.settings.smsPhoneNumber"/>
-            <g:textField name="smsNotificationNumber" value="${preferences?.smsNotificationNumber()?.encodeAsHTML()}"/>
+            <g:textField name="smsNotificationNumber" value="${preferences?.smsNotificationNumber()?.encodeAsHTML()}" class="${listen.validationClass(bean: preferences, field: 'smsPhoneNumber')}"/>
           </label>
 
           <label for="smsNotificationProvider" class="inline-label">

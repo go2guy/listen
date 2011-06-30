@@ -48,7 +48,7 @@ tr.add td.col-button {
               <g:form controller="administration" action="updateExternalRoute" method="post">
                 <td class="col-pattern">${route?.pattern.encodeAsHTML()}</td>
                 <td class="col-destination"><listen:applicationSelect name="destination" value="${route.destination}"/></td>
-                <td class="col-label"><g:textField name="label" value="${fieldValue(bean: route, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}"/></td>
+                <td class="col-label"><g:textField name="label" value="${fieldValue(bean: route, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}" class="${listen.validationClass(bean: route, field: 'label')}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${route.id}"/>
                   <g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/>
@@ -65,9 +65,9 @@ tr.add td.col-button {
       <tbody>
         <tr class="add highlighted">
           <g:form controller="administration" action="addInternalRoute" method="post">
-            <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: newRoute, field: 'pattern')}" placeholder="${g.message(code: 'page.administration.routing.internal.add.pattern.placeholder')}"/></td>
-            <td class="col-destination"><listen:applicationSelect name="destination" value="${newRoute?.destination}"/></td>
-            <td class="col-label"><g:textField name="label" value="${fieldValue(bean: newRoute, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}"/></td>
+            <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: newRoute, field: 'pattern')}" placeholder="${g.message(code: 'page.administration.routing.internal.add.pattern.placeholder')}" class="${listen.validationClass(bean: newRoute, field: 'pattern')}"/></td>
+            <td class="col-destination"><listen:applicationSelect name="destination" value="${newRoute?.destination}" class="${listen.validationClass(bean: newRoute, field: 'destination')}"/></td>
+            <td class="col-label"><g:textField name="label" value="${fieldValue(bean: newRoute, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}" class="${listen.validationClass(bean: newRoute, field: 'label')}"/></td>
             <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.internal.add.addButton')}"/></td>
           </g:form>
         </tr>
@@ -87,9 +87,9 @@ tr.add td.col-button {
           <g:each in="${internal}" var="route" status="i">
             <tr class="<%= i % 2 == 0 ? 'even' : 'odd' %>">
               <g:form controller="administration" action="updateInternalRoute" method="post">
-                <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: route, field: 'pattern')}"/></td>
+                <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: route, field: 'pattern')}" class="${listen.validationClass(bean: route, field: 'pattern')}"/></td>
                 <td class="col-destination"><listen:applicationSelect name="destination" value="${route.destination}"/></td>
-                <td class="col-label"><g:textField name="label" value="${fieldValue(bean: route, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}"/></td>
+                <td class="col-label"><g:textField name="label" value="${fieldValue(bean: route, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}" class="${listen.validationClass(bean: route, field: 'label')}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${route.id}"/>
                   <g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/>
@@ -112,8 +112,8 @@ tr.add td.col-button {
       <tbody>
         <tr class="add highlighted">
           <g:form controller="administration" action="addDirectVoicemailNumber" method="post">
-            <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: newDirectVoicemailNumber, field: 'number')}" placeholder="${g.message(code: 'page.administration.routing.direct.add.number.placeholder')}"/></td>
-            <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${newDirectVoicemailNumber?.owner?.id}"/></td>
+            <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: newDirectVoicemailNumber, field: 'number')}" placeholder="${g.message(code: 'page.administration.routing.direct.add.number.placeholder')}" class="${listen.validationClass(bean: newDirectVoicemailNumber, field: 'number')}"/></td>
+            <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${newDirectVoicemailNumber?.owner?.id}" class="${listen.validationClass(bean: newDirectVoicemailNumber, field: 'owner')}"/></td>
             <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.direct.add.addButton')}"/>
           </g:form>
         </tr>
@@ -132,8 +132,8 @@ tr.add td.col-button {
           <g:each in="${directVoicemailNumbers}" var="directVoicemailNumber" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="administration" action="updateDirectVoicemailNumber" method="post">
-                <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: directVoicemailNumber, field: 'number')}"/></td>
-                <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${directVoicemailNumber.owner.id}"/></td>
+                <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: directVoicemailNumber, field: 'number')}" class="${listen.validationClass(bean: directVoicemailNumber, field: 'number')}"/></td>
+                <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${directVoicemailNumber.owner.id}" class="${listen.validationClass(bean: directVoicemailNumber, field: 'owner')}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${directVoicemailNumber.id}"/>
                   <g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/>

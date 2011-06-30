@@ -341,6 +341,11 @@ ul.button-menu li.current a {
     color: #A81818;
 }
 
+input.validation-error,
+select.validation-error {
+    background-color: #FFC7C7;
+}
+
 .field-error {
     background-color: #FFC7C7;
 }
