@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_111_68(subHref)
+            function II_SB_JS_function_111_68(lstnSub)
             {
-	            return "{\"initiatingSubscriber\": \""+subHref+"\", \"initiatingChannel\":\"TUI\" }";
+	            return "{\"initiatingSubscriber\": \""+lstnSub+"\", \"initiatingChannel\":\"TUI\" }";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Initiating Info</log>
             <log>INFO: Entered run-javascript.vxml [111_68]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_111_68(subHref)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_111_68(lstnSub)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="initiatingObj" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

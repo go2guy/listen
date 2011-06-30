@@ -1,3 +1,8 @@
+function getSubHref(returnVal) {
+    var result = getResultsKeyValue(returnVal, 0, 'subscriber');
+    return "/subscribers/" + getNextElement('L', result, '/');
+}
+
 function getConfInfo(conferenceObj, flag) {
     var result = eval("("+conferenceObj+")");
     if ((result[flag]) && (result[flag] != null))

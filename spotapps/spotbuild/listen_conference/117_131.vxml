@@ -14,9 +14,6 @@
             <log>INFO: Current value [<value expr="lstnChannel"/>]</log>
 <assign name="lstnChannel" expr="'GUI'+''" />
 <log>INFO: Updated value [<value expr="lstnChannel"/>]</log>
-<log>INFO: Current value [<value expr="lstnSub"/>]</log>
-<assign name="lstnSub" expr="subHref+''" />
-<log>INFO: Updated value [<value expr="lstnSub"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

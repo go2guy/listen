@@ -99,7 +99,6 @@
 	<var name="SB_UV_whichPathStat"/>
 	<var name="SB_UV_lstnChannel"/>
 	<var name="SB_UV_lstnSub"/>
-	<var name="SB_UV_subHref"/>
 	<var name="SB_UV_initiatingObj"/>
 	<var name="SB_UV_argList"/>
 	<var name="SB_UV_organization"/>
@@ -365,9 +364,6 @@
 			</if>
 			<if cond="SB_UV_lstnSub != undefined">
 				<assign name="lstnSub" expr="SB_UV_lstnSub" />
-			</if>
-			<if cond="SB_UV_subHref != undefined">
-				<assign name="subHref" expr="SB_UV_subHref" />
 			</if>
 			<if cond="SB_UV_initiatingObj != undefined">
 				<assign name="initiatingObj" expr="SB_UV_initiatingObj" />
