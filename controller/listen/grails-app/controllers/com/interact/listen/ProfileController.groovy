@@ -52,7 +52,7 @@ class ProfileController {
         def otherPhone = otherPhoneService.create(params)
         if(otherPhone.hasErrors()) {
             def model = phonesModel()
-            model.newOtherPhone = mobilePhone
+            model.newOtherPhone = otherPhone
             render(view: 'phones', model: model)
         } else {
             flash.successMessage = 'Other phone saved'
