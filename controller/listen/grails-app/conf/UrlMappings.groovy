@@ -61,6 +61,7 @@ class UrlMappings {
             ]
         }
         "/api/routeCall"(controller: 'callRouting', action: 'routeCall')
+        "/api/getBroadcastList"(controller: 'extension', action: 'getExtensionsByOrganization')
 
         "/meta/canAccessFeature"(controller: 'spotApi', action: 'canAccessFeature')
         "/meta/canDial"(controller: 'spotApi', action: 'canDial')
