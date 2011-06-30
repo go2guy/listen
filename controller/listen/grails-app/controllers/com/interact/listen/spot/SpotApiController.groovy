@@ -967,8 +967,8 @@ class SpotApiController {
     }
 
     def listPhoneNumbers = {
-        if((!params.number || !params.organization) && !params.subscriber) {
-            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameters [number] and [organization] or [subscriber] (or all of them)')
+        if((params.number && !params.organization) && !params.subscriber && !params.organization) {
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameters [number] and [organization] or [subscriber] alone or [organization] alone')
             return
         }
 
