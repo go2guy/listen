@@ -8,9 +8,9 @@ class ExtensionService {
     def spotCommunicationService
     def springSecurityService
 
-    Extension create(def params) {
+    Extension create(def params, def checkPermission = true) {
         def user = springSecurityService.getCurrentUser()
-        if(!user.hasRole('ROLE_ORGANIZATION_ADMIN')) {
+        if(checkPermission && !user.hasRole('ROLE_ORGANIZATION_ADMIN')) {
             // TODO better exception type
             throw new AssertionError('Action not allowed')
         }

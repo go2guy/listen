@@ -44,7 +44,7 @@ class UserCreationService {
                     ip: params.ip,
                     'owner.id': user.id
                 ]
-                def extension = extensionService.create(p)
+                def extension = extensionService.create(p, false)
                 if(!extension.hasErrors()) {
                     user.addToPhoneNumbers(extension)
                 }
