@@ -57,7 +57,7 @@ class BootStrap {
                 def operator = createOperator('Operator', 'Operator McSillyPants', 'operator@example.com', 'super', organization)
                 def user = createUser('User', 'User McSillypants', 'user@example.com', 'super', organization)
                 def rob = createUser('Rob', 'Rob Hruska', 'hruskar@iivip.com', 'super', organization)
-                def phillip = createUser('Phillip', 'Phillip Rapp', 'user@example.com', 'super', null)
+                def phillip = createUser('Phillip', 'Phillip Rapp', 'user@example.com', 'super', organization)
 
                 def greeting = new Audio(description: 'Greeting',
                                          duration: new Duration(1000),

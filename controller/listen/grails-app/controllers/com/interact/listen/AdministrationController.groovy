@@ -1,6 +1,7 @@
 package com.interact.listen
 
 import com.interact.listen.android.GoogleAuthConfiguration
+import com.interact.listen.conferencing.ConferencingConfiguration
 import com.interact.listen.history.*
 import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
@@ -142,8 +143,12 @@ class AdministrationController {
 
         def transcription = TranscriptionConfiguration.findByOrganization(organization)
         def afterHours = AfterHoursConfiguration.findByOrganization(organization)
+        def conferencing = ConferencingConfiguration.findByOrganization(organization)
+        if(!conferencing) {
+            conferencing = new ConferencingConfiguration(organization: organization)
+        }
 
-        render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours])
+        render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
     }
 
     def deleteDirectVoicemailNumber = {
@@ -301,8 +306,15 @@ class AdministrationController {
             afterHours.alternateNumber = params['afterHours'].alternateNumber + '@' + params['afterHours'].provider
         }
 
+        def conferencing = ConferencingConfiguration.findByOrganization(organization)
+        if(!conferencing) {
+            conferencing = new ConferencingConfiguration(organization: organization)
+        }
+
+        bindData(conferencing, params['conferencing'], 'pinLength')
+
         // TODO use a transaction
-        if(transcription.validate() && transcription.save() && afterHours.validate() && afterHours.save()) {
+        if(transcription.validate() && transcription.save() && afterHours.validate() && afterHours.save() && conferencing.validate() && conferencing.save()) {
             if(originalAlternateNumber != afterHours.alternateNumber) {
                 realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
             }
@@ -310,7 +322,7 @@ class AdministrationController {
             flash.successMessage = 'Saved'
             redirect(action: 'configuration')
         } else {
-            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours])
+            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
         }
     }
 

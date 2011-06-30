@@ -1601,4 +1601,28 @@ databaseChangeLog = {
 		dropForeignKeyConstraint(baseTableName: "after_hours_configuration", constraintName: "after_hours_conf_phone_nu_fk")
 		dropColumn(columnName: "phone_number_id", tableName: "after_hours_configuration")
 	}
+
+	changeSet(author: "root (generated)", id: "1309447761436-1") {
+		createTable(tableName: "conferencing_configuration") {
+			column(autoIncrement: "true", name: "id", type: "bigint") {
+				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "conferencing_PK")
+			}
+
+			column(name: "version", type: "bigint") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "organization_id", type: "bigint") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "pin_length", type: "integer") {
+				constraints(nullable: "false")
+			}
+		}
+		createIndex(indexName: "FKC3E7621056D05B56", tableName: "conferencing_configuration") {
+			column(name: "organization_id")
+		}
+		addForeignKeyConstraint(baseColumnNames: "organization_id", baseTableName: "conferencing_configuration", constraintName: "FKC3E7621056D05B56", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "organization", referencesUniqueColumn: "false")
+	}
 }

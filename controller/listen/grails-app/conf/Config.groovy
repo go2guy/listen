@@ -165,6 +165,6 @@ codenarc.maxPriority3Violations = 0
 
 // Listen configuration
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
-com.interact.listen.conferencing.pinLength = 6 // FIXME hard-coded number
+com.interact.listen.conferencing.defaultPinLength = 6
 com.interact.listen.activeDirectory.server = 'iiserver01'
 com.interact.listen.activeDirectory.domain = 'interact.nonreg'

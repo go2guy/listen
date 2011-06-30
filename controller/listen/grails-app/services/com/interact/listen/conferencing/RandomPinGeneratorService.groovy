@@ -22,7 +22,8 @@ class RandomPinGeneratorService {
     }
 
     def createConferencePin(Conference conference, PinType type) {
-        def length = grailsApplication.config.com.interact.listen.conferencing.pinLength
+        def configuration = ConferencingConfiguration.findByOrganization(conference.owner.organization)
+        def length = configuration ? configuration.pinLength : grailsApplication.config.com.interact.listen.conferencing.defaultPinLength
         def number = generate(length)
         while(Pin.countByNumber(number) != 0) {
             // avoid duplicates

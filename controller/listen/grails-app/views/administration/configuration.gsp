@@ -46,6 +46,13 @@
 
       </fieldset>
 
+      <fieldset class="vertical">
+        <h3>Conferencing</h3>
+
+        <label for="conferencing.pinLength"><g:message code="conferencingConfiguration.pinLength.label"/></label>
+        <g:textField name="conferencing.pinLength" value="${fieldValue(bean: conferencing, field: 'pinLength')}"/>
+      </fieldset>
+
       <ul class="form-buttons">
         <li><g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/></li>
       </ul>
