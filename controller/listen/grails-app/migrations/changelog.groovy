@@ -1573,12 +1573,12 @@ databaseChangeLog = {
         }
 
         update(tableName: 'phone_number') {
-            column(name: 'class', value: 'com.interact.listen.MobilePhone')
+            column(name: 'class', value: 'com.interact.listen.OtherPhone')
             where "type='OTHER'"
         }
 
         update(tableName: 'phone_number') {
-            column(name: 'class', value: 'com.interact.listen.MobilePhone')
+            column(name: 'class', value: 'com.interact.listen.OtherPhone')
             where "type='HOME'"
         }
 

@@ -3,10 +3,7 @@ package com.interact.listen
 import com.interact.listen.pbx.Extension
 import com.interact.listen.voicemail.DirectVoicemailNumber
 
-// Note: do not create new instances of PhoneNumber
-// This class should be marked abstract, but cannot because of http://jira.grails.org/browse/GRAILS-6780
-
-/*abstract*/ class PhoneNumber {
+class PhoneNumber {
     String number
     User owner
 
@@ -33,8 +30,10 @@ import com.interact.listen.voicemail.DirectVoicemailNumber
             return 'VOICEMAIL'
         } else if(this.instanceOf(Extension)) {
             return 'EXTENSION'
+        } else if(this.instanceOf(MobilePhone)) {
+            return 'MOBILE'
         }
 
-        return 'MOBILE'
+        return 'OTHER'
     }
 }

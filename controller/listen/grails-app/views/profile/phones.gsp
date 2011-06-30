@@ -13,8 +13,15 @@ table { margin-bottom: 10px; }
 #extensions .col-button { width: 5%; }
 
 .mobile-phones .col-number { width: 30%; }
-.mobile-phones .col-public { width: 65%; }
-.mobile-phones .col-button { width: 5%; }
+.mobile-phones .col-provider { width: 30%; }
+.mobile-phones .col-public { width: 26%; }
+.mobile-phones .col-button { width: 7%; }
+
+.other-phones .col-number { width: 60%; }
+.other-phones .col-public { width: 26%; }
+.other-phones .col-button { width: 7%; }
+
+.add .col-button { width: 14%; }
 
 .col-forward input[type=text] { width: 150px; }
 .col-number input[type=text] { width: 150px; }
@@ -23,7 +30,6 @@ td.col-public {
     padding-left: 20px;
 }
 
-.add .col-button { width: 60px; }
 .col-button { text-align: center; }
     </style>
   </head>
@@ -66,9 +72,10 @@ td.col-public {
         <tr class="add highlighted">
           <g:form controller="profile" action="addMobilePhone" method="post">
             <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newMobilePhone, field: 'number')}"/></td>
+            <td class="col-provider"><listen:mobileProviderSelect name="smsDomain" value="${newMobilePhone?.smsDomain}"/></td>
             <td class="col-public"><g:checkBox name="isPublic" value="${newMobilePhone?.isPublic}"/></td>
             <td class="col-button">
-              <g:submitButton name="add" value="${g.message(code: 'default.add.label', args: [g.message(code: 'mobilePhone.label')])}"/>
+              <g:submitButton name="add" value="${g.message(code: 'page.profile.phones.mobilePhones.addButton')}"/>
             </td>
           </g:form>
         </tr>
@@ -77,7 +84,8 @@ td.col-public {
 
     <table class="mobile-phones">
       <thead>
-        <th class="col-number"><g:message code="mobilePhone.number.label"/></th>
+        <th class="col-number"><g:message code="phoneNumber.number.label"/></th>
+        <th class="col-provider"><g:message code="mobilePhone.smsDomain.label"/></th>
         <th class="col-public"><g:message code="mobilePhone.isPublic.label"/></th>
         <th class="col-button"></th>
         <th class="col-button"></th>
@@ -88,6 +96,7 @@ td.col-public {
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="profile" action="updateMobilePhone" method="post">
                 <td class="col-number"><g:textField name="number" value="${fieldValue(bean: mobilePhone, field: 'number')}"/></td>
+                <td class="col-provider"><listen:mobileProviderSelect name="smsDomain" value="${mobilePhone.smsDomain}"/></td>
                 <td class="col-public"><g:checkBox name="isPublic" value="${mobilePhone.isPublic}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${mobilePhone.id}"/>
@@ -108,6 +117,56 @@ td.col-public {
         </g:else>
       </tbody>
     </table>
+
+    <table class="other-phones">
+      <caption><g:message code="page.profile.phones.caption.otherPhones"/></caption>
+      <tbody>
+        <tr class="add highlighted">
+          <g:form controller="profile" action="addOtherPhone" method="post">
+            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newOtherPhone, field: 'number')}"/></td>
+            <td class="col-public"><g:checkBox name="isPublic" value="${newOtherPhone?.isPublic}"/></td>
+            <td class="col-button">
+              <g:submitButton name="add" value="${g.message(code: 'page.profile.phones.otherPhones.addButton')}"/>
+            </td>
+          </g:form>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="other-phones">
+      <thead>
+        <th class="col-number"><g:message code="phoneNumber.number.label"/></th>
+        <th class="col-public"><g:message code="otherPhone.isPublic.label"/></th>
+        <th class="col-button"></th>
+        <th class="col-button"></th>
+      </thead>
+      <tbody>
+        <g:if test="${otherPhoneList.size() > 0}">
+          <g:each in="${otherPhoneList}" var="otherPhone" status="i">
+            <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
+              <g:form controller="profile" action="updateOtherPhone" method="post">
+                <td class="col-number"><g:textField name="number" value="${fieldValue(bean: otherPhone, field: 'number')}"/></td>
+                <td class="col-public"><g:checkBox name="isPublic" value="${otherPhone.isPublic}"/></td>
+                <td class="col-button">
+                  <g:hiddenField name="id" value="${otherPhone.id}"/>
+                  <g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/>
+                </td>
+              </g:form>
+              <g:form controller="profile" action="deleteOtherPhone" method="post">
+                <td class="col-button">
+                  <g:hiddenField name="id" value="${otherPhone.id}"/>
+                  <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}"/>
+                </td>
+              </g:form>
+            </tr>
+          </g:each>
+        </g:if>
+        <g:else>
+          <tr class="even"><td colspan="4"><g:message code="page.profile.phones.noOtherPhones"/></td></tr>
+        </g:else>
+      </tbody>
+    </table>
+
     <script type="text/javascript">
 $(document).ready(function() {
     ${/* FIXME globally namespaced function */}

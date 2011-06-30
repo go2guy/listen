@@ -9,6 +9,7 @@ import grails.plugins.springsecurity.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
     def mobilePhoneService
+    def otherPhoneService
     def realizeAlertUpdateService
     def springSecurityService
     def updateExtensionService
@@ -16,16 +17,19 @@ class ProfileController {
     static allowedMethods = [
         index: 'GET',
         addMobilePhone: 'POST',
+        addOtherPhone: 'POST',
         afterHours: 'GET',
         canDial: 'GET',
         deleteMobilePhone: 'POST',
+        deleteOtherPhone: 'POST',
         settings: 'GET',
         history: 'GET',
         phones: 'GET',
         saveAfterHours: 'POST',
         saveSettings: 'POST',
         updateExtension: 'POST',
-        updateMobilePhone: 'POST'
+        updateMobilePhone: 'POST',
+        updateOtherPhone: 'POST'
     ]
 
     def index = {
@@ -40,6 +44,18 @@ class ProfileController {
             render(view: 'phones', model: model)
         } else {
             flash.successMessage = 'Mobile phone saved'
+            redirect(action: 'phones')
+        }
+    }
+
+    def addOtherPhone = {
+        def otherPhone = otherPhoneService.create(params)
+        if(otherPhone.hasErrors()) {
+            def model = phonesModel()
+            model.newOtherPhone = mobilePhone
+            render(view: 'phones', model: model)
+        } else {
+            flash.successMessage = 'Other phone saved'
             redirect(action: 'phones')
         }
     }
@@ -75,6 +91,19 @@ class ProfileController {
 
         mobilePhoneService.delete(mobilePhone)
         flash.successMessage = 'Mobile phone deleted'
+        redirect(action: 'phones')
+    }
+
+    def deleteOtherPhone = {
+        def otherPhone = OtherPhone.get(params.id)
+        if(!otherPhone) {
+            flash.errorMessage = 'Other phone not found'
+            redirect(action: 'phone')
+            return
+        }
+
+        otherPhoneService.delete(otherPhone)
+        flash.successMessage = 'Other phone deleted'
         redirect(action: 'phones')
     }
 
@@ -218,6 +247,25 @@ class ProfileController {
         }
     }
 
+    def updateOtherPhone = {
+        def otherPhone = OtherPhone.get(params.id)
+        if(!otherPhone) {
+            flash.errorMessage = 'Other phone not found'
+            redirect(action: 'phone')
+            return
+        }
+
+        otherPhone = otherPhoneService.update(otherPhone, params)
+        if(otherPhone.hasErrors()) {
+            def model = phonesModel()
+            model.updatedOtherPhone = otherPhone
+            render(view: 'phones', model: model)
+        } else {
+            flash.successMessage = 'Other phone saved'
+            redirect(action: 'phones')
+        }
+    }
+
     private def phonesModel() {
         def user = springSecurityService.getCurrentUser()
         def extensionList = Extension.withCriteria {
@@ -226,9 +274,13 @@ class ProfileController {
         def mobilePhoneList = MobilePhone.withCriteria {
             eq('owner', user)
         }
+        def otherPhoneList = OtherPhone.withCriteria {
+            eq('owner', user)
+        }
         return [
             extensionList: extensionList,
-            mobilePhoneList: mobilePhoneList
+            mobilePhoneList: mobilePhoneList,
+            otherPhoneList: otherPhoneList
         ]
     }
 }
