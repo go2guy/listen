@@ -35,7 +35,7 @@ class VoicemailNotificationService {
         def newCount = Voicemail.countByOwnerAndIsNew(voicemail.owner, true)
 
         // TODO handle IOException reading file (set file to null)
-        def attachedFileName = "Voicemail-${voicemail.dateCreated}"
+        def attachedFileName = "Voicemail-${voicemail.dateCreated}${voicemail.audio.uri.substring(voicemail.audio.uri.lastIndexOf("."))}"
         def file
         try {
             file = download(voicemail.audio.uri)
@@ -52,7 +52,7 @@ ${retrieve}
 
 ${voicemail.audio.transcription == '' ? '': '<i>' + voicemail.audio.transcription + '</i><br/><br/>'}
 
-You currently have ${newCount} new message${newCount == 1 ? '' : 's'}.<br/><br/>b
+You currently have ${newCount} new message${newCount == 1 ? '' : 's'}.<br/><br/>
 
 ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to this message. Contact a system administrator for assistance.)'}
 </body></html>
