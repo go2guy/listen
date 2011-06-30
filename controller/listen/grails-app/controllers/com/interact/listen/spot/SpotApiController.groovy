@@ -1630,6 +1630,7 @@ class SpotApiController {
             result << g.message(error: it)
             result << "\n"
         }
+        log.debug "Built beanErrors: ${result}"
         return result.toString()
     }
 
