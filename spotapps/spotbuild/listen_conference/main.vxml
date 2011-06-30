@@ -19,11 +19,11 @@
     <var name="II_SB_transfer"/>
     <var name="II_SB_projectSource"/>
     <var name="II_SB_importedValue"/>
+	<var name="SB_UV_tempSID"/>
 	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_userID"/>
 	<var name="SB_UV_callType"/>
 	<var name="SB_UV_SID"/>
-	<var name="SB_UV_tempSID"/>
 	<var name="SB_UV_fileName"/>
 	<var name="SB_UV_getInput"/>
 	<var name="SB_UV_errCnt"/>
@@ -107,6 +107,7 @@
 	<var name="SB_UV_line"/>
 	<var name="SB_UV_project"/>
 	<var name="SB_UV_application"/>
+	<var name="SB_UV_EXT_SUFFIX"/>
 
     
     <form id="beginDocument">
@@ -125,6 +126,9 @@
 			<assign name="SID" expr="II_SB_sessionID" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
+			<if cond="SB_UV_tempSID != undefined">
+				<assign name="tempSID" expr="SB_UV_tempSID" />
+			</if>
 			<if cond="SB_UV_ANI != undefined">
 				<assign name="ANI" expr="SB_UV_ANI" />
 			</if>
@@ -136,9 +140,6 @@
 			</if>
 			<if cond="SB_UV_SID != undefined">
 				<assign name="SID" expr="SB_UV_SID" />
-			</if>
-			<if cond="SB_UV_tempSID != undefined">
-				<assign name="tempSID" expr="SB_UV_tempSID" />
 			</if>
 			<if cond="SB_UV_fileName != undefined">
 				<assign name="fileName" expr="SB_UV_fileName" />
@@ -388,6 +389,9 @@
 			</if>
 			<if cond="SB_UV_application != undefined">
 				<assign name="application" expr="SB_UV_application" />
+			</if>
+			<if cond="SB_UV_EXT_SUFFIX != undefined">
+				<assign name="EXT_SUFFIX" expr="SB_UV_EXT_SUFFIX" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

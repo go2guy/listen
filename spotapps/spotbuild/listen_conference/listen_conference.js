@@ -130,7 +130,7 @@ function setCallerID (phoneNumber, passValues, ANI) {
         return ANI + getJsonVal(passValues, 'EXT_SUFFIX');
 }
 
-function setDestination (phoneNumber, passValues) {
+function setDestination (phoneNumber, passValues, EXT_SUFFIX) {
     var str = new String(phoneNumber);
     var num = /^\d+$/;
     if (num.test(str)) {
@@ -140,7 +140,10 @@ function setDestination (phoneNumber, passValues) {
         if ((phoneNumber.length >= tmpPstn) && (tmpSipURL.length > 0))
             return phoneNumber + "@" + tmpSipURL;
         else if (phoneNumber.length < tmpExtLength)
-            return getJsonVal(passValues, 'EXT_PREFIX') + phoneNumber + getJsonVal(passValues, 'EXT_SUFFIX');
+            if (EXT_SUFFIX == '')
+                return getJsonVal(passValues, 'EXT_PREFIX') + phoneNumber + getJsonVal(passValues, 'EXT_SUFFIX');
+            else
+                return getJsonVal(passValues, 'EXT_PREFIX') + phoneNumber + '@' + EXT_SUFFIX;
         else
             return phoneNumber;
     }
@@ -219,3 +222,13 @@ function isConfRecording (isRecording, isAdmin) {
         return "false";
 }
 
+function getResultsKey(jsonObj, key) {
+    var result = "";
+    var tmpVal = eval("("+jsonObj+")");
+    if (tmpVal.results.length != 0) {
+        result = tmpVal.results[key];
+        if (result == null)
+            result = "";
+    }
+    return result;
+}

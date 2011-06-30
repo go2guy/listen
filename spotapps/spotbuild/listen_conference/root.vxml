@@ -29,11 +29,11 @@
 	<var name="II_SB_ibcallid"/>			<!-- Inbound connection id -->
 
     <!-- User Dertermined Globals -->
+	<var name="tempSID" expr="''" />
 	<var name="ANI" expr="'remote'" />
 	<var name="userID" expr="'line'" />
 	<var name="callType" expr="'type'" />
 	<var name="SID" expr="'sessionID'" />
-	<var name="tempSID" expr="''" />
 	<var name="fileName" expr="''" />
 	<var name="getInput" expr="''" />
 	<var name="errCnt" expr="'0'" />
@@ -117,6 +117,7 @@
 	<var name="line" expr="'line'" />
 	<var name="project" expr="'LISTEN_CONFERENCE'" />
 	<var name="application" expr="''" />
+	<var name="EXT_SUFFIX" expr="''" />
 
 
     <!-- Conference Variables -->
