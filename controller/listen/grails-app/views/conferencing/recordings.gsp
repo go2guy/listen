@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title><g:message code="page.conferencing.scheduling.title"/></title>
+    <title><g:message code="page.conferencing.recordings.title"/></title>
     <meta name="layout" content="main"/>
     <meta name="tab" content="conferencing"/>
     <meta name="button" content="recordings"/>
