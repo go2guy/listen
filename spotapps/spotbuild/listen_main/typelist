@@ -1,10 +1,7 @@
-316_20 - run-javascript
 269_31 - log
 51_100 - run-javascript
 315_19 - run-javascript
 269_34 - run-javascript
-316_26 - decision
-316_24 - math
 315_12 - run-javascript
 315_11 - run-javascript
 315_16 - decision
@@ -13,15 +10,10 @@
 269_5 - data-query
 324_10 - assign-variable
 269_4 - run-javascript
-316_32 - log
-316_6 - decision
-316_4 - run-javascript
 324_13 - run-javascript
 324_7 - data-query
 269_26 - log
-316_35 - run-javascript
 324_5 - decision
-316_34 - run-javascript
 324_4 - run-javascript
 315_9 - run-javascript
 269_25 - run-javascript
@@ -32,7 +24,6 @@
 315_27 - log
 324_17 - math
 312_3 - end
-316_8 - data-query
 324_18 - decision
 312_4 - audio-input
 311_4 - data-query
@@ -54,5 +45,3 @@
 324_24 - log
 begin - begin
 315_30 - assign-variable
-316_11 - assign-variable
-316_19 - run-javascript
