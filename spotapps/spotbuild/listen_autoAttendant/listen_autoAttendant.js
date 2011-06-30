@@ -71,14 +71,3 @@ function setParamsForCallEnd(sysAccessTime, callType, ANI, DNIS, callResult, org
     }
     return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
 }
-
-function getResultsKey(jsonObj, key) {
-    var result = "";
-    var tmpVal = eval("("+jsonObj+")");
-    if (tmpVal.results.length != 0) {
-        result = tmpVal.results[key];
-        if (result == null)
-            result = "";
-    }
-    return result;
-}

@@ -221,14 +221,3 @@ function isConfRecording (isRecording, isAdmin) {
     else
         return "false";
 }
-
-function getResultsKey(jsonObj, key) {
-    var result = "";
-    var tmpVal = eval("("+jsonObj+")");
-    if (tmpVal.results.length != 0) {
-        result = tmpVal.results[key];
-        if (result == null)
-            result = "";
-    }
-    return result;
-}
