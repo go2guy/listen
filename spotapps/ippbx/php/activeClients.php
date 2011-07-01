@@ -74,6 +74,8 @@ else if ($t_flag == 'getList') {
 }
 else if ((mysql_affected_rows($t_connect)) === 1)
     $result = "Success";
+else if (($t_flag == 'dltList') && ($t_val))
+    $result = "Success";
 else {
     # Nothing to do here. Just exit with result == 'Faliure'
 }
