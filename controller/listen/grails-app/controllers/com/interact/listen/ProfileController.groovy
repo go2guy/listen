@@ -217,7 +217,7 @@ class ProfileController {
             return
         }
 
-        extension = extensionService.updateExtension(extension, params)
+        extension = extensionService.update(extension, params)
         if(extension.hasErrors()) {
             def model = phonesModel()
             model.updatedExtension = extension
