@@ -309,7 +309,7 @@ class SpotApiController {
         def count = results.size()
 
         render(contentType: 'application/json') {
-            delegate.count = Kcountresults.size()
+            delegate.count = count
             delegate.total = total
             delegate.results = results
             if(count < total) {
