@@ -40,6 +40,7 @@ class SpotCommunicationService {
         importedValue.put("sessionId", conference.firstAdminSessionId());
         importedValue.put("conferenceId", conference.id);
         importedValue.put("destination", numbers);
+        importedValue.put("organization", "/organizations/${conference.owner.organization.id}")
         importedValue.put("ani", requestingNumber);
         buildAndSendRequest(importedValue);
         statWriterService.send(Stat.SPOT_AUTO_DIAL_DIAL)
@@ -53,6 +54,7 @@ class SpotCommunicationService {
         importedValue.put("sessionId", conference.firstAdminSessionId());
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
+        importedValue.put("organization", "/organizations/${conference.owner.organization.id}")
         buildAndSendRequest(importedValue);
         statWriterService.send(Stat.SPOT_CONF_EVENT_BRIDGE_DIAL)
     }
