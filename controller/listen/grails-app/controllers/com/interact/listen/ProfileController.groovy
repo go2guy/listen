@@ -12,7 +12,7 @@ class ProfileController {
     def otherPhoneService
     def realizeAlertUpdateService
     def springSecurityService
-    def updateExtensionService
+    def extensionService
 
     static allowedMethods = [
         index: 'GET',
@@ -217,7 +217,7 @@ class ProfileController {
             return
         }
 
-        extension = updateExtensionService.updateExtension(extension, params)
+        extension = extensionService.updateExtension(extension, params)
         if(extension.hasErrors()) {
             def model = phonesModel()
             model.updatedExtension = extension
