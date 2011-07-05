@@ -45,6 +45,7 @@
     <var name="LINE_NUMBER" expr="''"/>
     <var name="startTime" expr="getTimeStamp(3)"/>
     <var name="endTime" expr="'0'"/>
+    <var name="officeOptr" expr="'101'"/>   <!-- Operator's extension -->
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -106,6 +107,10 @@
             <log>INFO: Origination [<value expr="ANI"/>]</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
             <log>INFO: Inbound connection ID [<value expr="ibconnid"/>]</log>
+            <if cond="tmpDNIS == '0'">
+                <!-- If caller dialed zero, we'll call the operator's extension -->
+                <assign name="tmpDNIS" expr="officeOptr"/>
+            </if>
             <log>INFO: DNIS [<value expr="tmpDNIS"/>]</log>
             <log>INFO: Orig DNIS [<value expr="origDNIS"/>]</log>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
