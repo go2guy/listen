@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_327_27(returnVal)
             {
-	            return getResultsKey(returnVal, '0').ip;
+	            return getResultsKeyValue(returnVal, 0, 'ip');
             }
         ]]>
     </script>
