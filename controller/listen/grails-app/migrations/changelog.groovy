@@ -1625,4 +1625,27 @@ databaseChangeLog = {
 		}
 		addForeignKeyConstraint(baseColumnNames: "organization_id", baseTableName: "conferencing_configuration", constraintName: "FKC3E7621056D05B56", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "organization", referencesUniqueColumn: "false")
 	}
+
+	changeSet(author: "root (generated)", id: "1309530345925-1") {
+		createTable(tableName: "mail_configuration") {
+			column(autoIncrement: "true", name: "id", type: "bigint") {
+				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "mail_configurPK")
+			}
+
+			column(name: "version", type: "bigint") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "default_from", type: "varchar(255)")
+
+			column(name: "host", type: "varchar(255)") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "password", type: "varchar(255)")
+
+			column(name: "username", type: "varchar(255)")
+		}
+	}
+
 }

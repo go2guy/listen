@@ -1,5 +1,6 @@
 package com.interact.listen
 
+import com.interact.listen.mail.MailConfiguration
 import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_CUSTODIAN'])
@@ -10,7 +11,9 @@ class CustodianAdministrationController {
         index: 'GET',
         addRestriction: 'POST',
         deleteRestriction: 'POST',
+        mail: 'GET',
         outdialing: 'GET',
+        saveMail: 'POST',
         updateRestriction: 'POST'
     ]
 
@@ -51,8 +54,27 @@ class CustodianAdministrationController {
         redirect(action: 'outdialing')
     }
 
+    def mail = {
+        def list = MailConfiguration.list()
+        def mail = list.size() > 0 ? list[0] : new MailConfiguration()
+        render(view: 'mail', model: [mail: mail])
+    }
+
     def outdialing = {
         render(view: 'outdialing', model: restrictionModel())
+    }
+
+    def saveMail = {
+        def list = MailConfiguration.list()
+        def mail = list.size() > 0 ? list[0] : new MailConfiguration()
+        mail.properties = params
+
+        if(mail.validate() && mail.save()) {
+            flash.successMessage = 'Mail settings updated'
+            redirect(action: 'mail')
+        } else {
+            render(view: 'mail', model: [mail: mail])
+        }
     }
 
     def updateRestriction = {

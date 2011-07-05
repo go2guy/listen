@@ -9,7 +9,6 @@ class ButtonMenuTagLib {
 
     def buttonMenu = { attrs ->
         if(!attrs.tab) return
-//        if(!attrs.button) throwTagError 'Tag [buttonMenu] is missing required attribute [button]'
         def user = springSecurityService.getCurrentUser()
 
         switch(attrs.tab) {
@@ -39,6 +38,7 @@ class ButtonMenuTagLib {
 
                 out << '<ul class="button-menu">'
                 button(attrs.button == 'outdialing', 'custodianAdministration', 'outdialing', 'button.menu.custodianAdministration.outdialing')
+                button(attrs.button == 'mail', 'custodianAdministration', 'mail', 'button.menu.custodianAdministration.mail')
                 out << '</ul>'
 
                 break

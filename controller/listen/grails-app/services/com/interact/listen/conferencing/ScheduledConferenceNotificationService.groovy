@@ -27,7 +27,6 @@ class ScheduledConferenceNotificationService {
                 log.debug "Sending conference invitation (active) to ${addresses.active}"
                 sendMail {
                     headers vcalHeaders
-                    from 'Listen'
                     to addresses.active.toArray()
                     subject "Listen Conference Invitation: ${scheduledConference.emailSubject}"
                     body activeBody
@@ -38,7 +37,6 @@ class ScheduledConferenceNotificationService {
                 log.debug "Sending conference invitation (passive) to ${addresses.passive}"
                 sendMail {
                     headers vcalHeaders
-                    from 'Listen'
                     to addresses.passive.toArray()
                     subject "Listen Conference Invitation: ${scheduledConference.emailSubject}"
                     body passiveBody
@@ -48,7 +46,6 @@ class ScheduledConferenceNotificationService {
             log.debug "Sending conference invitation (admin) to ${scheduledConference.scheduledBy.emailAddress}"
             sendMail {
                 headers vcalHeaders
-                from 'Listen'
                 to scheduledConference.scheduledBy.emailAddress
                 subject "Listen Conference Invitation: ${scheduledConference.emailSubject}"
                 body adminBody
@@ -69,7 +66,6 @@ class ScheduledConferenceNotificationService {
                 log.debug "Sending conference cancel invitation (active) to ${addresses.active}"
                 sendMail {
                     headers vcalHeaders
-                    from 'Listen'
                     to addresses.active.toArray()
                     subject "Canceled: ${scheduledConference.emailSubject}"
                     body activeBody
@@ -80,7 +76,6 @@ class ScheduledConferenceNotificationService {
                 log.debug "Sending conference cancel invitation (passive) to ${addresses.passive}"
                 sendMail {
                     headers vcalHeaders
-                    from 'Listen'
                     to addresses.passive.toArray()
                     subject "Canceled: ${scheduledConference.emailSubject}"
                     body passiveBody
@@ -90,7 +85,6 @@ class ScheduledConferenceNotificationService {
             log.debug "Sending conference cancel invitation (admin) to ${scheduledConference.scheduledBy.emailAddress}"
             sendMail {
                 headers vcalHeaders
-                from 'Listen'
                 to scheduledConference.scheduledBy.emailAddress
                 subject "Canceled: ${scheduledConference.emailSubject}"
                 body adminBody

@@ -140,13 +140,12 @@ grails.gorm.default.mapping = {
 // Mail plugin
 grails {
     mail {
-        // FIXME hard-coded configuration
-        host = 'mail.iivip.com'
-        username = 'listen@iivip.com'
-        password = 'listen'
+        host = 'localhost'
+        username = ''
+        password = ''
     }
 }
-grails.mail.default.from = 'listen@iivip.com'
+grails.mail.default.from = 'listen@localhost'
 
 // Database Migrations plugin
 environments {

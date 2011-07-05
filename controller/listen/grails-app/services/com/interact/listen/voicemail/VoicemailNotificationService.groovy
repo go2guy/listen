@@ -65,7 +65,6 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
                     multipart true
                 }
 
-                from 'Listen'
                 to address
                 subject subj
                 html body
@@ -87,7 +86,6 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
     void sendNewVoicemailTestEmail(String address) {
         backgroundService.execute("New voicemail test email to [${address}]", {
             sendMail {
-                from 'Listen'
                 to address
                 subject 'Listen Notification Test Message'
                 html """
@@ -140,7 +138,6 @@ You have correctly configured your settings to receive Listen email notification
             }
 
             sendMail {
-                from 'Listen'
                 to address
                 subject "New voicemail from ${voicemailFrom}"
                 body message
@@ -155,7 +152,6 @@ You have correctly configured your settings to receive Listen email notification
     void sendNewVoicemailTestSms(String address) {
         backgroundService.execute("New voicemail test SMS to addres [${address}]", {
             sendMail {
-                from 'Listen'
                 to address
                 subject 'Listen Notification Test Message'
                 body 'You have correctly configured your settings to receive SMS notifications at this address'
