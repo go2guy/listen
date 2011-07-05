@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_114_5(phoneNumber,ANI,SID,confID)
+            function II_SB_JS_function_114_5(phoneNumber,ANI,SID,confID,organization)
             {
-	            return "{\"application\":\"AUTO_DIAL\", \"action\":\"DIAL\", \"initiatingChannel\":\"TUI\", \"sessionId\":\""+SID+"\", \"destination\":\""+phoneNumber+"\", \"conferenceId\":"+confID+", \"ani\":"+ANI+", \"interruptAdmin\":\"false\"}";
+	            return "{\"application\":\"AUTO_DIAL\", \"action\":\"DIAL\", \"initiatingChannel\":\"TUI\", \"sessionId\":\""+SID+"\", \"destination\":\""+phoneNumber+"\", \"conferenceId\":"+confID+", \"ani\":"+ANI+",\"organization\":\""+organization+"\", \"interruptAdmin\":\"false\"}";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set autoDial obj</log>
             <log>INFO: Entered run-javascript.vxml [114_5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_114_5(phoneNumber,ANI,SID,confID)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_114_5(phoneNumber,ANI,SID,confID,organization)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
