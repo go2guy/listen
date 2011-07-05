@@ -73,6 +73,8 @@
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
 	<var name="logText" expr="''" />
 	<var name="nextPath" expr="''" />
+	<var name="EXT_SUFFIX" expr="''" />
+	<var name="organization" expr="''" />
 
 
     <!-- Conference Variables -->

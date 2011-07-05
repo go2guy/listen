@@ -63,6 +63,8 @@
 	<var name="SB_UV_exceptionLog"/>
 	<var name="SB_UV_logText"/>
 	<var name="SB_UV_nextPath"/>
+	<var name="SB_UV_EXT_SUFFIX"/>
+	<var name="SB_UV_organization"/>
 
     
     <form id="beginDocument">
@@ -209,6 +211,12 @@
 			</if>
 			<if cond="SB_UV_nextPath != undefined">
 				<assign name="nextPath" expr="SB_UV_nextPath" />
+			</if>
+			<if cond="SB_UV_EXT_SUFFIX != undefined">
+				<assign name="EXT_SUFFIX" expr="SB_UV_EXT_SUFFIX" />
+			</if>
+			<if cond="SB_UV_organization != undefined">
+				<assign name="organization" expr="SB_UV_organization" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
