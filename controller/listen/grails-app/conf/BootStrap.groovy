@@ -48,7 +48,7 @@ class BootStrap {
         environments {
             development {
 
-                def organization = new Organization(name: 'Interact Incorporated')
+                def organization = new Organization(name: 'Interact Incorporated', contextPath: 'interact')
                 licenseService.licensableFeatures().each {
                     organization.addToEnabledFeatures(it)
                 }

@@ -19,8 +19,7 @@
               <ul class="messages error"><li>${flash.message}</li></ul>
             </g:if>
 
-            <label for="organization"><g:message code="page.login.auth.organization.label"/></label>
-            <g:select name="organization" from="${organizations}" optionKey="id" optionValue="name" noSelection="['-1': 'N/A']"/>
+            <g:hiddenField name="organization" value="${listen.contextOrganizationProperty(field: 'id', defaultValue: '-1')}"/>
 
             <label for="username"><g:message code="page.login.auth.username.label"/></label>
             <g:textField name="username" placeholder="${g.message(code: 'page.login.auth.username.label')}"/>

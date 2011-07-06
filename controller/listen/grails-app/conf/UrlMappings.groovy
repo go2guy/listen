@@ -85,6 +85,9 @@ class UrlMappings {
             ]
         }
 
+        "/$organizationContext/$controller?/$action?/$id?"{
+            controller = { controller ?: 'login' }
+        }
 		"/$controller/$action?/$id?"{
 			constraints {
 				// apply constraints here

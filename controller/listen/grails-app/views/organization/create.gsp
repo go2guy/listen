@@ -14,6 +14,9 @@
         <label for="name"><g:message code="organization.name.label"/></label>
         <g:textField name="name" value="${fieldValue(bean: organization, field: 'name')}" maxlength="100" class="${listen.validationClass(bean: organization, field: 'name')}"/>
 
+        <label for="contextPath"><g:message code="organization.contextPath.label"/></label>
+        <g:textField name="contextPath" value="${fieldValue(bean: organization, field: 'contextPath')}" maxlength="50" class="${listen.validationClass(bean: organization, field: 'contextPath')}"/>
+
         <h3><g:message code="page.organization.create.features.header"/></h3>
 
         <g:each in="${enableableFeatures}" var="feature">

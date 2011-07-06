@@ -4,6 +4,11 @@ class RequestInformationFilters {
             before = {
                 if(shouldLog(controllerName, actionName)) {
                     log.debug "Request Details:"
+
+                    log.debug "  Params organization context  [${params.organizationContext}]"
+                    log.debug "  Session organization context [${session.organizationContext}]"
+                    log.debug "  Session organization object  [${session.organization?.name}]"
+
                     log.debug "  Remote Address [${request.remoteAddr}]"
                     log.debug "  Method         [${request.method}]"
                     log.debug "  URI            [${request.requestURI}]"

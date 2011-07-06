@@ -10,6 +10,14 @@ class LogoutController {
 	def index = {
         historyService.loggedOut(springSecurityService.getCurrentUser())
         statWriterService.send(Stat.GUI_LOGOUT)
-		redirect uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl // '/j_spring_security_logout'
+
+        def url = SpringSecurityUtils.securityConfig.logout.filterProcessesUrl
+        if(session.organization) {
+            url += "?spring-security-redirect=/${session.organization.contextPath}"
+        } else if(session.organizationContext == 'custodian') {
+            url += "?spring-security-redirect=/custodian"
+        }
+
+        redirect(uri: url)
 	}
 }

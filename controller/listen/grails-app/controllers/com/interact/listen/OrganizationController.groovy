@@ -105,9 +105,9 @@ class OrganizationController {
         // TODO this should all probably be in a service
         Organization.withTransaction { status ->
             def organization = new Organization()
-            organization.properties['name'] = params
+            organization.properties['name', 'contextPath'] = params
 
-             params.each { k, v ->
+            params.each { k, v ->
                 if(k.startsWith("enabledFeature-")) {
                      organization.addToEnabledFeatures(ListenFeature.valueOf(v))
                 }
@@ -144,8 +144,8 @@ class OrganizationController {
         }
 
         // TODO check entity version?
-        organization.properties['name'] = params
-        
+        organization.properties['name', 'contextPath'] = params
+
         organization.enabledFeatures = []
         params.each { k, v ->
             if(k.startsWith("enabledFeature-")) {

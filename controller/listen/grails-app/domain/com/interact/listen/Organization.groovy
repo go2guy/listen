@@ -3,8 +3,9 @@ package com.interact.listen
 import com.interact.listen.license.ListenFeature
 
 class Organization {
-    String name
+    String contextPath
     Set enabledFeatures = []
+    String name
 
     static hasMany = [users: User, enabledFeatures: ListenFeature]
 
@@ -19,6 +20,7 @@ class Organization {
 
 
     static constraints = {
+        contextPath blank: false, maxSize: 50, unique: true, matches: '^[a-z0-9_-]+$', notEqual: 'custodian'
         name blank: false, maxSize: 100, unique: true // TODO for max constraints, add maxlengths to the text fields on the views
     }
 

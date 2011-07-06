@@ -1648,4 +1648,14 @@ databaseChangeLog = {
 		}
 	}
 
+	changeSet(author: "root (generated)", id: "1309965402630-2") {
+		addColumn(tableName: "organization") {
+			column(name: "context_path", type: "varchar(50)") {
+				constraints(nullable: "false", unique: "true")
+			}
+		}
+		createIndex(indexName: "context_path_unique_1309965401489", tableName: "organization", unique: "true") {
+			column(name: "context_path")
+		}
+	}
 }
