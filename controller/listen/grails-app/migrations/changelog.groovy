@@ -1658,4 +1658,52 @@ databaseChangeLog = {
 			column(name: "context_path")
 		}
 	}
+
+    changeSet(author: "root (generated)", id: "1309967981861-1") {
+        createTable(tableName: "prompt_override") {
+            column(autoIncrement: "true", name: "id", type: "bigint") {
+                constraints(nullable: "false", primaryKey: "true", primaryKeyName: "prompt_overriPK")
+            }
+
+            column(name: "version", type: "bigint") {
+                constraints(nullable: "false")
+            }
+
+            column(name: "date", type: "date") {
+                constraints(nullable: "false")
+            }
+
+            column(name: "menu_id", type: "bigint") {
+                constraints(nullable: "false")
+            }
+
+            column(name: "options_prompt", type: "varchar(255)") {
+                constraints(nullable: "false")
+            }
+
+            column(name: "organization_id", type: "bigint") {
+                constraints(nullable: "false")
+            }
+        }
+    }
+
+    changeSet(author: "root (generated)", id: "1309967981861-2") {
+        createIndex(indexName: "organization_unique_9087444756", tableName: "prompt_override") {
+            column(name: "organization_id")
+        }
+    }
+
+    changeSet(author: "root (generated)", id: "1309967981861-3") {
+        createIndex(indexName: "menu_id_unique_9087444767", tableName: "prompt_override") {
+            column(name: "menu_id")
+        }
+    }
+
+    changeSet(author: "root (generated)", id: "1309967981861-4") {
+        addForeignKeyConstraint(baseColumnNames: "menu_id", baseTableName: "prompt_override", constraintName: "prompt_override_menu_id_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "menu", referencesUniqueColumn: "false")
+    }
+
+    changeSet(author: "root (generated)", id: "1309967981861-5") {
+        addForeignKeyConstraint(baseColumnNames: "organization_id", baseTableName: "prompt_override", constraintName: "prompt_overri_organizati_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "organization", referencesUniqueColumn: "false")
+    }
 }
