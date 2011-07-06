@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_117_87(returnVal,ANI,DNIS,timeStamp,organization)
             {
-	            var duration = new Date().getTime() - timeStamp;return "{\"date\": \""+iiDateToISO(timeStamp)+"\", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+	            var duration = new Date().getTime() - timeStamp;return "{\"date\": \""+iiDateToISO(timeStamp)+"\", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\"Conference\", \"organization\": {\"href\":\""+organization+"\"}}";
             }
         ]]>
     </script>
