@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 06/29/2011
+    <!-- Last Modified 07/06/2011
        *   @Name	getCallerID.vxml
        *   @Desc	This script checks the name of the party attempting
                     a pbx or voip call -->
@@ -83,6 +83,7 @@
             <if cond="tmpVal == 1">
                 <assign name="request"  expr="'get'"/>
                 <assign name="resource" expr="'getUser/'"/>
+                <assign name="gotoForm" expr="'#getName'"/>
                 <assign name="params" expr="getResultsKeyValue(result, 0, 'subscriber')"/>
                 <assign name="params" expr="getNextElement('L',params, '/')"/>
                 <goto next="#sendEvent"/>
