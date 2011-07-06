@@ -5,6 +5,11 @@ class ExtractOrganizationFilters {
     def filters = {
         extractOrganization(uri: '/**') {
             before = {
+                if(!shouldCheck(controllerName, actionName)) {
+                    log.debug "Skipping organization extract for ${controllerName}/${actionName}"
+                    return true
+                }
+
                 if(params.organizationContext) {
                     session.organizationContext = params.organizationContext
                 }
@@ -32,5 +37,12 @@ class ExtractOrganizationFilters {
                 }
             }
         }
+    }
+
+    private def shouldCheck(def controller, def action) {
+        if(controller == 'spotApi') {
+            return false
+        }
+        return true
     }
 }
