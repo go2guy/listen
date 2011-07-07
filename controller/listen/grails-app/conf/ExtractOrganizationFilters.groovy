@@ -5,6 +5,7 @@ class ExtractOrganizationFilters {
     def filters = {
         extractOrganization(uri: '/**') {
             before = {
+                log.debug "Extracting organization for controller [${controllerName}], action [${actionName}]"
                 if(!shouldCheck(controllerName, actionName)) {
                     log.debug "Skipping organization extract for ${controllerName}/${actionName}"
                     return true
