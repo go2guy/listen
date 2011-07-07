@@ -1,13 +1,19 @@
 import com.interact.listen.Organization
 import javax.servlet.http.HttpServletResponse
 
+import static com.interact.listen.FilterUtil.*
+
 class ExtractOrganizationFilters {
     def filters = {
         extractOrganization(uri: '/**') {
             before = {
-                log.debug "Extracting organization for controller [${controllerName}], action [${actionName}]"
-                if(!shouldCheck(controllerName, actionName)) {
-                    log.debug "Skipping organization extract for ${controllerName}/${actionName}"
+                if(shouldLog(controllerName, actionName)) {
+                    log.debug "Extracting organization for controller [${controllerName}], action [${actionName}]"
+                }
+                if(!shouldExtractOrganization(controllerName, actionName)) {
+                    if(shouldLog(controllerName, actionName)) {
+                        log.debug "Skipping organization extract for ${controllerName}/${actionName}"
+                    }
                     return true
                 }
 
@@ -18,32 +24,31 @@ class ExtractOrganizationFilters {
                 if(session.organizationContext) {
                     if(session.organizationContext == 'custodian') {
                         session.organization = null
-                        log.debug "Organization context is 'custodian'"
+                        if(shouldLog(controllerName, actionName)) {
+                            log.debug "Organization context is 'custodian'"
+                        }
                         return true
                     }
 
                     def organization = Organization.findByContextPath(session.organizationContext)
                     if(!organization) {
                         session.organizationContext = null
-                        log.warn "Organization not found for context [${session.organizationContext}]"
+                        if(shouldLog(controllerName, actionName)) {
+                            log.warn "Organization not found for context [${session.organizationContext}]"
+                        }
                         response.sendError(HttpServletResponse.SC_NOT_FOUND)
                         return false
                     }
 
                     session.organization = organization
                 } else {
-                    log.warn "No organization in session"
+                    if(shouldLog(controllerName, actionName)) {
+                        log.warn "No organization in session"
+                    }
                     response.sendError(HttpServletResponse.SC_NOT_FOUND)
                     return false
                 }
             }
         }
-    }
-
-    private def shouldCheck(def controller, def action) {
-        if(controller == 'spotApi') {
-            return false
-        }
-        return true
     }
 }

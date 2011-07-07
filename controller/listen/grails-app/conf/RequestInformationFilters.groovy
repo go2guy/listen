@@ -1,3 +1,5 @@
+import static com.interact.listen.FilterUtil.*
+
 class RequestInformationFilters {
     def filters = {
         requestInformation(uri: '/**') {
@@ -23,18 +25,5 @@ class RequestInformationFilters {
                 }
             }
         }
-    }
-
-    private boolean shouldLog(def controller, def action) {
-        if(controller == 'voicemail' && ['pollingList', 'newCount'].contains(action)) {
-            return false
-        }
-        if(controller == 'login' && action == 'authAjax') {
-            return false
-        }
-        if(controller == 'conferencing' && ['polledConference', 'ajaxPagination'].contains(action)) {
-            return false
-        }
-        return true
     }
 }
