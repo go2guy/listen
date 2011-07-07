@@ -1,3 +1,5 @@
+import org.apache.log4j.Logger
+
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
@@ -70,12 +72,49 @@ log4j = {
     // Example of changing the log pattern for the default console
     // appender:
     //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
+    appenders {
+        def defaultPattern = '%d{ISO8601} [%10.10t] [%18.18c] %5p: %m%n'
+        console name: 'stdout', layout: pattern(conversionPattern: defaultPattern)
 
-    root {
-        warn()
+        environments {
+            production {
+                def dir = System.getProperty('catalina.base')
+                if(!dir) {
+                    dir = '/interact/listen/logs'
+                } else {
+                    dir += '/logs'
+                }
+
+                println "Log directory is [${dir}]"
+
+                def file = new File(dir)
+                if(file.exists()) {
+                    if(!file.isDirectory()) {
+                        def fallback = System.getProperty('java.io.tmpdir')
+                        println "Log directory [${dir}] exists but is not a directory, using [${fallback}] instead"
+                        dir = fallback
+                    }
+                } else {
+                    println "Log directory [${dir}] does not exist, creating"
+                    file.mkdirs()
+                }
+
+                rollingFile name: 'file', maxFileSize: '100MB', maxBackupIndex: '7', file: "${dir}/${appName}.log", layout: pattern(conversionPattern: defaultPattern)
+                rollingFile name: 'StackTrace', maxFileSize: '10MB', maxBackupIndex: '7', file: "${dir}/${appName}-stacktrace.log"
+            }
+        }
+    }
+
+    environments {
+        development {
+            root { warn 'stdout' }
+        }
+        test {
+            root { warn 'stdout' }
+        }
+        production {
+            root { warn 'file' }
+        }
     }
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
@@ -95,6 +134,14 @@ log4j = {
 
     debug  'grails.app',
            'com.interact'
+}
+
+environments {
+    production {
+        def logger = Logger.getRootLogger()
+        logger.removeAppender('stdout')
+        // see http://stackoverflow.com/questions/2410955/why-is-grails-in-tomcat-logging-to-both-catalina-out-and-my-custom-file-appende
+    }
 }
 
 // Spring Security Core plugin:
