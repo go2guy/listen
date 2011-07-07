@@ -15,6 +15,8 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
 
+        mavenRepo "http://megatron:8081/nexus/content/groups/public"
+
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         //mavenLocal()
@@ -27,6 +29,18 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        // runtime 'mysql:mysql-connector-java:5.1.13'
+        compile 'org.mortbay.jetty:jetty:6.1.24',
+                'org.mortbay.jetty:jetty-util:6.1.24'
+
+        test 'mysql:mysql-connector-java:5.1.13'
+
+        runtime 'commons-codec:commons-codec:1.4',
+                'commons-io:commons-io:1.4',
+                'commons-lang:commons-lang:2.5',
+                'org.apache.httpcomponents:httpcore:4.0.1',
+                'org.apache.httpcomponents:httpcore-nio:4.0.1',
+                'org.apache.httpcomponents:httpclient:4.0.1',
+                'org.apache.httpcomponents:httpmime:4.0.1',
+                'com.googlecode.json-simple:json-simple:1.1'
     }
 }
