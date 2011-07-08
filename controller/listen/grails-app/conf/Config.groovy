@@ -1,3 +1,5 @@
+import com.interact.listen.license.LicenseService
+import com.interact.listen.license.ListenFeature
 import org.apache.log4j.Logger
 
 // locations to search for config files that get merged into the main config
@@ -149,12 +151,19 @@ grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.interact.lis
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.interact.listen.UserRole'
 grails.plugins.springsecurity.authority.className = 'com.interact.listen.Role'
 grails.plugins.springsecurity.useSecurityEventListener = true
-grails.plugins.springsecurity.providerNames = [
-    'apiKeyAuthenticationProvider',
-    'daoAuthenticationProvider',
-    'activeDirectoryAuthenticationProvider',
-    'anonymousAuthenticationProvider'
-]
+
+def providers = []
+providers << 'apiKeyAuthenticationProvider'
+providers << 'daoAuthenticationProvider'
+
+def licenseService = new LicenseService()
+licenseService.afterPropertiesSet()
+if(licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
+    providers << 'activeDirectoryAuthenticationProvider'
+}
+providers << 'anonymousAuthenticationProvider'
+grails.plugins.springsecurity.providerNames = providers
+
 grails.plugins.springsecurity.filterChain.chainMap = [
     '/api/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
     '/spotApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',

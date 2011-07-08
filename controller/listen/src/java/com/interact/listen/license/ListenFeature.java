@@ -7,15 +7,16 @@ import com.interact.license.client.Feature;
  */
 public enum ListenFeature implements Feature
 {
-    ACD("Listen ACD", "ACD"),
-    AFTERHOURS("Listen After Hours", "After Hours"),
-    ATTENDANT("Listen Attendant", "Attendant"),
-    BROADCAST("Listen Broadcast", "PBX Broadcast"),
-    CONFERENCING("Listen Conferencing", "Conferencing"),
-    CUSTOM_APPLICATIONS("Listen Custom App", "Custom SPOT Applications"),
-    FINDME("Listen Find Me", "Find Me / Follow Me"),
-    VOICEMAIL("Listen Voice Mail", "Voicemail"),
-    IPPBX("IP PBX", "IP PBX");
+    ACD                 ("Listen ACD",          "ACD", false),
+    ACTIVE_DIRECTORY    ("Listen AD",           "Active Directory", false),
+    AFTERHOURS          ("Listen After Hours",  "After Hours", true),
+    ATTENDANT           ("Listen Attendant",    "Attendant", true),
+    BROADCAST           ("Listen Broadcast",    "PBX Broadcast", true),
+    CONFERENCING        ("Listen Conferencing", "Conferencing", true),
+    CUSTOM_APPLICATIONS ("Listen Custom App",   "Custom SPOT Applications", true),
+    FINDME              ("Listen Find Me",      "Find Me / Follow Me", true),
+    VOICEMAIL           ("Listen Voice Mail",   "Voicemail", true),
+    IPPBX               ("IP PBX",              "IP PBX", true);
 
     /** How this feature is represented in the license file */
     private String licenseFileFeatureName;
@@ -23,11 +24,15 @@ public enum ListenFeature implements Feature
     /** How this feature is displayed on screens. */
     private String displayName;
 
+    /** Whether or not this feature can be enabled/disabled for organizations */
+    private boolean isPerOrganization = true;
+
     /** Constructs a new {@code ListenFeature} */
-    private ListenFeature(String licenseFileFeatureName, String displayName)
+    private ListenFeature(String licenseFileFeatureName, String displayName, boolean isPerOrganization)
     {
         this.licenseFileFeatureName = licenseFileFeatureName;
         this.displayName = displayName;
+        this.isPerOrganization = isPerOrganization;
     }
 
     public String getDisplayName()
@@ -39,5 +44,10 @@ public enum ListenFeature implements Feature
     public String asLicenseFileFeatureName()
     {
         return licenseFileFeatureName;
+    }
+
+    public boolean getIsPerOrganization()
+    {
+        return isPerOrganization;
     }
 }

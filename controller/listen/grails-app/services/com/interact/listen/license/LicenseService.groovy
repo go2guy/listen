@@ -17,11 +17,11 @@ class LicenseService implements InitializingBean {
     }
     
     List licensableFeatures() {
-        Arrays.asList(ListenFeature.values())
+        Arrays.asList(ListenFeature.values()).findAll { it.isPerOrganization }
     }
 
     List enableableFeatures() {
-        ListenFeature.values().findAll { isLicensed(it) } as List
+        licensableFeatures().findAll { isLicensed(it) }
     }
 
     boolean canAccess(def feature, def organization = null) {
