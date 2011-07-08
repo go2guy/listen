@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_117_87(returnVal,ANI,DNIS,timeStamp,organization)
+            function II_SB_JS_function_117_87(returnVal,ANI,timeStamp,organization,confDescription)
             {
-	            var duration = new Date().getTime() - timeStamp;return "{\"date\": \""+iiDateToISO(timeStamp)+"\", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\"Conference\", \"organization\": {\"href\":\""+organization+"\"}}";
+	            var duration = new Date().getTime() - timeStamp;return "{\"date\": \""+iiDateToISO(timeStamp)+"\", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+confDescription+"\", \"result\":\"Conference\", \"organization\": {\"href\":\""+organization+"\"}}";
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set CDR Obj</log>
             <log>INFO: Entered run-javascript.vxml [117_87]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_117_87(returnVal,ANI,DNIS,timeStamp,organization)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_117_87(returnVal,ANI,timeStamp,organization,confDescription)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

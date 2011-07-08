@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_105_74(outDialStart,ANI,phoneNumber,outDialStop,organization)
             {
-	            var duration = outDialStop - iiStrToDate(outDialStart);return "{\"date\": \""+outDialStart+"\", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+phoneNumber+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+	            var duration = outDialStop - iiStrToDate(outDialStart);return "{\"date\": \""+outDialStart+"\", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"result\":\"Call Answered\", \"dnis\":\""+phoneNumber+"\", \"organization\": {\"href\":\""+organization+"\"}}";
             }
         ]]>
     </script>
