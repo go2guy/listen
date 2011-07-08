@@ -15,9 +15,7 @@ import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
 import org.apache.commons.lang.StringUtils
-import org.joda.time.DateTime
-import org.joda.time.Duration
-import org.joda.time.LocalDateTime
+import org.joda.time.*
 import org.joda.time.format.DateTimeFormat
 
 @Secured(['ROLE_SPOT_API'])
@@ -1229,6 +1227,16 @@ class SpotApiController {
             }
 
             def command = menu.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), '')
+
+            def promptOverride = PromptOverride.findByMenu(menu)
+            def today = new LocalDate()
+
+            promptOverride.each {
+                if(it.date == today) {
+                    command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/')) + it.optionsPrompt
+                }
+            }
+
             render(command as JSON)
             return
         }
@@ -1264,6 +1272,16 @@ class SpotApiController {
         }
 
         def command = doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore)
+
+        def promptOverride = PromptOverride.findByMenu(menu)
+        def today = new LocalDate()
+
+        promptOverride.each {
+            if(it.date == today) {
+                command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/')) + it.optionsPrompt
+            }
+        }
+
         render(command as JSON)
     }
 
