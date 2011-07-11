@@ -1,6 +1,7 @@
 package com.interact.listen.history
 
 import com.interact.listen.*
+import com.interact.listen.attendant.*
 import com.interact.listen.conferencing.*
 import com.interact.listen.voicemail.*
 import com.interact.listen.pbx.findme.*
@@ -22,7 +23,7 @@ class HistoryService {
     void cancelledConferenceInvitation(ScheduledConference invitation) {
         def properties = [
             action: Action.CANCELLED_CONFERENCE_INVITATION,
-            description: "Cancelled conference invitation for [${invitation.forConference.description}] starting [${formatDate(invitation.startsAt())}]",
+            description: "Cancelled conference invitation for [${invitation.forConference.description}] starting [${formatDateTime(invitation.startsAt())}]",
             onUser: invitation.scheduledBy
         ]
         write(new ActionHistory(properties))
@@ -37,10 +38,18 @@ class HistoryService {
         write(new ActionHistory(properties))
      }
 
+    void createdAttendantHoliday(PromptOverride promptOverride) {
+        def properties = [
+            action: Action.CREATED_ATTENDANT_HOLIDAY,
+            description: "Created attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.menuGroup.name}] with prompt [${promptOverride.optionsPrompt}]"
+        ]
+        write(new ActionHistory(properties))
+    }
+
     void createdConferenceInvitation(ScheduledConference invitation) {
         def properties = [
             action: Action.CREATED_CONFERENCE_INVITATION,
-            description: "Created conference invitation for [${invitation.forConference.description}] starting [${formatDate(invitation.startsAt())}]",
+            description: "Created conference invitation for [${invitation.forConference.description}] starting [${formatDateTime(invitation.startsAt())}]",
             onUser: invitation.scheduledBy
         ]
         write(new ActionHistory(properties))
@@ -51,6 +60,14 @@ class HistoryService {
             action: Action.CREATED_USER,
             description: "Created user [${user.username}]",
             onUser: user
+        ]
+        write(new ActionHistory(properties))
+    }
+
+    void deletedAttendantHoliday(PromptOverride promptOverride) {
+        def properties = [
+            action: Action.DELETED_ATTENDANT_HOLIDAY,
+            description: "Deleted attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.menuGroup.name}] with prompt [${promptOverride.optionsPrompt}]"
         ]
         write(new ActionHistory(properties))
     }
@@ -260,12 +277,17 @@ class HistoryService {
         return request?.getAttribute('tui-channel') ?: Channel.GUI
     }
 
-    private def formatDate(def date) {
+    private def formatFriendlyDate(def date) {
+        def formatter = DateTimeFormat.forPattern('MMMM d, yyyy')
+        return formatter.print(date)
+    }
+
+    private def formatDateTime(def date) {
         def formatter = DateTimeFormat.forPattern('yyyy-MM-dd HH:mm')
         return formatter.print(date)
     }
 
     private def friendlyVoicemailSnippet(Voicemail voicemail) {
-        return "voicemail for [${voicemail.owner.realName}] from [${voicemail.from()}] left on [${formatDate(voicemail.dateCreated)}]"
+        return "voicemail for [${voicemail.owner.realName}] from [${voicemail.from()}] left on [${formatDateTime(voicemail.dateCreated)}]"
     }
 }

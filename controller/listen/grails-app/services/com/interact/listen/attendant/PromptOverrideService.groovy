@@ -3,6 +3,7 @@ package com.interact.listen.attendant
 import org.springframework.web.multipart.MultipartFile
 
 class PromptOverrideService {
+    def historyService
     def promptFileService
     def springSecurityService
 
@@ -21,13 +22,13 @@ class PromptOverrideService {
 
         def promptOverride = new PromptOverride(params)
         if(promptOverride.validate() && promptOverride.save()) {
-            // TODO history?
+            historyService.createdAttendantHoliday(promptOverride)
         }
         return promptOverride
     }
 
     void delete(PromptOverride promptOverride) {
         promptOverride.delete()
-        // TODO history?
+        historyService.deletedAttendantHoliday(promptOverride)
     }
 }
