@@ -17,6 +17,7 @@ class OrganizationController {
         list: 'GET',
         routing: 'GET',
         save: 'POST',
+        setSingleOrganization: 'POST',
         update: 'POST',
         updateRoute: 'POST'
     ]
@@ -93,7 +94,12 @@ class OrganizationController {
         params.order = params.order ?: 'asc'
         def organizations = Organization.list(params)
         def total = Organization.count()
-        render(view: 'list', model: [organizationList: organizations, organizationListTotal: total]) 
+        render(view: 'list',
+               model: [
+                   organizationList: organizations,
+                   organizationListTotal: total,
+                   singleOrganization: SingleOrganizationConfiguration.retrieve()
+               ]) 
     }
 
     def routing = {
@@ -133,6 +139,19 @@ class OrganizationController {
                 render(view: 'create', model: [organization: organization, user: u, enableableFeatures: licenseService.enableableFeatures()])
             }
         }
+    }
+
+    def setSingleOrganization = {
+        def organization = Organization.get(params.id)
+        if(!organization) {
+            flash.successMessage = 'Single organization disabled'
+            SingleOrganizationConfiguration.unset()
+        } else {
+            flash.successMessage = "Single organization set to ${organization.name}"
+            SingleOrganizationConfiguration.set(organization)
+        }
+
+        redirect(action: 'list')
     }
 
     def update = {

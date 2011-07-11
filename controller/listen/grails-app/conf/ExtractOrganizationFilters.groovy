@@ -1,11 +1,12 @@
 import com.interact.listen.Organization
+import com.interact.listen.SingleOrganizationConfiguration
 import javax.servlet.http.HttpServletResponse
 
 import static com.interact.listen.FilterUtil.*
 
 class ExtractOrganizationFilters {
     def filters = {
-        extractOrganization(uri: '/**') {
+        extractOrganization(controller: 'login', action: 'auth') {
             before = {
                 if(shouldLog(controllerName, actionName)) {
                     log.debug "Extracting organization for controller [${controllerName}], action [${actionName}]"
@@ -17,7 +18,12 @@ class ExtractOrganizationFilters {
                     return true
                 }
 
-                if(params.organizationContext) {
+                if(SingleOrganizationConfiguration.exists() && params.organizationContext != 'custodian') {
+                    session.organizationContext = SingleOrganizationConfiguration.retrieve().contextPath
+                    if(shouldLog(controllerName, actionName)) {
+                        log.debug "Forcibly set session organization context to [${session.organizationContext}]"
+                    }
+                } else if(params.organizationContext) {
                     session.organizationContext = params.organizationContext
                 }
 

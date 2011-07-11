@@ -1735,4 +1735,25 @@ databaseChangeLog = {
 		}
 	}
 
+	changeSet(author: "root (generated)", id: "1310412924599-1") {
+		createTable(tableName: "single_organization_configuration") {
+			column(autoIncrement: "true", name: "id", type: "bigint") {
+				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "single_organiPK")
+			}
+
+			column(name: "version", type: "bigint") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "organization_id", type: "bigint") {
+				constraints(nullable: "false")
+			}
+		}
+
+		createIndex(indexName: "FKA64DE54156D05B56", tableName: "single_organization_configuration") {
+			column(name: "organization_id")
+		}
+
+		addForeignKeyConstraint(baseColumnNames: "organization_id", baseTableName: "single_organization_configuration", constraintName: "FKA64DE54156D05B56", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "organization", referencesUniqueColumn: "false")
+	}
 }

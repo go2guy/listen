@@ -4,8 +4,11 @@
     <meta name="layout" content="main"/>
     <meta name="tab" content="organization"/>
     <meta name="button" content="list"/>
-    <meta name="page-header" content="${g.message(code: 'page.organization.list.header')}"/>
     <style type="text/css">
+.pagination {
+    margin-bottom: 10px;
+}
+
 table td {
     padding: 2px 2px;
 }
@@ -13,11 +16,17 @@ table td {
 table td.button-cell {
     width: 5%;
 }
+
+fieldset.vertical {
+    background: #F0F0F0;
+    padding: 1px 10px 10px 10px;
+}
     </style>
   </head>
   <body>
     <g:if test="${organizationList.size() > 0}">
       <table>
+        <caption><g:message code="page.organization.list.header"/></caption>
         <thead>
           <g:sortableColumn property="name" title="${g.message(code: 'organization.name.label')}"/>
           <th></th>
@@ -49,6 +58,20 @@ table td.button-cell {
           <g:paginate total="${organizationListTotal}" maxSteps="5"/>
         </div>
       </g:if>
+
+      <listen:infoSnippet summaryCode="page.organization.list.snippet.summary" contentCode="page.organization.list.snippet.content"/>
+
+      <g:form controller="organization" action="setSingleOrganization">
+        <fieldset class="vertical">
+          <label for="id" class="inline-label"><g:message code="page.organization.list.single.label"/></label>
+          <g:select from="${organizationList}" name="id" optionKey="id" optionValue="name" noSelection="${['-1': g.message(code: 'page.organization.list.single.noSelection')]}" value="${fieldValue(bean: singleOrganization, field: 'id')}"/>
+
+          <ul class="form-buttons">
+            <li><g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/>
+          </ul>
+        </fieldset>
+      </g:form>
+
     </g:if>
     <g:else>
       <g:message code="page.organization.list.noOrganizations"/>
