@@ -1228,7 +1228,7 @@ class SpotApiController {
 
             def command = menu.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), '')
 
-            def promptOverride = PromptOverride.findByMenu(menu)
+            def promptOverride = PromptOverride.findByMenuGroup(menu.menuGroup)
             def today = new LocalDate()
 
             promptOverride.each {
@@ -1272,16 +1272,6 @@ class SpotApiController {
         }
 
         def command = doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore)
-
-        def promptOverride = PromptOverride.findByMenu(menu)
-        def today = new LocalDate()
-
-        promptOverride.each {
-            if(it.date == today) {
-                command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/')) + it.optionsPrompt
-            }
-        }
-
         render(command as JSON)
     }
 

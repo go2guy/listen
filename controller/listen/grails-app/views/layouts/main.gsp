@@ -469,9 +469,18 @@ fieldset.vertical ul.form-buttons li {
 }
 
 fieldset.vertical ul.form-buttons input,
-fieldset.vertical ul.form-buttons button {
+fieldset.vertical ul.form-buttons button,
+fieldset.vertical ul.form-buttons a {
     font-size: 14px;
     margin-top: 15px;
+}
+
+fieldset.vertical ul.form-buttons a {
+    color: #999999;
+}
+
+fieldset.vertical ul.form-buttons a:hover {
+    color: #333333;
 }
 
 fieldset.vertical h3 {

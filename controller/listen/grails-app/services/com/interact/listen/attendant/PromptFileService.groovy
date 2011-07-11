@@ -9,7 +9,7 @@ class PromptFileService {
     // TODO fix hard-coded path
     static final File storage = new File('/interact/listen/artifacts/attendant')
     
-    def save(MultipartFile prompt, def organizationId) {
+    File save(MultipartFile prompt, def organizationId) {
         def dir = new File(storage, (String)organizationId)
         if(!dir.exists() && !dir.mkdirs()) {
             throw new FileNotFoundException('Could not use organization-specific prompt storage directory')
@@ -19,7 +19,11 @@ class PromptFileService {
             throw new IllegalStateException('Organization-specific storage path is not a directory')
         }
 
-        prompt.transferTo(new File(dir, prompt.originalFilename))
+        log.debug "Adding prompt [${prompt.originalFilename}] to storage dir [${dir}]"
+
+        def destination = new File(dir, prompt.originalFilename)
+        prompt.transferTo(destination)
+        return destination
     }
 
     def listNames(def organizationId) {

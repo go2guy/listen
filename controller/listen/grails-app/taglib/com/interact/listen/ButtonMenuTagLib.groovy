@@ -25,7 +25,17 @@ class ButtonMenuTagLib {
 
                 break
 
+            case 'attendant':
+
+                out << '<ul class="button-menu">'
+                button(attrs.button == 'menu', 'attendant', 'menu', 'button.menu.attendant.menu')
+                button(attrs.button == 'holidays', 'attendant', 'holidays', 'button.menu.attendant.holidays')
+                out << '</ul>'
+
+                break
+
             case 'conferencing':
+
                 out << '<ul class="button-menu">'
                 button(attrs.button == 'manage', 'conferencing', 'manage', 'button.menu.conferencing.manage')
                 button(attrs.button == 'invitations', 'conferencing', 'invitations', 'button.menu.conferencing.invitations')

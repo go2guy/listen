@@ -1706,4 +1706,33 @@ databaseChangeLog = {
     changeSet(author: "root (generated)", id: "1309967981861-5") {
         addForeignKeyConstraint(baseColumnNames: "organization_id", baseTableName: "prompt_override", constraintName: "prompt_overri_organizati_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "organization", referencesUniqueColumn: "false")
     }
+
+	changeSet(author: "root (generated)", id: "1310396460702-1") {
+		addColumn(tableName: "prompt_override") {
+			column(name: "menu_group_id", type: "bigint") {
+				constraints(nullable: "false")
+			}
+		}
+
+		dropForeignKeyConstraint(baseTableName: "prompt_override", baseTableSchemaName: "listen2", constraintName: "prompt_override_menu_id_fk")
+
+		dropForeignKeyConstraint(baseTableName: "prompt_override", baseTableSchemaName: "listen2", constraintName: "prompt_overri_organizati_fk")
+
+		createIndex(indexName: "FK908744472A28807E", tableName: "prompt_override") {
+			column(name: "menu_group_id")
+		}
+
+		addForeignKeyConstraint(baseColumnNames: "menu_group_id", baseTableName: "prompt_override", constraintName: "FK908744472A28807E", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "menu_group", referencesUniqueColumn: "false")
+
+		dropColumn(columnName: "menu_id", tableName: "prompt_override")
+
+		dropColumn(columnName: "organization_id", tableName: "prompt_override")
+
+        createIndex(indexName: "unique-date", tableName: "prompt_override") {
+			column(name: "menu_group_id")
+
+			column(name: "date")
+		}
+	}
+
 }

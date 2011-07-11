@@ -23,6 +23,13 @@ class AttendantTagLib {
         out << '</select>'
     }
 
+    def rawPromptSelect = { attrs ->
+        def user = springSecurityService.getCurrentUser()
+        def prompts = promptFileService.listNames(user.organization.id)
+        attrs.from = prompts
+        out << g.select(attrs)
+    }
+
     def actionSelect = { attrs ->
         def action = attrs.action
         out << '<select class="action-select">'
@@ -80,5 +87,15 @@ class AttendantTagLib {
             out << '<option' + (menu?.isEntry ? ' selected="selected"' : '') + ">${fieldValue(bean: menu, field: 'name')}</option>"
         }
         out << '</select>'
+    }
+
+    def menuGroupSelect = { attrs ->
+        def user = springSecurityService.getCurrentUser()
+
+        def menuGroups = MenuGroup.findAllByOrganization(user.organization, [sort: 'name', order: 'asc'])
+        attrs.from = menuGroups
+        attrs.optionKey = 'id'
+        attrs.optionValue = 'name'
+        out << g.select(attrs)
     }
 }

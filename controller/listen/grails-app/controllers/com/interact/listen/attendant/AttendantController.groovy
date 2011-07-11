@@ -12,14 +12,48 @@ import org.json.simple.JSONValue
 class AttendantController {
     static allowedMethods = [
         index: 'GET',
-        menu: 'GET'
+        addHoliday: 'POST',
+        deleteHoliday: 'POST',
+        holidays: 'GET',
+        menu: 'GET',
+        save: 'POST'
     ]
 
-    def promptFileService // injected
-    def springSecurityService // injected
+    def promptFileService
+    def promptOverrideService
+    def springSecurityService
 
     def index = {
         redirect(action: 'menu')
+    }
+
+    def addHoliday = {
+        def promptOverride = promptOverrideService.create(params, request.getFile('uploadedPrompt'))
+        if(promptOverride.hasErrors()) {
+            def model = promptOverrideModel()
+            model.newPromptOverride = promptOverride
+            render(view: 'holidays', model: model)
+        } else {
+            flash.successMessage = 'Holiday created'
+            redirect(action: 'holidays')
+        }
+    }
+
+    def deleteHoliday = {
+        def promptOverride = PromptOverride.get(params.id)
+        if(!promptOverride) {
+            flash.errorMessage = 'Holiday not found'
+            redirect(action: 'holidays')
+            return
+        }
+
+        promptOverrideService.delete(promptOverride)
+        flash.successMessage = 'Holiday deleted'
+        redirect(action: 'holidays')
+    }
+
+    def holidays = {
+        render(view: 'holidays', model: promptOverrideModel())
     }
 
     def menu = {
@@ -191,5 +225,12 @@ class AttendantController {
 
         action.promptBefore = promptBefore
         action.keysPressed = keypress
+    }
+
+    private def promptOverrideModel() {
+        def user = springSecurityService.getCurrentUser()
+        return [
+            promptOverrideList: PromptOverride.findAllByOrganizationAndNotPast(user.organization, [sort: 'date', order: 'asc'])
+        ]
     }
 }
