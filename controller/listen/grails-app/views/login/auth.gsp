@@ -36,7 +36,7 @@
 
     <script type="text/javascript">
 (function(){
-	document.forms['loginForm'].elements['organization'].focus();
+	document.forms['loginForm'].elements['username'].focus();
     $('#loginForm').submit(function(e) {
         var org = $('#organization').val();
         var username = $('#username').val();
