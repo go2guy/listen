@@ -109,13 +109,13 @@ log4j = {
 
     environments {
         development {
-            root { warn 'stdout' }
+            root { debug 'stdout' }
         }
         test {
-            root { warn 'stdout' }
+            root { debug 'stdout' }
         }
         production {
-            root { warn 'file' }
+            root { debug 'file' }
         }
     }
 
