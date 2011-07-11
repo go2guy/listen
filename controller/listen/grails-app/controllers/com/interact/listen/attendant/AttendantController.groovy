@@ -68,13 +68,29 @@ class AttendantController {
             log.debug "Received menu for saving: ${jsonGroups.toJSONString()}"
 
             def user = springSecurityService.getCurrentUser()
-            MenuGroup.findAllByOrganization(user.organization).each {
-                it.delete()
-            }
+            def missingGroups = MenuGroup.findAllByOrganization(user.organization) as Set
 
             def groups = []
             jsonGroups.each { jsonGroup ->
-                def group = new MenuGroup()
+                def group
+                if(jsonGroup.containsKey('id')) {
+                    group = MenuGroup.get(jsonGroup.get('id'))
+                    if(group) {
+                        missingGroups.remove(group)
+                    }
+                }
+                
+                if(!group) {
+                    group = new MenuGroup()
+                }
+
+                if(group.id) {
+                    group.menus?.clear()
+                    group.restrictions?.clear()
+                    Menu.findAllByMenuGroup(group)*.delete(flush: true)
+                }
+
+
                 group.name = (String)jsonGroup.get('name')
                 group.isDefault = (Boolean)jsonGroup.get('isDefault')
                 group.organization = user.organization
@@ -143,6 +159,11 @@ class AttendantController {
                     valid = false
                     status.setRollbackOnly()
                 }
+            }
+
+            missingGroups.each {
+                log.debug "Deleting group [${it.name}]"
+                it.delete()
             }
 
             if(valid) {

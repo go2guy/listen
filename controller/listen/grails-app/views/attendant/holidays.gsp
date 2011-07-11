@@ -61,8 +61,8 @@ fieldset.vertical .or-separator {
         </label>
 
         <ul class="form-buttons">
-          <li><g:link controller="attendant" action="holidays"><g:message code="default.button.discard.label"/></g:link></li>
           <li><g:submitButton name="add" value="${g.message(code: 'page.attendant.holidays.button.add.label')}"/></li>
+          <li><g:link controller="attendant" action="holidays"><g:message code="default.button.discard.label"/></g:link></li>
         </ul>
       </fieldset>
     </g:uploadForm>

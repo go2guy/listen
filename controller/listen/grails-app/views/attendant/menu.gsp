@@ -409,6 +409,7 @@ $(document).ready(function() {
             $('#all-groups > li').each(function() {
                 var groupLi = $(this);
                 var group = {
+                    id: $('.group-id', groupLi).val(),
                     name: $('.group-name', groupLi).val(),
                     isDefault: $('.is-default', groupLi).val() == 'true',
                     restrictions: []

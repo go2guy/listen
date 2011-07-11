@@ -1,5 +1,6 @@
 <li class="menu-group"<g:if test="${id}"> id="${id}"</g:if><g:if test="${hidden}"> style="display: none;"</g:if>>
   <input type="hidden" class="is-default" value="${group?.isDefault}"/>
+  <input type="hidden" class="group-id" value="${group?.id}"/>
   <div class="group-configuration">
     <g:if test="${!group?.isDefault}">
       <button type="button" class="delete-group">Delete Configuration</button>

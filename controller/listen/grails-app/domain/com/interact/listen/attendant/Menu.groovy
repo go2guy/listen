@@ -11,6 +11,7 @@ class Menu {
 
     static belongsTo = [menuGroup: MenuGroup]
     static hasMany = [keypressActions: Action]
+    static fetchMode = [keypressActions: 'eager']
 
     static constraints = {
         name blank: false, maxSize: 50, unique: 'menuGroup'

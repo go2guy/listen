@@ -9,10 +9,14 @@ class MenuGroup {
     String name
 
     static belongsTo = [organization: Organization]
-
     static hasMany = [
         menus: Menu,
-        restrictions: TimeRestriction
+        promptOverrides: PromptOverride
+        restrictions: TimeRestriction,
+    ]
+    static fetchMode = [
+        menus: 'eager',
+        restrictions: 'eager'
     ]
 
     static constraints = {

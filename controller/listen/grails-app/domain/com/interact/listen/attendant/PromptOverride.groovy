@@ -10,8 +10,10 @@ class PromptOverride {
     static belongsTo = [menuGroup: MenuGroup]
 
     static constraints = {
-        date unique: 'menuGroup', validator: { val ->
-            val?.isBefore(new LocalDate()) ? 'before.today' : true
+        date unique: 'menuGroup', validator: { val, obj ->
+            if(!obj.id) {
+                val?.isBefore(new LocalDate()) ? 'before.today' : true
+            }
         }
         optionsPrompt blank: false
     }
