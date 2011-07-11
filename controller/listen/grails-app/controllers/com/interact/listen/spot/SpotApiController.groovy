@@ -1233,7 +1233,7 @@ class SpotApiController {
 
             promptOverride.each {
                 if(it.date == today) {
-                    command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/')) + it.optionsPrompt
+                    command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/') + 1) + it.optionsPrompt
                 }
             }
 
