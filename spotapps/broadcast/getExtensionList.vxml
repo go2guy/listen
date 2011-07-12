@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 07/12/2011
+       *   @Name	getExtensionList.vxml
+       *   @Desc	This script gets the list of registered extensions from the controller -->
+
+
+    <!-- Passed in from ccxml -->
+    <var name="ANI"/>
+    <var name="importedValue"/>
+
+    <!-- Global Vars -->
+    <var name="cnt" expr="0"/>
+    <var name="index" expr="0"/>
+    <var name="allExt" expr="''"/>
+    <var name="activeExt" expr="''"/>
+    <var name="DND" expr="'372|323'"/>  <!-- Do not disturb list -->
+
+	<form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <assign name="request"  expr="'get'"/>
+            <assign name="resource" expr="'getBroadcastList'"/>
+            <assign name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <assign name="params" expr="setParams(importedValue)"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="sendEvent">
+        <block>
+            <log>INFO: Entered sendEvent</log>
+            <data name="apiObj" srcexpr="getJsonVal(importedValue, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="allExt" expr="apiObj.Result" />
+            <if cond="status == 'Failure'">
+                <assign name="logText" expr="'getExtensionList.vxml: sendEvent returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+']  at ['+cntrlURL+'] using ['+params+']. ANI ['+ ANI +'].'"/>
+                <assign name="logText" expr="writeLog('BROADCAST',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <else/>
+                    <log>INFO: No information on controller</log>
+                    <assign name="result" expr="''"/>
+                    <goto next="#exit"/>
+                </if>
+            <else/>
+                <assign name="result" expr="getList(allExt, DND)"/>
+                <goto next="#exit"/>
+            </if>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <exit namelist="result"/>
+        </block>
+    </form>
+
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'">
+            <param name="id" expr="errID"/>
+            <param name="statServer" expr="getJsonVal(importedValue, 'STATcontroller')"/>
+        </subdialog>
+        <block>
+            <assign name="result" expr="''" />
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
+        <log>ERROR: Unable to connect with local webserver</log>
+        <assign name="result" expr="''"/>
+        <goto next="#exit"/>
+    </catch>
+
+    <script>
+        <![CDATA[
+            function setParams(jsonObj) {
+                return "?_fields=number&organization=" + getJsonVal(jsonObj, 'organization');
+            }
+
+            function getList(jsonObj, DND) {
+                var index = 0;
+                var result = '';
+                var tmpObj = eval("("+jsonObj+")");
+                while (index < tmpObj.count) {
+                    var extension = tmpObj.results[index].number;
+                    if ((extension != null) && (extension.length > 0)) {
+                        if (!inString(extension, DND, '|'))
+                            result = result + extension + '|';
+                    }
+                    index++;
+                }                
+                return result;
+            }
+
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
+            }
+        ]]>
+    </script>
+
+</vxml>

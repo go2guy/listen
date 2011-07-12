@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 05/31/2011
+    <!-- Last Modified 07/12/2011
        *   @Name	writeCDR.vxml
        *   @Desc	This script is part of the logic for writing CDRs
                     to the web controller -->
@@ -23,6 +23,7 @@
             <assign name="request"  expr="'post'"/>
             <assign name="resource" expr="'addCallHistory'"/>
             <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','spotApi')"/>
             <assign name="organization" expr="getJsonVal(listenArgs, 'organization')"/>
             <assign name="params" expr="setParams(startTime, endTime, listenArgs, callType, ANI, DNIS, callResult,organization)"/>
             <goto next="#sendEvent"/>
