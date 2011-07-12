@@ -1,5 +1,6 @@
 package com.interact.listen
 
+import com.interact.listen.license.ListenFeature
 import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
@@ -16,6 +17,7 @@ class UserController {
 
     def cloudToDeviceService
     def historyService
+    def licenseService
     def springSecurityService
     def userCreationService
     def userDeletionService
@@ -81,8 +83,22 @@ class UserController {
         params.sort = params.sort ?: 'username'
         params.order = params.order ?: 'asc'
         def organization = springSecurityService.getCurrentUser()?.organization
-        def userList = User.findAllByOrganization(organization, params)
-        def userListTotal = User.countByOrganization(organization)
+        def userList = User.createCriteria().list(params) {
+            eq('organization', organization)
+            if(!licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
+                eq('isActiveDirectory', false)
+            }
+        }
+
+        def userListTotal = User.createCriteria().get {
+            projections {
+                count('id')
+            }
+            eq('organization', organization)
+            if(!licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
+                eq('isActiveDirectory', false)
+            }
+        }
         render(view: 'list', model: [userList: userList, userListTotal: userListTotal])
     }
 

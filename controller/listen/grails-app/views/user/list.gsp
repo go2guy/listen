@@ -25,7 +25,9 @@ td.col-isActiveDirectory {
         <g:sortableColumn property="username" title="${g.message(code: 'user.username.label')}" class="col-username"/>
         <g:sortableColumn property="realName" title="${g.message(code: 'user.realName.label')}" class="col-realName"/>
         <g:sortableColumn property="enabled" title="${g.message(code: 'user.enabled.label')}" class="col-enabled"/>
-        <g:sortableColumn property="isActiveDirectory" title="${g.message(code: 'user.isActiveDirectory.label')}" class="col-activeDirectory"/>
+        <listen:ifLicensed feature="ACTIVE_DIRECTORY">
+          <g:sortableColumn property="isActiveDirectory" title="${g.message(code: 'user.isActiveDirectory.label')}" class="col-activeDirectory"/>
+        </listen:ifLicensed>
         <g:sortableColumn property="lastLogin" title="${g.message(code: 'user.lastLogin.label')}" class="col-lastLogin"/>
         <th class="col-button"></th>
         <th class="col-button"></th>
@@ -36,7 +38,9 @@ td.col-isActiveDirectory {
             <td class="col-username">${fieldValue(bean: user, field: 'username')}</td>
             <td class="col-realName">${fieldValue(bean: user, field: 'realName')}</td>
             <td class="col-enabled"><listen:checkMark value="${user.enabled}"/></td>
-            <td class="col-isActiveDirectory"><listen:checkMark value="${user.isActiveDirectory}"/></td>
+            <listen:ifLicensed feature="ACTIVE_DIRECTORY">
+              <td class="col-isActiveDirectory"><listen:checkMark value="${user.isActiveDirectory}"/></td>
+            </listen:ifLicensed>
             <td class="col-lastLogin">
               <g:if test="${user.lastLogin}">
                 <span title="${joda.format(value: user.lastLogin, style: 'LL')}"><listen:prettytime date="${user.lastLogin}"/></span>

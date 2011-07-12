@@ -54,10 +54,26 @@ class BootStrap {
                 }
                 organization.save(flush: true)
 
+                SingleOrganizationConfiguration.set(organization)
+
                 def operator = createOperator('Operator', 'Operator McSillyPants', 'operator@example.com', 'super', organization)
                 def user = createUser('User', 'User McSillypants', 'user@example.com', 'super', organization)
                 def rob = createUser('Rob', 'Rob Hruska', 'hruskar@iivip.com', 'super', organization)
                 def phillip = createUser('Phillip', 'Phillip Rapp', 'user@example.com', 'super', organization)
+
+                def ad = User.findByUsername('adirectory')
+                if(!ad) {
+                    def params = [
+                        username: 'adirectory',
+                        realName: 'A. D. Rectory',
+                        emailAddress: 'ad@example.com',
+                        pass: 'ad',
+                        confirm: 'ad'
+                    ]
+                    ad = userCreationService.createUser(params, organization)
+                    ad.isActiveDirectory = true
+                    ad.save(flush: true)
+                }
 
                 def greeting = new Audio(description: 'Greeting',
                                          duration: new Duration(1000),
