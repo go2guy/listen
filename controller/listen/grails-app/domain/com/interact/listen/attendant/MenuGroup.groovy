@@ -11,8 +11,8 @@ class MenuGroup {
     static belongsTo = [organization: Organization]
     static hasMany = [
         menus: Menu,
-        promptOverrides: PromptOverride
-        restrictions: TimeRestriction,
+        promptOverrides: PromptOverride,
+        restrictions: TimeRestriction
     ]
     static fetchMode = [
         menus: 'eager',
