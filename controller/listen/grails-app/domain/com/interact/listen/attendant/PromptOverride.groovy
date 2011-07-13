@@ -1,9 +1,12 @@
 package com.interact.listen.attendant
 
 import com.interact.listen.Organization
+import org.apache.log4j.Logger
 import org.joda.time.LocalDate
 
 class PromptOverride {
+    private static final Logger _log = Logger.getLogger("grails.app.controllers.com.interact.listen.PromptOverride")
+
     LocalDate date
     String optionsPrompt
 
@@ -20,12 +23,15 @@ class PromptOverride {
 
     static def findAllByOrganizationAndNotPast(Organization organization, def params = [:]) {
         def today = new LocalDate()
+        _log.debug "Finding all PromptOverride instances with organization [${organization.name}] and params: ${params}"
         def c = PromptOverride.createCriteria()
-        return c.list(params) {
+        def result = c.list(params) {
             ge('date', today)
             menuGroup {
                 eq('organization', organization)
             }
         }
+        _log.debug "  Found ${result.size()} PromptOverride instances"
+        return result
     }
 }

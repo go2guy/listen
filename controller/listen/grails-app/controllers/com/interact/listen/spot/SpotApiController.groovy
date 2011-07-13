@@ -1228,12 +1228,14 @@ class SpotApiController {
 
             def command = menu.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), '')
 
-            def promptOverride = PromptOverride.findByMenuGroup(menu.menuGroup)
+            def promptOverride = PromptOverride.findAllByMenuGroup(menu.menuGroup)
             def today = new LocalDate()
 
             promptOverride.each {
+                log.debug "Checking promptOverride with date [${it.date}] and prompt [${it.optionsPrompt}]"
                 if(it.date == today) {
                     command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/') + 1) + it.optionsPrompt
+                    log.debug "  Overrode default prompt with [${command.args.audioFile}]"
                 }
             }
 
