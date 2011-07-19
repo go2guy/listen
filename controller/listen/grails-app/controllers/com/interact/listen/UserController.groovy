@@ -48,6 +48,8 @@ class UserController {
         user.enabled = false
         user.save()
 
+        historyService.disabledUser(user)
+
         flash.successMessage = 'User disabled'
         redirect(action: 'list')
     }
@@ -73,6 +75,8 @@ class UserController {
 
         user.enabled = true
         user.save()
+
+        historyService.enabledUser(user)
 
         flash.successMessage = 'User enabled'
         redirect(action: 'list')

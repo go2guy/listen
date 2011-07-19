@@ -104,6 +104,15 @@ class HistoryService {
         write(new ActionHistory(properties))
     }
 
+    def disabledUser(User user) {
+        def properties = [
+            action: Action.DISABLED_USER,
+            description: "Disabled user [${user.username}]",
+            onUser: user
+        ]
+        write(new ActionHistory(properties))
+    }
+
     def downloadedFax(Fax fax) {
         def properties = [
             action: Action.DOWNLOADED_FAX,
@@ -126,6 +135,15 @@ class HistoryService {
         def properties = [
             action: Action.DROPPED_CONFERENCE_CALLER,
             description: "Dropped caller [${participant.displayName()}] from conference [${participant.conference.description}]"
+        ]
+        write(new ActionHistory(properties))
+    }
+
+    def enabledUser(User user) {
+        def properties = [
+            action: Action.ENABLED_USER,
+            description: "Enabled user [${user.username}]",
+            onUser: user
         ]
         write(new ActionHistory(properties))
     }

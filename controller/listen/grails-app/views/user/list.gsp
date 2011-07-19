@@ -59,7 +59,7 @@ td.col-isActiveDirectory {
               <g:if test="${user.enabled}">
                 <g:form controller="user" action="disable" method="post">
                   <g:hiddenField name="id" value="${user.id}"/>
-                  <input type="submit" name="disable" value="${g.message(code: 'default.button.disable.label')}"<g:if test="${sec.loggedInUserInfo(field: 'id') as Long == user.id}">readonly="readonly" class="disabled" title="You cannot disable your own account"</g:if>/>
+                  <input type="submit" name="disable" value="${g.message(code: 'default.button.disable.label')}"<g:if test="${sec.loggedInUserInfo(field: 'id') as Long == user.id}">readonly="readonly" class="disabled" disabled="disabled" title="You cannot disable your own account"</g:if>/>
                 </g:form>
               </g:if>
               <g:else>
