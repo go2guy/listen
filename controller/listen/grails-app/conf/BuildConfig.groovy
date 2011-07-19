@@ -41,6 +41,8 @@ grails.project.dependency.resolution = {
                 'org.apache.httpcomponents:httpcore-nio:4.0.1',
                 'org.apache.httpcomponents:httpclient:4.0.1',
                 'org.apache.httpcomponents:httpmime:4.0.1',
-                'com.googlecode.json-simple:json-simple:1.1'
+                'com.googlecode.json-simple:json-simple:1.1',
+                'org.apache.tika:tika-core:0.9',
+                'org.apache.tika:tika-parsers:0.9'
     }
 }

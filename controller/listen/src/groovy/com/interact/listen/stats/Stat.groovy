@@ -15,6 +15,9 @@ enum Stat {
     CONFERENCE_RECORDING_START            ('2006'),
     CONFERENCE_RECORDING_STOP             ('2007'),
 
+    // Faxing
+    SENT_FAX                              ('2018'),
+
     // Email and SMS
     NEW_VOICEMAIL_EMAIL                   ('2008'),
     NEW_VOICEMAIL_SMS                     ('2009'),

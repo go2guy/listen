@@ -1,6 +1,7 @@
 import com.interact.listen.*
 import com.interact.listen.attendant.*
 import com.interact.listen.conferencing.*
+import com.interact.listen.fax.*
 import com.interact.listen.history.*
 import com.interact.listen.pbx.*
 import com.interact.listen.stats.Stat
@@ -39,6 +40,7 @@ class BootStrap {
 
         // application roles
         createRole('ROLE_CONFERENCE_USER')
+        createRole('ROLE_FAX_USER')
         createRole('ROLE_FINDME_USER')
         createRole('ROLE_VOICEMAIL_USER')
 
@@ -124,6 +126,10 @@ class BootStrap {
                 new Voicemail(ani: '4025604557',
                               audio: a0,
                               owner: user).save(flush: true)
+
+                new Fax(ani: '4024768786',
+                        file: new File('/tmp/foo'),
+                        owner: user).save(flush: true)
 
                 def a1 = new Audio(description: 'Second audio file',
                                    duration: new Duration(1000),

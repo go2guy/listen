@@ -3,8 +3,9 @@ package com.interact.listen.history
 import com.interact.listen.*
 import com.interact.listen.attendant.*
 import com.interact.listen.conferencing.*
-import com.interact.listen.voicemail.*
+import com.interact.listen.fax.*
 import com.interact.listen.pbx.findme.*
+import com.interact.listen.voicemail.*
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.springframework.web.context.request.RequestContextHolder as RCH
@@ -72,6 +73,15 @@ class HistoryService {
         write(new ActionHistory(properties))
     }
 
+    void deletedFax(Fax fax) {
+        def properties = [
+            action: Action.DELETED_FAX,
+            description: "Deleted ${friendlyMessageSnippet(fax)}",
+            onUser: fax.owner
+        ]
+        write(new ActionHistory(properties))
+    }
+
     void deletedFindMeNumber(FindMeNumber findMeNumber) {
         def properties = [
             action: Action.DELETED_FINDMENUMBER,
@@ -88,8 +98,17 @@ class HistoryService {
     def deletedVoicemail(Voicemail voicemail) {
         def properties = [
             action: Action.DELETED_VOICEMAIL,
-            description: "Deleted ${friendlyVoicemailSnippet(voicemail)}",
+            description: "Deleted ${friendlyMessageSnippet(voicemail)}",
             onUser: voicemail.owner
+        ]
+        write(new ActionHistory(properties))
+    }
+
+    def downloadedFax(Fax fax) {
+        def properties = [
+            action: Action.DOWNLOADED_FAX,
+            description: "Downloaded ${friendlyMessageSnippet(fax)}",
+            onUser: fax.owner
         ]
         write(new ActionHistory(properties))
     }
@@ -97,7 +116,7 @@ class HistoryService {
     def downloadedVoicemail(Voicemail voicemail) {
         def properties = [
             action: Action.DOWNLOADED_VOICEMAIL,
-            description: "Downloaded ${friendlyVoicemailSnippet(voicemail)}",
+            description: "Downloaded ${friendlyMessageSnippet(voicemail)}",
             onUser: voicemail.owner
         ]
         write(new ActionHistory(properties))
@@ -114,8 +133,17 @@ class HistoryService {
     def forwardedVoicemail(Voicemail voicemail) {
         def properties = [
             action: Action.FORWARDED_VOICEMAIL,
-            description: "Forwarded ${friendlyVoicemailSnippet(voicemail)}",
+            description: "Forwarded ${friendlyMessageSnippet(voicemail)}",
             onUser: voicemail.owner
+        ]
+        write(new ActionHistory(properties))
+    }
+
+    def leftFax(Fax fax) {
+        def properties = [
+            action: Action.LEFT_FAX,
+            description: "${fax.from()} left fax for [${fax.owner.username}]",
+            onUser: fax.owner
         ]
         write(new ActionHistory(properties))
     }
@@ -163,11 +191,19 @@ class HistoryService {
 //        // TODO later
 //    }
 
+    void sentFax(OutgoingFax fax) {
+        def properties = [
+            action: Action.SENT_FAX,
+            description: "Sent ${fax.pages}-page fax to [${fax.dnis}]"
+        ]
+        write(new ActionHistory(properties))
+    }
+
     def sentNewVoicemailEmail(Voicemail voicemail) {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)
         def properties = [
             action: Action.SENT_NEW_VOICEMAIL_EMAIL,
-            description: "Sent email to [${preferences.emailNotificationAddress}] for ${friendlyVoicemailSnippet(voicemail)}",
+            description: "Sent email to [${preferences.emailNotificationAddress}] for ${friendlyMessageSnippet(voicemail)}",
             onUser: voicemail.owner
         ]
         write(new ActionHistory(properties))
@@ -177,7 +213,7 @@ class HistoryService {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)
         def properties = [
             action: Action.SENT_NEW_VOICEMAIL_SMS,
-            description: "Sent SMS to [${preferences.smsNotificationAddress}] for ${friendlyVoicemailSnippet(voicemail)}",
+            description: "Sent SMS to [${preferences.smsNotificationAddress}] for ${friendlyMessageSnippet(voicemail)}",
             onUser: voicemail.owner
         ]
         write(new ActionHistory(properties))
@@ -287,7 +323,8 @@ class HistoryService {
         return formatter.print(date)
     }
 
-    private def friendlyVoicemailSnippet(Voicemail voicemail) {
-        return "voicemail for [${voicemail.owner.realName}] from [${voicemail.from()}] left on [${formatDateTime(voicemail.dateCreated)}]"
+    private def friendlyMessageSnippet(InboxMessage message) {
+        def type = message.instanceOf(Fax) ? 'fax' : 'voicemail'
+        return "${type} for [${message.owner.realName}] from [${message.from()}] left on [${formatDateTime(message.dateCreated)}]"
     }
 }

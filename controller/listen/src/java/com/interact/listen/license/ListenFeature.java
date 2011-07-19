@@ -14,6 +14,7 @@ public enum ListenFeature implements Feature
     BROADCAST           ("Listen Broadcast",    "PBX Broadcast", true),
     CONFERENCING        ("Listen Conferencing", "Conferencing", true),
     CUSTOM_APPLICATIONS ("Listen Custom App",   "Custom SPOT Applications", true),
+    FAX                 ("Listen Fax",          "Fax", true),
     FINDME              ("Listen Find Me",      "Find Me / Follow Me", true),
     VOICEMAIL           ("Listen Voice Mail",   "Voicemail", true),
     IPPBX               ("IP PBX",              "IP PBX", true);

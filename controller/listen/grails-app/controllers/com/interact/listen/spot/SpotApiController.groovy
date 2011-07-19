@@ -68,10 +68,10 @@ class SpotApiController {
     def cloudToDeviceService
     def conferenceService
     def deleteParticipantService
-    def deleteVoicemailService
     def googleAuthService
     def historyService
     def hrefParserService
+    def inboxMessageService
     def menuLocatorService
     def messageLightService
     def springSecurityService
@@ -571,7 +571,7 @@ class SpotApiController {
             log.debug "MissingPropertyException in deleteVoicemail API, probably an API user"
         }
 
-        deleteVoicemailService.deleteVoicemail(voicemail)
+        inboxMessageService.delete(voicemail)
         response.flushBuffer()
     }
 

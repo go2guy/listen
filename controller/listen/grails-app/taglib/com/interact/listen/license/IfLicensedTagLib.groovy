@@ -3,8 +3,9 @@ package com.interact.listen.license
 
 class IfLicensedTagLib {
     static namespace = 'listen'
-    def springSecurityService // injected
-    def licenseService // injected
+
+    def springSecurityService
+    def licenseService
 
     def ifLicensed = { attrs, body ->
         if(!attrs.feature) throwTagError('Tag [ifLicensed] is missing required attribute [feature]')
@@ -21,10 +22,19 @@ class IfLicensedTagLib {
         }
     }
 
+    def ifNotLicensed = { attrs, body ->
+        if(!attrs.feature) throwTagError('Tag [ifNotLicensed] is missing required attribute [feature]')
+
+        def feature = ListenFeature.valueOf(attrs.feature)
+        if(!licenseService.isLicensed(feature)) {
+            out << body()
+        }
+    }
+
     def canAccess = { attrs, body ->
         if(!attrs.feature) throwTagError('Tag [canAccess] is missing required attribute [feature]')
 
-        //Check if a feture is licensed first, if it is, check if it's enabled for the current organization
+        //Check if a feture is licensed first, if it is, check if it is enabled for the current organization
         def feature
         try {
             feature = ListenFeature.valueOf(attrs.feature)
@@ -33,6 +43,15 @@ class IfLicensedTagLib {
         }
 
         if(licenseService.canAccess(feature)) {
+            out << body()
+        }
+    }
+
+    def canAccessAny = { attrs, body ->
+        if(!attrs.features) throwTagError('Tag [canAccessAny] is missing required attribute [features]')
+
+        def names = attrs.features.split(',') as Set
+        if(names.collect { ListenFeature.valueOf(it) }.any { licenseService.canAccess(it) }) {
             out << body()
         }
     }

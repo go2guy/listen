@@ -3,15 +3,15 @@ package com.interact.listen
 class CurrentUserTagLib {
     static namespace = 'listen'
 
-    def newVoicemailCountService
+    def inboxMessageService
     def springSecurityService
 
     def realName = { attrs ->
         out << springSecurityService.getCurrentUser().realName
     }
 
-    def newVoicemailCount = { attrs ->
-        out << newVoicemailCountService.count()
+    def newMessageCount = { attrs ->
+        out << inboxMessageService.newMessageCount()
     }
 
     def ifCannotDial = { attrs, body ->

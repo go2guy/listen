@@ -30,7 +30,7 @@ class UserCreationService {
         // roles is not licensed. this ensures that users will be able to access
         // the application if the feature is licensed later.
 
-        def roles = ['ROLE_VOICEMAIL_USER', 'ROLE_CONFERENCE_USER', 'ROLE_FINDME_USER']
+        def roles = ['ROLE_VOICEMAIL_USER', 'ROLE_CONFERENCE_USER', 'ROLE_FINDME_USER', 'ROLE_FAX_USER']
         if(isOperator) {
             roles << 'ROLE_ORGANIZATION_ADMIN'
             roles << 'ROLE_ATTENDANT_ADMIN'

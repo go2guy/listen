@@ -101,6 +101,18 @@ class SpotCommunicationService {
         buildAndSendRequest(importedValue);
     }
 
+    def sendFax(def fax) throws IOException, SpotCommunicationException
+    {
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        importedValue.put("application", "Direct Message");
+        importedValue.put("action", "SEND_FAX");
+        importedValue.put("artifact", fax.merged.absolutePath);
+        importedValue.put("destination", fax.dnis);
+        importedValue.put("ani", ""); //Will be implemented later, probably once sold and we know what to do
+        importedValue.put("organization", "/organizations/${fax.sender.organization.id}");
+        buildAndSendRequest(importedValue);
+    }
+
     private void sendDeleteArtifactEvent(def action, def filePath) throws IOException, SpotCommunicationException {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "DEL_ARTIFACT");

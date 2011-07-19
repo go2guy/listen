@@ -1,11 +1,13 @@
 package com.interact.listen
 
+import com.interact.listen.license.ListenFeature
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 
 class ButtonMenuTagLib {
     static namespace = 'listen'
 
-    def springSecurityService // injected
+    def licenseService
+    def springSecurityService
 
     def buttonMenu = { attrs ->
         if(!attrs.tab) return
@@ -92,11 +94,20 @@ class ButtonMenuTagLib {
 
                 break
 
+            case 'messages':
+                // falls through
             case 'voicemail':
+                // falls through
+            case 'fax':
 
                 out << '<ul class="button-menu">'
-                button(attrs.button == 'inbox', 'voicemail', 'inbox', 'button.menu.voicemail.inbox')
-                button(attrs.button == 'settings', 'voicemail', 'settings', 'button.menu.voicemail.settings')
+                button(attrs.button == 'inbox', 'messages', 'inbox', 'button.menu.messages.inbox')
+                if(licenseService.isLicensed(ListenFeature.FAX)) {
+                    button(attrs.button == 'sendfax', 'fax', 'create', 'button.menu.messages.sendfax')
+                }
+                if(licenseService.isLicensed(ListenFeature.VOICEMAIL)) {
+                    button(attrs.button == 'settings', 'voicemail', 'settings', 'button.menu.messages.settings')
+                }
                 out << '</ul>'
 
                 break

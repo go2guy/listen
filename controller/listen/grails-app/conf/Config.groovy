@@ -166,6 +166,7 @@ grails.plugins.springsecurity.providerNames = providers
 
 grails.plugins.springsecurity.filterChain.chainMap = [
     '/api/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
+    '/faxApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
     '/spotApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
     '/meta/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
     '/**': 'JOINED_FILTERS'
@@ -181,7 +182,7 @@ grails.plugins.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, con
     }
 }
 
-// Joda-Time plugin:
+// Joda-Time plugin, other mappings:
 grails.gorm.default.mapping = {
 	"user-type" type: org.joda.time.contrib.hibernate.PersistentDateTime, class: org.joda.time.DateTime
 	"user-type" type: org.joda.time.contrib.hibernate.PersistentDuration, class: org.joda.time.Duration
@@ -191,6 +192,8 @@ grails.gorm.default.mapping = {
 	"user-type" type: org.joda.time.contrib.hibernate.PersistentLocalTimeAsString, class: org.joda.time.LocalTime
 	"user-type" type: org.joda.time.contrib.hibernate.PersistentLocalDateTime, class: org.joda.time.LocalDateTime
 	"user-type" type: org.joda.time.contrib.hibernate.PersistentPeriod, class: org.joda.time.Period
+
+    'user-type' type: com.interact.listen.PersistentFileUri, class: File
 }
 
 // Mail plugin

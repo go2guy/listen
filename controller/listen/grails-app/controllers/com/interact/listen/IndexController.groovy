@@ -18,12 +18,16 @@ class IndexController {
         def controller = 'profile'
 
         // TODO make this use the new roles
-        if      (has('ROLE_CUSTODIAN'))           controller = 'organization'
-        else if (has('ROLE_VOICEMAIL_USER') &&
-                 can(ListenFeature.VOICEMAIL))    controller = 'voicemail'
-        else if (can(ListenFeature.CONFERENCING)) controller = 'conferencing'
-//        else if (can(ListenFeature.FINDME))       controller = 'findme'
-        // TODO un-comment the conference and findme ones when they get ported
+        if(has('ROLE_CUSTODIAN')) {
+            controller = 'organization'
+        } else if((has('ROLE_VOICEMAIL_USER') && can(ListenFeature.VOICEMAIL)) ||
+                  (has('ROLE_FAX_USER') && can(ListenFeature.FAX))) {
+            controller = 'messages'
+        } else if(can(ListenFeature.CONFERENCING)) {
+            controller = 'conferencing'
+        } else if (can(ListenFeature.FINDME)) {
+            controller = 'findme'
+        }
 
         redirect(controller: controller)
     }

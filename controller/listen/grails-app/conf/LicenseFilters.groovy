@@ -24,6 +24,12 @@ class LicenseFilters {
             case 'conferencing':
                 return licenseService.isLicensed(ListenFeature.CONFERENCING)
 
+            case 'fax':
+                return licenseService.isLicensed(ListenFeature.FAX)
+
+            case 'messages':
+                return licenseService.isLicensed(ListenFeature.VOICEMAIL) || licenseService.isLicensed(ListenFeature.FAX)
+
             case 'voicemail':
                 return licenseService.isLicensed(ListenFeature.VOICEMAIL)
 

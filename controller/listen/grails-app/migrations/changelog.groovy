@@ -1756,4 +1756,107 @@ databaseChangeLog = {
 
 		addForeignKeyConstraint(baseColumnNames: "organization_id", baseTableName: "single_organization_configuration", constraintName: "FKA64DE54156D05B56", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "organization", referencesUniqueColumn: "false")
 	}
+
+    changeSet(author: 'root', id: '1310562708789-1') {
+        // incoming faxes
+
+        renameTable(oldTableName: 'voicemail', newTableName: 'inbox_message')
+
+        addColumn(tableName: 'inbox_message') {
+            column(name: 'class', type: 'varchar(255)') {
+                constraints(nullable: 'false')
+            }
+        }
+
+		addColumn(tableName: "inbox_message") {
+			column(name: "file", type: "varchar(255)")
+		}
+
+        dropNotNullConstraint(tableName: 'inbox_message', columnName: 'ani', columnDataType: 'varchar(255)')
+        dropNotNullConstraint(tableName: 'inbox_message', columnName: 'audio_id', columnDataType: 'bigint')
+
+        // outgoing faxes
+
+		createTable(tableName: "outgoing_fax") {
+			column(autoIncrement: "true", name: "id", type: "bigint") {
+				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "outgoing_faxPK")
+			}
+
+			column(name: "version", type: "bigint") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "date_created", type: "datetime") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "date_prepared", type: "datetime")
+
+			column(name: "date_sent", type: "datetime")
+
+			column(name: "dnis", type: "varchar(255)") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "merged", type: "varchar(255)")
+
+			column(name: "pages", type: "integer") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "preparation_status", type: "varchar(255)")
+
+			column(name: "sender_id", type: "bigint") {
+				constraints(nullable: "false")
+			}
+		}
+
+		createTable(tableName: "outgoing_fax_user_file") {
+			column(name: "outgoing_fax_to_merge_id", type: "bigint")
+
+			column(name: "user_file_id", type: "bigint")
+
+			column(name: "to_merge_idx", type: "integer")
+		}
+
+		createTable(tableName: "user_file") {
+			column(autoIncrement: "true", name: "id", type: "bigint") {
+				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "user_filePK")
+			}
+
+			column(name: "version", type: "bigint") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "detected_type", type: "varchar(255)") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "file", type: "varchar(255)") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "owner_id", type: "bigint") {
+				constraints(nullable: "false")
+			}
+		}
+
+
+		createIndex(indexName: "FK39FA57CABED31AC", tableName: "outgoing_fax") {
+			column(name: "sender_id")
+		}
+
+		createIndex(indexName: "FK7A26073B813442AD", tableName: "outgoing_fax_user_file") {
+			column(name: "user_file_id")
+		}
+
+		createIndex(indexName: "FK143669706D23A06E", tableName: "user_file") {
+			column(name: "owner_id")
+		}
+
+		addForeignKeyConstraint(baseColumnNames: "sender_id", baseTableName: "outgoing_fax", constraintName: "FK39FA57CABED31AC", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user", referencesUniqueColumn: "false")
+		addForeignKeyConstraint(baseColumnNames: "user_file_id", baseTableName: "outgoing_fax_user_file", constraintName: "FK7A26073B813442AD", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user_file", referencesUniqueColumn: "false")
+		addForeignKeyConstraint(baseColumnNames: "owner_id", baseTableName: "user_file", constraintName: "FK143669706D23A06E", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user", referencesUniqueColumn: "false")
+	}
+
 }

@@ -603,7 +603,7 @@ div.listTotal {
     margin: 5px;
 }
 
-#new-voicemail-count {
+#new-message-count {
     margin-left: 5px;
 }
     </style>
@@ -632,11 +632,11 @@ div.listTotal {
       </ul>
 
       <ul id="application-menu" class="tab-menu">
-        <listen:canAccess feature="VOICEMAIL">
-          <sec:ifAllGranted roles="ROLE_VOICEMAIL_USER">
-            <li class="voicemail<g:if test="${pageProperty(name: 'meta.tab') == 'voicemail'}"> current</g:if>"><g:link controller="voicemail"><g:message code="tab.menu.voicemail"/><span id="new-voicemail-count">(<listen:newVoicemailCount/>)</span></g:link></li>
-          </sec:ifAllGranted>
-        </listen:canAccess>
+        <listen:canAccessAny features="VOICEMAIL,FAX">
+          <sec:ifAnyGranted roles="ROLE_VOICEMAIL_USER,ROLE_FAX_USER">
+            <li class="messages<g:if test="${['messages', 'voicemail', 'fax'].contains(pageProperty(name: 'meta.tab'))}"> current</g:if>"><g:link controller="messages" action="inbox"><g:message code="tab.menu.messages"/><span id="new-message-count">(<listen:newMessageCount/>)</span></g:link></li>
+          </sec:ifAnyGranted>
+        </listen:canAccessAny>
         <listen:canAccess feature="CONFERENCING">
           <sec:ifAllGranted roles="ROLE_CONFERENCE_USER">
             <li class="conferencing<g:if test="${pageProperty(name: 'meta.tab') == 'conferencing'}"> current</g:if>"><g:link controller="conferencing"><g:message code="tab.menu.conferencing"/></g:link></li>
@@ -723,14 +723,14 @@ $(document).ready(function() {
         return false; // prevent browser from submitting the form
     });
 
-<sec:ifAllGranted roles="ROLE_VOICEMAIL_USER">
+<sec:ifAnyGranted roles="ROLE_VOICEMAIL_USER,ROLE_FAX_USER">
     setInterval(function() {
         $.ajax({
-            url: '${request.contextPath}/voicemail/newCount',
+            url: '${request.contextPath}/messages/newCount',
             dataType: 'json',
             cache: false,
             success: function(data) {
-                var displayedCount = $('#new-voicemail-count');
+                var displayedCount = $('#new-message-count');
                 var newCount = '(' + data.count + ')';
                 if(newCount != displayedCount.text()) {
                     displayedCount.text(newCount);
@@ -738,7 +738,7 @@ $(document).ready(function() {
             }
         });
     }, 5000);
-</sec:ifAllGranted>
+</sec:ifAnyGranted>
 });
 
 // this is a fun idea, but it impacts usability - when the element is removed,
