@@ -25,11 +25,12 @@ class PromptOverride {
         def today = new LocalDate()
         _log.debug "Finding all PromptOverride instances with organization [${organization.name}] and params: ${params}"
         def c = PromptOverride.createCriteria()
-        def result = c.list(params) {
+        def result = c.listDistinct() {
             ge('date', today)
             menuGroup {
                 eq('organization', organization)
             }
+            order 'date', 'asc'
         }
         _log.debug "  Found ${result.size()} PromptOverride instances"
         return result
