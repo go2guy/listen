@@ -1768,6 +1768,10 @@ databaseChangeLog = {
             }
         }
 
+        update(tableName: 'inbox_message') {
+            column(name: 'class', value: 'com.interact.listen.voicemail.Voicemail')
+        }
+
 		addColumn(tableName: "inbox_message") {
 			column(name: "file", type: "varchar(255)")
 		}
