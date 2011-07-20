@@ -56,7 +56,7 @@ class AdministrationController {
             model.newDirectMessageNumber = directMessageNumber
             render(view: 'routing', model: model)
         } else {
-            flash.successMessage = 'Direct message number created'
+            flash.successMessage = message(code: 'directMessageNumber.created.message')
             redirect(action: 'routing')
         }
     }
@@ -66,7 +66,7 @@ class AdministrationController {
         exception.properties['target', 'restriction'] = params
 
         if(exception.validate() && exception.save()) {
-            flash.successMessage = 'Exception created'
+            flash.successMessage = message(code: 'outdialRestrictionException.created.message')
             redirect(action: 'outdialing')
         } else {
             def model = outdialingModel()
@@ -82,7 +82,7 @@ class AdministrationController {
         route.organization = user.organization
 
         if(route.validate() && route.save()) {
-            flash.successMessage = "Route ${route.pattern} created"
+            flash.successMessage = message(code: 'numberRoute.created.message', args: [route.pattern])
             redirect(action: 'routing')
         } else {
             def model = routingModel()
@@ -98,7 +98,7 @@ class AdministrationController {
             model.newExtension = extension
             render(view: 'phones', model: model)
         } else {
-            flash.successMessage = 'Extension created'
+            flash.successMessage = message(code: 'extension.created.message')
             redirect(action: 'phones')
         }
     }
@@ -113,7 +113,7 @@ class AdministrationController {
             if(!target) {
                 def model = outdialingModel()
                 model.newRestriction = restriction
-                flash.errorMessage = 'Target user not found'
+                flash.errorMessage = message(code: 'outdialRestriction.targetNotFound.message')
                 render(view: 'outdialing', model: model)
                 return
             }
@@ -121,7 +121,7 @@ class AdministrationController {
         }
 
         if(restriction.validate() && restriction.save()) {
-            flash.successMessage = "Restriction for ${restriction.pattern} saved"
+            flash.successMessage = message(code: 'outdialRestriction.created.message', args: [restriction.pattern])
             redirect(action: 'outdialing')
         } else {
             def model = outdialingModel()
@@ -153,65 +153,65 @@ class AdministrationController {
     def deleteDirectMessageNumber = {
         def directMessageNumber = DirectMessageNumber.get(params.id)
         if(!directMessageNumber) {
-            flash.errorMessage = 'Direct message number not found'
+            flash.errorMessage = message(code: 'directMessageNumber.notFound.message')
             redirect(action: 'routing')
             return
         }
 
         directMessageNumberService.delete(directMessageNumber)
-        flash.successMessage = 'Direct message number deleted'
+        flash.successMessage = message(code: 'directMessageNumber.deleted.message')
         redirect(action: 'routing')
     }
 
     def deleteException = {
         def exception = OutdialRestrictionException.get(params.id)
         if(!exception) {
-            flash.errorMessage = 'Exception not found'
+            flash.errorMessage = message(code: 'outdialRestrictionException.notFound.message')
             redirect(action: 'outdialing')
             return
         }
 
         exception.delete()
-        flash.successMessage = 'Exception deleted'
+        flash.successMessage = message(code: 'outdialRestrictionException.deleted.message')
         redirect(action: 'outdialing')
     }
 
     def deleteInternalRoute = {
         def route = NumberRoute.get(params.id)
         if(!route) {
-            flash.errorMessage = 'Route not found'
+            flash.errorMessage = message(code: 'numberRoute.notFound.message')
             redirect(action: 'routing')
             return
         }
 
         route.delete()
-        flash.successMessage = 'Route deleted'
+        flash.successMessage = message(code: 'numberRoute.deleted.message')
         redirect(action: 'routing')
     }
 
     def deleteExtension = {
         def extension = Extension.get(params.id)
         if(!extension) {
-            flash.errorMessage = 'Extension not found'
+            flash.errorMessage = message(code: 'extension.notFound.message')
             redirect(action: 'phones')
             return
         }
 
         extensionService.delete(extension)
-        flash.successMessage = 'Extension deleted'
+        flash.successMessage = message(code: 'extension.deleted.message')
         redirect(action: 'phones')
     }
 
     def deleteRestriction = {
         def restriction = OutdialRestriction.get(params.id)
         if(!restriction) {
-            flash.errorMessage = 'Restriction not found'
+            flash.errorMessage = message(code: 'outdialRestriction.notFound.message')
             redirect(action: 'outdialing')
             return
         }
 
         restriction.delete()
-        flash.successMessage = 'Restriction deleted'
+        flash.successMessage = message(code: 'outdialRestriction.deleted.message')
         redirect(action: 'outdialing')
     }
 
@@ -266,7 +266,7 @@ class AdministrationController {
         googleAuthConfiguration.properties['authUser', 'authPass', 'authToken', 'isEnabled'] = params
 
         if(googleAuthConfiguration.validate() && googleAuthConfiguration.save()) {
-            flash.successMessage = 'Android Cloud-to-Device settings saved'
+            flash.successMessage = message(code: 'googleAuthConfiguration.updated.message')
             redirect(action: 'android')
         } else {
             render(view: 'android', model: [googleAuthConfiguration: googleAuthConfiguration])
@@ -318,7 +318,7 @@ class AdministrationController {
                 realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
             }
 
-            flash.successMessage = 'Saved'
+            flash.successMessage = message(code: 'default.saved.message')
             redirect(action: 'configuration')
         } else {
             render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
@@ -328,7 +328,7 @@ class AdministrationController {
     def updateDirectMessageNumber = {
         def directMessageNumber = DirectMessageNumber.get(params.id)
         if(!directMessageNumber) {
-            flash.errorMessage = 'Direct message number not found'
+            flash.errorMessage = message(code: 'directMessageNumber.notFound.message')
             redirect(action: 'routing')
             return
         }
@@ -339,7 +339,7 @@ class AdministrationController {
             model.updatedDirectMessageNumber = directMessageNumber
             render(view: 'routing', model: model)
         } else {
-            flash.successMessage = 'Direct message number saved'
+            flash.successMessage = message(code: 'directMessageNumber.updated.message')
             redirect(action: 'routing')
         }
     }
@@ -347,14 +347,14 @@ class AdministrationController {
     def updateException = {
         def exception = OutdialRestrictionException.get(params.id)
         if(!exception) {
-            flash.errorMessage = 'Exception not found'
+            flash.errorMessage = message(code: 'outdialRestrictionException.notFound.message')
             redirect(action: 'outdialing')
             return
         }
 
         exception.properties['target', 'restriction'] = params
         if(exception.validate() && exception.save()) {
-            flash.successMessage = 'Exception updated'
+            flash.successMessage = message(code: 'outdialRestrictionException.updated.message')
             redirect(action: 'outdialing')
         } else {
             def model = outdialingModel()
@@ -366,7 +366,7 @@ class AdministrationController {
     def updateExternalRoute = {
         def route = NumberRoute.get(params.id)
         if(!route) {
-            flash.errorMessage = 'Route not found'
+            flash.errorMessage = message(code: 'numberRoute.notFound.message')
             redirect(action: 'routing')
             return
         }
@@ -379,7 +379,7 @@ class AdministrationController {
 
         route.properties['destination', 'label'] = params
         if(route.validate() && route.save()) {
-            flash.successMessage = 'Route updated'
+            flash.successMessage = message(code: 'numberRoute.updated.message')
             redirect(action: 'routing')
         } else {
             def model = routingModel()
@@ -391,7 +391,7 @@ class AdministrationController {
     def updateInternalRoute = {
         def route = NumberRoute.get(params.id)
         if(!route) {
-            flash.errorMessage = 'Route not found'
+            flash.errorMessage = message(code: 'numberRoute.notFound.message')
             redirect(action: 'routing')
             return
         }
@@ -404,7 +404,7 @@ class AdministrationController {
 
         route.properties['destination', 'label', 'pattern'] = params
         if(route.validate() && route.save()) {
-            flash.successMessage = 'Route updated'
+            flash.successMessage = message(code: 'numberRoute.updated.message')
             redirect(action: 'routing')
         } else {
             def model = routingModel()
@@ -416,7 +416,7 @@ class AdministrationController {
     def updateExtension = {
         def extension = Extension.get(params.id)
         if(!extension) {
-            flash.errorMessage = 'Extension not found'
+            flash.errorMessage = message(code: 'extension.notFound.message')
             redirect(action: 'phones')
             return
         }
@@ -427,7 +427,7 @@ class AdministrationController {
             model.updatedExtension = extension
             render(view: 'phones', model: model)
         } else {
-            flash.successMessage = 'Extension saved'
+            flash.successMessage = message(code: 'extension.updated.message')
             redirect(action: 'phones')
         }
     }
@@ -435,7 +435,7 @@ class AdministrationController {
     def updateRestriction = {
         def restriction = OutdialRestriction.get(params.id)
         if(!restriction) {
-            flash.errorMessage = 'Restriction not found'
+            flash.errorMessage = message(code: 'outdialRestriction.notFound.message')
             redirect(action: 'restrictions')
             return
         }
@@ -453,7 +453,7 @@ class AdministrationController {
             if(!target) {
                 def model = outdialingModel()
                 model.newRestriction = restriction
-                flash.errorMessage = 'Target user not found'
+                flash.errorMessage = message(code: 'outdialRestriction.targetNotFound.message')
                 render(view: 'outdialing', model: model)
                 return
             }
@@ -461,7 +461,7 @@ class AdministrationController {
         }
 
         if(restriction.validate() && restriction.save()) {
-            flash.successMessage = "Restriction for ${restriction.pattern} saved"
+            flash.successMessage = message(code: 'outdialRestriction.updated.message', args: [restriction.pattern])
             redirect(action: 'outdialing')
         } else {
             def model = outdialingModel()
