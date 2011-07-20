@@ -264,6 +264,7 @@ h3 {
 
 ul.button-menu  {
     display: block;
+    float: left;
     font: 12px Century Gothic, Arial, sans-serif;
     height: 27px;
     margin-bottom: 10px;
@@ -297,6 +298,12 @@ ul.button-menu li.current a {
     color: #054B7A; /* swatch:text */
 }
 
+#content-separator {
+    clear: both;
+    display: block;
+    height: 0;
+}
+
 #footer {
     color: #054B7A;
     display: block;
@@ -315,6 +322,14 @@ ul.button-menu li.current a {
     font: 12px Arial, sans-serif;
     margin-bottom: 10px;
     padding: 5px 5px 5px 30px;
+}
+
+#content-area ul.messages.success {
+    float: right;
+}
+
+#content-area ul.messages.error {
+    clear: both;
 }
 
 .success {
@@ -660,11 +675,11 @@ div.listTotal {
       <g:set var="tab" value="${pageProperty(name: 'meta.tab')}"/>
       <g:set var="isMeta" value="${['administration', 'users', 'profile', 'custodianAdministration'].contains(tab)}"/>
       <div id="content-area" class="${tab}${isMeta ? ' meta' : ''}">
-        <listen:buttonMenu tab="${pageProperty(name: 'meta.tab')}" button="${pageProperty(name: 'meta.button')}"/>
-
         <g:if test="${flash.successMessage}">
           <ul class="messages success"><li>${flash.successMessage}</li></ul>
         </g:if>
+
+        <listen:buttonMenu tab="${pageProperty(name: 'meta.tab')}" button="${pageProperty(name: 'meta.button')}"/>
 
         <g:if test="${flash.errorMessage}">
           <ul class="messages error"><li>${flash.errorMessage}</li></ul>
@@ -676,6 +691,8 @@ div.listTotal {
             </ul>
           </g:hasErrors>
         </g:else>
+
+        <div id="content-separator"></div>
 
         <g:if test="${pageProperty(name: 'meta.page-header')}">
           <h3>${pageProperty(name: 'meta.page-header')}</h3>
@@ -741,10 +758,7 @@ $(document).ready(function() {
 </sec:ifAnyGranted>
 });
 
-// this is a fun idea, but it impacts usability - when the element is removed,
-// the whole content area slides up fast, which could lead to an inadvertent
-// button click, or other negative consequences
-/*$(document).ready(function() {
+$(document).ready(function() {
   $('.messages.success').each(function(index) {
     var el = $(this);
     setTimeout(function() {
@@ -753,7 +767,7 @@ $(document).ready(function() {
       });
     }, 1000);
   });
-});*/
+});
       </script>
       <listen:customApplicationScripts/>
     </div>

@@ -111,6 +111,9 @@ class ButtonMenuTagLib {
                 out << '</ul>'
 
                 break
+
+            default:
+                out << '<ul class="button-menu"></ul>'
         }
     }
 
