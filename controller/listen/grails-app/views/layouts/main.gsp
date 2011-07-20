@@ -318,6 +318,8 @@ ul.button-menu li.current a {
 /* MESSAGES */
 
 #content-area ul.messages {
+    background-image: url('${g.resource(dir: 'resources/app/images', file: 'sprite.png')}');
+    background-repeat: no-repeat;
     display: block;
     font: 12px Arial, sans-serif;
     margin-bottom: 10px;
@@ -325,16 +327,18 @@ ul.button-menu li.current a {
 }
 
 #content-area ul.messages.success {
+    background-position: 5px -47px;
     float: right;
 }
 
 #content-area ul.messages.error {
+    background-position: 5px -547px;
     clear: both;
 }
 
 .success {
     background-color: #D1FFC9;
-    border: 1px dashed #437A3A;
+    border: 1px solid #437A3A;
     color: #437A3A; /* same as border color */
 }
 
