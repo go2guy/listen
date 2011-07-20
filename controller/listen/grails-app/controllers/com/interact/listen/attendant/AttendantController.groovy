@@ -1,6 +1,7 @@
 package com.interact.listen.attendant
 
 import com.interact.listen.attendant.action.*
+import com.interact.listen.util.FileTypeDetector
 import com.interact.listen.voicemail.TimeRestriction
 import grails.plugins.springsecurity.Secured
 import org.joda.time.LocalTime
@@ -179,6 +180,13 @@ class AttendantController {
         def file = request.getFile('uploadFile')
         if(!file) {
             render('Please select a file to upload')
+            return
+        }
+
+        def detector = new FileTypeDetector()
+        def detectedType = detector.detectContentType(file.inputStream, file.originalFilename)
+        if(detectedType != 'audio/x-wav') {
+            render('File must be a wav file')
             return
         }
 

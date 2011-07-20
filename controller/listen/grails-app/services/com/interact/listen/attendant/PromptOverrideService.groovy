@@ -1,5 +1,6 @@
 package com.interact.listen.attendant
 
+import com.interact.listen.util.FileTypeDetector
 import org.springframework.web.multipart.MultipartFile
 
 class PromptOverrideService {
@@ -15,13 +16,22 @@ class PromptOverrideService {
         def user = springSecurityService.getCurrentUser()
         def organization = user.organization
 
+        def promptOverride = new PromptOverride(params)
+        promptOverride.validate(['date', 'menuGroup'])
+
         if(file && !file.isEmpty()) {
-            def savedFile = promptFileService.save(file, organization.id)
-            params.optionsPrompt = savedFile.name
+            def detector = new FileTypeDetector()
+            def detectedType = detector.detectContentType(file.inputStream, file.originalFilename)
+            if(detectedType != 'audio/x-wav') {
+                promptOverride.optionsPrompt = file.originalFilename
+                promptOverride.errors.rejectValue('optionsPrompt', 'promptOverride.optionsPrompt.must.be.wav')
+            } else {
+                def savedFile = promptFileService.save(file, organization.id)
+                promptOverride.optionsPrompt = file.originalFilename
+            }
         }
 
-        def promptOverride = new PromptOverride(params)
-        if(promptOverride.validate() && promptOverride.save()) {
+        if(!promptOverride.hasErrors() && promptOverride.save()) {
             historyService.createdAttendantHoliday(promptOverride)
         }
         return promptOverride

@@ -1,6 +1,7 @@
 package com.interact.listen.util
 
 import java.io.FileInputStream
+import java.io.InputStream
 import java.io.IOException
 
 import org.apache.tika.exception.TikaException
@@ -17,10 +18,19 @@ class FileTypeDetector {
         def is = null
         try {
             is = new FileInputStream(file)
-            
+            return detectContentType(is, file.name)
+        } catch(FileNotFoundException e) {
+            throw new FileTypeDetectionException(e)
+        } finally {
+            if(is) is.close()
+        }
+    }
+
+    public String detectContentType(InputStream is, String fileName) throws FileTypeDetectionException {
+        try {
             def contentHandler = new BodyContentHandler()
             def metadata = new Metadata()
-            metadata.set(Metadata.RESOURCE_NAME_KEY, file.name)
+            metadata.set(Metadata.RESOURCE_NAME_KEY, fileName)
             def parser = new AutoDetectParser()
             parser.parse(is, contentHandler, metadata)
 
@@ -31,8 +41,6 @@ class FileTypeDetector {
             throw new FileTypeDetectionException(e)
         } catch(TikaException e) {
             throw new FileTypeDetectionException(e)
-        } finally {
-            if(is) is.close()
         }
     }
 }
