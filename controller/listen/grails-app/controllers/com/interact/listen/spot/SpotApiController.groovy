@@ -1110,8 +1110,8 @@ class SpotApiController {
             log.debug "MissingPropertyException in listVoicemails API, probably an API user"
         }
 
-        params.offset = params['_first'] ?: 0
-        params.max = params['_max'] ?: 100
+        params.offset = params.int('_first') ?: 0
+        params.max = params.int('_max') ?: 100
         params.sort = params['_sortBy'] ?: 'dateCreated'
         params.order = params['_sortOrder'] ? (params['_sortOrder'] == 'ASCENDING' ? 'asc' : 'desc') : 'asc'
         def voicemails = Voicemail.createCriteria().list(params) {
@@ -1166,8 +1166,8 @@ class SpotApiController {
             results: results
         ]
         if(count < total) {
-            if(params.offset + count < total) {
-                json.next = "/voicemails?_first=${params.offset + count}&_max=${params.max}&_sortBy=${params.sort}&_sortOrder=${params.order == 'asc' ? 'ASCENDING' : 'DESCENDING'}${pstring}"
+            if((params.offset + count) < total) {
+                json.put('next', "/voicemails?_first=${params.offset + count}&_max=${params.max}&_sortBy=${params.sort}&_sortOrder=${params.order == 'asc' ? 'ASCENDING' : 'DESCENDING'}${pstring}")
             }
         }
         log.debug "Rendering JSON: ${json}"
