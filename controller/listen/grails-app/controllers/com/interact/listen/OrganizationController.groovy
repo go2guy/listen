@@ -103,8 +103,13 @@ class OrganizationController {
     }
 
     def routing = {
-        def routes = NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL, [sort: 'organization', order: 'asc'])
-        render(view: 'routing', model: [routes: routes])
+        params.max = Math.min(params.max ? params.int('max') : 100, 100)
+        params.sort = params.sort ?: 'organization'
+        params.order = params.order ?: 'asc'
+
+        def total = NumberRoute.countByType(NumberRoute.Type.EXTERNAL)
+        def routes = NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL, params)
+        render(view: 'routing', model: [routes: routes, routesTotal: total])
     }
 
     def save = {

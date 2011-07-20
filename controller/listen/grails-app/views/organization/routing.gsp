@@ -69,6 +69,12 @@ table { margin-bottom: 10px; }
           </g:each>
         </tbody>
       </table>
+      <g:if test="${routes.size() > 0}">
+        <listen:paginateTotal total="${routesTotal}" messagePrefix="paginate.total.routes"/>
+        <div class="pagination">
+          <g:paginate total="${routesTotal}" maxSteps="5"/>
+        </div>
+      </g:if>
     </g:if>
   </body>
 </html>
