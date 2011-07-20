@@ -5,6 +5,7 @@ import com.interact.listen.android.DeviceRegistration
 import com.interact.listen.attendant.*
 import com.interact.listen.attendant.action.*
 import com.interact.listen.conferencing.*
+import com.interact.listen.history.CallHistory
 import com.interact.listen.license.ListenFeature
 import com.interact.listen.pbx.*
 import com.interact.listen.pbx.findme.*

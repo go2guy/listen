@@ -1,6 +1,7 @@
 package com.interact.listen
 
 import com.interact.listen.history.ActionHistory
+import com.interact.listen.history.CallHistory
 import com.interact.listen.pbx.Extension
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON

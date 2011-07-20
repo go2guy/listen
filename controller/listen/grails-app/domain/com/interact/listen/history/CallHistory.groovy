@@ -1,5 +1,7 @@
-package com.interact.listen
+package com.interact.listen.history
 
+import com.interact.listen.Organization
+import com.interact.listen.User
 import org.joda.time.DateTime
 import org.joda.time.Duration
 
