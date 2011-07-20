@@ -5,6 +5,8 @@ import com.interact.listen.stats.Stat
 
 import org.apache.commons.validator.EmailValidator
 import org.joda.time.format.DateTimeFormat
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import org.joda.time.format.ISODateTimeFormat
 
 class ScheduledConferenceNotificationService {
@@ -116,6 +118,53 @@ class ScheduledConferenceNotificationService {
         switch(pinType) {
             case PinType.ACTIVE:
             case PinType.PASSIVE:
+                pinHtml += "${pinType.displayName()} PIN: ${getPin(scheduledConference, pinType)}\n"
+                break
+            case PinType.ADMIN:
+                Pin.findAllByConference(scheduledConference.forConference).each { pin ->
+                    pinHtml += "${pin.pinType.displayName()} PIN: ${pin.number}\n"
+                }
+                break
+        }
+
+        def body = """You have been invited to a conference by ${scheduledConference.scheduledBy.friendlyName()}.
+Subject: ${scheduledConference.emailSubject}
+Date/Time: ${formattedDateTime(scheduledConference)}
+Memo: ${scheduledConference.emailBody}
+
+${pinHtml}
+
+${phoneNumberHtml}
+"""
+
+        //in case the user create memo has new lines
+        body = body.replaceAll('\\r', '')
+        return body.replaceAll('\\n', '\\\\n')
+    }
+
+    private def getHtmlBody(ScheduledConference scheduledConference, PinType pinType) {
+        def organization = scheduledConference.forConference.owner.organization
+        // TODO hard-coded destination application
+        def phoneNumbers = NumberRoute.withCriteria {
+            isNotNull('label')
+            eq('organization', organization)
+            eq('destination', 'Conferencing')
+        }
+        def phoneNumberCount = phoneNumbers.size()
+        def phoneNumberHtml = ''
+        if(phoneNumberCount == 0) {
+            phoneNumberHtml = 'Contact the conference administrator for the conference phone number.'
+        } else {
+            phoneNumberHtml = 'Join the conference by dialing:<br/>'
+            phoneNumbers.each { number ->
+                    phoneNumberHtml += "- ${number.label}: ${number.pattern}<br/>"
+            }
+        }
+
+        def pinHtml = ''
+        switch(pinType) {
+            case PinType.ACTIVE:
+            case PinType.PASSIVE:
                 pinHtml += "<b>${pinType.displayName()} PIN: ${getPin(scheduledConference, pinType)}</b><br/>"
                 break
             case PinType.ADMIN:
@@ -126,9 +175,10 @@ class ScheduledConferenceNotificationService {
         }
 
         def body = """\
-<!doctype html>\
+<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">\
 <html><body>\
-You have been invited to a conference by ${scheduledConference.scheduledBy.friendlyName().encodeAsHTML()}.<br/><br/>\
+You have been invited to a conference by ${scheduledConference.scheduledBy.friendlyName().encodeAsHTML()}.<br/><b\
+r/>\
 \
 Subject: ${scheduledConference.emailSubject.encodeAsHTML()}<br/>\
 Date/Time: ${formattedDateTime(scheduledConference)}<br/>\
@@ -185,12 +235,12 @@ ${phoneNumberHtml}\
             b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}\n"
         }
         b << 'CLASS:PUBLIC\n'
-        b << "CREATED:${iso.print(sc.dateCreated)}\n"
+        b << "CREATED:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated)}\n"
         b << "DESCRIPTION:${getEmailBody(sc, pinType)}\n"
-        b << "DTEND:${iso.print(sc.endsAt())}\n"
-        b << "DTSTAMP:${iso.print(sc.dateCreated)}\n"
-        b << "DTSTART:${iso.print(sc.startsAt())}\n"
-        b << "LAST-MODIFIED:${iso.print(sc.dateCreated)}\n"
+        b << "DTEND:${iso.withZone(DateTimeZone.UTC).print(sc.endsAt().toDateTime())}\n"
+        b << "DTSTAMP:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated)}\n"
+        b << "DTSTART:${iso.withZone(DateTimeZone.UTC).print(sc.startsAt().toDateTime())}\n"
+        b << "LAST-MODIFIED:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated)}\n"
         b << 'LOCATION:Listen\n'
         b << "ORGANIZER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
         b << 'PRIORITY:5\n'
@@ -198,7 +248,7 @@ ${phoneNumberHtml}\
         b << "SUMMARY;LANGUAGE=en-us:${sc.emailSubject}\n"
         b << 'TRANSP:OPAQUE\n'
         b << "UID:${sc.uid}\n"
-        b << "X-ALT-DESC;FMTTYPE=text/html:${getEmailBody(sc, pinType)}\n"
+        b << "X-ALT-DESC;FMTTYPE=text/html:${getHtmlBody(sc, pinType)}\n"
         b << 'X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE\n'
         b << 'X-MICROSOFT-CDO-IMPORTANCE:1\n'
         b << 'X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY\n'
@@ -214,6 +264,8 @@ ${phoneNumberHtml}\
         b << 'END:VALARM\n'
         b << 'END:VEVENT\n'
         b << 'END:VCALENDAR\n'
+
+        log.debug "TONY vcal = ${b.toString()}"
         return b.toString()
     }
 
@@ -236,12 +288,12 @@ ${phoneNumberHtml}\
             b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}\n"
         }
         b << 'CLASS:PUBLIC\n'
-        b << "CREATED:${iso.print(sc.dateCreated)}\n"
+        b << "CREATED:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated)}\n"
         b << "DESCRIPTION:${getEmailBody(sc, pinType)}\n"
-        b << "DTEND:${iso.print(sc.endsAt())}\n"
-        b << "DTSTAMP:${iso.print(sc.dateCreated)}\n"
-        b << "DTSTART:${iso.print(sc.startsAt())}\n"
-        b << "LAST-MODIFIED:${iso.print(sc.dateCreated)}\n"
+        b << "DTEND:${iso.withZone(DateTimeZone.UTC).print(sc.endsAt().toDateTime())}\n"
+        b << "DTSTAMP:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated)}\n"
+        b << "DTSTART:${iso.withZone(DateTimeZone.UTC).print(sc.startsAt().toDateTime())}\n"
+        b << "LAST-MODIFIED:${iso.withZone(DateTimeZone.UTC).print(new DateTime())}\n"
         b << 'LOCATION:Listen\n'
         b << "ORGANIZER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
         b << 'PRIORITY:1\n'
@@ -249,12 +301,12 @@ ${phoneNumberHtml}\
         b << "SUMMARY;LANGUAGE=en-us:Canceled: ${sc.emailSubject}\n"
         b << 'TRANSP:TRANSPARENT\n'
         b << "UID:${sc.uid}\n"
-        b << "X-ALT-DESC;FMTTYPE=text/html:${getEmailBody(sc, pinType)}\n"
+        b << "X-ALT-DESC;FMTTYPE=text/html:${getHtmlBody(sc, pinType)}\n"
         b << 'X-MICROSOFT-CDO-BUSYSTATUS:FREE\n'
         b << 'X-MICROSOFT-CDO-IMPORTANCE:2\n'
         b << 'X-MICROSOFT-DISALLOW-COUNTER:FALSE\n'
         b << 'X-MS-OLK-ALLOWEXTERNCHECK:TRUE\n'
-        b << 'X-MS-APPTSEQTIME:${iso.print(new DateTime())}\n'
+        b << 'X-MS-APPTSEQTIME:${iso.withZone(DateTimeZone.UTC).print(new DateTime())}\n'
         b << 'X-MS-OLK-AUTOSTARTCHECK:FALSE\n'
         b << 'X-MS-OLK-CONFTYPE:0\n'
         b << "X-MS-OLK-SENDER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
