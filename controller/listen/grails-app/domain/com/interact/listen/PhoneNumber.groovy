@@ -1,7 +1,6 @@
 package com.interact.listen
 
 import com.interact.listen.pbx.Extension
-import com.interact.listen.voicemail.DirectVoicemailNumber
 
 class PhoneNumber {
     String number
@@ -24,9 +23,9 @@ class PhoneNumber {
         }
     }
 
-    // legacy, for returning to un-migrated APIs
+    // legacy, for returning to un-migrated (android) API clients
     def type() {
-        if(this.instanceOf(DirectVoicemailNumber)) {
+        if(this.instanceOf(DirectMessageNumber)) {
             return 'VOICEMAIL'
         } else if(this.instanceOf(Extension)) {
             return 'EXTENSION'

@@ -1489,7 +1489,7 @@ class SpotApiController {
                 phoneNumber.owner = user
             }
 
-            if((phoneNumber.instanceOf(Extension) || phoneNumber.instanceOf(DirectVoicemailNumber)) && json.greetingLocation) {
+            if((phoneNumber.instanceOf(Extension) || phoneNumber.instanceOf(DirectMessageNumber)) && json.greetingLocation) {
                 if(!phoneNumber.greeting) {
                     phoneNumber.greeting = new Audio(duration: new Duration(0), fileSize: '0')
                 }

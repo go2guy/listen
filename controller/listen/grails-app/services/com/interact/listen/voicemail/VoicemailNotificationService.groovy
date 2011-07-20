@@ -30,7 +30,7 @@ class VoicemailNotificationService {
         }
 
         def address = preferences.emailNotificationAddress
-        def voicemailNumber = directVoicemailNumber(voicemail.owner.organization)
+        def voicemailNumber = directMailboxNumber(voicemail.owner.organization)
         def retrieve = voicemailNumber ? "Retrieve it at <b>${voicemailNumber.pattern}</b>.<br/><br/>" : ''
         def newCount = Voicemail.countByOwnerAndIsNew(voicemail.owner, true)
 
@@ -125,7 +125,7 @@ You have correctly configured your settings to receive Listen email notification
 
         def voicemailFrom = voicemail.from()
         def transcription = voicemail.audio.transcription
-        def voicemailNumber = directVoicemailNumber(voicemail.owner.organization)
+        def voicemailNumber = directMailboxNumber(voicemail.owner.organization)
 
         backgroundService.execute("New voicemail SMS to [${voicemail.owner.username}] at [${address}] for voicemail id [${voicemail.id}]", {
             def max = 160
@@ -185,7 +185,7 @@ You have correctly configured your settings to receive Listen email notification
         return file
     }
 
-    private def directVoicemailNumber(def organization) {
+    private def directMailboxNumber(def organization) {
         // TODO hard-coded destination application
         def routes = NumberRoute.findAllByDestinationAndOrganization('Mailbox', organization).findAll { !it.pattern.contains('*') }
         if(routes.size() == 0) {

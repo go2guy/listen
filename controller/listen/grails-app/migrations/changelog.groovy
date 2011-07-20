@@ -1863,4 +1863,10 @@ databaseChangeLog = {
 		addForeignKeyConstraint(baseColumnNames: "owner_id", baseTableName: "user_file", constraintName: "FK143669706D23A06E", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user", referencesUniqueColumn: "false")
 	}
 
+	changeSet(author: "root (generated)", id: "1311179739940-1") {
+        update(tableName: 'phone_number') {
+            column(name: 'class', value: 'com.interact.listen.DirectMessageNumber')
+            where "class='com.interact.listen.voicemail.DirectVoicemailNumber'"
+        }
+    }
 }

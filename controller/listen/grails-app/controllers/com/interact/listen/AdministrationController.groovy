@@ -5,28 +5,27 @@ import com.interact.listen.conferencing.ConferencingConfiguration
 import com.interact.listen.history.*
 import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
-import com.interact.listen.voicemail.DirectVoicemailNumber
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
     def applicationService
-    def directVoicemailNumberService
+    def directMessageNumberService
     def extensionService
     def realizeAlertUpdateService
     def springSecurityService
 
     static allowedMethods = [
         index: 'GET',
-        addDirectVoicemailNumber: 'POST',
+        addDirectMessageNumber: 'POST',
         addException: 'POST',
         addExtension: 'POST',
         addInternalRoute: 'POST',
         addRestriction: 'POST',
         android: 'GET',
         configuration: 'GET',
-        deleteDirectVoicemailNumber: 'POST',
+        deleteDirectMessageNumber: 'POST',
         deleteException: 'POST',
         deleteExtension: 'POST',
         deleteInternalRoute: 'POST',
@@ -37,7 +36,7 @@ class AdministrationController {
         routing: 'GET',
         saveAndroid: 'POST',
         saveConfiguration: 'POST',
-        updateDirectVoicemailNumber: 'POST',
+        updateDirectMessageNumber: 'POST',
         updateException: 'POST',
         updateExtension: 'POST',
         updateExternalRoute: 'POST',
@@ -50,14 +49,14 @@ class AdministrationController {
         redirect(action: 'routing')
     }
 
-    def addDirectVoicemailNumber = {
-        def directVoicemailNumber = directVoicemailNumberService.create(params)
-        if(directVoicemailNumber.hasErrors()) {
+    def addDirectMessageNumber = {
+        def directMessageNumber = directMessageNumberService.create(params)
+        if(directMessageNumber.hasErrors()) {
             def model = routingModel()
-            model.newDirectVoicemailNumber = directVoicemailNumber
+            model.newDirectMessageNumber = directMessageNumber
             render(view: 'routing', model: model)
         } else {
-            flash.successMessage = 'Direct voicemail number created'
+            flash.successMessage = 'Direct message number created'
             redirect(action: 'routing')
         }
     }
@@ -151,16 +150,16 @@ class AdministrationController {
         render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
     }
 
-    def deleteDirectVoicemailNumber = {
-        def directVoicemailNumber = DirectVoicemailNumber.get(params.id)
-        if(!directVoicemailNumber) {
-            flash.errorMessage = 'Direct voicemail number not found'
+    def deleteDirectMessageNumber = {
+        def directMessageNumber = DirectMessageNumber.get(params.id)
+        if(!directMessageNumber) {
+            flash.errorMessage = 'Direct message number not found'
             redirect(action: 'routing')
             return
         }
 
-        directVoicemailNumberService.delete(directVoicemailNumber)
-        flash.successMessage = 'Direct voicemail number deleted'
+        directMessageNumberService.delete(directMessageNumber)
+        flash.successMessage = 'Direct message number deleted'
         redirect(action: 'routing')
     }
 
@@ -326,21 +325,21 @@ class AdministrationController {
         }
     }
 
-    def updateDirectVoicemailNumber = {
-        def directVoicemailNumber = DirectVoicemailNumber.get(params.id)
-        if(!directVoicemailNumber) {
-            flash.errorMessage = 'Direct voicemail number not found'
+    def updateDirectMessageNumber = {
+        def directMessageNumber = DirectMessageNumber.get(params.id)
+        if(!directMessageNumber) {
+            flash.errorMessage = 'Direct message number not found'
             redirect(action: 'routing')
             return
         }
 
-        directVoicemailNumber = directVoicemailNumberService.update(directVoicemailNumber, params)
-        if(directVoicemailNumber.hasErrors()) {
+        directMessageNumber = directMessageNumberService.update(directMessageNumber, params)
+        if(directMessageNumber.hasErrors()) {
             def model = routingModel()
-            model.updatedDirectVoicemailNumber = directVoicemailNumber
+            model.updatedDirectMessageNumber = directMessageNumber
             render(view: 'routing', model: model)
         } else {
-            flash.successMessage = 'Direct voicemail saved'
+            flash.successMessage = 'Direct message number saved'
             redirect(action: 'routing')
         }
     }
@@ -529,7 +528,7 @@ class AdministrationController {
         def user = springSecurityService.getCurrentUser()
         def external = NumberRoute.findAllByOrganizationAndType(user.organization, NumberRoute.Type.EXTERNAL, [sort: 'pattern', order: 'asc'])
         def internal = NumberRoute.findAllByOrganizationAndType(user.organization, NumberRoute.Type.INTERNAL, [sort: 'pattern', order: 'asc'])
-        def directVoicemailNumbers = DirectVoicemailNumber.withCriteria {
+        def directMessageNumbers = DirectMessageNumber.withCriteria {
             owner {
                 eq('organization', user.organization)
             }
@@ -541,7 +540,7 @@ class AdministrationController {
             destinations: destinations,
             external: external,
             internal: internal,
-            directVoicemailNumbers: directVoicemailNumbers,
+            directMessageNumbers: directMessageNumbers,
             users: users
         ]
     }

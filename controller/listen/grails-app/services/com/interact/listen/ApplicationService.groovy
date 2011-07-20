@@ -3,42 +3,44 @@ package com.interact.listen
 import com.interact.listen.license.ListenFeature
 
 class ApplicationService {
-    static scope = 'singleton'
     static transactional = false
 
-    def licenseService // injected
+    def licenseService
 
     def listApplications() {
         def applications = []
 
         if(licenseService.canAccess(ListenFeature.AFTERHOURS)) {
-           applications.add('After Hours')
+            applications << 'After Hours'
         }
 
         if(licenseService.canAccess(ListenFeature.ATTENDANT)) {
-            applications.add('Attendant')
+            applications << 'Attendant'
         }
 
         if(licenseService.canAccess(ListenFeature.BROADCAST)) {
-            applications.add('Broadcast')
+            applications << 'Broadcast'
         }
 
         if(licenseService.canAccess(ListenFeature.CONFERENCING)) {
-            applications.add('Conferencing')
+            applications << 'Conferencing'
+        }
+
+        if(licenseService.canAccess(ListenFeature.VOICEMAIL) || licenseService.canAccess(ListenFeature.FAX)) {
+            applications << 'Direct Message'
         }
 
         if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
-            applications.add('Direct Voicemail')
-            applications.add('Mailbox')
-            applications.add('Voicemail')
+            applications << 'Mailbox'
+            applications << 'Voicemail'
         }
 
         if(licenseService.canAccess(ListenFeature.FINDME)) {
-            applications.add('Find Me Config')
+            applications << 'Find Me Config'
         }
 
         if(licenseService.canAccess(ListenFeature.IPPBX)) {
-            applications.add('IP PBX')
+            applications << 'IP PBX'
         }
 
         return applications.sort()
