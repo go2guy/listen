@@ -6,7 +6,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils as 
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class IndexController {
-    def licenseService // injected
+    def licenseService
 
     // routes a logged-in user to a relevant page
     def index = {

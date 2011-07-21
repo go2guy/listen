@@ -18,14 +18,13 @@ class MessagesController {
     ]
 
     def inboxMessageService
-    def springSecurityService
 
     def index = {
         redirect(action: 'inbox')
     }
 
     def inbox = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
 
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
         params.sort = params.sort ? params.sort : 'dateCreated'
@@ -52,7 +51,7 @@ class MessagesController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(message.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -87,7 +86,7 @@ class MessagesController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(message.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -101,7 +100,7 @@ class MessagesController {
     
     // ajax
     def pollingList = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
 
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
         params.sort = params.sort ? params.sort : 'dateCreated'
@@ -190,7 +189,7 @@ class MessagesController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(message.owner != user) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Current user not owner of message')
             response.flushBuffer()

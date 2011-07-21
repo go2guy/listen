@@ -38,7 +38,7 @@ class UserController {
             return
         }
 
-        def currentUser = springSecurityService.getCurrentUser()
+        def currentUser = authenticatedUser
         if(user.id == currentUser.id) {
             flash.errorMessage = 'You cannot disable your own account'
             redirect(action: 'list')
@@ -86,7 +86,7 @@ class UserController {
         params.max = Math.min(params.max ? params.int('max') : 100, 100)
         params.sort = params.sort ?: 'username'
         params.order = params.order ?: 'asc'
-        def organization = springSecurityService.getCurrentUser()?.organization
+        def organization = authenticatedUser?.organization
         def userList = User.createCriteria().list(params) {
             eq('organization', organization)
             if(!licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
@@ -107,7 +107,7 @@ class UserController {
     }
 
     def save = {
-        def user = userCreationService.createUser(params, springSecurityService.getCurrentUser().organization)
+        def user = userCreationService.createUser(params, authenticatedUser.organization)
         if(user.hasErrors()) {
             render(view: 'create', model: [user: user])
         } else {

@@ -5,8 +5,6 @@ import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_CUSTODIAN'])
 class CustodianAdministrationController {
-    def springSecurityService // injected
-
     static allowedMethods = [
         index: 'GET',
         addRestriction: 'POST',

@@ -73,12 +73,11 @@ class SpotApiController {
     def historyService
     def hrefParserService
     def inboxMessageService
+    def licenseService
     def menuLocatorService
     def messageLightService
-    def springSecurityService
     def statWriterService
     def voicemailNotificationService
-    def licenseService
 
     def addCallHistory = {
         def formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
@@ -263,7 +262,7 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidEmailContact = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def contact = User.get(params.id)
 
         println "ID: ${params.id}, CONTACT: ${contact}"
@@ -285,7 +284,7 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidEmailContacts = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
 
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 100
@@ -318,7 +317,7 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidGetDeviceRegistration = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def deviceType = DeviceRegistration.DeviceType.valueOf(params.deviceType)
 
         def device = DeviceRegistration.findWhere(user: user, deviceType: deviceType, deviceId: params.deviceId)
@@ -340,7 +339,7 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidNumberContact = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def number = PhoneNumber.get(params.id)
 
         if(!number || number.owner.organization != user.organization) {
@@ -361,7 +360,7 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidNumberContacts = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
 
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 100
@@ -411,7 +410,7 @@ class SpotApiController {
 
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidUpdateDeviceRegistration = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def json = JSON.parse(request)
 
         def deviceType = DeviceRegistration.DeviceType.ANDROID
@@ -482,7 +481,7 @@ class SpotApiController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(voicemail.owner != user) {
             response.sendError(HSR.SC_UNAUTHORIZED)
             return
@@ -559,7 +558,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = springSecurityService.getCurrentUser()
+            def current = authenticatedUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return
@@ -1038,7 +1037,7 @@ class SpotApiController {
         def organization = Organization.get(getIdFromHref(params.organization))
 
         if(!organization) {
-            def user = springSecurityService.getCurrentUser()
+            def user = authenticatedUser
             if(!params.username || user.username != params.username) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return
@@ -1097,7 +1096,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = springSecurityService.getCurrentUser()
+            def current = authenticatedUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 log.warn "Android user is unauthorized; current.id [${current.id}], user.id [${user.id}], hasRole [${user.hasRole('ROLE_SPOT_API')}]"
                 response.sendError(HSR.SC_UNAUTHORIZED)
@@ -1546,7 +1545,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = springSecurityService.getCurrentUser()
+            def current = authenticatedUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return

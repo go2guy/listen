@@ -22,7 +22,6 @@ class AttendantController {
 
     def promptFileService
     def promptOverrideService
-    def springSecurityService
 
     def index = {
         redirect(action: 'menu')
@@ -58,8 +57,7 @@ class AttendantController {
     }
 
     def menu = {
-        def user = springSecurityService.getCurrentUser()
-        def groups = MenuGroup.findAllByOrganization(user.organization, [sort: 'isDefault', order: 'desc'])
+        def groups = MenuGroup.findAllByOrganization(authenticatedUser.organization, [sort: 'isDefault', order: 'desc'])
         render(view: 'menu', model: [groups: groups])
     }
 
@@ -68,7 +66,7 @@ class AttendantController {
             JSONArray jsonGroups = (JSONArray)JSONValue.parse(params.groups)
             log.debug "Received menu for saving: ${jsonGroups.toJSONString()}"
 
-            def user = springSecurityService.getCurrentUser()
+            def user = authenticatedUser
             def missingGroups = MenuGroup.findAllByOrganization(user.organization) as Set
 
             def groups = []
@@ -190,7 +188,7 @@ class AttendantController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         promptFileService.save(file, user.organization.id)
 
         render('Success')
@@ -257,7 +255,7 @@ class AttendantController {
     }
 
     private def promptOverrideModel() {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         return [
             promptOverrideList: PromptOverride.findAllByOrganizationAndNotPast(user.organization, [sort: 'date', order: 'asc'])
         ]

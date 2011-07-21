@@ -22,8 +22,8 @@ class OrganizationController {
         updateRoute: 'POST'
     ]
 
-    def userCreationService
     def licenseService
+    def userCreationService
 
     def index = {
         redirect(action: 'list')

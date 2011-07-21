@@ -31,7 +31,6 @@ class ConferencingController {
     def recordingService
     def scheduledConferenceNotificationService
     def spotCommunicationService
-    def springSecurityService
 
     def index = {
         redirect(action: 'manage')
@@ -67,7 +66,7 @@ class ConferencingController {
             redirect(action: 'recordings', params: preserve)
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(recording.conference.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -92,7 +91,7 @@ class ConferencingController {
             redirect(action: 'recordings', params: preserve)
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(recording.conference.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -158,7 +157,7 @@ class ConferencingController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(participant.conference.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -176,7 +175,7 @@ class ConferencingController {
     }
 
     def manage = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         // TODO only works for current user, needs to be usable by admins
         def conference = Conference.findByOwner(user)
         if(!conference) {
@@ -202,7 +201,7 @@ class ConferencingController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(participant.conference.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -233,7 +232,7 @@ class ConferencingController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(conference.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -273,7 +272,7 @@ class ConferencingController {
         params.sort = params.sort ?: 'audio.dateCreated'
         params.order = params.order ?: 'desc'
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         // TODO doesnt work with multiple conferences per user
         def conference = Conference.findByOwner(user)
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
@@ -283,7 +282,7 @@ class ConferencingController {
     }
 
     def invite = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def invitation = invitationService.create(params)
         if(invitation.hasErrors()) {
             render(view: 'invitations', model: [scheduledConference: invitation, scheduleLists: scheduleLists(user)])
@@ -294,7 +293,7 @@ class ConferencingController {
     }
 
     def invitations = {
-        render(view: 'invitations', model: [scheduleLists: scheduleLists(springSecurityService.getCurrentUser())])
+        render(view: 'invitations', model: [scheduleLists: scheduleLists(authenticatedUser)])
     }
 
     private def scheduleLists(def user) {
@@ -333,7 +332,7 @@ class ConferencingController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(conference.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -352,7 +351,7 @@ class ConferencingController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(conference.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -371,7 +370,7 @@ class ConferencingController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         if(participant.conference.owner != user) {
             redirect(controller: 'login', action: 'denied')
             return

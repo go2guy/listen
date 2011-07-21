@@ -14,7 +14,6 @@ class AdministrationController {
     def directMessageNumberService
     def extensionService
     def realizeAlertUpdateService
-    def springSecurityService
 
     static allowedMethods = [
         index: 'GET',
@@ -76,10 +75,9 @@ class AdministrationController {
     }
 
     def addInternalRoute = {
-        def user = springSecurityService.getCurrentUser()
         def route = new NumberRoute(params)
         route.type = NumberRoute.Type.INTERNAL
-        route.organization = user.organization
+        route.organization = authenticatedUser.organization
 
         if(route.validate() && route.save()) {
             flash.successMessage = message(code: 'numberRoute.created.message', args: [route.pattern])
@@ -104,10 +102,9 @@ class AdministrationController {
     }
 
     def addRestriction = {
-        def user = springSecurityService.getCurrentUser()
         def restriction = new OutdialRestriction()
         restriction.pattern = params.pattern
-        restriction.organization = user.organization
+        restriction.organization = authenticatedUser.organization
         if(params.target) {
             def target = User.get(params.target)
             if(!target) {
@@ -137,8 +134,7 @@ class AdministrationController {
     }
 
     def configuration = {
-        def user = springSecurityService.getCurrentUser()
-        def organization = user.organization
+        def organization = authenticatedUser.organization
 
         def transcription = TranscriptionConfiguration.findByOrganization(organization)
         def afterHours = AfterHoursConfiguration.findByOrganization(organization)
@@ -216,8 +212,7 @@ class AdministrationController {
     }
 
     def history = {
-        def user = springSecurityService.getCurrentUser()
-        def organization = user.organization
+        def organization = authenticatedUser.organization
 
         params.offset = params.offset ? params.int('offset') : 0
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
@@ -274,8 +269,7 @@ class AdministrationController {
     }
 
     def saveConfiguration = {
-        def user = springSecurityService.getCurrentUser()
-        def organization = user.organization
+        def organization = authenticatedUser.organization
 
         def transcription = TranscriptionConfiguration.findByOrganization(organization)
         if(!transcription) {
@@ -371,8 +365,7 @@ class AdministrationController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
-        if(user.organization != route.organization) {
+        if(authenticatedUser.organization != route.organization) {
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -396,8 +389,7 @@ class AdministrationController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
-        if(user.organization != route.organization) {
+        if(authenticatedUser.organization != route.organization) {
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -440,8 +432,7 @@ class AdministrationController {
             return
         }
 
-        def user = springSecurityService.getCurrentUser()
-        if(user.organization != restriction.organization) {
+        if(authenticatedUser.organization != restriction.organization) {
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -475,13 +466,13 @@ class AdministrationController {
     }
 
     private def phonesModel() {
+        def organization = authenticatedUser.organization
         params.max = Math.min(params.max ? params.int('max') : 100, 100)
         params.sort = params.sort ?: 'number'
         params.order = params.order ?: 'asc'
-        def user = springSecurityService.getCurrentUser()
         def extensionList = Extension.createCriteria().list(params) {
             owner {
-                eq('organization', user.organization)
+                eq('organization', organization)
             }
         }
         def extensionTotal = Extension.createCriteria().get {
@@ -489,10 +480,10 @@ class AdministrationController {
                 count('id')
             }
             owner {
-                eq('organization', user.organization)
+                eq('organization', organization)
             }
         }
-        def users = User.findAllByOrganization(user.organization, [sort: 'realName', order: 'asc'])
+        def users = User.findAllByOrganization(organization, [sort: 'realName', order: 'asc'])
         return [
             extensionList: extensionList,
             extensionTotal: extensionTotal,
@@ -501,20 +492,20 @@ class AdministrationController {
     }
 
     private def outdialingModel() {
-        def user = springSecurityService.getCurrentUser()
+        def organization = authenticatedUser.organization
         def globalRestrictions = GlobalOutdialRestriction.findAll([sort: 'pattern', order: 'asc'])
-        def restrictions = OutdialRestriction.findAllByOrganization(user.organization, [sort: 'pattern', order: 'asc'])
+        def restrictions = OutdialRestriction.findAllByOrganization(organization, [sort: 'pattern', order: 'asc'])
         def exceptions = OutdialRestrictionException.createCriteria().list([sort: 'restriction', order: 'asc']) {
             // TODO ultimately i would like to provide [sort: 'restriction.target'] to the list() method above. however,
             // theres a grails bug getting in the way:
             // http://jira.grails.org/browse/GRAILS-7324
 
             restriction {
-                eq('organization', user.organization)
+                eq('organization', organization)
             }
         }
-        def everyoneRestrictions = OutdialRestriction.findAllByOrganizationAndTarget(user.organization, null)
-        def users = User.findAllByOrganization(user.organization, [sort: 'realName', order: 'asc'])
+        def everyoneRestrictions = OutdialRestriction.findAllByOrganizationAndTarget(organization, null)
+        def users = User.findAllByOrganization(organization, [sort: 'realName', order: 'asc'])
         return [
             globalRestrictions: globalRestrictions,
             restrictions: restrictions,
@@ -525,16 +516,16 @@ class AdministrationController {
     }
 
     private def routingModel() {
-        def user = springSecurityService.getCurrentUser()
-        def external = NumberRoute.findAllByOrganizationAndType(user.organization, NumberRoute.Type.EXTERNAL, [sort: 'pattern', order: 'asc'])
-        def internal = NumberRoute.findAllByOrganizationAndType(user.organization, NumberRoute.Type.INTERNAL, [sort: 'pattern', order: 'asc'])
+        def organization = authenticatedUser.organization
+        def external = NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.EXTERNAL, [sort: 'pattern', order: 'asc'])
+        def internal = NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.INTERNAL, [sort: 'pattern', order: 'asc'])
         def directMessageNumbers = DirectMessageNumber.withCriteria {
             owner {
-                eq('organization', user.organization)
+                eq('organization', organization)
             }
             order('number', 'asc')
         }
-        def users = User.findAllByOrganization(user.organization, [sort: 'realName', order: 'asc'])
+        def users = User.findAllByOrganization(organization, [sort: 'realName', order: 'asc'])
         def destinations = applicationService.listApplications()
         return [
             destinations: destinations,

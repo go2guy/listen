@@ -62,7 +62,7 @@ class ProfileController {
     }
 
     def afterHours = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def afterHoursConfiguration = AfterHoursConfiguration.findByOrganization(user.organization)
         render(view: 'afterHours', model: [afterHoursConfiguration: afterHoursConfiguration])
     }
@@ -73,7 +73,7 @@ class ProfileController {
         boolean canDial = true
 
         if(number) {
-            def user = springSecurityService.getCurrentUser()
+            def user = authenticatedUser
             canDial = user.canDial(number)
         }
 
@@ -109,12 +109,12 @@ class ProfileController {
     }
 
     def settings = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         render(view: 'settings', model: [user: user])
     }
 
     def history = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
 
         // TODO since there are two tables on the page, none of the sorting
         // is being used yet. also, both tables will page together (i.e. not separately).
@@ -168,7 +168,7 @@ class ProfileController {
     }
 
     def saveAfterHours = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def afterHours = AfterHoursConfiguration.findByOrganization(user.organization)
         if(!afterHours) {
             flash.errorMessage = 'After Hours has not been configured by an administrator; alternate number cannot be set.'
@@ -196,7 +196,7 @@ class ProfileController {
     }
 
     def saveSettings = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         user.properties['realName', 'emailAddress', 'pass', 'confirm'] = params
         if(user.pass?.trim()?.length() > 0) {
             user.password = springSecurityService.encodePassword(user.pass)
@@ -268,7 +268,7 @@ class ProfileController {
     }
 
     private def phonesModel() {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def extensionList = Extension.withCriteria {
             eq('owner', user)
         }

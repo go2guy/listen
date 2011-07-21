@@ -18,7 +18,6 @@ class VoicemailController {
 
     def audioDownloadService
     def historyService
-    def springSecurityService
     def voicemailNotificationService
 
     def download = {
@@ -45,7 +44,7 @@ class VoicemailController {
     }
 
     def saveSettings = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def preferences = VoicemailPreferences.findByUser(user)
         if(!preferences) {
             preferences = new VoicemailPreferences()
@@ -98,7 +97,7 @@ class VoicemailController {
 
     // ajax
     def sendTestEmail = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def address = params.address
         if(!address || address.trim() == '') {
             address = user.emailAddress
@@ -120,7 +119,7 @@ class VoicemailController {
     }
 
     def settings = {
-        def user = springSecurityService.getCurrentUser()
+        def user = authenticatedUser
         def preferences = VoicemailPreferences.findByUser(user)
         render(view: 'settings', model: [preferences: preferences])
     }
