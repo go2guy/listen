@@ -199,19 +199,4 @@ class MessagesController {
         inboxMessageService.setStatus(message, params.newStatus == 'new')
         response.flushBuffer()
     }
-
-    // FIXME used by the polling list, which needs to account for faxes
-    private String getMp3Uri(String uri) {
-        if(uri.endsWith(".wav"))
-        {
-            uri = uri.replace(".wav", ".mp3");
-        }
-        
-        if(!uri.endsWith(".mp3"))
-        {
-            uri.concat(".mp3");
-        }
-
-        return uri.encodeAsHTML();
-    }
 }

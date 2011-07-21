@@ -30,9 +30,9 @@ class Audio {
         return detector.detectContentType(file)
     }
 
-    String mp3File() {
+    File mp3File() {
         def uri = file.toURI().toString()
-        uri.replace('.wav', '.mp3')
+        uri = uri.replace('.wav', '.mp3')
         return new File(new URI(uri))
     }
 }

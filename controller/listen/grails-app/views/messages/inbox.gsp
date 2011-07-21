@@ -250,11 +250,11 @@ $('.delete-form').submit(function(e) {
 });
       });
 
-      function playVoicemail(id, uri) {
+      function playVoicemail(id) {
            //setMessageStatus(id, 'old');
            $('.playerDiv').remove();
            $('.playLink').show();
-           var playerHtml = '<div class="playerDiv"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="165" height="37" id="player' + id + '" align=""><param name=movie value="${resource(dir: 'resources/audio', file: 'niftyplayer.swf')}?file=' + uri + '&as=1"><param name=quality value=high><param name=bgcolor value=#FFFFFF><embed src="${resource(dir: 'resources/audio', file: 'niftyplayer.swf')}?file=' + uri + '&as=1" quality=high bgcolor=#FFFFFF width="165" height="37" id="player' + id + '" name="player' + id + '" align="" type="application/x-shockwave-flash" swLiveConnect="true" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed></object></div>';
+           var playerHtml = '<div class="playerDiv"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="165" height="37" id="player' + id + '" align=""><param name=movie value="${resource(dir: 'resources/audio', file: 'niftyplayer.swf')}?file=${request.contextPath}/voicemail/download/' + id + '&as=1"><param name=quality value=high><param name=bgcolor value=#FFFFFF><embed src="${resource(dir: 'resources/audio', file: 'niftyplayer.swf')}?file=${request.contextPath}/voicemail/download/' + id + '&as=1" quality=high bgcolor=#FFFFFF width="165" height="37" id="player' + id + '" name="player' + id + '" align="" type="application/x-shockwave-flash" swLiveConnect="true" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed></object></div>';
            $('#' + id + ' .play').append(playerHtml);
            $('#playLink' + id).hide()
       }
@@ -316,7 +316,7 @@ $('.delete-form').submit(function(e) {
                             var durationString = ' ' + message.audio.duration;
                             $(playLink).append(durationString);
                             $(playLink).click(function() {
-                                playVoicemail(message.id, message.audio.uri);
+                                playVoicemail(message.id);
                                 return false;
                             });
 

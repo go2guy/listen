@@ -39,7 +39,9 @@ class VoicemailController {
             return
         }
 
-        audioDownloadService.download(voicemail.audio, response)
+        //hard code the mp3 tag to true since the flash player needs mp3 and there is not reason to not
+        //download the mp3 version from the screens as well
+        audioDownloadService.download(voicemail.audio, response, true)
         historyService.downloadedVoicemail(voicemail)
     }
 
