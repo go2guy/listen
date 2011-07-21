@@ -1,8 +1,6 @@
 package com.interact.listen.pbx
 
 class ExtensionService {
-    static transactional = true
-
     def cloudToDeviceService
     def messageLightService
     def spotCommunicationService

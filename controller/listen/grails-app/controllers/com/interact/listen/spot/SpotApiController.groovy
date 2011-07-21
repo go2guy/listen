@@ -69,7 +69,6 @@ class SpotApiController {
     def audioDownloadService
     def cloudToDeviceService
     def conferenceService
-    def deleteParticipantService
     def googleAuthService
     def historyService
     def hrefParserService
@@ -546,7 +545,7 @@ class SpotApiController {
             return
         }
 
-        deleteParticipantService.deleteParticipant(participant)
+        conferenceService.dropCaller(participant)
         response.flushBuffer()
     }
 
@@ -1449,17 +1448,14 @@ class SpotApiController {
         def json = JSON.parse(request)
 
         if(json.isAdminMuted != participant.isAdminMuted) {
-            participant.isAdminMuted = json.isAdminMuted
             if(participant.isAdminMuted) {
-                historyService.mutedConferenceCaller(participant)
+                conferenceService.unmuteCaller(participant)
             } else {
-                historyService.unmutedConferenceCaller(participant)
+                conferenceService.muteCaller(participant)
             }
         }
 
-        if(json.isMuted != participant.isMuted) {
-            participant.isMuted = json.isMuted
-        }
+        participant.isMuted = json.isMuted
 
         if(participant.validate() && participant.save()) {
             response.status = HSR.SC_OK

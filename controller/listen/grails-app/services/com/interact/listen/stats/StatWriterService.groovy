@@ -5,7 +5,6 @@ import com.interact.insa.client.StatsPublisher.Operator
 import org.springframework.beans.factory.InitializingBean
 
 class StatWriterService implements InitializingBean {
-    static scope = 'singleton'
     static transactional = false
 
     void send(Stat stat) {

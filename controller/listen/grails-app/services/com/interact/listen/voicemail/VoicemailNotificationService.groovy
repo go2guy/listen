@@ -4,7 +4,6 @@ import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.stats.Stat
 
 class VoicemailNotificationService {
-    static scope = 'singleton'
     static transactional = false
 
     def backgroundService

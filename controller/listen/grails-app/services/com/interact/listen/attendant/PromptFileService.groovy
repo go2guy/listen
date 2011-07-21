@@ -3,7 +3,6 @@ package com.interact.listen.attendant
 import org.springframework.web.multipart.MultipartFile
 
 class PromptFileService {
-    static scope = 'singleton'
     static transactional = false
 
     // TODO fix hard-coded path

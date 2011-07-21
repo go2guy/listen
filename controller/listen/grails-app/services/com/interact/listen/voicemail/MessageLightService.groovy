@@ -5,8 +5,6 @@ import com.interact.listen.pbx.Extension
 import com.interact.listen.spot.SpotCommunicationException
 
 class MessageLightService {
-    static transactional = true
-
     def spotCommunicationService
 
     void toggle(User user) {

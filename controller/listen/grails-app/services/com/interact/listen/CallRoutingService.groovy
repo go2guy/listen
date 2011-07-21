@@ -4,7 +4,6 @@ import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
 
 class CallRoutingService {
-    static scope = 'singleton'
     static transactional = false
 
     def routeCall(def ani, def dnis) {

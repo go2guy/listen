@@ -1,9 +1,6 @@
 package com.interact.listen.android
 
 class GoogleAuthService {
-    static scope = 'singleton'
-    static transactional = true
-    
     private static final String GOOGLE_LOGIN = "https://www.google.com/accounts/ClientLogin"
     private static final String GOOGLE_DATA = "accountType=HOSTED_OR_GOOGLE&service=ac2dm&source=interact-listen-voicemail"
     private static final String PARAM_EMAIL = "Email"

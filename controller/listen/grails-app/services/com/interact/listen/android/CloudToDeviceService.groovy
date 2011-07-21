@@ -4,9 +4,6 @@ import com.interact.listen.User
 import com.interact.listen.android.DeviceRegistration.DeviceType
 
 class CloudToDeviceService {
-    static scope = 'singleton'
-    static transactional = true
-
     @SuppressWarnings('GrailsStatelessService')
     def cloudToDeviceMessaging
 

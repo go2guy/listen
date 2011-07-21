@@ -7,7 +7,6 @@ import com.interact.listen.stats.Stat
 import org.joda.time.format.DateTimeFormat
 
 class SpotCommunicationService {
-    static scope = 'singleton'
     static transactional = false
 
     def springSecurityService

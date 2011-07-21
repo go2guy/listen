@@ -1,7 +1,6 @@
 package com.interact.listen.spot
 
 class HrefParserService {
-    static scope = 'singleton'
     static transactional = false
 
     def idFromHref(def href) {

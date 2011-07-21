@@ -10,7 +10,6 @@ import org.joda.time.DateTimeZone
 import org.joda.time.format.ISODateTimeFormat
 
 class ScheduledConferenceNotificationService {
-    static scope = 'singleton'
     static transactional = false
 
     def backgroundService

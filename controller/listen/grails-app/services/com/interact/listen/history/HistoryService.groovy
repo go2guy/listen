@@ -11,10 +11,7 @@ import org.joda.time.format.DateTimeFormat
 import org.springframework.web.context.request.RequestContextHolder as RCH
 
 class HistoryService {
-    static scope = 'singleton'
-    static transactional = true
-
-    def springSecurityService // injected
+    def springSecurityService
     // TODO handle service (if necessary)
 
 //    def changedAlternatePagerNumber(def newNumber) {
@@ -91,9 +88,14 @@ class HistoryService {
         write(new ActionHistory(properties))
     }
 
-//    def deletedUser(User user) {
-//        // TODO?
-//    }
+    void deletedConferenceRecording(Recording recording) {
+        def properties = [
+            action: Action.DELETED_CONFERENCE_RECORDING,
+            description: "Deleted conference recording created on ${formatDateTime(recording.audio.dateCreated)} for conference [${recording.conference?.description}]",
+            onUser: recording.conference.owner
+        ]
+        write(new ActionHistory(properties))
+    }
 
     def deletedVoicemail(Voicemail voicemail) {
         def properties = [

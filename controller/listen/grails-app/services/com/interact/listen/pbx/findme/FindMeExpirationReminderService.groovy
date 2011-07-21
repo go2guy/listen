@@ -4,9 +4,6 @@ import org.joda.time.LocalDateTime
 import org.joda.time.Period
 
 class FindMeExpirationReminderService {
-    static scope = 'singleton'
-    static transactional = true
-
     def backgroundService
 
     def sendReminder(FindMePreferences preferences) {

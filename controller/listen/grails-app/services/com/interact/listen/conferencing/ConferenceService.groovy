@@ -5,60 +5,41 @@ import org.joda.time.DateTime
 import org.joda.time.Period
 
 class ConferenceService {
-    static scope = 'singleton'
-    static transactional = true
-
     def historyService
     def springSecurityService
     def statWriterService
 
-    // TODO remove this class, and just put the logic into the SpotApiController
-    // - or, move ALL logic from the API controller into here. just dont separate it out,
-    //   its too much work to maintain
-    // - ideally, this would be easier to do after changing the SPOT API to have more
-    //   specific API calls (e.g. a 'stop conference' 
-
     boolean dropCaller(Participant participant) {
-/*        def user = springSecurityService.getCurrentUser()
-        if(participant.conference.owner != user) {
-            log.warn "User [${user}] illegally tried to drop caller from conference [${participant.conference}]"
-            return false
-        }*/
-
         if(participant.isAdmin) {
-//            log.warn "User [${user}] illegally tried to drop admin caller [${participant}]"
+            log.warn "Cannot drop admin caller ${participant}"
             return false
         }
 
-        historyService.droppedConferenceCaller(participant)
         participant.delete()
+        historyService.droppedConferenceCaller(participant)
         return true
     }
 
     boolean muteCaller(Participant participant) {
-/*        def user = springSecurityService.getCurrentUser()
-        if(participant.conference.owner != user) {
-            log.warn "User [${user}] illegally tried to mute caller from conference [${participant.conference}]"
-            return false
-        }*/
-
         if(participant.isAdmin) {
-//            log.warn "User [${user}] illegally tried to mute admin caller [${participant}]"
+            log.warn "Cannot mute admin caller ${participant}"
             return false
         }
 
         if(participant.isPassive) {
-//            log.warn "User [${user}] illegally tried to mute passive caller [${participant}]"
+            log.warn "Cannot mute passive caller ${participant}"
             return false
         }
 
-        historyService.mutedConferenceCaller(participant)
         participant.isAdminMuted = true
-        return participant.validate() && participant.save()
+        boolean success = participant.validate() && participant.save()
+        if(success) {
+            historyService.mutedConferenceCaller(participant)
+        }
+        return success
     }
 
     boolean startConference(Conference conference) {
-        // TODO user validation?
         statWriterService.send(Stat.CONFERENCE_START)
         
         if(conference.isStarted) {
@@ -75,12 +56,6 @@ class ConferenceService {
     }
 
     boolean startRecordingConference(Conference conference) {
-/*        def user = springSecurityService.getCurrentUser()
-        if(conference.owner != user) {
-            log.warn "User [${user}] illegally tried to start recording conference [${conference}]"
-            return false
-        }*/
-
         statWriterService.send(Stat.CONFERENCE_RECORDING_START)
 
         conference.isRecording = true
@@ -90,8 +65,6 @@ class ConferenceService {
     }
 
     boolean stopConference(Conference conference) {
-        // TODO user validation?
-        
         def seconds = new Period(conference.startTime, new DateTime()).toStandardSeconds().seconds
         statWriterService.send(Stat.CONFERENCE_LENGTH, seconds)
 
@@ -110,12 +83,6 @@ class ConferenceService {
     }
 
     boolean stopRecordingConference(Conference conference) {
-/*        def user = springSecurityService.getCurrentUser()
-        if(conference.owner != user) {
-            log.warn "User [${user}] illegally tried to stop recording conference [${conference}]"
-            return false
-        }*/
-
         statWriterService.send(Stat.CONFERENCE_RECORDING_STOP)
 
         conference.isRecording = false
@@ -127,24 +94,21 @@ class ConferenceService {
     }
 
     boolean unmuteCaller(Participant participant) {
-/*        def user = springSecurityService.getCurrentUser()
-        if(participant.conference.owner != user) {
-            log.warn "User [${user}] illegally tried to unmute caller from conference [${participant.conference}]"
-            return false
-        }*/
-
         if(participant.isAdmin) {
-//            log.warn "User [${user}] illegally tried to unmute admin caller [${participant}]"
+            log.warn "Cannot unmute admin caller ${participant}"
             return false
         }
 
         if(participant.isPassive) {
-//            log.warn "User [${user}] illegally tried to unmute passive caller [${participant}]"
+            log.warn "Cannot unmute passive caller ${participant}"
             return false
         }
 
-        historyService.unmutedConferenceCaller(participant)
         participant.isAdminMuted = false
-        return participant.validate() && participant.save()
+        boolean success = participant.validate() && participant.save()
+        if(success) {
+            historyService.unmutedConferenceCaller(participant)
+        }
+        return success
     }
 }

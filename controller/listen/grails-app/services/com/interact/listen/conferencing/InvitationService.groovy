@@ -1,14 +1,11 @@
 package com.interact.listen.conferencing
 
-class CreateInvitationService {
-    static scope = 'singleton'
-    static transactional = true
-
+class InvitationService {
     def historyService
     def scheduledConferenceNotificationService
     def springSecurityService
 
-    def createInvitation(def params) {
+    ScheduledConference create(def params) {
         def user = springSecurityService.getCurrentUser()
         // TODO doesnt work with multiple conferences per user
         def conference = Conference.findByOwner(user)
@@ -30,4 +27,19 @@ class CreateInvitationService {
 
         return invitation
     }
+
+    void cancel(ScheduledConference invitation) {
+        def user = springSecurityService.getCurrentUser()
+        if(invitation.forConference.owner != user && invitation.scheduledBy != user) {
+            // TODO user better exception type
+            throw new AssertionError('Action not allowed')
+        }
+
+        invitation.delete()
+
+        scheduledConferenceNotificationService.sendCancellation(invitation)
+        historyService.cancelledConferenceInvitation(invitation)
+        // TODO stat?
+    }
+
 }

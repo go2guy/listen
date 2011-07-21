@@ -26,10 +26,9 @@ class ConferencingController {
     ]
 
     def audioDownloadService
-    def cancelInvitationService
-    def createInvitationService
-    def deleteRecordingService
     def grailsApplication
+    def invitationService
+    def recordingService
     def scheduledConferenceNotificationService
     def spotCommunicationService
     def springSecurityService
@@ -50,7 +49,7 @@ class ConferencingController {
             return
         }
 
-        cancelInvitationService.cancel(invitation)
+        invitationService.cancel(invitation)
         flash.successMessage = 'Cancellation has been sent to invited callers'
         redirect(action: 'invitations')
     }
@@ -74,7 +73,7 @@ class ConferencingController {
             return
         }
 
-        deleteRecordingService.deleteRecording(recording)
+        recordingService.delete(recording)
 
         flash.successMessage = 'Recording deleted'
         redirect(action: 'recordings', params: preserve)
@@ -285,7 +284,7 @@ class ConferencingController {
 
     def invite = {
         def user = springSecurityService.getCurrentUser()
-        def invitation = createInvitationService.createInvitation(params)
+        def invitation = invitationService.create(params)
         if(invitation.hasErrors()) {
             render(view: 'invitations', model: [scheduledConference: invitation, scheduleLists: scheduleLists(user)])
         } else {

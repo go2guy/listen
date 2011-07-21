@@ -3,9 +3,6 @@ package com.interact.listen.attendant
 import com.interact.listen.Organization
 
 class MenuLocatorService {
-    static scope = 'singleton'
-    static transactional = true
-
     // for the provided organization, finds the appropate entry menu
     // for the current date and time.
     def findEntryMenu(Organization organization) {

@@ -3,7 +3,6 @@ package com.interact.listen.conferencing
 import java.security.SecureRandom
 
 class RandomPinGeneratorService {
-    static scope = 'singleton'
     static transactional = false
 
     def grailsApplication

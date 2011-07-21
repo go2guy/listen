@@ -3,7 +3,6 @@ package com.interact.listen.voicemail.afterhours
 import com.interact.listen.httpclient.HttpClientImpl
 
 class RealizeAlertUpdateService {
-    static scope = 'singleton'
     static transactional = false
 
     def backgroundService

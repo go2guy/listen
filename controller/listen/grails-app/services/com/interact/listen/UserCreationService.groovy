@@ -5,8 +5,6 @@ import com.interact.listen.conferencing.PinType
 import com.interact.listen.voicemail.VoicemailPreferences
 
 class UserCreationService {
-    static transactional = true
-
     def cloudToDeviceService
     def extensionService
     def historyService
