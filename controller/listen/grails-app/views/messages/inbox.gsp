@@ -134,7 +134,7 @@ div.options .type-tags li {
             <div class="from">${message?.from().encodeAsHTML()}</div>
             <div class="received" title="${joda.format(value: message.dateCreated, style: 'LL')}"><listen:prettytime date="${message.dateCreated}"/></div>
             <listen:ifIsVoicemail message="${message}">
-              <div style="display:none;" class="playLink" id="playLink${message.id}"><a href="#" onclick="playVoicemail(${message.id},'<listen:mp3uri voicemail="${message}"/>');return false;">Play</a> <listen:prettyduration duration="${message.audio.duration}"/></div>
+              <div style="display:none;" class="playLink" id="playLink${message.id}"><a href="#" onclick="playVoicemail(${message.id});return false;">Play</a> <listen:prettyduration duration="${message.audio.duration}"/></div>
               <div class="play"></div>
               <div class="duration"><listen:prettyduration duration="${message.audio.duration}"/></div>
             </listen:ifIsVoicemail>

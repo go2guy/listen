@@ -17,7 +17,6 @@ class InboxMessageService {
             historyService.deletedVoicemail(message)
             cloudToDeviceService.sendVoicemailSync(message.owner)
             messageLightService.toggle(message.owner)
-            spotCommunicationService.deleteArtifact(message.audio.uri)
         } else if(message.instanceOf(Fax)) {
             historyService.deletedFax(message)
         }

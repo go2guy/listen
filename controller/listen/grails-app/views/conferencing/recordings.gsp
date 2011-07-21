@@ -19,7 +19,7 @@
           <tr>
             <g:sortableColumn property="audio.dateCreated" title="${g.message(code: 'audio.dateCreated.label')}" class="col-date"/>
             <g:sortableColumn property="audio.duration" title="${g.message(code: 'audio.duration.label')}" class="col-duration"/>
-            <g:sortableColumn property="audio.fileSize" title="${g.message(code: 'audio.fileSize.label')}" class="col-size"/>
+            <th class="col-size"><g:message code="page.conferencing.recordings.column.fileSize"/></th>
             <th class="col-download"></th>
             <th class="col-delete"></th>
           </tr>
@@ -29,7 +29,7 @@
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <td class="col-date"><joda:format value="${recording.audio.dateCreated}" style="LL"/></td>
               <td class="col-duration"><listen:prettyduration duration="${recording.audio.duration}"/></td>
-              <td class="col-size"><listen:megabytes bytes="${recording.audio.fileSize}"/></td>
+              <td class="col-size"><listen:megabytes file="${recording.audio.file}"/></td>
               <td class="col-download">
                 <g:form action="downloadRecording" method="get">
                   <g:hiddenField name="id" value="${recording.id}"/>

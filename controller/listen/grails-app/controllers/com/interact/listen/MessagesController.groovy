@@ -141,7 +141,6 @@ class MessagesController {
             if(it.instanceOf(Voicemail)) {
                 item.put('type', 'voicemail')
                 item.put('audio', [
-                    uri: getMp3Uri(it.audio.uri),
                     duration: formatter.print(it.audio.duration.toPeriod())
                 ])
                 item.put('transcription', it.audio.transcription.encodeAsHTML())

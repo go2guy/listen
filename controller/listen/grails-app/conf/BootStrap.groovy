@@ -79,9 +79,8 @@ class BootStrap {
 
                 def greeting = new Audio(description: 'Greeting',
                                          duration: new Duration(1000),
-                                         fileSize: '16252928',
                                          transcription: '',
-                                         uri: 'http://www.example.com').save(flush: true)
+                                         file: new File('/tmp/foo')).save(flush: true)
 
                 new ActionHistory(dateTime: new DateTime(),
                                   byUser: phillip,
@@ -120,9 +119,8 @@ class BootStrap {
 
                 def a0 = new Audio(description: 'Test Voicemail',
                                    duration: new Duration(1000000),
-                                   fileSize: '1024',
                                    transcription: 'Transcription pending...',
-                                   uri: 'http://www.example.com').save(flush: true)
+                                   file: new File('/tmp/foo')).save(flush: true)
                 new Voicemail(ani: '4025604557',
                               audio: a0,
                               owner: user).save(flush: true)
@@ -133,9 +131,8 @@ class BootStrap {
 
                 def a1 = new Audio(description: 'Second audio file',
                                    duration: new Duration(1000),
-                                   fileSize: '1024',
                                    transcription: 'Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp Herp derp ',
-                                   uri: 'http://www.example.com').save(flush: true)
+                                   file: new File('/tmp/foo')).save(flush: true)
                 new Voicemail(ani: '378',
                               audio: a1,
                               owner: user).save(flush: true)
@@ -143,9 +140,8 @@ class BootStrap {
                 for(i in 1..30) {
                     def a = new Audio(description: 'Foo',
                                       duration: new Duration(10000),
-                                      fileSize: '1024',
                                       transcription: 'Hurrrrrrrrrr!!! LOLcats. meow. hey hey',
-                                      uri: 'http://www.example.com').save(flush: true)
+                                      file: new File('/tmp/foo')).save(flush: true)
                     new Voicemail(ani: '14024768786',
                                   audio: a,
                                   isNew: false,

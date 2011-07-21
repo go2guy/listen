@@ -38,9 +38,6 @@ class ExtensionService {
 
         cloudToDeviceService.sendContactSync()
         messageLightService.toggle(extension.number, extension.ip, false)
-        if(extension.greeting) {
-            spotCommunicationService.deleteArtifact(extension.greeting.uri)
-        }
     }
 
     Extension update(Extension extension, def params) {

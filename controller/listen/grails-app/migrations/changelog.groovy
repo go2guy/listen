@@ -1869,4 +1869,21 @@ databaseChangeLog = {
             where "class='com.interact.listen.voicemail.DirectVoicemailNumber'"
         }
     }
+
+	changeSet(author: "root (generated)", id: "1311263975348-1") {
+        renameColumn(tableName: 'audio', oldColumnName: 'uri', columnDataType: 'varchar(255)', newColumnName: 'file')
+        dropColumn(tableName: 'audio', columnName: 'file_size')
+
+        modifyDataType(tableName: 'audio', columnName: 'file', newDataType: 'varchar(1000)')
+        modifyDataType(tableName: 'user_file', columnName: 'file', newDataType: 'varchar(1000)')
+        modifyDataType(tableName: 'inbox_message', columnName: 'file', newDataType: 'varchar(1000)')
+	}
+
+	changeSet(author: "root (generated)", id: "1311263975348-2") {
+        preConditions(onFail: 'WARN') {
+            dbms(type: 'mysql')
+        }
+
+        sql "UPDATE audio SET file = REPLACE(file, 'http://hathor-v.interact.nonreg', 'file:')"
+    }
 }

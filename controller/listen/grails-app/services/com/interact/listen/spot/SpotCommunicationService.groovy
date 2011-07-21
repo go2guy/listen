@@ -13,16 +13,6 @@ class SpotCommunicationService {
     def springSecurityService
     def statWriterService
 
-    def deleteArtifact(def filePath) throws IOException, SpotCommunicationException {
-        sendDeleteArtifactEvent("FILE", filePath)
-        statWriterService.send(Stat.SPOT_DEL_ARTIFACT_FILE)
-    }
-
-    def deleteAllSubscriberArtifacts(def user) throws IOException, SpotCommunicationException {
-        sendDeleteArtifactEvent("SUB", String.valueOf(user.id));
-        statWriterService.send(Stat.SPOT_DEL_ARTIFACT_SUB)
-    }
-
     def dropParticipant(def participant) throws IOException, SpotCommunicationException {
         sendConferenceParticipantEvent("DROP", participant);
         statWriterService.send(Stat.SPOT_CONF_EVENT_DROP)
@@ -110,14 +100,6 @@ class SpotCommunicationService {
         importedValue.put("destination", fax.dnis);
         importedValue.put("ani", ""); //Will be implemented later, probably once sold and we know what to do
         importedValue.put("organization", "/organizations/${fax.sender.organization.id}");
-        buildAndSendRequest(importedValue);
-    }
-
-    private void sendDeleteArtifactEvent(def action, def filePath) throws IOException, SpotCommunicationException {
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
-        importedValue.put("application", "DEL_ARTIFACT");
-        importedValue.put("action", action);
-        importedValue.put("artifact", filePath);
         buildAndSendRequest(importedValue);
     }
 

@@ -14,6 +14,7 @@ import com.interact.listen.voicemail.*
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
+import java.net.URI
 import javax.servlet.http.HttpServletResponse as HSR
 import org.apache.commons.lang.StringUtils
 import org.joda.time.*
@@ -113,8 +114,7 @@ class SpotApiController {
         Recording.withTransaction { status ->
             def audio = new Audio()
             audio.duration = new Duration(json.duration as Long)
-            audio.fileSize = json.fileSize
-            audio.uri = json.uri
+            audio.file = new File(new URI(json.uri))
             if(!(audio.validate() && audio.save())) {
                 status.setRollbackOnly()
                 response.sendError(HSR.SC_BAD_REQUEST, beanErrors(audio))
@@ -148,9 +148,8 @@ class SpotApiController {
         Participant.withTransaction { status ->
             def audio = new Audio()
             audio.duration = new Duration(0)
-            audio.fileSize = "0"
             audio.transcription = ""
-            audio.uri = json.audioResource
+            audio.file = new File(new URI(json.audioResource))
 
             if(!(audio.validate() && audio.save())) {
                 status.setRollbackOnly()
@@ -183,7 +182,7 @@ class SpotApiController {
 
             render(contentType: 'application/json') {
                 href = "/participants/${participant.id}"
-                audioResource = participant.recordedName.uri
+                audioResource = participant.recordedName.file.toURI()
                 conference = {
                     href = "/conferences/${conference.id}"
                 }
@@ -205,9 +204,8 @@ class SpotApiController {
         Voicemail.withTransaction { status ->
             def audio = new Audio()
             audio.duration = new Duration(json.duration as Long)
-            audio.fileSize = json.fileSize
             audio.transcription = json.transcription
-            audio.uri = json.uri
+            audio.file = new File(new URI(json.uri))
 
             if(!(audio.validate() && audio.save())) {
                 status.setRollbackOnly()
@@ -835,7 +833,7 @@ class SpotApiController {
             participant.put("isPassive", p.isPassive)
             participant.put("id", p.id)
             participant.put("sessionID", p.sessionId)
-            participant.put("audioResource", p.recordedName.uri)
+            participant.put("audioResource", p.recordedName.file.toURI())
             list.add(participant)
             return list
         }
@@ -869,7 +867,7 @@ class SpotApiController {
             result.greetingLocation = ''
             result.publicNumber = phoneNumber.isPublic
         } else {
-            result.greetingLocation = phoneNumber.greeting?.uri ?: ''
+            result.greetingLocation = phoneNumber.greeting?.file?.toURI() ?: ''
             if(phoneNumber.instanceOf(Extension)) {
                 result.forwardedTo = phoneNumber.forwardedTo ?: ''
                 result.publicNumber = true
@@ -1492,9 +1490,9 @@ class SpotApiController {
 
             if((phoneNumber.instanceOf(Extension) || phoneNumber.instanceOf(DirectMessageNumber)) && json.greetingLocation) {
                 if(!phoneNumber.greeting) {
-                    phoneNumber.greeting = new Audio(duration: new Duration(0), fileSize: '0')
+                    phoneNumber.greeting = new Audio(duration: new Duration(0))
                 }
-                phoneNumber.greeting.uri = json.greetingLocation
+                phoneNumber.greeting.file = new File(new URI(json.greetingLocation))
 
                 if(!(phoneNumber.greeting.validate() && phoneNumber.greeting.save())) {
                     status.setRollbackOnly()
@@ -1663,9 +1661,8 @@ class SpotApiController {
             subscriber = {
                 href = '/subscribers/' + voicemail.owner.id
             }
-            uri = voicemail.audio.uri
+            uri = voicemail.audio.file.toURI()
             description = voicemail.audio.description
-            fileSize = voicemail.audio.fileSize
             dateCreated = formatter.print(voicemail.audio.dateCreated)
             duration = voicemail.audio.duration.millis
             transcription = voicemail.audio.transcription
