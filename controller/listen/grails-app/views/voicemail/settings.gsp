@@ -56,10 +56,12 @@ fieldset.vertical .time-restriction select {
 
         <label><g:message code="page.voicemail.settings.newVoicemail"/></label>
 
-        <label for="transcribe">
-          <g:checkBox name="transcribe" value="${preferences?.transcribe}"/>
-          <g:message code="page.voicemail.settings.transcribe"/>
-        </label>
+        <listen:ifTranscriptionEnabled>
+          <label for="transcribe">
+            <g:checkBox name="transcribe" value="${preferences?.transcribe}"/>
+            <g:message code="page.voicemail.settings.transcribe"/>
+          </label>
+        </listen:ifTranscriptionEnabled>
 
         <label for="isEmailNotificationEnabled">
           <g:checkBox name="isEmailNotificationEnabled" value="${preferences?.isEmailNotificationEnabled}"/>

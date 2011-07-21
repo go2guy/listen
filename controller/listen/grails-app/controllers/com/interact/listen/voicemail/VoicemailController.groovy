@@ -65,7 +65,9 @@ class VoicemailController {
         // it seems to work in its current state, but it sucks. try to avoid changing stuff
         // here, and test it well if you do.
 
-        bindData(preferences, params, 'transcribe')
+        if(params.containsKey('transcribe')) {
+            bindData(preferences, params, 'transcribe')
+        }
         bindData(preferences, params, 'passcode')
         bindData(preferences, params, 'playbackOrder')
         bindData(preferences, params, 'isEmailNotificationEnabled')

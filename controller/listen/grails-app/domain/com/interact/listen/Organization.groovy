@@ -41,4 +41,13 @@ class Organization {
         enabledFeatures.remove(enabledFeature)
         return enabledFeatures
     }
+
+    boolean hasTranscriptionEnabled() {
+        def config = TranscriptionConfiguration.findByOrganization(this)
+        if(!config) {
+            return false
+        }
+
+        return config.isEnabled && config.phoneNumber.trim() != ''
+    }
 }
