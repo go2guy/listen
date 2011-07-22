@@ -50,7 +50,7 @@
 	<form id="assignvariables">
 		<block>
 			<log>INFO: Entered assignvariables</log>
-			<assign name="'viopChannel'" expr="II_SB_VOIP_Channel" />
+			<assign name="viopChannel" expr="II_SB_VOIP_Channel" />
 
 
             <log>INFO: VOIP_T38 [<value expr="II_SB_VOIP_T38"/>]</log>
