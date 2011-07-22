@@ -34,13 +34,8 @@ class VoicemailNotificationService {
         def newCount = Voicemail.countByOwnerAndIsNew(voicemail.owner, true)
 
         // TODO handle IOException reading file (set file to null)
-        def attachedFileName = "Voicemail-${voicemail.dateCreated}${voicemail.audio.uri.substring(voicemail.audio.uri.lastIndexOf("."))}"
-        def file
-        try {
-            file = download(voicemail.audio.uri)
-        } catch(IOException e) {
-            log.warn "Unable to download audio file [${voicemail.audio.uri}]"
-        }
+        def attachedFileName = "Voicemail-${voicemail.dateCreated}${voicemail.audio.file.name.substring(voicemail.audio.file.name.lastIndexOf("."))}"
+        def file = voicemail.audio.file
 
         def subj = "New voicemail from ${voicemail.from()}"
         def body = """
@@ -173,15 +168,6 @@ You have correctly configured your settings to receive Listen email notification
             return true
         }
         return restrictions.any { it.appliesToNow() }
-    }
-
-    private File download(String uri) {
-        def file = File.createTempFile('Voicemail', null)
-        file.deleteOnExit()
-        def out = new BufferedOutputStream(new FileOutputStream(file))
-        out << new URL(uri).openStream()
-        out.close()
-        return file
     }
 
     private def directMailboxNumber(def organization) {

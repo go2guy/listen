@@ -28,6 +28,7 @@ enum Stat {
     TEST_VOICEMAIL_EMAIL                  ('2017'),
     CONFERENCE_INVITE_EMAIL               ('2014'),
     CONFERENCE_CANCEL_EMAIL               ('2015'),
+    TRANSCRIPTION_FAILED                  ('2019'),
 
     // Listen -> SPOT communication
     SPOT_AUTO_DIAL_DIAL                   ('5000'),
