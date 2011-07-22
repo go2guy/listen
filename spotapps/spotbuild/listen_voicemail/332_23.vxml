@@ -5,18 +5,21 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'173_16'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'332_26'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Variable</log>
-            <log>INFO: Entered assign-variable.vxml [173_7]</log>
-            <log>INFO: Current value [<value expr="params"/>]</log>
-<assign name="params" expr="'/'+accessID" />
-<log>INFO: Updated value [<value expr="params"/>]</log>
-<log>INFO: Current value [<value expr="resource"/>]</log>
-<assign name="resource" expr="'accessNumbers'+''" />
-<log>INFO: Updated value [<value expr="resource"/>]</log>
+	    <log target="status">Set File URL</log>
+            <log>INFO: Entered assign-variable.vxml [332_23]</log>
+            <log>INFO: Current value [<value expr="FILE1"/>]</log>
+<assign name="FILE1" expr="audioURL+''" />
+<log>INFO: Updated value [<value expr="FILE1"/>]</log>
+<log>INFO: Current value [<value expr="OPERATION"/>]</log>
+<assign name="OPERATION" expr="'stat'+''" />
+<log>INFO: Updated value [<value expr="OPERATION"/>]</log>
+<log>INFO: Current value [<value expr="mbxGreeting"/>]</log>
+<assign name="mbxGreeting" expr="'AP_'+audioURL" />
+<log>INFO: Updated value [<value expr="mbxGreeting"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

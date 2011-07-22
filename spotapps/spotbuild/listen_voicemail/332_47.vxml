@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'256_10'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'332_46'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_256_4(DNIS,fileLocation,subID,duration,fileSize,ANI,hostName,transcriptionTxt)
+            function II_SB_JS_function_332_47(project,line)
             {
-	            return "{\"uri\": \"file:"+fileLocation +"\",\"transcription\":\""+transcriptionTxt+"\",\"duration\":\""+duration+"\",\"fileSize\":\""+fileSize+"\",\"leftBy\":\""+getnum(ANI)+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
+	            var logText = 'Get Greeting: Chk For Grtng bad fetch';return writeLog(project,line,logText);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
-            <log>INFO: Entered run-javascript.vxml [256_4]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_256_4(DNIS,fileLocation,subID,duration,fileSize,ANI,hostName,transcriptionTxt)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="params" expr="II_SB_userJava" />   
+            <log target="status">Set Fetch Log</log>
+            <log>INFO: Entered run-javascript.vxml [332_47]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_332_47(project,line)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="logText" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

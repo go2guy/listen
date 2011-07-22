@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'173_77'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'334_5'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_173_78(project,line)
+            function II_SB_JS_function_334_12(passValues,subID)
             {
-	            var logText = 'Get Greeting: Chk For Grtng bad fetch';return writeLog(project,line,logText);
+	            return extendJsonObject(passValues, 'subscriberID', subID);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Fetch Log</log>
-            <log>INFO: Entered run-javascript.vxml [173_78]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_173_78(project,line)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="logText" expr="II_SB_userJava" />   
+            <log target="status">Set SubscriberID</log>
+            <log>INFO: Entered run-javascript.vxml [334_12]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_334_12(passValues,subID)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

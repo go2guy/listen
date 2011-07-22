@@ -85,6 +85,7 @@
 	<var name="line" expr="'line'" />
 	<var name="project" expr="'LISTEN_VOICEMAIL'" />
 	<var name="transcriptionOpts" expr="''" />
+	<var name="mbxGreeting" expr="''" />
 
 
     <!-- Conference Variables -->
