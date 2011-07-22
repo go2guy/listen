@@ -89,7 +89,7 @@ function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,s
 function setRouteRequest(ANI, DNIS) {
     var ani = getnum(ANI);
     var dnis = getnum(DNIS);
-    if ((ani.length == 0 || (ani == undefined))
+    if ((ani.length == 0) || (ani == undefined))
         ani = 'anonymous';
     return "?ani=" + escape(ani) + "&dnis=" + escape(dnis);
 }
