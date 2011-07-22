@@ -153,7 +153,7 @@ Requires: spotbuild-vip
     %config /interact/apps/spotbuild/listen_findme/root.vxml
     %config /interact/apps/spotbuild/listen_mailbox/root.vxml
     %config /interact/apps/spotbuild/listen_afterHours/root.vxml
-    %config /interact/apps/ippbx/root.vxml
+    %config /interact/apps/spotbuild/ippbx/root.vxml
     %config /interact/listen/artifacts/defaultApp.cfg
 
 
