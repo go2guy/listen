@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'313_7'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'330_9'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_313_5(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,sipDirect,appToAccess,organization)
+            function II_SB_JS_function_330_3(appToAccess,returnVal)
             {
-	            return extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,sipDirect,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX);
+	            return getAppName(appToAccess, returnVal);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Extend App Obj</log>
-            <log>INFO: Entered run-javascript.vxml [313_5]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_313_5(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,sipDirect,appToAccess,organization)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="passValues" expr="II_SB_userJava" />   
+            <log target="status">Get App Name</log>
+            <log>INFO: Entered run-javascript.vxml [330_3]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_330_3(appToAccess,returnVal)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="appToAccess" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

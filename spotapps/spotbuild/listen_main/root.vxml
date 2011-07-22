@@ -67,6 +67,7 @@
 	<var name="appLicense" expr="''" />
 	<var name="returnStr" expr="''" />
 	<var name="returnVal" expr="''" />
+	<var name="viopChannel" expr="''" />
 
 
     <!-- Conference Variables -->

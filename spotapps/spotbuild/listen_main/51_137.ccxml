@@ -31,6 +31,13 @@
     <var name="II_SB_action" expr="''"/>      <!-- Action. Contains the inbound action 'accept' or 'reject' -->
     <var name="II_SB_indialog" expr="'false'"/>
 
+    <!-- Pass Variables -->
+    <var name="II_SB_callActionPassThrough"/>
+    <var name="II_SB_VOIP_T38"/>
+    <var name="II_SB_VOIP_Channel"/>
+    <var name="II_SB_VOIP_Codec"/>
+    <var name="II_SB_VOIP_Videocodec"/>
+
 	<!-- Disconnect variables -->
 	<var name="II_SB_discID" expr="''"/>			<!-- Contains the connection id of party that triggered connection.disconnected event -->
 	<var name="II_SB_discReason" expr="''"/>		<!-- Contains platform specific reason for disconnect -->
@@ -44,7 +51,7 @@
 
         <!-- Load CCXML file. Log status and update state -->
         <transition state="idle" event="ccxml.loaded" name="loadEv">
-            <log>INFO: Entered incoming-call-action.ccxml [51_3]</log>
+            <log>INFO: Entered incoming-call-action.ccxml [51_137]</log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <assign name="II_SB_state" expr="'loaded'"/>
@@ -78,7 +85,8 @@
 			<log>INFO: II_SB_ibcallid [<value expr="II_SB_ibcallid"/>] II_SB_NEXT_OPTION [<value expr="II_SB_NEXT_OPTION"/>]</log>
             <if cond="(II_SB_NEXT_OPTION != '') &amp;&amp; (II_SB_NEXT_OPTION != 'undefined')">    
                 <assign name="II_SB_state" expr="'nextOptionRun'"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.vxml'" namelist="II_SB_ibcallid"/>
+                <assign name="II_SB_callActionPassThrough" expr="'yes'"/>
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.vxml'" namelist="II_SB_ibcallid II_SB_callActionPassThrough II_SB_VOIP_T38 II_SB_VOIP_Channel II_SB_VOIP_Codec II_SB_VOIP_Videocodec"/>
             <else/>
                 <assign name="II_SB_state" expr="'endCall'"/>
                 <send data="'dialog.user.endCall'" target="II_SB_sessionID"/>
@@ -86,12 +94,16 @@
         </transition>
 		
         <!-- Received connection.connected -->
-	    <transition state="callAccepted" event="connection.connected">
+	    <transition state="callAccepted" event="connection.connected" name="evt">
             <log>INFO: transition event [connection.connected] state [<value expr="II_SB_state"/>]</log>
             <log>INFO: II_SB_remote [<value expr="II_SB_remote"/>]</log>
             <log>INFO: II_SB_local [<value expr="II_SB_local"/>]</log>
             <log>INFO: connection ID [<value expr="II_SB_connectionID"/>]</log>
             <log>INFO: CALL TYPE [<value expr="II_SB_type"/>]</log>
+            <assign name="II_SB_VOIP_T38" expr="evt.info.voip.T38"/>
+            <assign name="II_SB_VOIP_Channel" expr="evt.info.voip.channel"/>
+            <assign name="II_SB_VOIP_Codec" expr="evt.info.voip.codec"/>
+            <assign name="II_SB_VOIP_Videocodec" expr="evt.info.voip.videocodec"/>
 			<send data="'dialog.user.nextVXML'" target="II_SB_sessionID"/>
 	    </transition>
 

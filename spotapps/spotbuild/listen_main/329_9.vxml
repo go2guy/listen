@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'315_27'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'330_3'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_315_12(project,line,params,cntrlURL,resource,request,returnStr)
+            function II_SB_JS_function_329_9(returnVal,appToAccess)
             {
-	            logText = 'Chk License : Check License returned Failure. Reason [' + returnStr  + ']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+'].';return writeLog(project,line,logText);
+	            return chkAppLicense(appToAccess, returnVal ;
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Log</log>
-            <log>INFO: Entered run-javascript.vxml [315_12]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_315_12(project,line,params,cntrlURL,resource,request,returnStr)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="logText" expr="II_SB_userJava" />   
+            <log target="status">Get License Info</log>
+            <log>INFO: Entered run-javascript.vxml [329_9]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_329_9(returnVal,appToAccess)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="appLicense" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

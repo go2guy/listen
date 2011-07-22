@@ -22,6 +22,7 @@
     <var name="II_SB_originator"/> <!-- Call originator -->
     <var name="II_SB_connectionID"/>          <!-- II_SB_connectionID. Contains the ID of the connection for this call -->
     <var name="II_SB_type"/>                  <!-- II_SB_type.Contains the type of call - VOIP, PSTN -->
+    <var name="II_SB_sipFrom"/>
     <var name="II_SB_line"/>                  <!-- Line number processing call -->
     <var name="II_SB_projectSource"/>
     <var name="II_SB_whichID"/>
@@ -66,6 +67,7 @@
 	<var name="SB_UV_appLicense"/>
 	<var name="SB_UV_returnStr"/>
 	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_viopChannel"/>
 
 
     <!-- Global variables -->
@@ -110,10 +112,11 @@
             <log>INFO: II_SB_type [<value expr="II_SB_type"/>]</log>
             <log>INFO: II_SB_line [<value expr="II_SB_line"/>]</log>
         	<log>INFO: sessionID [<value expr="II_SB_sessionID"/>]</log>
+            <log>INFO: II_SB_from [<value expr="II_SB_sipFrom"/>]</log>
             <assign name="II_SB_state" expr="'alerted'"/>
             <if cond="((II_SB_transfer == undefined) &amp;&amp; (II_SB_status == undefined))">
                 <assign name="II_SB_ibcallid" expr="II_SB_connectionID"/>
-                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sipDirect SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_organization SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText SB_UV_appLicense SB_UV_returnStr SB_UV_returnVal"/> <!-- Start vxml dialog -->
+                <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_sipFrom II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sipDirect SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_organization SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText SB_UV_appLicense SB_UV_returnStr SB_UV_returnVal SB_UV_viopChannel"/> <!-- Start vxml dialog -->
             <else/>
                 <log>INFO: Transfer [<value expr="II_SB_transfer"/>]</log>
                 <if cond="II_SB_transfer == 'yes'">
@@ -157,12 +160,12 @@
 
         <transition event="dialog.user.startMain" name="alertEV" cond="II_SB_ibcallid.length &gt; 0">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sipDirect SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_organization SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText SB_UV_appLicense SB_UV_returnStr SB_UV_returnVal"/> <!-- Start vxml dialog -->
+            <dialogstart connectionid="II_SB_ibcallid" src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_sipFrom II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sipDirect SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_organization SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText SB_UV_appLicense SB_UV_returnStr SB_UV_returnVal SB_UV_viopChannel"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.user.startMain" name="alertEV">
             <log>INFO: transition event [dialog.user.alerting] state [<value expr="II_SB_state"/>]</log>
-            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sipDirect SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_organization SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText SB_UV_appLicense SB_UV_returnStr SB_UV_returnVal"/> <!-- Start vxml dialog -->
+            <dialogstart src="'file:' + II_SB_CODE_DIR + II_SB_MAIN_VXML" namelist="II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_sipFrom II_SB_line II_SB_sessionID II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_projectSource II_SB_importedValue SB_UV_appToAccess SB_UV_DNIS SB_UV_cntrlURL SB_UV_hostName SB_UV_subID SB_UV_passValues SB_UV_params SB_UV_resource SB_UV_request SB_UV_status SB_UV_sipURL SB_UV_sipDirect SB_UV_sysAccessTime SB_UV_ANI SB_UV_HTTPcontroller SB_UV_callType SB_UV_STATcontroller SB_UV_id SB_UV_source SB_UV_value SB_UV_operation SB_UV_artifactsDIR SB_UV_contentType SB_UV_EXT_LENGTH SB_UV_EXT_PREFIX SB_UV_EXT_SUFFIX SB_UV_VM_DIAL SB_UV_pstnLength SB_UV_errorCnt SB_UV_errorTot SB_UV_organization SB_UV_project SB_UV_line SB_UV_exceptionLog SB_UV_logText SB_UV_appLicense SB_UV_returnStr SB_UV_returnVal SB_UV_viopChannel"/> <!-- Start vxml dialog -->
 		</transition>
 
         <transition event="dialog.started" name="evt"> <!-- Started VXML dialog -->
@@ -200,12 +203,12 @@
                 <var name="II_SB_transfer" expr="'yes'"/>
                 <assign name="II_SB_projectSource" expr="'listen_main'"/>
                 <assign name="II_SB_importedValue" expr="evt.values.II_SB_valueToPass"/>
-                <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+                <fetch next="'file:' + II_SB_BASE_DIR + II_SB_NEXT_OPTION + '/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_sipFrom II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
             <else/>
                 <log>INFO: Inbound call action is set to [<value expr="II_SB_status"/>]</log>
                 <assign name="II_SB_state" expr="'inboundAction'"/>
 		        <var name="II_SB_passValues" expr="evt.values.II_SB_returnValues"/>
-                <fetch next="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.ccxml'" namelist="II_SB_status II_SB_passValues II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_type II_SB_connectionID II_SB_BASE_DIR II_SB_VXML_LIB II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_ibcallid II_SB_projectSource II_SB_obcallid"/> <!-- Fetch ccxml document -->
+                <fetch next="'file:' + II_SB_CODE_DIR + II_SB_NEXT_OPTION + '.ccxml'" namelist="II_SB_status II_SB_passValues II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_type II_SB_sipFrom II_SB_connectionID II_SB_BASE_DIR II_SB_VXML_LIB II_SB_CODE_DIR II_SB_NEXT_OPTION II_SB_transfer II_SB_ibcallid II_SB_projectSource II_SB_obcallid"/> <!-- Fetch ccxml document -->
             </if>
         </transition>
 

@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'315_22'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'330_6'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_315_19(project,line,appLicense)
+            function II_SB_JS_function_330_4(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,sipDirect,appToAccess,organization,returnVal,viopChannel)
             {
-	            logText = 'Chk License: Check License returned [Failure]. Reason [' + appLicense + ']';return writeLog(project,line,logText);
+	            return extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,sipDirect,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,returnVal,viopChannel);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Log</log>
-            <log>INFO: Entered run-javascript.vxml [315_19]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_315_19(project,line,appLicense)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="logText" expr="II_SB_userJava" />   
+            <log target="status">Extend App Obj</log>
+            <log>INFO: Entered run-javascript.vxml [330_4]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_330_4(passValues,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,sipDirect,appToAccess,organization,returnVal,viopChannel)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

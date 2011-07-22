@@ -13,6 +13,7 @@
     <var name="II_SB_connectionID"/>
     <var name="II_SB_type"/>
     <var name="II_SB_line"/>
+    <var name="II_SB_sipFrom"/>
     <var name="II_SB_sessionID"/>
     <var name="II_SB_CODE_DIR"/>
     <var name="II_SB_NEXT_OPTION"/>
@@ -57,6 +58,7 @@
 	<var name="SB_UV_appLicense"/>
 	<var name="SB_UV_returnStr"/>
 	<var name="SB_UV_returnVal"/>
+	<var name="SB_UV_viopChannel"/>
 
     
     <form id="beginDocument">
@@ -186,6 +188,9 @@
 			</if>
 			<if cond="SB_UV_returnVal != undefined">
 				<assign name="returnVal" expr="SB_UV_returnVal" />
+			</if>
+			<if cond="SB_UV_viopChannel != undefined">
+				<assign name="viopChannel" expr="SB_UV_viopChannel" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
