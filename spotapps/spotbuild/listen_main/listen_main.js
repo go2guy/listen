@@ -4,7 +4,7 @@ function getAppName(appName, jsonObj) {
         application = application.toUpperCase();
 
         if (application != 'DIRECTMESSAGE') {
-            var licensed = getJsonVal(jsonObj, appName);
+            var licensed = getJsonVal(jsonObj, application);
             if (!licensed)
                 return '';
         }
