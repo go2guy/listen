@@ -46,3 +46,9 @@ grails.project.dependency.resolution = {
                 'org.apache.tika:tika-parsers:0.9'
     }
 }
+
+coverage {
+    exclusions = [
+        '**changelog**'
+    ]
+}
