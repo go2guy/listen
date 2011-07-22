@@ -67,7 +67,7 @@
                 <var name="tmpVal" expr="promptID[0] + promptID[1] + promptID[2]"/>
                 <if cond="tmpVal == 'AP_'"> <!-- Check if file is under the audio path directory -->
                     <assign name="index" expr="index + 1"/>
-                    <assign name="promptID" expr="iiSubstr(promptID, 3 ,promptID.length) + '.00.wav'"/>
+                    <assign name="promptID" expr="iiSubstr(promptID, 3 ,promptID.length)"/>
                     <log>INFO: Play file [<value expr="promptID"/>]</log>
                     <goto next="#playAudio"/>
                 <elseif cond="tmpVal == 'SP_'"/> <!-- Check if file is under the audio/system directory -->
