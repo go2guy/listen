@@ -22,7 +22,6 @@ class FailedTranscriptionHandlerJob {
             }
         }
 
-        log.debug "TONY found ${voicemails.size} voicemails pending transcription"
         voicemails.each { voicemail ->
             def differenceInMinutes = Minutes.minutesBetween(voicemail.dateCreated, now).minutes
             log.debug "Minutes between [${voicemail.dateCreated}] and [${now}]: ${differenceInMinutes}"
