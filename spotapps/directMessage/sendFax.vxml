@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 07/15/2011
+       *   @Name	sendFax.vxml
+       *   @Desc	This script handles sending a fax (TIF file) via T38 protocol -->
+
+    <!-- Passed in from ccxml -->
+    <var name="ANI"/>
+    <var name="t38"/>
+    <var name="DNIS"/>
+    <var name="fileURL"/>
+    <var name="importedValue"/>
+
+    <form id="beginDocument">
+        <block>
+            <log>INFO: Entered beginDocument</log>
+            <log target="status">Sending Fax...</log>
+        </block>
+	    <object name="send" classid="com.iivip.fax">
+		    <param name="COMMAND" expr="'SEND'"/>
+		    <param name="FILENAME" expr="fileURL"/>
+		    <param name="T38" expr="t38"/>	
+	    </object>
+        <block cond="send.Result == 'Success'">
+            <log>INFO: Send fax successful</log>
+            <assign name="id" expr="'LSTNAPP_0070'"/>
+            <assign name="gotoForm" expr="'#sendEvent'"/>
+            <goto next="#sendStat"/>
+        </block>
+        <block>
+            <log>ERROR: Send fax failed</log>
+   	        <log target="status">Send fax failed</log>
+            <assign name="logText" expr="'sendFax.vxml: Send fax failed. ['+ANI+'] was attempting to send fax to ['+DNIS+'].'"/>
+            <assign name="logText" expr="writeLog('DIRECT_MESSAGE',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <assign name="id" expr="'LSTNAPP_0069'"/>
+            <assign name="gotoForm" expr="'#exit'"/>
+            <goto next="#sendStat"/>
+        </block>
+    </form>
+
+    <form id="sendStat">
+        <block>
+            <log>INFO: Entered sendStat</log>
+            <var name="value" expr="'1'"/>
+            <var name="operation" expr="'increment'"/>
+            <var name="source" expr="'directMessage'"/>
+    	    <log target="status">Send Stat</log>
+            <var name="statsCntrl" expr="getJsonVal(importedValue,'STATcontroller')"/>
+            <data name="stat" srcexpr="statsCntrl" method="post" namelist="id source value operation"/>
+            <goto expr="gotoForm"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <log>INFO: Entered exit</log>
+            <exit/>
+        </block>
+    </form>
+
+</vxml>

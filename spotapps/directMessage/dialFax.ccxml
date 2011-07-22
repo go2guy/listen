@@ -1,0 +1,177 @@
+<ccxml version="1.0">
+    <!-- Last Modified 07/15/2011
+       *   @Name	dialFax.ccxml
+       *   @Desc	This script handles the fax dial activities. -->
+
+    <var name="ANI"/>
+    <var name="DNIS"/>
+    <var name="startTime"/>
+    <var name="importedValue"/>
+
+    <!-- Global variables -->
+    <var name="dialogID" expr="''"/>
+    <var name="t38" expr="''"/>
+    <var name="fileURL" expr="''"/>
+    <var name="obcallid" expr="''"/>
+    <var name="inviteID" expr="''"/>
+    <var name="state" expr="'idle'"/>
+    <var name="destination" expr="''"/>
+    <var name="LINE_NUMBER" expr="''"/>
+    <var name="callResult" expr="'Send fax failed'"/>
+    <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>
+    <var name="APP_PATH" expr="SB_PATH + 'directMessage/'"/>
+    <var name="LIB_PATH" expr="SB_PATH + 'lib/'"/>       <!-- Lib Path. Direcotry for lib files -->
+    <var name="AUDIO_PATH" expr="APP_PATH + 'audio/'"/>  <!-- Audio Path. Directory for audio files -->
+    <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
+
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>         <!-- Location of Java script file -->
+
+    <eventprocessor statevariable="state">
+        <transition state="idle" event="ccxml.loaded" name="loadEV">
+            <!-- Received ccxml.loaded -->
+            <log>INFO: transition event [ccxml.loaded] state [<value expr="state"/>]</log>
+            <assign name="state" expr="'loaded'"/>
+            <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
+            <send data="'dialog.user.dial'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.dial" name="evt">
+            <!-- Dial fax machine -->
+            <log>INFO: transition event [dialog.user.dial] state [<value expr="state"/>]</log>
+            <assign name="state" expr="'dialing'"/>
+            <assign name="fileURL" expr="getJsonVal(importedValue, 'artifact')"/>
+            <if cond="((ANI.length == 0) || (ANI == undefined))">
+                <assign name="ANI" expr="'4024767473'"/>
+            </if>
+            <assign name="destination" expr="getJsonVal(importedValue, 'destination')"/>
+            <log target="status">Dialing [<value expr="destination"/>]</log>
+            <createcall connectionid="obcallid" dest="'sip:' + destination" callerid="'sip:' + ANI + '@Spot'" timeout="'30s'"/>
+        </transition>
+
+        <transition state="dialing" event="connection.connected" name="evt">
+            <!-- Fax Machine answered -->
+            <log>INFO: transition event [connection.connected] state [<value expr="state"/>]</log>
+	        <log target="status">Play CNG Tones</log>
+            <assign name="state" expr="'connected'"/>
+            <var name="II_SB_repeat" expr="'y'"/>
+            <var name="II_SB_interval" expr="'1000'"/> <!-- Number of milliseconds repeat -->
+            <var name="II_SB_promptID" expr="AUDIO_PATH+'cng.wav'"/>   <!-- Play CNG tones -->
+            <dialogstart dialogid="dialogID" connectionid="obcallid" src="'file:'+LIB_PATH+'vxml/audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+	        <send data="'dialog.user.reInvite'" sendid="inviteID" target="session.id" targettype="'ccxml'" delay="'10s'"/>
+        </transition>
+
+        <transition event="dialog.user.reInvite">
+            <log>INFO: transition event [dialog.user.reInvite] state [<value expr="state"/>]</log>
+            <log>INFO: Answering side did not re-INVITE. We will now do so and force the issue</log>
+            <assign name="inviteID" expr="''"/>
+            <var name="GEN_CALLID" expr="getJsonVal(importedValue, 'voipChannel')"/>
+            <send data="'EV_T38_REINVITE'" targettype="'x-iievent'" target="'voipmgr_0'" namelist="GEN_CALLID"/>
+        </transition>
+
+        <transition event="connection.signal" name="evt">
+            <log>INFO: transition event [connection.signal] state [<value expr="state"/>]</log>
+            <if cond="((inviteID.length &gt; 0) &amp;&amp; (inviteID != undefined))">
+	            <cancel sendid="inviteID"/> <!-- Cancel delayed re-invite event -->
+            </if>
+            <assign name="t38" expr="evt.info.voip.T38"/>
+            <if cond="((t38 == undefined) || (t38.length == 0))">
+                <log>ERROR: re-INVITE failed</log>
+                <var name="logText" expr="'dialFax.ccxml: Signal error. SPOT did not receive T38 information. Caller ['+ ANI +'] attempting to fax destination ['+ destination + '].'"/>
+                <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <var name="id" expr="'LSTNAPP_0069'"/>
+                <var name="value" expr="'1'"/>
+                <var name="operation" expr="'increment'"/>
+                <var name="source" expr="'directMessage'"/>
+                <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
+                <send data="'dialog.user.endCall'" target="session.id"/>
+            <else/>
+	            <log>INFO: Stop sending tones</log>
+	            <if cond="dialogID.length != 0">
+		            <assign name="state" expr="'terminating'"/>
+		            <dialogterminate dialogid="dialogID" immediate="true"/>
+	            <else/>
+                    <send data="'dialog.user.sendFax'" target="session.id"/>
+	            </if>
+            </if>
+        </transition>
+
+        <transition  state="terminating" event="dialog.exit">
+            <log>INFO: transition event [dialog.exit] state [<value expr="state"/>]</log>
+            <log>INFO: Stopped playing the CNG and are ready to send the T38</log>
+            <assign name="dialogID" expr="''"/>
+            <send data="'dialog.user.sendFax'" target="session.id"/>
+        </transition>
+
+        <transition event="fetch.done" name="evt"> <!-- Fetched ccxml document -->
+            <log>INFO: transition event [fetch.done] state [<value expr="state"/>]</log>
+            <goto fetchid="evt.fetchid"/> <!-- Go to ccxml document -->
+        </transition>
+
+        <transition event="dialog.user.sendFax">
+            <log>INFO: transition event [dialog.user.sendFax] state [<value expr="state"/>]</log>
+            <assign name="inviteID" expr="''"/>
+            <assign name="state" expr="'faxing'"/>
+            <dialogstart dialogid="dialogID" connectionid="obcallid" src="'file:' + APP_PATH + 'sendFax.vxml'" namelist="t38 fileURL ANI DNIS importedValue"/>
+        </transition>
+
+        <transition event="dialog.exit" name="evt">
+            <log>INFO: transition event [dialog.exit] state [<value expr="state"/>]</log>
+            <assign name="dialogID" expr="''"/>
+            <if cond="((state == 'faxing') &amp;&amp; (evt.values.status == 'Success'))">
+                <log>INFO: Done faxing</log>
+                <assign name="callResult" expr="'Send fax succeeded'"/>
+            </if>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="connection.disconnected" state="faxing">
+            <log>INFO: transition event [connection.disconnected] state [<value expr="state"/>]</log>
+            <log>INFO: Got disconnect. Wait for out T38 timers in the dialog to end</log>
+            <assign name="callResult" expr="'Send fax succeeded'"/>
+        </transition>
+
+        <transition event="connection.disconnected">
+            <log>INFO: transition event [connection.disconnected] state [<value expr="state"/>]</log>
+            <assign name="state" expr="'connectionDisconnected'"/>
+            <if cond="dialogID.length != 0">
+		        <dialogterminate dialogid="dialogID" immediate="true"/>
+	        <else/>
+                <send data="'dialog.user.endCall'" target="session.id"/>
+	        </if>
+        </transition>
+
+        <transition event="connection.failed" name="evt">
+            <log>INFO: transition event [connection.failed] state [<value expr="state"/>]</log>
+            <assign name="state" expr="'connectionFailed'"/>
+            <var name="logText" expr="'dialFax.ccxml: Call failed. ['+ ANI +'] attempting to fax destination ['+ destination + ']. Reason ['+ errorCode(evt.reason) +']'"/>
+            <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="error.*" name="evt">
+            <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
+            <log>INFO: Reason [<value expr="evt.reason"/>]</log>
+            <!-- Remove the caller's record in the db prior to exiting -->
+            <assign name="state" expr="'errorEnd'"/>
+            <var name="logText" expr="'dialFax.ccxml: Global error catch. ANI ['+ ANI +'] DNIS ['+ destination + ']. Reason [' + evt.reason + ']'"/>
+            <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.endCall" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
+	        <log target="status">Send CDR</log>
+            <var name="DNIS" expr="destination"/>
+            <var name="callType" expr="'Send Fax'"/>
+            <var name="endTime" expr="getTimeStamp(3)"/>
+            <assign name="APP_PATH" expr="SB_PATH+'ippbx/'"/>
+            <fetch next="'file:' + APP_PATH + 'cdr.ccxml'" namelist="APP_PATH DNIS ANI startTime endTime callResult callType importedValue"/>
+        </transition>
+
+    </eventprocessor>
+
+</ccxml>
