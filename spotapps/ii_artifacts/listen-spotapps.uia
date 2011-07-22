@@ -2,13 +2,7 @@
 <uia>
     <iiLoader>
         <TYPES></TYPES>
-        <PATH>
-            <ENTRY>/interact/apps/spotbuild/listen_main/root.vxml</ENTRY>
-            <ENTRY>/interact/apps/spotbuild/listen_conference/root.vxml</ENTRY>
-            <ENTRY>/interact/listen/artifacts/defaultApp.cfg</ENTRY>
-            <ENTRY>/interact/apps/spotbuild/listen_voicemail/root.vxml</ENTRY>
-            <ENTRY>/interact/apps/spotbuild/listen_mailbox/root.vxml</ENTRY>
-        </PATH>
+        <PATH></PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
 
@@ -71,36 +65,6 @@
             </question>
 
             <question level="not_in_backup" severity="ask">
-                <text>Enter the maximum allowed errors</text>
-                <default>3</default>
-                <validateRegex preset="DIGITS"/>
-
-                <property format="ccvxml" action="update" quotes="yes">
-                    <name>maxErr</name>
-                    <group>Error</group>
-                    <description>Max Error Count</description>
-                    <tag>var</tag>
-                    <attribute>expr</attribute>
-                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
-                </property>
-            </question>
-
-            <question level="not_in_backup" severity="ask">
-                <text>Enter the maximum allowed help attempts</text>
-                <default>3</default>
-                <validateRegex preset="DIGITS"/>
-
-                <property format="ccvxml" action="update" quotes="yes">
-                    <name>maxHelp</name>
-                    <group>Help</group>
-                    <description>Max Max Help Attempts</description>
-                    <tag>var</tag>
-                    <attribute>expr</attribute>
-                    <location>/interact/apps/spotbuild/listen_conference/root.vxml</location>
-                </property>
-            </question>
-
-            <question level="not_in_backup" severity="ask">
                 <text>Enter the server name of the SIP trunk</text>
                 <default>
                     #!/bin/bash
@@ -148,21 +112,6 @@
                     <tag>var</tag>
                     <attribute>expr</attribute>
                     <location>/interact/apps/spotbuild/listen_defaultDial/root.vxml</location>
-                </property>
-            </question>
-
-            <question level="not_in_backup" severity="ask">
-                <text>Enter the mimimum allowed digits for a pstn call</text>
-                <default>10</default>
-                <validateRegex preset="DIGITS"/>
-
-                <property format="ccvxml" action="update" quotes="yes">
-                    <name>pstnLength</name>
-                    <group>PSTN</group>
-                    <description>Minimum Digits Length</description>
-                    <tag>var</tag>
-                    <attribute>expr</attribute>
-                    <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
                 </property>
             </question>
 

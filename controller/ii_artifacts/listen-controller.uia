@@ -1,12 +1,8 @@
 <?xml version = "1.0"?>
 <uia>
     <iiLoader>
-        <TYPES>
-            <ENTRY>noextcfg</ENTRY>
-        </TYPES>
-        <PATH>
-            <ENTRY>/etc/init.d/listen-controller</ENTRY>
-        </PATH>
+        <TYPES></TYPES>
+        <PATH></PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
 
@@ -41,7 +37,7 @@
 
                 <property format="cfg" action="update">
                     <name>PORT</name>
-                    <location>/etc/init.d/listen-controller</location>
+                    <location>/interact/listen/scripts/listen-controller</location>
                 </property>
             </question>
         </inquiry>

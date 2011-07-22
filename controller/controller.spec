@@ -60,8 +60,7 @@ Requires: xmlsecurity
     # Include everything in the /interact/listen directory
     %dir /interact/listen/logs
     /interact/listen/lib/listen-controller.war
-    /interact/listen/scripts/listen-controller
-
+    %config /interact/listen/scripts/listen-controller
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
