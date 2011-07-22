@@ -180,7 +180,7 @@ class SpotApiController {
 
             render(contentType: 'application/json') {
                 href = "/participants/${participant.id}"
-                audioResource = participant.recordedName.file.toURI()
+                audioResource = participant.recordedName.file.toURI().toString()
                 conference = {
                     href = "/conferences/${conference.id}"
                 }
@@ -831,7 +831,7 @@ class SpotApiController {
             participant.put("isPassive", p.isPassive)
             participant.put("id", p.id)
             participant.put("sessionID", p.sessionId)
-            participant.put("audioResource", p.recordedName.file.toURI())
+            participant.put("audioResource", p.recordedName.file.toURI().toString())
             list.add(participant)
             return list
         }
@@ -865,7 +865,7 @@ class SpotApiController {
             result.greetingLocation = ''
             result.publicNumber = phoneNumber.isPublic
         } else {
-            result.greetingLocation = phoneNumber.greeting?.file?.toURI() ?: ''
+            result.greetingLocation = phoneNumber.greeting?.file?.toURI()?.toString() ?: ''
             if(phoneNumber.instanceOf(Extension)) {
                 result.forwardedTo = phoneNumber.forwardedTo ?: ''
                 result.publicNumber = true
@@ -1656,7 +1656,7 @@ class SpotApiController {
             subscriber = {
                 href = '/subscribers/' + voicemail.owner.id
             }
-            uri = voicemail.audio.file.toURI()
+            uri = voicemail.audio.file.toURI().toString()
             description = voicemail.audio.description
             dateCreated = formatter.print(voicemail.audio.dateCreated)
             duration = voicemail.audio.duration.millis
