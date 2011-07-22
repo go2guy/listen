@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import interface
+import os
 
 class listenAction(interface.Action):
     INCLUDED_PACKAGES = [
@@ -7,7 +8,7 @@ class listenAction(interface.Action):
             [interface.Process('httpd',
                                '0',
                                statusCmd='/sbin/service httpd status',
-                               statusSource=Process.RETURN_CODE_KEY,
+                               statusSource=interface.Process.RETURN_CODE_KEY,
                                stopCmd='/sbin/service httpd stop',
                                startCmd='/sbin/service httpd start'),
 
@@ -27,8 +28,7 @@ class listenAction(interface.Action):
                                startCmd='/sbin/service collector start'),
 
              interface.Process('mysql',
-                               '^[^\s]*/mysqld ',
-                               stopCmd='/sbin/service mysqld stop',
+                               '/usr/lib.*/mysqld ',
                                startCmd='/sbin/service mysqld start',
                                statusState=interface.Process.STATE_RUNNING)])]
 

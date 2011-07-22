@@ -139,21 +139,21 @@ Requires: spotbuild-vip
     /var/www/html/interact/listen
     /var/www/html/ippbx
 
-    %config /interact/apps/spotapps/spotbuild/listen_defaultDial/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_autoDial/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_main/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_voicemail/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_conference/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_confEvents/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_findmeAdmin/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_transcription/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_artifacts/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_autoAttendant/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_record/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_findme/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_mailbox/root.vxml
-    %config /interact/apps/spotapps/spotbuild/listen_afterHours/root.vxml
-    %config /interact/apps/spotapps/ippbx/root.vxml
+    %config /interact/apps/spotbuild/listen_defaultDial/root.vxml
+    %config /interact/apps/spotbuild/listen_autoDial/root.vxml
+    %config /interact/apps/spotbuild/listen_main/root.vxml
+    %config /interact/apps/spotbuild/listen_voicemail/root.vxml
+    %config /interact/apps/spotbuild/listen_conference/root.vxml
+    %config /interact/apps/spotbuild/listen_confEvents/root.vxml
+    %config /interact/apps/spotbuild/listen_findmeAdmin/root.vxml
+    %config /interact/apps/spotbuild/listen_transcription/root.vxml
+    %config /interact/apps/spotbuild/listen_artifacts/root.vxml
+    %config /interact/apps/spotbuild/listen_autoAttendant/root.vxml
+    %config /interact/apps/spotbuild/listen_record/root.vxml
+    %config /interact/apps/spotbuild/listen_findme/root.vxml
+    %config /interact/apps/spotbuild/listen_mailbox/root.vxml
+    %config /interact/apps/spotbuild/listen_afterHours/root.vxml
+    %config /interact/apps/ippbx/root.vxml
     %config /interact/listen/artifacts/defaultApp.cfg
 
 
