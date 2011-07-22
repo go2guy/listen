@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 07/12/2011
+    <!-- Last Modified 07/22/2011
        *   @Name	page.ccxml
        *   @Desc	This script handles the group paging logic -->
 
@@ -31,6 +31,7 @@
     <var name="LINE_NUMBER" expr="''"/>
     <var name="EXT_PREFIX" expr="'ext'"/>
     <var name="EXT_SUFFIX" expr="'@iipbx'"/>
+    <var name="callResult" expr="'Broadcast Failed'"/>
 
     <!-- Constants -->
     <var name="phoneType" expr="'spa941.'"/>
@@ -136,7 +137,8 @@
             <!-- We got a disconnect event. We're only interested in handling the caller's disconnect. We need
             to toggle the callers extension to inactive. -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
-            <cancel sendid="pageMaxID"/> 
+            <cancel sendid="pageMaxID"/>
+            <assign name="callResult" expr="'Broadcast Successful'"/>
             <send data="'dialog.user.updateDB'" target="session.id"/>
         </transition>
 
@@ -187,7 +189,7 @@
             <var name="endTime" expr="getTimeStamp(3)"/>
             <var name="startTime" expr="getJsonVal(importedValue, 'sysAccessTime')"/>
             <assign name="APP_PATH" expr="SB_PATH+'ippbx/'"/>
-            <fetch next="'file:' + PBX_PATH + 'cdr.ccxml'" namelist="APP_PATH DNIS ANI startTime endTime callType importedValue"/>
+            <fetch next="'file:' + PBX_PATH + 'cdr.ccxml'" namelist="APP_PATH DNIS ANI startTime endTime callResult callType importedValue"/>
         </transition>
 
 	</eventprocessor>
