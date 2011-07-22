@@ -21,7 +21,8 @@ class CallRoutingService {
             return [application: mapping.destination, organization: mapping.organization]
         } else {
             //Look up organization by the extension that is making the call
-            organization = Extension.queryByIp(ani)?.owner.organization
+            def extension = Extension.findByIp(ani)
+            organization = extension?.owner?.organization
         }        
 
         if(organization == null) {
