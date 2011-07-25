@@ -81,13 +81,22 @@ table.schedule-details ul li {
     text-overflow: ellipsis;
     width: 144px;
 }
+
+.schedule-details-row form {
+    display: inline;
+}
     </style>
   </head>
   <body>
-    <listen:infoSnippet summaryCode="page.conferencing.invitations.snippet.summary" contentCode="page.conferencing.invitations.snippet.content"/>
+    <g:if test="${!edit}">
+      <listen:infoSnippet summaryCode="page.conferencing.invitations.snippet.summary" contentCode="page.conferencing.invitations.snippet.content"/>
+    </g:if>
 
-    <h3><g:message code="page.conferencing.invitations.header"/></h3>
-    <g:form controller="conferencing" action="invite" method="post">
+    <h3><g:message code="page.conferencing.invitations.header${edit ? '.edit' : ''}"/></h3>
+    <g:form controller="conferencing" action="${edit ? 'updateInvitation' : 'invite'}" method="post">
+      <g:if test="${edit}">
+        <g:hiddenField name="id" value="${scheduledConference.id}"/>
+      </g:if>
       <fieldset class="vertical">
         <div class="date-fields">
           <label><g:message code="page.conferencing.invitations.header.datetime"/></label>
@@ -125,7 +134,7 @@ table.schedule-details ul li {
         </div>
 
         <ul class="form-buttons">
-          <li><g:submitButton name="submit" value="${g.message(code: 'page.conferencing.invitations.send.button.label')}"/></li>
+          <li><g:submitButton name="submit" value="${g.message(code: 'page.conferencing.invitations.' + (edit ? 'edit' : 'send') + '.button.label')}"/></li>
         </ul>
       </fieldset>
     </g:form>

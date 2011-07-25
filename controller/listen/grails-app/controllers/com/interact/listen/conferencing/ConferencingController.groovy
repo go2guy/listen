@@ -13,6 +13,7 @@ class ConferencingController {
         deleteRecording: 'POST',
         downloadRecording: 'GET',
         dropCaller: 'POST',
+        editInvitation: 'GET',
         manage: 'GET',
         muteCaller: 'POST',
         outdial: 'POST',
@@ -22,7 +23,8 @@ class ConferencingController {
         invitations: 'GET',
         startRecording: 'POST',
         stopRecording: 'POST',
-        unmuteCaller: 'POST'
+        unmuteCaller: 'POST',
+        updateInvitation: 'POST'
     ]
 
     def audioDownloadService
@@ -174,6 +176,17 @@ class ConferencingController {
         redirect(action: 'manage')
     }
 
+    def editInvitation = {
+        def invitation = ScheduledConference.get(params.id)
+        if(!invitation) {
+            flash.errorMessage = 'Invitation not found'
+            redirect(action: 'invitations')
+            return
+        }
+
+        render(view: 'invitations', model: [edit: true, scheduledConference: invitation, scheduleLists: scheduleLists()])
+    }
+
     def manage = {
         def user = authenticatedUser
         // TODO only works for current user, needs to be usable by admins
@@ -282,10 +295,9 @@ class ConferencingController {
     }
 
     def invite = {
-        def user = authenticatedUser
         def invitation = invitationService.create(params)
         if(invitation.hasErrors()) {
-            render(view: 'invitations', model: [scheduledConference: invitation, scheduleLists: scheduleLists(user)])
+            render(view: 'invitations', model: [scheduledConference: invitation, scheduleLists: scheduleLists()])
         } else {
             flash.successMessage = 'Conference has been scheduled and email invitations have been sent'
             redirect(action: 'invitations')
@@ -293,10 +305,11 @@ class ConferencingController {
     }
 
     def invitations = {
-        render(view: 'invitations', model: [scheduleLists: scheduleLists(authenticatedUser)])
+        render(view: 'invitations', model: [scheduleLists: scheduleLists()])
     }
 
-    private def scheduleLists(def user) {
+    private def scheduleLists() {
+        def user = authenticatedUser
         def future = ScheduledConference.withCriteria {
             eq('scheduledBy', user)
             or {
@@ -389,5 +402,22 @@ class ConferencingController {
         spotCommunicationService.unmuteParticipant(participant)
         flash.successMessage = 'Caller unmuted'
         redirect(action: 'manage')
+    }
+
+    def updateInvitation = {
+        def invitation = ScheduledConference.get(params.id)
+        if(!invitation) {
+            flash.errorMessage = 'Invitation not found'
+            redirect(action: 'invitations')
+            return
+        }
+
+        invitation = invitationService.change(invitation, params)
+        if(invitation.hasErrors()) {
+            render(view: 'invitations', model: [edit: true, scheduledConference: invitation, scheduleLists: scheduleLists()])
+        } else {
+            flash.successMessage = 'Invitation updated; email updates have been sent'
+            redirect(action: 'invitations')
+        }
     }
 }
