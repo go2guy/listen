@@ -1663,4 +1663,28 @@ class SpotApiController {
             transcription = voicemail.audio.transcription
         }
     }
+
+    // for call data graphing
+    def startCall = {
+        def json = JSON.parse(request)
+        def call = new CallData()
+        call.ani = json.ani
+        call.dnis = json.dnis
+        call.sessionId = json.sessionId
+        call.save(flush: true)
+
+        response.status = HSR.SC_OK
+        response.flushBuffer()
+    }
+
+    def endCall = {
+        def json = JSON.parse(request)
+        def call = CallData.findBySessionId(json.sessionId)
+        if(call) {
+            call.ended = new LocalDateTime()
+            call.save(flush: true)
+        }
+        response.status = HSR.SC_OK
+        response.flushBuffer()
+    }
 }

@@ -14,6 +14,9 @@ final class FilterUtil {
         if(controller == 'fax' && action == 'prepareStatus') {
             return false
         }
+        if(controller == 'administration' && action == 'callsData') {
+            return false
+        }
         return true
     }
 

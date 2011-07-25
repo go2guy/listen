@@ -1,12 +1,15 @@
 package com.interact.listen
 
+import grails.converters.JSON
+import grails.plugins.springsecurity.Secured
 import com.interact.listen.android.GoogleAuthConfiguration
 import com.interact.listen.conferencing.ConferencingConfiguration
 import com.interact.listen.history.*
 import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
-import grails.plugins.springsecurity.Secured
+import org.joda.time.Period
+import org.joda.time.LocalDateTime
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
@@ -23,6 +26,8 @@ class AdministrationController {
         addInternalRoute: 'POST',
         addRestriction: 'POST',
         android: 'GET',
+        calls: 'GET',
+        callsData: 'GET',
         configuration: 'GET',
         deleteDirectMessageNumber: 'POST',
         deleteException: 'POST',
@@ -131,6 +136,31 @@ class AdministrationController {
         def list = GoogleAuthConfiguration.list()
         def googleAuthConfiguration = list.size() > 0 ? list[0] : null
         render(view: 'android', model: [googleAuthConfiguration: googleAuthConfiguration])
+    }
+
+    def calls = {
+        render(view: 'calls')
+    }
+
+    def callsData = {
+        def now = new LocalDateTime()
+        def cutoff = new LocalDateTime().minusMinutes(25)
+        def data = []
+        CallData.withCriteria {
+            or {
+                isNull('ended')
+                ge('ended', cutoff)
+            }
+        }.each { call ->
+            data << [
+                ani: call.ani,
+                dnis: call.dnis,
+                started: new Period(call.started, now).toStandardSeconds().seconds,
+                ended: call.ended ? new Period(call.ended, now).toStandardSeconds().seconds : 0,
+                sessionId: call.sessionId
+            ]
+        }
+        render data as JSON
     }
 
     def configuration = {

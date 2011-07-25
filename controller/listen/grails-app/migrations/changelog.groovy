@@ -1886,4 +1886,38 @@ databaseChangeLog = {
 
         sql "UPDATE audio SET file = REPLACE(file, 'http://hathor-v.interact.nonreg', 'file:')"
     }
+
+	changeSet(author: "root (generated)", id: "1311604377122-1") {
+		createTable(tableName: "call_data") {
+			column(autoIncrement: "true", name: "id", type: "bigint") {
+				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "call_dataPK")
+			}
+
+			column(name: "version", type: "bigint") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "ani", type: "varchar(255)") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "dnis", type: "varchar(255)") {
+				constraints(nullable: "false")
+			}
+
+			column(name: "ended", type: "datetime")
+
+			column(name: "session_id", type: "varchar(255)") {
+				constraints(nullable: "false", unique: "true")
+			}
+
+			column(name: "started", type: "datetime") {
+				constraints(nullable: "false")
+			}
+		}
+
+		createIndex(indexName: "session_id_unique_1311604373502", tableName: "call_data", unique: "true") {
+			column(name: "session_id")
+		}
+	}
 }
