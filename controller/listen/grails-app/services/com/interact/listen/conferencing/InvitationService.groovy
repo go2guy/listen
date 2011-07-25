@@ -41,5 +41,8 @@ class InvitationService {
         historyService.cancelledConferenceInvitation(invitation)
         // TODO stat?
     }
-
+    
+    ScheduledConference change(ScheduledConference invitation, def params) {
+        return invitation
+    }
 }
