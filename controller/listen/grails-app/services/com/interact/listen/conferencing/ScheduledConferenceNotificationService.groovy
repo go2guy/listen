@@ -264,7 +264,6 @@ ${phoneNumberHtml}\
         b << 'END:VEVENT\n'
         b << 'END:VCALENDAR\n'
 
-        log.debug "TONY vcal = ${b.toString()}"
         return b.toString()
     }
 
