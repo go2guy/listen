@@ -84,7 +84,7 @@ Requires: spotbuild-vip
     cp -r %{STARTDIR}/spotbuild %{buildroot}/interact/apps
     cp -r %{STARTDIR}/ippbx %{buildroot}/interact/apps/spotbuild
     cp -r %{STARTDIR}/broadcast %{buildroot}/interact/apps/spotbuild
-    mv %{buildroot}/interact/apps/spotbuild/ippbx/defaultApp.cfg %{buildroot}/interact/listen/artifacts/
+    cp -r %{STARTDIR}/directMessage %{buildroot}/interact/apps/spotbuild
     cp -r %{STARTDIR}/msgLightCntrl %{buildroot}/interact/apps/spotbuild
     cp -r %{STARTDIR}/ippbx/php/* %{buildroot}/var/www/html/ippbx/
     cp -r %{STARTDIR}/wavconvert/logtolinwav %{buildroot}/interact/listen/bin/
@@ -94,6 +94,7 @@ Requires: spotbuild-vip
     rm -rf %{buildroot}/interact/apps/spotbuild/ippbx/php
     rm -rf %{buildroot}/interact/apps/spotbuild/after_hours
     rm -rf %{buildroot}/interact/apps/spotbuild/rhinounit
+    rm -f %{buildroot}/interact/apps/spotbuild/ippbx/defaultApp.cfg
 
     # Run Encryption
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/ %{buildroot}/interact/apps/spotbuild/listen_artifacts/
@@ -103,6 +104,7 @@ Requires: spotbuild-vip
     /interact/program/iiXMLcrypt -e "IP PBX" %{buildroot}/interact/apps/spotbuild/ippbx/
     /interact/program/iiXMLcrypt -e "Listen Broadcast" %{buildroot}/interact/apps/spotbuild/broadcast/
     /interact/program/iiXMLcrypt -e "Listen Attendant" %{buildroot}/interact/apps/spotbuild/listen_autoAttendant/
+    /interact/program/iiXMLcrypt -e "Listen Fax" %{buildroot}/interact/apps/spotbuild/directMessage/
 
     # Add root.vxml
     for rootfile in `find %{STARTDIR}/spotbuild/listen* -name root.vxml`
@@ -132,6 +134,7 @@ Requires: spotbuild-vip
     /interact/apps/spotbuild/listen*
     /interact/apps/spotbuild/ippbx*
     /interact/apps/spotbuild/broadcast*
+    /interact/apps/spotbuild/directMessage*
     /interact/apps/spotbuild/msgLightCntrl*
     /interact/apps/spotbuild/lib/cgi-bin/listen
     /interact/listen/artifacts
@@ -154,8 +157,6 @@ Requires: spotbuild-vip
     %config /interact/apps/spotbuild/listen_mailbox/root.vxml
     %config /interact/apps/spotbuild/listen_afterHours/root.vxml
     %config /interact/apps/spotbuild/ippbx/root.vxml
-    %config /interact/listen/artifacts/defaultApp.cfg
-
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
