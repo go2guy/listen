@@ -124,8 +124,8 @@
 
                 <property format="ccvxml" action="update" quotes="yes">
                     <name>phoneNumber</name>
-                    <group>DefaultDial</group>
-                    <description>Default Dial</description>
+                    <group>Default</group>
+                    <description>Dial Number</description>
                     <tag>var</tag>
                     <attribute>expr</attribute>
                     <location>/interact/apps/spotbuild/listen_defaultDial/root.vxml</location>
