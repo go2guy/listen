@@ -67,8 +67,8 @@
                 <var name="tmpVal" expr="promptID[0] + promptID[1] + promptID[2]"/>
                 <if cond="tmpVal == 'AP_'"> <!-- Check if file is under the audio path directory -->
                     <assign name="index" expr="index + 1"/>
-                    <assign name="promptID" expr="iiSubstr(promptID, 3 ,promptID.length)"/>
-                    <log>INFO: Play file [<value expr="promptID"/>]</log>
+                    <assign name="promptID" expr="II_SB_AUDIO_PATH + iiSubstr(promptID, 3 ,promptID.length) + '.00.wav'"/>
+                    <log>INFO: Set prompt to [<value expr="promptID"/>]</log>
                     <goto next="#playAudio"/>
                 <elseif cond="tmpVal == 'SP_'"/> <!-- Check if file is under the audio/system directory -->
                     <assign name="digitsList" expr="iiSubstr(promptID, 3 ,promptID.length)"/>
@@ -76,13 +76,15 @@
                     <if cond="promptID != '-1'">
                         <assign name="dgtCnt" expr="dgtCnt + 1"/>
                         <assign name="promptID" expr="SYSTEM_PATH + promptID + '.00.wav'"/>
-                        <log>INFO: Play file [<value expr="promptID"/>]</log>
+                        <log>INFO: Set prompt to [<value expr="promptID"/>]</log>
                         <goto next="#playAudio"/>
                     <else/>
                         <assign name="index" expr="index + 1"/>
                     </if>
                 <else/>
-                    <goto next="#exit"/>
+                    <assign name="promptID" expr="tmpVal"/>
+                    <log>INFO: Set prompt to [<value expr="promptID"/>]</log>
+                    <goto next="#playAudio"/>
                 </if>
             <else/>
                 <goto next="#exit"/>
@@ -104,6 +106,7 @@
     		    <audio expr="promptID"/>
             </prompt>
 		    <filled>
+                <log>INFO: Played file [<value expr="promptID"/>]</log>
                 <log>INFO: User Entry [<value expr="Tones"/>]</log>
                 <assign name="userEntry" expr="Tones"/>
                 <if cond="((userEntry == 'N') &amp;&amp; (isFaxLicensed != 1))">
