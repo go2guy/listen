@@ -10,11 +10,6 @@ class ConferenceService {
     def statWriterService
 
     boolean dropCaller(Participant participant) {
-        if(participant.isAdmin) {
-            log.warn "Cannot drop admin caller ${participant}"
-            return false
-        }
-
         participant.delete()
         historyService.droppedConferenceCaller(participant)
         return true
