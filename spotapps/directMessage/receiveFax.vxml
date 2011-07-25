@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/20/2011
+    <!-- Last Modified 09/25/2011
        *   @Name	receiveFax.vxml
        *   @Desc	-->
 
@@ -94,7 +94,7 @@
                     <goto next="#sendStat"/>
                 </if>
             <else/>
-                <goto expr="gotoForm"/>
+                <goto next="#exit"/>
             </if>
         </block>
     </form>

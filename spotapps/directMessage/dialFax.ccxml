@@ -1,5 +1,5 @@
 <ccxml version="1.0">
-    <!-- Last Modified 07/22/2011
+    <!-- Last Modified 07/25/2011
        *   @Name	dialFax.ccxml
        *   @Desc	This script handles the fax dial activities. -->
 
@@ -15,7 +15,6 @@
     <var name="obcallid" expr="''"/>
     <var name="inviteID" expr="''"/>
     <var name="state" expr="'idle'"/>
-    <var name="destination" expr="''"/>
     <var name="LINE_NUMBER" expr="''"/>
     <var name="callResult" expr="'Send fax failed'"/>
     <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>
@@ -43,9 +42,9 @@
             <if cond="((ANI.length == 0) || (ANI == undefined))">
                 <assign name="ANI" expr="'4024767473'"/>
             </if>
-            <assign name="destination" expr="getJsonVal(importedValue, 'destination')"/>
-            <log target="status">Dialing [<value expr="destination"/>]</log>
-            <createcall connectionid="obcallid" dest="'sip:' + destination" callerid="'sip:' + ANI + '@Spot'" timeout="'30s'"/>
+            <assign name="DNIS" expr="getJsonVal(importedValue, 'destination')"/>
+            <log target="status">Dialing [<value expr="DNIS"/>]</log>
+            <createcall connectionid="obcallid" dest="'sip:' + DNIS" callerid="'sip:' + ANI + '@Spot'" timeout="'30s'"/>
         </transition>
 
         <transition state="dialing" event="connection.connected" name="evt">
@@ -76,7 +75,7 @@
             <assign name="t38" expr="evt.info.voip.T38"/>
             <if cond="((t38 == undefined) || (t38.length == 0))">
                 <log>ERROR: re-INVITE failed</log>
-                <var name="logText" expr="'dialFax.ccxml: Signal error. SPOT did not receive T38 information. Caller ['+ ANI +'] attempting to fax destination ['+ destination + '].'"/>
+                <var name="logText" expr="'dialFax.ccxml: Signal error. SPOT did not receive T38 information. Caller ['+ ANI +'] attempting to fax destination ['+ DNIS + '].'"/>
                 <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>
                 <var name="id" expr="'LSTNAPP_0069'"/>
@@ -144,7 +143,7 @@
         <transition event="connection.failed" name="evt">
             <log>INFO: transition event [connection.failed] state [<value expr="state"/>]</log>
             <assign name="state" expr="'connectionFailed'"/>
-            <var name="logText" expr="'dialFax.ccxml: Call failed. ['+ ANI +'] attempting to fax destination ['+ destination + ']. Reason ['+ errorCode(evt.reason) +']'"/>
+            <var name="logText" expr="'dialFax.ccxml: Call failed. ['+ ANI +'] attempting to fax destination ['+ DNIS + ']. Reason ['+ errorCode(evt.reason) +']'"/>
             <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
             <send data="'dialog.user.endCall'" target="session.id"/>
@@ -159,7 +158,7 @@
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <!-- Remove the caller's record in the db prior to exiting -->
             <assign name="state" expr="'errorEnd'"/>
-            <var name="logText" expr="'dialFax.ccxml: Global error catch. ANI ['+ ANI +'] DNIS ['+ destination + ']. Reason [' + evt.reason + ']'"/>
+            <var name="logText" expr="'dialFax.ccxml: Global error catch. ANI ['+ ANI +'] DNIS ['+ DNIS + ']. Reason [' + evt.reason + ']'"/>
             <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
             <send data="'dialog.user.endCall'" target="session.id"/>
@@ -169,7 +168,6 @@
             <!-- Exit CCXML session -->
             <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
 	        <log target="status">Send CDR</log>
-            <var name="DNIS" expr="destination"/>
             <var name="callType" expr="'Send Fax'"/>
             <var name="endTime" expr="getTimeStamp(3)"/>
             <assign name="APP_PATH" expr="SB_PATH+'ippbx/'"/>

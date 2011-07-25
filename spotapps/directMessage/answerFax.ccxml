@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 07/22/2011
+    <!-- Last Modified 07/25/2011
        *   @Name   answerFax.ccxml
        *   @Desc    -->
 
@@ -80,6 +80,11 @@
             <!-- Ignore this error -->
         </transition>
 
+        <transition event="fetch.done" name="evt"> <!-- Fetched ccxml document -->
+            <log>INFO: transition event [fetch.done] state [<value expr="state"/>]</log>
+            <goto fetchid="evt.fetchid"/> <!-- Go to ccxml document -->
+        </transition>
+
         <transition event="err*" name="errEV">
             <log>INFO: transition event [err*] state [<value expr="state"/>]</log>
             <log>ERROR: [<value expr="errEV.reason"/>]</log>
@@ -92,7 +97,6 @@
 
 		<transition event="connection.disconnected">
 			<log>INFO: transition event [connection.disconnected] state [<value expr="state"/>]</log>
-            <send data="'dialog.user.endCall'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">
