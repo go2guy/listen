@@ -6,7 +6,7 @@
                     It uses custom Intract code to detect incoming fax -->
 
     <property name="termchar" value=""/>
-	<property name="timeout" value="1000ms"/>
+	<property name="timeout" value="250ms"/>
     <property name="termtimeout" value="0ms"/>
 
     <var name="index" expr="0"/>
@@ -80,6 +80,7 @@
                         <goto next="#playAudio"/>
                     <else/>
                         <assign name="index" expr="index + 1"/>
+                        <goto next="#getPrompt"/>
                     </if>
                 <else/>
                     <assign name="promptID" expr="tmpVal"/>
