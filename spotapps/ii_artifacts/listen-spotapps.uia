@@ -2,7 +2,24 @@
 <uia>
     <iiLoader>
         <TYPES></TYPES>
-        <PATH></PATH>
+        <PATH>
+            <ENTRY>/interact/listen/artifacts/defaultApp.cfg</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_defaultDial/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_autoDial/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_main/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_voicemail/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_conference/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_confEvents/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_findmeAdmin/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_transcription/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_artifacts/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_autoAttendant/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_record/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_findme/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_mailbox/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/listen_afterHours/root.vxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/ippbx/root.vxml</ENTRY>
+        </PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
 

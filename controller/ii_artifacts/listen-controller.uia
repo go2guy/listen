@@ -2,7 +2,9 @@
 <uia>
     <iiLoader>
         <TYPES></TYPES>
-        <PATH></PATH>
+        <PATH>
+            <ENTRY>/interact/listen/scripts/listen-controller</ENTRY>
+        </PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
 
