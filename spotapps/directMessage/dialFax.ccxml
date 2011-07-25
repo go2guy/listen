@@ -1,5 +1,5 @@
 <ccxml version="1.0">
-    <!-- Last Modified 07/15/2011
+    <!-- Last Modified 07/22/2011
        *   @Name	dialFax.ccxml
        *   @Desc	This script handles the fax dial activities. -->
 
@@ -148,6 +148,10 @@
             <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
             <send data="'dialog.user.endCall'" target="session.id"/>
+        </transition>
+
+        <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
+            <!-- Ignore this error -->
         </transition>
 
         <transition event="error.*" name="evt">

@@ -76,6 +76,10 @@
 	    </transition>
 
         <!-- Catch errors -->
+        <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
+            <!-- Ignore this error -->
+        </transition>
+
         <transition event="err*" name="errEV">
             <log>INFO: transition event [err*] state [<value expr="state"/>]</log>
             <log>ERROR: [<value expr="errEV.reason"/>]</log>
