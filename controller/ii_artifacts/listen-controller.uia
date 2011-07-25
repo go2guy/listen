@@ -29,16 +29,6 @@
                 <name>^jre$|^jdk$</name>
                 <version>1.6.0</version>
             </rpm>
-
-            <script focus="background" onerror="die">
-                <![CDATA[
-                    #!/bin/bash
-                    if [ ! -d /var/lib/mysql/listen2/ ]
-                    then
-                        mysql --user=root -e "create database if not exists listen2"
-                    fi
-                ]]>
-            </script>
         </pre>
 
         <inquiry>
@@ -53,6 +43,18 @@
                 </property>
             </question>
         </inquiry>
+
+        <post>
+            <script focus="background" onerror="report">
+                <![CDATA[
+                    #!/bin/bash
+                    if [ ! -d /var/lib/mysql/listen2/ ]
+                    then
+                        mysql --user=root -e "create database if not exists listen2"
+                    fi
+                ]]>
+            </script>
+        </post>
     </install>
 
     <rollback>
