@@ -28,7 +28,17 @@
              <rpm state="greater-than-or-equal">
                 <name>^jre$|^jdk$</name>
                 <version>1.6.0</version>
-            </rpm>           
+            </rpm>
+
+            <script focus="background" onerror="die">
+                <![CDATA[
+                    #!/bin/bash
+                    if [ ! -d /var/lib/mysql/listen2/ ]
+                    then
+                        mysql --user=root -e "create database if not exists listen2"
+                    fi
+                ]]>
+            </script>
         </pre>
 
         <inquiry>

@@ -8,7 +8,7 @@ class listenAction(interface.Action):
             [interface.Process('httpd',
                                '0',
                                statusCmd='/sbin/service httpd status',
-                               statusSource=interface.Process.RETURN_CODE_KEY,
+                               statusSource=interface.Process.RETVAL_STATUS_SOURCE,
                                stopCmd='/sbin/service httpd stop',
                                startCmd='/sbin/service httpd start'),
 
@@ -30,13 +30,5 @@ class listenAction(interface.Action):
              interface.Process('mysql',
                                '/usr/lib.*/mysqld ',
                                startCmd='/sbin/service mysqld start',
-                               statusState=interface.Process.STATE_RUNNING)])]
-
-    def preinstall(cls, packages, test):
-        if not os.path.isdir('/var/lib/mysql/listen2'):
-            cls.run('mysql --user=root -e "create database listen2"')
-
-        if not os.path.isdir('/var/lib/mysql/ip_pbx'):
-            cls.run('mysql --user=root < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql')
-    preinstall = classmethod(preinstall)
+                               desiredState=interface.Process.RUNNING_STATE)])]
 

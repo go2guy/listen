@@ -33,6 +33,16 @@
                 <name>uia</name>
                 <version>5.0.0</version>
             </rpm>
+
+            <script focus="background" onerror="die">
+                <![CDATA[
+                    #!/bin/bash
+                    if [ ! -d /var/lib/mysql/ip_pbx/ ]
+                    then
+                        mysql --user=root < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql
+                    fi
+                ]]>
+            </script>
         </pre>
 
         <inquiry>
