@@ -3,7 +3,6 @@
     <iiLoader>
         <TYPES></TYPES>
         <PATH>
-            <ENTRY>/interact/listen/artifacts/defaultApp.cfg</ENTRY>
             <ENTRY>/interact/apps/spotbuild/listen_defaultDial/root.vxml</ENTRY>
             <ENTRY>/interact/apps/spotbuild/listen_autoDial/root.vxml</ENTRY>
             <ENTRY>/interact/apps/spotbuild/listen_main/root.vxml</ENTRY>

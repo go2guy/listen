@@ -94,7 +94,6 @@ Requires: spotbuild-vip
     rm -rf %{buildroot}/interact/apps/spotbuild/ippbx/php
     rm -rf %{buildroot}/interact/apps/spotbuild/after_hours
     rm -rf %{buildroot}/interact/apps/spotbuild/rhinounit
-    rm -f %{buildroot}/interact/apps/spotbuild/ippbx/defaultApp.cfg
 
     # Run Encryption
     /interact/program/iiXMLcrypt -e "Listen" %{buildroot}/interact/apps/spotbuild/listen_main/ %{buildroot}/interact/apps/spotbuild/listen_artifacts/
