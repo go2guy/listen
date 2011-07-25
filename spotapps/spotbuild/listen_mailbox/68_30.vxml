@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_68_30(FILE2,subscriber,grtngSelect,hostName)
             {
-	            return "{\"subscriber\": {\"href\": \"/subscribers/" + subscriber +"\"},\"greetingLocation\": \"http://"+hostName+FILE2+"\","+ "\"number\": \""+grtngSelect+"\"}";
+	            return "{\"subscriber\": {\"href\": \"/subscribers/" + subscriber +"\"},\"greetingLocation\": \"file:"+FILE2+"\","+ "\"number\": \""+grtngSelect+"\"}";
             }
         ]]>
     </script>

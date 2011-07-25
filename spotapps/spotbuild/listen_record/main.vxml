@@ -13,6 +13,7 @@
     <var name="II_SB_connectionID"/>
     <var name="II_SB_type"/>
     <var name="II_SB_line"/>
+    <var name="II_SB_sipFrom"/>
     <var name="II_SB_sessionID"/>
     <var name="II_SB_CODE_DIR"/>
     <var name="II_SB_NEXT_OPTION"/>

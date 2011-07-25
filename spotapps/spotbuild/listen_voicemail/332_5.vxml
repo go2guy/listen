@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_332_5(returnVal)
             {
-	            return getJsonVal (returnVal, 'greetingLocation').split('file:')[1];;
+	            return getGreetingURL (returnVal);
             }
         ]]>
     </script>

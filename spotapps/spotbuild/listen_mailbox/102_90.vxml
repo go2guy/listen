@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_102_90(FILE1,hostName)
             {
-	            return FILE1.split(hostName)[1];
+	            return FILE1.split('file:')[1];
             }
         ]]>
     </script>

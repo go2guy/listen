@@ -49,10 +49,3 @@ function extendAppObj(jsonObj, recDtmf) {
 
     return jsonObj;
 }
-
-function getGreetingURL (returnVal) {
-    var greeting = getJsonVal (returnVal, 'greetingLocation');
-    if (greeting.length > 0)
-        greeting = greeting.split('file:')[1];
-    return greeting;
-}
