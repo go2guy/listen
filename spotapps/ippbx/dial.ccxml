@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 06/15/2011
+    <!-- Last Modified 07/25/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -15,7 +15,6 @@
     <var name="callType"/>  <!-- Call type. Identifies a call as: service, extension or external. Service calls will be allowed to reoriginate -->
     <var name="ibconnid"/>  <!-- Inbound connection ID -->
     <var name="obconnid"/>  <!-- Outbound connection ID -->
-    <var name="isClosed"/>  <!-- Flag to determine if the office is closed -->
     <var name="EXT_LENGTH"/>        <!-- Extension length -->
     <var name="importedValue"/>     <!-- Imported Value. Values passed in from Listen application -->
     <var name="origDNIS"/>          <!-- Stores the original DNIS in a forwarded scenario -->
@@ -85,6 +84,13 @@
                     return 'true';
                 else
                     return 'false';
+            }
+
+            function setParams (SID, ani, dnis) {
+                if ((ani.length > 0) && (dnis.length > 0))
+                    return "{\"ani\":\""+ ani +"\", \"dnis\":\""+ dnis +"\", \"sessionId\":\""+ SID + "\"}";
+                else
+                    return "{\"sessionId\":\""+ SID + "\"}";
             }
         ]]>
     </script>
@@ -392,6 +398,9 @@
 		<transition event="connection.connected" name="evt">
             <!-- The dial attempt was successful. Let's terminate the ring tone on the caller's side -->
             <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
+            <var name="params" expr="setParams(session.id, tmpANI, tmpDNIS)"/>
+            <var name="resource" expr="'startCall'"/>
+            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
 		    <assign name="state" expr="'callConnected'"/>
             <if cond="inVXML == 'y'">
                 <send data="'dialog.user.terminate'" target="session.id"/>
@@ -516,6 +525,9 @@
             <!-- We've received the disconnect event -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <!-- Let's remove the disconnected callee's info from the active clients table -->
+            <var name="params" expr="setParams(session.id, '', '')"/>
+            <var name="resource" expr="'endCall'"/>
+            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
             <assign name="clientFlag" expr="'delete'"/>
             <send data="'dialog.user.updateClientRecord'" target="session.id"/>
@@ -633,6 +645,9 @@
         <transition state="attdXferMoveDisc" event="connection.disconnected" name="evt" cond="evt.connectionid == ibconnid">
             <!-- Got the disconnect -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <var name="params" expr="setParams(session.id, '', '')"/>
+            <var name="resource" expr="'endCall'"/>
+            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <!-- Remove the caller's record in the db -->
             <assign name="record" expr="ibconnid + '|' + tmpANI"/>
             <assign name="clientFlag" expr="'delete'"/>
@@ -918,6 +933,9 @@
             <!-- We've detected a hang up while dialing the destination number -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
+            <var name="params" expr="setParams(session.id, '', '')"/>
+            <var name="resource" expr="'endCall'"/>
+            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <var name="endTime" expr="getTimeStamp(3)"/>
             <if cond="inVXML == 'y'">   <!-- This should be true -->
                 <assign name="state" expr="'hangUp'"/>
@@ -933,6 +951,9 @@
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
+            <var name="params" expr="setParams(session.id, '', '')"/>
+            <var name="resource" expr="'endCall'"/>
+            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <assign name="state" expr="'hangUp'"/>
             <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
                 <send data="'dialog.user.terminate'" target="session.id"/>
@@ -976,6 +997,21 @@
         <transition event="fetch.done" name="evt">
             <log>INFO: Fetched document [<value expr="evt.uri"/>]</log>
             <goto fetchid="evt.fetchid" />
+        </transition>
+
+		<transition event="dialog.user.callInfo" name="evt">
+            <!-- Here, we information about the call to the listten controller -->
+            <log>INFO: Entered [dialog.user.callInfo] with state [<value expr="state"/>]</log>
+            <var name="request" expr="'post'"/>
+            <var name="params" expr="evt.params"/>
+            <var name="resource" expr="evt.resource"/>
+            <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','spotApi')"/>
+            <send data="'callInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="cntrlURL request resource params"/>
+		</transition>
+
+        <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
+            <!-- Ignore this error -->
         </transition>
 
         <transition event="error.*" name="evt">
