@@ -30,8 +30,15 @@
 			<if cond="II_SB_eventReceived == 'ERR_REC_START'">
 				<assign name="II_SB_assign_NxtOpt" expr="'121_88'"/>
 			</if>
+			<if cond="II_SB_eventReceived == 'IS_RECORDING'">
+				<assign name="II_SB_assign_NxtOpt" expr="'112_90'"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'INTERACTIVE_DIAL'">
+				<assign name="II_SB_assign_NxtOpt" expr="'112_76'"/>
+				<assign name="argList" expr="II_SB_valueReceived"/>
+			</if>
 			<if cond="II_SB_eventReceived == 'JOIN'">
-				<assign name="II_SB_assign_NxtOpt" expr="'86_94'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'86_111'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'END'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112_63'"/>
@@ -43,13 +50,6 @@
 			</if>
 			<if cond="II_SB_eventReceived == 'DROP'">
 				<assign name="II_SB_assign_NxtOpt" expr="'112_67'"/>
-				<assign name="argList" expr="II_SB_valueReceived"/>
-			</if>
-			<if cond="II_SB_eventReceived == 'IS_RECORDING'">
-				<assign name="II_SB_assign_NxtOpt" expr="'112_90'"/>
-			</if>
-			<if cond="II_SB_eventReceived == 'INTERACTIVE_DIAL'">
-				<assign name="II_SB_assign_NxtOpt" expr="'112_76'"/>
 				<assign name="argList" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'ERR_REC_STOP'">
