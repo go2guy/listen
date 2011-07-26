@@ -20,17 +20,15 @@
     <var name="origDNIS"/>          <!-- Stores the original DNIS in a forwarded scenario -->
 
     <!-- Global Vars -->
+    <var name="request" expr="'post'"/>
+    <var name="maxTime" expr="0"/>
     <var name="ip" expr="''"/>              <!-- IP. IP Address of phone client -->
     <var name="state" expr="'idle'"/>       <!-- State. Used to track which state a transition is in -->
     <var name="dialogID" expr="''"/>        <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="status" expr="''"/>          <!-- Status. Stores application status -->
     <var name="inVXML" expr="'n'"/>         <!-- In VXML. Determines if this session is currently running a vxml dialog -->
     <var name="ringToneID" expr="''"/>      <!-- Dialog ID of ring tone -->
-    <var name="whichMBox" expr="''"/>
-    <var name="whichID" expr="''"/>
     <var name="II_SB_promptID" expr="''"/>
-    <var name="clientFlag" expr="''"/>
-    <var name="record" expr="''"/>
     <var name="moveRequestSID" expr="''"/>  <!-- Session ID involved in an attended transfer -->
     <var name="xferConnID" expr="''"/>
     <var name="xferSID" expr="''"/>
@@ -45,11 +43,12 @@
     <var name="startTime" expr="getTimeStamp(3)"/>
     <var name="endTime" expr="'0'"/>
     <var name="officeOptr" expr="'101'"/>   <!-- Operator's extension -->
+    <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
+    <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
     <var name="CALL_DNIS" expr="''"/>
-    <var name="TEN_DIGITS" expr="10"/>      <!-- Number of digits for an outbound call -->
     <var name="OUT_BOUND_ID" expr="'14024768786'"/>         <!-- Caller ID used for outbound calls -->
     <var name="OUTSIDE_LINE" expr="'9'"/>
     <var name="callResult" expr="'Call Failed'"/>
@@ -64,7 +63,6 @@
     <var name="LIB_PATH" expr="''"/>        <!-- Lib Path. Direcotry for lib files -->
     <var name="SUP_PATH" expr="''"/>        <!-- Support Path. Directory for support files -->
     <var name="TRANS_PATH" expr="''"/>      <!-- Transactions Path. Directory for transaction files -->
-    <var name="NOTIFY_PATH" expr="''"/> 
     <var name="AUDIO_PATH" expr="''"/>      <!-- Audio Path. Directory for audio files -->
     <var name="SIP_SERVER" expr="''"/>      <!-- Name of SIP Trunk server for inbound/outbound calls -->
     <var name="SHORT_CODE" expr="'**'"/>
@@ -78,19 +76,23 @@
 
     <script>
         <![CDATA[
-            function isName (DNIS) {
-                var dnis = new String(getnum(DNIS)).replace(/[0-9*]/g,'');
-                if (dnis.length > 0)
-                    return 'true';
-                else
-                    return 'false';
-            }
-
-            function setParams (SID, ani, dnis) {
+            function callInfoParams (SID, ani, dnis) {
                 if ((ani.length > 0) && (dnis.length > 0))
                     return "{\"ani\":\""+ ani +"\", \"dnis\":\""+ dnis +"\", \"sessionId\":\""+ SID + "\"}";
                 else
                     return "{\"sessionId\":\""+ SID + "\"}";
+            }
+
+            function cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization) {
+                var duration = endTime - startTime;
+                if(endTime == '0')
+                    duration = '0';
+                return "{\"date\": \""+iiDateToISO(startTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+            }
+
+            function getExtID (dest) {
+                var result = new String(dest).split('@');
+                return result[0].replace(/\D/g,'');
             }
         ]]>
     </script>
@@ -117,42 +119,11 @@
                 <!-- If caller dialed zero, we'll call the operator's extension -->
                 <assign name="tmpDNIS" expr="officeOptr"/>
             </if>
+            <assign name="tmpDNIS" expr="getExtID(tmpDNIS)"/>
             <log>INFO: DNIS [<value expr="tmpDNIS"/>]</log>
             <log>INFO: Orig DNIS [<value expr="origDNIS"/>]</log>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
-            <send data="'dialog.user.chkRedial'" target="session.id"/>
-        </transition>
-
-        <transition event="dialog.user.chkRedial" name="evt">
-            <!-- If the dialed number is a string of characters, we're possibly dealing with a 
-            redial. Let's attempt to get an access number for the characters --> 
-            <log>INFO: Entered [dialog.user.chkRedial] with state [<value expr="state"/>]</log>
-            <if cond="((callType != 'fromXfer') &amp;&amp; (isName(tmpDNIS) == 'true'))"> <!-- Implies destination is a name. Assume a redial -->
-                <assign name="state" expr="'getExtID'"/>
-       	   		<dialogstart src="'file:'+TRANS_PATH+'getCallerID.vxml'" namelist="DNIS importedValue"/>
-            <else/>
                 <send data="'dialog.user.chkCallType'" target="session.id"/>
-            </if>
-        </transition>
-
-        <transition state="getExtID" event="dialog.exit" name="evt">
-            <!-- Back from getting the call ID -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <var name="result" expr="evt.values.result"/>
-            <if cond="result.length &gt; 0">
-                <log>INFO: Set destination to [<value expr="result"/>]</log>
-                <assign name="tmpDNIS" expr="getResultsKeyValue(result, 0, 'number')"/>
-                <assign name="DNIS" expr="tmpDNIS"/>
-                <assign name="ip" expr="getResultsKeyValue(result, 0, 'ip')"/>
-                <send data="'dialog.user.chkCallType'" target="session.id"/>
-            <else/>
-                <log>ERROR: Unable to dial [<value expr="DNIS"/>]</log>
-                <assign name="state" expr="'errorEnd'"/>
-                <var name="logText" expr="'dial.ccxml: Unable to find access number for ['+ DNIS + ']. Caller ext['+ tmpANI +'] was attempting to dial this party'"/>
-                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
-                <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
-            </if>
         </transition>
 
         <transition event="dialog.user.chkCallType" name="evt">
@@ -181,11 +152,11 @@
                         <var name="whichRsrc" expr="'dial'"/>
        	   		        <dialogstart src="'file:'+TRANS_PATH+'chkPhoneConfig.vxml'" namelist="importedValue whichRsrc accessNum"/>
                     <else/>
-                        <send data="'dialog.user.getCallerID'" target="session.id"/>
+                        <send data="'dialog.user.setCallerID'" target="session.id"/>
                     </if>
                 </if>
             <else/>
-                <send data="'dialog.user.getCallerID'" target="session.id"/>
+                <send data="'dialog.user.setCallerID'" target="session.id"/>
             </if>
         </transition>
 
@@ -212,61 +183,42 @@
                         <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                         <send data="'dialog.user.listenApp'" target="session.id"/>
                     <else/>
-                        <send data="'dialog.user.getCallerID'" target="session.id"/>
+                        <send data="'dialog.user.setCallerID'" target="session.id"/>
                     </if>
                 <else/>
-                    <send data="'dialog.user.getCallerID'" target="session.id"/>
+                    <send data="'dialog.user.setCallerID'" target="session.id"/>
                 </if>
-            <else/>
-                <send data="'dialog.user.getCallerID'" target="session.id"/>
-            </if>
-        </transition>
-
-        <transition event="dialog.user.getCallerID" name="evt">
-            <!-- This transition is used to get the callerID (where appropriate) -->
-            <log>INFO: Entered [dialog.user.getCallerID] with state [<value expr="state"/>]</log>
-            <if cond="((importedValue.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,''))))">
-                <!-- Attempting a pbx or voip call -->
-                <log>INFO: Attempting a pbx or voip call</log>
-                <assign name="state" expr="'getCallID'"/>
-       	   		<dialogstart src="'file:'+TRANS_PATH+'getCallerID.vxml'" namelist="tmpANI importedValue"/>
             <else/>
                 <send data="'dialog.user.setCallerID'" target="session.id"/>
             </if>
         </transition>
 
-        <transition state="getCallID" event="dialog.exit" name="evt">
-            <!-- Back from getting the call ID -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <var name="result" expr="evt.values.result"/>
-            <if cond="result.length &gt; 0">
-                <log>INFO: Set caller ID to [<value expr="result"/>]</log>
-                <assign name="CALL_ANI" expr="'sip:' + result + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
-            </if>
-            <send data="'dialog.user.setCallerID'" target="session.id"/>
-        </transition>
-
         <transition event="dialog.user.setCallerID" name="evt">
-            <!-- This transition is used to set the callerID -->
+            <!-- This transition is used to get the callerID (where appropriate) -->
             <log>INFO: Entered [dialog.user.setCallerID] with state [<value expr="state"/>]</log>
-            <if cond="CALL_ANI.length == 0">
-                <!-- Implies ID has not been set previousely -->
+            <if cond="((importedValue.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,''))))">
+                <assign name="CALL_ANI" expr="'sip:' + getJsonVal(importedValue, 'sipFrom') + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
+            <else/>
                 <assign name="CALL_ANI" expr="ANI"/>
             </if>
             <if cond="iiNumber(tmpDNIS)">
-                <!-- Let's verify caller has permission to dial number -->
-                <assign name="state" expr="'chkBlackList'"/>
-                <var name="destination" expr="tmpDNIS"/>
-                <if cond="tmpDNIS[0] == OUTSIDE_LINE">
-                    <assign name="destination" expr="iiSubstr(tmpDNIS,1,-1)"/>
-                </if>
-                <var name="accessNum" expr="tmpANI"/>
-                <var name="whichRsrc" expr="'canDial'"/>
-       	   		<dialogstart src="'file:'+TRANS_PATH+'chkPhoneConfig.vxml'" namelist="importedValue whichRsrc accessNum destination"/>
+               <send data="'dialog.user.chkBlkList'" target="session.id"/>
             <else/>
                 <send data="'dialog.user.call'" target="session.id"/>
             </if>
+        </transition>
+
+        <transition event="dialog.user.chkBlkList" name="evt">
+            <!-- Let's verify caller has permission to dial number -->
+            <log>INFO: Entered [dialog.user.chkBlkList] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'chkBlackList'"/>
+            <var name="destination" expr="tmpDNIS"/>
+            <if cond="tmpDNIS[0] == OUTSIDE_LINE">
+                <assign name="destination" expr="iiSubstr(tmpDNIS,1,-1)"/>
+            </if>
+            <var name="accessNum" expr="tmpANI"/>
+            <var name="whichRsrc" expr="'canDial'"/>
+       	   	<dialogstart src="'file:'+TRANS_PATH+'chkPhoneConfig.vxml'" namelist="importedValue whichRsrc accessNum destination"/>
         </transition>
 
         <transition state="chkBlackList" event="dialog.exit" name="evt">
@@ -274,42 +226,36 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <if cond="((evt.values.status == 'Failure') || (evt.values.result == 'true'))">
-                <if cond="((tmpDNIS &lt; EXT_LENGTH) &amp;&amp; (ip.length == 0))">
-                    <!-- Assume this is a pbx call. Get the IP address associated with DNIS -->
+                <send data="'dialog.user.call'" target="session.id"/>
+               <!-- <if cond="((tmpDNIS &lt; EXT_LENGTH) &amp;&amp; (ip.length == 0))">
+                     Assume this is a pbx call. Get the IP address associated with DNIS 
                     <assign name="state" expr="'getIP'"/>
           	   		<dialogstart src="'file:'+TRANS_PATH+'getCallerID.vxml'" namelist="tmpDNIS importedValue"/>
                 <else/>
                     <send data="'dialog.user.call'" target="session.id"/>
-                </if>
+                </if>  -->
             <else/>
                 <log target="status">[<value expr="tmpDNIS"/>] not permitted</log>
                 <log>INFO: [<value expr="ANI"/>] not permitted to dial [<value expr="tmpDNIS"/>]</log>
-                <assign name="state" expr="'error'"/>
                 <var name="logText" expr="'dial.ccxml: Caller [ext'+ tmpANI +'] attempted to dial blacklisted destination ['+ tmpDNIS + ']'"/>
                 <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
-                <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <assign name="state" expr="'blackListNum'"/>
+                <var name="II_SB_repeat" expr="'n'"/>
+                <var name="II_SB_interval" expr="''"/>
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'blackListNum.00.wav'"/>
+                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
             </if>
         </transition>
 
-        <transition state="getIP" event="dialog.exit" name="evt">
-            <!-- Back from getting destination IP address -->
+     <!--   <transition state="getIP" event="dialog.exit" name="evt">
+              Back from getting destination IP address
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <var name="result" expr="evt.values.result"/>
             <assign name="ip" expr="getResultsKeyValue(result, 0, 'ip')"/>
             <send data="'dialog.user.call'" target="session.id"/>
-        </transition>
-
-        <transition state="error" event="dialog.exit" name="evt">
-            <!-- Back from checking if caller has permission to dial number -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <assign name="state" expr="'blackListNum'"/>
-            <var name="II_SB_repeat" expr="'n'"/>
-            <var name="II_SB_interval" expr="''"/>
-            <assign name="II_SB_promptID" expr="AUDIO_PATH+'blackListNum.00.wav'"/>
-            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
-        </transition>
+        </transition>   -->
 
         <transition event="dialog.user.call" name="evt">
             <!-- Attempt dial to destination number. Since this is voip, we'll generate
@@ -344,38 +290,21 @@
             </if>
             <if cond="CALL_DNIS.length &gt; 0">
                 <log target="status">Dialing [<value expr="tmpDNIS"/>]</log>
-                <assign name="state" expr="'storeInfo'"/>
                 <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
-                <if cond="tmpDNIS.length &lt; EXT_LENGTH">
-                    <send data="'dialog.user.storeInfo'" target="session.id" delay="'250ms'" sendid="ringToneID"/>
-                <else/>
-                    <assign name="state" expr="'dialing'"/> <!-- Not an ippbx call. Play ring tone -->
-                    <send data="'dialog.user.ringTone'" target="session.id"/>
-                </if>
+                <assign name="state" expr="'dialing'"/>
+                <var name="id" expr="obconnid"/>
+                <var name="sessionID" expr="session.id"/>
+                <var name="flag" expr="'insert'"/>
+                <var name="extension" expr="tmpDNIS"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+                <send data="'dialog.user.ringTone'" target="session.id"/> <!-- Not an ippbx call. Play ring tone -->
             <else/>
                 <assign name="state" expr="'hangUp'"/>
                 <var name="logText" expr="'dial.ccxml: Invalid outdial attempt. Caller [ext'+ tmpANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
                 <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
-                <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <send data="'dialog.user.deleteRecord'" target="session.id"/>
             </if>
-        </transition>
-
-		<transition state="storeInfo" event="dialog.user.storeInfo" name="evt">
-            <!-- In here, we check if the dialed destination is within ippbx. If it is, there's a possibility of the call
-            being "pickup" from another extension. Therefore, we need to update the db with information about this call -->
-            <log>INFO: Entered [dialog.user.storeInfo] with state [<value expr="state"/>]</log>
-            <var name="flag" expr="'insert'"/>
-            <var name="sessionID" expr="session.id"/>
-            <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record sessionID EXT_LENGTH"/>
-		</transition>
-
-        <transition state="storeInfo" event="dialog.exit" name="evt">
-            <!-- Back from updating the db. Let's play the ring tone -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <assign name="state" expr="'dialing'"/>
-            <send data="'dialog.user.ringTone'" target="session.id"/>
         </transition>
 
 		<transition state="dialing" event="dialog.user.ringTone" name="evt">
@@ -398,7 +327,7 @@
 		<transition event="connection.connected" name="evt">
             <!-- The dial attempt was successful. Let's terminate the ring tone on the caller's side -->
             <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
-            <var name="params" expr="setParams(session.id, tmpANI, tmpDNIS)"/>
+            <var name="params" expr="callInfoParams(session.id, tmpANI, tmpDNIS)"/>
             <var name="resource" expr="'startCall'"/>
             <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
 		    <assign name="state" expr="'callConnected'"/>
@@ -432,25 +361,14 @@
             <log target="status">Call in progress</log>
             <assign name="callResult" expr="'Call Answered'"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to update a record into the db -->
-    		    <assign name="state" expr="'updateClient'"/>
-                <var name="flag" expr="'update'"/>
+                <var name="id" expr="obconnid"/>
                 <var name="sessionID" expr="''"/>
-                <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
-   	   		    <dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record sessionID EXT_LENGTH"/>
-            <else/>
-                <!-- Call transition that monitors the call for key presses -->
-                <send data="'dialog.user.keyPress'" target="session.id"/>
+                <var name="flag" expr="'update'"/>
+                <var name="extension" expr="tmpDNIS"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
             </if>
-		</transition>
-
-        <transition state="updateClient" event="dialog.exit" name="evt">
-            <!-- We're back from inserting the callee's record into the db -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-		    <assign name="state" expr="'callConnected'"/>
-            <assign name="inVXML" expr="'n'"/>
-            <!-- Call transition that monitors the call for key presses -->
             <send data="'dialog.user.keyPress'" target="session.id"/>
-        </transition>
+		</transition>
 
 		<transition state="callConnected" event="dialog.user.keyPress" name="evt">
             <!-- -->
@@ -525,18 +443,14 @@
             <!-- We've received the disconnect event -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <!-- Let's remove the disconnected callee's info from the active clients table -->
-            <var name="params" expr="setParams(session.id, '', '')"/>
+            <var name="params" expr="callInfoParams(session.id, '', '')"/>
             <var name="resource" expr="'endCall'"/>
             <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
-            <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
-            <assign name="clientFlag" expr="'delete'"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
-        </transition>
-
-        <transition state="xferToVoiceMail" event="dialog.exit" name="evt">
-            <!-- Back from removing the callee's info from the db -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
+            <var name="id" expr="obconnid"/>
+            <var name="sessionID" expr="''"/>
+            <var name="flag" expr="'delete'"/>
+            <var name="extension" expr="tmpDNIS"/>
+            <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
             <assign name="DNIS" expr="userEntry"/>
             <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
             <send data="'dialog.user.listenApp'" target="session.id"/>
@@ -645,36 +559,30 @@
         <transition state="attdXferMoveDisc" event="connection.disconnected" name="evt" cond="evt.connectionid == ibconnid">
             <!-- Got the disconnect -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
-            <var name="params" expr="setParams(session.id, '', '')"/>
+            <var name="params" expr="callInfoParams(session.id, '', '')"/>
             <var name="resource" expr="'endCall'"/>
             <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <!-- Remove the caller's record in the db -->
-            <assign name="record" expr="ibconnid + '|' + tmpANI"/>
-            <assign name="clientFlag" expr="'delete'"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            <var name="id" expr="ibconnid"/>
+            <var name="sessionID" expr="''"/>
+            <var name="flag" expr="'delete'"/>
+            <var name="extension" expr="tmpANI"/>
+            <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+		    <assign name="state" expr="'attdXferVChnnel'"/>
+            <join id1="obconnid" id2="'VXML_CHANNEL'"/>
         </transition>
 
         <transition state="ringPickUpDisc" event="connection.failed" name="evt" cond="evt.connectionid == obconnid">
             <!-- Got the response to our disconnect. Remove the callee's record in the db -->
             <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
 		    <assign name="state" expr="'ringRecDelete'"/>
-            <assign name="record" expr="obconnid + '|' + tmpDNIS"/>
-            <assign name="clientFlag" expr="'delete'"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
-        </transition>
-
-        <transition state="ringRecDelete attdXferMoveDisc" event="dialog.exit" name="evt">
-            <!-- Record has been removed. Before continuing with the transfer/pickup,
-            let's join remaining party to a voice channel -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <if cond="state == 'attdXferMoveDisc'">
-		        <assign name="state" expr="'attdXferVChnnel'"/>
-                <join id1="obconnid" id2="'VXML_CHANNEL'"/>
-            <else/>
-		        <assign name="state" expr="'pickUpVChnnel'"/>
-                <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
-            </if>
+            <var name="id" expr="obconnid"/>
+            <var name="sessionID" expr="''"/>
+            <var name="flag" expr="'delete'"/>
+            <var name="extension" expr="tmpDNIS"/>
+            <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+		    <assign name="state" expr="'pickUpVChnnel'"/>
+            <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
         </transition>
 
         <transition state="pickUpVChnnel attdXferVChnnel" event="conference.joined" name="evt">
@@ -697,11 +605,12 @@
             <if cond="state == 'attdXferMoveAttempt'">
                 <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="obconnid"/>
             <else/>
-                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
+                <var name="record" expr="ibconnid + '|' + tmpANI"/>
                 <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="record"/>
             </if>
             <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
+            <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
         </transition>
 
         <transition state="pickUpMoveAttempt attdXferMoveAttempt" event="error.move" name="evt">
@@ -709,10 +618,13 @@
             attendedTransfer.ccxml or transferHold.ccxlm script -->
             <log>INFO: Entered [error.move] with state [<value expr="state"/>]</log>
             <send data="'dialog.user.moveFailed'" target="moveRequestSID"/>
-            <assign name="record" expr="ibconnid + '|' + tmpDNIS"/>
-            <assign name="clientFlag" expr="'delete'"/>
-  		    <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            <var name="id" expr="ibconnid"/>
+            <var name="sessionID" expr="''"/>
+            <var name="flag" expr="'delete'"/>
+            <var name="extension" expr="tmpDNIS"/>
+            <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
+            <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
         </transition>
 
         <transition state="xferUnjoin" event="error.conference.unjoined" name="evt">
@@ -721,6 +633,9 @@
             <send data="'dialog.user.moveFailed'" target="moveRequestSID" namelist="obconnid"/>
             <assign name="state" expr="'hangUp'"/>
             <!-- Remove the records associated with this call in the db prior to exiting -->
+            <var name="logText" expr="'dial.ccxml: Error while attempting to perform call transfer. Caller ['+ tmpANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
             <send data="'dialog.user.deleteRecord'" target="session.id"/>
         </transition>
 
@@ -728,8 +643,10 @@
             <!-- Our join attempt failed -->
             <log>ERROR: Entered [error.conference.join] with state [<value expr="state"/>]</log>
             <!-- TODO: How do we handle this? Allow a retry? Play a prompt and end? -->
-            <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <var name="logText" expr="'dial.ccxml: Error while attempting to join parties. Caller ['+ tmpANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
 		</transition>
 
         <transition event="connection.failed" name="evt">
@@ -748,14 +665,36 @@
                 <cancel sendid="ringToneID"/>
                 <assign name="state" expr="'noRingToneFail'"/>
                 <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
+                <if cond="inString(dialFailReason,ERR_BUSY,',')"> <!-- Destination was busy -->
+                    <log target="status">Destination busy</log>
+                    <assign name="state" expr="'busy'"/>
+                    <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+                        <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                            <send data="'dialog.user.writeCDR'" target="session.id"/>
+                            <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
+                    <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
+                        <!-- Remove the caller's record in the db prior to exiting -->
+                        <send data="'dialog.user.deleteRecord'" target="session.id"/>
+                    </if>
+                <elseif cond="(inString(dialFailReason,ERR_NOT_FOUND,',')) &amp;&amp; (callType == 'extension')"/>
+                     <!-- Destination not found. Maybe IP Phone is offline. Check if there's a voicemail account -->
+                    <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                    <send data="'dialog.user.writeCDR'" target="session.id"/>
+                    <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
+                <else/>
+                    <!-- Call failed due to some other reason -->
+                    <send data="'dialog.user.callFailed'" target="session.id"/>
+                </if>
             <elseif cond="inString(dialFailReason,ERR_BUSY,',')"/> <!-- Destination was busy -->
                 <log target="status">Destination busy</log>
                 <assign name="callResult" expr="'Destination Busy'"/>
-                <assign name="state" expr="'busy'"/>
+                <assign name="state" expr="'writeBusyLog'"/>
+                <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
                 <send data="'dialog.user.terminate'" target="session.id"/> <!-- Stop ringing tone on caller side -->
             <else/>
                 <log target="status">Call failed</log>
-                <assign name="state" expr="'callFailed'"/>
+                <assign name="state" expr="'callFailedLog'"/>
+                <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
                 <send data="'dialog.user.terminate'" target="session.id"/> <!-- Stop ringing tone on caller side -->
             </if>
         </transition>
@@ -764,38 +703,7 @@
             <log>INFO: Entered [dialog.user.writeCallFailedLog] with state [<value expr="state"/>]</log>
             <var name="logText" expr="'dial.ccxml: Call failed. Caller ['+ tmpANI +'] attempting to reach destination ['+ tmpDNIS + ']. Reason ['+ errorCode(dialFailReason) +']'"/>
             <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
-            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
-        </transition>
-
-        <transition state="busy callFailed noRingToneFail" event="dialog.exit" name="evt">
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <if cond="state == 'noRingToneFail'">
-                <if cond="inString(dialFailReason,ERR_BUSY,',')"> <!-- Destination was busy -->
-                    <log target="status">Destination busy</log>
-                    <assign name="state" expr="'busy'"/>
-                    <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
-                        <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                        <send data="'dialog.user.createccxml'" target="session.id"/>
-                    <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
-                        <!-- Remove the caller's record in the db prior to exiting -->
-                        <send data="'dialog.user.deleteRecord'" target="session.id"/>
-                    </if>
-                <elseif cond="(inString(dialFailReason,ERR_NOT_FOUND,',')) &amp;&amp; (callType == 'extension')"/>
-                     <!-- Destination not found. Maybe IP Phone is offline. Check if there's a voicemail account -->
-                    <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                    <send data="'dialog.user.createccxml'" target="session.id"/>
-                <else/>
-                    <!-- Call failed due to some other reason -->
-                    <send data="'dialog.user.callFailed'" target="session.id"/>
-                </if>
-            <elseif cond="state == busy"/>
-                <assign name="state" expr="'busyLog'"/>
-                <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
-            <else/>
-                <assign name="state" expr="'callFailedLog'"/>
-                <send data="'dialog.user.writeCallFailedLog'" target="session.id"/>
-            </if>
+            <log target="logFile"><value expr="logText"/></log>
         </transition>
 
         <transition state="noAns writeBusyLog" event="dialog.exit" name="evt">
@@ -805,7 +713,8 @@
             <assign name="inVXML" expr="'n'"/>
             <if cond="callType == 'extension'">   <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
                 <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                <send data="'dialog.user.createccxml'" target="session.id"/>
+                <send data="'dialog.user.writeCDR'" target="session.id"/>
+                <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             <else/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
                 <!-- Remove the caller's record in the db prior to exiting -->
                 <send data="'dialog.user.deleteRecord'" target="session.id"/>
@@ -926,14 +835,15 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <assign name="LISTEN_APP" expr="'listen_autoAttendant'"/>
-            <send data="'dialog.user.createccxml'" target="session.id"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
+            <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
         </transition>
 
         <transition state="storeInfo dialing monitor" event="connection.disconnected" name="evt">
             <!-- We've detected a hang up while dialing the destination number -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
-            <var name="params" expr="setParams(session.id, '', '')"/>
+            <var name="params" expr="callInfoParams(session.id, '', '')"/>
             <var name="resource" expr="'endCall'"/>
             <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <var name="endTime" expr="getTimeStamp(3)"/>
@@ -951,7 +861,7 @@
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
-            <var name="params" expr="setParams(session.id, '', '')"/>
+            <var name="params" expr="callInfoParams(session.id, '', '')"/>
             <var name="resource" expr="'endCall'"/>
             <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <assign name="state" expr="'hangUp'"/>
@@ -966,21 +876,18 @@
         <transition event="dialog.user.deleteRecord" name="evt">
             <!-- Here, we start the vxml dialog to update the database -->
             <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
+            <var name="sessionID" expr="''"/>
+            <var name="flag" expr="'delete'"/>
             <if cond="state == 'hangUp'">
-                <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
-            <else/>
-                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
+                <var name="id" expr="obconnid"/>
+                <var name="extension" expr="tmpDNIS"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
             </if>
-            <assign name="clientFlag" expr="'delete'"/>
-  		    <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
-        </transition>
-
-        <transition event="dialog.user.updateClientRecord" name="evt">
-            <!-- Here, we start the vxml dialog to update the database -->
-            <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
-            <var name="flag" expr="clientFlag"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+            <var name="id" expr="ibconnid"/>
+            <var name="extension" expr="tmpANI"/>
+            <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime" delay="'250ms'"/>
+            <send data="'dialog.user.writeCDR'" target="session.id" delay="'250ms'"/>
+            <send data="'dialog.user.endCall'" target="session.id" delay="'500ms'"/>
         </transition>
 
         <transition event="dialog.user.terminate" name="evt">
@@ -991,7 +898,8 @@
         <transition event="dialog.exit" name="evt">
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
+            <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
         </transition>
 
         <transition event="fetch.done" name="evt">
@@ -1002,11 +910,9 @@
 		<transition event="dialog.user.callInfo" name="evt">
             <!-- Here, we information about the call to the listten controller -->
             <log>INFO: Entered [dialog.user.callInfo] with state [<value expr="state"/>]</log>
-            <var name="request" expr="'post'"/>
             <var name="params" expr="evt.params"/>
             <var name="resource" expr="evt.resource"/>
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
-            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','spotApi')"/>
             <send data="'callInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="cntrlURL request resource params"/>
 		</transition>
 
@@ -1022,36 +928,41 @@
             <assign name="state" expr="'errorEnd'"/>
             <var name="logText" expr="'dial.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
             <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
-            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
         </transition>
 
-        <transition event="dialog.user.createccxml" name="evt">
-            <!-- Create new ccxml session -->
-            <log>INFO: Entered [dialog.user.createccxml] with state [<value expr="state"/>]</log>
-		    <assign name="state" expr="'createCCXML'"/>
+        <transition event="dialog.user.writeCDR" name="evt">
+            <!-- Exit CCXML session -->
+            <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
+            <var name="endTime" expr="getTimeStamp(3)"/>
             <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
-            <createccxml sessionid="newSID" next="'file:'+APP_PATH+'cdr.ccxml'" namelist="APP_PATH DNIS ANI startTime endTime callType callResult importedValue"/>
+            <assign name="ANI" expr="tmpANI"/>  <!-- Strip off outside line prefix -->
+
+            <var name="resource" expr="'addCallHistory'"/>
+            <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>
+            <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
+            <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="cntrlURL request resource params"/>
+
+            <var name="id" expr="''"/>
+            <var name="source" expr="'ippbx'"/>
+            <var name="operation" expr="'set'"/>
+            <if cond="((tmpANI &lt; EXT_LENGTH) &amp;&amp; (tmpDNIS &lt; EXT_LENGTH))">
+                <assign name="id" expr="'LSTNAPP_0011'"/> <!-- Assume pbx ext to ext call. -->
+            <elseif cond="tmpANI &lt; EXT_LENGTH"/>
+                <assign name="id" expr="'LSTNAPP_0012'"/> <!-- Assume pbx to external call -->
+            <else/>
+                <var name="id" expr="'LSTNAPP_0013'"/>  <!-- Assume external to pbx call -->
+            </if>
+            <var name="value" expr="getTimeDifference(startTime,endTime)"/>
+            <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
         </transition>
-
-		<!-- Catch ccxml.created event -->
-		<transition state="createCCXML" event="ccxml.created" name="evt">
-            <log>INFO: Entered [ccxml.created] with state [<value expr="state"/>]</log>
-			<log>INFO: session ID [<value expr="newSID"/>]</log>
-            <send data="'dialog.user.listenApp'" target="session.id"/>
-		</transition>
-
-		<!-- Catch error.createccxml event -->
-		<transition state="createCCXML" event="error.createccxml">
-            <log>INFO: Entered [error.createccxml] with state [<value expr="state"/>]</log>
-            <send data="'dialog.user.listenApp'" target="session.id"/>
-		</transition>
 
         <transition event="dialog.user.endCall" name="evt">
             <!-- Exit CCXML session -->
             <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
-            <var name="endTime" expr="getTimeStamp(3)"/>
-            <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
-            <fetch next="'file:'+APP_PATH+'cdr.ccxml'" namelist="APP_PATH DNIS ANI startTime endTime callType callResult importedValue"/>
+            <exit/>
         </transition>
 
 	</eventprocessor>

@@ -59,9 +59,15 @@ function getAppName(appName, jsonObj) {
     return appName;
 }
 
-function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,sipDirect,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,licenses,viopChannel) {
+function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,sipDirect,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,licenses,viopChannel,callerID) {
     if ((typeof(passValues) == 'undefined') || (passValues.length == 0)) {
-        return "{\"application\":\""+appToAccess+"\", \"licenses\":"+licenses+", \"voipChannel\":\""+viopChannel+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"pstnLength\": \""+pstnLength+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"sipDirect\":\""+sipDirect+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"organization\": \""+ organization+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
+        var sipFrom = '';
+        var tmpVal = callerID.split('<sip:');
+        if ((typeof(tmpVal[0]) == 'undefined') || (tmpVal[0].length == 0))
+            sipFrom = tmpVal[1].split('@')[0];
+        else
+            sipFrom = tmpVal[0].replace(/"|\s$/g,'');
+        return "{\"application\":\""+appToAccess+"\", \"sipFrom\":\""+sipFrom+"\", \"licenses\":"+licenses+", \"voipChannel\":\""+viopChannel+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"pstnLength\": \""+pstnLength+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"sipDirect\":\""+sipDirect+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"organization\": \""+ organization+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
     }
     else {
         var result = eval("("+passValues+")");

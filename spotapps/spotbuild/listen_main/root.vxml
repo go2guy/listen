@@ -68,6 +68,7 @@
 	<var name="returnStr" expr="''" />
 	<var name="returnVal" expr="''" />
 	<var name="viopChannel" expr="''" />
+	<var name="callerID" expr="'sipFrom'" />
 
 
     <!-- Conference Variables -->

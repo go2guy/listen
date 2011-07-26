@@ -59,6 +59,7 @@
 	<var name="SB_UV_returnStr"/>
 	<var name="SB_UV_returnVal"/>
 	<var name="SB_UV_viopChannel"/>
+	<var name="SB_UV_callerID"/>
 
     
     <form id="beginDocument">
@@ -73,6 +74,7 @@
 			<assign name="ANI" expr="II_SB_remote" />
 			<assign name="callType" expr="II_SB_type" />
 			<assign name="line" expr="II_SB_line" />
+			<assign name="callerID" expr="II_SB_sipFrom" />
 			<assign name="passValues" expr="II_SB_importedValue" />
 
 			<if cond="SB_UV_appToAccess != undefined">
@@ -191,6 +193,9 @@
 			</if>
 			<if cond="SB_UV_viopChannel != undefined">
 				<assign name="viopChannel" expr="SB_UV_viopChannel" />
+			</if>
+			<if cond="SB_UV_callerID != undefined">
+				<assign name="callerID" expr="SB_UV_callerID" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
