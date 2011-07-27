@@ -112,7 +112,9 @@
     <fail unless"webserver">Property [webserver] must be set</fail>
 
     <property name="automation.deploy.dir" value="\\${webserver}/slash/interact/listen/lib"/>
+
     <copy file="cobertura.ser" todir="${automation.deploy.dir}"/>
+    <copy file="listen/target/listen-controller.war" todir="${automation.deploy.dir}"/>
     <sshexec host="${webserver}" username="root" password="super" trust="true"
              command="chmod 777 /interact/listen/lib/*"/>
     <sshexec host="${webserver}" username="root" password="super" trust="true"
@@ -128,5 +130,19 @@
     <mkdir dir="${automation.report.dir}"/>
 
     <cobertura-report destdir="${automation.report.dir}" format="xml" datafile="\\${webserver}/slash/interact/listen/lib/cobertura.ser"/>
+  </target>
+
+  <target name="automation-start-controller">
+    <fail unless"webserver">Property [webserver] must be set</fail>
+
+    <sshexec host="${webserver}" username="root" password="super" trust="true"
+             command="service listen-controller start"/>
+  </target>
+
+  <target name="automation-stop-controller">
+    <fail unless"webserver">Property [webserver] must be set</fail>
+
+    <sshexec host="${webserver}" username="root" password="super" trust="true"
+             command="service listen-controller stop"/>
   </target>
 </project>
