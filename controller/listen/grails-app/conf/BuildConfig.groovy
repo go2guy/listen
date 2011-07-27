@@ -44,13 +44,6 @@ grails.project.dependency.resolution = {
                 'com.googlecode.json-simple:json-simple:1.1',
                 'org.apache.tika:tika-core:0.9',
                 'org.apache.tika:tika-parsers:0.9'
-
-        def args = System.getProperty('grails.cli.args')
-        if(args.tokenize().containsAll('-instrument')) {
-            compile('net.sourceforge.cobertura:cobertura:1.9.4.1') {
-                excludes 'asm', 'log4j'
-            }
-        }
     }
 }
 
