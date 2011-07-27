@@ -91,7 +91,7 @@
   <taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
 
   <target name="automation-create-war">
-    <exec executable="grails" dir="${basedir}/listen">
+    <exec executable="grails.bat" dir="${basedir}/listen">
       <arg value="prod executable-war -with-cobertura"/>
     </exec>
   </target>
