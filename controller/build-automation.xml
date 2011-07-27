@@ -1,0 +1,62 @@
+<project name="listen-automation" default="instrument-war">
+  <path id="cobertura.classpath">
+    <fileset dir="listen/lib-cobertura" includes="*.jar"/>
+  </path>
+  <taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
+
+  <target name="create-war">
+    <exec executable="C:\grails-1.3.7\bin\grails.bat" dir="${basedir}/listen">
+      <arg value="prod executable-war -with-cobertura"/>
+    </exec>
+  </target>
+
+  <target name="instrument-war" depends="create-war">
+
+    <delete file="cobertura.ser"/>
+
+    <cobertura-instrument>
+      <includeClasses regex="com\.interact\.listen\..*"/>
+      <instrumentationClasspath>
+        <pathelement location="listen/target/listen-controller.war"/>
+      </instrumentationClasspath>
+    </cobertura-instrument>
+  </target>
+
+  <target name="deploy" depends="instrument-war">
+    <fail unless="webserver">Property [webserver] must be set</fail>
+
+    <property name="automation.deploy.dir" value="\\${webserver}/slash/interact/listen/lib"/>
+
+    <copy file="cobertura.ser" todir="${automation.deploy.dir}"/>
+    <copy file="listen/target/listen-controller.war" todir="${automation.deploy.dir}"/>
+    <sshexec host="${webserver}" username="root" password="super" trust="true"
+             command="chmod 777 /interact/listen/lib/*"/>
+    <sshexec host="${webserver}" username="root" password="super" trust="true"
+             command="sed -i 's@-Dport=$PORT@-Dnet.sourceforge.cobertura.datafile=/interact/listen/lib/cobertura.ser &amp;@'  /interact/listen/scripts/listen-controller"/>
+  </target>
+
+  <target name="report">
+    <fail unless="webserver">Property [webserver] must be set</fail>
+
+    <property name="automation.report.dir" value="automation-report"/>
+
+    <delete dir="${automation.report.dir}"/>
+    <mkdir dir="${automation.report.dir}"/>
+
+    <cobertura-report destdir="${automation.report.dir}" format="xml" datafile="\\${webserver}/slash/interact/listen/lib/cobertura.ser"/>
+  </target>
+
+  <target name="start-controller">
+    <fail unless="webserver">Property [webserver] must be set</fail>
+
+    <sshexec host="${webserver}" username="root" password="super" trust="true"
+             command="service listen-controller start"/>
+  </target>
+
+  <target name="stop-controller">
+    <fail unless="webserver">Property [webserver] must be set</fail>
+
+    <sshexec host="${webserver}" username="root" password="super" trust="true"
+             command="service listen-controller stop"/>
+  </target>
+</project>
