@@ -65,7 +65,7 @@ class DateTimeTagLib {
 
 
         out << '<select name="' + name + '_minute" id="' + id + '_minute"/>'
-        for(i in [0, 15, 30, 45]) {
+        for(i in [0, 15, 30, 45, 59]) {
             def m = i.toString().padLeft(2, '0')
             out << '<option value="' + m + '"' + (value?.minuteOfHour == i ? ' selected="selected"' : '') + '>' + m + '</option>'
         }
