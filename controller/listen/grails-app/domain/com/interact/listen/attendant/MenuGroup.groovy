@@ -9,14 +9,20 @@ class MenuGroup {
     String name
 
     static belongsTo = [organization: Organization]
+
     static hasMany = [
         menus: Menu,
         promptOverrides: PromptOverride,
         restrictions: TimeRestriction
     ]
+
     static fetchMode = [
         menus: 'eager',
         restrictions: 'eager'
+    ]
+
+    static mappedBy = [
+        promptOverrides: 'overridesMenu'
     ]
 
     static constraints = {

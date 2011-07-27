@@ -5,15 +5,16 @@ import org.apache.log4j.Logger
 import org.joda.time.LocalDate
 
 class PromptOverride {
-    private static final Logger _log = Logger.getLogger("grails.app.controllers.com.interact.listen.PromptOverride")
+    private static final Logger _log = Logger.getLogger("grails.app.controllers.com.interact.listen.attendant.PromptOverride")
 
     LocalDate date
     String optionsPrompt
+    MenuGroup useMenu
 
-    static belongsTo = [menuGroup: MenuGroup]
+    static belongsTo = [overridesMenu: MenuGroup]
 
     static constraints = {
-        date unique: 'menuGroup', validator: { val, obj ->
+        date unique: 'overridesMenu', validator: { val, obj ->
             if(!obj.id) {
                 val?.isBefore(new LocalDate()) ? 'before.today' : true
             }
@@ -27,7 +28,7 @@ class PromptOverride {
         def c = PromptOverride.createCriteria()
         def result = c.listDistinct() {
             ge('date', today)
-            menuGroup {
+            overridesMenu {
                 eq('organization', organization)
             }
             order 'date', 'asc'

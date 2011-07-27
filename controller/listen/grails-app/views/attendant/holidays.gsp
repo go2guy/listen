@@ -5,8 +5,9 @@
     <meta name="tab" content="attendant"/>
     <meta name="button" content="holidays"/>
     <style type="text/css">
-.col-date { width: 32%; }
-.col-menuGroup { width: 26%; }
+.col-date { width: 18%; }
+.col-overridesMenu { width: 20%; }
+.col-useMenu { width: 20%; }
 .col-prompt { width: 26%; }
 .col-button {
     text-align: center;
@@ -45,8 +46,8 @@ fieldset.vertical .or-separator {
           <joda:datePicker name="date" value="${newPromptOverride?.date}"/>
         </span>
 
-        <label for="menuGroup"><g:message code="promptOverride.menuGroup.label"/></label>
-        <listen:menuGroupSelect name="menuGroup.id" value="${newPromptOverride?.menuGroup?.id}"/>
+        <label for="overridesMenu.id"><g:message code="promptOverride.overridesMenu.label"/></label>
+        <listen:menuGroupSelect name="overridesMenu.id" value="${newPromptOverride?.overridesMenu?.id}"/>
 
         <label for="optionsPrompt" class="or-option">
           <g:message code="page.attendant.holidays.select.prompt.label"/>
@@ -60,6 +61,9 @@ fieldset.vertical .or-separator {
           <input type="file" name="uploadedPrompt" id="uploadedPrompt"/>
         </label>
 
+        <label for="useMenu.id"><g:message code="promptOverride.useMenu.label"/></label>
+        <listen:menuGroupSelect name="useMenu.id" value="${newPromptOverride?.useMenu?.id}"/>
+
         <ul class="form-buttons">
           <li><g:submitButton name="add" value="${g.message(code: 'page.attendant.holidays.button.add.label')}"/></li>
           <li><g:link controller="attendant" action="holidays"><g:message code="default.button.discard.label"/></g:link></li>
@@ -70,8 +74,9 @@ fieldset.vertical .or-separator {
     <table>
       <thead>
         <g:sortableColumn class="col-date" property="date" title="${g.message(code: 'promptOverride.date.label')}"/>
-        <g:sortableColumn class="col-menuGroup" property="menuGroup" title="${g.message(code: 'promptOverride.menuGroup.label')}"/>
+        <g:sortableColumn class="col-overridesMenu" property="overridesMenu" title="${g.message(code: 'promptOverride.overridesMenu.label')}"/>
         <g:sortableColumn class="col-prompt" property="optionsPrompt" title="${g.message(code: 'promptOverride.optionsPrompt.label')}"/>
+        <g:sortableColumn class="col-useMenu" property="useMenu" title="${g.message(code: 'promptOverride.useMenu.label')}"/>
         <th></th>
         <th></th>
       </thead>
@@ -80,8 +85,9 @@ fieldset.vertical .or-separator {
           <g:each in="${promptOverrideList}" var="promptOverride" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <td class="col-date"><joda:format value="${promptOverride.date}" pattern="MMMM d, yyyy"/></td>
-              <td class="col-menuGroup">${fieldValue(bean: promptOverride.menuGroup, field: 'name')}</td>
+              <td class="col-overridesMenu">${fieldValue(bean: promptOverride.overridesMenu, field: 'name')}</td>
               <td class="col-prompt">${fieldValue(bean: promptOverride, field: 'optionsPrompt')}</td>
+              <td class="col-useMenu">${fieldValue(bean: promptOverride.useMenu, field: 'name')}</td>
               <g:form controller="attendant" action="deleteHoliday">
                 <td class="col-button">
                   <g:hiddenField name="id" value="${promptOverride.id}"/>

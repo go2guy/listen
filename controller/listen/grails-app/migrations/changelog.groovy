@@ -1920,4 +1920,37 @@ databaseChangeLog = {
 			column(name: "session_id")
 		}
 	}
+
+	changeSet(author: "root (generated)", id: "1311780101233-1") {
+
+        // rename 'prompt_override.menu_group_id' to 'prompt_override.override_menu_id'
+
+		dropForeignKeyConstraint(baseTableName: "prompt_override", constraintName: "FK908744472A28807E")
+
+		dropIndex(indexName: "unique-date", tableName: "prompt_override")
+
+        renameColumn(tableName: 'prompt_override', oldColumnName: 'menu_group_id', columnDataType: 'bigint', newColumnName: 'overrides_menu_id')
+
+		addForeignKeyConstraint(baseColumnNames: "overrides_menu_id", baseTableName: "prompt_override", constraintName: "FK90874447138FACA6", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "menu_group", referencesUniqueColumn: "false")
+
+		createIndex(indexName: "unique-date", tableName: "prompt_override") {
+			column(name: "overrides_menu_id")
+
+			column(name: "date")
+		}
+
+        // add a new 'prompt_override.use_menu_id' column
+
+		addColumn(tableName: "prompt_override") {
+			column(name: "use_menu_id", type: "bigint") {
+				constraints(nullable: "false")
+			}
+		}
+
+		addForeignKeyConstraint(baseColumnNames: "use_menu_id", baseTableName: "prompt_override", constraintName: "FK90874447DD97B406", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "menu_group", referencesUniqueColumn: "false")
+
+		createIndex(indexName: "FK90874447DD97B406", tableName: "prompt_override") {
+			column(name: "use_menu_id")
+		}
+    }
 }

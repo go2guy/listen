@@ -39,7 +39,7 @@ class HistoryService {
     void createdAttendantHoliday(PromptOverride promptOverride) {
         def properties = [
             action: Action.CREATED_ATTENDANT_HOLIDAY,
-            description: "Created attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.menuGroup.name}] with prompt [${promptOverride.optionsPrompt}]"
+            description: "Created attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.overridesMenu.name}] with prompt [${promptOverride.optionsPrompt}]"
         ]
         write(new ActionHistory(properties))
     }
@@ -65,7 +65,7 @@ class HistoryService {
     void deletedAttendantHoliday(PromptOverride promptOverride) {
         def properties = [
             action: Action.DELETED_ATTENDANT_HOLIDAY,
-            description: "Deleted attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.menuGroup.name}] with prompt [${promptOverride.optionsPrompt}]"
+            description: "Deleted attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.overridesMenu.name}] with prompt [${promptOverride.optionsPrompt}]"
         ]
         write(new ActionHistory(properties))
     }

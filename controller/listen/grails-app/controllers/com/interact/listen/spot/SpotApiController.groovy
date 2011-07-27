@@ -1217,23 +1217,16 @@ class SpotApiController {
             }
 
             def organization = Organization.get(getIdFromHref(params.organization))
-            def menu = menuLocatorService.findEntryMenu(organization)
-            if(!menu) {
+            def entry = menuLocatorService.findEntryMenu(organization)
+            if(!entry.menu) {
                 response.sendError(HSR.SC_NOT_FOUND)
                 return
             }
 
-            def command = menu.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), '')
-
-            def promptOverride = PromptOverride.findAllByMenuGroup(menu.menuGroup)
-            def today = new LocalDate()
-
-            promptOverride.each {
-                log.debug "Checking promptOverride with date [${it.date}] and prompt [${it.optionsPrompt}]"
-                if(it.date == today) {
-                    command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/') + 1) + it.optionsPrompt
-                    log.debug "  Overrode default prompt with [${command.args.audioFile}]"
-                }
+            def command = entry.menu.toIvrCommand(organization.attendantPromptDirectory(), '')
+            if(entry.override) {
+                command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/') + 1) + entry.override.optionsPrompt
+                log.debug "Overrode default prompt with [${command.args.audioFile}]"
             }
 
             render(command as JSON)

@@ -17,7 +17,7 @@ class PromptOverrideService {
         def organization = user.organization
 
         def promptOverride = new PromptOverride(params)
-        promptOverride.validate(['date', 'menuGroup'])
+        promptOverride.validate(['date', 'useMenu', 'overridesMenu'])
 
         if(file && !file.isEmpty()) {
             def detector = new FileTypeDetector()
