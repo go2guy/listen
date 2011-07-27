@@ -10,10 +10,10 @@ class ApiFilters {
     def filters = {
         redirectedExtract(controller: 'spotApi', action: '*') {
             before = {
-                def href = request.getHeader('X-Listen-Subscriber')
-                if(href) {
-                    log.debug "Found X-Listen-Subscriber header with value [${href}]"
-                    def id = hrefParserService.idFromHref(href)
+                def header = request.getHeader('X-Listen-Subscriber')
+                if(header) {
+                    log.debug "Found X-Listen-Subscriber header with value [${header}]"
+                    def id = header ==~ /^[0-9]+$/ ? header as long : hrefParserService.idFromHref(header)
                     def user = User.get(id)
                     request.setAttribute('tui-user', user)
                     log.debug "Set request attribute [tui-user] to ${user}"
