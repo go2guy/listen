@@ -109,7 +109,7 @@
   </target>
 
   <target name="automation-deploy" depends="automation-instrument-war">
-    <fail unless"webserver">Property [webserver] must be set</fail>
+    <fail unless="webserver">Property [webserver] must be set</fail>
 
     <property name="automation.deploy.dir" value="\\${webserver}/slash/interact/listen/lib"/>
 
@@ -122,7 +122,7 @@
   </target>
 
   <target name="automation-report">
-    <fail unless"webserver">Property [webserver] must be set</fail>
+    <fail unless="webserver">Property [webserver] must be set</fail>
 
     <property name="automation.report.dir" value="automation-report"/>
 
@@ -133,14 +133,14 @@
   </target>
 
   <target name="automation-start-controller">
-    <fail unless"webserver">Property [webserver] must be set</fail>
+    <fail unless="webserver">Property [webserver] must be set</fail>
 
     <sshexec host="${webserver}" username="root" password="super" trust="true"
              command="service listen-controller start"/>
   </target>
 
   <target name="automation-stop-controller">
-    <fail unless"webserver">Property [webserver] must be set</fail>
+    <fail unless="webserver">Property [webserver] must be set</fail>
 
     <sshexec host="${webserver}" username="root" password="super" trust="true"
              command="service listen-controller stop"/>
