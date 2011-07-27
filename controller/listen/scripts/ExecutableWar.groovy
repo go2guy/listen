@@ -4,7 +4,7 @@ includeTargets << grailsScript('_GrailsWar')
 
 warName = null
 
-target(executableWar: "Builds a self-executing war file") {
+target(main: "Builds a self-executing war file") {
     depends(clean, war)
 
     configureWarName()
@@ -12,15 +12,6 @@ target(executableWar: "Builds a self-executing war file") {
     ant.delete(dir: 'target/war-stage')
     ant.mkdir(dir: 'target/war-stage')
     ant.unwar(src: warName, dest: 'target/war-stage')
-
-    if(argsMap.containsKey('instrument')) {
-        ant.taskdef(classpathRef: 'grails.test.classpath', resource: 'tasks.properties')
-        ant.'cobertura-instrument'(datafile: "cobertura.ser") {
-            fileset(dir: 'target/war-stage') {
-                include(name: "**/*.class")
-            }
-        }
-    }
 
     ant.unjar(dest: 'target/war-stage') {
         patternset {
@@ -45,4 +36,4 @@ target(executableWar: "Builds a self-executing war file") {
     ant.delete(dir: 'target/war-stage')
 }
 
-setDefaultTarget(executableWar)
+setDefaultTarget(main)
