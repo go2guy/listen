@@ -4,7 +4,7 @@ includeTargets << grailsScript('_GrailsWar')
 
 warName = null
 
-target(main: "Builds a self-executing war file") {
+target(executableWar: "Builds a self-executing war file") {
     depends(clean, war)
 
     configureWarName()
@@ -21,8 +21,16 @@ target(main: "Builds a self-executing war file") {
             exclude(name: 'about.html')
             exclude(name: 'jdtCompilerAdapter.jar')
             exclude(name: 'plugin*')
+            exclude(name: 'log4j.properties')
+            exclude(name: 'tasks.properties')
+            exclude(name: 'COPYING')
+            exclude(name: 'COPYRIGHT')
+            exclude(name: 'README')
         }
         fileset(dir: 'lib-jetty', includes: '*.jar')
+        if(argsMap.containsKey('with-cobertura')) {
+            fileset(dir: 'lib-cobertura', includes: 'cobertura.jar')
+        }
     }
     ant.copy(todir: 'target/war-stage') {
         fileset(dir: 'target/classes', includes: 'com/interact/listen/server/EmbeddedJettyServer.class')
@@ -36,4 +44,4 @@ target(main: "Builds a self-executing war file") {
     ant.delete(dir: 'target/war-stage')
 }
 
-setDefaultTarget(main)
+setDefaultTarget(executableWar)
