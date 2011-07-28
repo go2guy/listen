@@ -34,7 +34,8 @@ class InvitationService {
             // TODO user better exception type
             throw new AssertionError('Action not allowed')
         }
-
+        
+        invitation.sequence++
         invitation.delete()
 
         scheduledConferenceNotificationService.sendCancellation(invitation)
