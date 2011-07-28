@@ -1953,4 +1953,19 @@ databaseChangeLog = {
 			column(name: "use_menu_id")
 		}
     }
+
+    changeSet(author: "root (generated)", id: "1311709032434-2") {
+        addColumn(tableName: "scheduled_conference") {
+            column(name: "sequence", type: "integer") {
+                constraints(nullable: "false")
+            }
+        }
+    }
+
+    changeSet(author: "root (generated)", id: "1311709032434-3") {
+        update(tableName: 'scheduled_conference') {
+            column(name: 'sequence', value: 0)
+            where "sequence=''"
+        }
+    }
 }

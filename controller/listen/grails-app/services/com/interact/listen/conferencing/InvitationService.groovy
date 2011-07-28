@@ -43,6 +43,48 @@ class InvitationService {
     }
     
     ScheduledConference change(ScheduledConference invitation, def params) {
+        def originalActiveCallers = invitation.activeCallers(false)
+        def originalPassiveCallers = invitation.passiveCallers(false)
+        def deletedActiveInvitees = []
+        def deletedPassiveInvitees = []
+
+        invitation.properties = params
+        invitation.sequence++
+        def currentActiveCallers = invitation.activeCallers(false)
+        def currentPassiveCallers = invitation.passiveCallers(false)
+
+        //Figure out which, if any, of the original invitees have been removed
+        originalActiveCallers.each {
+            if(!currentActiveCallers.contains(it)) {
+                deletedActiveInvitees << it
+            }
+        }
+
+        originalPassiveCallers.each {
+            if(!currentPassiveCallers.contains(it)) {
+                deletedPassiveInvitees << it
+            }
+        }
+
+        if(invitation.validate() && invitation.save()) {
+            scheduledConferenceNotificationService.sendEmails(invitation)
+            historyService.createdConferenceInvitation(invitation)
+            // TODO stat?
+        }
+
+        //Need a temp scheduled conference to use to cancel the un-invited attendees
+        ScheduledConference tempInvitation = new ScheduledConference()
+        tempInvitation.scheduledBy = invitation.scheduledBy
+        tempInvitation.forConference = invitation.forConference
+        tempInvitation.uid = invitation.uid
+        tempInvitation.properties = params
+
+        tempInvitation.activeCallerAddresses = deletedActiveInvitees.join(",")
+        tempInvitation.passiveCallerAddresses = deletedPassiveInvitees.join(",")
+        scheduledConferenceNotificationService.sendCancellation(tempInvitation, false)
+
+        tempInvitation.discard()
+
         return invitation
     }
 }

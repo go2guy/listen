@@ -15,6 +15,7 @@ class ScheduledConference {
     User scheduledBy
     LocalTime starts
     String uid
+    int sequence = 0
 
     static constraints = {
         activeCallerAddresses maxSize: 2048

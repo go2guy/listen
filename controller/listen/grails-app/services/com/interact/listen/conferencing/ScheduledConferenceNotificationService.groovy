@@ -55,7 +55,7 @@ class ScheduledConferenceNotificationService {
         statWriterService.send(Stat.CONFERENCE_INVITE_EMAIL)
     }
 
-    void sendCancellation(ScheduledConference scheduledConference) {
+    void sendCancellation(ScheduledConference scheduledConference, boolean sendAdminCancel = true) {
         def adminBody = vcalCancelMarkup(scheduledConference, PinType.ADMIN)
         def activeBody = vcalCancelMarkup(scheduledConference, PinType.ACTIVE)
         def passiveBody = vcalCancelMarkup(scheduledConference, PinType.PASSIVE)
@@ -83,12 +83,15 @@ class ScheduledConferenceNotificationService {
                 }
             }
 
-            log.debug "Sending conference cancel invitation (admin) to ${scheduledConference.scheduledBy.emailAddress}"
-            sendMail {
-                headers vcalHeaders
-                to scheduledConference.scheduledBy.emailAddress
-                subject "Canceled: ${scheduledConference.emailSubject}"
-                body adminBody
+            //need ability to cancel for some users but not admin since invites can be edited
+            if(sendAdminCancel) {
+                log.debug "Sending conference cancel invitation (admin) to ${scheduledConference.scheduledBy.emailAddress}"
+                sendMail {
+                    headers vcalHeaders
+                    to scheduledConference.scheduledBy.emailAddress
+                    subject "Canceled: ${scheduledConference.emailSubject}"
+                    body adminBody
+                }
             }
         })
         statWriterService.send(Stat.CONFERENCE_CANCEL_EMAIL)
@@ -243,7 +246,7 @@ ${phoneNumberHtml}\
         b << 'LOCATION:Listen\n'
         b << "ORGANIZER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
         b << 'PRIORITY:5\n'
-        b << 'SEQUENCE:0\n'
+        b << "SEQUENCE:${sc.sequence}\n"
         b << "SUMMARY;LANGUAGE=en-us:${sc.emailSubject}\n"
         b << 'TRANSP:OPAQUE\n'
         b << "UID:${sc.uid}\n"
@@ -286,16 +289,16 @@ ${phoneNumberHtml}\
             b << "ATTENDEE;CN=${it};RSVP=TRUE:mailto:${it}\n"
         }
         b << 'CLASS:PUBLIC\n'
-        b << "CREATED:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated)}\n"
+        b << "CREATED:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated ?: new DateTime())}\n"
         b << "DESCRIPTION:${getEmailBody(sc, pinType)}\n"
         b << "DTEND:${iso.withZone(DateTimeZone.UTC).print(sc.endsAt().toDateTime())}\n"
-        b << "DTSTAMP:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated)}\n"
+        b << "DTSTAMP:${iso.withZone(DateTimeZone.UTC).print(sc.dateCreated ?: new DateTime())}\n"
         b << "DTSTART:${iso.withZone(DateTimeZone.UTC).print(sc.startsAt().toDateTime())}\n"
         b << "LAST-MODIFIED:${iso.withZone(DateTimeZone.UTC).print(new DateTime())}\n"
         b << 'LOCATION:Listen\n'
         b << "ORGANIZER;CN=\"${sc.scheduledBy.realName}\":mailto:${sc.scheduledBy.emailAddress}\n"
         b << 'PRIORITY:1\n'
-        b << 'SEQUENCE:1\n'
+        b << "SEQUENCE:${sc.sequence}\n"
         b << "SUMMARY;LANGUAGE=en-us:Canceled: ${sc.emailSubject}\n"
         b << 'TRANSP:TRANSPARENT\n'
         b << "UID:${sc.uid}\n"
