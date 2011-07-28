@@ -1,5 +1,5 @@
 <ccxml version="1.0">
-    <!-- Last Modified 07/25/2011
+    <!-- Last Modified 07/28/2011
        *   @Name	dialFax.ccxml
        *   @Desc	This script handles the fax dial activities. -->
 
@@ -24,6 +24,17 @@
     <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>         <!-- Location of Java script file -->
+
+    <script>
+        <![CDATA[
+            function cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization) {
+                var duration = endTime - startTime;
+                if(endTime == '0')
+                    duration = '0';
+                return "{\"date\": \""+iiDateToISO(startTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+            }
+        ]]>
+    </script>
 
     <eventprocessor statevariable="state">
         <transition state="idle" event="ccxml.loaded" name="loadEV">
@@ -83,7 +94,7 @@
                 <var name="operation" expr="'increment'"/>
                 <var name="source" expr="'directMessage'"/>
                 <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
-                <send data="'dialog.user.endCall'" target="session.id"/>
+                <send data="'dialog.user.writeCDR'" target="session.id"/>
             <else/>
 	            <log>INFO: Stop sending tones</log>
 	            <if cond="dialogID.length != 0">
@@ -121,7 +132,7 @@
                 <log>INFO: Done faxing</log>
                 <assign name="callResult" expr="'Send fax succeeded'"/>
             </if>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
         </transition>
 
         <transition event="connection.disconnected" state="faxing">
@@ -136,7 +147,7 @@
             <if cond="dialogID.length != 0">
 		        <dialogterminate dialogid="dialogID" immediate="true"/>
 	        <else/>
-                <send data="'dialog.user.endCall'" target="session.id"/>
+                <send data="'dialog.user.writeCDR'" target="session.id"/>
 	        </if>
         </transition>
 
@@ -146,7 +157,7 @@
             <var name="logText" expr="'dialFax.ccxml: Call failed. ['+ ANI +'] attempting to fax destination ['+ DNIS + ']. Reason ['+ errorCode(evt.reason) +']'"/>
             <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
         </transition>
 
         <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
@@ -161,17 +172,28 @@
             <var name="logText" expr="'dialFax.ccxml: Global error catch. ANI ['+ ANI +'] DNIS ['+ DNIS + ']. Reason [' + evt.reason + ']'"/>
             <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
-            <send data="'dialog.user.endCall'" target="session.id"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
+        </transition>
+
+        <transition event="dialog.user.writeCDR" name="evt">
+            <!-- Write Call History and Stat -->
+            <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
+            <var name="resource" expr="'addCallHistory'"/>
+            <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','spotApi')"/>
+            <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>
+            <var name="endTime" expr="getTimeStamp(3)"/>
+            <var name="callType" expr="'Send Fax'"/>
+            <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
+            <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="cntrlURL request resource params"/>
+            <send data="'dialog.user.writeCDR'" target="session.id"/>
+            <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">
             <!-- Exit CCXML session -->
             <log>INFO: Entered [dialog.user.endCall] with state [<value expr="state"/>]</log>
-	        <log target="status">Send CDR</log>
-            <var name="callType" expr="'Send Fax'"/>
-            <var name="endTime" expr="getTimeStamp(3)"/>
-            <assign name="APP_PATH" expr="SB_PATH+'ippbx/'"/>
-            <fetch next="'file:' + APP_PATH + 'cdr.ccxml'" namelist="APP_PATH DNIS ANI startTime endTime callResult callType importedValue"/>
+            <exit/>
         </transition>
 
     </eventprocessor>

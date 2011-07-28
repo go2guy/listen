@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 07/15/2011
+    <!-- Last Modified 07/28/2011
        *   @Name	sendFax.vxml
        *   @Desc	This script handles sending a fax (TIF file) via T38 protocol -->
 
@@ -24,7 +24,6 @@
         <block cond="send.Result == 'Success'">
             <log>INFO: Send fax successful</log>
             <assign name="id" expr="'LSTNAPP_0070'"/>
-            <assign name="gotoForm" expr="'#sendEvent'"/>
             <goto next="#sendStat"/>
         </block>
         <block>
@@ -34,7 +33,6 @@
             <assign name="logText" expr="writeLog('DIRECT_MESSAGE',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
             <assign name="id" expr="'LSTNAPP_0069'"/>
-            <assign name="gotoForm" expr="'#exit'"/>
             <goto next="#sendStat"/>
         </block>
     </form>
@@ -48,7 +46,7 @@
     	    <log target="status">Send Stat</log>
             <var name="statsCntrl" expr="getJsonVal(importedValue,'STATcontroller')"/>
             <data name="stat" srcexpr="statsCntrl" method="post" namelist="id source value operation"/>
-            <goto expr="gotoForm"/>
+            <goto next="#exit"/>
         </block>
     </form>
 
