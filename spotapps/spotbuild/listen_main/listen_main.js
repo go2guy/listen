@@ -4,6 +4,8 @@ function getAppName(appName, jsonObj) {
         application = application.toUpperCase();
         if (application == 'MAILBOX')
             application = 'VOICEMAIL';
+        if (application == 'FINDMECONFIG')
+            application = 'FINDME';
         if (application != 'DIRECTMESSAGE') {
             var licensed = getJsonVal(jsonObj, application);
             if (!licensed)
