@@ -1968,4 +1968,10 @@ databaseChangeLog = {
             where "sequence=''"
         }
     }
+
+	changeSet(author: "root (generated)", id: "1311872144223-1") {
+		addColumn(tableName: "inbox_message") {
+			column(name: "pages", type: "integer")
+		}
+	}
 }

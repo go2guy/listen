@@ -19,14 +19,18 @@ class FaxApiController {
         def json = JSON.parse(request)
         response.status = HttpServletResponse.SC_CREATED
 
+        log.debug "PAGES: ${json.pages}"
+
         def fax = new Fax()
         fax.ani = json.ani
         fax.file = new File(new URI(json.file))
         fax.owner = User.get(json.owner.id)
+        fax.pages = json.pages
 
         if(fax.validate() && fax.save()) {
             historyService.leftFax(fax)
         } else {
+            log.error(fax.errors)
             response.sendError(HttpServletResponse.SC_BAD_REQUEST)
         }
 

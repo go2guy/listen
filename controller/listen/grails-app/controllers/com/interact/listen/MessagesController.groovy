@@ -146,6 +146,7 @@ class MessagesController {
             } else {
                 item.put('type', 'fax')
                 item.put('size', listen.megabytes(file: it.file, unavailable: 'Size Unknown'))
+                item.put('pages', it.pages)
             }
 
             returnList << item
