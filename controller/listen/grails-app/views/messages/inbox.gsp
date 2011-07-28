@@ -139,7 +139,7 @@ div.options .type-tags li {
               <div class="duration"><listen:prettyduration duration="${message.audio.duration}"/></div>
             </listen:ifIsVoicemail>
             <listen:ifIsFax message="${message}">
-              <div class="playLink" style="display: none;">${message.pages} pages (<listen:megabytes file="${message.file}" unavailable="Size Unknown"/>)</div>
+              <div class="playLink" style="display: none;">${message.pages} page${message.pages == 1 ? '' : 's'} (<listen:megabytes file="${message.file}" unavailable="Size Unknown"/>)</div>
               <div class="play"></div>
             </listen:ifIsFax>
             <div class="status">${message.isNew ? 'new' : 'old'}</div>
@@ -326,7 +326,7 @@ $('.delete-form').submit(function(e) {
                         } else if(message.type == 'fax') {
                             clone.find('.transcription').remove();
                             clone.find('.playLink a').remove();
-                            clone.find('.playLink').text(message.pages + 'pages (' + message.size + ')');
+                            clone.find('.playLink').text(message.pages + 'page' + (message.pages == 1 ? '' : 's') + ' (' + message.size + ')');
                             clone.addClass('fax');
                             clone.find('.type-tags').append('<li class="fax-tag">fax</li>');
                         }
