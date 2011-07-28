@@ -9,6 +9,7 @@
     <var name="DNIS"/>
     <var name="importedValue"/>
     <var name="dest" expr="''"/>
+    <var name="pages" expr="0"/>
     <var name="destDir" expr="''"/>
 
     <form id="beginDocument">
@@ -16,6 +17,7 @@
             <log>INFO: Entered beginDocument</log>
 	        <log target="status">Receiving Fax...</log>
             <var name="recv.tif"/>
+            <var name="recv.Pages"/>
             <assign name="status" expr="'Failure'"/>
         </block>
         <!-- stay in the custom object while fax streams in as a tif file. -->
@@ -27,6 +29,7 @@
         </object>
         <block cond="recv.Result == 'Success'">
             <var name="name" expr="recv.tif"/>
+            <assign name="pages" expr="recv.Pages"/>
             <assign name="dest" expr="ANI + '-' + getTimeStamp(1) + '-' + getJsonVal(importedValue,'subscriberID') + '.tif'"/>
             <assign name="destDir" expr="getJsonVal(importedValue,'artifactsDIR') + getJsonVal(importedValue,'subscriberID') + '/fax/'"/>
             <data name="uploads" src="http://localhost/spot/cgi-bin/spotbuild/listen/upload.php" method="post" namelist="name dest destDir"/>
@@ -72,7 +75,7 @@
         <block>
             <log>INFO: Entered sendEvent</log>
             <assign name="dest" expr="'file:' + destDir + dest"/>
-            <var name="params" expr="setParams(ANI, importedValue, dest)"/>
+            <var name="params" expr="setParams(ANI, importedValue, dest, pages)"/>
             <var name="request" expr="'post'"/>
             <var name="resource" expr="'create'"/>
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
@@ -126,8 +129,8 @@
 
     <script>
         <![CDATA[
-            function setParams(ANI, importedValue, file) {
-                return "{\"ani\":\""+ANI+"\", \"file\":\""+file+"\", \"owner\":{\"id\":"+getJsonVal(importedValue, 'subscriberID')+"}}";
+            function setParams(ANI, importedValue, file, pages) {
+                return "{\"ani\":\""+ANI+"\", \"file\":\""+file+"\", \"pages\":"+pages+", \"owner\":{\"id\":"+getJsonVal(importedValue, 'subscriberID')+"}}";
             }
 
             function getInfo(inString) {
