@@ -27,7 +27,7 @@ class FailedTranscriptionHandlerJob {
             log.debug "Minutes between [${voicemail.dateCreated}] and [${now}]: ${differenceInMinutes}"
             if(differenceInMinutes > 5) {
                 statWriterService.send(Stat.TRANSCRIPTION_FAILED)
-                voicemail.audio.transcription = 'Transcription Failed'
+                voicemail.audio.transcription = 'Unable to transcribe'
                 if(!(voicemail.validate() && voicemail.save())) {
                         log.error 'Unable to update voicemail ${voicemail.id} for failed transcription.'
                 }
