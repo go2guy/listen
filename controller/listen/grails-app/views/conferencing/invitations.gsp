@@ -173,7 +173,7 @@ $(document).ready(function() {
         row.hide();
 
         var linkCell = $('td.col-details', row.prev('tr'));
-        var link = $('<a href="#">Toggle Details</a>');
+        var link = $('<a href="#">Show/Hide Details</a>');
         link.click(function(e) {
             row.toggle();
             return false;
