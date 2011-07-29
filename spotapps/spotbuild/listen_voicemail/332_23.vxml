@@ -17,9 +17,6 @@
 <log>INFO: Current value [<value expr="OPERATION"/>]</log>
 <assign name="OPERATION" expr="'stat'+''" />
 <log>INFO: Updated value [<value expr="OPERATION"/>]</log>
-<log>INFO: Current value [<value expr="mbxGreeting"/>]</log>
-<assign name="mbxGreeting" expr="'AP_'+audioURL" />
-<log>INFO: Updated value [<value expr="mbxGreeting"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

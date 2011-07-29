@@ -83,7 +83,7 @@
                         <goto next="#getPrompt"/>
                     </if>
                 <else/>
-                    <assign name="promptID" expr="tmpVal"/>
+                    <assign name="index" expr="index + 1"/>
                     <log>INFO: Set prompt to [<value expr="promptID"/>]</log>
                     <goto next="#playAudio"/>
                 </if>
