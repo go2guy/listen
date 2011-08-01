@@ -11,17 +11,17 @@
         <![CDATA[
             function II_SB_JS_function_326_22(returnVal)
             {
-	            return getJsonVal(returnVal, 'count');
+	            return '@' + getResultsKeyValue(returnVal, 0, 'ip');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Count</log>
+            <log target="status">Get IP Address</log>
             <log>INFO: Entered run-javascript.vxml [326_22]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_326_22(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="status" expr="II_SB_userJava" />   
+            <assign name="extSuffix" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
