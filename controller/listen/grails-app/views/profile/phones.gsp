@@ -113,7 +113,7 @@ td.col-public {
           </g:each>
         </g:if>
         <g:else>
-          <tr class="even"><td colspan="4"><g:message code="page.profile.phones.noMobilePhones"/></td></tr>
+          <tr class="even"><td colspan="5"><g:message code="page.profile.phones.noMobilePhones"/></td></tr>
         </g:else>
       </tbody>
     </table>
