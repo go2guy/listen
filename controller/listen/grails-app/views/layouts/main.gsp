@@ -627,6 +627,25 @@ div.listTotal {
 #new-message-count {
     margin-left: 5px;
 }
+
+/* jQuery UI */
+
+ul.ui-autocomplete {
+    font-size: 14px;
+    border-radius: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+}
+
+ul.ui-autocomplete > li > a {
+    border-radius: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+}
+
+ul.ui-autocomplete > li > a.ui-state-hover {
+    background: #CCCCCC;
+}
     </style>
     <listen:customApplicationStyles/>
     <g:layoutHead/>

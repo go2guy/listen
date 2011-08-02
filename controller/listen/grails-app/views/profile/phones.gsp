@@ -50,7 +50,7 @@ td.col-public {
                 <td class="col-number">${fieldValue(bean: extension, field: 'number')}</td>
                 <td class="col-public"><listen:checkMark value="true"/></td>
                 <td class="col-forward">
-                  <g:textField class="check-for-blocked" name="forwardedTo" value="${fieldValue(bean: extension, field: 'forwardedTo')}" class="${listen.validationClass(bean: extension, field: 'forwardedTo')}"/>
+                  <g:textField name="forwardedTo" value="${fieldValue(bean: extension, field: 'forwardedTo')}" class="check-for-blocked forwarded-to ${listen.validationClass(bean: extension, field: 'forwardedTo')}" autocomplete="off"/>
                   <listen:ifCannotDial number="${fieldValue(bean: extension, field: 'forwardedTo')}">
                     <span class="blocked-number error" title="You are not allowed to dial ${fieldValue(bean: extension, field: 'forwardedTo')}">Blocked</span>
                   </listen:ifCannotDial>
@@ -199,6 +199,16 @@ $(document).ready(function() {
         setTimeout(checkAndIndicateBlocked(e.target), 100);
     }).change(function(e) {
         checkAndIndicateBlocked(e.target);
+    });
+
+    $.get('${request.contextPath}/autocomplete/contacts', function(data) {
+        $('.forwarded-to').autocomplete({
+            source: data.my.phones,
+            delay: 0,
+            minLength: 0
+        }).focus(function() {
+            if(this.value === '') $(this).trigger('keydown.autocomplete');
+        });
     });
 });
     </script>
