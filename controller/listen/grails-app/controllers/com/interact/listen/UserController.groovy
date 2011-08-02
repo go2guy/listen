@@ -15,12 +15,9 @@ class UserController {
         update: 'POST'
     ]
 
-    def cloudToDeviceService
-    def historyService
     def licenseService
-    def springSecurityService
     def userCreationService
-    def userDeletionService
+    def userService
 
     def index = {
         redirect(action: 'list')
@@ -45,12 +42,12 @@ class UserController {
             return
         }
 
-        user.enabled = false
-        user.save()
-
-        historyService.disabledUser(user)
-
-        flash.successMessage = 'User disabled'
+        user = userService.disable(user)
+        if(user.hasErrors()) {
+            flash.errorMessage = 'An error occurred disabling the user'
+        } else {
+            flash.successMessage = 'User disabled'
+        }
         redirect(action: 'list')
     }
 
@@ -73,12 +70,12 @@ class UserController {
             return
         }
 
-        user.enabled = true
-        user.save()
-
-        historyService.enabledUser(user)
-
-        flash.successMessage = 'User enabled'
+        user = userService.enable(user)
+        if(user.hasErrors()) {
+            flash.errorMessage = 'An error occurred enabling the user'
+        } else {
+            flash.successMessage = 'User enabled'
+        }
         redirect(action: 'list')
     }
 
@@ -124,17 +121,12 @@ class UserController {
             return
         }
 
-        // TODO check entity version?
-        user.properties['username', 'pass', 'confirm', 'realName', 'emailAddress'] = params
-        if(user.pass?.trim()?.length() > 0) {
-            user.password = springSecurityService.encodePassword(user.pass)
-        }
-        if(user.validate() && user.save()) {
-            cloudToDeviceService.sendContactSync()
+        user = userService.update(user, params, true)
+        if(user.hasErrors()) {
+            render(view: 'edit', model: [user: user])
+        } else {
             flash.successMessage = 'User updated'
             redirect(action: 'edit', params: [id: user.id])
-        } else {
-            render(view: 'edit', model: [user: user])
         }
     }
 }

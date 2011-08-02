@@ -13,11 +13,13 @@ import org.joda.time.Duration
 class BootStrap {
 
     def customMailMessageBuilderFactory
+    def ldapService
+    def licenseService
     def mailService
+    def organizationService
     def springSecurityService
     def statWriterService
     def userCreationService
-    def licenseService
 
     def init = { servletContext ->
         statWriterService.send(Stat.CONTROLLER_STARTUP)
@@ -44,17 +46,17 @@ class BootStrap {
         createRole('ROLE_FINDME_USER')
         createRole('ROLE_VOICEMAIL_USER')
 
+        ldapService.init()
+
         // TODO should custodian creation be part of the bootstrap? if so, should the email address be changed?
         def custodian = createCustodian('Custodian', 'Custodian', 'custodian@example.com', 'super')
 
         environments {
             development {
 
-                def organization = new Organization(name: 'Interact Incorporated', contextPath: 'interact')
-                licenseService.licensableFeatures().each {
-                    organization.addToEnabledFeatures(it)
-                }
-                organization.save(flush: true)
+                def organization = organizationService.create([name: 'Interact Incorporated',
+                                                               contextPath: 'interact'],
+                                                              licenseService.licensableFeatures())
 
                 SingleOrganizationConfiguration.set(organization)
 

@@ -135,7 +135,10 @@ log4j = {
            'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
 
     debug  'grails.app',
-           'com.interact'
+           'com.interact'/*,
+           'org.apache.directory.server',
+           'org.apache.mina',
+           'groovy.grails.ldap.server'*/
 }
 
 environments {
@@ -226,3 +229,12 @@ com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
 com.interact.listen.conferencing.defaultPinLength = 6
 com.interact.listen.activeDirectory.server = 'iiserver01'
 com.interact.listen.activeDirectory.domain = 'interact.nonreg'
+com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=iivip,dc=com')
+com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.port', '389')
+
+ldapServers {
+    listen {
+        base = com.interact.listen.ldap.basedn
+        port = com.interact.listen.ldap.port as int
+    }
+}

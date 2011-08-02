@@ -2,6 +2,7 @@ package com.interact.listen.pbx
 
 class ExtensionService {
     def cloudToDeviceService
+    def ldapService
     def messageLightService
     def spotCommunicationService
     def springSecurityService
@@ -18,6 +19,7 @@ class ExtensionService {
             cloudToDeviceService.sendContactSync()
             messageLightService.toggle(extension)
             // TODO history?
+            ldapService.addExtension(extension.owner, extension.number)
         }
 
         return extension
@@ -33,7 +35,7 @@ class ExtensionService {
         extension.delete()
         
         // TODO history?
-
+        ldapService.removeExtension(extension.owner, extension.number)
         cloudToDeviceService.sendContactSync()
         messageLightService.toggle(extension.number, extension.ip, false)
     }
@@ -52,6 +54,10 @@ class ExtensionService {
 
         if(extension.validate() && extension.save()) {
             cloudToDeviceService.sendContactSync()
+
+            if(originalNumber != extension.number) {
+                ldapService.changeExtension(extension.owner, originalNumber, extension.number)
+            }
 
             if(originalNumber != extension.number || originalIp != extension.ip) {
                 messageLightService.toggle(originalNumber, originalIp, false)

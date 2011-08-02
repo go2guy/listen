@@ -9,11 +9,12 @@ import grails.plugins.springsecurity.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
+    def extensionService
     def mobilePhoneService
     def otherPhoneService
     def realizeAlertUpdateService
     def springSecurityService
-    def extensionService
+    def userService
 
     static allowedMethods = [
         index: 'GET',
@@ -197,16 +198,12 @@ class ProfileController {
 
     def saveSettings = {
         def user = authenticatedUser
-        user.properties['realName', 'emailAddress', 'pass', 'confirm'] = params
-        if(user.pass?.trim()?.length() > 0) {
-            user.password = springSecurityService.encodePassword(user.pass)
-        }
-
-        if(user.validate() && user.save()) {
+        user = userService.update(user, params, false)
+        if(user.hasErrors()) {
+            render(view: 'settings', model: [user: user])
+        } else {
             flash.successMessage = 'Saved'
             redirect(action: 'settings')
-        } else {
-            render(view: 'settings', model: [user: user])
         }
     }
 

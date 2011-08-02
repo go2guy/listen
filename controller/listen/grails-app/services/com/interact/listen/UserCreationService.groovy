@@ -8,6 +8,7 @@ class UserCreationService {
     def cloudToDeviceService
     def extensionService
     def historyService
+    def ldapService
     def randomPinGeneratorService
     def springSecurityService
 
@@ -36,6 +37,7 @@ class UserCreationService {
 
         def user = create(params, organization, roles)
         if(!user.errors.hasErrors()) {
+            ldapService.addUser(user)
             if(params.extension) {
                 def p = [
                     number: params.extension,
