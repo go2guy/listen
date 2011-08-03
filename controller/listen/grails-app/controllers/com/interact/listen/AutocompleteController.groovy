@@ -48,7 +48,8 @@ class AutocompleteController {
         User.findAllByOrganization(user.organization, [sort: 'emailAddress', order: 'asc']).each { u ->
             result.all.emails << [
                 value: u.emailAddress,
-                label: "${u.emailAddress} (${u.realName})"
+                label: "${u.emailAddress} (${u.realName})",
+                name: u.realName
             ]
         }
 
@@ -58,7 +59,9 @@ class AutocompleteController {
     private void addPhone(PhoneNumber phone, def list) {
         def value = [
             value: phone.number,
-            label: "${phone.number} (${phone.owner.realName})"
+            label: "${phone.number} (${phone.owner.realName})",
+            name: phone.owner.realName
+            
         ]
 
         if(isMobile(phone)) {

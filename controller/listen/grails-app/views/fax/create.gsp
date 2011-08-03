@@ -87,7 +87,8 @@ div.upload-error {
     <g:uploadForm name="file-form" controller="fax" action="save" method="post">
       <fieldset class="vertical">
         <label for="dnis"><g:message code="outgoingFax.dnis.label"/></label>
-        <g:textField name="dnis" value="${fieldValue(bean: fax, field: 'dnis')}" class="${listen.validationClass(bean: fax, field: 'dnis')}"/>
+        <g:textField name="dnis" value="${fieldValue(bean: fax, field: 'dnis')}" class="${listen.validationClass(bean: fax, field: 'dnis')}" autocomplete="off"/>
+        <listen:autocomplete selector="#dnis" data="all.direct"/>
         
         <div class="files-label">Files<button type="button" id="add-file">Add File</button></div>
 

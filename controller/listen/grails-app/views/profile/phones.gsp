@@ -200,17 +200,8 @@ $(document).ready(function() {
     }).change(function(e) {
         checkAndIndicateBlocked(e.target);
     });
-
-    $.get('${request.contextPath}/autocomplete/contacts', function(data) {
-        $('.forwarded-to').autocomplete({
-            source: data.my.phones,
-            delay: 0,
-            minLength: 0
-        }).focus(function() {
-            if(this.value === '') $(this).trigger('keydown.autocomplete');
-        });
-    });
 });
     </script>
+    <listen:autocomplete selector=".forwarded-to" data="my.phones"/>
   </body>
 </html>

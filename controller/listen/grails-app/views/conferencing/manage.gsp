@@ -303,7 +303,8 @@ span.recording-status.started {
         <input type="hidden" name="id" value="${conference.id}"/>
         <fieldset>
           <label for="onDemandNumber">Dial Number</label>
-          <input type="text" id="onDemandNumber" name="onDemandNumber" class="clear-after-submit"/>
+          <input type="text" id="onDemandNumber" name="onDemandNumber" class="clear-after-submit" autocomplete="off"/>
+          <listen:autocomplete selector="#onDemandNumber" data="all.phones"/>
 
           <label for="onDemandMode">Mode</label>
           <select id="onDemandMode" name="onDemandMode">
