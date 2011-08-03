@@ -70,10 +70,6 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
 
             statWriterService.send(Stat.NEW_VOICEMAIL_EMAIL)
             historyService.sentNewVoicemailEmail(voicemail)
-
-            if(file) {
-                file.delete()
-            }
         })
     }
 
