@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 06/09/2011
+    <!-- Last Modified 08/03/2011
        *   @Name   begin.ccxml
        *   @Desc   This ccxml script acts as a transition between the Listen project and
                    the ippbx project. Here, we collect values exported from Listen
@@ -44,16 +44,6 @@
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','spotApi')"/>
             <assign name="importedValue" expr="extendJsonObject(importedValue, 'cntrlURL', cntrlURL)"/>
-            <var name="application" expr="getJsonVal(importedValue, 'application')"/>
-            <if cond="application == 'listen_voicemail'">
-                <assign name="projectSource" expr="'VOICEMAIL'"/>
-            <elseif cond="application == 'listen_mailbox'"/>
-                <assign name="projectSource" expr="'MAILBOX'"/>
-            <elseif cond="application == 'listen_autoAttendant'"/>
-                <assign name="projectSource" expr="'ATTENDANT'"/>
-            <else/>
-                <assign name="projectSource" expr="'LISTEN'"/>
-            </if>
             <log>INFO: projectSource [<value expr="projectSource"/>]</log>
             <log>INFO: dnis [<value expr="local"/>]</log>
             <log>INFO: ani [<value expr="remote"/>]</log>
@@ -75,6 +65,10 @@
         </transition>
 
         <!-- Catch errors -->
+        <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
+            <!-- Ignore this error -->
+        </transition>
+
         <transition event="err*" name="errEV">
             <log>INFO: transition event [err*] state [<value expr="state"/>]</log>
             <log>ERROR: [<value expr="errEV.reason"/>]</log>
