@@ -67,8 +67,9 @@
 	<var name="appLicense" expr="''" />
 	<var name="returnStr" expr="''" />
 	<var name="returnVal" expr="''" />
-	<var name="viopChannel" expr="''" />
 	<var name="callerID" expr="'sipFrom'" />
+	<var name="defaultDialNumber" expr="''" /> <!-- Config Default Dial Number -->
+	<var name="voipChannel" expr="''" />
 
 
     <!-- Conference Variables -->

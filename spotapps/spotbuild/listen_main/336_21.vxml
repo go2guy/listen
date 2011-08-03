@@ -5,22 +5,22 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'311_12'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'330_4'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_311_13(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller,STATcontroller,artifactsDIR,EXT_LENGTH,EXT_PREFIX,EXT_SUFFIX,sipDirect)
+            function II_SB_JS_function_336_21(passValues,defaultDialNumber)
             {
-	            return "{\"application\":\""+appToAccess+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"sipDirect\":\""+sipDirect+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
+	            passValues = extendJsonObject(passValues, 'destination', defaultDialNumber);return extendJsonObject(passValues, 'application', 'listen_main');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Create App Obj</log>
-            <log>INFO: Entered run-javascript.vxml [311_13]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_311_13(cntrlURL,hostName,appToAccess,sipURL,sysAccessTime,HTTPcontroller,STATcontroller,artifactsDIR,EXT_LENGTH,EXT_PREFIX,EXT_SUFFIX,sipDirect)"/>   <!-- Call Javascript funtion and store result -->
+            <log target="status">Set Default Number</log>
+            <log>INFO: Entered run-javascript.vxml [336_21]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_336_21(passValues,defaultDialNumber)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>

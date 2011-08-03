@@ -51,7 +51,7 @@
 
         <!-- Load CCXML file. Log status and update state -->
         <transition state="idle" event="ccxml.loaded" name="loadEv">
-            <log>INFO: Entered incoming-call-action.ccxml [51_137]</log>
+            <log>INFO: Entered incoming-call-action.ccxml [51_138]</log>
             <log>INFO: transition event [<value expr="loadEv.name"/>] state [<value expr="II_SB_state"/>]</log>
             <assign name="II_SB_sessionID" expr="loadEv.sessionid"/>
             <assign name="II_SB_state" expr="'loaded'"/>

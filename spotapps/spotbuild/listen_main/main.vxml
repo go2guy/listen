@@ -58,8 +58,9 @@
 	<var name="SB_UV_appLicense"/>
 	<var name="SB_UV_returnStr"/>
 	<var name="SB_UV_returnVal"/>
-	<var name="SB_UV_viopChannel"/>
 	<var name="SB_UV_callerID"/>
+	<var name="SB_UV_defaultDialNumber"/>
+	<var name="SB_UV_voipChannel"/>
 
     
     <form id="beginDocument">
@@ -191,11 +192,14 @@
 			<if cond="SB_UV_returnVal != undefined">
 				<assign name="returnVal" expr="SB_UV_returnVal" />
 			</if>
-			<if cond="SB_UV_viopChannel != undefined">
-				<assign name="viopChannel" expr="SB_UV_viopChannel" />
-			</if>
 			<if cond="SB_UV_callerID != undefined">
 				<assign name="callerID" expr="SB_UV_callerID" />
+			</if>
+			<if cond="SB_UV_defaultDialNumber != undefined">
+				<assign name="defaultDialNumber" expr="SB_UV_defaultDialNumber" />
+			</if>
+			<if cond="SB_UV_voipChannel != undefined">
+				<assign name="voipChannel" expr="SB_UV_voipChannel" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

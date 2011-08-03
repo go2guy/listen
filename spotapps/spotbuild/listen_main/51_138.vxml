@@ -17,13 +17,13 @@
     <form id="beginDocument">
         <block>
             <log target="status">Accept Call</log>
-            <log>INFO: Entered incoming-call-action.vxml [51_137]</log>
+            <log>INFO: Entered incoming-call-action.vxml [51_138]</log>
 
             <log>INFO: Pass Through [<value expr="II_SB_callActionPassThrough"/>]</log>
 			<if cond="II_SB_callActionPassThrough == 'yes'">
 				<goto next="#assignvariables"/>
             </if>
-            <assign name="II_SB_nextOpt" expr="'51_137'"/>	<!-- ID of next CCXML template -->
+            <assign name="II_SB_nextOpt" expr="'51_138'"/>	<!-- ID of next CCXML template -->
             <log>INFO: Inbound call action is set to [<value expr="II_SB_ib_action"/>]</log>
             <assign name="II_SB_status" expr="'success'"/>
             <if cond="II_SB_TRANSFER == 'yes'">
@@ -38,7 +38,7 @@
                 <log>ERROR: Unknown call action [<value expr="II_SB_ib_action"/>]</log>
                 <log>INFO: Ending call</log>
             </if>
-            <assign name="II_SB_returnValues" expr="II_SB_returnValues + '|51_137'"/>
+            <assign name="II_SB_returnValues" expr="II_SB_returnValues + '|51_138'"/>
             <log>INFO: Return values [<value expr="II_SB_returnValues"/>]</log>
             <log>INFO: Return status [<value expr="II_SB_status"/>]</log>
             <log>INFO: Next Option [<value expr="II_SB_nextOpt"/>]</log>
@@ -50,7 +50,7 @@
 	<form id="assignvariables">
 		<block>
 			<log>INFO: Entered assignvariables</log>
-			<assign name="viopChannel" expr="II_SB_VOIP_Channel" />
+			<assign name="voipChannel" expr="II_SB_VOIP_Channel" />
 
 
             <log>INFO: VOIP_T38 [<value expr="II_SB_VOIP_T38"/>]</log>
