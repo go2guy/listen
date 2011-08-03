@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 04/04/2011
+    <!-- Last Modified 08/03/2011
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -21,18 +21,17 @@
     <var name="importedValue"/>         <!-- Imported Value. Values passed in from Listen application -->
     <var name="remote"/>
     <var name="local"/>
-    <var name="clientFlag" expr="''"/>
-    <var name="isClosed" expr="'n'"/>   <!-- Flag to determine if the office is closed -->
-    <var name="fwdInfo"/>
-    <var name="pbxFlag"/>
     <var name="LINE_NUMBER" expr="''"/>
+    <var name="sessionID" expr="''"/>
     <!-- End global vars -->
 
     <!-- Constants -->
+    <var name="maxTime" expr="0"/>
     <var name="EXT_LENGTH" expr="4"/>   <!-- Extensions are less than four digit numbers -->
     <var name="SB_PATH" expr="'/interact/apps/spotbuild/'"/>    <!-- Base directory for Spotbuild -->
     <var name="APP_PATH" expr="SB_PATH+'ippbx/'"/>              <!-- Base directory for PBX application -->
-    <var name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>    <!-- Direcotry for transaction files -->
+    <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
+    <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>
 
@@ -43,54 +42,30 @@
             <log>INFO: Event Source [<value expr="evt.eventsource"/>]</log>
             <assign name="ibconnid" expr="connectionid"/>   <!-- Get connection id for incoming call -->
 	    	<assign name="ANI" expr="iiUnescape(remote)"/>  <!-- Get origin of incoming call -->
-	    	<assign name="DNIS" expr="iiUnescape(local)"/>  <!-- Get destination of incoming call -->
-	    	<assign name="tmpDNIS" expr="getnum(DNIS)"/>
             <assign name="tmpANI" expr="getnum(ANI)"/>
        	    <assign name="EXT_LENGTH" expr="getJsonVal(importedValue, 'EXT_LENGTH')"/>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
-            <if cond="projectSource == 'LISTEN'">
-                <send data="'dialog.user.chk_ANI'" target="session.id"/>
-            <elseif cond="projectSource == 'ATTENDANT'"/>   <!-- If call is from attendant app, we're trying to use dial logic -->
-	    	    <assign name="DNIS" expr="getJsonVal(importedValue, 'destination')"/>
-	    	    <assign name="tmpDNIS" expr="DNIS"/>
+	    	<assign name="DNIS" expr="getJsonVal(importedValue, 'destination')"/> <!-- If call is from attendant or main app, we're trying to use dial logic -->
+            <if cond="DNIS.length &gt; 0">
+    	    	<assign name="tmpDNIS" expr="DNIS"/>
                 <assign name="route" expr="'dialog.user.dial'"/>   <!-- Set route to dial -->
-                <send data="'dialog.user.chk_ANI'" target="session.id"/>
-            <elseif cond="((projectSource == 'VOICEMAIL') || (projectSource == 'MAILBOX'))"/>
-                <send data="'dialog.user.pbx'" target="session.id"/>
-            <elseif cond="pbxFlag == 'forward'"/>
-                <assign name="tmpDNIS" expr="fwdInfo"/>
-                <send data="'dialog.user.forward'" target="session.id"/>
             <else/>
-                <!-- Nothing else here -->
+	    	    <assign name="DNIS" expr="iiUnescape(local)"/>  <!-- Get destination of incoming call -->
+	    	    <assign name="tmpDNIS" expr="getnum(DNIS)"/>
             </if>
+            <send data="'dialog.user.chk_ANI'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.chk_ANI" name="evt">
             <!-- Here, we determine if this call originated internally or externally. -->
             <log>INFO: Entered [dialog.user.chk_ANI] with state [<value expr="state"/>]</log>
             <if cond="tmpANI.length &lt; EXT_LENGTH">  <!-- If this is true, we can assume caller is internal to the pbx. -->
-                <assign name="state" expr="'active'"/>
-                <assign name="clientFlag" expr="'insert'"/>
-                <send data="'dialog.user.updateClientRecord'" target="session.id"/> <!-- We need to set their status in the db as actvie -->
-            <else/> <!-- Caller is probably not internal to pbx. So, we'll just route the call -->
-                <send data="'dialog.user.routeCall'" target="session.id"/>
+                <!-- We need to set their status in the db as actvie -->
+                <var name="id" expr="ibconnid"/>
+                <var name="flag" expr="'insert'"/>
+                <var name="extension" expr="tmpANI"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
             </if>
-        </transition>
-
-        <transition event="dialog.user.updateClientRecord" name="evt">
-            <!-- If we are in this transition, we can assume this call originated from an internal extention.
-            We need to insert a record into the active clients table. This is done for group paging purposes.
-            Any clients existing in this table will not be paged. -->
-            <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
-            <var name="flag" expr="clientFlag"/>
-            <var name="record" expr="ibconnid + '|' + tmpANI"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
-        </transition>
-
-        <transition state="active" event="dialog.exit" name="evt">
-            <!-- This transition handles the return after setting an extension as active -->
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
             <send data="'dialog.user.routeCall'" target="session.id"/>
         </transition>
 
@@ -119,21 +94,15 @@
                 <var name="logText" expr="'ippbx_main.ccxml: Unable to match current call to any ippbx route. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + '].'"/>
                 <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
                 <assign name="state" expr="'error'"/>
-                <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
             </if>
 		</transition>
-
-        <transition event="dialog.user.pbx" name="evt">
-            <!-- Here we'll pass control to the pbx ccxml script. This script uses the route variable
-            to determine what transition to run. -->
-            <log>INFO: Entered [dialog.user.pbx] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'pbx.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH isClosed ibconnid tmpANI tmpDNIS DNIS ANI callType route importedValue"/>
-        </transition>
 
         <transition event="dialog.user.dial" name="evt">
             <!-- Transfer control to dial script -->
             <log>INFO: Entered [dialog.user.dial] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH isClosed ibconnid tmpANI tmpDNIS DNIS ANI callType importedValue"/>
+            <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI callType importedValue"/>
         </transition>
 
         <transition event="dialog.user.forward" name="evt">
@@ -181,11 +150,12 @@
             <log>INFO: Entered [dialog.user.toggleThenEnd] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'endCall'"/>
             <if cond="tmpANI.length &lt; EXT_LENGTH">
-                <assign name="clientFlag" expr="'delete'"/>
-                <send data="'dialog.user.updateClientRecord'" target="session.id"/>
-            <else/>
-                <send data="'dialog.user.endCall'" target="session.id"/>
+                <var name="id" expr="ibconnid"/>
+                <var name="flag" expr="'delete'"/>
+                <var name="extension" expr="tmpANI"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
             </if>
+            <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
         </transition>
 
         <transition event="dialog.exit" name="evt">
@@ -200,6 +170,10 @@
             <goto fetchid="evt.fetchid" />
         </transition>
 
+        <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
+            <!-- Ignore this error -->
+        </transition>
+
         <transition event="error.*" name="evt">
             <!-- Use catch all error for now -->
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
@@ -207,7 +181,8 @@
             <var name="logText" expr="'ippbx_main.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
             <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
             <assign name="state" expr="'error'"/>
-            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <send data="'dialog.user.toggleThenEnd'" target="session.id"/>
         </transition>
 
         <!-- End call -->
