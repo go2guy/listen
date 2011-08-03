@@ -55,7 +55,7 @@ class LdapService {
         }
 
         MobilePhone.list().each { mobilePhone ->
-            addMobileNumber(mobilePhone.user, mobilePhone.number)
+            addMobileNumber(mobilePhone.owner, mobilePhone.number)
         }
     }
 
