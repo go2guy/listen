@@ -1,6 +1,8 @@
 package com.interact.listen.fax
 
 import com.interact.listen.UserFile
+import com.interact.listen.util.FileTypeDetector
+import com.interact.listen.util.FileTypeDetectionException
 import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse
 import org.joda.time.format.DateTimeFormat
@@ -48,12 +50,13 @@ class FaxController {
             return
         }
 
-        // TODO do we need to do any special escaping of the filename to avoid malicious activity?
-        def date = DateTimeFormat.forPattern("yyyyMMddHHmmss").print(fax.dateCreated)
-        def name = "Fax - ${fax.from()} - ${date}.tiff"
-
-        response.contentType = 'image/tiff'
-        response.setHeader('Content-disposition', "attachment;filename=${name}")
+        try {
+            def detector = new FileTypeDetector()
+            response.contentType = detector.detectContentType(fax.file)
+        } catch(FileTypeDetectionException e) {
+            response.contentType = 'application/octet-stream'
+        }
+        response.setHeader('Content-disposition', "attachment;filename=${fax.file.name}")
 
         response.outputStream << fax.file.newInputStream()
         response.flushBuffer()
