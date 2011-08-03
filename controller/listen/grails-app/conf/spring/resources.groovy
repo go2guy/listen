@@ -53,4 +53,9 @@ beans = {
     customMailMessageBuilderFactory(com.interact.listen.mail.MailMessageBuilderFactory) {
         it.autowire = true
     }
+
+    listenLdapServer(com.interact.grails.ldap.server.TransientGrailsLdapServer) {
+        base = CH.config.com.interact.listen.ldap.basedn
+        port = CH.config.com.interact.listen.ldap.port as int
+    }
 }

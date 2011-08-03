@@ -232,9 +232,9 @@ com.interact.listen.activeDirectory.domain = 'interact.nonreg'
 com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=iivip,dc=com')
 com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.port', '389')
 
-ldapServers {
+/*ldapServers {
     listen {
         base = com.interact.listen.ldap.basedn
         port = com.interact.listen.ldap.port as int
     }
-}
+}*/

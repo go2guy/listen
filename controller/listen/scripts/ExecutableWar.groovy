@@ -36,6 +36,11 @@ target(executableWar: "Builds a self-executing war file") {
         fileset(dir: 'target/classes', includes: 'com/interact/listen/server/EmbeddedJettyServer.class')
     }
 
+    // FIXME remove after sorting out the whole LDAP server thing
+    ant.copy(todir: 'target/war-stage/WEB-INF/lib') {
+        fileset(dir: 'lib-apacheds', includes: '*')
+    }
+
     manifestFile = 'target/war-stage/META-INF/MANIFEST.MF'
     ant.manifest(file: manifestFile, mode: 'update') {
         attribute(name: 'Main-Class', value: 'com.interact.listen.server.EmbeddedJettyServer')
