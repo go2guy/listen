@@ -157,6 +157,8 @@ input.seconds {
           <listen:mobileProviderSelect name="smsProvider" value="${preferences?.reminderNumberComponents()?.provider}"/>
         </label>
       </div>
+
+      <listen:autocomplete selector="#smsNumber" data="my.mobiles" providerSelector="#smsProvider"/>
     </fieldset>
 
     <h4 class="action-description">When somebody calls me</h4>

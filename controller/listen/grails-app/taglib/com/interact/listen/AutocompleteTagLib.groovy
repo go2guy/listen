@@ -25,5 +25,20 @@ class AutocompleteTagLib {
 });
 </script>
 """
+
+        if(attrs.providerSelector) {
+            out << """
+<script type="text/javascript">
+\$(document).ready(function() {
+    var provider = \$('${attrs.providerSelector}');
+    \$('${attrs.selector}').bind('autocompleteselect', function(e, ui) {
+        if(provider.size() > 0 && ui.item.hasOwnProperty('provider')) {
+            provider.val(ui.item.provider);
+        }
+    });
+});
+</script>
+"""
+        }
     }
 }

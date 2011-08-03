@@ -115,6 +115,8 @@ fieldset.vertical .time-restriction select {
             <listen:mobileProviderSelect name="smsNotificationProvider" value="${preferences?.smsNotificationProvider()}"/>
           </label>
 
+          <listen:autocomplete selector="#smsNotificationNumber" data="my.mobiles" providerSelector="#smsNotificationProvider"/>
+
           <button type="button" id="sendTestSms"><g:message code="page.voicemail.settings.button.sendTestSms"/></button>
 
           <g:set var="hasSmsTimeRestrictions" value="${preferences.smsTimeRestrictions.size() > 0}"/>
