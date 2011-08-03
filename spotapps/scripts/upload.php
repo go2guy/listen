@@ -16,7 +16,7 @@
             exitresult("Success", "");
         }
         else
-            exitresult("Failure", "Unable to move uploaded file from tmp directory to [$destDir]");
+            exitresult("Failure", "Unable to move uploaded file from tmp directory to $destDir");
     }
 
 	function exitresult($result, $reason="") {

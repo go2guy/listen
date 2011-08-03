@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 07/18/2011
+    <!-- Last Modified 08/02/2011
        *   @Name   begin.ccxml
        *   @Desc   This ccxml script acts as a transition between the Listen project and
                    the directMessage project. Here, we collect values exported from Listen
@@ -26,6 +26,7 @@
     <var name="ANI" expr="''"/>
     <var name="DNIS" expr="''"/>
     <var name="LINE_NUMBER" expr="''"/>
+    <var name="importedValue" expr="''"/>
 
     <!-- Global variables -->
     <var name="state" expr="'idle'"/>     <!-- state. This variable holds the CCXML dialog state -->
@@ -36,6 +37,30 @@
     <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"/>
+
+    <script>
+        <![CDATA[
+            function getPDF(jsonObj) {
+                var result = '';
+                var tmp = getJsonVal(jsonObj, 'artifact');
+                var i = 0;
+                while (i < tmp.length) {
+                    result = result + tmp[i] + ',';
+                    i++;
+                }
+                return result;
+            }
+
+            function setFileName(artifactList) {
+                var result = '';
+                var tmp = artifactList.split(',')[0];
+        		var artifactsPath = tmp.substr(0,tmp.lastIndexOf("/"));
+                return artifactsPath + '/' + getTimeStamp(1) + '.tif';
+            }
+        ]]>
+    </script>
+
 
     <!-- Begin executable code -->
     <eventprocessor statevariable="state">
@@ -54,9 +79,17 @@
             <assign name="ANI" expr="getnum(II_SB_remote)"/>
             <assign name="DNIS" expr="getnum(II_SB_local)"/>
             <var name="startTime" expr="getTimeStamp(3)"/>
-            <var name="importedValue" expr="II_SB_importedValue"/>
+            <assign name="importedValue" expr="II_SB_importedValue"/>
             <var name="action" expr="getJsonVal(importedValue, 'action')"/>
-            <if cond="action == 'SEND_FAX'">
+            <if cond="action == 'PDF_TO_TIFF'">
+                <assign name="action" expr="'SEND_FAX'"/>
+                <var name="artifact" expr="getPDF(importedValue)"/>
+                <var name="fileName" expr="setFileName(artifact)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'action', action)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'artifact', fileName)"/>
+                <send data="'sendRequest'" target="'http://localhost/spot/cgi-bin/spotbuild/listen/pdfToTiff.php'" targettype="'basichttp'" namelist="action artifact fileName importedValue"/>
+                <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
+            <elseif cond="action == 'SEND_FAX'"/>
                 <fetch next="'file:'+APP_PATH+'dialFax.ccxml'" namelist="importedValue startTime ANI DNIS"/>
             <elseif cond="action == 'RECEIVE_FAX'"/>
                 <fetch next="'file:'+APP_PATH+'answerFax.ccxml'" namelist="importedValue startTime ANI DNIS"/>
@@ -80,6 +113,10 @@
         </transition>
 
         <!-- Catch errors -->
+        <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
+            <!-- Ignore this error -->
+        </transition>
+
         <transition event="err*" name="errEV">
             <log>INFO: transition event [err*] state [<value expr="state"/>]</log>
             <log>ERROR: [<value expr="errEV.reason"/>]</log>

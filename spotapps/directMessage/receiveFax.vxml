@@ -37,7 +37,7 @@
             <if cond="uploads.Result == 'Success'">
                 <assign name="status" expr="'Success'"/>
                 <assign name="id" expr="'LSTNAPP_0067'"/>
-                <assign name="gotoForm" expr="'#sendEvent'"/>
+                <assign name="gotoForm" expr="'#createPDF'"/>
             <else/>
                 <assign name="logText" expr="'receiveFax.vxml: Fax upload returned Failure. Reason [' + uploads.Reason + '].'"/>
                 <assign name="logText" expr="writeLog('DIRECT_MESSAGE',LINE_NUMBER,logText)"/>
@@ -71,10 +71,29 @@
         </block>
     </form>
 
+    <form id="createPDF">
+        <block>
+            <log>INFO: Entered createPDF</log>
+    	    <log target="status">Create PDF</log>
+            <var name="action" expr="'CREATE_PDF'"/>
+            <var name="fileName" expr="destDir + dest"/>
+            <data name="appObj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/pdfToTiff.php'" method="post" namelist="action fileName" fetchtimeout="1s"/>
+            <if cond="appObj.Status == 'Success'">
+                <assign name="dest" expr="'file:' + appObj.Result"/>
+            <else/>
+                <assign name="logText" expr="'receiveFax.vxml: createPDF returned Failure. Unable to convert tiff file to PDF.'"/>
+                <assign name="logText" expr="writeLog('DIRECT_MESSAGE',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <assign name="dest" expr="'file:' + destDir + dest"/>
+            </if>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
     <form id="sendEvent">
         <block>
             <log>INFO: Entered sendEvent</log>
-            <assign name="dest" expr="'file:' + destDir + dest"/>
+    	    <log target="status">Post file location</log>
             <var name="params" expr="setParams(ANI, importedValue, dest, pages)"/>
             <var name="request" expr="'post'"/>
             <var name="resource" expr="'create'"/>
