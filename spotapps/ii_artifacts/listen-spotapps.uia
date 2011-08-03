@@ -122,12 +122,12 @@
                 <validateInfo>The value may be any number of letters, numbers, dashes, or periods. The value may not be blank.</validateInfo>
 
                 <property format="ccvxml" action="update" quotes="yes">
-                    <name>phoneNumber</name>
+                    <name>defaultDialNumber</name>
                     <group>Default</group>
                     <description>Dial Number</description>
                     <tag>var</tag>
                     <attribute>expr</attribute>
-                    <location>/interact/apps/spotbuild/listen_defaultDial/root.vxml</location>
+                    <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
                 </property>
             </question>
 
