@@ -48,7 +48,7 @@ class AutocompleteController {
         User.findAllByOrganization(user.organization, [sort: 'emailAddress', order: 'asc']).each { u ->
             result.all.emails << [
                 value: u.emailAddress,
-                label: "${u.emailAddress} (${u.realName})",
+                label: "${u.realName} (${u.emailAddress})",
                 name: u.realName
             ]
         }

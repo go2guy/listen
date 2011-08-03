@@ -186,6 +186,47 @@ $(document).ready(function() {
     });
 
     $('.date-fields select').change(invitations.checkAndWarnHistoricDate);
+
+    $.get('${request.contextPath}/autocomplete/contacts', function(data) {
+        function split(val) {
+            return val.split(/,\s*/);
+        }
+
+        function last(val) {
+            return split(val).pop();
+        }
+
+        $('#activeCallerAddresses,#passiveCallerAddresses').bind('keydown', function(e) {
+            if(event.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active) {
+                event.preventDefault();
+            }
+        }).autocomplete({
+            source: function(request, response) {
+                var term = last(request.term);
+                var matcher = new RegExp($.ui.autocomplete.escapeRegex(term), 'i');
+                response($.grep(data.all.emails, function(value) {
+                    return matcher.test(value.value)
+                            || matcher.test(value.name);
+                }));
+            },
+            delay: 0,
+            minLength: 1,
+            focus: function() {
+                return false;
+            },
+            select: function(e, ui) {
+                var terms = split(this.value);
+
+                // replace the entered text with the selected autocompleted value
+                terms.pop();
+                terms.push(ui.item.value);
+                terms.push('');
+
+                this.value = terms.join(', ');
+                return false;
+            }
+        });
+    });
 });
     </script>
   </body>
