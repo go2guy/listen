@@ -20,6 +20,7 @@ class AutocompleteController {
             all: [
                 phones: [],
                 direct: [],
+                mobiles: [],
                 emails: []
             ]
         ]
@@ -36,7 +37,11 @@ class AutocompleteController {
                     addPhone(phone, result.my.mobiles)
                 }
             }
-            
+
+            if(isMobile(phone) && phone.isPublic) {
+                addPhone(phone, result.all.mobiles)
+            }
+
             if(!isMobile(phone) || phone.isPublic) {
                 addPhone(phone, result.all.phones)
                 if(isDirect(phone)) {

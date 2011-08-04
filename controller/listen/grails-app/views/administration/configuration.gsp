@@ -33,10 +33,12 @@
         <listen:mobilePhoneSelect name="afterHours.mobilePhone.id" optionKey="id" optionValue="number" noSelection="['': 'None']" value="${afterHours?.mobilePhone?.id}"/>
 
         <label for="afterHours.alternateNumber"><g:message code="afterHoursConfiguration.alternateNumber.label"/></label>
-        <g:textField name="afterHours.alternateNumber" value="${afterHours?.alternateNumberComponents()?.number?.encodeAsHTML()}" class="${listen.validationClass(bean: afterHours, field: 'alternateNumber')}"/>
+        <g:textField name="afterHours.alternateNumber" value="${afterHours?.alternateNumberComponents()?.number?.encodeAsHTML()}" class="afterhours-alternatenumber ${listen.validationClass(bean: afterHours, field: 'alternateNumber')}"/>
 
         <label for="afterHours.provider"><g:message code="page.administration.configuration.afterHours.alternateNumberProvider.label"/></label>
-        <listen:mobileProviderSelect name="afterHours.provider" value="${afterHours?.alternateNumberComponents()?.provider}"/>
+        <listen:mobileProviderSelect name="afterHours.provider" value="${afterHours?.alternateNumberComponents()?.provider}" class="afterhours-provider"/>
+
+        <listen:autocomplete selector=".afterhours-alternatenumber" data="all.mobiles" providerSelector=".afterhours-provider"/>
 
         <label for="afterHours.realizeUrl"><g:message code="afterHoursConfiguration.realizeUrl.label"/></label>
         <g:textField name="afterHours.realizeUrl" value="${fieldValue(bean: afterHours, field: 'realizeUrl')}" class="${listen.validationClass(bean: afterHours, field: 'realizeUrl')}"/>

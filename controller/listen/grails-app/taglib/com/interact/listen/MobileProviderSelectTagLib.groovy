@@ -19,6 +19,10 @@ class MobileProviderSelectTagLib {
             'vmobl.com'              : 'Virgin Mobile'
         ]
 
-        out << g.select(name: attrs.name, value: attrs.value, from: providers, optionKey: 'key', optionValue: 'value')
+        attrs.from = providers
+        attrs.optionKey = 'key'
+        attrs.optionValue = 'value'
+
+        out << g.select(attrs)
     }
 }

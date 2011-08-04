@@ -32,6 +32,8 @@ fieldset.vertical select {
             <listen:mobileProviderSelect name="provider" value="${afterHoursConfiguration?.alternateNumberComponents()?.provider}"/>
           </label>
 
+          <listen:autocomplete selector="#alternateNumber" data="my.mobiles" providerSelector="#provider"/>
+
           <ul class="form-buttons">
             <li><g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/></li>
           </ul>
