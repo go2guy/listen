@@ -10,6 +10,7 @@ import org.apache.directory.shared.ldap.entry.ModificationOperation
 import org.apache.directory.shared.ldap.entry.client.ClientModification
 import org.apache.directory.shared.ldap.entry.client.DefaultClientAttribute
 import org.apache.directory.shared.ldap.exception.LdapAttributeInUseException
+import org.apache.directory.shared.ldap.exception.LdapNameAlreadyBoundException
 import org.apache.directory.shared.ldap.exception.LdapNoSuchAttributeException
 import org.apache.directory.shared.ldap.name.LdapDN
 
@@ -185,7 +186,11 @@ o: ${user.organization.name}
 
     private def addLdif(String ldif) {
         log.debug "Adding LDIF: ${ldif}"
-        listenLdapServer.loadLdif(ldif)
+        try {
+            listenLdapServer.loadLdif(ldif)
+        } catch(LdapNameAlreadyBoundException e) {
+            log.error e
+        }
     }
 
     private def baseDn() {
