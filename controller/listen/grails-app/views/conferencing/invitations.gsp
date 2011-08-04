@@ -197,8 +197,8 @@ $(document).ready(function() {
         }
 
         $('#activeCallerAddresses,#passiveCallerAddresses').bind('keydown', function(e) {
-            if(event.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active) {
-                event.preventDefault();
+            if(e.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active) {
+                e.preventDefault();
             }
         }).autocomplete({
             source: function(request, response) {
