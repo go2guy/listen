@@ -22,11 +22,11 @@ class UserService {
         if(user.validate() && user.save()) {
             cloudToDeviceService.sendContactSync()
 
-            if(originalEmailAddress != user.emailAddress) {
+            if(originalEmailAddress != user.emailAddress && user.organization) {
                 ldapService.changeEmailAddress(user, originalEmailAddress, user.emailAddress)
             }
 
-            if(originalRealName != user.realName) {
+            if(originalRealName != user.realName && user.organization) {
                 ldapService.changeName(user, user.realName)
             }
         }
