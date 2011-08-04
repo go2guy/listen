@@ -3,6 +3,7 @@ package com.interact.listen
 import com.interact.listen.license.ListenFeature
 import com.interact.listen.attendant.MenuGroup
 import com.interact.listen.pbx.NumberRoute
+import grails.converters.JSON
 import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_CUSTODIAN'])
@@ -10,6 +11,7 @@ class OrganizationController {
     static allowedMethods = [
         index: 'GET',
         addRoute: 'POST',
+        allowedApplications: 'GET',
         create: 'GET',
         delete: 'POST',
         deleteRoute: 'POST',
@@ -22,6 +24,7 @@ class OrganizationController {
         updateRoute: 'POST'
     ]
 
+    def applicationService
     def ldapService
     def licenseService
     def userCreationService
@@ -40,6 +43,16 @@ class OrganizationController {
             def routes = NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL, [sort: 'organization', order: 'asc'])
             render(view: 'routing', model: [routes: routes, newRoute: route])
         }
+    }
+
+    // ajax
+    def allowedApplications = {
+        // map of organization ids to feature names
+        def features = [:]
+        Organization.list().each { organization ->
+            features.put(organization.id, applicationService.listApplications(organization))
+        }
+        render features as JSON
     }
 
     def create = {

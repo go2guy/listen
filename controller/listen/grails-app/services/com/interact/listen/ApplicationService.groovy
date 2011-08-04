@@ -7,39 +7,39 @@ class ApplicationService {
 
     def licenseService
 
-    def listApplications() {
+    def listApplications(def organization = null) {
         def applications = []
 
-        if(licenseService.canAccess(ListenFeature.AFTERHOURS)) {
+        if(licenseService.canAccess(ListenFeature.AFTERHOURS, organization)) {
             applications << 'After Hours'
         }
 
-        if(licenseService.canAccess(ListenFeature.ATTENDANT)) {
+        if(licenseService.canAccess(ListenFeature.ATTENDANT, organization)) {
             applications << 'Attendant'
         }
 
-        if(licenseService.canAccess(ListenFeature.BROADCAST)) {
+        if(licenseService.canAccess(ListenFeature.BROADCAST, organization)) {
             applications << 'Broadcast'
         }
 
-        if(licenseService.canAccess(ListenFeature.CONFERENCING)) {
+        if(licenseService.canAccess(ListenFeature.CONFERENCING, organization)) {
             applications << 'Conferencing'
         }
 
-        if(licenseService.canAccess(ListenFeature.VOICEMAIL) || licenseService.canAccess(ListenFeature.FAX)) {
+        if(licenseService.canAccess(ListenFeature.VOICEMAIL, organization) || licenseService.canAccess(ListenFeature.FAX, organization)) {
             applications << 'Direct Message'
         }
 
-        if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
+        if(licenseService.canAccess(ListenFeature.VOICEMAIL, organization)) {
             applications << 'Mailbox'
             applications << 'Voicemail'
         }
 
-        if(licenseService.canAccess(ListenFeature.FINDME)) {
+        if(licenseService.canAccess(ListenFeature.FINDME, organization)) {
             applications << 'Find Me Config'
         }
 
-        if(licenseService.canAccess(ListenFeature.IPPBX)) {
+        if(licenseService.canAccess(ListenFeature.IPPBX, organization)) {
             applications << 'IP PBX'
         }
 

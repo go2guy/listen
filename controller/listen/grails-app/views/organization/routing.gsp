@@ -27,7 +27,7 @@ table { margin-bottom: 10px; }
         <tr>
           <g:form controller="organization" action="addRoute" method="post">
             <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: newRoute, field: 'pattern')}" placeholder="${g.message(code: 'page.organization.routing.add.pattern.placeholder')}" class="${listen.validationClass(bean: newRoute, field: 'pattern')}"/></td>
-            <td class="col-organization"><listen:organizationSelect name="organization.id" value="${newRoute?.organization?.id}"/></td>
+            <td class="col-organization"><listen:organizationSelect name="organization.id" value="${newRoute?.organization?.id}" class="organization-select add-organization-select"/></td>
             <td class="col-destination"><listen:applicationSelect name="destination" value="${newRoute?.destination}"/></td>
             <td class="col-button" colspan="2"><g:submitButton name="add" value="${g.message(code: 'page.organization.routing.add.addButton')}"/></td>
           </g:form>
@@ -52,8 +52,8 @@ table { margin-bottom: 10px; }
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="organization" action="updateRoute" method="post">
                 <td class="col-pattern"><g:textField name="pattern" value="${fieldValue(bean: route, field: 'pattern')}" class="${listen.validationClass(bean: route, field: 'pattern')}"/></td>
-                <td class="col-organization"><listen:organizationSelect name="organization.id" value="${route.organization?.id}"/></td>
-                <td class="col-destination"><listen:applicationSelect name="destination" value="${route.destination}"/></td>
+                <td class="col-organization"><listen:organizationSelect name="organization.id" value="${route.organization?.id}" class="organization-select"/></td>
+                <td class="col-destination"><listen:applicationSelect name="destination" value="${route.destination}" organization="${route.organization}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${route.id}"/>
                   <g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/>
@@ -76,5 +76,32 @@ table { margin-bottom: 10px; }
         </div>
       </g:if>
     </g:if>
+    <script type="text/javascript">
+$(document).ready(function() {
+    // if the organization changes, the application select should only show applications available to that organization
+    (function() {
+        function update(orgSelect, data) {
+            var appSelect = $('.application-select', orgSelect.closest('tr'));
+
+            var newOptions = data[orgSelect.val()];
+            var selectedApp = appSelect.val();
+
+            $('option', appSelect).remove();
+            for(var i = 0; i < newOptions.length; i++) {
+                appSelect.append('<option>' + newOptions[i] + '</option>');
+            }
+            appSelect.val(selectedApp);
+        };
+
+        $.get('${request.contextPath}/organization/allowedApplications', function(data) {
+            update($('.add-organization-select'), data);
+            $('.organization-select').change(function(e) {
+                var orgSelect = $(e.target);
+                update(orgSelect, data);
+            });
+        });
+    })();
+});
+    </script>
   </body>
 </html>

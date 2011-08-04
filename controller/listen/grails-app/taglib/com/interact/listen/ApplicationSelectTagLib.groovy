@@ -40,6 +40,7 @@ class ApplicationSelectTagLib {
         if(licenseService.canAccess(ListenFeature.CUSTOM_APPLICATIONS, organization)) {
             out << '<option>Custom Application...</option>'
         }
+        out << '</select>'
     }
 
     def customApplicationStyles = { attrs ->
