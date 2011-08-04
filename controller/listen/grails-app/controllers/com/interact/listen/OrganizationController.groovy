@@ -22,6 +22,7 @@ class OrganizationController {
         updateRoute: 'POST'
     ]
 
+    def ldapService
     def licenseService
     def userCreationService
 
@@ -125,6 +126,8 @@ class OrganizationController {
             }
 
             if(!organization.hasErrors() && organization.save()) {
+                ldapService.addOrganization(organization)
+
                 def user = userCreationService.createOperator(params, organization)
                 if(user.hasErrors()) {
                     status.setRollbackOnly()
