@@ -4,8 +4,10 @@ import com.interact.listen.*
 import com.interact.listen.attendant.*
 import com.interact.listen.conferencing.*
 import com.interact.listen.fax.*
+import com.interact.listen.pbx.*
 import com.interact.listen.pbx.findme.*
 import com.interact.listen.voicemail.*
+import com.interact.listen.voicemail.afterhours.*
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.springframework.web.context.request.RequestContextHolder as RCH
@@ -14,291 +16,439 @@ class HistoryService {
     def springSecurityService
     // TODO handle service (if necessary)
 
-//    def changedAlternatePagerNumber(def newNumber) {
-//        // TODO later
-//    }
-
     void cancelledConferenceInvitation(ScheduledConference invitation) {
-        def properties = [
-            action: Action.CANCELLED_CONFERENCE_INVITATION,
-            description: "Cancelled conference invitation for [${invitation.forConference.description}] starting [${formatDateTime(invitation.startsAt())}]",
-            onUser: invitation.scheduledBy
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.CANCELLED_CONFERENCE_INVITATION,
+              description: "Cancelled conference invitation for [${invitation.forConference.description}] starting [${formatDateTime(invitation.startsAt())}]",
+              onUser: invitation.scheduledBy)
+    }
+
+    void changedAccountEmailAddress(User onUser, def from) {
+        write(action: Action.CHANGED_ACCOUNT_EMAIL_ADDRESS,
+              description: "Changed account email address from [${from}] to [${onUser.emailAddress}]",
+              onUser: onUser)
+    }
+
+    void changedAccountName(User onUser, def from) {
+        write(action: Action.CHANGED_ACCOUNT_NAME,
+              description: "Changed account name from [${from}] to [${onUser.realName}]",
+              onUser: onUser)
+    }
+
+    void changedAccountPassword(User onUser) {
+        write(action: Action.CHANGED_ACCOUNT_PASSWORD,
+              description: "Changed account password",
+              onUser: onUser)
+    }
+
+    void changedAccountUsername(User onUser, def from) {
+        write(action: Action.CHANGED_ACCOUNT_USERNAME,
+              description: "Changed account username from [${from}] to [${onUser.username}]",
+              onUser: onUser)
+    }
+
+    void changedAfterHoursAlternateNumber(AfterHoursConfiguration configuration, def from) {
+        write(action: Action.CHANGED_AFTER_HOURS_ALTERNATE_NUMBER,
+              description: "Changed after hours alternate number from [${from}] to [${configuration.alternateNumber}]")
+    }
+
+    void changedAfterHoursMobileNumber(AfterHoursConfiguration configuration, MobilePhone from) {
+        write(action: Action.CHANGED_AFTER_HOURS_MOBILE_NUMBER,
+              description: "Changed after hours mobile number from [${from?.asSmsEmail() ?: 'None'}] to [${configuration.mobilePhone?.asSmsEmail() ?: 'None'}]")
+    }
+
+    void changedExtensionIpAddress(Extension extension, def from) {
+        write(action: Action.CHANGED_EXTENSION_IP_ADDRESS,
+              description: "Changed extension IP address from [${from}] to [${extension.ip}]",
+              onUser: extension.owner)
+    }
+
+    void changedFindMeExpiration(FindMePreferences preferences) {
+        write(action: Action.CHANGED_FIND_ME_EXPIRATION,
+              description: "Changed Find Me expiration to [${formatDateTime(preferences.expires)}]",
+              onUser: preferences.user)
+    }
+
+    void changedFindMeExpirationReminderSmsNumber(FindMePreferences preferences, def from) {
+        write(action: Action.CHANGED_FIND_ME_EXPIRATION_REMINDER_SMS_NUMBER,
+              description: "Changed Find Me expiration reminder SMS number from [${from}] to [${preferences.reminderNumber}]",
+              onUser: preferences.user)
+    }
+
+    void changedMobilePhoneVisibility(MobilePhone phone) {
+        write(action: Action.CHANGED_MOBILE_PHONE_VISIBILITY,
+              description: "Changed mobile phone [${phone.asSmsEmail()}] from [${phone.isPublic ? 'private' : 'public'}] to [${phone.isPublic ? 'public' : 'private'}]",
+              onUser: phone.owner)
+    }
+
+    void changedNewConferencePinLength(ConferencingConfiguration configuration, def from) {
+        write(action: Action.CHANGED_NEW_CONFERENCE_PIN_LENGTH,
+              description: "Changed new conference PIN length from [${from}] to [${configuration.pinLength}]")
+    }
+
+    void changedNewVoicemailEmailAddress(VoicemailPreferences preferences, def from) {
+        write(action: Action.CHANGED_NEW_VOICEMAIL_EMAIL_ADDRESS,
+              description: "Changed new voicemail email address from [${from}] to [${preferences.emailNotificationAddress}]",
+              onUser: preferences.user)
+    }
+
+    void changedNewVoicemailSmsNumber(VoicemailPreferences preferences, def from) {
+        write(action: Action.CHANGED_NEW_VOICEMAIL_SMS_NUMBER,
+              description: "Changed new voicemail SMS number from [${from}] to [${preferences.smsNotificationAddress}]",
+              onUser: preferences.user)
+    }
+
+    void changedOtherPhoneVisibility(OtherPhone phone) {
+        write(action: Action.CHANGED_OTHER_PHONE_VISIBILITY,
+              description: "Changed other phone [${phone.number}] from [${phone.isPublic ? 'private' : 'public'}] to [${phone.isPublic ? 'public' : 'private'}]",
+              onUser: phone.owner)
+    }
+
+    void changedRealizeConfiguration(AfterHoursConfiguration configuration) {
+        write(action: Action.CHANGED_REALIZE_CONFIGURATION,
+              description: "Changed Realize configuration to URL [${configuration.realizeUrl}], alert name [${configuration.realizeAlertName}]")
     }
 
     void changedVoicemailPin(User onUser, def oldPin, def newPin) {
-        def properties = [
-            action: Action.CHANGED_VOICEMAIL_PIN,
-            description: "Changed [${onUser.username}]'s voicemail PIN from [${oldPin}] to [${newPin}]",
-            onUser: onUser
-        ]
-        write(new ActionHistory(properties))
-     }
+        write(action: Action.CHANGED_VOICEMAIL_PIN,
+//              description: "Changed [${onUser.username}]'s voicemail PIN from [${oldPin}] to [${newPin}]",
+              description: 'Changed voicemail PIN',
+              onUser: onUser)
+    }
 
     void createdAttendantHoliday(PromptOverride promptOverride) {
-        def properties = [
-            action: Action.CREATED_ATTENDANT_HOLIDAY,
-            description: "Created attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.overridesMenu.name}] with prompt [${promptOverride.optionsPrompt}]"
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.CREATED_ATTENDANT_HOLIDAY,
+              description: "Created attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.overridesMenu.name}] with prompt [${promptOverride.optionsPrompt}]")
+
     }
 
     void createdConferenceInvitation(ScheduledConference invitation) {
-        def properties = [
-            action: Action.CREATED_CONFERENCE_INVITATION,
-            description: "Created conference invitation for [${invitation.forConference.description}] starting [${formatDateTime(invitation.startsAt())}]",
-            onUser: invitation.scheduledBy
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.CREATED_CONFERENCE_INVITATION,
+              description: "Created conference invitation for [${invitation.forConference.description}] starting [${formatDateTime(invitation.startsAt())}]",
+              onUser: invitation.scheduledBy)
+    }
+
+    void createdDirectMessageNumber(DirectMessageNumber number) {
+        write(action: Action.CREATED_DIRECT_MESSAGE_NUMBER,
+              description: "Created direct message number [${number.number}]",
+              onUser: number.owner)
+    }
+
+    void createdExtension(Extension extension) {
+        write(action: Action.CREATED_EXTENSION,
+              description: "Created extension [${extension.number}] with IP address [${extension.ip}]",
+              onUser: extension.owner)
+    }
+
+    void createdMobilePhone(MobilePhone phone) {
+        write(action: Action.CREATED_MOBILE_PHONE,
+              description: "Created [${phone.isPublic ? 'public' : 'private'}] mobile phone [${phone.asSmsEmail()}]",
+              onUser: phone.owner)
+    }
+
+    void createdOtherPhone(OtherPhone phone) {
+        write(action: Action.CREATED_OTHER_PHONE,
+              description: "Created [${phone.isPublic ? 'public' : 'private'}] other phone [${phone.number}]",
+              onUser: phone.owner)
+    }
+
+    void createdOutdialRestriction(OutdialRestriction restriction) {
+        write(action: Action.CREATED_OUTDIAL_RESTRICTION,
+              description: "Restricted outdialing [${restriction.pattern}] for [${restriction.target?.realName ?: 'Everyone'}]",
+              onUser: restriction.target)
+    }
+
+    void createdOutdialRestrictionException(OutdialRestrictionException exception) {
+        write(action: Action.CREATED_OUTDIAL_RESTRICTION_EXCEPTION,
+              description: "Created outdialing restriction exception to pattern [${exception.restriction.pattern}] for [${exception.target.realName}]",
+              onUser: exception.target)
+    }
+
+    void createdRoute(NumberRoute route) {
+        boolean internal = route.type == NumberRoute.Type.INTERNAL
+        write(action: internal ? Action.CREATED_INTERNAL_ROUTE : Action.CREATED_EXTERNAL_ROUTE,
+              description: "Routed (${internal ? 'internal' : 'external'}) [${route.pattern}] to [${route.destination}]")
     }
 
     void createdUser(User user) {
-        def properties = [
-            action: Action.CREATED_USER,
-            description: "Created user [${user.username}]",
-            onUser: user
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.CREATED_USER,
+              description: "Created user [${user.username}]",
+              onUser: user)
     }
 
     void deletedAttendantHoliday(PromptOverride promptOverride) {
-        def properties = [
-            action: Action.DELETED_ATTENDANT_HOLIDAY,
-            description: "Deleted attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.overridesMenu.name}] with prompt [${promptOverride.optionsPrompt}]"
-        ]
-        write(new ActionHistory(properties))
-    }
-
-    void deletedFax(Fax fax) {
-        def properties = [
-            action: Action.DELETED_FAX,
-            description: "Deleted ${friendlyMessageSnippet(fax)}",
-            onUser: fax.owner
-        ]
-        write(new ActionHistory(properties))
-    }
-
-    void deletedFindMeNumber(FindMeNumber findMeNumber) {
-        def properties = [
-            action: Action.DELETED_FINDMENUMBER,
-            description: "Deleted findme number [${findMeNumber.number}]",
-            onUser: findMeNumber.user
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.DELETED_ATTENDANT_HOLIDAY,
+              description: "Deleted attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.overridesMenu.name}] with prompt [${promptOverride.optionsPrompt}]")
     }
 
     void deletedConferenceRecording(Recording recording) {
-        def properties = [
-            action: Action.DELETED_CONFERENCE_RECORDING,
-            description: "Deleted conference recording created on ${formatDateTime(recording.audio.dateCreated)} for conference [${recording.conference?.description}]",
-            onUser: recording.conference.owner
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.DELETED_CONFERENCE_RECORDING,
+              description: "Deleted conference recording created on ${formatDateTime(recording.audio.dateCreated)} for conference [${recording.conference?.description}]",
+              onUser: recording.conference.owner)
     }
 
-    def deletedVoicemail(Voicemail voicemail) {
-        def properties = [
-            action: Action.DELETED_VOICEMAIL,
-            description: "Deleted ${friendlyMessageSnippet(voicemail)}",
-            onUser: voicemail.owner
-        ]
-        write(new ActionHistory(properties))
+    void deletedDirectMessageNumber(def number) {
+        write(action: Action.DELETED_DIRECT_MESSAGE_NUMBER,
+              description: "Deleted direct message number [${number.number}]",
+              onUser: number.owner)
     }
 
-    def disabledUser(User user) {
-        def properties = [
-            action: Action.DISABLED_USER,
-            description: "Disabled user [${user.username}]",
-            onUser: user
-        ]
-        write(new ActionHistory(properties))
+    void deletedExtension(def extension) {
+        write(action: Action.DELETED_EXTENSION,
+              description: "Deleted extension [${extension.number}]",
+              onUser: extension.owner)
     }
 
-    def downloadedFax(Fax fax) {
-        def properties = [
-            action: Action.DOWNLOADED_FAX,
-            description: "Downloaded ${friendlyMessageSnippet(fax)}",
-            onUser: fax.owner
-        ]
-        write(new ActionHistory(properties))
+    void deletedFax(Fax fax) {
+        write(action: Action.DELETED_FAX,
+              description: "Deleted ${friendlyMessageSnippet(fax)}",
+              onUser: fax.owner)
     }
 
-    def downloadedVoicemail(Voicemail voicemail) {
-        def properties = [
-            action: Action.DOWNLOADED_VOICEMAIL,
-            description: "Downloaded ${friendlyMessageSnippet(voicemail)}",
-            onUser: voicemail.owner
-        ]
-        write(new ActionHistory(properties))
+    void deletedFindMeNumber(FindMeNumber findMeNumber) {
+        write(action: Action.DELETED_FINDMENUMBER,
+              description: "Deleted findme number [${findMeNumber.number}]",
+              onUser: findMeNumber.user)
     }
 
-    def droppedConferenceCaller(Participant participant) {
-        def properties = [
-            action: Action.DROPPED_CONFERENCE_CALLER,
-            description: "Dropped caller [${participant.displayName()}] from conference [${participant.conference.description}]"
-        ]
-        write(new ActionHistory(properties))
+    void deletedMobilePhone(def phone) {
+        write(action: Action.DELETED_MOBILE_PHONE,
+              description: "Deleted mobile phone [${phone.asSmsEmail()}]",
+              onUser: phone.owner)
     }
 
-    def enabledUser(User user) {
-        def properties = [
-            action: Action.ENABLED_USER,
-            description: "Enabled user [${user.username}]",
-            onUser: user
-        ]
-        write(new ActionHistory(properties))
+    void deletedOtherPhone(def phone) {
+        write(action: Action.DELETED_OTHER_PHONE,
+              description: "Deleted other phone [${phone.number}]",
+              onUser: phone.owner)
     }
 
-    def forwardedVoicemail(Voicemail voicemail) {
-        def properties = [
-            action: Action.FORWARDED_VOICEMAIL,
-            description: "Forwarded ${friendlyMessageSnippet(voicemail)}",
-            onUser: voicemail.owner
-        ]
-        write(new ActionHistory(properties))
+    void deletedOutdialRestriction(def restriction) {
+        write(action: Action.DELETED_OUTDIAL_RESTRICTION,
+              description: "Deleted outdialing restriction [${restriction.pattern}] for [${restriction.target?.realName ?: 'Everyone'}]",
+              onUser: restriction.target)
     }
 
-    def leftFax(Fax fax) {
-        def properties = [
-            action: Action.LEFT_FAX,
-            description: "${fax.from()} left fax for [${fax.owner.username}]",
-            onUser: fax.owner
-        ]
-        write(new ActionHistory(properties))
+    void deletedOutdialRestrictionException(def exception) {
+        write(action: Action.DELETED_OUTDIAL_RESTRICTION_EXCEPTION,
+              description: "Deleted outdialing restriction exception to pattern [${exception.restriction.pattern}] for [${exception.target.realName}]",
+              onUser: exception.target)
     }
 
-    def leftVoicemail(Voicemail voicemail) {
-        def properties = [
-            action: Action.LEFT_VOICEMAIL,
-            description: "${voicemail.from()} left voicemail for [${voicemail.owner.username}]",
-            onUser: voicemail.owner
-        ]
-        write(new ActionHistory(properties))
+    void deletedRoute(def route) {
+        boolean internal = route.type == NumberRoute.Type.INTERNAL
+        write(action: internal ? Action.DELETED_INTERNAL_ROUTE : Action.DELETED_EXTERNAL_ROUTE,
+              description: "Deleted (${internal ? 'internal' : 'external'}) route from [${route.pattern}] to [${route.destination}]")
     }
 
-//    def listenedToVoicemail(Voicemail voicemail) {
-//        // TODO?
-//    }
-
-    def loggedIn(User user) {
-        def properties = [
-            action: Action.LOGGED_IN,
-            description: "Logged into GUI (Local Account)",
-            onUser: user
-        ]
-        write(new ActionHistory(properties))
+    void deletedVoicemail(Voicemail voicemail) {
+        write(action: Action.DELETED_VOICEMAIL,
+              description: "Deleted ${friendlyMessageSnippet(voicemail)}",
+              onUser: voicemail.owner)
     }
 
-    def loggedOut(User user) {
-        def properties = [
-            action: Action.LOGGED_OUT,
-            description: "Logged out of GUI",
-            onUser: user
-        ]
-        write(new ActionHistory(properties))
+    void disabledAndroidCloudToDevice() {
+        write(action: Action.DISABLED_ANDROID_CLOUD_TO_DEVICE,
+              description: "Disabled Android Cloud-to-Device")
     }
 
-    def mutedConferenceCaller(Participant participant) {
-        def properties = [
-            action: Action.MUTED_CONFERENCE_CALLER,
-            description: "Muted caller [${participant.displayName()}] in conference [${participant.conference.description}]"
-        ]
-        write(new ActionHistory(properties))
+    void disabledFindMeExpirationReminderSms(FindMePreferences preferences) {
+        write(action: Action.DISABLED_FIND_ME_EXPIRATION_REMINDER_SMS,
+              description: "Disabled Find Me expiration reminder SMS",
+              onUser: preferences.user)
     }
 
-//    def sentVoicemailAlternatePage(Voicemail voicemail) {
-//        // TODO later
-//    }
+    void disabledRecurringVoicemailSms(VoicemailPreferences preferences) {
+        write(action: Action.DISABLED_RECURRING_VOICEMAIL_SMS,
+              description: "Disabled recurring voicemail SMS",
+              onUser: preferences.user)
+    }
+
+    void disabledNewVoicemailEmail(VoicemailPreferences preferences) {
+        write(action: Action.DISABLED_NEW_VOICEMAIL_EMAIL,
+              description: "Disabled new voicemail email",
+              onUser: preferences.user)
+    }
+
+    void disabledNewVoicemailSms(VoicemailPreferences preferences) {
+        write(action: Action.DISABLED_NEW_VOICEMAIL_SMS,
+              description: "Disabled new voicemail SMS",
+              onUser: preferences.user)
+    }
+
+    void disabledTranscription() {
+        write(action: Action.DISABLED_TRANSCRIPTION,
+              description: "Disabled transcription")
+    }
+
+    void disabledUser(User user) {
+        write(action: Action.DISABLED_USER,
+              description: "Disabled user [${user.username}]",
+              onUser: user)
+    }
+
+    void downloadedFax(Fax fax) {
+        write(action: Action.DOWNLOADED_FAX,
+              description: "Downloaded ${friendlyMessageSnippet(fax)}",
+              onUser: fax.owner)
+    }
+
+    void downloadedVoicemail(Voicemail voicemail) {
+        write(action: Action.DOWNLOADED_VOICEMAIL,
+              description: "Downloaded ${friendlyMessageSnippet(voicemail)}",
+              onUser: voicemail.owner)
+    }
+
+    void droppedConferenceCaller(Participant participant) {
+        write(action: Action.DROPPED_CONFERENCE_CALLER,
+              description: "Dropped caller [${participant.displayName()}] from conference [${participant.conference.description}]")
+    }
+
+    void enabledAndroidCloudToDevice() {
+        write(action: Action.ENABLED_ANDROID_CLOUD_TO_DEVICE,
+              description: "Enabled Android Cloud-to-Device")
+    }
+
+    void enabledFindMeExpirationReminderSms(FindMePreferences preferences) {
+        write(action: Action.ENABLED_FIND_ME_EXPIRATION_REMINDER_SMS,
+              description: "Enabled Find Me expiration reminder SMS to number [${preferences.reminderNumber}]",
+              onUser: preferences.user)
+    }
+
+    void enabledRecurringVoicemailSms(VoicemailPreferences preferences) {
+        write(action: Action.ENABLED_RECURRING_VOICEMAIL_SMS,
+              description: "Enabled recurring voicemail SMS",
+              onUser: preferences.user)
+    }
+
+    void enabledNewVoicemailEmail(VoicemailPreferences preferences) {
+        write(action: Action.ENABLED_NEW_VOICEMAIL_EMAIL,
+              description: "Enabled new voicemail email to address [${preferences.emailNotificationAddress}]",
+              onUser: preferences.user)
+    }
+
+    void enabledNewVoicemailSms(VoicemailPreferences preferences) {
+        write(action: Action.ENABLED_NEW_VOICEMAIL_SMS,
+              description: "Enabled new voicemail SMS to number [${preferences.smsNotificationAddress}]",
+              onUser: preferences.user)
+    }
+
+    void enabledTranscription(TranscriptionConfiguration configuration) {
+        write(action: Action.ENABLED_TRANSCRIPTION,
+              description: "Enabled transcription using phone number [${configuration.phoneNumber}]")
+    }
+
+    void enabledUser(User user) {
+        write(action: Action.ENABLED_USER,
+              description: "Enabled user [${user.username}]",
+              onUser: user)
+    }
+
+    void forwardedExtension(Extension extension) {
+        write(action: Action.FORWARDED_EXTENSION,
+              description: "Forwarded extension [${extension.number}] to [${extension.forwardedTo}]",
+              onUsr: extension.owner)
+    }
+
+    void forwardedVoicemail(Voicemail voicemail) {
+        write(action: Action.FORWARDED_VOICEMAIL,
+              description: "Forwarded ${friendlyMessageSnippet(voicemail)}",
+              onUser: voicemail.owner)
+    }
+
+    void leftFax(Fax fax) {
+        write(action: Action.LEFT_FAX,
+              description: "${fax.from()} left fax for [${fax.owner.username}]",
+              onUser: fax.owner)
+    }
+
+    void leftVoicemail(Voicemail voicemail) {
+        write(action: Action.LEFT_VOICEMAIL,
+              description: "${voicemail.from()} left voicemail for [${voicemail.owner.username}]",
+              onUser: voicemail.owner)
+    }
+
+    void loggedIn(User user) {
+        write(action: Action.LOGGED_IN,
+              description: "Logged into GUI (Local Account)",
+              onUser: user)
+    }
+
+    void loggedOut(User user) {
+        write(action: Action.LOGGED_OUT,
+              description: "Logged out of GUI",
+              onUser: user)
+    }
+
+    void mutedConferenceCaller(Participant participant) {
+        write(action: Action.MUTED_CONFERENCE_CALLER,
+              description: "Muted caller [${participant.displayName()}] in conference [${participant.conference.description}]")
+    }
 
     void sentFax(OutgoingFax fax) {
-        def properties = [
-            action: Action.SENT_FAX,
-            description: "Sent ${fax.pages}-page fax to [${fax.dnis}]"
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.SENT_FAX,
+              description: "Sent ${fax.pages}-page fax to [${fax.dnis}]")
     }
 
-    def sentNewVoicemailEmail(Voicemail voicemail) {
+    void sentNewVoicemailEmail(Voicemail voicemail) {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)
-        def properties = [
-            action: Action.SENT_NEW_VOICEMAIL_EMAIL,
-            description: "Sent email to [${preferences.emailNotificationAddress}] for ${friendlyMessageSnippet(voicemail)}",
-            onUser: voicemail.owner
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.SENT_NEW_VOICEMAIL_EMAIL,
+              description: "Sent email to [${preferences.emailNotificationAddress}] for ${friendlyMessageSnippet(voicemail)}",
+              onUser: voicemail.owner)
     }
 
-    def sentNewVoicemailSms(Voicemail voicemail) {
+    void sentNewVoicemailSms(Voicemail voicemail) {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)
-        def properties = [
-            action: Action.SENT_NEW_VOICEMAIL_SMS,
-            description: "Sent SMS to [${preferences.smsNotificationAddress}] for ${friendlyMessageSnippet(voicemail)}",
-            onUser: voicemail.owner
-        ]
-        write(new ActionHistory(properties))
+        write(action: Action.SENT_NEW_VOICEMAIL_SMS,
+              description: "Sent SMS to [${preferences.smsNotificationAddress}] for ${friendlyMessageSnippet(voicemail)}",
+              onUser: voicemail.owner)
     }
 
-    def startedConference(Conference conference) {
-        def properties = [
-            action: Action.STARTED_CONFERENCE,
-            description: "Started conference [${conference.description}]"
-        ]
-        write(new ActionHistory(properties))
+    void startedConference(Conference conference) {
+        write(action: Action.STARTED_CONFERENCE,
+              description: "Started conference [${conference.description}]")
     }
 
-    def startedRecordingConference(Conference conference) {
-        def properties = [
-            action: Action.STARTED_RECORDING_CONFERENCE,
-            description: "Started recording conference [${conference.description}]"
-        ]
-        write(new ActionHistory(properties))
+    void startedRecordingConference(Conference conference) {
+        write(action: Action.STARTED_RECORDING_CONFERENCE,
+              description: "Started recording conference [${conference.description}]")
     }
 
-    def stoppedConference(Conference conference) {
-        def properties = [
-            action: Action.STOPPED_CONFERENCE,
-            description: "Stopped conference [${conference.description}]"
-        ]
-        write(new ActionHistory(properties))
+    void stoppedConference(Conference conference) {
+        write(action: Action.STOPPED_CONFERENCE,
+              description: "Stopped conference [${conference.description}]")
     }
 
-    def stoppedRecordingConference(Conference conference) {
-        def properties = [
-            action: Action.STOPPED_RECORDING_CONFERENCE,
-            description: "Stopped recording conference [${conference.description}]"
-        ]
-        write(new ActionHistory(properties))
+    void stoppedRecordingConference(Conference conference) {
+        write(action: Action.STOPPED_RECORDING_CONFERENCE,
+              description: "Stopped recording conference [${conference.description}]")
     }
 
-    def unmutedConferenceCaller(Participant participant) {
-        def properties = [
-            action: Action.UNMUTED_CONFERENCE_CALLER,
-            description: "Unmuted caller [${participant.displayName()}] in conference [${participant.conference.description}]"
-        ]
-        write(new ActionHistory(properties))
+    void unforwardedExtension(Extension extension) {
+        write(action: Action.UNFORWARDED_EXTENSION,
+              description: "Removed forwarding for extension [${extension.number}]",
+              onUser: extension.owner)
+    }
+
+    void unmutedConferenceCaller(Participant participant) {
+        write(action: Action.UNMUTED_CONFERENCE_CALLER,
+              description: "Unmuted caller [${participant.displayName()}] in conference [${participant.conference.description}]")
     }
 
     void updatedFindMeNumber(FindMeNumber findMeNumber) {
         def properties
         if(findMeNumber.isEnabled) {
-            properties = [
-                action: Action.UPDATED_FINDMENUMBER,
-                description: "Enabled findme number [${findMeNumber.number}]",
-                onUser: findMeNumber.user
-            ]
+            write(action: Action.UPDATED_FINDMENUMBER,
+                  description: "Enabled findme number [${findMeNumber.number}]",
+                  onUser: findMeNumber.user)
+        } else {
+            write(action: Action.UPDATED_FINDMENUMBER,
+                  description: "Disabled findme number [${findMeNumber.number}]",
+                  onUser: findMeNumber.user)
         }
-        else {
-            properties = [
-                action: Action.UPDATED_FINDMENUMBER,
-                description: "Disabled findme number [${findMeNumber.number}]",
-                onUser: findMeNumber.user
-            ]
-        }
-        write(new ActionHistory(properties))
     }
 
-    private void write(ActionHistory history) {
+    private void write(Map map) {
+        def history = new ActionHistory(map)
         history.byUser = currentUser()
         history.organization = history.byUser?.organization ?: history.onUser?.organization
         history.channel = currentChannel()

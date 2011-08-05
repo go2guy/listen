@@ -17,10 +17,12 @@ table tbody {
 .col-result { width: 20%; }
 
 .col-dateCreated { width: 15%; }
-.col-byUser { width: 18%; }
-.col-onUser { width: 18%; }
+.col-byUser { width: 36%; }
 .col-description { width: 44%; }
-.col-channel { width: 5%; }
+.col-channel {
+    text-align: center;
+    width: 5%;
+}
 
 tbody .col-duration {
     padding-right: 20px;

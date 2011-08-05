@@ -10,6 +10,7 @@ import grails.plugins.springsecurity.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
     def extensionService
+    def historyService
     def mobilePhoneService
     def otherPhoneService
     def realizeAlertUpdateService
@@ -187,6 +188,7 @@ class ProfileController {
         if(afterHours.validate() && afterHours.save()) {
             if(originalAlternateNumber != afterHours.alternateNumber) {
                 realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
+                historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
             }
 
             flash.successMessage = 'After Hours alternate number updated'

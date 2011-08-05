@@ -31,8 +31,6 @@
       <thead>
         <g:sortableColumn property="dateCreated" title="Date" class="col-dateCreated"/>
         <g:sortableColumn property="byUser" title="User" class="col-byUser"/>
-        <g:sortableColumn property="onUser" title="On User" class="col-onUser"/>
-<!--        <g:sortableColumn property="action" title="Action" class="col-action"/>-->
         <g:sortableColumn property="description" title="Description" class="col-description"/>
         <g:sortableColumn property="channel" title="Channel" class="col-channel"/>
       </thead>
@@ -40,9 +38,12 @@
         <g:each in="${actionHistoryList}" var="actionHistory" status="i">
           <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
             <td class="col-dateCreated"><joda:format value="${actionHistory.dateCreated}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-            <td class="col-byUser">${fieldValue(bean: actionHistory.byUser, field: 'realName')}</td>
-            <td class="col-onUser">${fieldValue(bean: actionHistory.onUser, field: 'realName')}</td>
-<!--            <td class="col-action">${fieldValue(bean: actionHistory, field: 'action')}</td>-->
+            <td class="col-byUser">
+                ${fieldValue(bean: actionHistory.byUser, field: 'realName')}
+                <g:if test="${actionHistory.byUser && actionHistory.onUser && actionHistory.byUser != actionHistory.onUser}">
+                    &nbsp;&#9656;&nbsp;${fieldValue(bean: actionHistory.onUser, field: 'realName')}
+                </g:if>
+             </td>
             <td class="col-description">${fieldValue(bean: actionHistory, field: 'description')}</td>
             <td class="col-channel">${fieldValue(bean: actionHistory, field: 'channel')}</td>
           </tr>

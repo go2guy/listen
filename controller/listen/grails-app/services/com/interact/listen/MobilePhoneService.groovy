@@ -2,6 +2,7 @@ package com.interact.listen
 
 class MobilePhoneService {
     def cloudToDeviceService
+    def historyService
     def ldapService
     def springSecurityService
 
@@ -15,7 +16,7 @@ class MobilePhoneService {
                 cloudToDeviceService.sendContactSync()
                 ldapService.addMobileNumber(mobilePhone.owner, mobilePhone.number)
             }
-            // TODO history?
+            historyService.createdMobilePhone(mobilePhone)
         }
         return mobilePhone
     }
@@ -33,12 +34,14 @@ class MobilePhoneService {
             cloudToDeviceService.sendContactSync()
             ldapService.removeMobileNumber(mobilePhone.owner, mobilePhone.number)
         }
+        historyService.deletedMobilePhone(mobilePhone)
     }
 
     MobilePhone update(MobilePhone mobilePhone, def params) {
         def user = springSecurityService.getCurrentUser()
         def originallyPublic = mobilePhone.isPublic
         def originalNumber = mobilePhone.number
+        def originalSmsEmail = mobilePhone.asSmsEmail()
         mobilePhone.properties = params
         mobilePhone.owner = user
 
@@ -50,11 +53,23 @@ class MobilePhoneService {
                 ldapService.addMobileNumber(mobilePhone.owner, mobilePhone.number)
             }
 
+            if(originalSmsEmail != mobilePhone.asSmsEmail()) {
+                def fake = new Expando()
+                fake.asSmsEmail = {
+                    originalSmsEmail
+                }
+                fake.owner = mobilePhone.owner
+                historyService.deletedMobilePhone(fake)
+                historyService.createdMobilePhone(mobilePhone)
+            } else {
+                if(originallyPublic != mobilePhone.isPublic) {
+                    historyService.changedMobilePhoneVisibility(mobilePhone)
+                }
+            }
+
             if(originallyPublic != mobilePhone.isPublic) {
                 cloudToDeviceService.sendContactSync()
             }
-
-            // TODO history?
         }
 
         return mobilePhone

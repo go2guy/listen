@@ -3,6 +3,7 @@ package com.interact.listen
 import com.interact.listen.license.ListenFeature
 
 class DirectMessageNumberService {
+    def historyService
     def ldapService
     def licenseService
     def springSecurityService
@@ -12,7 +13,7 @@ class DirectMessageNumberService {
 
         def directMessageNumber = new DirectMessageNumber(params)
         if(directMessageNumber.validate() && directMessageNumber.save()) {
-            // TODO history?
+            historyService.createdDirectMessageNumber(directMessageNumber)
             if(licenseService.canAccess(ListenFeature.FAX, directMessageNumber.owner.organization)) {
                 ldapService.addFaxNumber(directMessageNumber.owner, directMessageNumber.number)
             }
@@ -27,7 +28,7 @@ class DirectMessageNumberService {
         if(licenseService.canAccess(ListenFeature.FAX, directMessageNumber.owner.organization)) {
             ldapService.removeFaxNumber(directMessageNumber.owner, directMessageNumber.number)
         }
-        // TODO history?
+        historyService.deletedDirectMessageNumber(directMessageNumber)
     }
 
     DirectMessageNumber update(DirectMessageNumber directMessageNumber, def params) {
@@ -36,11 +37,19 @@ class DirectMessageNumberService {
         // TODO make sure owner is in current user organization? thats a pretty far-out check :O
 
         def originalNumber = directMessageNumber.number
+        def originalOwner = directMessageNumber.owner
+
         directMessageNumber.properties = params
         if(directMessageNumber.validate() && directMessageNumber.save()) {
-            // TODO history?
             if(licenseService.canAccess(ListenFeature.FAX, directMessageNumber.owner.organization) && originalNumber != directMessageNumber.number) {
                 ldapService.changeFaxNumber(directMessageNumber.owner, originalNumber, directMessageNumber.number)
+            }
+
+            if(originalNumber != directMessageNumber.number || originalOwner != directMessageNumber.owner) {
+                def fake = new Expando(number: originalNumber,
+                                       owner: originalOwner)
+                historyService.deletedDirectMessageNumber(fake)
+                historyService.createdDirectMessageNumber(directMessageNumber)
             }
         }
 

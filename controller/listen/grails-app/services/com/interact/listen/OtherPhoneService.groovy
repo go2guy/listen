@@ -2,6 +2,7 @@ package com.interact.listen
 
 class OtherPhoneService {
     def cloudToDeviceService
+    def historyService
     def springSecurityService
 
     OtherPhone create(def params) {
@@ -13,7 +14,7 @@ class OtherPhoneService {
             if(otherPhone.isPublic) {
                 cloudToDeviceService.sendContactSync()
             }
-            // TODO history?
+            historyService.createdOtherPhone(otherPhone)
         }
         return otherPhone
     }
@@ -30,19 +31,30 @@ class OtherPhoneService {
         if(otherPhone.isPublic) {
             cloudToDeviceService.sendContactSync()
         }
+        historyService.deletedOtherPhone(otherPhone)
     }
 
     OtherPhone update(OtherPhone otherPhone, def params) {
         def user = springSecurityService.getCurrentUser()
         def originallyPublic = otherPhone.isPublic
+        def originalNumber = otherPhone.number
         otherPhone.properties = params
         otherPhone.owner = user
 
         if(otherPhone.validate() && otherPhone.save()) {
+            if(originalNumber != otherPhone.number) {
+                def fake = new Expando(number: originalNumber, owner: otherPhone.owner)
+                historyService.deletedOtherPhone(fake)
+                historyService.createdOtherPhone(otherPhone)
+            } else {
+                if(originallyPublic != otherPhone.isPublic) {
+                    historyService.changedOtherPhoneVisibility(otherPhone)
+                }
+            }
+
             if(originallyPublic != otherPhone.isPublic) {
                 cloudToDeviceService.sendContactSync()
             }
-            // TODO history?
         }
 
         return otherPhone

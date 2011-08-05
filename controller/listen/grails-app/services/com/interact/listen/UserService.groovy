@@ -8,7 +8,9 @@ class UserService {
 
     User update(User user, def params, boolean byOperator = false) {
         def originalEmailAddress = user.emailAddress
+        def originalPassword = user.password
         def originalRealName = user.realName
+        def originalUsername = user.username
 
         if(byOperator) {
             user.properties['username', 'pass', 'confirm', 'realName', 'emailAddress'] = params
@@ -22,12 +24,26 @@ class UserService {
         if(user.validate() && user.save()) {
             cloudToDeviceService.sendContactSync()
 
-            if(originalEmailAddress != user.emailAddress && user.organization) {
-                ldapService.changeEmailAddress(user, originalEmailAddress, user.emailAddress)
+            if(originalEmailAddress != user.emailAddress) {
+                historyService.changedAccountEmailAddress(user, originalEmailAddress)
+                if(user.organization) {
+                    ldapService.changeEmailAddress(user, originalEmailAddress, user.emailAddress)
+                }
             }
 
-            if(originalRealName != user.realName && user.organization) {
-                ldapService.changeName(user, user.realName)
+            if(originalRealName != user.realName) {
+                historyService.changedAccountName(user, originalRealName)
+                if(user.organization) {
+                    ldapService.changeName(user, user.realName)
+                }
+            }
+
+            if(originalPassword != user.password) {
+                historyService.changedAccountPassword(user)
+            }
+
+            if(originalUsername != user.username) {
+                historyService.changedAccountUsername(user, originalUsername)
             }
         }
         return user

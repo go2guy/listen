@@ -14,6 +14,8 @@ class FindmeController {
         save: 'POST'
     ]
 
+    def historyService
+
     def index = {
         redirect(action: 'configure')
     }
@@ -77,6 +79,10 @@ class FindmeController {
             preferences = new FindMePreferences(user: user)
         }
         
+        def oldExpires = preferences.expires
+        def oldSendReminder = preferences.sendReminder
+        def oldReminderNumber = preferences.reminderNumber
+
         preferences.properties['expires', 'sendReminder'] = params
         if(params.smsNumber?.trim() == '') {
             preferences.reminderNumber = null
@@ -97,6 +103,25 @@ class FindmeController {
             success = success && preferences.validate() && preferences.save()
 
             if(success) {
+
+                boolean wasJustEnabled = false
+                if(oldSendReminder != preferences.sendReminder) {
+                    if(preferences.sendReminder) {
+                        historyService.enabledFindMeExpirationReminderSms(preferences)
+                        wasJustEnabled = true
+                    } else {
+                        historyService.disabledFindMeExpirationReminderSms(preferences)
+                    }
+                }
+
+                if(oldReminderNumber != preferences.reminderNumber && !wasJustEnabled) {
+                    historyService.changedFindMeExpirationReminderSmsNumber(preferences, oldReminderNumber)
+                }
+
+                if(oldExpires != preferences.expires) {
+                    historyService.changedFindMeExpiration(preferences)
+                }
+
                 flash.successMessage = 'Your Find Me / Follow Me configuration has been saved'
                 redirect(action: 'configure')
             } else {

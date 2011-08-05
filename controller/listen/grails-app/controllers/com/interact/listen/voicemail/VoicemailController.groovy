@@ -53,6 +53,11 @@ class VoicemailController {
             preferences.user = user
         }
         def oldPasscode = preferences.passcode
+        def oldIsEmailNotificationEnabled = preferences.isEmailNotificationEnabled
+        def oldIsSmsNotificationEnabled = preferences.isSmsNotificationEnabled
+        def oldRecurringNotificationsEnabled = preferences.recurringNotificationsEnabled
+        def oldEmailNotificationAddress = preferences.emailNotificationAddress
+        def oldSmsNotificationAddress = preferences.smsNotificationAddress
 
         preferences.emailTimeRestrictions.clear()
         preferences.smsTimeRestrictions.clear()
@@ -90,6 +95,42 @@ class VoicemailController {
         if(preferences.validate() && preferences.save()) {
             if(oldPasscode != preferences.passcode) {
                 historyService.changedVoicemailPin(user, oldPasscode, preferences.passcode)
+            }
+
+            boolean wasEmailJustEnabled = false
+            if(oldIsEmailNotificationEnabled != preferences.isEmailNotificationEnabled) {
+                if(preferences.isEmailNotificationEnabled) {
+                    historyService.enabledNewVoicemailEmail(preferences)
+                    wasEmailJustEnabled = true
+                } else {
+                    historyService.disabledNewVoicemailEmail(preferences)
+                }
+            }
+
+            boolean wasSmsJustEnabled = false
+            if(oldIsSmsNotificationEnabled != preferences.isSmsNotificationEnabled) {
+                if(preferences.isSmsNotificationEnabled) {
+                    historyService.enabledNewVoicemailSms(preferences)
+                    wasSmsJustEnabled = true
+                } else {
+                    historyService.disabledNewVoicemailSms(preferences)
+                }
+            }
+
+            if(oldRecurringNotificationsEnabled != preferences.recurringNotificationsEnabled) {
+                if(preferences.recurringNotificationsEnabled) {
+                    historyService.enabledRecurringVoicemailSms(preferences)
+                } else {
+                    historyService.disabledRecurringVoicemailSms(preferences)
+                }
+            }
+
+            if(oldEmailNotificationAddress != preferences.emailNotificationAddress && !wasEmailJustEnabled) {
+                historyService.changedNewVoicemailEmailAddress(preferences, oldEmailNotificationAddress)
+            }
+
+            if(oldSmsNotificationAddress != preferences.smsNotificationAddress && !wasSmsJustEnabled) {
+                historyService.changedNewVoicemailSmsNumber(preferences, oldSmsNotificationAddress)
             }
 
             flash.successMessage = 'Voicemail Settings Saved'

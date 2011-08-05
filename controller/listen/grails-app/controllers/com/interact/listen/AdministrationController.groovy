@@ -16,6 +16,7 @@ class AdministrationController {
     def applicationService
     def directMessageNumberService
     def extensionService
+    def historyService
     def realizeAlertUpdateService
 
     static allowedMethods = [
@@ -70,6 +71,7 @@ class AdministrationController {
         exception.properties['target', 'restriction'] = params
 
         if(exception.validate() && exception.save()) {
+            historyService.createdOutdialRestrictionException(exception)
             flash.successMessage = message(code: 'outdialRestrictionException.created.message')
             redirect(action: 'outdialing')
         } else {
@@ -85,6 +87,7 @@ class AdministrationController {
         route.organization = authenticatedUser.organization
 
         if(route.validate() && route.save()) {
+            historyService.createdRoute(route)
             flash.successMessage = message(code: 'numberRoute.created.message', args: [route.pattern])
             redirect(action: 'routing')
         } else {
@@ -123,6 +126,7 @@ class AdministrationController {
         }
 
         if(restriction.validate() && restriction.save()) {
+            historyService.createdOutdialRestriction(restriction)
             flash.successMessage = message(code: 'outdialRestriction.created.message', args: [restriction.pattern])
             redirect(action: 'outdialing')
         } else {
@@ -198,6 +202,7 @@ class AdministrationController {
         }
 
         exception.delete()
+        historyService.deletedOutdialRestrictionException(exception)
         flash.successMessage = message(code: 'outdialRestrictionException.deleted.message')
         redirect(action: 'outdialing')
     }
@@ -211,6 +216,7 @@ class AdministrationController {
         }
 
         route.delete()
+        historyService.deletedRoute(route)
         flash.successMessage = message(code: 'numberRoute.deleted.message')
         redirect(action: 'routing')
     }
@@ -237,6 +243,7 @@ class AdministrationController {
         }
 
         restriction.delete()
+        historyService.deletedOutdialRestriction(restriction)
         flash.successMessage = message(code: 'outdialRestriction.deleted.message')
         redirect(action: 'outdialing')
     }
@@ -288,9 +295,20 @@ class AdministrationController {
     def saveAndroid = {
         def list = GoogleAuthConfiguration.list()
         def googleAuthConfiguration = list.size() > 0 ? list[0] : new GoogleAuthConfiguration()
+
+        def oldIsEnabled = googleAuthConfiguration.isEnabled
+
         googleAuthConfiguration.properties['authUser', 'authPass', 'authToken', 'isEnabled'] = params
 
         if(googleAuthConfiguration.validate() && googleAuthConfiguration.save()) {
+            if(oldIsEnabled != googleAuthConfiguration.isEnabled) {
+                if(googleAuthConfiguration.isEnabled) {
+                    historyService.enabledAndroidCloudToDevice()
+                } else {
+                    historyService.disabledAndroidCloudToDevice()
+                }
+            }
+
             flash.successMessage = message(code: 'googleAuthConfiguration.updated.message')
             redirect(action: 'android')
         } else {
@@ -306,6 +324,9 @@ class AdministrationController {
             transcription = new TranscriptionConfiguration(organization: organization)
         }
 
+        def oldTranscriptionIsEnabled = transcription.isEnabled
+        def oldTranscriptionPhoneNumber = transcription.phoneNumber
+
         // using .properties = params['transcription'] didnt work here, resorting to bindData() :(
         bindData(transcription, params['transcription'], 'isEnabled')
         bindData(transcription, params['transcription'], 'phoneNumber')
@@ -315,7 +336,11 @@ class AdministrationController {
             afterHours = new AfterHoursConfiguration(organization: organization)
         }
 
+        def originalMobilePhone = afterHours.mobilePhone
         def originalAlternateNumber = afterHours.alternateNumber
+        def originalRealizeUrl = afterHours.realizeUrl
+        def originalRealizeAlertName = afterHours.realizeAlertName
+
         if(params['afterHours.mobilePhone.id'] == '') {
             afterHours.mobilePhone = null
         } else {
@@ -334,6 +359,8 @@ class AdministrationController {
             conferencing = new ConferencingConfiguration(organization: organization)
         }
 
+        def originalPinLength = conferencing.pinLength
+
         if(params['conferencing'].pinLength == '' || !params['conferencing'].pinLength.matches('^[0-9]*$')) {
             flash.errorMessage = message(code: 'conferencingConfiguration.pattern.matches.invalid')
             render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])   
@@ -343,8 +370,35 @@ class AdministrationController {
 
         // TODO use a transaction
         if(transcription.validate() && transcription.save() && afterHours.validate() && afterHours.save() && conferencing.validate() && conferencing.save()) {
+            boolean wasJustEnabled = false
+            if(oldTranscriptionIsEnabled != transcription.isEnabled) {
+                if(transcription.isEnabled) {
+                    wasJustEnabled = true
+                    historyService.enabledTranscription(transcription)
+                } else {
+                    historyService.disabledTranscription()
+                }
+            }
+
+            if(!wasJustEnabled && oldTranscriptionPhoneNumber != transcription.phoneNumber) {
+                historyService.enabledTranscription(transcription)
+            }
+
+            if(originalMobilePhone != afterHours.mobilePhone) {
+                historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
+            }
+
             if(originalAlternateNumber != afterHours.alternateNumber) {
                 realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
+                historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
+            }
+
+            if(originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
+                historyService.changedRealizeConfiguration(afterHours)
+            }
+
+            if(originalPinLength != conferencing.pinLength) {
+                historyService.changedNewConferencePinLength(conferencing, originalPinLength)
             }
 
             flash.successMessage = message(code: 'default.saved.message')
@@ -381,8 +435,17 @@ class AdministrationController {
             return
         }
 
+        def oldTarget = exception.target
+        def oldRestriction = exception.restriction
+
         exception.properties['target', 'restriction'] = params
         if(exception.validate() && exception.save()) {
+            if(oldTarget != exception.target || oldRestriction != exception.restriction) {
+                def fake = new Expando(target: oldTarget,
+                                       restriction: oldRestriction)
+                historyService.deletedOutdialRestrictionException(fake)
+                historyService.createdOutdialRestrictionException(exception)
+            }
             flash.successMessage = message(code: 'outdialRestrictionException.updated.message')
             redirect(action: 'outdialing')
         } else {
@@ -429,8 +492,19 @@ class AdministrationController {
             return
         }
 
+        def oldDestination = route.destination
+        def oldPattern = route.pattern
+
         route.properties['destination', 'label', 'pattern'] = params
         if(route.validate() && route.save()) {
+            if(oldDestination != route.destination || oldPattern != route.pattern) {
+                def fake = new Expando(type: NumberRoute.Type.INTERNAL,
+                                       destination: oldDestination,
+                                       pattern: oldPattern)
+                historyService.deletedRoute(fake)
+                historyService.createdRoute(route)
+            }
+
             flash.successMessage = message(code: 'numberRoute.updated.message')
             redirect(action: 'routing')
         } else {
@@ -472,6 +546,9 @@ class AdministrationController {
             return
         }
 
+        def originalPattern = restriction.pattern
+        def originalTarget = restriction.target
+
         restriction.pattern = params.pattern
         restriction.target = null
         if(params.target) {
@@ -487,6 +564,13 @@ class AdministrationController {
         }
 
         if(restriction.validate() && restriction.save()) {
+            if(originalPattern != restriction.pattern || originalTarget != restriction.target) {
+                def fake = new Expando(pattern: originalPattern,
+                                       target: originalTarget)
+                historyService.deletedOutdialRestriction(fake)
+                historyService.createdOutdialRestriction(restriction)
+            }
+
             flash.successMessage = message(code: 'outdialRestriction.updated.message', args: [restriction.pattern])
             redirect(action: 'outdialing')
         } else {
