@@ -334,6 +334,11 @@ class AdministrationController {
             conferencing = new ConferencingConfiguration(organization: organization)
         }
 
+        if(params['conferencing'].pinLength == '' || !params['conferencing'].pinLength.matches('^[0-9]*$')) {
+            flash.errorMessage = message(code: 'conferencingConfiguration.pattern.matches.invalid')
+            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])   
+        }
+
         bindData(conferencing, params['conferencing'], 'pinLength')
 
         // TODO use a transaction
