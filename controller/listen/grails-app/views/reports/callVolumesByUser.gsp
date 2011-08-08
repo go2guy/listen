@@ -38,9 +38,9 @@ table.report .col-call-duration {
 }
 
 table.report .col-call-count { width: 3%; }
-table.report .col-call-duration { width: 6%; }
-table.report .col-name { width: 18%; }
-table.report .col-number { width: 17%; }
+table.report .col-call-duration { width: 7%; }
+table.report .col-name { width: 16%; }
+table.report .col-number { width: 16%; }
 
 table.report .col-call-count.total { width: 4%; }
 table.report .col-call-duration.total { width: 7%; }
