@@ -15,7 +15,7 @@ class CallHistoryReportTagLib {
         if(!attrs.duration || attrs.duration.millis == 0) {
             out << '-'
         } else {
-            out << listen.secondsduration(duration: attrs.duration)
+            out << listen.formatduration(duration: attrs.duration, zeroes: false, millis: false)
         }
     }
 }

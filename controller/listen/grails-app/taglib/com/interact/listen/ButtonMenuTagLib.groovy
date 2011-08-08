@@ -23,7 +23,7 @@ class ButtonMenuTagLib {
                 button(attrs.button == 'configuration', 'administration', 'configuration', 'button.menu.administration.configuration')
                 button(attrs.button == 'android', 'administration', 'android', 'button.menu.administration.android')
                 button(attrs.button == 'history', 'administration', 'history', 'button.menu.administration.history')
-                button(attrs.button == 'reports', 'administration', 'reports', 'button.menu.administration.reports')
+                button(attrs.button == 'reports', 'reports', 'list', 'button.menu.administration.reports')
                 out << '</ul>'
 
                 break

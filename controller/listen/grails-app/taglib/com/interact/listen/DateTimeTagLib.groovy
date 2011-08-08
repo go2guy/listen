@@ -24,43 +24,33 @@ class DateTimeTagLib {
         out << formatter.print(attrs.duration.toPeriod())
     }
 
-    def secondsduration = { attrs ->
+    def formatduration = { attrs ->
         if(!attrs.duration) throwTagError 'Tag [millisduration] is missing required attribute [duration]'
+        boolean zeroes = attrs.containsKey('zeroes') ? Boolean.valueOf(attrs.zeroes) : true
+        boolean millis = attrs.containsKey('millis') ? Boolean.valueOf(attrs.millis) : false
 
-        def formatter = new PeriodFormatterBuilder()
-            .printZeroAlways()
-            .appendHours()
-            .appendSuffix(':')
-            .printZeroAlways()
-            .minimumPrintedDigits(2)
-            .appendMinutes()
-            .appendSuffix(':')
-            .printZeroAlways()
-            .minimumPrintedDigits(2)
-            .appendSeconds()
-            .toFormatter()
-        out << formatter.print(attrs.duration.toPeriod())
-    }
+        def builder = new PeriodFormatterBuilder()
+        zeroes ? builder.printZeroAlways() : builder.printZeroRarelyFirst()
 
-    def millisduration = { attrs ->
-        if(!attrs.duration) throwTagError 'Tag [millisduration] is missing required attribute [duration]'
+        builder.appendHours()
+               .appendSuffix(':')
 
-        def formatter = new PeriodFormatterBuilder()
-            .printZeroAlways()
-            .appendHours()
-            .appendSuffix(':')
-            .printZeroAlways()
-            .minimumPrintedDigits(2)
-            .appendMinutes()
-            .appendSuffix(':')
-            .printZeroAlways()
-            .minimumPrintedDigits(2)
-            .appendSeconds()
-            .appendSuffix('.')
-            .printZeroAlways()
-            .appendMillis3Digit()
-            .toFormatter()
-        out << formatter.print(attrs.duration.toPeriod())
+        zeroes ? builder.printZeroAlways() : builder.printZeroRarelyFirst()
+
+        builder.minimumPrintedDigits(2)
+               .appendMinutes()
+               .appendSuffix(':')
+               .printZeroAlways()
+               .minimumPrintedDigits(2)
+               .appendSeconds()
+
+        if(millis) {
+            builder.appendSuffix('.')
+                   .printZeroAlways()
+                   .appendMillis3Digit()
+        }
+               
+        out << builder.toFormatter().print(attrs.duration.toPeriod())
     }
 
     def timePicker = { attrs ->
