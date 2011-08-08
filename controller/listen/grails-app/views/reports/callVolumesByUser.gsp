@@ -50,7 +50,7 @@ table.report .subtotal {
 }
 
 table.report .total {
-    background-color: #F2C87C;
+    background-color: #F2DCB3;
 }
 
 table.report .supertotal {
