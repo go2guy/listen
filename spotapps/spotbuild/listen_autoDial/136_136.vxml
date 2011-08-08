@@ -10,12 +10,12 @@
 
     <!-- Edge Variables -->
     <var name="II_SB_oldNxtOpt" expr="'137_16'"/>       <!-- Next option for original session -->
-    <var name="II_SB_newNxtOpt" expr="'136_96'"/>        <!-- Next option for new session -->
+    <var name="II_SB_newNxtOpt" expr="'136_129'"/>        <!-- Next option for new session -->
     <var name="II_SB_errCreateOpt" expr="''"/>   <!-- Next option if a create attempt fails -->
     <var name="II_SB_errMoveOpt" expr="''"/>       <!-- Next option if a move attempt fails -->
 
     <!-- Global Variables -->
-    <var name="II_SB_nextOpt" expr="'136_7'"/> <!-- Next ccxml file that will be called -->
+    <var name="II_SB_nextOpt" expr="'136_136'"/> <!-- Next ccxml file that will be called -->
     <var name="II_SB_returnValues" expr="''"/>  <!-- List of values returned to ccxml layer -->
     <var name="II_SB_action"/>                  <!-- Identifies action to take -->
     <var name="II_SB_whichOpt"/>                <!-- Identifies next option -->
@@ -24,7 +24,7 @@
     <form id="beginDocument">
         <block>
 	        <log target="status">Move Called Party</log> 
-            <log>INFO: Entered create-session.vxml [136_7]</log>
+            <log>INFO: Entered create-session.vxml [136_136]</log>
             <if cond="II_SB_action == 'assign'">
                 <log>INFO: Returning to ccxml with Variables</log>
                 <exit namelist="audioURL argList"/>
