@@ -182,15 +182,23 @@ class BootStrap {
                 assert OutdialRestrictionException.count() == 1
 
                 for(i in 1..100) {
-                    def c = new CallHistory(ani: '123',
-                                            dnis: '456',
-                                            dateTime: new DateTime(),
-                                            duration: new Duration(1000),
-                                            fromUser: user,
-                                            toUser: user,
-                                            organization: organization)
-                    c.validate()
-                    c.save(flush: true)
+                    new CallHistory(ani: '123',
+                                    dnis: '456',
+                                    dateTime: new DateTime(),
+                                    duration: new Duration(1000),
+                                    fromUser: user,
+                                    toUser: user,
+                                    organization: organization,
+                                    result: "Success").save(flush: true)
+
+                    new CallHistory(ani: '290',
+                                    dnis: '362',
+                                    dateTime: new DateTime(),
+                                    duration: new Duration(5000),
+                                    fromUser: rob,
+                                    toUser: phillip,
+                                    organization: organization,
+                                    result: "Success").save(flush: true)
                 }
 
                 for(i in 1..100) {
