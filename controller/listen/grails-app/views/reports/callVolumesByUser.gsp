@@ -15,6 +15,11 @@ table.report tfoot {
     font: normal 11px Courier New, monospace;
 }
 
+table.report thead {
+    position: relative;
+    top: expression(this.offsetParent.scrollTop);
+}
+
 table.report td,
 table.report th {
     border: 1px solid #E4A634;
@@ -57,48 +62,58 @@ table.report .supertotal {
     background-color: #FFBC40;
 }
 
-table.report caption {
-    border-width: 0;
+
+form {
+    margin: 5px 0;
 }
 
-table.report caption form {
-    margin-top: 5px;
-}
-
-table.report caption form,
-table.report caption form input[type=text],
-table.report caption form input[type=submit] {
+form,
+form input[type=text],
+form input[type=submit] {
     font-size: 12px;
 }
 
-table.report caption form input[type=text],
-table.report caption form input[type=submit] {
+form input[type=text],
+form input[type=submit] {
     display: inline;
     margin-left: 5px;
 }
 
-table.report caption form input[type=text] {
+form input[type=text] {
     width: 150px;
 }
 
-table.report caption form input[type=submit] {
+form input[type=submit] {
     border-color: #CCCCCC !important; // FIXME
     border-radius: 0;
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
 }
+
+ul.download-options {
+    float: right;
+    font: bold 11px Courier New, monospace;
+}
+
+ul.download-options li {
+    display: inline;
+}
     </style>
   </head>
   <body>
-    <table class="report">
-      <caption>
-        Call Volumes By User
+    <h3>Call Volumes By User</h3>
+
+        <ul class="download-options">
+          <li>Download:</li>
+          <li><g:link controller="reports" action="callVolumesByUser.xls">Excel</g:link></li>
+        </ul>
         <g:form controller="reports" action="callVolumesByUser" method="get">
           <label for="start">From</label><g:textField name="start" value="${params.start}"/>
           <label for="end">To</label><g:textField name="end" value="${params.end}"/>
           <input type="submit" class="button" value="Apply"/>
         </g:form>
-      </caption>
+
+    <table class="report">
       <thead>
         <tr>
           <th rowspan="2">Name</th>
