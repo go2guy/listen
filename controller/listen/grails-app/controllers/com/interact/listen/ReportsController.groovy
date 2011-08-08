@@ -13,7 +13,7 @@ class ReportsController {
     static defaultAction = 'list'
     static allowedMethods = [
         list: 'GET',
-        callVolumesByUser: 'GET'
+        callVolumeByUser: 'GET'
     ]
 
     private def normal = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 11))
@@ -25,7 +25,7 @@ class ReportsController {
 
     // TODO move the bulk of the report generation into a service
 
-    def callVolumesByUser = {
+    def callVolumeByUser = {
         // this is inefficient, but will do for now
         // TODO optimize if it becomes slow
 
@@ -108,11 +108,11 @@ class ReportsController {
 
         withFormat {
             html {
-                render(view: 'callVolumesByUser', model: [calls: users, totals: totals])
+                render(view: 'callVolumeByUser', model: [calls: users, totals: totals])
             }
             xls {
-                def filename = "callVolumesByUser_${params.start}_to_${params.end}.xls"
-                def report = callVolumesByUserXlsReport(users, totals, params)
+                def filename = "callVolumeByUser_${params.start}_to_${params.end}.xls"
+                def report = callVolumeByUserXlsReport(users, totals, params)
                 response.contentLength = report.size()
                 response.contentType = 'application/vnd.ms-excel'
                 response.setHeader('Content-disposition', "attachment;filename=${filename}")
@@ -123,8 +123,8 @@ class ReportsController {
         }
     }
 
-    private def callVolumesByUserXlsReport(def users, def totals, def params) {
-        def file = File.createTempFile('callVolumesByUser', 'xls')
+    private def callVolumeByUserXlsReport(def users, def totals, def params) {
+        def file = File.createTempFile('callVolumeByUser', 'xls')
         file.deleteOnExit()
 
         def settings = new WorkbookSettings()

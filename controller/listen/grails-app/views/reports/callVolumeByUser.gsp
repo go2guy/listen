@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title><g:message code="page.reports.callVolumesByUser.title"/></title>
+    <title><g:message code="page.reports.callVolumeByUser.title"/></title>
     <meta name="layout" content="main"/>
     <meta name="tab" content="administration"/>
     <meta name="button" content="reports"/>
@@ -105,9 +105,9 @@ ul.download-options li {
 
         <ul class="download-options">
           <li>Download:</li>
-          <li><g:link controller="reports" action="callVolumesByUser.xls">Excel</g:link></li>
+          <li><g:link controller="reports" action="callVolumeByUser.xls">Excel</g:link></li>
         </ul>
-        <g:form controller="reports" action="callVolumesByUser" method="get">
+        <g:form controller="reports" action="callVolumeByUser" method="get">
           <label for="start">From</label><g:textField name="start" value="${params.start}"/>
           <label for="end">To</label><g:textField name="end" value="${params.end}"/>
           <input type="submit" class="button" value="Apply"/>
