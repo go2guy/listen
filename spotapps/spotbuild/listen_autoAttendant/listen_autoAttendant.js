@@ -63,11 +63,16 @@ function setDestValue (phoneNumber, passValues, EXT_SUFFIX) {
         return phoneNumber;
 }
 
-function setParamsForCallEnd(sysAccessTime, callType, ANI, DNIS, callResult, organization, callEndTime) {
-    var duration = callEndTime - sysAccessTime;
-    if(callEndTime == '0')
+function setParamsForCallEnd(passValues, ANI, callResult, organization) {
+    var duration = getJsonVal(passValues, 'callTime');
+    if(duration == '')
     {
     duration = 0;
     }
-    return "{\"date\": \""+iiDateToISO(sysAccessTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+    var callStartTime = getJsonVal(passValues, 'callStartTime');
+    if(callStartTime == '')
+    {
+        callStartTime = (new Date().getTime());
+    }
+    return "{\"date\": \""+iiDateToISO(callStartTime)+"\", \"service\": \""+getJsonVal(passValues, 'callType')+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+getJsonVal(passValues, 'destination')+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
 }

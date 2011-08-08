@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_286_33(callStartTime,callType,ANI,destination,organization,callResult,appEndTime)
+            function II_SB_JS_function_286_33(ANI,organization,callResult,passValues)
             {
-	            return setParamsForCallEnd(callStartTime, callType, ANI, destination, callResult, organization, appEndTime);
+	            return setParamsForCallEnd(passValues, ANI, callResult, organization);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set CDR Records</log>
             <log>INFO: Entered run-javascript.vxml [286_33]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_286_33(callStartTime,callType,ANI,destination,organization,callResult,appEndTime)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_286_33(ANI,organization,callResult,passValues)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
