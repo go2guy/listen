@@ -104,6 +104,8 @@
 	<var name="SB_UV_line"/>
 	<var name="SB_UV_project"/>
 	<var name="SB_UV_afterHoursSub"/>
+	<var name="SB_UV_callResult"/>
+	<var name="SB_UV_appDirection"/>
 
     
     <form id="beginDocument">
@@ -370,6 +372,12 @@
 			</if>
 			<if cond="SB_UV_afterHoursSub != undefined">
 				<assign name="afterHoursSub" expr="SB_UV_afterHoursSub" />
+			</if>
+			<if cond="SB_UV_callResult != undefined">
+				<assign name="callResult" expr="SB_UV_callResult" />
+			</if>
+			<if cond="SB_UV_appDirection != undefined">
+				<assign name="appDirection" expr="SB_UV_appDirection" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

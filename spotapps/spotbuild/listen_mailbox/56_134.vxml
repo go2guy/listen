@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'67_165'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'56_138'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_67_154(returnVal)
+            function II_SB_JS_function_56_134(passValues)
             {
-	            var index = 0;var key = 'href';var tmpVal = getResultsKeyValue(returnVal, index, key);return getNextElement('L',tmpVal ,'/');
+	            return extendJsonObject(passValues, 'callResult', '');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get ID</log>
-            <log>INFO: Entered run-javascript.vxml [67_154]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_67_154(returnVal)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="id" expr="II_SB_userJava" />   
+            <log target="status">Reset Call Result</log>
+            <log>INFO: Entered run-javascript.vxml [56_134]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_56_134(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

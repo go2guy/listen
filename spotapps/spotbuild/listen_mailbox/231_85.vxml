@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'231_53'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'231_94'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_231_61(cntrlURL)
+            function II_SB_JS_function_231_85(passValues,subFwd,appStartTime)
             {
-	            var result = cntrlURL.split('/api');return result[0] + "/meta";
+	            passValues = extendJsonObject(passValues, 'dialReturnApp', 'listen_mailbox');passValues = extendJsonObject(passValues, 'appStartTime', appStartTime);passValues = extendJsonObject(passValues, 'dialHotKeys', '');passValues = extendJsonObject(passValues, 'dialInterrupt', 'inbound');return extendJsonObject(passValues, 'destination', subFwd);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">New cntrlURL</log>
-            <log>INFO: Entered run-javascript.vxml [231_61]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_231_61(cntrlURL)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="cntrlURL" expr="II_SB_userJava" />   
+            <log target="status">Add Destination</log>
+            <log>INFO: Entered run-javascript.vxml [231_85]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_231_85(passValues,subFwd,appStartTime)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
