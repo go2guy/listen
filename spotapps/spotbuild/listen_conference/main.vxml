@@ -109,6 +109,7 @@
 	<var name="SB_UV_project"/>
 	<var name="SB_UV_application"/>
 	<var name="SB_UV_EXT_SUFFIX"/>
+	<var name="SB_UV_callResult"/>
 
     
     <form id="beginDocument">
@@ -393,6 +394,9 @@
 			</if>
 			<if cond="SB_UV_EXT_SUFFIX != undefined">
 				<assign name="EXT_SUFFIX" expr="SB_UV_EXT_SUFFIX" />
+			</if>
+			<if cond="SB_UV_callResult != undefined">
+				<assign name="callResult" expr="SB_UV_callResult" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

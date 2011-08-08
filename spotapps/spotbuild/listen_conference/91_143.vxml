@@ -16,8 +16,8 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'1'+',327_27|else,327_33'"/>	<!-- List of expression to be evaluated -->
-    <var name="II_SB_operand1" expr="status"/>   			<!-- User defined value to be used as an operand in the expression -->
+    <var name="II_SB_expList" expr="'=,'+'Caller Hung Up'+',91_93|=,'+'Called Party Hung Up'+',91_95|=,'+'No Answer'+',105_162|=,'+'Call Failed'+',91_124|=,'+'Busy'+',105_162|=,'+'Number Black Listed'+',105_160|=,'+'Call Answered'+',91_165|else,105_160'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_operand1" expr="callResult"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
     <var name="II_SB_index" expr="0"/>							<!-- Index used to loop through expression list -->
@@ -27,8 +27,8 @@
 
 	<form id="beginDocument">
 		<block>
-    	    <log target="status">status cnt</log>
-			<log>INFO: Entered decision.vxml [327_25]</log>
+    	    <log target="status">Call Result</log>
+			<log>INFO: Entered decision.vxml [91_143]</log>
             <log>INFO: List of expression(s) [<value expr="II_SB_expList"/>]</log>
 			<goto next="#getExpression"/>
 		</block>

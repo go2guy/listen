@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'91_117'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'109_86'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_91_119(project,line,phoneNumber,ANI)
+            function II_SB_JS_function_109_85(passValues)
             {
-	            var logText = 'Interactive Call: PSTN call failed - called [' + phoneNumber + '] from [' + ANI + ']';return writeLog(project,line,logText);
+	            return extendJsonObject(passValues, 'callResult', '');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Log</log>
-            <log>INFO: Entered run-javascript.vxml [91_119]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_91_119(project,line,phoneNumber,ANI)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="logText" expr="II_SB_userJava" />   
+            <log target="status">Reset Call Result</log>
+            <log>INFO: Entered run-javascript.vxml [109_85]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_109_85(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
