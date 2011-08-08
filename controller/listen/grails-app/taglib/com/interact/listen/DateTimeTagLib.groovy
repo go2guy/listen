@@ -25,7 +25,7 @@ class DateTimeTagLib {
     }
 
     def formatduration = { attrs ->
-        if(!attrs.duration) throwTagError 'Tag [millisduration] is missing required attribute [duration]'
+        if(!attrs.duration) throwTagError 'Tag [formatduration] is missing required attribute [duration]'
         boolean zeroes = attrs.containsKey('zeroes') ? Boolean.valueOf(attrs.zeroes) : true
         boolean millis = attrs.containsKey('millis') ? Boolean.valueOf(attrs.millis) : false
 

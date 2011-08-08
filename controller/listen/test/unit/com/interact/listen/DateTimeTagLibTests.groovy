@@ -50,23 +50,23 @@ class DateTimeTagLibTests extends TagLibUnitTestCase {
     // null duration throws error
     void tesFormatduration0() {
         try {
-            tagLib.reportduration(duration: null)
+            tagLib.formatduration(duration: null)
         } catch(GrailsTagException e) {
-            assertEquals 'Tag [millisduration] is missing required attribute [duration]', e.message
+            assertEquals 'Tag [formatduration] is missing required attribute [duration]', e.message
         }
     }
     
     // duration with hours
     void testFormatduration1() {
         final def duration = new Duration((1000 * 60 * 60 * 5) + (1000 * 60 * 6) + (1000 * 7) + 432)
-        tagLib.millisduration(duration: duration, zeroes: true, millis: true)
+        tagLib.formatduration(duration: duration, zeroes: true, millis: true)
         assertEquals '5:06:07.432', tagLib.out.toString()
     }
 
     // duration with minutes
-    void testMillisDuration2() {
+    void testFormatDuration2() {
         final def duration = new Duration(1000 * 60 * 34)
-        tagLib.millisduration(duration: duration)
+        tagLib.formatduration(duration: duration, zeroes: true, millis: true)
         assertEquals '0:34:00.000', tagLib.out.toString()
     }
 }
