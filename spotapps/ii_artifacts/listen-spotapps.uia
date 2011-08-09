@@ -100,13 +100,6 @@
             </question>
 
             <question level="not_in_backup" severity="ask">
-                <text>Will this system make calls directly to the SIP trunk</text>
-                <default>n</default>
-                <validateRegex>^(y|n)$</validateRegex>
-                <validateInfo>The value may only be y/n</validateInfo>
-            </question>
-
-            <question level="not_in_backup" severity="ask">
                 <text>Enter the phone number to use if the controller is unreachable</text>
                 <default>''</default>
                 <validateRegex>^${HOSTNAME}|''$</validateRegex>
