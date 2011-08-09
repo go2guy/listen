@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 07/28/2011
+    <!-- Last Modified 08/07/2011
        *   @Name   answerFax.ccxml
        *   @Desc    -->
 
@@ -15,6 +15,7 @@
     <var name="dialogID" expr="''"/>
     <var name="state" expr="'idle'"/>
     <var name="LINE_NUMBER" expr="''"/>
+    <var name="fromCCXML" expr="'DIRECT_MESSAGE: Receive Fax'"/>
     <var name="callResult" expr="'Receive fax failed'"/>
 
     <!-- Constants -->
@@ -121,7 +122,7 @@
             <var name="endTime" expr="getTimeStamp(3)"/>
             <var name="callType" expr="'Receive Fax'"/>
             <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
-            <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="cntrlURL request resource params"/>
+            <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
             <send data="'dialog.user.writeCDR'" target="session.id"/>
             <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
         </transition>
