@@ -104,15 +104,6 @@
                 <default>n</default>
                 <validateRegex>^(y|n)$</validateRegex>
                 <validateInfo>The value may only be y/n</validateInfo>
-
-                <property format="ccvxml" action="update" quotes="yes">
-                    <name>sipDirect</name>
-                    <group>SIP</group>
-                    <description>Direct</description>
-                    <tag>var</tag>
-                    <attribute>expr</attribute>
-                    <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
-                </property>
             </question>
 
             <question level="not_in_backup" severity="ask">
