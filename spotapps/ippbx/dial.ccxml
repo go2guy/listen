@@ -1,9 +1,25 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/03/2011
+    <!-- Last Modified 08/07/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
+
+    <!-- Exports from Spotbuild project -->
+    <var name="II_SB_VXML_LIB"/>        <!-- VXML Lib path -->
+    <var name="II_SB_status"/>          <!-- status. This variable is used for application control -->
+    <var name="II_SB_local"/>           <!-- Dialed ID -->
+    <var name="II_SB_remote"/>          <!-- Origination ID -->
+    <var name="II_SB_originator"/>      <!-- Call originator -->
+    <var name="II_SB_protocol"/>        <!-- Call protocol -->
+    <var name="II_SB_connectionID"/>    <!-- II_SB_connectionID. Contains the ID of the connection for this call -->
+    <var name="II_SB_type"/>            <!-- II_SB_type.Contains the type of call - VOIP, PSTN -->
+    <var name="II_SB_ibcallid"/>        <!-- ibcallid. In bound connection id -->
+    <var name="II_SB_transfer"/>        <!-- transfer. Determins if this call is a transfer from another program -->
+    <var name="II_SB_projectSource"/>   <!-- projectSource. -->
+    <var name="II_SB_obcallid"/>        <!-- obcallid. Out bound connection id -->
+    <var name="II_SB_CODE_DIR"/>        <!-- CODE_DIR. Application directory under base directory. Contains all code -->
+    <var name="II_SB_line"/>            <!-- Line number processing call -->
 
     <!-- Values passed in from other ccxml -->
     <var name="ANI"/>       <!-- ANI. Origination ID of current call -->
@@ -33,6 +49,7 @@
     <var name="xferConnID" expr="''"/>
     <var name="xferSID" expr="''"/>
     <var name="URI" expr="''"/>
+    <var name="playRingTone" expr="'y'"/>
     <var name="requestID" expr="''"/>
     <var name="voipDirection" expr="''"/>
     <var name="userEntry" expr="''"/>
@@ -40,12 +57,25 @@
     <var name="isFwd" expr="'false'"/>
     <var name="newSID" expr="''"/>
     <var name="LINE_NUMBER" expr="''"/>
-    <var name="startTime" expr="''"/>
-    <var name="endTime" expr="'0'"/>
+    <var name="startTime" expr="getTimeStamp(3)"/>
+    <var name="endTime" expr="startTime"/>
+    <var name="match_key" expr="''"/>
+    <var name="findMeObj" expr="''"/>
+    <var name="findMeIDList" expr="''"/>
+    <var name="fmConfigCnt" expr="0"/>
+    <var name="fmGrpCnt" expr="0"/>
+    <var name="fmConfigIndex" expr="0"/>
+    <var name="fmGrpIndex" expr="0"/>
+    <var name="fmFailedCalls" expr="0"/>
+    <var name="listenToID" expr="''"/>
+    <var name="findMeConfiguration" expr="''"/>
+    <var name="returnApp" expr="''"/>
+    <var name="TIME_OUT" expr="'25'"/>
     <var name="officeOptr" expr="'101'"/>   <!-- Operator's extension -->
+    <var name="fromCCXML" expr="'DIAL'"/>
     <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
     <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
-    <var name="waitList" expr="'callConnected,dialing,failed,busy,noAns,disconnected,gotSignal,blindXfer,attemptRingPickUp,attemptMove,gotXferReq'"/>
+    <var name="waitList" expr="'callConnected,dialing,findMe,stopFindMe,disconnected,gotSignal,blindXfer,attemptRingPickUp,attemptMove,gotXferReq'"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -102,6 +132,59 @@
                     ani = 'sip:' + ani;
                 return ani;
             }
+
+            function dialResult(jsonObj) {
+                var result = eval("("+jsonObj+")");
+                if ((result.length == 1) && (result[0].length == 1))
+                    return result[0][0].number;
+                else
+                    return 'findMe';
+            }
+
+            function findMeConfigCount(findMeConfigObj, index) {
+                var configCount = 0;
+                var result = eval("("+findMeConfigObj+")");
+                var num = /^\d+$/;
+                if (typeof(result.length) != 'undefined') {
+                    configCount = result.length;
+                }
+                if ((num.test(index)) && (index < configCount)) {
+                    configCount = result[index].length;
+                }
+                return configCount;
+            }
+
+            function getFindMeConfiguartion(findMeConfigObj, configIndex, groupIndex, flag) {
+                var tmpObj = eval("("+findMeConfigObj+")");
+                var num = /^\d+$/;
+                var result = '';
+                var configCount = 0;
+                if (typeof(tmpObj.length) != 'undefined') {
+                    configCount = tmpObj.length;
+                }
+                if ((num.test(configIndex)) && (num.test(groupIndex))) {
+                    if ((configIndex < tmpObj.length) && (groupIndex < tmpObj[configIndex].length)) {
+                        var tmpVal = tmpObj[configIndex][groupIndex][flag];
+                        if ((typeof(tmpVal) != 'undefined') && (tmpVal != 'null'))
+                            result = tmpVal;
+                    }
+                }
+                return result;
+            }
+
+            function shrink(value, list, delimiter)
+            {
+                var i = 0;
+                var result = '';
+                var tmpAry = list.split(delimiter);
+
+                while (i < tmpAry.length) {
+                    if ((value != tmpAry[i]) && (tmpAry[i] != delimiter) && (tmpAry[i].length != 0))
+                        result = result + tmpAry[i] + delimiter;
+                    i++;
+                }
+                return result;
+            }
         ]]>
     </script>
 
@@ -131,6 +214,8 @@
             <log>INFO: DNIS [<value expr="tmpDNIS"/>]</log>
             <log>INFO: Orig DNIS [<value expr="origDNIS"/>]</log>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
+            <assign name="returnApp" expr="getJsonVal(importedValue, 'dialReturnApp')"/>
+            <log>INFO: Dial Return App [<value expr="returnApp"/>]</log>
             <send data="'dialog.user.chkCallType'" target="session.id"/>
         </transition>
 
@@ -152,19 +237,19 @@
                     <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                     <send data="'dialog.user.listenApp'" target="session.id"/>
                 <else/>
+                    <send data="'dialog.user.setCallerID'" target="session.id"/>
                     <if cond="importedValue.length &gt; 0">
-                        <!-- This is part of the forwarding logic. Before dialing an internal extension
-                        we need to make sure it is not forwarded -->
+                        <!-- This is part of the forwarding/findMe logic. Before dialing an internal extension
+                        we need to make sure it is not forwarded or configured for findMe -->
                         <assign name="state" expr="'chkFwd'"/>
                         <var name="accessNum" expr="tmpDNIS"/>
                         <var name="whichRsrc" expr="'dial'"/>
        	   		        <dialogstart src="'file:'+TRANS_PATH+'chkPhoneConfig.vxml'" namelist="importedValue whichRsrc accessNum"/>
-                    <else/>
-                        <send data="'dialog.user.setCallerID'" target="session.id"/>
                     </if>
                 </if>
             <else/>
                 <send data="'dialog.user.setCallerID'" target="session.id"/>
+                <send data="'dialog.user.chkBlkList'" target="session.id"/>
             </if>
         </transition>
 
@@ -176,28 +261,33 @@
             <var name="result" expr="evt.values.result"/>
             <var name="status" expr="evt.values.status"/>
             <if cond="status != 'Failure'">
-                <if cond="result == 'listen_findMe'">
-                    <assign name="LISTEN_APP" expr="'listen_findme'"/>
-                    <send data="'dialog.user.listenApp'" target="session.id"/>
-                <elseif cond="result != tmpDNIS"/>
-                    <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="result"/>]</log>
+                <var name="extConfig" expr="dialResult(result)"/>
+                <if cond="extConfig == 'findMe'">
+                    <assign name="findMeConfiguration" expr="result"/>
+                    <assign name="fmConfigCnt" expr="findMeConfigCount(findMeConfiguration,'')"/>
+                    <assign name="fmGrpCnt" expr="findMeConfigCount(findMeConfiguration,fmConfigIndex)"/>
+                    <log>INFO: Configured Groups [<value expr="fmConfigCnt"/>]</log>
+                    <log>INFO: Group 1 count [<value expr="fmGrpCnt"/>]</log>
+                    <send data="'dialog.user.findMe'" target="session.id"/>
+                <elseif cond="extConfig != tmpDNIS"/>
+                    <log>INFO: Extension [<value expr="tmpDNIS"/>] is forwarded to [<value expr="extConfig"/>]</log>
                     <assign name="origDNIS" expr="DNIS"/> <!-- Let's save off original destination for possible later use -->
                     <assign name="isFwd" expr="'true'"/>
-                    <assign name="DNIS" expr="result"/>
-                    <assign name="tmpDNIS" expr="result"/>
+                    <assign name="DNIS" expr="extConfig"/>
+                    <assign name="tmpDNIS" expr="extConfig"/>
                     <if cond="((tmpANI == DNIS) &amp;&amp; (origDNIS.length &gt; 0))">
                         <!-- This implies that the extension we are forwarded to is calling our extension.
                         In this case, we'll go directly to our voice mail -->
                         <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                         <send data="'dialog.user.listenApp'" target="session.id"/>
                     <else/>
-                        <send data="'dialog.user.setCallerID'" target="session.id"/>
+                        <send data="'dialog.user.chkBlkList'" target="session.id"/>
                     </if>
                 <else/>
-                    <send data="'dialog.user.setCallerID'" target="session.id"/>
+                    <send data="'dialog.user.chkBlkList'" target="session.id"/>
                 </if>
             <else/>
-                <send data="'dialog.user.setCallerID'" target="session.id"/>
+                <send data="'dialog.user.chkBlkList'" target="session.id"/>
             </if>
         </transition>
 
@@ -209,24 +299,23 @@
             <else/>
                 <assign name="CALL_ANI" expr="setANI(ANI)"/>
             </if>
-            <if cond="iiNumber(tmpDNIS)">
-               <send data="'dialog.user.chkBlkList'" target="session.id"/>
-            <else/>
-                <send data="'dialog.user.call'" target="session.id"/>
-            </if>
         </transition>
 
         <transition event="dialog.user.chkBlkList" name="evt">
             <!-- Let's verify caller has permission to dial number -->
             <log>INFO: Entered [dialog.user.chkBlkList] with state [<value expr="state"/>]</log>
-            <assign name="state" expr="'chkBlackList'"/>
-            <var name="destination" expr="tmpDNIS"/>
-            <if cond="tmpDNIS[0] == OUTSIDE_LINE">
-                <assign name="destination" expr="iiSubstr(tmpDNIS,1,-1)"/>
+            <if cond="iiNumber(tmpDNIS)">
+                <assign name="state" expr="'chkBlackList'"/>
+                <var name="destination" expr="tmpDNIS"/>
+                <if cond="tmpDNIS[0] == OUTSIDE_LINE">
+                    <assign name="destination" expr="iiSubstr(tmpDNIS,1,-1)"/>
+                </if>
+                <var name="accessNum" expr="tmpANI"/>
+                <var name="whichRsrc" expr="'canDial'"/>
+       	   	    <dialogstart src="'file:'+TRANS_PATH+'chkPhoneConfig.vxml'" namelist="importedValue whichRsrc accessNum destination"/>
+            <else/>
+                <send data="'dialog.user.call'" target="session.id"/>
             </if>
-            <var name="accessNum" expr="tmpANI"/>
-            <var name="whichRsrc" expr="'canDial'"/>
-       	   	<dialogstart src="'file:'+TRANS_PATH+'chkPhoneConfig.vxml'" namelist="importedValue whichRsrc accessNum destination"/>
         </transition>
 
         <transition state="chkBlackList" event="dialog.exit" name="evt">
@@ -260,7 +349,6 @@
             <!-- We've informed the caller that the number they tried to reach is blocked -->
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
-            <var name="returnApp" expr="getJsonVal(importedValue, 'dialReturnApp')"/>
             <if cond="returnApp.length &gt; 0"> <!-- Dial request originated from different listen app. Return to it -->
                 <assign name="LISTEN_APP" expr="returnApp"/>
                 <assign name="callResult" expr="'Number Black Listed'"/>
@@ -282,11 +370,30 @@
             <send data="'dialog.user.call'" target="session.id"/>
         </transition>   -->
 
+        <transition event="dialog.user.findMe" name="evt">
+            <!--  -->
+            <log>INFO: Entered [dialog.user.findMe] with state [<value expr="state"/>]</log>
+            <var name="OBCALL.noproxy" expr="'false'"/>
+            <assign name="state" expr="'findMe'"/>
+            <if cond="fmGrpIndex &lt; fmGrpCnt">
+                <var name="enabled" expr="getFindMeConfiguartion(findMeConfiguration, fmConfigIndex, fmGrpIndex, 'enabled')"/>
+                <if cond="enabled">
+                    <var name="tmpDNIS" expr="getFindMeConfiguartion(findMeConfiguration, fmConfigIndex, fmGrpIndex, 'number')"/>
+                    <var name="TIME_OUT" expr="getFindMeConfiguartion(findMeConfiguration, fmConfigIndex, fmGrpIndex, 'duration')"/>
+                    <!-- Dial here -->
+                    <send data="'dialog.user.call'" target="session.id"/>
+                </if>
+                <assign name="fmGrpIndex" expr="fmGrpIndex + 1"/>
+                <send data="'dialog.user.findMe'" target="session.id"/>
+            <else/>
+                <!-- Done with numbers in find me group -->
+            </if>
+        </transition>
+
         <transition event="dialog.user.call" name="evt">
             <!-- Attempt dial to destination number. Since this is voip, we'll generate
             ring tone to the caller. Once call gets picked up, we'll end it (the ring tone). -->
             <log>INFO: Entered [dialog.user.call] with state [<value expr="state"/>]</log>
-            <var name="TIME_OUT" expr="'25s'"/>
             <var name="OBCALL.noproxy" expr="'false'"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
                 <if cond="ip.length &gt; 0">
@@ -295,9 +402,11 @@
                     <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
                 </if>
             <else/> <!-- Call to an external number (outside PBX) -->
-                <assign name="TIME_OUT" expr="'60s'"/>
+                <if cond="state != 'findMe'">
+                    <assign name="TIME_OUT" expr="'60'"/>  <!-- Set time out for external non findme calls -->
+                </if>
                 <if cond="iiNumber(tmpDNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
-                    <if cond="tmpDNIS[0] == OUTSIDE_LINE">
+                    <if cond="((tmpDNIS[0] == OUTSIDE_LINE) &amp;&amp; (state != 'findMe'))">
                         <assign name="tmpDNIS" expr="iiSubstr(tmpDNIS,1,-1)"/>  <!-- Strip off outside line prefix -->
                     </if>
                     <assign name="SIP_SERVER" expr="getJsonVal(importedValue, 'sipURL')"/>
@@ -315,28 +424,45 @@
             </if>
             <if cond="CALL_DNIS.length &gt; 0">
                 <log target="status">Dialing [<value expr="tmpDNIS"/>]</log>
-                <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT"/>
-                <assign name="state" expr="'dialing'"/>
-                <var name="id" expr="obconnid"/>
-                <var name="sessionID" expr="session.id"/>
-                <var name="flag" expr="'insert'"/>
-                <var name="extension" expr="tmpDNIS"/>
-                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
-                <send data="'dialog.user.ringTone'" target="session.id"/> <!-- Play ring tone -->
+                <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT + 's'"/>
+                <if cond="state == 'findMe'">
+                    <assign name="findMeIDList" expr="findMeIDList + obconnid + '|'"/>
+                    <assign name="findMeObj" expr="extendJsonObject(findMeObj, obconnid, tmpDNIS)"/>
+                    <log>INFO: Find Me Obj [<value expr="findMeObj"/>]</log>
+                <else/>
+                    <assign name="state" expr="'dialing'"/>
+                </if>
+                <if cond="((tmpDNIS.length &lt; EXT_LENGTH) || (state == 'findMe'))">
+                    <if cond="tmpDNIS.length &lt; EXT_LENGTH">
+                        <!-- Internal call. Need to store session information in pbx database. 
+                        This allows another party to pick up ringing call -->
+                        <var name="extension" expr="tmpDNIS"/>
+                        <var name="id" expr="obconnid"/>
+                        <var name="sessionID" expr="session.id"/>
+                        <var name="flag" expr="'insert'"/>
+                        <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+                    </if>
+                    <send data="'dialog.user.ringTone'" target="session.id"/> <!-- Play ring tone -->
+                </if>
             <else/>
-                <assign name="state" expr="'hangUp'"/>
                 <var name="logText" expr="'dial.ccxml: Invalid outdial attempt. Caller [ext'+ tmpANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
                 <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>
-                <send data="'dialog.user.deleteRecord'" target="session.id"/>
+                <if cond="state != 'findMe'">
+                    <assign name="state" expr="'hangUp'"/>
+                    <send data="'dialog.user.deleteRecord'" target="session.id"/>
+                <else/>
+                    <!-- Nothing to do here. Get next number -->
+                </if>
             </if>
         </transition>
 
-		<transition state="dialing" event="dialog.user.ringTone" name="evt">
+		<transition state="dialing findMe" event="dialog.user.ringTone" name="evt" cond="playRingTone == 'y'">
             <!-- Here, we start up a vxml dialog to play a ring tone to the caller -->
             <log>INFO: Entered [dialog.user.ringTone] with state [<value expr="state"/>]</log>
             <assign name="II_SB_promptID" expr="AUDIO_PATH+'ring'+'.00'+'.wav'"/> <!-- Play ringing tone -->
             <var name="II_SB_repeat" expr="'y'"/>
+            <assign name="playRingTone" expr="'n'"/>    <!-- This is a flag for find me logic -->
             <var name="II_SB_interval" expr="'2000'"/> <!-- Number of milliseconds repeat -->
             <dialogstart dialogid="ringToneID" src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
 		</transition>
@@ -348,18 +474,89 @@
             <assign name="inVXML" expr="'y'"/>
         </transition>
 
-		<transition event="connection.connected" name="evt">
-            <!-- The dial attempt was successful. Let's terminate the ring tone on the caller's side -->
+		<transition event="connection.progressing" name="evt" cond="((state != 'findMe') &amp;&amp; (callType == 'external'))">
             <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
-            <var name="params" expr="callInfoParams(session.id, tmpANI, tmpDNIS)"/>
-            <var name="resource" expr="'startCall'"/>
-            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
+            <assign name="state" expr="'progressing'"/>
+            <log target="status">Ringing...</log>
+		    <join id1="ibconnid" id2="evt.connectionid"/>
+		</transition>
+
+		<transition state="progressing" event="conference.joined" name="evt">
+            <!-- Our join attempt was successful. Wait for next event -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+		</transition>
+
+		<transition event="connection.connected" name="evt">
+            <!-- The dial attempt was successful. Let's terminate the ring tone on the caller's side (if neccessary)-->
+            <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
+            <assign name="callResult" expr="'Call Answered'"/>
             <assign name="startTime" expr="getTimeStamp(3)"/>
-		    <assign name="state" expr="'callConnected'"/>
             <if cond="inVXML == 'y'">
                 <send data="'dialog.user.terminate'" target="session.id"/>
             </if>
-            <send data="'dialog.user.joinID'" target="session.id" delay="'250ms'"/>
+            <if cond="state == 'progressing'">
+                <send data="'dialog.user.keyPress'" target="session.id" delay="'250ms'"/>
+            <elseif cond="state == 'findMe'"/>
+                <assign name="fmGrpCnt" expr="0"/>
+                <assign name="fmGrpIndex" expr="0"/>
+                <assign name="obconnid" expr="evt.connectionid"/>
+                <assign name="tmpDNIS" expr="getnum(DNIS)"/> <!-- Reset tmp dnis info -->
+                <assign name="findMeIDList" expr="shrink(evt.connectionid,findMeIDList,'|')"/>
+                <assign name="callResult" expr="'Find Me: ' + callResult + ' at ' + getJsonVal(findMeObj, evt.connectionid)"/>
+                <if cond="findMeIDList.length &gt; 1">
+                    <!-- There are some active calls to terminate -->
+                    <send data="'dialog.user.stopFindMe'" target="session.id"/>
+                <else/>
+      		        <assign name="state" expr="'callConnected'"/>
+                    <send data="'dialog.user.joinID'" target="session.id" delay="'250ms'"/>
+                </if>
+            <else/>
+    		    <assign name="state" expr="'callConnected'"/>
+                <send data="'dialog.user.joinID'" target="session.id" delay="'250ms'"/>
+            </if>
+            <var name="resource" expr="'startCall'"/>
+            <var name="params" expr="callInfoParams(session.id, tmpANI, tmpDNIS)"/>
+            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
+		</transition>
+
+		<transition event="dialog.user.stopFindMe" name="evt">
+            <!-- Here we stop all other find me calls-->
+            <log>INFO: Entered [dialog.user.stopFindMe] with state [<value expr="state"/>]</log>
+  		    <assign name="state" expr="'stopFindMe'"/>
+            <var name="callID" expr="getNextElement(fmGrpIndex,findMeIDList,'|')"/>
+            <if cond="callID == -1">
+                <!-- No more IDs to disconnect -->
+            <elseif cond="iiNumber(callID)"/>
+                <disconnect connectionid="callID"/>
+                <assign name="fmGrpIndex" expr="fmGrpIndex + 1"/>
+                <send data="'dialog.user.stopFindMe'" target="session.id"/>
+            <else/>
+                <assign name="fmGrpIndex" expr="fmGrpIndex + 1"/>
+                <assign name="fmGrpCnt" expr="fmGrpCnt + 1"/>
+                <send data="'dialog.user.stopFindMe'" target="session.id"/>
+            </if>
+		</transition>
+
+        <transition state="stopFindMe" event="connection.failed" name="evt">
+            <!-- Ended findMe call. Wait till we get all disconnects -->
+            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
+            <assign name="fmGrpCnt" expr="fmGrpCnt + 1"/>
+            <log>INFO: Stop find me cnt [<value expr="fmGrpCnt"/>]</log>
+            <log>INFO: Stop find index [<value expr="fmGrpIndex"/>]</log>
+            <if cond="fmGrpCnt == fmGrpIndex">
+      		    <assign name="state" expr="'callConnected'"/>
+                <send data="'dialog.user.joinID'" target="session.id"/>
+            </if>
+		</transition>
+
+        <transition state="stopFindMe" event="connection.disconnected" name="evt">
+            <!-- Ended findMe call.-->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+            <assign name="fmGrpCnt" expr="fmGrpCnt + 1"/>
+            <if cond="fmGrpCnt == fmGrpIndex">
+      		    <assign name="state" expr="'callConnected'"/>
+                <send data="'dialog.user.joinID'" target="session.id"/>
+            </if>
 		</transition>
 
 		<transition state="callConnected" event="dialog.user.joinID" name="evt">
@@ -376,7 +573,6 @@
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <log>INFO: Call in progress...</log>
             <log target="status">Call in progress</log>
-            <assign name="callResult" expr="'Call Answered'"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to update a record into the db -->
                 <var name="id" expr="obconnid"/>
                 <var name="sessionID" expr="''"/>
@@ -387,11 +583,18 @@
             <send data="'dialog.user.keyPress'" target="session.id" delay="'250ms'"/>
 		</transition>
 
-		<transition state="callConnected" event="dialog.user.keyPress" name="evt">
+		<transition state="callConnected progressing" event="dialog.user.keyPress" name="evt">
             <!-- -->
             <log>INFO: Entered [dialog.user.keyPress] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'keyPress'"/>
-            <join id1="'VXML_CHANNEL'" id2="obconnid" duplex="'half'"/>
+            <var name="id" expr="getJsonVal(importedValue, 'dialInterrupt')"/>
+            <if cond="id == 'inbound'">
+                <assign name="listenToID" expr="ibconnid"/>
+                <join id1="'VXML_CHANNEL'" id2="ibconnid" duplex="'half'"/>
+            <else/>
+                <assign name="listenToID" expr="obconnid"/>
+                <join id1="'VXML_CHANNEL'" id2="obconnid" duplex="'half'"/>
+            </if>
 		</transition>
 
 		<transition state="keyPress" event="conference.joined" name="evt">
@@ -414,7 +617,8 @@
             <var name="DGT_TIMEOUT" expr="'3s'"/>
             <var name="II_SB_repeat" expr="''"/>
             <var name="II_SB_interval" expr="''"/>
-            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" connectionid="obconnid" namelist="FLD_TERMCHAR II_SB_promptID II_SB_repeat II_SB_interval DGT_TIMEOUT FLD_LENGTH II_SB_FLD_TIMEOUT II_SB_FLD_INTERRUPT"/>
+            <assign name="match_key" expr="getJsonVal(importedValue, 'dialHotKeys')"/>
+            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" connectionid="listenToID" namelist="match_key FLD_TERMCHAR II_SB_promptID II_SB_repeat II_SB_interval DGT_TIMEOUT FLD_LENGTH II_SB_FLD_TIMEOUT II_SB_FLD_INTERRUPT"/>
 		</transition>
 
         <transition state="monitor" event="dialog.exit" name="evt">
@@ -422,15 +626,27 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <assign name="userEntry" expr="evt.values.userEntry"/>
-            <assign name="code" expr="userEntry[0] + userEntry[1]"/>
-            <if cond="code == SHORT_CODE">
-                <assign name="code" expr="userEntry[2]"/>
-                <assign name="userEntry" expr="iiSubstr(userEntry,3,-1)"/>
-                <send data="'dialog.user.chkCode'" target="session.id"/>
+            <if cond="((returnApp.length &gt; 0) &amp;&amp; (userEntry == match_key))">
+                <assign name="LISTEN_APP" expr="returnApp"/>
+                <assign name="endTime" expr="getTimeStamp(3)"/>
+                <var name="callTime" expr="getTimeDifference(startTime,endTime)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', callTime)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'keyPress', userEntry)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'outBoundID', obconnid)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', callResult)"/>
+                <send data="'dialog.user.listenApp'" target="session.id"/>
             <else/>
-                <log>INFO: Invalid short code [<value expr="code"/>]</log>
-    		    <assign name="state" expr="'callConnected'"/>
-                <send data="'dialog.user.monitor'" target="session.id"/>
+                <assign name="code" expr="userEntry[0] + userEntry[1]"/>
+                <if cond="code == SHORT_CODE">
+                    <assign name="code" expr="userEntry[2]"/>
+                    <assign name="userEntry" expr="iiSubstr(userEntry,3,-1)"/>
+                    <send data="'dialog.user.chkCode'" target="session.id"/>
+                <else/>
+                    <log>INFO: Invalid short code [<value expr="code"/>]</log>
+    		        <assign name="state" expr="'callConnected'"/>
+                    <send data="'dialog.user.monitor'" target="session.id"/>
+                </if>
             </if>
         </transition>
 
@@ -491,7 +707,7 @@
 		<transition state="blindXfer" event="dialog.user.blindXfer" name="evt">
             <!-- Blind Transfer request. Call the transfer script -->
             <log>INFO: Entered [dialog.user.blindXfer] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID"/>
+            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
 		</transition>
 
 		<transition state="monitor" event="connection.signal" name="evt">
@@ -513,7 +729,7 @@
                 <!-- Here, we assume this event is in connection to a 3-way call/conference. 
                 We'll ignore it and allow the IP phone handle the call -->
             <else/>
-                <fetch next="'file:'+APP_PATH+'transfer/hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue"/>
+                <fetch next="'file:'+APP_PATH+'transfer/hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
             </if>
 		</transition>
 
@@ -537,6 +753,10 @@
             <if cond="state == 'attemptMove'"> <!-- This is for attenden transfer. First, we'll unjoin the current call -->
                 <assign name="state" expr="'xferUnjoin'"/>
                 <unjoin id1="ibconnid" id2="obconnid"/>
+                <var name="resource" expr="'endCall'"/>
+                <assign name="endTime" expr="getTimeStamp(3)"/>
+                <var name="params" expr="callInfoParams(session.id, '', '')"/>
+                <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <elseif cond="state == 'attemptRingPickUp'"/> <!-- This is for ringing pick up. Here, we disconnect our dial attempt and end the current ring tone -->
                 <assign name="state" expr="'ringPickUpDisc'"/>
                 <disconnect connectionid="obconnid"/>
@@ -553,20 +773,47 @@
             <disconnect connectionid="ibconnid"/>
         </transition>
 
+        <transition state="xferUnjoin" event="error.conference.unjoined" name="evt">
+            <log>INFO: Entered [error.conference.unjoined] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.moveFailed'" target="moveRequestSID" namelist="obconnid"/>
+            <assign name="state" expr="'hangUp'"/>
+            <!-- Remove the records associated with this call in the db prior to exiting -->
+            <var name="logText" expr="'dial.ccxml: Error while attempting to perform call transfer. Unable to unjoin ['+ tmpANI +'] from ['+ tmpDNIS + ']. Reason [evt.reason]'"/>
+            <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <assign name="callResult" expr="'Call transfer to ' + tmpDNIS + ' failed'"/>
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
+        </transition>
+
         <transition state="attdXferMoveDisc" event="connection.disconnected" name="evt" cond="evt.connectionid == ibconnid">
             <!-- Got the disconnect -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
-            <var name="params" expr="callInfoParams(session.id, '', '')"/>
-            <var name="resource" expr="'endCall'"/>
-            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <!-- Remove the caller's record in the db -->
-            <var name="id" expr="ibconnid"/>
-            <var name="sessionID" expr="''"/>
-            <var name="flag" expr="'delete'"/>
-            <var name="extension" expr="tmpANI"/>
-            <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
-            <assign name="endTime" expr="getTimeStamp(3)"/>
-            <send data="'dialog.user.writeCDR'" target="session.id"/>
+            <if cond="tmpANI.length &lt; EXT_LENGTH">
+                <var name="id" expr="ibconnid"/>
+                <var name="sessionID" expr="''"/>
+                <var name="flag" expr="'delete'"/>
+                <var name="extension" expr="tmpANI"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+            </if>
+		    <assign name="state" expr="'attdXferVChnnel'"/>
+            <join id1="obconnid" id2="'VXML_CHANNEL'"/>
+        </transition>
+
+        <transition state="attdXferMoveDisc" event="connection.failed" name="evt" cond="evt.connectionid == ibconnid">
+            <!-- Got the response to our disconnect. Remove the callee's record in the db -->
+            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
+            <var name="logText" expr="'dial.ccxml: Error while attempting to disconnect [tmpANI] during a call transfer. Reason [evt.reason]'"/>
+            <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <!-- Remove the caller's record in the db -->
+            <if cond="tmpANI.length &lt; EXT_LENGTH">
+                <var name="id" expr="ibconnid"/>
+                <var name="sessionID" expr="''"/>
+                <var name="flag" expr="'delete'"/>
+                <var name="extension" expr="tmpANI"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+            </if>
 		    <assign name="state" expr="'attdXferVChnnel'"/>
             <join id1="obconnid" id2="'VXML_CHANNEL'"/>
         </transition>
@@ -597,19 +844,34 @@
             </if>
         </transition>
 
+        <transition state="pickUpVChnnel attdXferVChnnel" event="error.conference.joined" name="evt">
+            <!-- Our join attempt was unsucessful. Write a log and end this call -->
+            <log>INFO: Entered [error.conference.joined] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.moveFailed'" target="moveRequestSID"/>
+            <if cond="state == 'attdXferMoveAttempt'">
+                <assign name="callResult" expr="callResult + ': Attended transfer to: ' + tmpDNIS + ' failed'"/>
+            <else/>
+                <assign name="callResult" expr="'Attempted call pick up from: ' + tmpDNIS + ' failed'"/>
+            </if>
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
+        </transition>
+
         <transition state="pickUpMoveAttempt attdXferMoveAttempt" event="move.successful" name="evt">
             <!-- Looks like our move worked. Let's send control to the attendedTransfer.ccxml or transferHold.ccxml
             script and end this call -->
             <log>INFO: Entered [move.successful] with state [<value expr="state"/>]</log>
             <if cond="state == 'attdXferMoveAttempt'">
-                <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="obconnid" delay="'250ms'"/>
+                <assign name="callResult" expr="callResult + ': Attended transfer to: ' + tmpDNIS + ' successful'"/>
+                <send data="'dialog.user.writeCDR'" target="session.id"/>
+                <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
+                <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="obconnid"/>
             <else/>
                 <var name="record" expr="ibconnid + '|' + tmpANI"/>
+                <assign name="callResult" expr="'Attempted call pick up from: ' + tmpDNIS + ' successful'"/>
                 <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="record" delay="'250ms'"/>
             </if>
             <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.writeCDR'" target="session.id"/>
-            <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
+            <send data="'dialog.user.deleteRecord'" target="session.id"/>
         </transition>
 
         <transition state="pickUpMoveAttempt attdXferMoveAttempt" event="error.move" name="evt">
@@ -617,24 +879,11 @@
             attendedTransfer.ccxml or transferHold.ccxlm script -->
             <log>INFO: Entered [error.move] with state [<value expr="state"/>]</log>
             <send data="'dialog.user.moveFailed'" target="moveRequestSID"/>
-            <var name="id" expr="ibconnid"/>
-            <var name="sessionID" expr="''"/>
-            <var name="flag" expr="'delete'"/>
-            <var name="extension" expr="tmpDNIS"/>
-            <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
-            <send data="'dialog.user.writeCDR'" target="session.id"/>
-            <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
-        </transition>
-
-        <transition state="xferUnjoin" event="error.conference.unjoined" name="evt">
-            <log>INFO: Entered [error.conference.unjoined] with state [<value expr="state"/>]</log>
-            <!-- TODO: How do we handle this? Just end? -->
-            <send data="'dialog.user.moveFailed'" target="moveRequestSID" namelist="obconnid"/>
-            <assign name="state" expr="'hangUp'"/>
-            <!-- Remove the records associated with this call in the db prior to exiting -->
-            <var name="logText" expr="'dial.ccxml: Error while attempting to perform call transfer. Caller ['+ tmpANI +'] attempted to dial destination ['+ tmpDNIS + ']'"/>
-            <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
-            <log target="logFile"><value expr="logText"/></log>
+            <if cond="state == 'attdXferMoveAttempt'">
+                <assign name="callResult" expr="callResult + ': Attended transfer to: ' + tmpDNIS + ' failed'"/>
+            <else/>
+                <assign name="callResult" expr="'Attempted call pick up from: ' + tmpDNIS + ' failed'"/>
+            </if>
             <send data="'dialog.user.deleteRecord'" target="session.id"/>
         </transition>
 
@@ -646,6 +895,40 @@
             <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
             <send data="'dialog.user.deleteRecord'" target="session.id"/>
+		</transition>
+
+        <transition state="findMe" event="connection.failed" name="evt">
+            <!-- The out dial attempt failed for some reason -->
+            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
+            <assign name="fmFailedCalls" expr="fmFailedCalls + 1"/>
+            <log>INFO: Config Index [<value expr="fmConfigIndex"/>]</log>
+            <log>INFO: Config Cnt [<value expr="fmConfigCnt"/>]</log>
+            <log>INFO: Group Index [<value expr="fmGrpIndex"/>]</log>
+            <log>INFO: Group cnt [<value expr="fmGrpCnt"/>]</log>
+            <log>INFO: Failed Call Cnt [<value expr="fmFailedCalls"/>]</log>
+            <var name="finalConfigIndex" expr="fmConfigCnt - 1"/>
+            <if cond="((fmConfigIndex == finalConfigIndex) &amp;&amp; (fmFailedCalls == fmGrpCnt))">
+                <!-- Done with all find me groups -->
+                <assign name="tmpDNIS" expr="getnum(DNIS)"/> <!-- Reset tmp dnis info -->
+                <assign name="dialFailReason" expr="evt.reason"/>
+           	    <dialogterminate dialogid="ringToneID" immediate="true"/> <!-- Stop ringing tone on caller side -->
+                <send data="'dialog.user.callFailed'" target="session.id" delay="'250ms'"/>
+            <elseif cond="((fmConfigIndex &lt; finalConfigIndex) &amp;&amp; (fmFailedCalls == fmGrpCnt))"/>
+                <!-- Done with current group. Get details of next group -->
+                <assign name="fmGrpIndex" expr="0"/>
+                <assign name="fmFailedCalls" expr="0"/>
+                <assign name="findMeIDList" expr="''"/>
+                <assign name="fmConfigIndex" expr="fmConfigIndex + 1"/>
+                <assign name="fmGrpCnt" expr="findMeConfigCount(findMeConfiguration,fmConfigIndex)"/>
+                <log>INFO: Config Index [<value expr="fmConfigIndex"/>]</log>
+                <log>INFO: Config Cnt [<value expr="fmConfigCnt"/>]</log>
+                <log>INFO: Group Index [<value expr="fmGrpIndex"/>]</log>
+                <log>INFO: Group cnt [<value expr="fmGrpCnt"/>]</log>
+                <send data="'dialog.user.findMe'" target="session.id" delay="'250ms'"/>
+            <else/>
+                <!-- Remove connectionid from list -->
+                <assign name="findMeIDList" expr="shrink(evt.connectionid,findMeIDList,'|')"/>
+            </if>
 		</transition>
 
         <transition event="connection.failed" name="evt">
@@ -662,7 +945,6 @@
             <log>INFO: Entered [dialog.user.callFailed] with state [<value expr="state"/>]</log>
             <if cond="((dialFailReason == 'DIALTIMEOUT') || (dialFailReason == REQUEST_TIMEOUT))"> <!-- Reached max ring time -->
                 <log target="status">Call not answered</log>
-                <assign name="state" expr="'noAns'"/>
                 <assign name="callResult" expr="'No Answer'"/>
             <else/>
                 <var name="logText" expr="'dial.ccxml: Call failed. Caller ['+ tmpANI +'] attempting to reach destination ['+ tmpDNIS + ']. Reason ['+ errorCode(dialFailReason) +']'"/>
@@ -670,30 +952,48 @@
                 <log target="logFile"><value expr="logText"/></log>
                 <if cond="inString(dialFailReason,ERR_BUSY,',')"> <!-- Destination was busy -->
                     <log target="status">Destination busy</log>
-                    <assign name="state" expr="'busy'"/>
                     <assign name="callResult" expr="'Busy'"/>
                 <else/>
                     <!-- Call failed due to some other reason -->
-                    <assign name="state" expr="'failed'"/>
+                    <log target="status">Call failed</log>
                     <assign name="callResult" expr="'Call Failed'"/>
                 </if>
             </if>
-            <var name="returnApp" expr="getJsonVal(importedValue, 'dialReturnApp')"/>
             <if cond="returnApp.length &gt; 0"> <!-- Dial request originated from different listen app. Return to it -->
                 <assign name="LISTEN_APP" expr="returnApp"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', callResult)"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', '')"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
+            <elseif cond="state == 'findMe'"/>
+                <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                <assign name="callResult" expr="'Find Me Call: ' + callResult"/>
+                <send data="'dialog.user.writeCDR'" target="session.id"/>
+                <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             <elseif cond="callType == 'external'"/> <!-- Caller tried to reach a destination outside of IP PBX. Nothing more to do. -->
-                <!-- Remove the caller's record in the db prior to exiting -->
-                <send data="'dialog.user.deleteRecord'" target="session.id"/>
+                <assign name="state" expr="'callError'"/>
+                <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
             <else/>    <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
                 <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                 <send data="'dialog.user.writeCDR'" target="session.id"/>
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             </if>
 		</transition>
+
+        <transition state="callError" event="conference.joined" name="evt">
+            <!-- We're joined to a voice channel. Let's continue with the transfer/pickup. Need to move this
+            call to the appropriate location -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+            <assign name="state" expr="'errorEnd'"/>
+            <var name="II_SB_repeat" expr="'n'"/>
+            <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
+            <if cond="callResult == 'No Answer'">
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'noAnswer.00.wav ' + AUDIO_PATH + 'tryAgainLater.00.wav ' +  AUDIO_PATH+'thankYou.00.wav ' + AUDIO_PATH + 'goodbye.00.wav'"/>
+            <else/>
+                <assign name="II_SB_promptID" expr="AUDIO_PATH+'callFailed2.00.wav'"/>
+            </if>
+            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+        </transition>
 
 		<transition event="attendedtransferrequest" name="evt">
             <!-- Attended Transfer request. If we get this event in here, most likely the originator of a 3-way conference
@@ -714,7 +1014,7 @@
         <transition state="gotXferReq" event="dialog.user.transfer" name="evt">
             <!-- Here, we call the attended transfer ccxml script that handles joining the call legs -->
             <log>INFO: Entered [dialog.user.transfer] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID"/>
+            <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
         </transition>
 
         <transition event="dialog.user.listenApp" name="evt">
@@ -731,20 +1031,9 @@
                     <assign name="DNIS" expr="origDNIS"/>
                     </if>
                 </if>            
-                <var name="II_SB_VXML_LIB" expr="'/interact/apps/spotbuild/lib/vxml/'"/>
-                <var name="II_SB_status" expr="''"/>
-                <var name="II_SB_local" expr="DNIS"/>
-                <var name="II_SB_remote" expr="ANI"/>
-                <var name="II_SB_originator" expr="''"/>
-                <var name="II_SB_protocol" expr="'VOIP'"/>
-                <var name="II_SB_connectionID" expr="ibconnid"/>
-                <var name="II_SB_type" expr="''"/>
-                <var name="II_SB_ibcallid" expr="ibconnid"/>
-                <var name="II_SB_transfer" expr="'yes'"/>
-                <var name="II_SB_projectSource" expr="'attendant'"/>
-                <var name="II_SB_obcallid" expr="''"/>
-                <var name="II_SB_CODE_DIR" expr="''"/>
-                <var name="II_SB_line" expr="''"/>
+                <assign name="II_SB_status" expr="''"/>
+                <assign name="II_SB_transfer" expr="'yes'"/>
+                <assign name="II_SB_obcallid" expr="obconnid"/>
                 <var name="II_SB_importedValue" expr="importedValue"/>
                 <fetch next="'file:'+SB_PATH+LISTEN_APP+'/begin.ccxml'" namelist="II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
             <else/>
@@ -776,10 +1065,12 @@
             <var name="params" expr="callInfoParams(session.id, '', '')"/>
             <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <assign name="state" expr="'disconnected'"/>
-            <if cond="evt.connectionid == ibconnid">
-                <assign name="callResult" expr="'Caller Hung Up'"/>
-            <else/>
-                <assign name="callResult" expr="'Called Party Hung Up'"/>
+            <if cond="returnApp.length &gt; 0">
+                <if cond="evt.connectionid == ibconnid">
+                    <assign name="callResult" expr="'Caller Hung Up'"/>
+                <else/>
+                    <assign name="callResult" expr="'Called Party Hung Up'"/>
+                </if>
             </if>
             <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
                 <send data="'dialog.user.terminate'" target="session.id"/>
@@ -790,43 +1081,35 @@
         <transition event="dialog.user.disconnected" name="evt">
             <!-- Here, we start the vxml dialog to update the database -->
             <log>INFO: Entered [dialog.user.disconnected] with state [<value expr="state"/>]</log>
-            <var name="returnApp" expr="getJsonVal(importedValue, 'dialReturnApp')"/>
             <if cond="returnApp.length &gt; 0"> <!-- Dial request originated from different listen app. Return to it -->
                 <assign name="LISTEN_APP" expr="returnApp"/>
+                <assign name="II_SB_ibcallid" expr="''"/>
+                <assign name="II_SB_connectionID" expr="''"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', callResult)"/>
                 <var name="callTime" expr="getTimeDifference(startTime,endTime)"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', callTime)"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             <else/>
-                <var name="sessionID" expr="''"/>
-                <var name="flag" expr="'delete'"/>
-                <if cond="obconnid.length &gt; 0">
-                    <var name="id" expr="obconnid"/>
-                    <var name="extension" expr="tmpDNIS"/>
-                    <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
-                </if>
-                <var name="id" expr="ibconnid"/>
-                <var name="extension" expr="tmpANI"/>
-                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime" delay="'250ms'"/>
-                <send data="'dialog.user.writeCDR'" target="session.id" delay="'250ms'"/>
-                <send data="'dialog.user.endCall'" target="session.id" delay="'500ms'"/>
+                <send data="'dialog.user.deleteRecord'" target="session.id" delay="'250ms'"/>
             </if>
         </transition>
 
         <transition event="dialog.user.deleteRecord" name="evt">
             <!-- Here, we start the vxml dialog to update the database -->
             <log>INFO: Entered [dialog.user.deleteRecord] with state [<value expr="state"/>]</log>
+            <var name="id" expr="obconnid"/>
             <var name="sessionID" expr="''"/>
             <var name="flag" expr="'delete'"/>
-            <if cond="state == 'hangUp'">
-                <var name="id" expr="obconnid"/>
-                <var name="extension" expr="tmpDNIS"/>
+            <var name="extension" expr="tmpDNIS"/>
+            <if cond="tmpDNIS.length &lt; EXT_LENGTH">
                 <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
             </if>
-            <var name="id" expr="ibconnid"/>
-            <var name="extension" expr="tmpANI"/>
-            <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime" delay="'250ms'"/>
+            <if cond="tmpANI.length &lt; EXT_LENGTH">
+                <assign name="id" expr="ibconnid"/>
+                <assign name="extension" expr="tmpANI"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime" delay="'250ms'"/>
+            </if>
             <send data="'dialog.user.writeCDR'" target="session.id" delay="'250ms'"/>
             <send data="'dialog.user.endCall'" target="session.id" delay="'500ms'"/>
         </transition>
@@ -858,7 +1141,7 @@
             <var name="params" expr="evt.params"/>
             <var name="resource" expr="evt.resource"/>
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
-            <send data="'callInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="cntrlURL request resource params"/>
+            <send data="'callInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
 		</transition>
 
         <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
@@ -880,13 +1163,13 @@
         <transition event="dialog.user.writeCDR" name="evt">
             <!-- Write Call History and Stat -->
             <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
-            <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
             <assign name="ANI" expr="tmpANI"/>
+            <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
             <var name="resource" expr="'addCallHistory'"/>
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>
             <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
-            <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="cntrlURL request resource params"/>
+            <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
 
             <var name="id" expr="''"/>
             <var name="source" expr="'ippbx'"/>
