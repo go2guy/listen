@@ -7,6 +7,7 @@
     $http_success = 2;
     $options = array();
     $header = "";
+    $logFile    = "/interact/logs/exceptionLog";
 
     #Grab inputs
     $method     = @$_REQUEST['request']     or exitresult ($objName,$status,$string,"'request' argument missing from request");
@@ -22,6 +23,10 @@
     $destURL    = @$_REQUEST['cntrlURL']    or exitresult ($objName,$status,$string,"'cntrlURL' argument missing from request");
     $lstnChannel= @$_REQUEST['lstnChannel'] or $lstnChannel="";
     $lstnSub    = @$_REQUEST['lstnSub']     or $lstnSub="";
+    $fromCCXML  = @$_REQUEST['fromCCXML']   or $fromCCXML="";
+
+    $date   = date('m/d/Y G:i:s');
+    $log    = "LVL:2 $date \t $fromCCXML \t ";
 
     $date = date('D, d M Y H:i:s T');
     $signature = sign($date);
@@ -84,7 +89,13 @@
     if (curl_errno($curlHandle)) {
         $err = curl_error($curlHandle);
         curl_close($curlHandle);
-        exitresult ($objName,$status,$string,$err);
+        if (strlen($fromCCXML) > 0) {
+            $log = $log."Error [$err] while attempting [$method] on [$rsrc] with [$data]\n";
+            error_log($log, 3, $logFile);
+            exit;
+        } else {
+            exitresult ($objName,$status,$string,$err);
+        }
     }
 
     #cURL succeeded. Check Controller return code
@@ -93,7 +104,13 @@
     if (substr($code,0,1) != $http_success) {
         $err = $rtrn['http_code'];
         curl_close($curlHandle);
-        exitresult ($objName,$status,$string,$err);
+        if (strlen($fromCCXML) > 0) {
+            $log = $log."Error [$err] while attempting [$method] on [$rsrc] with [$data]\n";
+            error_log($log, 3, $logFile);
+            exit;
+        } else {
+            exitresult ($objName,$status,$string,$err);
+        }
     }
 
     #Successful return
