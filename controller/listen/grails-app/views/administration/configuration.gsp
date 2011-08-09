@@ -13,18 +13,19 @@
   <body>
     <g:form controller="administration" action="saveConfiguration">
     <listen:canAccess feature="VOICEMAIL">
-      <fieldset class="vertical">
-        <h3>Audio Transcription</h3>
+      <listen:canAccess feature="TRANSCRIPTION">
+        <fieldset class="vertical">
+          <h3>Audio Transcription</h3>
 
-        <g:checkBox name="transcription.isEnabled" value="${transcription?.isEnabled}" class="transcriptionIsEnabled"/>
-        <label for="transcription.isEnabled" class="inline-label"><g:message code="transcriptionConfiguration.isEnabled.label"/></label>
+          <g:checkBox name="transcription.isEnabled" value="${transcription?.isEnabled}" class="transcriptionIsEnabled"/>
+          <label for="transcription.isEnabled" class="inline-label"><g:message code="transcriptionConfiguration.isEnabled.label"/></label>
 
-        <div class="transcriptionDetails">
-          <label for="transcription.phoneNumber"><g:message code="transcriptionConfiguration.phoneNumber.label"/></label>
-          <g:textField name="transcription.phoneNumber" value="${fieldValue(bean: transcription, field: 'phoneNumber')}" class="${listen.validationClass(bean: transcription, field: 'phoneNumber')}"/>
-        </div>
-      </fieldset>
-     </listen:canAccess>
+          <div class="transcriptionDetails">
+            <label for="transcription.phoneNumber"><g:message code="transcriptionConfiguration.phoneNumber.label"/></label>
+            <g:textField name="transcription.phoneNumber" value="${fieldValue(bean: transcription, field: 'phoneNumber')}" class="${listen.validationClass(bean: transcription, field: 'phoneNumber')}"/>
+          </div>
+        </fieldset>
+       </listen:canAccess>
 
       <fieldset class="vertical">
         <h3>After Hours Support</h3>
@@ -47,14 +48,17 @@
         <g:textField name="afterHours.realizeAlertName" value="${fieldValue(bean: afterHours, field: 'realizeAlertName')}" class="${listen.validationClass(bean: afterHours, field: 'realizeAlertName')}"/>
 
       </fieldset>
+    </listen:canAccess>
 
+    <listen:canAccess feature="CONFERENCING">
       <fieldset class="vertical">
         <h3>Conferencing</h3>
 
         <label for="conferencing.pinLength"><g:message code="conferencingConfiguration.pinLength.label"/></label>
         <g:textField name="conferencing.pinLength" value="${fieldValue(bean: conferencing, field: 'pinLength')}" class="${listen.validationClass(bean: conferencing, field: 'pinLength')}"/>
       </fieldset>
-
+   </listen:canAccess>
+        
       <ul class="form-buttons">
         <li><g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/></li>
       </ul>

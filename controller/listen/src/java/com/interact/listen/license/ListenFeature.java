@@ -16,6 +16,7 @@ public enum ListenFeature implements Feature
     CUSTOM_APPLICATIONS ("Listen Custom App",   "Custom SPOT Applications", true),
     FAX                 ("Listen Fax",          "Fax", true),
     FINDME              ("Listen Find Me",      "Find Me / Follow Me", true),
+    TRANSCRIPTION       ("Listen Transcription","Transcription", true),
     VOICEMAIL           ("Listen Voice Mail",   "Voicemail", true),
     IPPBX               ("IP PBX",              "IP PBX", true);
 
