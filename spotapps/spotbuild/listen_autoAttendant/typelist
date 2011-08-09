@@ -67,7 +67,6 @@ begin - begin
 190_11 - assign-variable
 242_3 - decision
 243_9 - run-javascript
-288_48 - run-javascript
 243_4 - run-javascript
 190_18 - run-javascript
 190_19 - assign-variable
@@ -77,7 +76,6 @@ begin - begin
 170_11 - run-javascript
 246_11 - assign-variable
 246_10 - audio-input
-288_46 - log
 170_14 - run-javascript
 245_10 - run-javascript
 245_12 - assign-variable

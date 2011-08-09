@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_246_7(passValues,destination)
+            function II_SB_JS_function_246_7(passValues)
             {
-	            var ext = getnum(destination);return extendJsonObject(passValues,'toExt',ext);
+	            var ext = getnum(getJsonVal(passValues, 'destination'));return extendJsonObject(passValues,'toExt',ext);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Add Extension</log>
             <log>INFO: Entered run-javascript.vxml [246_7]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_246_7(passValues,destination)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_246_7(passValues)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
