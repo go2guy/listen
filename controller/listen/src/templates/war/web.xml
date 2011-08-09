@@ -71,7 +71,7 @@
     </servlet-mapping>
 
     <session-config>
-        <session-timeout>2880</session-timeout><!-- 2880 = two days (in minutes) -->
+        <session-timeout>20160</session-timeout><!-- 20160 = two weeks (in minutes) -->
     </session-config>
 
     <welcome-file-list>
