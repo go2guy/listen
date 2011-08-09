@@ -31,7 +31,6 @@
 	<var name="SB_UV_request"/>
 	<var name="SB_UV_status"/>
 	<var name="SB_UV_sipURL"/>
-	<var name="SB_UV_sipDirect"/>
 	<var name="SB_UV_sysAccessTime"/>
 	<var name="SB_UV_ANI"/>
 	<var name="SB_UV_HTTPcontroller"/>
@@ -110,9 +109,6 @@
 			</if>
 			<if cond="SB_UV_sipURL != undefined">
 				<assign name="sipURL" expr="SB_UV_sipURL" />
-			</if>
-			<if cond="SB_UV_sipDirect != undefined">
-				<assign name="sipDirect" expr="SB_UV_sipDirect" />
 			</if>
 			<if cond="SB_UV_sysAccessTime != undefined">
 				<assign name="sysAccessTime" expr="SB_UV_sysAccessTime" />

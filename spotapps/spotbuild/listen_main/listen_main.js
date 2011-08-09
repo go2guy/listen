@@ -61,7 +61,7 @@ function getAppName(appName, jsonObj) {
     return appName;
 }
 
-function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,sipDirect,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,licenses,voipChannel,callerID) {
+function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,licenses,voipChannel,callerID) {
     if ((typeof(passValues) == 'undefined') || (passValues.length == 0)) {
         var sipFrom = '';
         var tmpVal = callerID.split('<sip:');
@@ -69,14 +69,13 @@ function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,s
             sipFrom = tmpVal[1].split('@')[0];
         else
             sipFrom = tmpVal[0].replace(/"|\s$/g,'');
-        return "{\"application\":\""+appToAccess+"\", \"sipFrom\":\""+sipFrom+"\", \"licenses\":"+licenses+", \"voipChannel\":\""+voipChannel+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"pstnLength\": \""+pstnLength+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"sipDirect\":\""+sipDirect+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"organization\": \""+ organization+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
+        return "{\"application\":\""+appToAccess+"\", \"sipFrom\":\""+sipFrom+"\", \"licenses\":"+licenses+", \"voipChannel\":\""+voipChannel+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"pstnLength\": \""+pstnLength+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"organization\": \""+ organization+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
     }
     else {
         var result = eval("("+passValues+")");
         result.cntrlURL = cntrlURL + "/api";
         result.hostName = hostName;
         result.sipURL = sipURL;
-        result.sipDirect = sipDirect;
         if(!result.sysAccessTime) {        
             result.sysAccessTime = sysAccessTime;
         }
