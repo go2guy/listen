@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 06/27/2011
+    <!-- Last Modified 08/09/2011
        *   @Name	chkPhoneConfig.vxml
-       *   @Desc	This script is part of the logic for forwarding an extension.
-                    Here, we check if an extension is forwarded -->
+       *   @Desc	This script is part of the forwarding/findMe logic for an extension.
+                    Here, we check if an extension is forwarded or has a findMe configuration -->
 
     <!-- Passed in from ccxml -->
     <var name="importedValue"/>
@@ -72,10 +72,11 @@
                 <assign name="resource" expr="whichRsrc"/>
                 <if cond="resource == 'canDial'">
                     <assign name="params" expr="setParams(subID, destination, whichRsrc, listenArgs)"/>
+                    <assign name="gotoForm" expr="'#chkResult'"/>
                 <else/>
                     <assign name="params" expr="setParams(subID, accessNum, whichRsrc, listenArgs)"/>
+                    <assign name="gotoForm" expr="'#exit'"/>
                 </if>
-                <assign name="gotoForm" expr="'#chkResult'"/>
                 <goto next="#sendEvent"/>
             <else/>
                 <assign name="status" expr="'Failure'"/>
@@ -86,12 +87,7 @@
 
     <form id="chkResult">
         <!-- Check Results -->
-        <block cond="resource == 'dial'">
-            <log>INFO: Entered chkResult</log>
-            <assign name="result" expr="dialResult(result)"/>
-            <goto next="#exit"/>
-        </block>
-        <block cond="resource == 'canDial'">
+        <block>
             <log>INFO: Entered chkResult</log>
             <assign name="result" expr="blkListResult(result)"/>
             <goto next="#exit"/>
@@ -134,14 +130,6 @@
                     return "?subscriber=/subscribers/" + inStr + "&destination=" + ext + "&includeDisabled=false&organization=" + getJsonVal(importedValue, 'organization');
                 else
                     return "?subscriber=/subscribers/" + inStr + "&destination=" + ext + "&organization=" + getJsonVal(importedValue, 'organization');
-            }
-
-            function dialResult(jsonObj) {
-                var result = eval("("+jsonObj+")");
-                if ((result.length == 1) && (result[0].length == 1))
-                    return result[0][0].number;
-                else
-                    return 'listen_findMe';
             }
 
             function blkListResult(jsonObj) {

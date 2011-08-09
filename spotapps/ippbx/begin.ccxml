@@ -22,7 +22,6 @@
     <var name="II_SB_CODE_DIR"/>        <!-- CODE_DIR. Application directory under base directory. Contains all code -->
     <var name="II_SB_line"/>            <!-- Line number processing call -->
     <var name="II_SB_importedValue"/>   <!-- imported values-->
-    <var name="projectSource" expr="''"/>
 
     <!-- Global variables -->
     <var name="state" expr="'idle'"/>     <!-- state. This variable holds the CCXML dialog state -->
@@ -44,12 +43,11 @@
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','spotApi')"/>
             <assign name="importedValue" expr="extendJsonObject(importedValue, 'cntrlURL', cntrlURL)"/>
-            <log>INFO: projectSource [<value expr="projectSource"/>]</log>
             <log>INFO: dnis [<value expr="local"/>]</log>
             <log>INFO: ani [<value expr="remote"/>]</log>
             <log>INFO: connectionid [<value expr="connectionid"/>]</log>
             <log>INFO: importedValue [<value expr="importedValue"/>]</log>
-            <fetch next="'file:'+APP_PATH+'ippbx_main.ccxml'" namelist="projectSource local remote connectionid importedValue"/>
+            <fetch next="'file:'+APP_PATH+'ippbx_main.ccxml'" namelist="local remote connectionid importedValue II_SB_line II_SB_CODE_DIR II_SB_ibcallid II_SB_obcallid II_SB_projectSource II_SB_transfer II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type"/>
         </transition>
 
         <transition event="fetch.done" name="evt"> <!-- Fetched ccxml document -->
