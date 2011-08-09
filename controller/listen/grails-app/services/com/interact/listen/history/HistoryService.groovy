@@ -427,7 +427,7 @@ class HistoryService {
 
     void sentFax(OutgoingFax fax) {
         write(action: Action.SENT_FAX,
-              description: "Sent ${fax.pages}-page fax to [${fax.dnis}]")
+              description: "Sent fax to [${fax.dnis}]")
     }
 
     void sentNewVoicemailEmail(Voicemail voicemail) {

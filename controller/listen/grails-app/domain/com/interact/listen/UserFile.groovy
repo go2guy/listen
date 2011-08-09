@@ -31,13 +31,33 @@ class UserFile {
         if(!user?.id) {
             throw new IllegalArgumentException('Cannot get UserFile path for null user id')
         }
-        File dir = new File("/interact/listen/artifacts/${user.id}/files")
-        if(subdir) {
-            dir = new File(dir, subdir)
+
+        File userDir = new File("/interact/listen/artifacts/${user.id}")
+        if(!userDir.exists()) {
+            userDir.mkdirs()
+            userDir.setExecutable(true, false)
+            userDir.setReadable(true, false)
+            userDir.setWritable(true, false)
         }
 
+        //create files under the userDir and give it 777 permissions
+        File dir = new File("${userDir}/files")
         if(!dir.exists()) {
             dir.mkdirs()
+            dir.setExecutable(true, false)
+            dir.setReadable(true, false)
+            dir.setWritable(true, false)
+        }
+
+        //if we are making a new subdir under dir, give it 777 permissions
+        if(subdir) {
+            dir = new File(dir, subdir)
+            if(!dir.exists()) {
+                dir.mkdirs()
+                dir.setExecutable(true, false)
+                dir.setReadable(true, false)
+                dir.setWritable(true, false)
+            }
         }
 
         new File(dir, filename)

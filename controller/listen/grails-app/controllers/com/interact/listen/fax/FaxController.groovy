@@ -71,7 +71,7 @@ class FaxController {
         def names = [] as List
         def subdir = System.currentTimeMillis() as String
         command.files.each { file ->
-            log.debug "Handling file [${file}]"
+            log.debug "Handling file [${file.originalFilename}]"
             if(file instanceof MultipartFile) {
                 if(!file.isEmpty()) {
                     def filename = file.originalFilename
@@ -99,38 +99,13 @@ class FaxController {
 
         def fax = new OutgoingFax()
         fax.properties['dnis'] = params
-        fax.toMerge.addAll(uploaded)
+        fax.sourceFiles.addAll(uploaded)
         fax.sender = user
 
         if(fax.validate() && fax.save()) {
-            faxSenderService.prepareInBackground(fax)
-            redirect(action: 'prepare', params: [id: fax.id])
+            render(view: 'preparing', model: [fax: fax])
         } else {
             render(view: 'create', model: [fax: fax])
-        }
-    }
-
-    def prepare = {
-        def fax = OutgoingFax.get(params.id)
-        if(!fax) {
-            flash.errorMessage = 'Fax not found'
-            redirect(action: 'create')
-            return
-        }
-        render(view: 'preparing', model: [fax: fax])
-    }
-
-    def prepareStatus = {
-        def fax = OutgoingFax.get(params.id)
-        if(!fax) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND)
-            return
-        }
-
-        render(contentType: 'application/json') {
-            ready = fax.merged != null
-            pages = fax.pages
-            status = fax.preparationStatus
         }
     }
 
@@ -139,12 +114,6 @@ class FaxController {
         if(!fax) {
             flash.errorMessage = 'Fax not found'
             redirect(action: 'create')
-            return
-        }
-
-        if(!fax.merged) {
-            flash.errorMessage = 'Fax has not been prepared'
-            redirect(action: 'prepare', params: [id: fax.id])
             return
         }
 

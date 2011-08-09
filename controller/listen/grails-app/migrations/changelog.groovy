@@ -1982,4 +1982,31 @@ databaseChangeLog = {
 			}
 		}
 	}
+
+    changeSet(author: "root (generated)", id: "1312476123211-7") {
+        dropColumn(columnName: "date_prepared", tableName: "outgoing_fax")
+    }
+
+    changeSet(author: "root (generated)", id: "1312476123211-8") {
+        dropColumn(columnName: "merged", tableName: "outgoing_fax")
+    }
+
+    changeSet(author: "root (generated)", id: "1312476123211-9") {
+        dropColumn(columnName: "preparation_status", tableName: "outgoing_fax")
+    }
+
+    changeSet(author: "root (generated)", id: "1312476123211-3") {
+        renameColumn(tableName: 'outgoing_fax_user_file', oldColumnName: 'outgoing_fax_to_merge_id', columnDataType: 'bigint(20)', newColumnName: 'outgoing_fax_source_files_id')
+        renameColumn(tableName: 'outgoing_fax_user_file', oldColumnName: 'to_merge_idx', columnDataType: 'int(11)', newColumnName: 'source_files_idx')
+    }
+
+    changeSet(author: "root (generated)", id: "1312476123211-4") {
+        createIndex(indexName: "FK7A26073B74452195", tableName: "outgoing_fax_user_file") {
+            column(name: "outgoing_fax_source_files_id")
+        }
+    }
+
+    changeSet(author: "root (generated)", id: "1312476123211-5") {
+        addForeignKeyConstraint(baseColumnNames: "outgoing_fax_source_files_id", baseTableName: "outgoing_fax_user_file", constraintName: "outgo_fax_user_outgo_fax_sour_id_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "outgoing_fax", referencesUniqueColumn: "false")
+    }
 }

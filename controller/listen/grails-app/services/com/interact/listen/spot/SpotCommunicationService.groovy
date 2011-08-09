@@ -94,8 +94,8 @@ class SpotCommunicationService {
     {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "Direct Message");
-        importedValue.put("action", "SEND_FAX");
-        importedValue.put("artifact", fax.merged.absolutePath);
+        importedValue.put("action", "PDF_TO_TIFF");
+        importedValue.put("artifact", fax.sourceFiles.collect{ it.file.absolutePath });
         importedValue.put("destination", fax.dnis);
         importedValue.put("ani", ""); //Will be implemented later, probably once sold and we know what to do
         importedValue.put("organization", "/organizations/${fax.sender.organization.id}");
