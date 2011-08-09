@@ -7,6 +7,12 @@
     <meta name="page-header" content="${g.message(code: 'page.user.edit.header')}"/>
   </head>
   <body>
+    <g:if test="${!user.enabled}">
+      <ul class="messages info">
+        <li><g:message code="page.user.edit.disabled"/></li>
+      </ul>
+    </g:if>
+
     <g:form controller="user" action="update" method="post">
       <fieldset class="vertical">
         <g:hiddenField name="id" value="${user.id}"/>

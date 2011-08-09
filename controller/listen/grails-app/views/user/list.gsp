@@ -17,6 +17,10 @@ td.col-enabled,
 td.col-isActiveDirectory {
     padding-left: 20px;
 }
+
+tr.disabled {
+    color: #999999;
+}
     </style>
   </head>
   <body>
@@ -34,7 +38,7 @@ td.col-isActiveDirectory {
       </thead>
       <tbody>
         <g:each in="${userList}" var="user" status="i">
-          <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
+          <tr class="${i % 2 == 0 ? 'even' : 'odd'}${!user.enabled ? ' disabled' : ''}">
             <td class="col-username">${fieldValue(bean: user, field: 'username')}</td>
             <td class="col-realName">${fieldValue(bean: user, field: 'realName')}</td>
             <td class="col-enabled"><listen:checkMark value="${user.enabled}"/></td>
