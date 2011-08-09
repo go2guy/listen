@@ -20,7 +20,7 @@ class User {
     String pass
     String confirm
 
-    static transients = ['pass', 'confirm'] // used for confirming a password
+    static transients = ['pass', 'confirm', 'enabledForLogin'] // used for confirming a password
 
     static hasMany = [phoneNumbers: PhoneNumber]
 
@@ -105,6 +105,18 @@ class User {
 
     def friendlyName() {
         realName ?: username
+    }
+
+    def enabled() {
+        enabled && (!organization || organization.enabled)
+    }
+
+    // create a couple of 'fake' properties so our authentication can use them
+    // to determine if the user is enabled, considering both the user and organization
+    // 'enabled' values
+    void setEnabledForLogin(boolean value) { /* no-op */ }
+    boolean getEnabledForLogin() {
+        enabled()
     }
 
     String toString() {

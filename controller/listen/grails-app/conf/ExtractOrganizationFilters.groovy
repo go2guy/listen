@@ -37,7 +37,7 @@ class ExtractOrganizationFilters {
                     }
 
                     def organization = Organization.findByContextPath(session.organizationContext)
-                    if(!organization) {
+                    if(!organization || !organization.enabled) {
                         session.organizationContext = null
                         if(shouldLog(controllerName, actionName)) {
                             log.warn "Organization not found for context [${session.organizationContext}]"

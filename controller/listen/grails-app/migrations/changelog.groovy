@@ -1974,4 +1974,12 @@ databaseChangeLog = {
 			column(name: "pages", type: "integer")
 		}
 	}
+
+	changeSet(author: "root (generated)", id: "1312919153259-1") {
+		addColumn(tableName: "organization") {
+			column(name: "enabled", type: "bit", defaultValueBoolean: 'true') {
+				constraints(nullable: "false")
+			}
+		}
+	}
 }

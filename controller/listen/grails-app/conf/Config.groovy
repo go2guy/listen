@@ -153,6 +153,7 @@ environments {
 // Spring Security Core plugin:
 grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.interact.listen.User'
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.interact.listen.UserRole'
+grails.plugins.springsecurity.userLookup.enabledPropertyName = 'enabledForLogin'
 grails.plugins.springsecurity.authority.className = 'com.interact.listen.Role'
 grails.plugins.springsecurity.useSecurityEventListener = true
 

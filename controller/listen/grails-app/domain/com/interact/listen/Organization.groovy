@@ -4,6 +4,7 @@ import com.interact.listen.license.ListenFeature
 
 class Organization {
     String contextPath
+    boolean enabled = true
     Set enabledFeatures = []
     String name
 

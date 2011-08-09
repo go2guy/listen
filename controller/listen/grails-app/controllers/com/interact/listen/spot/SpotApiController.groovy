@@ -122,6 +122,12 @@ class SpotApiController {
             recording.conference = Conference.get(getIdFromHref(json.conference.href))
             recording.audio = audio
 
+            if(!recording.conference.owner.enabled()) {
+                status.setRollbackOnly()
+                response.sendError(HSR.SC_FORBIDDEN)
+                return
+            }
+
             if(!(recording.validate() && recording.save())) {
                 status.setRollbackOnly()
                 response.sendError(HSR.SC_BAD_REQUEST, beanErrors(recording))
@@ -139,6 +145,11 @@ class SpotApiController {
         def conference = Conference.get(getIdFromHref(json.conference.href))
         if(!conference) {
             response.sendError(HSR.SC_BAD_REQUEST, "Property [conference] with value [${params.conference.href}] references a non-existent entity")
+            return
+        }
+
+        if(!conference.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
@@ -216,6 +227,12 @@ class SpotApiController {
             voicemail.audio = audio
             voicemail.owner = User.get(getIdFromHref(json.subscriber.href))
 
+            if(!voicemail.owner.enabled()) {
+                status.setRollbackOnly()
+                response.sendError(HSR.SC_FORBIDDEN)
+                return
+            }
+
             if(json.forwardedBy) {
                 def user = User.get(getIdFromHref(json.forwardedBy.href))
                 if(!user) {
@@ -265,9 +282,7 @@ class SpotApiController {
         def user = authenticatedUser
         def contact = User.get(params.id)
 
-        println "ID: ${params.id}, CONTACT: ${contact}"
-
-        if(!contact || contact.organization != user.organization) {
+        if(!contact || contact.organization != user.organization || !contact.enabled()) {
             response.sendError(HSR.SC_NOT_FOUND)
             return
         }
@@ -289,8 +304,8 @@ class SpotApiController {
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 100
 
-        def list = User.findAllByOrganization(user.organization, params)
-        def total = User.countByOrganization(user.organization)
+        def list = User.findAllByOrganizationAndEnabled(user.organization, true, params)
+        def total = User.countByOrganizationAndEnabled(user.organization, true)
 
         def results = []
         list.each { u ->
@@ -328,7 +343,7 @@ class SpotApiController {
 
         String token = device?.registrationToken ?: ''
         def json = [
-            enabled: String.valueOf(googleAuthService.isEnabled()),
+            enabled: String.valueOf(googleAuthService.enabled()),
             account: googleAuthService.getUsername(),
             registrationToken: token,
             registeredTypes: device.registeredTypes.collect { it.name() }
@@ -342,11 +357,11 @@ class SpotApiController {
         def user = authenticatedUser
         def number = PhoneNumber.get(params.id)
 
-        if(!number || number.owner.organization != user.organization) {
+        if(!number || number.owner.organization != user.organization || !number.owner.enabled()) {
             response.sendError(HSR.SC_NOT_FOUND)
             return
         }
-        
+
         def json = [
             id: number.id,
             subscriberId: number.owner.id,
@@ -369,8 +384,9 @@ class SpotApiController {
         // (isPublic is defined on MobileNumber, which extends PhoneNumber)
         def list = PhoneNumber.createCriteria().list(params) {
             eq('isPublic', true)
-                owner {
+            owner {
                 eq('organization', user.organization)
+                eq('enabled', true)
             }
         }
 
@@ -381,6 +397,7 @@ class SpotApiController {
             eq('isPublic', true)
             owner {
                 eq('organization', user.organization)
+                eq('enabled', true)
             }
         }
 
@@ -411,6 +428,7 @@ class SpotApiController {
     @Secured(['ROLE_VOICEMAIL_USER'])
     def androidUpdateDeviceRegistration = {
         def user = authenticatedUser
+
         def json = JSON.parse(request)
 
         def deviceType = DeviceRegistration.DeviceType.ANDROID
@@ -506,6 +524,11 @@ class SpotApiController {
             return
         }
 
+        if(!organization.enabled) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         render(contentType: 'application/json') {             
             canAccess = licenseService.canAccess(feature, organization)
         }
@@ -513,6 +536,11 @@ class SpotApiController {
 
     def canDial = {
         def user = User.get(getIdFromHref(params.subscriber))
+        if(!user.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def destination = params.destination
         if(!destination) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [destination]')
@@ -530,7 +558,12 @@ class SpotApiController {
             response.sendError(HSR.SC_NOT_FOUND)
             return
         }
-        
+
+        if(!findMeNumber.user.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
 		historyService.deletedFindMeNumber(findMeNumber)
         findMeNumber.delete()
         
@@ -541,6 +574,11 @@ class SpotApiController {
         def participant = Participant.get(params.id)
         if(!participant) {
             response.sendError(HSR.SC_NOT_FOUND)
+            return
+        }
+
+        if(!participant.conference.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
@@ -566,6 +604,11 @@ class SpotApiController {
         } catch(MissingPropertyException e) {
             // ignore, this is an API user
             log.debug "MissingPropertyException in deleteVoicemail API, probably an API user"
+        }
+
+        if(!voicemail.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
         }
 
         inboxMessageService.delete(voicemail)
@@ -595,6 +638,11 @@ class SpotApiController {
             return
         }
 
+        if(!organization.enabled) {
+            response.sendError(HSR.SC_BAD_REQUEST)
+            return
+        }
+
         def userPhoneNumber = PhoneNumber.createCriteria().get {
             eq('number', destination)
             owner {
@@ -605,6 +653,11 @@ class SpotApiController {
 
         if(!user) {
             response.sendError(HSR.SC_BAD_REQUEST, "Subscriber not found with phone number [${destination}]")
+            return
+        }
+
+        if(!user.enabled()) {
+            response.sendError(HSR.SC_BAD_REQUEST)
             return
         }
 
@@ -734,6 +787,11 @@ class SpotApiController {
             return
         }
 
+        if(!organization.enabled) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def afterHoursConfig = AfterHoursConfiguration.findByOrganization(organization)
         if(!afterHoursConfig) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -746,6 +804,11 @@ class SpotApiController {
             return
         }
 
+        if(!subscriber.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         render(contentType: 'application/json') {
             href = '/subscribers/' + subscriber.id
         }
@@ -755,6 +818,11 @@ class SpotApiController {
         def conference = Conference.get(params.id)
         if(!conference) {
             response.sendError(HSR.SC_NOT_FOUND)
+            return
+        }
+
+        if(!conference.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
@@ -787,6 +855,11 @@ class SpotApiController {
             return
         }
 
+        if(!organization.enabled) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def featureStatusMap = [:]
         licenseService.licensableFeatures().each {
             featureStatusMap.put(it.toString(), licenseService.canAccess(it, organization))
@@ -798,7 +871,6 @@ class SpotApiController {
     }
 
     def getParticipants = {
-
         if(!params.conference) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [conference]')
             return
@@ -810,6 +882,10 @@ class SpotApiController {
             return
         }
 
+        if(!conference.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
 
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 5
@@ -848,6 +924,11 @@ class SpotApiController {
         def phoneNumber = PhoneNumber.get(params.id)
         if(!phoneNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
+            return
+        }
+
+        if(!phoneNumber.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
@@ -890,6 +971,11 @@ class SpotApiController {
             return
         }
 
+        if(!pin.conference.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         render(contentType: 'application/json') {
             href = '/pins/' + pin.id
             conference = {
@@ -905,6 +991,11 @@ class SpotApiController {
         def user = User.get(params.id)
         if(!user) {
             response.sendError(HSR.SC_NOT_FOUND)
+            return
+        }
+
+        if(!user.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
@@ -925,6 +1016,11 @@ class SpotApiController {
             return
         }
 
+        if(!voicemail.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         renderVoicemailAsJson(voicemail)
     }
 
@@ -937,6 +1033,11 @@ class SpotApiController {
         def user = User.get(getIdFromHref(params.subscriber))
         if(!user) {
             response.sendError(HSR.SC_BAD_REQUEST, "Property [subscriber] with value [${params.subscriber}] references a non-existent entity")
+            return
+        }
+
+        if(!user.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
@@ -982,6 +1083,16 @@ class SpotApiController {
             return
         }
 
+        if(organization && !organization.enabled) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
+        if(user && !user.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def list = PhoneNumber.createCriteria().list {
             if(params.number) {
                 eq('number', params.number)
@@ -989,6 +1100,11 @@ class SpotApiController {
             if(organization) {
                 owner {
                     eq('organization', organization)
+                    eq('enabled', true)
+                }
+            } else {
+                owner {
+                    eq('enabled', true)
                 }
             }
             if(user) {
@@ -1006,6 +1122,11 @@ class SpotApiController {
             if(organization) {
                 owner {
                     eq('organization', organization)
+                    eq('enabled', true)
+                }
+            } else {
+                owner {
+                    eq('enabled', true)
                 }
             }
             if(user) {
@@ -1045,9 +1166,15 @@ class SpotApiController {
             organization = user.organization
         }
 
+        if(!organization.enabled) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def users = User.createCriteria().list([offset: 0, max: 100]) {
             if(params.containsKey('username')) {
                 eq('username', params.username)
+                eq('enabled', true)
             }
             eq('organization', organization)
         }
@@ -1058,6 +1185,7 @@ class SpotApiController {
             }
             if(params.containsKey('username')) {
                 eq('username', params.username)
+                eq('enabled', true)
             }
             eq('organization', organization)
         }
@@ -1105,6 +1233,11 @@ class SpotApiController {
         } catch(MissingPropertyException e) {
             // ignore, this is an API user
             log.debug "MissingPropertyException in listVoicemails API, probably an API user"
+        }
+
+        if(!user.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
         }
 
         params.offset = params.int('_first') ?: 0
@@ -1185,6 +1318,11 @@ class SpotApiController {
             return
         }
 
+        if(!organization.enabled) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def phoneNumbers = PhoneNumber.withCriteria() {
             eq('number', number)
             owner {
@@ -1192,13 +1330,19 @@ class SpotApiController {
             }
         }
 
+        def phoneNumber = phoneNumbers.size() > 0 ? phoneNumbers[0] : null
+        if(phoneNumber && !phoneNumber.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         render(contentType: 'application/json') {
-            count = (phoneNumbers.size() > 0 ? 1 : 0)
-            if(phoneNumbers.size() > 0) {
+            count = (phoneNumber ? 1 : 0)
+            if(phoneNumber) {
                 results = [{
-                    href = '/accessNumbers/' + phoneNumbers[0].id
+                    href = '/accessNumbers/' + phoneNumber.id
                     subscriber = {
-                        href = '/subscribers/' + phoneNumbers[0].owner.id
+                        href = '/subscribers/' + phoneNumber.owner.id
                     }
                 }]
             } else {
@@ -1344,6 +1488,11 @@ class SpotApiController {
             return
         }
 
+        if(!conference.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def json = JSON.parse(request)
 
         if(json.arcadeId != conference.arcadeId) {
@@ -1389,6 +1538,11 @@ class SpotApiController {
             return
         }
 
+        if(!findMeNumber.user.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def json = JSON.parse(request)
 
         if(json.isEnabled != findMeNumber.isEnabled) {
@@ -1396,7 +1550,6 @@ class SpotApiController {
         }
 
         if(findMeNumber.validate() && findMeNumber.save()) {
-        // TODO action history?
             response.status = HSR.SC_OK
             response.flushBuffer()
     		historyService.updatedFindMeNumber(findMeNumber)
@@ -1411,6 +1564,11 @@ class SpotApiController {
         def user = User.get(params.id)
         if(!user) {
             response.sendError(HSR.SC_NOT_FOUND)
+            return
+        }
+
+        if(!user.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
@@ -1461,6 +1619,11 @@ class SpotApiController {
         def phoneNumber = PhoneNumber.get(params.id)
         if(!phoneNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
+            return
+        }
+
+        if(!phoneNumber.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
@@ -1546,6 +1709,11 @@ class SpotApiController {
         } catch(MissingPropertyException e) {
             // ignore, this is an API user
             log.debug "MissingPropertyException in updateVoicemail API, probably an API user"
+        }
+
+        if(!voicemail.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
         }
 
         def originalTranscription = voicemail.audio.transcription

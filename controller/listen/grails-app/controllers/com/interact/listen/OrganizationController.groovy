@@ -15,7 +15,9 @@ class OrganizationController {
         create: 'GET',
         delete: 'POST',
         deleteRoute: 'POST',
+        disable: 'POST',
         edit: 'GET',
+        enable: 'POST',
         list: 'GET',
         routing: 'GET',
         save: 'POST',
@@ -91,6 +93,20 @@ class OrganizationController {
         redirect(action: 'routing')
     }
 
+    def disable = {
+        def organization = Organization.get(params.id)
+        if(!organization) {
+            flash.errorMessage = 'Organization not found'
+            redirect(action: 'list')
+            return
+        }
+
+        organization.enabled = false
+        // TODO history?
+        flash.successMessage = 'Organization disabled'
+        redirect(action: 'list')
+    }
+
     def edit = {
         def organization = Organization.get(params.id)
         if(!organization) {
@@ -100,6 +116,20 @@ class OrganizationController {
         }
 
         render(view: 'edit', model: [organization: organization, enableableFeatures: licenseService.enableableFeatures()])
+    }
+
+    def enable = {
+        def organization = Organization.get(params.id)
+        if(!organization) {
+            flash.errorMessage = 'Organization not found'
+            redirect(action: 'list')
+            return
+        }
+
+        organization.enabled = true
+        // TODO history?
+        flash.successMessage = 'Organization enabled'
+        redirect(action: 'list')
     }
 
     def list = {

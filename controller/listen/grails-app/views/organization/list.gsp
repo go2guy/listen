@@ -13,13 +13,19 @@ table td {
     padding: 2px 2px;
 }
 
-table td.button-cell {
-    width: 5%;
-}
+.col-name { width: 50%; }
+.col-enabled { width: 35%; }
+.col-button { width: 5%; }
+
+td.col-enabled { padding-left: 20px; }
 
 fieldset.vertical {
     background: #F0F0F0;
     padding: 1px 10px 10px 10px;
+}
+
+tr.disabled {
+    color: #999999;
 }
     </style>
   </head>
@@ -28,21 +34,38 @@ fieldset.vertical {
       <table>
         <caption><g:message code="page.organization.list.header"/></caption>
         <thead>
-          <g:sortableColumn property="name" title="${g.message(code: 'organization.name.label')}"/>
-          <th></th>
-          <th></th>
+          <g:sortableColumn property="name" title="${g.message(code: 'organization.name.label')}" class="col-name"/>
+          <g:sortableColumn property="enabled" title="${g.message(code: 'organization.enabled.label')}" class="col-enabled"/>
+          <th class="col-button"></th>
+          <th class="col-button"></th>
+          <th class="col-button"></th>
         </thead>
         <tbody>
           <g:each in="${organizationList}" var="organization" status="i">
-            <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
-              <td>${fieldValue(bean: organization, field: 'name')}</td>
-              <td class="button-cell">
+            <tr class="${i % 2 == 0 ? 'even' : 'odd'}${!organization.enabled ? ' disabled' : ''}">
+              <td class="col-name">${fieldValue(bean: organization, field: 'name')}</td>
+              <td class="col-enabled"><listen:checkMark value="${organization.enabled}"/></td>
+              <td class="col-button">
                 <g:form controller="organization" action="edit" method="get">
                   <g:hiddenField name="id" value="${organization.id}"/>
                   <g:submitButton name="edit" value="${g.message(code: 'default.button.edit.label')}"/>
                 </g:form>
               </td>
-              <td class="button-cell">
+              <td class="col-button">
+                <g:if test="${organization.enabled}">
+                  <g:form controller="organization" action="disable" method="post">
+                    <g:hiddenField name="id" value="${organization.id}"/>
+                    <g:submitButton name="disable" value="${g.message(code: 'default.button.disable.label')}"/>
+                  </g:form>
+                </g:if>
+                <g:else>
+                  <g:form controller="organization" action="enable" method="post">
+                    <g:hiddenField name="id" value="${organization.id}"/>
+                    <g:submitButton name="enable" value="${g.message(code: 'default.button.enable.label')}"/>
+                  </g:form>
+                </g:else>
+              </td>
+              <td class="col-button">
                 <g:form controller="organization" action="delete" method="post">
                   <g:hiddenField name="id" value="${organization.id}"/>
                   <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}"/>

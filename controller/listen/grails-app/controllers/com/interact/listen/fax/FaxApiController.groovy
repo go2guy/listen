@@ -27,6 +27,11 @@ class FaxApiController {
         fax.owner = User.get(json.owner.id)
         fax.pages = json.pages
 
+        if(!fax.owner.enabled()) {
+            response.sendError(HttpServletRequest.SC_FORBIDDEN)
+            return
+        }
+
         if(fax.validate() && fax.save()) {
             historyService.leftFax(fax)
         } else {
