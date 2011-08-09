@@ -29,6 +29,7 @@ class ConferencingController {
 
     def audioDownloadService
     def grailsApplication
+    def historyService
     def invitationService
     def recordingService
     def scheduledConferenceNotificationService
@@ -99,8 +100,9 @@ class ConferencingController {
             return
         }
 
-        // TODO stat? history?
+        // TODO stat?
         audioDownloadService.download(recording.audio, response)
+        historyService.downloadedConferenceRecording(recording)
     }
 
     // ajax

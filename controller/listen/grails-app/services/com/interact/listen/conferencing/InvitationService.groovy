@@ -69,7 +69,7 @@ class InvitationService {
 
         if(invitation.validate() && invitation.save()) {
             scheduledConferenceNotificationService.sendEmails(invitation)
-            historyService.createdConferenceInvitation(invitation)
+            historyService.changedConferenceInvitation(invitation)
             // TODO stat?
         }
 

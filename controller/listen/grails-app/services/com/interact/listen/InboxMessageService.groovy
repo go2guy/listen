@@ -28,18 +28,30 @@ class InboxMessageService {
     }
 
     void toggleStatus(InboxMessage message) {
-        message.isNew = !message.isNew
-        message.save()
-
-        if(message.instanceOf(Voicemail)) {
-            cloudToDeviceService.sendVoicemailSync(message.owner)
-            messageLightService.toggle(message.owner)
-        }
+        setStatus(message, !message.isNew)
     }
 
     void setStatus(InboxMessage message, boolean isNew) {
+        def originalIsNew = message.isNew
+
         message.isNew = isNew
         message.save()
+
+        if(originalIsNew != message.isNew) {
+            if(message.instanceOf(Voicemail)) {
+                if(message.isNew) {
+                    historyService.markedVoicemailNew(message)
+                } else {
+                    historyService.markedVoicemailOld(message)
+                }
+            } else {
+                if(message.isNew) {
+                    historyService.markedFaxNew(message)
+                } else {
+                    historyService.markedFaxOld(message)
+                }
+            }
+        }
 
         if(message.instanceOf(Voicemail)) {
             cloudToDeviceService.sendVoicemailSync(message.owner)

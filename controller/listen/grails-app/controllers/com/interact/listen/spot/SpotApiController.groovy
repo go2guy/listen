@@ -181,6 +181,8 @@ class SpotApiController {
                 return
             }
 
+            historyService.joinedConference(participant)
+
             if(participant.isAdmin) {
                 statWriterService.send(Stat.CONFERENCE_ADMIN_JOIN)
             } else if(participant.isPassive) {
@@ -1720,6 +1722,8 @@ class SpotApiController {
 
         Voicemail.withTransaction { status ->
             def json = JSON.parse(request)
+
+            def originalIsNew = voicemail.isNew
             if(json.containsKey('isNew')) {
                 voicemail.isNew = json.isNew
             }
@@ -1752,6 +1756,14 @@ class SpotApiController {
 
             cloudToDeviceService.sendVoicemailSync(voicemail.owner)
             messageLightService.toggle(voicemail.owner)
+
+            if(originalIsNew != voicemail.isNew) {
+                if(isNew) {
+                    historyService.markedVoicemailNew(voicemail)
+                } else {
+                    historyService.markedVoicemailOld(voicemail)
+                }
+            }
 
             // only send a notification for a new message whose transcription was updated from 'Transcription Pending'
             // to something different (which means that the IVR received its transcription back and updated the voicemail

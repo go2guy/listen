@@ -56,6 +56,12 @@ class HistoryService {
               description: "Changed after hours mobile number from [${from?.asSmsEmail() ?: 'None'}] to [${configuration.mobilePhone?.asSmsEmail() ?: 'None'}]")
     }
 
+    void changedConferenceInvitation(ScheduledConference invitation) {
+        write(action: Action.CHANGED_CONFERENCE_INVITATION,
+              description: "Changed conference invitation for [${invitation.forConference.description}] starting [${formatDateTime(invitation.startsAt())}]",
+              onUser: invitation.scheduledBy)
+    }
+
     void changedExtensionIpAddress(Extension extension, def from) {
         write(action: Action.CHANGED_EXTENSION_IP_ADDRESS,
               description: "Changed extension IP address from [${from}] to [${extension.ip}]",
@@ -182,7 +188,7 @@ class HistoryService {
 
     void deletedConferenceRecording(Recording recording) {
         write(action: Action.DELETED_CONFERENCE_RECORDING,
-              description: "Deleted conference recording created on ${formatDateTime(recording.audio.dateCreated)} for conference [${recording.conference?.description}]",
+              description: "Deleted conference recording created on [${formatDateTime(recording.audio.dateCreated)}] for conference [${recording.conference?.description}]",
               onUser: recording.conference.owner)
     }
 
@@ -286,6 +292,12 @@ class HistoryService {
               onUser: user)
     }
 
+    void downloadedConferenceRecording(Recording recording) {
+        write(action: Action.DOWNLOADED_CONFERENCE_RECORDING,
+              description: "Downloaded conference recording created on [${formatDateTime(recording.audio.dateCreated)}] for conference [${recording.conference?.description}]",
+              onUser: recording.conference.owner)
+    }
+
     void downloadedFax(Fax fax) {
         write(action: Action.DOWNLOADED_FAX,
               description: "Downloaded ${friendlyMessageSnippet(fax)}",
@@ -355,6 +367,11 @@ class HistoryService {
               onUser: voicemail.owner)
     }
 
+    void joinedConference(Participant participant) {
+        write(action: Action.JOINED_CONFERENCE,
+              description: "[${participant.displayName}] joined conference [${participant.conference.description}]")
+    }
+
     void leftFax(Fax fax) {
         write(action: Action.LEFT_FAX,
               description: "${fax.from()} left fax for [${fax.owner.username}]",
@@ -377,6 +394,30 @@ class HistoryService {
         write(action: Action.LOGGED_OUT,
               description: "Logged out of GUI",
               onUser: user)
+    }
+
+    void markedFaxNew(Fax fax) {
+        write(action: Action.MARKED_FAX_NEW,
+              description: "Marked ${friendlyMessageSnippet(fax)} as New",
+              onUser: fax.owner)
+    }
+
+    void markedFaxOld(Fax fax) {
+        write(action: Action.MARKED_FAX_OLD,
+              description: "Marked ${friendlyMessageSnippet(fax)} as Old",
+              onUser: fax.owner)
+    }
+
+    void markedVoicemailNew(Voicemail voicemail) {
+        write(action: Action.MARKED_VOICEMAIL_NEW,
+              description: "Marked ${friendlyMessageSnippet(voicemail)} as New",
+              onUser: voicemail.owner)
+    }
+
+    void markedVoicemailOld(Voicemail voicemail) {
+        write(action: Action.MARKED_VOICEMAIL_OLD,
+              description: "Marked ${friendlyMessageSnippet(voicemail)} as Old",
+              onUser: voicemail.owner)
     }
 
     void mutedConferenceCaller(Participant participant) {
