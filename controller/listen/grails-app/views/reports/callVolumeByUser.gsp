@@ -23,7 +23,7 @@ table.report thead {
 table.report td,
 table.report th {
     border: 1px solid #E4A634;
-    padding: 2px 4px;
+    padding: 2px 2px;
 }
 
 table.report thead th {
@@ -157,9 +157,9 @@ ul.download-options li {
             <g:each in="${user.value.numbers}" var="ani" status="i">
               <tr>
                 <g:if test="${i == 0}">
-                  <td class="col-name" rowspan="${user.value.numbers.size()}"><listen:truncate value="${user.value.name}" length="18"/></td>
+                  <td class="col-name" rowspan="${user.value.numbers.size()}">${user.value.name}</td>
                 </g:if>
-                <td class="col-number"><listen:truncate value="${ani.key}" length="18"/></td>
+                <td class="col-number"><listen:truncate value="${ani.key}" length="14"/></td>
  
                 <td class="col-call-count"><listen:reportCount value="${ani.value.outbound.internal.count}"/></td>
                 <td class="col-call-duration"><listen:reportDuration duration="${ani.value.outbound.internal.duration}"/></td>
