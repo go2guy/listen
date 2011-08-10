@@ -13,7 +13,7 @@ table td {
     padding: 2px 2px;
 }
 
-.col-name { width: 50%; }
+.col-name { width: 55%; }
 .col-enabled { width: 35%; }
 .col-button { width: 5%; }
 
@@ -36,7 +36,6 @@ tr.disabled {
         <thead>
           <g:sortableColumn property="name" title="${g.message(code: 'organization.name.label')}" class="col-name"/>
           <g:sortableColumn property="enabled" title="${g.message(code: 'organization.enabled.label')}" class="col-enabled"/>
-          <th class="col-button"></th>
           <th class="col-button"></th>
           <th class="col-button"></th>
         </thead>
@@ -64,12 +63,6 @@ tr.disabled {
                     <g:submitButton name="enable" value="${g.message(code: 'default.button.enable.label')}"/>
                   </g:form>
                 </g:else>
-              </td>
-              <td class="col-button">
-                <g:form controller="organization" action="delete" method="post">
-                  <g:hiddenField name="id" value="${organization.id}"/>
-                  <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}"/>
-                </g:form>
               </td>
             </tr>
           </g:each>

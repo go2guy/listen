@@ -13,7 +13,6 @@ class OrganizationController {
         addRoute: 'POST',
         allowedApplications: 'GET',
         create: 'GET',
-        delete: 'POST',
         deleteRoute: 'POST',
         disable: 'POST',
         edit: 'GET',
@@ -59,19 +58,6 @@ class OrganizationController {
 
     def create = {
         render(view: 'create', model: [enableableFeatures: licenseService.enableableFeatures()])
-    }
-
-    def delete = {
-        def organization = Organization.get(params.id)
-        if(!organization) {
-            flash.errorMessage = 'Organization not found'
-            redirect(action: 'list')
-            return
-        }
-
-        organization.delete()
-        flash.successMessage = 'Organization deleted'
-        redirect(action: 'list')
     }
 
     def deleteRoute = {
