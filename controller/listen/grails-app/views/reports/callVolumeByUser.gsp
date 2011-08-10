@@ -22,6 +22,7 @@ table.report thead {
 
 table.report td,
 table.report th {
+    background-color: #FFFFFF;
     border: 1px solid #E4A634;
     padding: 2px 2px;
 }
@@ -187,6 +188,26 @@ ul.download-options li {
 $(document).ready(function() {
     $('#start').datepicker({ dateFormat: 'yy-mm-dd', showAnim: 'fadeIn' });
     $('#end').datepicker({ dateFormat: 'yy-mm-dd', showAnim: 'fadeIn' });
+/* TODO works well in chrome, but not FF or IE
+    function fixedHeader() {
+        var scrollTop = $(window).scrollTop();
+        var offset = $('.report').offset().top;
+        var thead = $('.report thead');
+        $('*', thead).each(function() {
+            var it = $(this);
+            it.css('width', it.css('width'));
+        });
+        if(scrollTop > offset) {
+            thead.css({ position: 'fixed', top: '0px' }).css('box-shadow', '0 5px 5px rgba(200, 200, 200, 0.5)');
+        } else {
+            if(scrollTop <= offset) {
+                thead.css({ position: 'relative', top: ''});
+                $('.report tbody tr:first td').css('border-top-width', 0);
+            }
+        }
+    }
+    $(window).scroll(fixedHeader);
+    fixedHeader();*/
 });
 
     </script>
