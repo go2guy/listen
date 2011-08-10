@@ -9,6 +9,7 @@ ol.file-list {
     list-style-type: none;
     margin: 0 10px 0 0;
     padding: 0;
+    width: 510px;
 }
 
 ol.file-list > li {
@@ -94,12 +95,12 @@ div.upload-error {
 
         <ol class="file-list sortable">
           <g:if test="${fax?.sourceFiles?.size() > 0}">
-            <g:set var="onlyOne" value="${fax.sourceFiles.size() == 1}"/>
+            <g:set var="disableDelete" value="${fax.sourceFiles.size() == 1 && fax.sourceFiles[0].detectedType == 'application/pdf'}"/>
             <g:each in="${fax.sourceFiles}" var="file" status="i">
               <li class="${file.detectedType != 'application/pdf' ? 'upload-error' : ''}">
                 <span class="file-existing">${file.file.name.encodeAsHTML()}</span>
                 <input type="hidden" class="file-input" name="files[${i}]" value="${file.id}"/>
-                <button type="button" class="delete-file${onlyOne ? ' disabled' : ''}"${onlyOne ? ' disabled="disabled" readonly="readonly"' : ''}>Delete</button>
+                <button type="button" class="delete-file${disableDelete ? ' disabled' : ''}"${disableDelete ? ' disabled="disabled" readonly="readonly"' : ''}>Delete</button>
                 <g:if test="${file.detectedType != 'application/pdf'}">
                   <div class="upload-error">This file is not a PDF</div>
                 </g:if>
@@ -134,7 +135,7 @@ var fax = {
 
     deleteFile: function(li) {
         li.remove();
-        if($('.file-list > li').size() == 1) {
+        if($('.file-list > li').size() == 1 && !$('.file-list > li:first').hasClass('upload-error')) {
             $('.file-list > li .delete-file').addClass('disabled').attr('readonly', 'readonly').attr('disabled', 'disabled');
         }
     },
@@ -158,6 +159,9 @@ $(document).ready(function() {
         tolerance: 'pointer'
     }).disableSelection();
     $('.delete-file').click(function(e) {
+        if($('.file-list > li').size() == 1) {
+            fax.addFile();
+        }
         fax.deleteFile($(e.target).closest('li'));
     });
     $('#file-form').submit(function() {
