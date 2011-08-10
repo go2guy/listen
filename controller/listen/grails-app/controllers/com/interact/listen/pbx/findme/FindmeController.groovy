@@ -90,6 +90,8 @@ class FindmeController {
             preferences.reminderNumber = params.smsNumber + '@' + params.smsProvider
         }
 
+        def oldNumbers = FindMeNumber.findAllByUserForHistory(user)
+
         FindMeNumber.withTransaction { status ->
             boolean success = true
 
@@ -103,6 +105,11 @@ class FindmeController {
             success = success && preferences.validate() && preferences.save()
 
             if(success) {
+
+                def newNumbers = FindMeNumber.findAllByUserForHistory(user)
+                if(oldNumbers != newNumbers) {
+                    historyService.changedFindMeNumbers(user)
+                }
 
                 boolean wasJustEnabled = false
                 if(oldSendReminder != preferences.sendReminder) {

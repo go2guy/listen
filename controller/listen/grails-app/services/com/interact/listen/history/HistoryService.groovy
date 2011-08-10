@@ -80,6 +80,13 @@ class HistoryService {
               onUser: preferences.user)
     }
 
+    void changedFindMeNumbers(User user) {
+        def numbers = FindMeNumber.findAllByUserForHistory(user)
+        write(action: Action.CHANGED_FIND_ME_NUMBERS,
+              description: "Changed Find Me numbers to ${numbers}",
+              onUser: user)
+    }
+
     void changedMobilePhoneVisibility(MobilePhone phone) {
         write(action: Action.CHANGED_MOBILE_PHONE_VISIBILITY,
               description: "Changed mobile phone [${phone.asSmsEmail()}] from [${phone.isPublic ? 'private' : 'public'}] to [${phone.isPublic ? 'public' : 'private'}]",
@@ -208,12 +215,6 @@ class HistoryService {
         write(action: Action.DELETED_FAX,
               description: "Deleted ${friendlyMessageSnippet(fax)}",
               onUser: fax.owner)
-    }
-
-    void deletedFindMeNumber(FindMeNumber findMeNumber) {
-        write(action: Action.DELETED_FINDMENUMBER,
-              description: "Deleted findme number [${findMeNumber.number}]",
-              onUser: findMeNumber.user)
     }
 
     void deletedMobilePhone(def phone) {
@@ -473,19 +474,6 @@ class HistoryService {
     void unmutedConferenceCaller(Participant participant) {
         write(action: Action.UNMUTED_CONFERENCE_CALLER,
               description: "Unmuted caller [${participant.displayName()}] in conference [${participant.conference.description}]")
-    }
-
-    void updatedFindMeNumber(FindMeNumber findMeNumber) {
-        def properties
-        if(findMeNumber.isEnabled) {
-            write(action: Action.UPDATED_FINDMENUMBER,
-                  description: "Enabled findme number [${findMeNumber.number}]",
-                  onUser: findMeNumber.user)
-        } else {
-            write(action: Action.UPDATED_FINDMENUMBER,
-                  description: "Disabled findme number [${findMeNumber.number}]",
-                  onUser: findMeNumber.user)
-        }
     }
 
     private void write(Map map) {

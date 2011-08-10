@@ -2,6 +2,7 @@ package com.interact.listen.pbx.findme
 
 import com.interact.listen.pbx.Extension
 import com.interact.listen.User
+import grails.converters.JSON
 
 class FindMeNumber {
     Integer dialDuration
@@ -30,6 +31,19 @@ class FindMeNumber {
 
         // we dont want the keys in our returned object, just a list of lists
         return groups.collect { entry -> entry.value }
+    }
+
+    static def findAllByUserForHistory(User user) {
+        def groups = findAllByUserGroupedByPriority(user)
+        def result = [] as List
+        groups.each { numbers ->
+            def group = [] as List
+            numbers.each { number ->
+                group << "${number.isEnabled ? 'on' : 'off'}/${number.number}/${number.dialDuration}"
+            }
+            result << group
+        }
+        return (result as JSON).toString().replaceAll('"', '').replaceAll(',', ', ')
     }
 
     static def removeAll(User user) {

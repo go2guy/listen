@@ -566,8 +566,8 @@ class SpotApiController {
             return
         }
 
-		historyService.deletedFindMeNumber(findMeNumber)
         findMeNumber.delete()
+        historyService.changedFindMeNumbers(findMeNumber.user)
         
         response.flushBuffer()
     }
@@ -1552,9 +1552,9 @@ class SpotApiController {
         }
 
         if(findMeNumber.validate() && findMeNumber.save()) {
+            historyService.changedFindMeNumbers(findMeNumber.user)
             response.status = HSR.SC_OK
             response.flushBuffer()
-    		historyService.updatedFindMeNumber(findMeNumber)
         } else {
             response.sendError(HSR.SC_BAD_REQUEST, beanErrors(findMeNumber))
         }
