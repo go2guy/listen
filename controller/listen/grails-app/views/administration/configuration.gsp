@@ -55,7 +55,7 @@
         <h3>Conferencing</h3>
 
         <label for="conferencing.pinLength"><g:message code="conferencingConfiguration.pinLength.label"/></label>
-        <g:textField name="conferencing.pinLength" value="${fieldValue(bean: conferencing, field: 'pinLength')}" class="${listen.validationClass(bean: conferencing, field: 'pinLength')}"/>
+        <g:textField name="conferencing.pinLength" value="${fieldValue(bean: conferencing, field: 'pinLength')}" class="${listen.validationClass(bean: conferencing, field: 'pinLength')}" autocomplete="false"/>
       </fieldset>
    </listen:canAccess>
         

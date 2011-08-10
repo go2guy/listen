@@ -5,6 +5,7 @@ import grails.plugins.springsecurity.Secured
 import com.interact.listen.android.GoogleAuthConfiguration
 import com.interact.listen.conferencing.ConferencingConfiguration
 import com.interact.listen.history.*
+import com.interact.listen.license.ListenFeature
 import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
@@ -17,6 +18,7 @@ class AdministrationController {
     def directMessageNumberService
     def extensionService
     def historyService
+    def licenseService
     def realizeAlertUpdateService
 
     static allowedMethods = [
@@ -326,11 +328,12 @@ class AdministrationController {
 
         def oldTranscriptionIsEnabled = transcription.isEnabled
         def oldTranscriptionPhoneNumber = transcription.phoneNumber
-
-        // using .properties = params['transcription'] didnt work here, resorting to bindData() :(
-        bindData(transcription, params['transcription'], 'isEnabled')
-        bindData(transcription, params['transcription'], 'phoneNumber')
-
+        if(licenseService.canAccess(ListenFeature.VOICEMAIL) && licenseService.canAccess(ListenFeature.TRANSCRIPTION)) {
+            // using .properties = params['transcription'] didnt work here, resorting to bindData()
+            bindData(transcription, params['transcription'], 'isEnabled')
+            bindData(transcription, params['transcription'], 'phoneNumber')
+        }
+        
         def afterHours = AfterHoursConfiguration.findByOrganization(organization)
         if(!afterHours) {
             afterHours = new AfterHoursConfiguration(organization: organization)
@@ -340,18 +343,19 @@ class AdministrationController {
         def originalAlternateNumber = afterHours.alternateNumber
         def originalRealizeUrl = afterHours.realizeUrl
         def originalRealizeAlertName = afterHours.realizeAlertName
-
-        if(params['afterHours.mobilePhone.id'] == '') {
-            afterHours.mobilePhone = null
-        } else {
-            bindData(afterHours, params['afterHours'], 'mobilePhone')
-        }
-        bindData(afterHours, params['afterHours'], 'realizeAlertName')
-        bindData(afterHours, params['afterHours'], 'realizeUrl')
-        if(params['afterHours'].alternateNumber?.trim() == '') {
-            afterHours.alternateNumber = ''
-        } else {
-            afterHours.alternateNumber = params['afterHours'].alternateNumber + '@' + params['afterHours'].provider
+        if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
+            if(params['afterHours.mobilePhone.id'] == '') {
+                afterHours.mobilePhone = null
+            } else {
+                bindData(afterHours, params['afterHours'], 'mobilePhone')
+            }
+            bindData(afterHours, params['afterHours'], 'realizeAlertName')
+            bindData(afterHours, params['afterHours'], 'realizeUrl')
+            if(params['afterHours'].alternateNumber?.trim() == '') {
+                afterHours.alternateNumber = ''
+            } else {
+                afterHours.alternateNumber = params['afterHours'].alternateNumber + '@' + params['afterHours'].provider
+            }
         }
 
         def conferencing = ConferencingConfiguration.findByOrganization(organization)
@@ -360,45 +364,52 @@ class AdministrationController {
         }
 
         def originalPinLength = conferencing.pinLength
-
-        if(params['conferencing'].pinLength == '' || !params['conferencing'].pinLength.matches('^[0-9]*$')) {
-            flash.errorMessage = message(code: 'conferencingConfiguration.pattern.matches.invalid')
-            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])   
+        if(licenseService.canAccess(ListenFeature.CONFERENCING)) {
+            if(params['conferencing'].pinLength == '' || !params['conferencing'].pinLength.matches('^[0-9]*$')) {
+                flash.errorMessage = message(code: 'conferencingConfiguration.pattern.matches.invalid')
+                render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])   
+            }
+            bindData(conferencing, params['conferencing'], 'pinLength')
         }
-
-        bindData(conferencing, params['conferencing'], 'pinLength')
 
         // TODO use a transaction
         if(transcription.validate() && transcription.save() && afterHours.validate() && afterHours.save() && conferencing.validate() && conferencing.save()) {
-            boolean wasJustEnabled = false
-            if(oldTranscriptionIsEnabled != transcription.isEnabled) {
-                if(transcription.isEnabled) {
-                    wasJustEnabled = true
+
+            if(licenseService.canAccess(ListenFeature.VOICEMAIL) && licenseService.canAccess(ListenFeature.TRANSCRIPTION)) {
+                boolean wasJustEnabled = false
+                if(oldTranscriptionIsEnabled != transcription.isEnabled) {
+                    if(transcription.isEnabled) {
+                        wasJustEnabled = true
+                        historyService.enabledTranscription(transcription)
+                    } else {
+                        historyService.disabledTranscription()
+                    }
+                }
+
+                if(!wasJustEnabled && oldTranscriptionPhoneNumber != transcription.phoneNumber) {
                     historyService.enabledTranscription(transcription)
-                } else {
-                    historyService.disabledTranscription()
                 }
             }
 
-            if(!wasJustEnabled && oldTranscriptionPhoneNumber != transcription.phoneNumber) {
-                historyService.enabledTranscription(transcription)
+            if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
+                if(originalMobilePhone != afterHours.mobilePhone) {
+                    historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
+                }
+
+                if(originalAlternateNumber != afterHours.alternateNumber) {
+                    realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
+                    historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
+                }
+
+                if(originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
+                    historyService.changedRealizeConfiguration(afterHours)
+                }
             }
 
-            if(originalMobilePhone != afterHours.mobilePhone) {
-                historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
-            }
-
-            if(originalAlternateNumber != afterHours.alternateNumber) {
-                realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
-                historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
-            }
-
-            if(originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
-                historyService.changedRealizeConfiguration(afterHours)
-            }
-
-            if(originalPinLength != conferencing.pinLength) {
-                historyService.changedNewConferencePinLength(conferencing, originalPinLength)
+            if(licenseService.canAccess(ListenFeature.CONFERENCING)) {
+                if(originalPinLength != conferencing.pinLength) {
+                    historyService.changedNewConferencePinLength(conferencing, originalPinLength)
+                }
             }
 
             flash.successMessage = message(code: 'default.saved.message')
