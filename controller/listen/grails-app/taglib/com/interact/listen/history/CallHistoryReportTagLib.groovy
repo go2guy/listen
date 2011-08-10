@@ -12,7 +12,7 @@ class CallHistoryReportTagLib {
 
     def reportDuration = { attrs ->
         if(attrs.duration && attrs.duration.millis > 0) {
-            out << listen.formatduration(duration: attrs.duration, zeroes: false, millis: false)
+            out << listen.formatduration(duration: attrs.duration)
         }
     }
 }

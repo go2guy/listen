@@ -201,6 +201,23 @@ class BootStrap {
                                     result: "Success").save(flush: true)
                 }
 
+                new CallHistory(ani: '789',
+                                dnis: '987',
+                                dateTime: new DateTime(),
+                                duration: new Duration(4500),
+                                fromUser: operator,
+                                toUser: user,
+                                organization: organization,
+                                result: 'Success').save(flush: true)
+                new CallHistory(ani: '789',
+                                dnis: '987',
+                                dateTime: new DateTime(),
+                                duration: new Duration(1000 * 60 * 60 * 36),
+                                fromUser: rob,
+                                toUser: operator,
+                                organization: organization,
+                                result: 'Success').save(flush: true)
+
                 for(i in 1..100) {
                     def a = new ActionHistory(byUser: user,
                                               onUser: user,

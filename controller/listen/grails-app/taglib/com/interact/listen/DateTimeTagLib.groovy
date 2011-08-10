@@ -26,31 +26,64 @@ class DateTimeTagLib {
 
     def formatduration = { attrs ->
         if(!attrs.duration) throwTagError 'Tag [formatduration] is missing required attribute [duration]'
-        boolean zeroes = attrs.containsKey('zeroes') ? Boolean.valueOf(attrs.zeroes) : true
         boolean millis = attrs.containsKey('millis') ? Boolean.valueOf(attrs.millis) : false
 
-        def builder = new PeriodFormatterBuilder()
-        zeroes ? builder.printZeroAlways() : builder.printZeroRarelyFirst()
-
-        builder.appendHours()
-               .appendSuffix(':')
-
-        zeroes ? builder.printZeroAlways() : builder.printZeroRarelyFirst()
-
-        builder.minimumPrintedDigits(2)
-               .appendMinutes()
-               .appendSuffix(':')
-               .printZeroAlways()
-               .minimumPrintedDigits(2)
-               .appendSeconds()
-
+        def builder = builderFor(attrs.duration.millis)
         if(millis) {
-            builder.appendSuffix('.')
+            builder.appendSeparator('.')
                    .printZeroAlways()
                    .appendMillis3Digit()
         }
-               
         out << builder.toFormatter().print(attrs.duration.toPeriod())
+    }
+
+    private def builderFor(long millis) {
+        final long MILLIS_PER_MINUTE = 1000 * 60
+        final long MILLIS_PER_TEN_MINUTES = MILLIS_PER_MINUTE * 10
+        final long MILLIS_PER_HOUR = MILLIS_PER_MINUTE * 60
+
+        if(millis < MILLIS_PER_MINUTE) {
+            // '0:00' to '0:59'
+            return new PeriodFormatterBuilder()
+                .appendLiteral('0:')
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendSeconds()
+        } else if(millis < MILLIS_PER_TEN_MINUTES) {
+            // '1:00' to '9:59'
+            return new PeriodFormatterBuilder()
+                .printZeroNever()
+                .minimumPrintedDigits(1)
+                .appendMinutes()
+                .appendSeparator(':')
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendSeconds()
+        } else if(millis < MILLIS_PER_HOUR) {
+            // '10:00' to '59:59'
+            return new PeriodFormatterBuilder()
+                .printZeroNever()
+                .minimumPrintedDigits(2)
+                .appendMinutes()
+                .appendSeparator(':')
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendSeconds()
+        } else {
+            // '1:00:00' and above, e.g. '12:34:56', '123:45:54'
+            return new PeriodFormatterBuilder()
+                .printZeroNever()
+                .minimumPrintedDigits(1)
+                .appendHours()
+                .appendSuffix(':')
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendMinutes()
+                .appendSuffix(':')
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendSeconds()
+        }
     }
 
     def timePicker = { attrs ->

@@ -48,7 +48,7 @@ class DateTimeTagLibTests extends TagLibUnitTestCase {
     }
 
     // null duration throws error
-    void tesFormatduration0() {
+    void testFormatduration0() {
         try {
             tagLib.formatduration(duration: null)
         } catch(GrailsTagException e) {
@@ -56,17 +56,38 @@ class DateTimeTagLibTests extends TagLibUnitTestCase {
         }
     }
     
-    // duration with hours
+    // duration with hours, millis
     void testFormatduration1() {
         final def duration = new Duration((1000 * 60 * 60 * 5) + (1000 * 60 * 6) + (1000 * 7) + 432)
-        tagLib.formatduration(duration: duration, zeroes: true, millis: true)
+        tagLib.formatduration(duration: duration, millis: true)
         assertEquals '5:06:07.432', tagLib.out.toString()
     }
 
-    // duration with minutes
-    void testFormatDuration2() {
+    // duration with minutes, millis
+    void testFormatduration2() {
         final def duration = new Duration(1000 * 60 * 34)
-        tagLib.formatduration(duration: duration, zeroes: true, millis: true)
-        assertEquals '0:34:00.000', tagLib.out.toString()
+        tagLib.formatduration(duration: duration, millis: true)
+        assertEquals '34:00.000', tagLib.out.toString()
+    }
+
+    // duration with < 60 seconds, millis
+    void testFormatduration3() {
+        final def duration = new Duration(1000 * 32)
+        tagLib.formatduration(duration: duration, millis: true)
+        assertEquals '0:32.000', tagLib.out.toString()
+    }
+
+    // duration with < 10 seconds, no millis
+    void testFormatduration4() {
+        final def duration = new Duration(1000 * 9)
+        tagLib.formatduration(duration: duration, millis: false)
+        assertEquals '0:09', tagLib.out.toString()
+    }
+
+    // duration > 100 hours, millis
+    void testFormatduration5() {
+        final def duration = new Duration((1000 * 60 * 60 * 123) + (1000 * 60 * 55) + 321)
+        tagLib.formatduration(duration: duration, millis: true)
+        assertEquals '123:55:00.321', tagLib.out.toString()
     }
 }
