@@ -11,14 +11,14 @@
         <![CDATA[
             function II_SB_JS_function_56_121(passValues)
             {
-	            return getJsonVal(passValues, 'application');
+	            return getJsonVal(passValues, 'applicationLabel');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Application</log>
+            <log target="status">Get Application Label</log>
             <log>INFO: Entered run-javascript.vxml [56_121]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_56_121(passValues)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="application" expr="II_SB_userJava" />   

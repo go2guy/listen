@@ -2,7 +2,7 @@ function getAppName(appName, jsonObj) {
     if ((typeof(jsonObj) != 'undefined') && (jsonObj.length > 0)) {
         var application = new String(appName).replace(/^\s*|\s*$|\s+/g,'');
         application = application.toUpperCase();
-        if (application == 'MAILBOX')
+        if (application == 'MAILBOX' || application == 'DIRECTMAILBOX')
             application = 'VOICEMAIL';
         if (application == 'FINDMECONFIG')
             application = 'FINDME';
@@ -32,7 +32,7 @@ function getAppName(appName, jsonObj) {
             appName = "listen_conference";
             break;
         case "Mailbox":
-        case "Direct Voicemail":
+        case "Direct Mailbox":
             appName = "listen_mailbox";
             break;
         case "Voicemail":
@@ -61,7 +61,7 @@ function getAppName(appName, jsonObj) {
     return appName;
 }
 
-function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,licenses,voipChannel,callerID) {
+function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,licenses,voipChannel,callerID,applicationLabel) {
     if ((typeof(passValues) == 'undefined') || (passValues.length == 0)) {
         var sipFrom = '';
         var tmpVal = callerID.split('<sip:');
@@ -69,7 +69,7 @@ function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,s
             sipFrom = tmpVal[1].split('@')[0];
         else
             sipFrom = tmpVal[0].replace(/"|\s$/g,'');
-        return "{\"application\":\""+appToAccess+"\", \"sipFrom\":\""+sipFrom+"\", \"licenses\":"+licenses+", \"voipChannel\":\""+voipChannel+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"pstnLength\": \""+pstnLength+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"organization\": \""+ organization+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
+        return "{\"application\":\""+appToAccess+"\", \"sipFrom\":\""+sipFrom+"\", \"licenses\":"+licenses+", \"applicationLabel\":\""+applicationLabel+"\", \"voipChannel\":\""+voipChannel+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"pstnLength\": \""+pstnLength+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"organization\": \""+ organization+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
     }
     else {
         var result = eval("("+passValues+")");

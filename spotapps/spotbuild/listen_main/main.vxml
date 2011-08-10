@@ -60,6 +60,7 @@
 	<var name="SB_UV_callerID"/>
 	<var name="SB_UV_defaultDialNumber"/>
 	<var name="SB_UV_voipChannel"/>
+	<var name="SB_UV_applicationLabel"/>
 
     
     <form id="beginDocument">
@@ -196,6 +197,9 @@
 			</if>
 			<if cond="SB_UV_voipChannel != undefined">
 				<assign name="voipChannel" expr="SB_UV_voipChannel" />
+			</if>
+			<if cond="SB_UV_applicationLabel != undefined">
+				<assign name="applicationLabel" expr="SB_UV_applicationLabel" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

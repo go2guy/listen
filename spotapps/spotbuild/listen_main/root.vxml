@@ -69,6 +69,7 @@
 	<var name="callerID" expr="'sipFrom'" />
 	<var name="defaultDialNumber" expr="''" /> <!-- Config Default Dial Number -->
 	<var name="voipChannel" expr="''" />
+	<var name="applicationLabel" expr="''" />
 
 
     <!-- Conference Variables -->
