@@ -1,54 +1,38 @@
 <html>
   <head>
-	  <title>Grails Runtime Exception</title>
-	  <style type="text/css">
-	  		.message {
-	  			border: 1px solid black;
-	  			padding: 5px;
-	  			background-color:#E9E9E9;
-	  		}
-	  		.stack {
-	  			border: 1px solid black;
-	  			padding: 5px;
-	  			overflow:auto;
-	  			height: 300px;
-	  		}
-	  		.snippet {
-	  			padding: 5px;
-	  			background-color:white;
-	  			border:1px solid black;
-	  			margin:3px;
-	  			font-family:courier;
-	  		}
-	  </style>
+    <title>Unknown Error</title>
+    <meta name="layout" content="main"/>
+    <style>
+.error-image,
+.error-details {
+    display: block;
+    float: left;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.error-image {
+    margin-left: 100px;
+}
+
+.error-details {
+    margin-left: 20px;
+}
+
+h2, h4 {
+    margin: 0 0 10px 0;
+    padding: 0;
+}
+
+h4 { font-weight: normal; }
+
+    </style>
   </head>
-
   <body>
-    <h1>Grails Runtime Exception</h1>
-    <h2>Error Details</h2>
-
-  	<div class="message">
-		<strong>Error ${request.'javax.servlet.error.status_code'}:</strong> ${request.'javax.servlet.error.message'.encodeAsHTML()}<br/>
-		<strong>Servlet:</strong> ${request.'javax.servlet.error.servlet_name'}<br/>
-		<strong>URI:</strong> ${request.'javax.servlet.error.request_uri'}<br/>
-		<g:if test="${exception}">
-	  		<strong>Exception Message:</strong> ${exception.message?.encodeAsHTML()} <br />
-	  		<strong>Caused by:</strong> ${exception.cause?.message?.encodeAsHTML()} <br />
-	  		<strong>Class:</strong> ${exception.className} <br />
-	  		<strong>At Line:</strong> [${exception.lineNumber}] <br />
-	  		<strong>Code Snippet:</strong><br />
-	  		<div class="snippet">
-	  			<g:each var="cs" in="${exception.codeSnippet}">
-	  				${cs?.encodeAsHTML()}<br />
-	  			</g:each>
-	  		</div>
-		</g:if>
-  	</div>
-	<g:if test="${exception}">
-	    <h2>Stack Trace</h2>
-	    <div class="stack">
-	      <pre><g:each in="${exception.stackTraceLines}">${it.encodeAsHTML()}<br/></g:each></pre>
-	    </div>
-	</g:if>
+    <img class="error-image" src="${resource(dir: 'resources/app/images', file: 'sad.jpg')}"/>
+    <div class="error-details">
+      <h2>We seem to have encountered an error.</h2>
+      <h4>The error has been logged. Contact your system administrator for assistance.</h4>
+    </div>
   </body>
 </html>
