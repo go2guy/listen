@@ -93,9 +93,9 @@ div.upload-error {
         <div class="files-label">Files<button type="button" id="add-file">Add File</button></div>
 
         <ol class="file-list sortable">
-          <g:if test="${fax?.toMerge?.size() > 0}">
-            <g:set var="onlyOne" value="${fax.toMerge.size() == 1}"/>
-            <g:each in="${fax.toMerge}" var="file" status="i">
+          <g:if test="${fax?.sourceFiles?.size() > 0}">
+            <g:set var="onlyOne" value="${fax.sourceFiles.size() == 1}"/>
+            <g:each in="${fax.sourceFiles}" var="file" status="i">
               <li class="${file.detectedType != 'application/pdf' ? 'upload-error' : ''}">
                 <span class="file-existing">${file.file.name.encodeAsHTML()}</span>
                 <input type="hidden" class="file-input" name="files[${i}]" value="${file.id}"/>
@@ -107,7 +107,7 @@ div.upload-error {
             </g:each>
           </g:if>
           <g:else>
-            <li class="${hasErrors(bean: fax, field: 'toMerge', 'upload-error')}">
+            <li class="${hasErrors(bean: fax, field: 'sourceFiles', 'upload-error')}">
               <input type="file" class="file-input" name="files[0]"/>
               <button type="button" class="delete-file disabled" readonly="readonly" disabled="disabled">Delete</button>
             </li>

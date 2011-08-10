@@ -71,8 +71,8 @@ class FaxController {
         def names = [] as List
         def subdir = System.currentTimeMillis() as String
         command.files.each { file ->
-            log.debug "Handling file [${file.originalFilename}]"
             if(file instanceof MultipartFile) {
+                log.debug "Handling file [${file.originalFilename}]"
                 if(!file.isEmpty()) {
                     def filename = file.originalFilename
                     def count = names.count(filename)
