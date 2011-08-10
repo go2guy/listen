@@ -27,12 +27,8 @@ class ApplicationService {
         }
 
         if(licenseService.canAccess(ListenFeature.VOICEMAIL, organization) || licenseService.canAccess(ListenFeature.FAX, organization)) {
+            applications << 'Direct Mailbox'
             applications << 'Direct Message'
-        }
-
-        if(licenseService.canAccess(ListenFeature.VOICEMAIL, organization)) {
-            applications << 'Mailbox'
-            applications << 'Voicemail'
         }
 
         if(licenseService.canAccess(ListenFeature.FINDME, organization)) {
@@ -41,6 +37,11 @@ class ApplicationService {
 
         if(licenseService.canAccess(ListenFeature.IPPBX, organization)) {
             applications << 'IP PBX'
+        }
+
+        if(licenseService.canAccess(ListenFeature.VOICEMAIL, organization)) {
+            applications << 'Mailbox'
+            applications << 'Voicemail'
         }
 
         return applications.sort()
