@@ -21,7 +21,7 @@
             <log target="status">Chk App</log>
             <log>INFO: Entered run-javascript.vxml [51_67]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_51_67(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="appToAccess" expr="II_SB_userJava" />   
+            <assign name="applicationLabel" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
