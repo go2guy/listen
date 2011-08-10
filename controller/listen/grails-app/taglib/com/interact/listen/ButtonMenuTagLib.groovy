@@ -103,10 +103,10 @@ class ButtonMenuTagLib {
 
                 out << '<ul class="button-menu">'
                 button(attrs.button == 'inbox', 'messages', 'inbox', 'button.menu.messages.inbox')
-                if(licenseService.isLicensed(ListenFeature.FAX)) {
+                if(licenseService.canAccess(ListenFeature.FAX)) {
                     button(attrs.button == 'sendfax', 'fax', 'create', 'button.menu.messages.sendfax')
                 }
-                if(licenseService.isLicensed(ListenFeature.VOICEMAIL)) {
+                if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
                     button(attrs.button == 'settings', 'voicemail', 'settings', 'button.menu.messages.settings')
                 }
                 out << '</ul>'
