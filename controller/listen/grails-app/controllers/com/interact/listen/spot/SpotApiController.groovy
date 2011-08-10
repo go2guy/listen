@@ -1561,8 +1561,6 @@ class SpotApiController {
     }
 
     def updateFindMeExpiration = {
-        // TODO Action History?
-
         def user = User.get(params.id)
         if(!user) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1583,6 +1581,7 @@ class SpotApiController {
         }
 
         if(findMePreferences.validate() && findMePreferences.save()) {
+            historyService.changedFindMeExpiration(findMePreferences)
             response.status = HSR.SC_OK
             response.flushBuffer()
         } else {
