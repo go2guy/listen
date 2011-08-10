@@ -116,7 +116,7 @@
                     <assign name="hangUp" expr="'true'"/>
                     <assign name="logText" expr="'playGreeting.vxml: Fax receive error. Organization ['+getJsonVal(appObj, 'organization')+'] is not licensed for fax'"/>
                     <assign name="logText" expr="writeLog('LISTEN_VOICEMAIL',LINE_NUMBER,logText)"/>
-                    <log target="logFile"><value expr="logText"/></log>
+                    <goto next="#exit"/>
                 </if>
                 <if cond="((userEntry != 'N') &amp;&amp; (isVmLicensed != 1))">
                     <log>INFO: Organization is not licensed for voicemail</log>
@@ -124,7 +124,7 @@
                     <assign name="hangUp" expr="'true'"/>
                     <assign name="logText" expr="'playGreeting.vxml: Voicemail error. Organization ['+getJsonVal(appObj, 'organization')+'] is not licensed for voicemail'"/>
                     <assign name="logText" expr="writeLog('LISTEN_VOICEMAIL',LINE_NUMBER,logText)"/>
-                    <log target="logFile"><value expr="logText"/></log>
+                    <goto next="#exit"/>
                 </if>
 		    </filled>
 		    <noinput>
@@ -134,14 +134,13 @@
                 <goto next="#getPrompt"/>
 		    </nomatch>
 	    </field>
-        <block>
-            <goto next="#exit"/>
-        </block>
     </form>
 
 	<form id="exit">
 		<block>
-            <return namelist="userEntry hangUp"/>
+            <log>INFO: Hang UP [<value expr="hangUp"/>]</log>
+            <log>INFO: User Entry [<value expr="userEntry"/>]</log>
+            <return namelist="userEntry hangUp logText"/>
         </block>
     </form>
 

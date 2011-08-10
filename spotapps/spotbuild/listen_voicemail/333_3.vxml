@@ -24,6 +24,7 @@
         <block>
 			<assign name="returnVal" expr="playGreeting.userEntry" />
 			<assign name="status" expr="playGreeting.hangUp" />
+			<assign name="logText" expr="playGreeting.logText" />
 
 			<assign name="II_SB_nxtOpt" expr="II_SB_succeed"/>
             <goto next="#exit"/>
