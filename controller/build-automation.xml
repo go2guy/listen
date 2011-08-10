@@ -44,7 +44,7 @@
     <mkdir dir="${automation.report.dir}"/>
 
     <cobertura-report destdir="${automation.report.dir}" format="xml" datafile="\\${webserver}/slash/interact/listen/lib/cobertura.ser">
-      <fileset dir="listen/grails-app" includes="**/*.groovy"/>
+      <fileset dir="listen/grails-app/controllers" includes="**/*.groovy"/>
       <fileset dir="listen/src/java" includes="**/*.java"/>
       <fileset dir="listen/src/groovy" includes="**/*.groovy"/>
     </cobertura-report>
