@@ -382,6 +382,7 @@ class HistoryService {
     void leftVoicemail(Voicemail voicemail) {
         write(action: Action.LEFT_VOICEMAIL,
               description: "${voicemail.from()} left voicemail for [${voicemail.owner.username}]",
+              byUser: voicemail.leftBy,
               onUser: voicemail.owner)
     }
 
@@ -478,7 +479,7 @@ class HistoryService {
 
     private void write(Map map) {
         def history = new ActionHistory(map)
-        history.byUser = currentUser()
+        history.byUser = map.containsKey('byUser') ? map.byUser : currentUser()
         history.organization = history.byUser?.organization ?: history.onUser?.organization
         history.channel = currentChannel()
         if(!(history.validate() && history.save())) {
