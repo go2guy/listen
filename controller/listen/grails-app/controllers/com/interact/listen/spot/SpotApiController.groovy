@@ -1757,7 +1757,7 @@ class SpotApiController {
             messageLightService.toggle(voicemail.owner)
 
             if(originalIsNew != voicemail.isNew) {
-                if(isNew) {
+                if(voicemail.isNew) {
                     historyService.markedVoicemailNew(voicemail)
                 } else {
                     historyService.markedVoicemailOld(voicemail)
