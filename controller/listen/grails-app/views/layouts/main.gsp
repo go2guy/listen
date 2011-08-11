@@ -570,11 +570,15 @@ button:hover {
 input[type=submit].disabled,
 input[type=button].disabled,
 input[type=reset].disabled,
-button.disabled {
-    color: #999999;
-    cursor: default;
-    background-color: #DDDDDD;
-    border-color: #999999;
+button.disabled,
+input[type=submit].disabled:hover,
+input[type=button].disabled:hover,
+input[type=reset].disabled:hover,
+button.disabled:hover {
+    color: #999999 !important;
+    cursor: default !important;
+    background-color: #DDDDDD !important;
+    border-color: #999999 !important;
 }
 
 /* SORTING */
