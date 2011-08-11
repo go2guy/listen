@@ -370,7 +370,7 @@ class HistoryService {
 
     void joinedConference(Participant participant) {
         write(action: Action.JOINED_CONFERENCE,
-              description: "[${participant.displayName}] joined conference [${participant.conference.description}]")
+              description: "[${participant.displayName()}] joined conference [${participant.conference.description}]")
     }
 
     void leftFax(Fax fax) {
