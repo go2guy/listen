@@ -1,5 +1,6 @@
 package com.interact.listen
 
+import com.interact.listen.pbx.Extension
 import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
 
@@ -25,6 +26,11 @@ class CallRoutingController {
             return
         }
 
+        if(!shouldRoute(ani) || !shouldRoute(dnis)) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
         def result = callRoutingService.routeCall(ani, dnis)
 
         if(!result) {
@@ -38,6 +44,14 @@ class CallRoutingController {
             }
         }
     }
-}
 
-    
+    private boolean shouldRoute(def number) {
+        def extension = Extension.findByNumber(number)
+        if(extension && !extension.owner.enabled()) {
+            return false
+        }
+
+        def direct = DirectMessageNumber.findByNumber(number)
+        return !direct || direct.owner.enabled()
+    }
+}
