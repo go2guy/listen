@@ -75,6 +75,7 @@
 	<var name="logText" expr="''" />
 	<var name="isActivating" expr="'false'" />
 	<var name="exceptionLog" expr="'/interact/logs/exceptionLog'" />
+	<var name="lstnSub" expr="''" />
 
 
     <!-- Conference Variables -->
