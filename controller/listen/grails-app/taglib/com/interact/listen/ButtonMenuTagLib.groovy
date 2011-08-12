@@ -91,6 +91,7 @@ class ButtonMenuTagLib {
                 out << '<ul class="button-menu">'
                 button(attrs.button == 'list', 'user', 'list', 'button.menu.users.list')
                 button(attrs.button == 'create', 'user', 'create', 'button.menu.users.create')
+                button(attrs.button == 'permissions', 'user', 'permissions', 'button.menu.users.permissions')
                 out << '</ul>'
 
                 break

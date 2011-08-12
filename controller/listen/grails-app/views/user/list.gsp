@@ -26,15 +26,17 @@ tr.disabled {
   <body>
     <table>
       <thead>
-        <g:sortableColumn property="username" title="${g.message(code: 'user.username.label')}" class="col-username"/>
-        <g:sortableColumn property="realName" title="${g.message(code: 'user.realName.label')}" class="col-realName"/>
-        <g:sortableColumn property="enabled" title="${g.message(code: 'user.enabled.label')}" class="col-enabled"/>
-        <listen:ifLicensed feature="ACTIVE_DIRECTORY">
-          <g:sortableColumn property="isActiveDirectory" title="${g.message(code: 'user.isActiveDirectory.label')}" class="col-activeDirectory"/>
-        </listen:ifLicensed>
-        <g:sortableColumn property="lastLogin" title="${g.message(code: 'user.lastLogin.label')}" class="col-lastLogin"/>
-        <th class="col-button"></th>
-        <th class="col-button"></th>
+        <tr>
+          <g:sortableColumn property="username" title="${g.message(code: 'user.username.label')}" class="col-username"/>
+          <g:sortableColumn property="realName" title="${g.message(code: 'user.realName.label')}" class="col-realName"/>
+          <g:sortableColumn property="enabled" title="${g.message(code: 'user.enabled.label')}" class="col-enabled"/>
+          <listen:ifLicensed feature="ACTIVE_DIRECTORY">
+            <g:sortableColumn property="isActiveDirectory" title="${g.message(code: 'user.isActiveDirectory.label')}" class="col-activeDirectory"/>
+          </listen:ifLicensed>
+          <g:sortableColumn property="lastLogin" title="${g.message(code: 'user.lastLogin.label')}" class="col-lastLogin"/>
+          <th class="col-button"></th>
+          <th class="col-button"></th>
+        </tr>
       </thead>
       <tbody>
         <g:each in="${userList}" var="user" status="i">

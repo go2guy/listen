@@ -48,9 +48,9 @@ class User {
 		UserRole.findAllByUser(this).collect { it.role } as Set
 	}
 
-    boolean hasRole(def role) {
+    boolean hasRole(String authority) {
         def roleStrings = getAuthorities().collect { it.authority }
-        return roleStrings.contains(role)
+        return roleStrings.contains(authority)
     }
 
     static def lookupByPhoneNumber(def number) {

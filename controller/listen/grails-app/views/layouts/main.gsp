@@ -47,6 +47,23 @@ var log = {
         }
     }
 };
+
+var listen = {
+    showSuccessMessage: function(message) {
+        var ca = $('#content-area');
+        $('.messages.success', ca).remove();
+        ca.prepend('<ul class="messages success"><li>' + message + '</li></ul>');
+        listen.fadeMessage($('.messages.success', ca));
+    },
+    fadeMessage: function(element) {
+        var el = $(element);
+        setTimeout(function() {
+          el.fadeOut(4000, 'swing', function() {
+            el.remove();
+          });
+        }, 1000);
+    }
+};
     </script>
 
     <link rel="stylesheet" type="text/css" href="${resource(dir: 'resources/jquery/skin/css/custom-theme', file: 'jquery-ui-1.8.2.custom.css')}">
@@ -789,12 +806,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
   $('.messages.success').each(function(index) {
-    var el = $(this);
-    setTimeout(function() {
-      el.fadeOut(4000, 'swing', function() {
-        el.remove();
-      });
-    }, 1000);
+    listen.fadeMessage(this);
   });
 });
       </script>

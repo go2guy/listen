@@ -22,4 +22,23 @@ class CurrentUserTagLib {
             out << body()
         }
     }
+
+    def ifEqualsCurrentUser = { attrs, body ->
+        if(!attrs.user) throwTagError 'Tag [ifEqualsCurrentUser] is missing required attribute [user]'
+        if(equalsCurrentUser(attrs.user)) {
+            out << body()
+        }
+    }
+
+    def ifNotEqualsCurrentUser = { attrs, body ->
+        if(!attrs.user) throwTagError 'Tag [ifNotEqualsCurrentUser] is missing required attribute [user]'
+        if(!equalsCurrentUser(attrs.user)) {
+            out << body()
+        }
+    }
+
+    private boolean equalsCurrentUser(def user) {
+        def currentUser = springSecurityService.getCurrentUser()
+        return user == currentUser
+    }
 }
