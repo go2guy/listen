@@ -32,3 +32,6 @@ class listenAction(interface.Action):
                                startCmd='/sbin/service mysqld start',
                                desiredState=interface.Process.RUNNING_STATE)])]
 
+    def __init__(self, masterpkg, uiapkg):
+        super(listenAction, self).__init__(masterpkg, uiapkg)
+
