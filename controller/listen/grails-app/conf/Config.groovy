@@ -234,6 +234,12 @@ com.interact.listen.activeDirectory.domain = 'interact.nonreg'
 com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=iivip,dc=com')
 com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.port', '389')
 
+// page:     https://test.authorize.net
+// username: hruskar@iivip.com
+// password: Int3ract!Inc
+com.interact.listen.authorizenet.loginId = '9u9rhMY2hS2'
+com.interact.listen.authorizenet.transactionKey = '6s6Z7U5z2WnyA2Xz'
+
 /*ldapServers {
     listen {
         base = com.interact.listen.ldap.basedn

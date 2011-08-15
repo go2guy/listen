@@ -1,6 +1,8 @@
 <html>
   <head>
     <meta name="layout" content="public"/>
+    <title>Checkout</title>
+    <script type="text/javascript" src="${resource(dir: 'resources/jquery', file: 'jquery-1.4.2.min.js')}"></script>
     <style type="text/css">
 fieldset,
 #cart-wrapper {
@@ -29,6 +31,7 @@ th {
 
 tfoot tr {
     background-color: #E4F0FB;
+    font-weight: bold;
 }
 
 .col-item {
@@ -38,16 +41,23 @@ tfoot tr {
 
 .col-buttons {
     border-left-style: dashed;
+    border-right-width: 2px;
     text-align: center;
     width: 15%;
 }
 
 .col-cost {
+    background-color: #F6F6F6;
+    border-left-width: 2px;
     text-align: right;
     font-family: Lucida Console, Courier New, monospace;
     font-weight: normal;
     vertical-align: middle;
     width: 15%;
+}
+
+tfoot .col-cost {
+    background-color: #E4F0FB;
 }
 
 .col-buttons button {
@@ -94,14 +104,16 @@ fieldset.aligned ul.buttons li {
 }
 
 fieldset.aligned ul.buttons .primary-button {
+    border-color: #090 #060 #060 #090;
     border-width: 2px;
+    color: #437A3A;
+    font-weight: bold;
     padding: 5px 20px;
 }
 
 fieldset.aligned ul.buttons .primary-button:hover {
     background-color: #D1FFC9;
-    border-color: #000000;
-    color: #000000;
+    color: #060;
 }
 
 fieldset.aligned ul.buttons .cancel-button {
@@ -139,8 +151,23 @@ fieldset #accepted-cards img {
     </style>
   </head>
   <body>
+
+    <g:if test="${flash.successMessage}">
+      <ul class="messages success"><li>${flash.successMessage}</li></ul>
+    </g:if>
+    <g:if test="${flash.errorMessage}">
+      <ul class="messages error"><li>${flash.errorMessage}</li></ul>
+    </g:if>
+    <g:else>
+      <g:hasErrors>
+        <ul class="messages error">
+          <g:eachError><li><g:message error="${it}"/></li></g:eachError>
+        </ul>
+      </g:hasErrors>
+    </g:else>
+
     <fieldset class="aligned">
-      <g:form controller="cart" method="post">
+      <g:form controller="cart" method="post" class="payment-form">
         <h3>Payment Information</h3>
 
         <div id="accepted-cards">
@@ -148,17 +175,17 @@ fieldset #accepted-cards img {
         </div>
 
         <label for="cardNumber">Card number</label>
-        <g:textField name="cardNumber"/>
+        <g:textField name="cardNumber" value="${fieldValue(bean: payment, field: 'cardNumber')}" class="${listen.validationClass(bean: payment, field: 'cardNumber')}"/>
 
         <label for="cardholderName">Name on card</label>
-        <g:textField name="cardholderName"/>
+        <g:textField name="cardholderName" value="${fieldValue(bean: payment, field: 'cardholderName')}" class="${listen.validationClass(bean: payment, field: 'cardholderName')}"/>
 
         <label for="cardExpirationMonth">Expires</label>
-        <g:select name="cardExpirationMonth" from="${1..12}"/>
-        <g:select name="cardExpirationYear" from="${2011..2020}"/>
+        <g:select name="cardExpirationMonth" from="${1..12}" value="${fieldValue(bean: payment, field: 'cardExpirationMonth')}" class="${listen.validationClass(bean: payment, field: 'cardExpirationMonth')}"/>
+        <g:select name="cardExpirationYear" from="${2011..2020}" value="${fieldValue(bean: payemtn, field: 'cardExpirationYear')}" class="${listen.validationClass(bean: payment, field: 'cardExpirationYear')}"/>
 
         <label for="cardVerification">CVV</label>
-        <g:textField name="cardVerification"/>
+        <g:textField name="cardVerification" value="${fieldValue(bean: payment, field: 'cardVerification')}" class="${listen.validationClass(bean: payment, field: 'cardVerification')}"/>
 
         <div style="clear: both;"></div>
 
@@ -205,5 +232,12 @@ fieldset #accepted-cards img {
         </tbody>
       </table>
     </div>
+    <script type="text/javascript">
+$(document).ready(function() {
+    $('.payment-form').submit(function() {
+        $('.payment-form input[type=submit]').attr('readonly', 'readonly').addClass('disabled');
+    });
+});
+    </script>
   </body>
 </html>

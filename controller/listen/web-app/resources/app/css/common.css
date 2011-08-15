@@ -45,14 +45,12 @@ ul.messages.success {
     background-image: url('${g.resource(dir: 'resources/app/images', file: 'sprite.png')}');
     background-position: 5px -47px;
     background-repeat: no-repeat;
-    float: right;
 }
 
 ul.messages.error {
     background-image: url('${g.resource(dir: 'resources/app/images', file: 'sprite.png')}');
     background-position: 5px -547px;
     background-repeat: no-repeat;
-    clear: both;
 }
 
 .success {

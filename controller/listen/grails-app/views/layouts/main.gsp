@@ -304,6 +304,14 @@ ul.button-menu li.current a {
 
 /* MESSAGES */
 
+ul.messages.success {
+    float: right;
+}
+
+ul.messages.error {
+    clear: both;
+}
+
 .blocked-number {
     border-style: solid;
     display: inline-block;
