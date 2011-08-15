@@ -6,12 +6,14 @@ import com.interact.listen.util.FileTypeDetector
 import org.joda.time.DateTime
 
 class OutgoingFax {
+    int attempts = 0
     DateTime dateCreated
     DateTime dateSent
     String dnis
     int pages = 0
     User sender
     List sourceFiles = [] as List
+    String status = 'Preparing'
 
     static hasMany = [sourceFiles: UserFile]
 
@@ -25,5 +27,6 @@ class OutgoingFax {
                 detector.detectContentType(it.file) == 'application/pdf'
             }
         }
+        status blank: false
     }
 }

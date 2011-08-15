@@ -14,9 +14,10 @@ class FaxController {
         index: 'GET',
         create: 'GET',
         download: 'GET',
-        prepare: 'GET',
-        prepareStatus: 'GET',
-        send: 'POST'
+        resend: 'POST',
+        save: 'POST',
+        sending: 'GET',
+        status: 'GET'
     ]
 
     def faxSenderService
@@ -64,6 +65,18 @@ class FaxController {
         historyService.downloadedFax(fax)
     }
 
+    def resend = {
+        def fax = OutgoingFax.get(params.id)
+        if(!fax) {
+            flash.errorMessage = 'Fax not found'
+            redirect(action: 'create')
+            return
+        }
+
+        faxSenderService.send(fax)
+        redirect(action: 'sending', id: fax.id)
+    }
+
     def save = { MultiFileUploadCommand command ->
         def user = authenticatedUser
 
@@ -103,13 +116,14 @@ class FaxController {
         fax.sender = user
 
         if(fax.validate() && fax.save()) {
-            render(view: 'preparing', model: [fax: fax])
+            faxSenderService.send(fax)
+            redirect(action: 'sending', id: fax.id)
         } else {
             render(view: 'create', model: [fax: fax])
         }
     }
 
-    def send = {
+    def sending = {
         def fax = OutgoingFax.get(params.id)
         if(!fax) {
             flash.errorMessage = 'Fax not found'
@@ -117,8 +131,22 @@ class FaxController {
             return
         }
 
-        faxSenderService.send(fax)
-        flash.successMessage = 'Fax sent'
-        render(view: 'create')
+        render(view: 'sending', model: [fax: fax])
     }
+
+    def status = {
+        def fax = OutgoingFax.get(params.id)
+        if(!fax) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+
+        render(contentType: 'application/json') {
+            attempts = fax.attempts
+            pages = fax.pages
+            delegate.status = fax.status
+        }
+    }
+
+    // TODO add success/error spinner images
 }
