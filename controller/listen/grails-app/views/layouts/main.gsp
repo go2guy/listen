@@ -67,27 +67,11 @@ var listen = {
     </script>
 
     <link rel="stylesheet" type="text/css" href="${resource(dir: 'resources/jquery/skin/css/custom-theme', file: 'jquery-ui-1.8.2.custom.css')}">
+    <link rel="stylesheet" href="${resource(dir: 'resources/app/css', file: 'common.css')}">
     <style type="text/css">
 /* TODO move this into a separate file when development is complete */
 
 /* MAIN LAYOUT */
-
-html,
-body {
-    margin: 0;
-    padding: 0;
-}
-
-a {
-    color: #054B7A;
-    text-decoration: underline;
-}
-
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
 
 #container {
     display: block;
@@ -130,8 +114,7 @@ ul {
     color: #054B7A;
 }
 
-#user-info a:hover,
-#footer a:hover {
+#user-info a:hover {
     color: #CCCCCC;
 }
 
@@ -275,10 +258,6 @@ ul.tab-menu li.current a {
     padding: 10px 10px 10px 10px; /* top is 15 to offset some border widths */
 }
 
-h3 {
-    margin: 0 0 10px 0;
-}
-
 ul.button-menu  {
     display: block;
     float: left;
@@ -321,89 +300,9 @@ ul.button-menu li.current a {
     height: 0;
 }
 
-#footer {
-    color: #054B7A;
-    display: block;
-    font: 11px Arial, sans-serif;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-}
-
 /* END MAIN LAYOUT */
 
 /* MESSAGES */
-
-#content-area ul.messages {
-    display: block;
-    font: 12px Arial, sans-serif;
-    margin-bottom: 10px;
-    padding: 5px 5px 5px 30px;
-}
-
-#content-area ul.messages.success {
-    background-image: url('${g.resource(dir: 'resources/app/images', file: 'sprite.png')}');
-    background-position: 5px -47px;
-    background-repeat: no-repeat;
-    float: right;
-}
-
-#content-area ul.messages.error {
-    background-image: url('${g.resource(dir: 'resources/app/images', file: 'sprite.png')}');
-    background-position: 5px -547px;
-    background-repeat: no-repeat;
-    clear: both;
-}
-
-.success {
-    background-color: #D1FFC9;
-    border: 1px solid #437A3A;
-    color: #437A3A; /* same as border color */
-}
-
-.info {
-    background-color: #E4F0FB;
-    border: 1px dashed #176BA3;
-    color: #176BA3;
-}
-
-.warning {
-    background-color: #FFDEB0;
-    border: 1px dashed #D17B02;
-    color: #D17B02;
-}
-
-.error {
-    background-color: #FFC7C7;
-    border: 1px dashed #A81818;
-    color: #A81818;
-}
-
-input.validation-error,
-select.validation-error {
-    background-color: #FFC7C7;
-}
-
-.field-error {
-    background-color: #FFC7C7;
-}
-
-.info-snippet {
-    background-color: #DED7CA;
-    font-size: 13px;
-    margin-bottom: 10px;
-    padding: 5px;
-
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-}
-
-.info-snippet .summary {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 3px;
-}
 
 .blocked-number {
     border-style: solid;
@@ -423,249 +322,8 @@ select.validation-error {
 
 /* END MESSAGES */
 
-
-/* TABLES, OTHER STUFF */
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-th,
-td {
-    padding: 2px;
-}
-
-thead th,
-thead th a,
-.columnHeader,
-.columnHeader a {
-    color: #054B7A;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: left;
-}
-
-thead th a,
-.columnHeader a {
-    text-decoration: underline;
-}
-
-caption, h3 {
-    color: #054B7A;
-    font-size: 16px;
-    font-weight: normal;
-    text-align: left;
-    border-bottom: 1px solid #054B7A;
-    margin-bottom: 5px;
-}
-
-tr.even { background-color: #EBEEF5; }
-tr.odd { background-color: #E4E6ED; }
-tr.highlighted,
-table.highlighted tbody tr {
-    background-color: #6DACD6;
-}
-
-/* END TABLES, OTHER STUFF */
-
-/* FORMS and FIELDSETS */
-
-fieldset.vertical {
-    border-width: 0;
-/*    border: 1px solid #6DACD6;*/
-    margin: 0;
-    padding: 0;
-}
-
-fieldset.vertical label {
-    display: block;
-    margin-top: 8px;
-    margin-bottom: 3px;
-}
-
-fieldset.vertical .inline-label {
-    display: inline-block;
-}
-
-fieldset.vertical input[type=text],
-fieldset.vertical input[type=password],
-fieldset.vertical select {
-    display: block;
-}
-
-fieldset.vertical input[type=checkbox] {
-    display: inline-block;
-}
-
-fieldset.vertical ul.form-buttons {
-    display: block;
-}
-
-fieldset.vertical ul.form-buttons li {
-    display: inline-block;
-}
-
-fieldset.vertical ul.form-buttons input,
-fieldset.vertical ul.form-buttons button,
-fieldset.vertical ul.form-buttons a {
-    font-size: 14px;
-    margin-top: 15px;
-}
-
-fieldset.vertical ul.form-buttons a {
-    color: #999999;
-}
-
-fieldset.vertical ul.form-buttons a:hover {
-    color: #333333;
-}
-
-fieldset.vertical h3 {
-    border-width: 0;
-    display: block;
-    font-size: 14px;
-    font-weight: bold;
-    margin: 15px 0 5px 0;
-    padding-bottom: 3px;
-}
-
-fieldset.vertical ul.checkbox-list {
-    display: block;
-    margin: 10px;
-}
-
-fieldset.vertical ul.checkbox-list label {
-    display: inline;
-    margin-left: 10px;
-}*/
-
-label {
-    font-size: 14px;
-}
-
-input[type=text],
-input[type=password],
-select {
-    border: 1px solid #CCCCCC;
-    font-family: Helvetica, sans-serif;
-    font-size: 16px;
-    padding: 2px;
-    width: 250px;
-}
-
-select {
-    width: 256px;
-}
-
-input[type=submit],
-input[type=button],
-input[type=reset],
-button {
-    background-color: #FAFAFA;
-    border: 1px solid #054B7A;
-    color: #054B7A;
-    cursor: pointer;
-    font-family: Century Gothic, sans-serif;
-    font-size: 13px;
-    padding: 2px 5px;
-    white-space: nowrap;
-
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-}
-
-input[type=submit]:hover,
-input[type=button]:hover,
-input[type=reset]:hover,
-button:hover {
-    background-color: #054B7A;
-    color: #FFFFFF;
-}
-
-input[type=submit].disabled,
-input[type=button].disabled,
-input[type=reset].disabled,
-button.disabled,
-input[type=submit].disabled:hover,
-input[type=button].disabled:hover,
-input[type=reset].disabled:hover,
-button.disabled:hover {
-    color: #999999 !important;
-    cursor: default !important;
-    background-color: #DDDDDD !important;
-    border-color: #999999 !important;
-}
-
-/* SORTING */
-
-.sortable.sorted.asc a:after,
-.columnHeader.sorted.asc a:after {
-    content: '\25B4';
-}
-
-.sortable.sorted.desc a:after,
-.columnHeader.sorted.desc a:after {
-    content: '\25BE';
-}
-
-/* PAGINATION */
-
-div.pagination {
-    display: block;
-    height: 20px;
-}
-
-div.pagination span,
-div.pagination a {
-    border: 1px solid #CCCCCC;
-    color: #666666;
-    display: inline-block;
-    font-size: 12px;
-    height: 20px;
-    line-height: 20px;
-    margin: 5px;
-    padding: 0 5px;
-    text-align: center;
-    text-decoration: none;
-}
-
-div.pagination .currentStep {
-    border-width: 0;
-    font-weight: bold;
-}
-
-div.listTotal {
-    color: #666666;
-    display: block;
-    float: right;
-    font-size: 14px;
-    height: 20px;
-    margin: 5px;
-}
-
 #new-message-count {
     margin-left: 5px;
-}
-
-/* jQuery UI */
-
-ul.ui-autocomplete {
-    font-size: 14px;
-    border-radius: 0;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-}
-
-ul.ui-autocomplete > li > a {
-    border-radius: 0;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-}
-
-ul.ui-autocomplete > li > a.ui-state-hover {
-    background: #CCCCCC;
 }
     </style>
     <listen:customApplicationStyles/>
