@@ -76,3 +76,16 @@ function setParamsForCallEnd(passValues, ANI, callResult, organization) {
     }
     return "{\"date\": \""+iiDateToISO(callStartTime)+"\", \"service\": \""+getJsonVal(passValues, 'callType')+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+getJsonVal(passValues, 'destination')+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
 }
+
+function setVoicemailObj(passValues) {
+    var ext;
+    var transExt = getnum(getJsonVal(passValues, 'transExt'));
+    if (transExt != '') {
+        ext = transExt;
+    }
+    else {    
+        ext = getnum(getJsonVal(passValues, 'destination'));
+    }
+
+    return extendJsonObject(passValues,'toExt',ext);
+}

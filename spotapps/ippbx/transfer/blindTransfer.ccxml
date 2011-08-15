@@ -128,6 +128,7 @@
             </if>
             <assign name="DNIS" expr="URI"/>        <!-- Set new destination number -->
             <assign name="tmpDNIS" expr="getnum(URI)"/>
+          	<assign name="importedValue" expr="extendJsonObject(importedValue, 'transExt', tmpDNIS)"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH">
                 <assign name="callType" expr="'extension'"/>
             <else/>
