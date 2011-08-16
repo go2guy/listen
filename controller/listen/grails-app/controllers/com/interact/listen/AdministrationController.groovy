@@ -613,11 +613,9 @@ class AdministrationController {
                 eq('organization', organization)
             }
         }
-        def users = User.findAllByOrganization(organization, [sort: 'realName', order: 'asc'])
         return [
             extensionList: extensionList,
-            extensionTotal: extensionTotal,
-            users: users
+            extensionTotal: extensionTotal
         ]
     }
 
@@ -635,13 +633,11 @@ class AdministrationController {
             }
         }
         def everyoneRestrictions = OutdialRestriction.findAllByOrganizationAndTarget(organization, null)
-        def users = User.findAllByOrganization(organization, [sort: 'realName', order: 'asc'])
         return [
             globalRestrictions: globalRestrictions,
             restrictions: restrictions,
             everyoneRestrictions: everyoneRestrictions,
-            exceptions: exceptions,
-            users: users
+            exceptions: exceptions
         ]
     }
 
@@ -655,14 +651,12 @@ class AdministrationController {
             }
             order('number', 'asc')
         }
-        def users = User.findAllByOrganization(organization, [sort: 'realName', order: 'asc'])
         def destinations = applicationService.listApplications()
         return [
             destinations: destinations,
             external: external,
             internal: internal,
-            directMessageNumbers: directMessageNumbers,
-            users: users
+            directMessageNumbers: directMessageNumbers
         ]
     }
 }

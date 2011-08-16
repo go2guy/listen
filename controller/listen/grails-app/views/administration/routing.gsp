@@ -113,7 +113,7 @@ tr.add td.col-button {
         <tr class="add highlighted">
           <g:form controller="administration" action="addDirectMessageNumber" method="post">
             <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: newDirectMessageNumber, field: 'number')}" placeholder="${g.message(code: 'page.administration.routing.direct.add.number.placeholder')}" class="${listen.validationClass(bean: newDirectMessageNumber, field: 'number')}"/></td>
-            <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${newDirectMessageNumber?.owner?.id}" class="${listen.validationClass(bean: newDirectMessageNumber, field: 'owner')}"/></td>
+            <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${newDirectMessageNumber?.owner?.id}" class="${listen.validationClass(bean: newDirectMessageNumber, field: 'owner')}"/></td>
             <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.direct.add.addButton')}"/>
           </g:form>
         </tr>
@@ -133,7 +133,7 @@ tr.add td.col-button {
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="administration" action="updateDirectMessageNumber" method="post">
                 <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: directMessageNumber, field: 'number')}" class="${listen.validationClass(bean: directMessageNumber, field: 'number')}"/></td>
-                <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${directMessageNumber.owner.id}" class="${listen.validationClass(bean: directMessageNumber, field: 'owner')}"/></td>
+                <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${directMessageNumber.owner.id}" class="${listen.validationClass(bean: directMessageNumber, field: 'owner')}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${directMessageNumber.id}"/>
                   <g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/>

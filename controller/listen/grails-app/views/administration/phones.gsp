@@ -34,7 +34,7 @@ tbody .col-light { text-align: center; }
           <g:form controller="administration" action="addExtension" method="post">
             <!-- TODO number needs focus on page load -->
             <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newExtension, field: 'number')}" class="${listen.validationClass(bean: newExtension, field: 'number')}"/></td>
-            <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${newExtension?.owner?.id}" class="${listen.validationClass(bean: newExtension, field: 'owner')}"/></td>
+            <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${newExtension?.owner?.id}" class="${listen.validationClass(bean: newExtension, field: 'owner')}"/></td>
             <td class="col-ip"><g:textField name="ip" value="${fieldValue(bean: newExtension, field: 'ip')}" class="${listen.validationClass(bean: newExtension, field: 'ip')}"/></td>
             <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.phones.add.button.addExtension')}"/></td>
           </g:form>
@@ -57,7 +57,7 @@ tbody .col-light { text-align: center; }
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="administration" action="updateExtension" method="post">
                 <td class="col-number"><g:textField name="number" value="${fieldValue(bean: extension, field: 'number')}" class="${listen.validationClass(bean: extension, field: 'number')}"/></td>
-                <td class="col-owner"><g:select name="owner.id" from="${users}" optionKey="id" optionValue="realName" value="${extension.owner.id}" class="${listen.validationClass(bean: nextension, field: 'owner')}"/></td>
+                <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${extension.owner.id}" class="${listen.validationClass(bean: nextension, field: 'owner')}"/></td>
                 <td class="col-ip"><g:textField name="ip" value="${fieldValue(bean: extension, field: 'ip')}" class="${listen.validationClass(bean: extension, field: 'ip')}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${extension.id}"/>
