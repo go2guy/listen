@@ -271,6 +271,13 @@ button.disabled:hover {
     border-color: #999999 !important;
 }
 
+input[type=submit]::-moz-focus-inner,
+input[type=button]::-moz-focus-inner,
+input[type=reset]::-moz-focus-inner,
+button::-moz-focus-inner {
+    border: 0;
+}
+
 .sortable.sorted.asc a:after,
 .columnHeader.sorted.asc a:after {
     content: '\25B4';

@@ -25,8 +25,6 @@ table.permissions thead th {
 
 tbody .col-permission {
     text-align: center;
-    vertical-align: middle;
-    height: 25px;
 }
 
 thead .col-permission {
@@ -36,7 +34,9 @@ thead .col-permission {
 }
 
 .col-permission .toggle-button {
+    display: block;
     height: 23px;
+    margin: 0 auto;
     width: 23px;
 
     border-radius: 0;
