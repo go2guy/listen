@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletResponse
 class FaxApiController {
 
     static allowedMethods = [
-        create: 'POST'
+        create: 'POST',
+        updateOutgoingFax: 'POST'
     ]
 
     def historyService
@@ -28,7 +29,7 @@ class FaxApiController {
         fax.pages = json.pages
 
         if(!fax.owner.enabled()) {
-            response.sendError(HttpServletRequest.SC_FORBIDDEN)
+            response.sendError(HttpServletResponse.SC_FORBIDDEN)
             return
         }
 
@@ -42,4 +43,30 @@ class FaxApiController {
         response.flushBuffer()
     }
 
+    def updateOutgoingFax = {
+        def fax = OutgoingFax.get(params.id)
+        if(!fax) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+
+        def json = JSON.parse(request)
+        fax.properties['attempts', 'pages', 'status'] = json
+
+        if(fax.validate() && fax.save()) {
+            response.status = HttpServletResponse.SC_OK
+            response.flushBuffer()
+        } else {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, beanErrors(fax))
+        }
+    }
+
+    private def beanErrors(def bean) {
+        def result = new StringBuilder()
+        g.eachError(bean: bean) {
+            result << g.message(error: it)
+            result << "\n"
+        }
+        return result.toString()
+    }
 }
