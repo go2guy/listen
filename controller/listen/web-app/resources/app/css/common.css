@@ -42,13 +42,13 @@ ul.messages {
 }
 
 ul.messages.success {
-    background-image: url('${g.resource(dir: 'resources/app/images', file: 'sprite.png')}');
+    background-image: url('../images/sprite.png');
     background-position: 5px -47px;
     background-repeat: no-repeat;
 }
 
 ul.messages.error {
-    background-image: url('${g.resource(dir: 'resources/app/images', file: 'sprite.png')}');
+    background-image: url('../images/sprite.png');
     background-position: 5px -547px;
     background-repeat: no-repeat;
 }
