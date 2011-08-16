@@ -1,7 +1,6 @@
 <html>
   <head>
     <title><g:message code="page.messages.inbox.title"/></title>
-    <script type="text/javascript" src="${resource(dir: 'resources/jquery', file: 'jquery-1.4.2.min.js')}"></script>
     <meta name="layout" content="main"/>
     <meta name="tab" content="messages"/>
     <meta name="button" content="inbox"/>
