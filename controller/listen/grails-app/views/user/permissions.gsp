@@ -89,16 +89,21 @@ input.allowed {
             <g:each in="${available}" var="permission" status="j">
               <td class="col-permission ${j % 2 == 0 ? 'col-even' : 'col-odd'}">
                 <g:set var="hasRole" value="${user.hasRole(permission.authority)}"/>
-                <listen:ifEqualsCurrentUser user="${user}">
-                  <span title="You cannot change your own permissions"><listen:checkMark value="${hasRole}"/></span>
-                </listen:ifEqualsCurrentUser>
-                <listen:ifNotEqualsCurrentUser user="${user}">
-                  <g:form controller="user" action="togglePermission" method="post" class="toggle-form">
-                    <input type="hidden" name="id" value="${user.id}"/>
-                    <input type="hidden" name="permission" value="${permission.name()}"/>
-                    <input type="submit" class="toggle-button ${hasRole ? 'allowed' : 'disallowed'}" value="${listen.checkMark(value: hasRole)}" title="${hasRole ? 'Revoke' : 'Grant'}"/>
-                  </g:form>
-                </listen:ifNotEqualsCurrentUser>
+                <g:if test="${permission.readOnly}">
+                  <span title="This permission is not assignable"><listen:checkMark value="${hasRole}"/></span>
+                </g:if>
+                <g:else>
+                  <listen:ifEqualsCurrentUser user="${user}">
+                    <span title="You cannot change your own permissions"><listen:checkMark value="${hasRole}"/></span>
+                  </listen:ifEqualsCurrentUser>
+                  <listen:ifNotEqualsCurrentUser user="${user}">
+                    <g:form controller="user" action="togglePermission" method="post" class="toggle-form">
+                      <input type="hidden" name="id" value="${user.id}"/>
+                      <input type="hidden" name="permission" value="${permission.name()}"/>
+                      <input type="submit" class="toggle-button ${hasRole ? 'allowed' : 'disallowed'}" value="${listen.checkMark(value: hasRole)}" title="${hasRole ? 'Revoke' : 'Grant'}"/>
+                    </g:form>
+                  </listen:ifNotEqualsCurrentUser>
+                </g:else>
               </td>
             </g:each>
           </tr>
@@ -113,12 +118,6 @@ input.allowed {
     </g:if>
     <script type="text/javascript">
 $(document).ready(function() {
-    $('thead .col-permission').each(function() {
-        var it = $(this);
-        it.height(it.width());
-        it.css('width', it.css('width'));
-    });
-
     $('.toggle-form').submit(function() {
         var form = $(this);
         $('.toggle-button', form).attr('disabled', 'disabled').attr('readonly', 'readonly').addClass('disabled').removeClass('allowed');
