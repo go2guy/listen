@@ -1,5 +1,6 @@
 package com.interact.listen.voicemail
 
+import com.interact.listen.fax.Fax
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.stats.Stat
 
@@ -72,6 +73,62 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
             historyService.sentNewVoicemailEmail(voicemail)
         })
     }
+    
+    void sendNewFaxEmail(Fax fax) {
+            def preferences = VoicemailPreferences.findByUser(fax.owner)
+            if(!preferences) {
+                log.warn "No VoicemailPreferences configured for user [${fax.owner}]"
+                return
+            }
+    
+            if(!preferences.isEmailNotificationEnabled) {
+                log.debug "User is not set to receive e-mail notifications"
+                return
+            }
+    
+            if(!emailTimeRestrictionsAllow(preferences)) {
+                log.debug "Time restrictions disallow sending notification"
+                return
+            }
+    
+            def address = preferences.emailNotificationAddress
+            def newCount = Fax.countByOwnerAndIsNew(fax.owner, true)
+    
+            // TODO handle IOException reading file (set file to null)
+            def attachedFileName = "Fax-${fax.dateCreated}${fax.file.name.substring(fax.file.name.lastIndexOf("."))}"
+            def file = fax.file
+    
+            def subj = "New fax from ${fax.from()}"
+            def body = """
+    <html><body>
+    You received a new fax from ${fax.from()} at ${fax.dateCreated}.<br/><br/>
+
+    You currently have ${newCount} new fax${newCount == 1 ? '' : 'es'}.<br/><br/>
+    
+    ${file ? 'The fax is attached' : '(The fax could not be attached to this message. Contact a system administrator for assistance.)'}
+    </body></html>
+    """
+    
+            backgroundService.execute("New fax email to [${fax.owner.username}] at [${address}] for fax id [${fax.id}]", {
+                sendMail {
+                    if(file) {
+                        // 'multipart true' must be first for multipart messages
+                        multipart true
+                    }
+    
+                    to address
+                    subject subj
+                    html body
+                    // call 'attach' last, see http://jira.grails.org/browse/GPMAIL-60
+                    if(file) {
+                        attach "${attachedFileName}", "application/octet-stream", file.bytes
+                    }
+                }
+    
+                statWriterService.send(Stat.NEW_FAX_EMAIL)
+                historyService.sentNewFaxEmail(fax)
+            })
+    }
 
     void sendNewVoicemailTestEmail(String address) {
         backgroundService.execute("New voicemail test email to [${address}]", {
@@ -137,6 +194,43 @@ You have correctly configured your settings to receive Listen email notification
             statWriterService.send(stat)
         }
         historyService.sentNewVoicemailSms(voicemail)
+    }
+    
+    void sendNewFaxSms(Fax fax) {
+            def preferences = VoicemailPreferences.findByUser(fax.owner)
+            if(!preferences) {
+                log.warn "No VoicemailPreferences configured for user [${fax.owner}]"
+                return
+            }
+    
+            if(!preferences.isSmsNotificationEnabled) {
+                log.debug "User is not set to receive sms notifications"
+                return
+            }
+    
+            if(!smsTimeRestrictionsAllow(preferences)) {
+                log.debug "Time restrictions disallow sending notification"
+                return
+            }
+    
+            def faxFrom = fax.from()
+    
+            backgroundService.execute("New fax SMS to [${fax.owner.username}] at [${preferences.smsNotificationAddress}] for fax id [${fax.id}]", {
+                def max = 160
+                def message = "New fax from ${faxFrom}."
+                if(message.size() > max) {
+                    message = message[0..(max - 1)]
+                }
+    
+                sendMail {
+                    to preferences.smsNotificationAddress
+                    subject "New fax from ${faxFrom}"
+                    body message
+                }
+            })
+            
+            statWriterService.send(Stat.NEW_FAX_SMS)
+            historyService.sentNewFaxSms(fax)
     }
 
     void sendNewVoicemailTestSms(String address) {

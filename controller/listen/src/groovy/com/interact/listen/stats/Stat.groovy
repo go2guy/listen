@@ -29,6 +29,8 @@ enum Stat {
     CONFERENCE_INVITE_EMAIL               ('2014'),
     CONFERENCE_CANCEL_EMAIL               ('2015'),
     TRANSCRIPTION_FAILED                  ('2019'),
+    NEW_FAX_EMAIL                         ('2020'),
+    NEW_FAX_SMS                           ('2021'),
 
     // Listen -> SPOT communication
     SPOT_AUTO_DIAL_DIAL                   ('5000'),

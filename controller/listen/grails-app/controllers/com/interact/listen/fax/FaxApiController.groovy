@@ -15,6 +15,7 @@ class FaxApiController {
     ]
 
     def historyService
+    def voicemailNotificationService
     
     def create = {
         def json = JSON.parse(request)
@@ -35,6 +36,8 @@ class FaxApiController {
 
         if(fax.validate() && fax.save()) {
             historyService.leftFax(fax)
+            voicemailNotificationService.sendNewFaxEmail(fax)
+            voicemailNotificationService.sendNewFaxSms(fax)
         } else {
             log.error(fax.errors)
             response.sendError(HttpServletResponse.SC_BAD_REQUEST)

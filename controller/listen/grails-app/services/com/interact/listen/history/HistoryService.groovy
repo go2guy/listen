@@ -446,6 +446,20 @@ class HistoryService {
               onUser: voicemail.owner)
     }
 
+    void sentNewFaxEmail(Fax fax) {
+        def preferences = VoicemailPreferences.findByUser(fax.owner)
+        write(action: Action.SENT_NEW_FAX_EMAIL,
+              description: "Sent email to [${preferences.emailNotificationAddress}] for ${friendlyMessageSnippet(fax)}",
+              onUser: fax.owner)
+    }
+
+    void sentNewFaxSms(Fax fax) {
+        def preferences = VoicemailPreferences.findByUser(fax.owner)
+        write(action: Action.SENT_NEW_FAX_SMS,
+              description: "Sent SMS to [${preferences.smsNotificationAddress}] for ${friendlyMessageSnippet(fax)}",
+              onUser: fax.owner)
+    }
+
     void startedConference(Conference conference) {
         write(action: Action.STARTED_CONFERENCE,
               description: "Started conference [${conference.description}]")
