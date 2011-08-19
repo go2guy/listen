@@ -26,7 +26,7 @@
         <pre>
             <process state='running'>
                 <name>mysqld</name>
-                <statusRegex>/usr/lib.*/mysqld</statusRegex>
+                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
                 <start>/sbin/service mysqld start</start>
             </process>
 
@@ -153,6 +153,12 @@
 
     <rollback>
         <pre>
+            <process state='running'>
+                <name>mysqld</name>
+                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
+                <start>/sbin/service mysqld start</start>
+            </process>
+
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.5.1</version>
@@ -167,6 +173,12 @@
 
     <uninstall>
         <pre>
+            <process state='running'>
+                <name>mysqld</name>
+                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
+                <start>/sbin/service mysqld start</start>
+            </process>
+
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.5.1</version>
