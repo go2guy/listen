@@ -24,6 +24,12 @@
 
     <install>
         <pre>
+            <process state='running'>
+                <name>mysqld</name>
+                <statusRegex>/usr/lib.*/mysqld</statusRegex>
+                <start>/sbin/service mysqld start</start>
+            </process>
+
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.5.1</version>

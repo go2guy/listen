@@ -12,7 +12,15 @@
         <pre>
             <process state="stopped">
                 <name>listen controller</name>
-                <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
+                <statusRegex>java.*-jar.*/listen-controller.war</statusRegex>
+                <start>/sbin/service listen-controller start</start>
+                <stop>/sbin/service listen-controller stop</stop>
+            </process>
+
+            <process state="running">
+                <name>mysqld</name>
+                <statusRegex>/usr/lib.*/mysqld</statusRegex>
+                <start>/sbin/service mysqld start</start>
             </process>
 
             <rpm state="greater-than-or-equal">
