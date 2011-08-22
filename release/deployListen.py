@@ -182,6 +182,7 @@ def prepcommon():
     stopcmds = ["service listen-controller stop",
                 "service collector stop",
                 "service mysqld stop",
+                "service httpd stop",
                 "service vipStart stop"]
 
     killprocs = ["/interact/.*/iiMoap",
@@ -233,7 +234,7 @@ def doupgrade():
     if hostname == controllerserver:
         deploy.run(["/interact/packages/iiInstall.py", "--noinput", "install", "--replacepkgs", masterpkg, "all"])
 
-        deploy.run(["service", "httpd", "restart"])
+        deploy.run(["service", "httpd", "start"])
         deploy.run(["service", "vipStart", "start"])
         deploy.run(["service", "listen-controller", "start"])
         deploy.run(["service", "collector", "start"])
