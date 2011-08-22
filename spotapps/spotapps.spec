@@ -233,13 +233,6 @@ Requires: spotbuild-vip
     rm -f /var/www/html/interact/listen/artifacts >> ${debug} 2>> ${error}
     ln -s /interact/listen/artifacts /var/www/html/interact/listen/artifacts >> ${debug} 2>> ${error}
 
-    if [ ! -e /var/lib/mysql/ip_pbx ]
-    then
-        echo "******ALERT******"
-        echo -e "\tNo ip_pbx database found in mysql. Run [ mysql -u root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql ] to initialize one."
-        echo "*****************"
-    fi
-
     if [ ! -f /usr/local/bin/lame ]
     then
         echo "******ALERT******"

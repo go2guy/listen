@@ -144,7 +144,13 @@
                     #!/bin/bash
                     if [ ! -d /var/lib/mysql/ip_pbx/ ]
                     then
-                        mysql --user=root < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql
+                        echo "Creating IPPBX database."
+                        mysql --user=root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql
+                        if [ $? -ne 0 ]
+                        then
+                            echo "Error creating IPPBX database"
+                            exit 1
+                        fi
                     fi
                 ]]>
             </script>
