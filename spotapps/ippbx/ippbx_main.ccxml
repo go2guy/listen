@@ -68,6 +68,7 @@
             <else/>
 	    	    <assign name="DNIS" expr="iiUnescape(local)"/>  <!-- Get destination of incoming call -->
 	    	    <assign name="tmpDNIS" expr="getnum(DNIS)"/>
+                <assign name="route" expr="'dialog.user.routeCall'"/>   <!-- Set route to dial -->
             </if>
             <send data="'dialog.user.chk_ANI'" target="session.id"/>
         </transition>
@@ -82,7 +83,7 @@
                 <var name="extension" expr="tmpANI"/>
                 <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
             </if>
-            <send data="'dialog.user.routeCall'" target="session.id"/>
+            <send data="route" target="session.id"/>
         </transition>
 
         <transition event="dialog.started" name="evt">
