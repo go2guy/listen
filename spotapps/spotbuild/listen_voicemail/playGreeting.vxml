@@ -134,6 +134,9 @@
                 <goto next="#getPrompt"/>
 		    </nomatch>
 	    </field>
+        <block>
+            <goto next="#exit"/>
+        </block>
     </form>
 
 	<form id="exit">
