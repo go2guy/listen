@@ -70,6 +70,7 @@
 	<var name="defaultDialNumber" expr="''" /> <!-- Config Default Dial Number -->
 	<var name="voipChannel" expr="''" />
 	<var name="applicationLabel" expr="''" />
+	<var name="faxGateway" expr="''" /> <!-- Config Fax Server Name -->
 
 
     <!-- Conference Variables -->

@@ -61,6 +61,7 @@
 	<var name="SB_UV_defaultDialNumber"/>
 	<var name="SB_UV_voipChannel"/>
 	<var name="SB_UV_applicationLabel"/>
+	<var name="SB_UV_faxGateway"/>
 
     
     <form id="beginDocument">
@@ -200,6 +201,9 @@
 			</if>
 			<if cond="SB_UV_applicationLabel != undefined">
 				<assign name="applicationLabel" expr="SB_UV_applicationLabel" />
+			</if>
+			<if cond="SB_UV_faxGateway != undefined">
+				<assign name="faxGateway" expr="SB_UV_faxGateway" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

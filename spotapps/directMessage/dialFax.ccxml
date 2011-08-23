@@ -1,5 +1,5 @@
 <ccxml version="1.0">
-    <!-- Last Modified 08/07/2011
+    <!-- Last Modified 08/22/2011
        *   @Name	dialFax.ccxml
        *   @Desc	This script handles the fax dial activities. -->
 
@@ -56,7 +56,11 @@
             </if>
             <assign name="DNIS" expr="getJsonVal(importedValue, 'destination')"/>
             <log target="status">Dialing [<value expr="DNIS"/>]</log>
-            <createcall connectionid="obcallid" dest="'sip:' + DNIS" callerid="'sip:' + ANI + '@Spot'" timeout="'30s'"/>
+            <var name="faxGateway" expr="getJsonVal(importedValue, 'faxGateway')"/>
+            <if cond="faxGateway.length == 0">
+                <assign name="faxGateway" expr="getJsonVal(importedValue, 'sipURL')"/>
+            </if>
+            <createcall connectionid="obcallid" dest="'sip:' + DNIS + '@' + faxGateway" callerid="'sip:' + ANI + '@Spot'" timeout="'30s'"/>
         </transition>
 
         <transition state="dialing" event="connection.connected" name="evt">

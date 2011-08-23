@@ -106,6 +106,25 @@
             </question>
 
             <question level="not_in_backup" severity="ask">
+                <text>Enter the server name/IP of the fax gateway if different from SIP trunk</text>
+                <default>
+                    #!/bin/bash
+                    hostname
+                </default>
+                <validateRegex>^${HOSTNAME}$</validateRegex>
+                <validateInfo>The value may be blank or alphanumeric.</validateInfo>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>faxGateway</name>
+                    <group>Fax</group>
+                    <description>Server Name</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="ask">
                 <text>Enter the phone number to use if the controller is unreachable</text>
                 <default>''</default>
                 <validateRegex>^${HOSTNAME}|''$</validateRegex>
