@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/07/2011
+    <!-- Last Modified 08/23/2011
        *   @Name	blindTransfer.ccxml
        *   @Desc	This script handles the logic for doing a blind call transfer -->
 
@@ -146,6 +146,10 @@
         <transition event="fetch.done" name="evt">
             <log>INFO: Fetched document [<value expr="evt.uri"/>]</log>
             <goto fetchid="evt.fetchid" />
+        </transition>
+
+        <transition event="error.send.failed" name="evt" cond="evt.reason == 200">
+            <!-- Ignore this error -->
         </transition>
 
         <transition event="error.*" name="evt">

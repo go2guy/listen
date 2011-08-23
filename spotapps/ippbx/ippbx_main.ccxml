@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/03/2011
+    <!-- Last Modified 08/23/2011
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -83,7 +83,7 @@
                 <var name="extension" expr="tmpANI"/>
                 <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
             </if>
-            <send data="route" target="session.id"/>
+            <send data="route" target="session.id" delay="'250ms'"/>
         </transition>
 
         <transition event="dialog.started" name="evt">
