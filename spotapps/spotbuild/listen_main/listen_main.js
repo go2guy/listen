@@ -76,6 +76,7 @@ function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,s
         result.cntrlURL = cntrlURL + "/api";
         result.hostName = hostName;
         result.sipURL = sipURL;
+        result.faxGateway = faxGateway;
         if(!result.sysAccessTime) {        
             result.sysAccessTime = sysAccessTime;
         }
