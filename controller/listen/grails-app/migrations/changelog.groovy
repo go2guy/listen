@@ -2009,4 +2009,18 @@ databaseChangeLog = {
     changeSet(author: "root (generated)", id: "1312476123211-5") {
         addForeignKeyConstraint(baseColumnNames: "outgoing_fax_source_files_id", baseTableName: "outgoing_fax_user_file", constraintName: "outgo_fax_user_outgo_fax_sour_id_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "outgoing_fax", referencesUniqueColumn: "false")
     }
+
+    changeSet(author: "root (generated)", id: "1314127530475-2") {
+        addColumn(tableName: "outgoing_fax") {
+            column(name: "attempts", type: "integer") {
+                constraints(nullable: "false")
+            }
+        }
+
+        addColumn(tableName: "outgoing_fax") {
+            column(name: "status", type: "varchar(255)") {
+                constraints(nullable: "false")
+            }
+        }
+    }
 }
