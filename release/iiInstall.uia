@@ -47,7 +47,30 @@
         </system>
 
         <system>
+            <name>java</name>
+            <rpmRegex>iijava</rpmRegex>
+            <group>webserver</group>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>python</name>
+            <rpmRegex>iipython</rpmRegex>
+            <group>webserver</group>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
             <name>xmlsecurity</name>
+            <group>webserver</group>
+            <group>ivrserver</group>
+            <group>all</group>
+        </system>
+
+        <system>
+            <name>dmv</name>
             <group>webserver</group>
             <group>ivrserver</group>
             <group>all</group>

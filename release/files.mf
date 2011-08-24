@@ -21,6 +21,9 @@
 /interact/packages/xmlsecurity-*.rpm
 /interact/packages/conf/xmlsecurity.uia
 
+# dmv files
+/interact/packages/dmv-*.rpm
+
 # spotbuild-vip files
 /interact/packages/spotbuild-vip-*.rpm
 /interact/packages/conf/spotbuild-vip.uia
@@ -37,3 +40,9 @@
 /interact/packages/conf/iiacs-softspot.uia
 /interact/packages/conf/iiserv.uia
 /interact/packages/conf/iixap.uia
+
+# iitools files
+/interact/packages/iipython-*.rpm
+/interact/packages/iijava-*.rpm
+/interact/packages/conf/iipython.uia
+/interact/packages/conf/iijava.uia
