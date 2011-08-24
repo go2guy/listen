@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/23/2011
+    <!-- Last Modified 08/24/2011
        *   @Name	transferHold.ccxml
        *   @Desc	This script handles the logic for transferring a party
                     that's currently on hold to a new call -->
@@ -33,15 +33,34 @@
     <var name="EXT_LENGTH"/>    <!-- Extensions are less than seven digit numbers -->
     <var name="SB_PATH"/>       <!-- Spotbuild Path. Base directory for spotbuild -->
     <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
+    <var name="callType"/>
 
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
     <var name="record" expr="''"/>
+    <var name="callResult" expr="'Call pickup failed'"/>
     <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
     <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
     <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
     <var name="LINE_NUMBER" expr="''"/>
+    <var name="LIB_PATH" expr="''"/>        <!-- Lib Path. Direcotry for lib files -->
+    <var name="AUDIO_PATH" expr="''"/>      <!-- Audio Path. Directory for audio files -->
+    <var name="startTime" expr="getTimeStamp(3)"/>
+    <var name="endTime" expr="startTime"/>
+    <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
+    <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
+
+    <script>
+        <![CDATA[
+            function cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization) {
+                var duration = endTime - startTime;
+                if(endTime == '0')
+                    duration = '0';
+                return "{\"date\": \""+iiDateToISO(startTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+            }
+        ]]>
+    </script>
 
     <eventprocessor statevariable="state">  <!-- Here is where executable code begins -->
         <transition state="idle" event="ccxml.loaded" name="evt">
@@ -49,7 +68,10 @@
             <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
             <log target="status">Transfer Call</log>
             <assign name="state" expr="'loaded'"/>
+            <assign name="LIB_PATH" expr="SB_PATH+'lib/vxml/'"/>
+            <assign name="AUDIO_PATH" expr="APP_PATH+'audio/'"/>
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
+            <assign name="tmpDNIS" expr="getNextElement(1,tmpDNIS,'#9')"/>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
             <send data="'dialog.user.getInfo'" target="session.id"/>
         </transition>
@@ -59,36 +81,53 @@
             <log>INFO: Entered [dialog.user.getInfo] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'dbInfo'"/>
             <var name="flag" expr="'select'"/>
-            <assign name="record" expr="ibconnid + '|' + getNextElement(1,tmpDNIS,'#9')"/>
+            <assign name="record" expr="ibconnid + '|' + tmpDNIS"/>
    	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
 		</transition>
 
         <transition state="dbInfo" event="dialog.exit" name="evt">
             <!-- Back from getting the session id --> 
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <if cond="evt.values.result != 'Faliure'">
-                <var name="holdSID" expr="evt.values.result"/>
+            <var name="holdSID" expr="evt.values.result"/>
+            <if cond="((holdSID.length != 0) &amp;&amp; (holdSID != undefined) &amp;&amp; (holdSID != 'Failure'))">
+                <var name="requestToID" expr="tmpDNIS"/>
+                <var name="requestFromID" expr="tmpANI"/>
                 <var name="moveRequestSID" expr="session.id"/>  <!-- Save off current session id for future use -->
                 <!-- This send event below should end up in either dial.ccxml or hold.ccxml; 
                 depending on when the "pick up" is attempted -->
-                <send data="'dialog.user.moveRequest'" target="holdSID" namelist="moveRequestSID"/>
+                <send data="'dialog.user.moveRequest'" target="holdSID" namelist="moveRequestSID requestToID requestFromID"/>
             <else/>
-                <!-- TODO: Maybe play a prompt or some tones to indicate failure -->
                 <!-- Looks like we had some issues. End this call. -->
-                <assign name="state" expr="'endCall'"/>
-                <var name="flag" expr="'delete'"/>
-                <assign name="record" expr="ibconnid + '|' + tmpANI"/>
-   	   		    <dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+                <send data="'dialog.user.playErrorMessage'" target="session.id"/>
             </if>
+        </transition>
+
+        <transition event="dialog.user.playErrorMessage">
+            <log>INFO: Entered [dialog.user.playErrorMessage] with state [<value expr="state"/>]</log>
+            <var name="logText" expr="'transferHold.ccxml: Transfer failed. ['+ tmpANI +'] was attempting call pick up from ['+ tmpDNIS + ']'"/>
+            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+            <log target="logFile"><value expr="logText"/></log>
+            <log target="status">Transfer Failed</log>
+            <assign name="state" expr="'playErrorMsg'"/>
+            <var name="II_SB_repeat" expr="'n'"/>
+            <var name="II_SB_interval" expr="''"/>
+            <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceError2.00.wav ' + AUDIO_PATH + 'notifyAdmin.00.wav ' +  AUDIO_PATH+'thankYou.00.wav ' + AUDIO_PATH + 'goodbye.00.wav'"/>
+            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+        </transition>
+
+        <transition state="playErrorMsg" event="dialog.exit">
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <var name="dltAniRecord" expr="'true'"/>
+            <var name="dltDnisRecord" expr="'false'"/>
+            <send data="'dialog.user.updateClientRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord"/>
         </transition>
 
         <transition event="dialog.user.moveSuccessful" name="evt">
             <!-- Our move was successful. Next, we'll join the connection ids of the two parties -->
             <log>INFO: Entered [dialog.user.moveSuccessful] with state [<value expr="state"/>]</log>
     	    <assign name="state" expr="'joinID'"/>
-            <assign name="record" expr="evt.record"/>
-            <assign name="obconnid" expr="getNextElement(0,record,'|')"/>
-            <assign name="tmpDNIS" expr="getNextElement(1,record,'|')"/>
+            <assign name="obconnid" expr="evt.ibconnid"/>
+            <assign name="tmpDNIS" expr="evt.tmpANI"/>
             <join id1="ibconnid" id2="obconnid"/>
         </transition>
 
@@ -100,11 +139,9 @@
 		</transition>
 
         <transition event="dialog.user.moveFailed" name="evt">
-            <!-- Our move failed. -->
+            <!-- Our move failed. Play error and end this call -->
             <log>INFO: Entered [dialog.user.moveFailed] with state [<value expr="state"/>]</log>
-    	    <assign name="state" expr="'endCall'"/>
-            <assign name="record" expr="ibconnid + '|' + tmpANI"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            <send data="'dialog.user.playErrorMessage'" target="session.id"/>
         </transition>
 
         <transition event="connection.disconnected" name="evt">
@@ -112,15 +149,45 @@
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
     	    <assign name="state" expr="'endCall'"/>
-            <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            <var name="dltAniRecord" expr="'true'"/>
+            <var name="dltDnisRecord" expr="'false'"/>
+            <if cond="obconnid != undefined">
+                <assign name="dltDnisRecord" expr="'true'"/>
+            </if>
+            <send data="'dialog.user.updateClientRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord"/>
         </transition>
 
         <transition event="dialog.user.updateClientRecord" name="evt">
-            <!-- Here, we start the vxml dialog to update the database -->
+            <!-- Here, we update the client status in the database -->
             <log>INFO: Entered [dialog.user.updateClientRecord] with state [<value expr="state"/>]</log>
+            <var name="maxTime" expr="''"/>
+            <var name="id" expr="obconnid"/>
+            <var name="sessionID" expr="''"/>
             <var name="flag" expr="'delete'"/>
-   	   		<dialogstart src="'file:'+TRANS_PATH+'dbCall.vxml'" namelist="flag record EXT_LENGTH"/>
+            <var name="extension" expr="tmpDNIS"/>
+            <if cond="((tmpDNIS.length &lt; EXT_LENGTH) &amp;&amp; (evt.dltDnisRecord == 'true'))">
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+            </if>
+            <if cond="((tmpANI.length &lt; EXT_LENGTH)  &amp;&amp; (evt.dltAniRecord == 'true'))">
+                <assign name="id" expr="ibconnid"/>
+                <assign name="extension" expr="tmpANI"/>
+                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime" delay="'250ms'"/>
+            </if>
+            <send data="'dialog.user.writeCDR'" target="session.id" delay="'500ms'"/>
+            <send data="'dialog.user.endCall'" target="session.id" delay="'750ms'"/>
+        </transition>
+
+        <transition event="dialog.user.writeCDR" name="evt">
+            <!-- Write Call History and Stat -->
+            <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
+            <assign name="ANI" expr="tmpANI"/>
+            <assign name="DNIS" expr="tmpDNIS"/>
+            <var name="request" expr="'post'"/>
+            <var name="resource" expr="'addCallHistory'"/>
+            <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>
+            <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
+            <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
         </transition>
 
         <transition event="dialog.exit" name="evt">
@@ -153,18 +220,7 @@
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <assign name="state" expr="'errorEnd'"/>
-            <var name="logText" expr="'transferHold.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
-            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
-            <dialogstart src="'file:/interact/apps/spotbuild/ippbx/writeExceptionLog.vxml'" namelist="logText"/>
-        </transition>
-
-        <transition state="errorEnd" event="dialog.exit" name="evt">
-            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
-            <assign name="inVXML" expr="'n'"/>
-            <!-- Remove user's info from db b/4 exiting -->
-    	    <assign name="state" expr="'endCall'"/>
-            <assign name="record" expr="ibconnid + '|' + tmpANI + ',' + obconnid + '|' + tmpDNIS"/>
-            <send data="'dialog.user.updateClientRecord'" target="session.id"/>
+            <send data="'dialog.user.playErrorMessage'" target="session.id"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">

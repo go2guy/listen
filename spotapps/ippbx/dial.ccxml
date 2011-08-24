@@ -49,6 +49,8 @@
     <var name="xferConnID" expr="''"/>
     <var name="xferSID" expr="''"/>
     <var name="URI" expr="''"/>
+    <var name="requestToID" expr="''"/>
+    <var name="requestFromID" expr="''"/>
     <var name="playRingTone" expr="'y'"/>
     <var name="requestID" expr="''"/>
     <var name="voipDirection" expr="''"/>
@@ -228,6 +230,7 @@
                 <log>INFO: Call in progress...</log>
                 <log target="status">Call in progress</log>
                 <assign name="state" expr="'callConnected'"/>
+                <assign name="callResult" expr="'Call Answered'"/>
                 <send data="'dialog.user.keyPress'" target="session.id"/>
             <elseif cond="tmpDNIS.length &lt; EXT_LENGTH"/>
                 <if cond="((origDNIS.length != undefined) &amp;&amp; (origDNIS == tmpDNIS))">
@@ -722,7 +725,7 @@
 		<transition state="blindXfer" event="dialog.user.blindXfer" name="evt">
             <!-- Blind Transfer request. Call the transfer script -->
             <log>INFO: Entered [dialog.user.blindXfer] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI callType ibconnid obconnid importedValue URI xferConnID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
 		</transition>
 
 		<transition state="monitor" event="connection.signal" name="evt">
@@ -744,7 +747,7 @@
                 <!-- Here, we assume this event is in connection to a 3-way call/conference. 
                 We'll ignore it and allow the IP phone handle the call -->
             <else/>
-                <fetch next="'file:'+APP_PATH+'transfer/hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI ibconnid obconnid requestID importedValue startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+                <fetch next="'file:'+APP_PATH+'transfer/hold.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI callType ibconnid obconnid requestID importedValue startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
             </if>
 		</transition>
 
@@ -756,6 +759,8 @@
             <else/>
                 <assign name="state" expr="'attemptMove'"/>
             </if>
+            <assign name="requestToID" expr="evt.requestToID"/>
+            <assign name="requestFromID" expr="evt.requestFromID"/>
             <assign name="moveRequestSID" expr="evt.moveRequestSID"/>
             <if cond="inVXML == 'y'">   <!-- If we're in a vxml dialog, we need to end it -->
                 <send data="'dialog.user.terminate'" target="session.id"/>
@@ -772,7 +777,7 @@
                 <assign name="endTime" expr="getTimeStamp(3)"/>
                 <var name="params" expr="callInfoParams(session.id, '', '')"/>
                 <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
-            <else/> <!-- This is for ringing pick up. Here, we disconnect our dial attempt and end the current ring tone -->
+            <else/> <!-- This is for ringing pick up. Here, we disconnect our dial attempt -->
                 <assign name="state" expr="'ringPickUpDisc'"/>
                 <disconnect connectionid="obconnid"/>
             </if>
@@ -797,7 +802,7 @@
             <log target="logFile"><value expr="logText"/></log>
             <var name="dltAniRecord" expr="'true'"/>
             <var name="dltDnisRecord" expr="'true'"/>
-            <assign name="callResult" expr="callResult + ': Transfer to ' + tmpDNIS + ' failed'"/>
+            <assign name="callResult" expr="callResult + ': Transfer to ' + requestFromID + ' failed'"/>
             <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord"/>
         </transition>
 
@@ -837,7 +842,6 @@
         <transition state="ringPickUpDisc" event="connection.failed" name="evt" cond="evt.connectionid == obconnid">
             <!-- Got the response to our disconnect. Remove the callee's record in the db -->
             <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
-		    <assign name="state" expr="'ringRecDelete'"/>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH">
                 <var name="id" expr="obconnid"/>
                 <var name="sessionID" expr="''"/>
@@ -870,10 +874,10 @@
             <send data="'dialog.user.moveFailed'" target="moveRequestSID"/>
             <if cond="state == 'attdXferVChnnel'">
                 <assign name="dltDnisRecord" expr="'true'"/>
-                <assign name="callResult" expr="callResult + ': Attended transfer to: ' + tmpDNIS + ' failed'"/>
+                <assign name="callResult" expr="callResult + ': Attended transfer to: ' + requestFromID + ' failed'"/>
             <else/>
                 <assign name="dltAniRecord" expr="'true'"/>
-                <assign name="callResult" expr="'Call pick up from: ' + tmpDNIS + ' failed'"/>
+                <assign name="callResult" expr="'Call pick up from: ' + requestFromID + ' failed'"/>
             </if>
             <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord"/>
         </transition>
@@ -885,17 +889,18 @@
             <var name="dltAniRecord" expr="'false'"/>
             <var name="dltDnisRecord" expr="'false'"/>
             <if cond="state == 'attdXferMoveAttempt'">
+                <assign name="state" expr="'endCall'"/>
                 <assign name="dltDnisRecord" expr="'true'"/>
-                <assign name="callResult" expr="callResult + ': Attended transfer to ' + tmpDNIS + ' successful'"/>
+                <assign name="callResult" expr="callResult + ': Attended transfer to ' + requestFromID + ' successful'"/>
                 <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="obconnid"/>
+                <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord" delay="'250ms'"/>
             <else/>
                 <assign name="dltAniRecord" expr="'true'"/>
-                <var name="record" expr="ibconnid + '|' + tmpANI"/>
-                <assign name="callResult" expr="'Call pick up from: ' + tmpDNIS + ' successful'"/>
-                <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="record" delay="'250ms'"/>
+                <assign name="callResult" expr="'Call pick up from: ' + requestFromID + ' successful'"/>
+                <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="ibconnid tmpANI"/>
+                <send data="'dialog.user.writeCDR'" target="session.id" delay="'250ms'"/>
+                <send data="'dialog.user.endCall'" target="session.id" delay="'500ms'"/>
             </if>
-            <assign name="state" expr="'endCall'"/>
-            <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord" delay="'250ms'"/>
         </transition>
 
         <transition state="pickUpMoveAttempt attdXferMoveAttempt" event="error.move" name="evt">
@@ -907,10 +912,10 @@
             <send data="'dialog.user.moveFailed'" target="moveRequestSID"/>
             <if cond="state == 'attdXferMoveAttempt'">
                 <assign name="dltDnisRecord" expr="'true'"/>
-                <assign name="callResult" expr="callResult + ': Attended transfer to: ' + tmpDNIS + ' failed'"/>
+                <assign name="callResult" expr="callResult + ': Attended transfer to: ' + requestFromID + ' failed'"/>
             <else/>
                 <assign name="dltAniRecord" expr="'true'"/>
-                <assign name="callResult" expr="'Call pick up from: ' + tmpDNIS + ' failed'"/>
+                <assign name="callResult" expr="'Call pick up from: ' + requestFromID + ' failed'"/>
             </if>
             <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord" delay="'250ms'"/>
         </transition>
@@ -1051,7 +1056,7 @@
         <transition state="gotXferReq" event="dialog.user.transfer" name="evt">
             <!-- Here, we call the attended transfer ccxml script that handles joining the call legs -->
             <log>INFO: Entered [dialog.user.transfer] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI ibconnid obconnid importedValue URI xferConnID xferSID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+            <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI callType ibconnid obconnid importedValue URI xferConnID xferSID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
         </transition>
 
         <transition event="dialog.user.listenApp" name="evt">
