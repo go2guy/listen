@@ -99,6 +99,7 @@ class SpotCommunicationService {
         importedValue.put("destination", fax.dnis);
         importedValue.put("ani", ""); //Will be implemented later, probably once sold and we know what to do
         importedValue.put("organization", "/organizations/${fax.sender.organization.id}");
+        importedValue.put("id", fax.id)
         buildAndSendRequest(importedValue);
     }
 
