@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/23/2011
+    <!-- Last Modified 08/24/2011
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -139,7 +139,7 @@
         <transition event="dialog.user.pickUpCall" name="evt">
             <!-- Here we'll pass control to the transfer hold ccxml script -->
             <log>INFO: Entered [dialog.user.pickUpCall] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'transfer/transferHold.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI importedValue II_SB_line II_SB_CODE_DIR II_SB_ibcallid II_SB_obcallid II_SB_projectSource II_SB_transfer II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type"/>
+            <fetch next="'file:'+APP_PATH+'transfer/transferHold.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid tmpANI tmpDNIS DNIS ANI callType importedValue II_SB_line II_SB_CODE_DIR II_SB_ibcallid II_SB_obcallid II_SB_projectSource II_SB_transfer II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type"/>
         </transition>
 
         <transition event="connection.disconnected" name="evt">
