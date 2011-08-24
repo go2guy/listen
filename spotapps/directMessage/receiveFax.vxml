@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/25/2011
+    <!-- Last Modified 08/24/2011
        *   @Name	receiveFax.vxml
        *   @Desc	-->
 
@@ -75,6 +75,7 @@
         <block>
             <log>INFO: Entered createPDF</log>
     	    <log target="status">Create PDF</log>
+            <assign name="gotoForm" expr="'#exit'"/>
             <var name="action" expr="'CREATE_PDF'"/>
             <var name="fileName" expr="destDir + dest"/>
             <data name="appObj" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/listen/pdfToTiff.php'" method="post" namelist="action fileName" fetchtimeout="1s"/>
@@ -143,7 +144,7 @@
     <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
         <log>ERROR: Unable to connect with local webserver</log>
         <assign name="status" expr="'Failure'"/>
-        <goto next="#exit"/>
+        <goto expr="gotoForm"/>
     </catch>
 
     <script>

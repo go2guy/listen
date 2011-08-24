@@ -23,6 +23,11 @@
     <var name="LIB_PATH" expr="SB_PATH + 'lib/'"/>       <!-- Lib Path. Direcotry for lib files -->
     <var name="AUDIO_PATH" expr="APP_PATH + 'audio/'"/>  <!-- Audio Path. Directory for audio files -->
     <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
+    <var name="resource" expr="''"/>
+    <var name="cntrlURL" expr="''"/>
+    <var name="params" expr="''"/>
+    <var name="request" expr="'post'"/>
+    <var name="id" expr="''"/>
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>         <!-- Location of Java script file -->
 
@@ -34,6 +39,11 @@
                     duration = '0';
                 return "{\"date\": \""+iiDateToISO(startTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
             }
+
+            function updateParams(status) {
+                return "{\"status\": \""+ status +"\"}";
+            }
+
         ]]>
     </script>
 
@@ -42,7 +52,9 @@
             <!-- Received ccxml.loaded -->
             <log>INFO: transition event [ccxml.loaded] state [<value expr="state"/>]</log>
             <assign name="state" expr="'loaded'"/>
+            <assign name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
+            <assign name="id" expr="getJsonVal(importedValue, 'id')"/>
             <send data="'dialog.user.dial'" target="session.id"/>
         </transition>
 
@@ -50,6 +62,13 @@
             <!-- Dial fax machine -->
             <log>INFO: transition event [dialog.user.dial] state [<value expr="state"/>]</log>
             <assign name="state" expr="'dialing'"/>
+
+            <!-- Update Controller -->
+            <assign name="resource" expr="'updateOutgoingFax/' + id"/>
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','faxApi')"/>
+            <assign name="params" expr="updateParams('Dialing')"/>
+            <send data="'apiObj'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
+
             <assign name="fileURL" expr="getJsonVal(importedValue, 'artifact')"/>
             <if cond="((ANI.length == 0) || (ANI == undefined))">
                 <assign name="ANI" expr="'4024767473'"/>
@@ -183,15 +202,14 @@
         <transition event="dialog.user.writeCDR" name="evt">
             <!-- Write Call History and Stat -->
             <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
-            <var name="resource" expr="'addCallHistory'"/>
-            <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <assign name="resource" expr="'addCallHistory'"/>
+            <assign name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','spotApi')"/>
             <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>
             <var name="endTime" expr="getTimeStamp(3)"/>
             <var name="callType" expr="'Send Fax'"/>
-            <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
+            <assign name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
             <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
-            <send data="'dialog.user.writeCDR'" target="session.id"/>
             <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
         </transition>
 
