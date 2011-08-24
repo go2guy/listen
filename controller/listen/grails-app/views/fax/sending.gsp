@@ -123,7 +123,7 @@ $(document).ready(function() {
                         $('.fax-status .status-message').css('margin-left', '10px');
                         $('#resend-form').show();
                         clearInterval(interval);
-                    } else if(data.status.indexOf('Pages Sent') > -1) {
+                    } else if(data.status.indexOf(' Sent') > -1) {
                         $('.fax-status').addClass('fax-success').css('background-image', 'none');
                         $('.fax-status .status-message').css('margin-left', '10px');
                         clearInterval(interval);
