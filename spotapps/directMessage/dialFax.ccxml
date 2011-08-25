@@ -110,6 +110,11 @@
             <assign name="t38" expr="evt.info.voip.T38"/>
             <if cond="((t38 == undefined) || (t38.length == 0))">
                 <log>ERROR: re-INVITE failed</log>
+
+                <!-- Update Controller -->
+                <assign name="params" expr="updateParams('Failed')"/>
+                <send data="'apiObj'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
+
                 <var name="logText" expr="'dialFax.ccxml: Signal error. SPOT did not receive T38 information. Caller ['+ ANI +'] attempting to fax destination ['+ DNIS + '].'"/>
                 <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>
@@ -168,6 +173,11 @@
         <transition event="connection.disconnected">
             <log>INFO: transition event [connection.disconnected] state [<value expr="state"/>]</log>
             <assign name="state" expr="'connectionDisconnected'"/>
+
+            <!-- Update Controller -->
+            <assign name="params" expr="updateParams('Failed')"/>
+            <send data="'apiObj'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
+
             <if cond="dialogID.length != 0">
 		        <dialogterminate dialogid="dialogID" immediate="true"/>
 	        <else/>
@@ -177,6 +187,11 @@
 
         <transition event="connection.failed" name="evt">
             <log>INFO: transition event [connection.failed] state [<value expr="state"/>]</log>
+
+            <!-- Update Controller -->
+            <assign name="params" expr="updateParams('Failed')"/>
+            <send data="'apiObj'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
+
             <assign name="state" expr="'connectionFailed'"/>
             <var name="logText" expr="'dialFax.ccxml: Call failed. ['+ ANI +'] attempting to fax destination ['+ DNIS + ']. Reason ['+ errorCode(evt.reason) +']'"/>
             <assign name="logText" expr="writeLog('DIRECT MESSAGE',LINE_NUMBER,logText)"/>

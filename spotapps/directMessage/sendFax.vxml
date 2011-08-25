@@ -11,11 +11,19 @@
     <var name="fileURL"/>
     <var name="importedValue"/>
     <var name="pages"/>
+    <var name="HTTPcontroller"/>
 
     <form id="beginDocument">
         <block>
             <log>INFO: Entered beginDocument</log>
             <log target="status">Sending Fax...</log>
+            <assign name="resource" expr="'updateOutgoingFax/' + getJsonVal(importedValue,'id')"/>
+            <assign name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','faxApi')"/>
+            <assign name="params" expr="sendSendingStatus('Sending')"/>
+            <assign name="request" expr="'post'"/>
+            <assign name="HTTPcontroller" expr="getJsonVal(importedValue,'HTTPcontroller')"/>
+            <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL resource params request"/>
         </block>
 	    <object name="send" classid="com.iivip.fax">
 		    <param name="COMMAND" expr="'SEND'"/>
@@ -42,12 +50,7 @@
     <form id="sendSuccess">
         <block>
             <log>INFO: Entered sendSuccess</log>
-            <assign name="resource" expr="'updateOutgoingFax/' + getJsonVal(importedValue,'id')"/>
-            <assign name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
-            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','faxApi')"/>
             <assign name="params" expr="sendSuccessStatus(pages)"/>
-            <assign name="request" expr="'post'"/>
-            <var name="HTTPcontroller" expr="getJsonVal(importedValue,'HTTPcontroller')"/>
             <data name="apiObj" srcexpr="HTTPcontroller" method="post" namelist="cntrlURL resource params request"/>
             <goto next="#sendStat"/>
         </block>
@@ -97,6 +100,10 @@
                 else
                     returnString = returnString + pages + " Pages Sent\"}";
                 return returnString;
+            }
+
+            function sendSendingStatus(status) {
+                return "{\"attempts\": \"1\", \"status\": \"" + status + "\"}";
             }
         ]]>
     </script>
