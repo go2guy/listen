@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/24/2011
+    <!-- Last Modified 08/25/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -280,7 +280,10 @@
                         <!-- This implies that the extension we are forwarded to is calling our extension.
                         In this case, we'll go directly to our voice mail -->
                         <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                        <send data="'dialog.user.listenApp'" target="session.id"/>
+                        <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
+                        <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
+                        <send data="'dialog.user.writeCDR'" target="session.id"/> <!-- Write CDR of call -->
+                        <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
                     <else/>
                         <send data="'dialog.user.chkBlkList'" target="session.id"/>
                     </if>
@@ -606,7 +609,6 @@
             <!-- Our join attempt was successful -->
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
             <log>INFO: Call in progress...</log>
-            <log target="status"><value expr="tmpDNIS"/></log>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- If Called party is internal, we need to update a record into the db -->
                 <var name="id" expr="obconnid"/>
                 <var name="sessionID" expr="''"/>
@@ -642,6 +644,7 @@
 		<transition state="callConnected" event="dialog.user.monitor" name="evt">
             <!-- In here, we start a dialog that will monitor the call for any 4 digit key press -->
             <log>INFO: Entered [dialog.user.monitor] with state [<value expr="state"/>]</log>
+            <log target="status"><value expr="tmpDNIS"/></log>
             <assign name="state" expr="'monitor'"/>
             <assign name="II_SB_promptID" expr="''"/>
             <var name="FLD_TERMCHAR" expr="'#'"/>
@@ -1038,7 +1041,11 @@
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             <else/>
                 <var name="tmp" expr="getExtID(DNIS)"/>
-                <if cond="tmp.length &lt; EXT_LENGTH">  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+                <if cond="((tmp.length &lt; EXT_LENGTH) || (isFwd == 'true'))">  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+                    <if cond="isFwd == 'true'">
+                        <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
+                        <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
+                    </if>
                     <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                     <send data="'dialog.user.writeCDR'" target="session.id"/>
                     <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
@@ -1094,9 +1101,9 @@
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'cntrlURL', cntrlURL)"/>
                 <if cond="LISTEN_APP == 'listen_voicemail'">
                     <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0) &amp;&amp; (isFwd == 'true'))">
-                    <!-- If we're dealing with an extension that was forwarded, we need to use the original
-                    voicemail not where the call was forwarded to -->
-                    <assign name="DNIS" expr="origDNIS"/>
+                        <!-- If we're dealing with an extension that was forwarded, we need to use the original
+                        voicemail not where the call was forwarded to -->
+                        <assign name="DNIS" expr="origDNIS"/>
                     </if>
                 </if>            
                 <assign name="II_SB_status" expr="''"/>
@@ -1167,6 +1174,9 @@
                     <var name="operation" expr="'set'"/>
                     <var name="value" expr="getTimeDifference(startTime,endTime)"/>
                     <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
+                <elseif cond="isFwd == 'true'"/>
+                    <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
+                    <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
                 </if>
                 <var name="dltAniRecord" expr="'true'"/>
                 <var name="dltDnisRecord" expr="'true'"/>
