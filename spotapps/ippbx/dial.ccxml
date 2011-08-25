@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/23/2011
+    <!-- Last Modified 08/24/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -383,7 +383,12 @@
             <else/>
                 <!-- Done with numbers in find me group. Possibly have multiple calls going on. If they all time out, 
                 we'll get a connection.failed for all of them and start dialing the next group. If any is answered, we'll
-                terminate the other calls -->
+                terminate the other calls. Here we send a stat for this find me group -->
+                <var name="id" expr="'LSTNAPP_0036'"/>
+                <var name="source" expr="'findMe'"/>
+                <var name="operation" expr="'increment'"/>
+                <var name="value" expr="'1'"/>
+                <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
             </if>
         </transition>
 
@@ -392,16 +397,16 @@
             ring tone to the caller. Once call gets picked up, we'll end it (the ring tone). -->
             <log>INFO: Entered [dialog.user.call] with state [<value expr="state"/>]</log>
             <var name="OBCALL.noproxy" expr="'false'"/>
+            <if cond="((tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,''))))">
+                <assign name="CALL_ANI" expr="'sip:' + getJsonVal(importedValue, 'sipFrom') + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
+            <else/>
+                <assign name="CALL_ANI" expr="setANI(ANI)"/>
+            </if>
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
                 <if cond="ip.length &gt; 0">
                     <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + '@' + ip"/>
                 <else/>
                     <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
-                </if>
-                <if cond="((tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,''))))">
-                    <assign name="CALL_ANI" expr="'sip:' + getJsonVal(importedValue, 'sipFrom') + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
-                <else/>
-                    <assign name="CALL_ANI" expr="setANI(ANI)"/>
                 </if>
             <else/> <!-- Call to an external number (outside PBX) -->
                 <if cond="state != 'findMe'">
@@ -426,10 +431,22 @@
             <if cond="CALL_DNIS.length &gt; 0">
                 <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT + 's'"/>
                 <if cond="state == 'findMe'">
+                    <var name="id" expr="'LSTNAPP_0032'"/>
                     <assign name="findMeIDList" expr="findMeIDList + obconnid + '|'"/>
                     <assign name="findMeObj" expr="extendJsonObject(findMeObj, obconnid, tmpDNIS)"/>
                     <log>INFO: Find Me Obj [<value expr="findMeObj"/>]</log>
                     <log target="status">Finding [<value expr="getExtID(DNIS)"/>]</log>
+                    <if cond="tmpDNIS.length &lt; EXT_LENGTH">
+                        <!-- Stat ID already set above -->
+                    <elseif cond="inString('.',tmpDNIS,'')"/>
+                        <assign name="id" expr="'LSTNAPP_0037'"/> <!-- IP Stat ID -->
+                    <else/>
+                        <assign name="id" expr="'LSTNAPP_0033'"/> <!-- External Stat ID -->
+                    </if>
+                    <var name="source" expr="'findMe'"/>
+                    <var name="operation" expr="'increment'"/>
+                    <var name="value" expr="'1'"/>
+                    <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
                 <else/>
                     <assign name="state" expr="'dialing'"/>
                     <log target="status">Dialing [<value expr="tmpDNIS"/>]</log>
@@ -483,7 +500,7 @@
 		<transition event="connection.progressing" name="evt" cond="((state != 'findMe') &amp;&amp; (tmpDNIS.length &gt; EXT_LENGTH))">
             <!-- For external calls (that are not find me), we want to join connections in this transition. This allows caller to
             hear any telco carrier messages -->
-            <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
+            <log>INFO: Entered [connection.progressing] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'progressing'"/>
             <log target="status">Ringing...</log>
 		    <join id1="ibconnid" id2="evt.connectionid"/>
@@ -511,6 +528,15 @@
                 <assign name="tmpDNIS" expr="getExtID(DNIS)"/> <!-- Reset tmp dnis info -->
                 <assign name="findMeIDList" expr="shrink(evt.connectionid,findMeIDList,'|')"/>
                 <assign name="callResult" expr="'Find Me: ' + callResult + ' at ' + getJsonVal(findMeObj, evt.connectionid)"/>
+                <var name="id" expr="'LSTNAPP_0030'"/>
+                <var name="source" expr="'findMe'"/>
+                <var name="operation" expr="'set'"/>
+                <var name="value" expr="getTimeDifference(startTime,endTime)"/>
+                <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
+                <assign name="id" expr="'LSTNAPP_0035'"/>
+                <assign name="operation" expr="'increment'"/>
+                <assign name="value" expr="'1'"/>
+                <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
                 <if cond="findMeIDList.length &gt; 1">
                     <!-- There are some active calls to terminate -->
                     <send data="'dialog.user.stopFindMe'" target="session.id"/>
@@ -1135,6 +1161,13 @@
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             <else/>
+                <if cond="findMeObj.length &gt; 0">
+                    <var name="id" expr="'LSTNAPP_0031'"/>
+                    <var name="source" expr="'findMe'"/>
+                    <var name="operation" expr="'set'"/>
+                    <var name="value" expr="getTimeDifference(startTime,endTime)"/>
+                    <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
+                </if>
                 <var name="dltAniRecord" expr="'true'"/>
                 <var name="dltDnisRecord" expr="'true'"/>
                 <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord" delay="'250ms'"/>
@@ -1222,12 +1255,20 @@
             <var name="id" expr="''"/>
             <var name="source" expr="'ippbx'"/>
             <var name="operation" expr="'set'"/>
-            <if cond="((tmpANI &lt; EXT_LENGTH) &amp;&amp; (tmpDNIS &lt; EXT_LENGTH))">
+            <if cond="((state == 'findMe') &amp;&amp; (LISTEN_APP == 'listen_voicemail'))">
+                <var name="value" expr="'1'"/>
+                <assign name="source" expr="'findMe'"/>
+                <assign name="id" expr="'LSTNAPP_0034'"/> <!-- Find Me went to voicemail -->
+                <assign name="operation" expr="'increment'"/>
+                <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
+                <assign name="operation" expr="'set'"/>
+                <assign name="id" expr="'LSTNAPP_0005'"/> <!-- Call Time in Find Me -->
+            <elseif cond="((tmpANI &lt; EXT_LENGTH) &amp;&amp; (tmpDNIS &lt; EXT_LENGTH))"/>
                 <assign name="id" expr="'LSTNAPP_0011'"/> <!-- Assume pbx ext to ext call. -->
             <elseif cond="tmpANI &lt; EXT_LENGTH"/>
                 <assign name="id" expr="'LSTNAPP_0012'"/> <!-- Assume pbx to external call -->
             <else/>
-                <var name="id" expr="'LSTNAPP_0013'"/>  <!-- Assume external to pbx call -->
+                <assign name="id" expr="'LSTNAPP_0013'"/>  <!-- Assume external to pbx call -->
             </if>
             <var name="value" expr="getTimeDifference(startTime,endTime)"/>
             <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
