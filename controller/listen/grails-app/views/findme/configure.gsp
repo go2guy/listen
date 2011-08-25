@@ -25,6 +25,7 @@ fieldset.vertical #smsDetails {
 
 fieldset.vertical #smsDetails label {
     display: inline-block;
+    vertical-align: middle;
 }
 
 fieldset.vertical #smsDetails input[type="text"],

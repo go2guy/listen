@@ -40,6 +40,15 @@ fieldset.vertical .time-restriction select {
     width: 60px;
 }
 
+#smsNotificationNumberFields > label {
+    vertical-align: middle;    
+}
+
+#smsNotificationNumberFields > button {
+    margin-bottom: 5px;
+    vertical-align: bottom;
+}
+
 .templates {
     display: none;
 }
@@ -104,7 +113,7 @@ fieldset.vertical .time-restriction select {
           <g:message code="page.voicemail.settings.sendSms"/>
         </label>
 
-        <fieldset>
+        <fieldset id="smsNotificationNumberFields">
           <label for="smsNotificationNumber" class="inline-label">
             <g:message code="page.voicemail.settings.smsPhoneNumber"/>
             <g:textField name="smsNotificationNumber" value="${preferences?.smsNotificationNumber()?.encodeAsHTML()}" class="${listen.validationClass(bean: preferences, field: 'smsPhoneNumber')}"/>
