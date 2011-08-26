@@ -72,9 +72,9 @@
     <form id="deleteTiff">
         <block>
             <log>INFO: Entered deleteTiff</log>
-            <var name="FILE1" expr="fileURL"/>
+            <var name="FILE1" expr="getDirectory(fileURL)"/>
             <var name="OPERATION" expr="'delete'"/>
-    	    <log target="status">Delete Tiff</log>
+    	    <log target="status">Delete artifacts</log>
             <data name="fileOBJ" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="post" namelist="FILE1 OPERATION"/>
             <if cond="fileOBJ.Result != 'Success'">
                 <log>INFO: Result [<value expr="fileOBJ.Result"/>]</log>
@@ -104,6 +104,10 @@
 
             function sendSendingStatus(status) {
                 return "{\"attempts\": \"1\", \"status\": \"" + status + "\"}";
+            }
+
+            function getDirectory(fileName) {
+                return fileName.slice(0, fileName.lastIndexOf('/'));
             }
         ]]>
     </script>
