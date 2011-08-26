@@ -43,7 +43,7 @@
             }
             break;
         case 'CREATE_PDF':
-            $pdf = substr($tiff, 0, -4)."pdf";
+            $pdf = substr($tiff, 0, -3)."pdf";
             $tiffToPDF = "tiff2pdf -p letter -j -q 75 -f -o $pdf $tiff";
             @exec ($tiffToPDF, $output, $return_var);
             if ($return_var == 0) {

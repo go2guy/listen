@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/22/2011
+    <!-- Last Modified 08/26/2011
        *   @Name	sendFax.vxml
        *   @Desc	This script handles sending a fax (TIF file) via T38 protocol -->
 
@@ -75,10 +75,10 @@
             <var name="FILE1" expr="fileURL"/>
             <var name="OPERATION" expr="'delete'"/>
     	    <log target="status">Delete Tiff</log>
-            <data name="dltTiff" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="post" namelist="FILE1 OPERATION"/>
-            <if cond="dltTiff.Result != 'Success'">
-                <log>INFO: Result [<value expr="dltTiff.Result"/>]</log>
-                <log>INFO: Reason [<value expr="dltTiff.Reason"/>]</log>
+            <data name="fileOBJ" srcexpr="'http://localhost/spot/cgi-bin/spotbuild/fileops.php'" method="post" namelist="FILE1 OPERATION"/>
+            <if cond="fileOBJ.Result != 'Success'">
+                <log>INFO: Result [<value expr="fileOBJ.Result"/>]</log>
+                <log>INFO: Reason [<value expr="fileOBJ.Reason"/>]</log>
             </if>
             <goto next="#exit"/>
         </block>
