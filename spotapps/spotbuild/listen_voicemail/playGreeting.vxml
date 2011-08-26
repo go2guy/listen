@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/listen_voicemail/root.vxml">
-    <!-- Last Modified 07/22/2011
+    <!-- Last Modified 08/26/2011
        *   @Name	playGreeting.vxml
        *   @Desc	This script acts as a front end for the voicemail and fax receive applications.
                     It uses custom Intract code to detect incoming fax -->
 
     <property name="termchar" value=""/>
-	<property name="timeout" value="250ms"/>
+	<property name="timeout" value="750ms"/>
     <property name="termtimeout" value="0ms"/>
 
     <var name="index" expr="0"/>
