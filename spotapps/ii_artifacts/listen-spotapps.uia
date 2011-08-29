@@ -32,7 +32,7 @@
 
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.5.1</version>
+                <version>4.8.0</version>
             </rpm>
 
             <rpm state="less-than-or-equal">
@@ -186,7 +186,7 @@
 
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.5.1</version>
+                <version>4.8.0</version>
             </rpm>
 
             <rpm state="less-than-or-equal">
@@ -206,7 +206,7 @@
 
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
-                <version>4.5.1</version>
+                <version>4.8.0</version>
             </rpm>
 
             <rpm state="less-than-or-equal">
