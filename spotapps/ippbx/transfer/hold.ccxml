@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/24/2011
+    <!-- Last Modified 08/29/2011
        *   @Name	hold.ccxml
        *   @Desc	This script handles the logic for placing a call on hold -->
 
@@ -414,7 +414,7 @@
             </if>
             <var name="dltAniRecord" expr="'true'"/>
             <var name="dltDnisRecord" expr="'true'"/>
-            <send data="'dialog.user.deleteRecord'" target="session.id" delay="'250ms'"/>
+            <send data="'dialog.user.deleteRecord'" target="session.id" delay="'250ms'" namelist="dltAniRecord dltDnisRecord"/>
         </transition>
 
         <transition event="dialog.user.endCall" name="evt">
