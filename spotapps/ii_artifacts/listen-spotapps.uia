@@ -88,11 +88,8 @@
 
             <question level="not_in_backup" severity="ask">
                 <text>Enter the server name of the SIP trunk</text>
-                <default>
-                    #!/bin/bash
-                    hostname
-                </default>
-                <validateRegex>^${HOSTNAME}$</validateRegex>
+                <default>''</default>
+                <validateRegex>^${HOSTNAME}|''$</validateRegex>
                 <validateInfo>The value may be any number of letters, numbers, dashes, or periods. The value may not be blank.</validateInfo>
 
                 <property format="ccvxml" action="update" quotes="yes">
@@ -107,11 +104,8 @@
 
             <question level="not_in_backup" severity="ask">
                 <text>Enter the server name/IP of the fax gateway if different from SIP trunk</text>
-                <default>
-                    #!/bin/bash
-                    hostname
-                </default>
-                <validateRegex>^${HOSTNAME}$</validateRegex>
+                <default>''</default>
+                <validateRegex>^${HOSTNAME}|''$</validateRegex>
                 <validateInfo>The value may be blank or alphanumeric.</validateInfo>
 
                 <property format="ccvxml" action="update" quotes="yes">
