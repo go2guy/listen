@@ -659,7 +659,7 @@ class SpotApiController {
         }
 
         if(!user.enabled()) {
-            response.sendError(HSR.SC_BAD_REQUEST)
+            response.sendError(HSR.SC_FORBIDDEN)
             return
         }
 
