@@ -1159,14 +1159,8 @@
             <!-- Here, we start the vxml dialog to update the database -->
             <log>INFO: Entered [dialog.user.disconnected] with state [<value expr="state"/>]</log>
             <if cond="returnApp.length &gt; 0"> <!-- Dial request originated from different listen app. Return to it -->
-                <assign name="LISTEN_APP" expr="returnApp"/>
-                <assign name="II_SB_ibcallid" expr="''"/>
-                <assign name="II_SB_connectionID" expr="''"/>
-            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', callResult)"/>
-                <var name="callTime" expr="getTimeDifference(startTime,endTime)"/>
-            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', callTime)"/>
-            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
-                <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
+                <assign name="state" expr="'disconnectVC'"/>
+                <join id1="ibconnid" id2="'VXML_CHANNEL'"/> <!-- Get a voice channel before returnning to dial app -->
             <else/>
                 <if cond="findMeObj.length &gt; 0">
                     <var name="id" expr="'LSTNAPP_0031'"/>
@@ -1182,6 +1176,19 @@
                 <var name="dltDnisRecord" expr="'true'"/>
                 <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord" delay="'250ms'"/>
             </if>
+        </transition>
+
+        <transition state="disconnectVC" event="conference.joined" name="evt">
+            <!-- We're joined to a voice channel. Return to originating application -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+            <assign name="LISTEN_APP" expr="returnApp"/>
+            <assign name="II_SB_ibcallid" expr="''"/>
+            <assign name="II_SB_connectionID" expr="''"/>
+            <assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', callResult)"/>
+            <var name="callTime" expr="getTimeDifference(startTime,endTime)"/>
+            <assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', callTime)"/>
+            <assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
+            <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
         </transition>
 
         <transition event="dialog.user.deleteRecord" name="evt">
