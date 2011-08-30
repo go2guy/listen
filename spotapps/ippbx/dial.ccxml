@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/25/2011
+    <!-- Last Modified 08/30/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -454,7 +454,7 @@
                     <assign name="state" expr="'dialing'"/>
                     <log target="status">Dialing [<value expr="tmpDNIS"/>]</log>
                 </if>
-                <if cond="((tmpDNIS.length &lt; EXT_LENGTH) || (state == 'findMe'))">
+                <if cond="((tmpDNIS.length &lt; EXT_LENGTH) || (state == 'findMe') || (inString('.',tmpDNIS,'')))">
                     <if cond="tmpDNIS.length &lt; EXT_LENGTH">
                         <!-- Internal call. Need to store session information in pbx database. 
                         This allows another party to pick up ringing call -->
