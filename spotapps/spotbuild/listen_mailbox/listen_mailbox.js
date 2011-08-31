@@ -112,3 +112,17 @@ function checkMbxMenuInput(enableOutDial, enablePagingSupport, userInput)
 
     return userInput;
 }
+
+function setParamsForCallEnd(passValues, ANI, callResult, organization) {
+    var duration = getJsonVal(passValues, 'callTime');
+    if(duration == '')
+    {
+    duration = 0;
+    }
+    var callStartTime = getJsonVal(passValues, 'callStartTime');
+    if(callStartTime == '')
+    {
+        callStartTime = (new Date().getTime());
+    }
+    return "{\"date\": \""+iiDateToISO(callStartTime)+"\", \"service\": \""+getJsonVal(passValues, 'callType')+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+getJsonVal(passValues, 'destination')+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+}

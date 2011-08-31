@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_231_85(passValues,subFwd,appStartTime)
+            function II_SB_JS_function_231_85(passValues,subFwd,appStartTime,subscriber,lstnSub,subscriberInfo)
             {
-	            passValues = extendJsonObject(passValues, 'dialReturnApp', 'listen_mailbox');passValues = extendJsonObject(passValues, 'appStartTime', appStartTime);passValues = extendJsonObject(passValues, 'dialHotKeys', '');passValues = extendJsonObject(passValues, 'dialInterrupt', 'inbound');return extendJsonObject(passValues, 'destination', subFwd);
+	            passValues = extendJsonObject(passValues, 'dialReturnApp', 'listen_mailbox');passValues = extendJsonObject(passValues, 'appStartTime', appStartTime);passValues = extendJsonObject(passValues, 'dialHotKeys', '');passValues = extendJsonObject(passValues, 'dialInterrupt', 'inbound');passValues = extendJsonObject(passValues, 'subscriber', subscriber);passValues = extendJsonObject(passValues, 'lstnSub', lstnSub);passValues = extendJsonObject(passValues, 'destination', subFwd);passValues = extendJsonObject(passValues, 'subscriberInfo', subscriberInfo);passValues = passValues.replace(':"{',':{');passValues = passValues.replace('}"}','}}');return passValues;
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Add Destination</log>
             <log>INFO: Entered run-javascript.vxml [231_85]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_231_85(passValues,subFwd,appStartTime)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_231_85(passValues,subFwd,appStartTime,subscriber,lstnSub,subscriberInfo)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
