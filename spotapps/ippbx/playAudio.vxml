@@ -467,23 +467,18 @@
         <block>
             <!-- Verify that the user did not press the terminating character
                  and we've not collected the max number of key presses -->
-            <if cond="((fldLength.length == 0) || (fldLength == 0))"> <!-- Appears user made the prompt interruptible but doesn't want to save the key press -->
-                <log>INFO: DTMF Length set to [<value expr="fldLength"/>]</log>
-                <log>INFO: Ignoring user key press [<value expr="application.lastresult$.utterance"/>]</log>
-            <else/>
-                <if cond="application.lastresult$.utterance != fldTermChar">
-                    <assign name="userEntry" expr="userEntry + application.lastresult$.utterance"/> <!-- Store the user's key press -->
-                    <if cond="userEntry.length != fldLength">   <!-- If we've not collected the max allowed, go get next one -->
-                        <assign name="plyAudio" expr="'n'"/>
-                        <assign name="plySpch" expr="'n'"/>
-                        <assign name="gotoForm" expr="''"/>
-                        <goto next="#getEntry"/>
-                    <else/>
-                        <log>INFO: Received maximum key presses allowed [<value expr="fldLength"/>]</log>
-                    </if>
+            <if cond="application.lastresult$.utterance != fldTermChar">
+                <assign name="userEntry" expr="userEntry + application.lastresult$.utterance"/> <!-- Store the user's key press -->
+                <if cond="userEntry.length != fldLength">   <!-- If we've not collected the max allowed, go get next one -->
+                    <assign name="plyAudio" expr="'n'"/>
+                    <assign name="plySpch" expr="'n'"/>
+                    <assign name="gotoForm" expr="''"/>
+                    <goto next="#getEntry"/>
                 <else/>
-                    <log>INFO: Received term key [<value expr="fldTermChar"/>]</log>
+                    <log>INFO: Received maximum key presses allowed [<value expr="fldLength"/>]</log>
                 </if>
+            <else/>
+                <log>INFO: Received term key [<value expr="fldTermChar"/>]</log>
             </if>
             <goto next="#exit"/> <!-- We have max allowed input or user pressed term key -->
         </block>
