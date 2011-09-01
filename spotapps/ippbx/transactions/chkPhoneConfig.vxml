@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 08/09/2011
+    <!-- Last Modified 09/01/2011
        *   @Name	chkPhoneConfig.vxml
        *   @Desc	This script is part of the forwarding/findMe logic for an extension.
                     Here, we check if an extension is forwarded or has a findMe configuration -->
@@ -47,8 +47,10 @@
                     <goto next="#serviceError"/>
                 <else/>
                     <log>INFO: No information on controller</log>
-                    <assign name="status" expr="'Failure'"/>
-                    <if cond="whichRsrc == 'canDial'">
+                    <assign name="reason" expr="apiObj.Reason" />
+                    <if cond="inString('403',reason,' ')"> <!-- Extension is disabled -->
+                        <goto next="#exit"/>
+                    <elseif cond="whichRsrc == 'canDial'"/>
                         <assign name="errID" expr="blkListID"/>
                         <goto next="#serviceError"/>
                     <else/>
@@ -109,7 +111,7 @@
 
     <form id="exit">
         <block>
-            <exit namelist="status result"/>
+            <exit namelist="status result reason"/>
         </block>
     </form>
 
