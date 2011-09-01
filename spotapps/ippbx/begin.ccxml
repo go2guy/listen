@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <ccxml version="1.0">
-    <!-- Last Modified 08/03/2011
+    <!-- Last Modified 09/01/2011
        *   @Name   begin.ccxml
        *   @Desc   This ccxml script acts as a transition between the Listen project and
                    the ippbx project. Here, we collect values exported from Listen
@@ -22,6 +22,9 @@
     <var name="II_SB_CODE_DIR"/>        <!-- CODE_DIR. Application directory under base directory. Contains all code -->
     <var name="II_SB_line"/>            <!-- Line number processing call -->
     <var name="II_SB_importedValue"/>   <!-- imported values-->
+
+    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>
+    <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"/>    <!-- Location of Java script file -->
 
     <!-- Global variables -->
     <var name="state" expr="'idle'"/>     <!-- state. This variable holds the CCXML dialog state -->

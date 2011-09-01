@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/24/2011
+    <!-- Last Modified 09/01/2011
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -64,6 +64,11 @@
 	    	<assign name="DNIS" expr="getJsonVal(importedValue, 'destination')"/> <!-- If call is from attendant or main app, we're trying to use dial logic -->
             <if cond="DNIS.length &gt; 0">
     	    	<assign name="tmpDNIS" expr="DNIS"/>
+                <if cond="tmpDNIS.length &lt; EXT_LENGTH">
+                    <assign name="callType" expr="'extension'"/>
+                <else/>
+                    <assign name="callType" expr="'external'"/>
+                </if>
                 <assign name="route" expr="'dialog.user.dial'"/>   <!-- Set route to dial -->
             <else/>
 	    	    <assign name="DNIS" expr="iiUnescape(local)"/>  <!-- Get destination of incoming call -->
