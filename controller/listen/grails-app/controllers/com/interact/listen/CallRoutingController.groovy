@@ -26,11 +26,6 @@ class CallRoutingController {
             return
         }
 
-        if(!shouldRoute(ani) || !shouldRoute(dnis)) {
-            response.sendError(HSR.SC_FORBIDDEN)
-            return
-        }
-
         def result = callRoutingService.routeCall(ani, dnis)
 
         if(!result) {
@@ -45,7 +40,11 @@ class CallRoutingController {
         }
     }
 
-    private boolean shouldRoute(def number) {
+    // Leaving this method here even though it isn't used currently.  We previously were calling this method before 
+    // calling the callRoutingService. Apps group has requested we not do this check here as they wouldn't have a 
+    // graceful way of handling a 403 at this point in processing.  Leaving the method incase we want to re-add later.
+    // Changes made for Target Process bug 26927
+/*    private boolean shouldRoute(def number) {
         def extension = Extension.findByNumber(number)
         if(extension && !extension.owner.enabled()) {
             return false
@@ -53,5 +52,5 @@ class CallRoutingController {
 
         def direct = DirectMessageNumber.findByNumber(number)
         return !direct || direct.owner.enabled()
-    }
+    }*/
 }
