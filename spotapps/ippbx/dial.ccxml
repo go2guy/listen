@@ -91,7 +91,6 @@
     <var name="REQUEST_TIMEOUT" expr="'408'"/>  <!-- Dialed attempt timed out -->
 
     <!-- Constants -->
-    <var name="LIB_PATH" expr="''"/>        <!-- Lib Path. Direcotry for lib files -->
     <var name="SUP_PATH" expr="''"/>        <!-- Support Path. Directory for support files -->
     <var name="LISTEN_APP" expr="''"/>
     <var name="TRANS_PATH" expr="''"/>      <!-- Transactions Path. Directory for transaction files -->
@@ -194,13 +193,11 @@
         <transition state="idle" event="ccxml.loaded" name="evt">
             <!-- Loaded new ccxml script. Set variables -->
             <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
-            <assign name="LIB_PATH" expr="SB_PATH+'lib/vxml/'"/>
             <assign name="AUDIO_PATH" expr="APP_PATH+'audio/'"/>
             <assign name="SUP_PATH" expr="APP_PATH+'support/'"/>
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <assign name="state" expr="'loaded'"/>
             <log>INFO: APP Path [<value expr="APP_PATH"/>]</log>
-            <log>INFO: Lib Path [<value expr="LIB_PATH"/>]</log>
             <log>INFO: Audio Path [<value expr="AUDIO_PATH"/>]</log>
             <log>INFO: Suppport Path [<value expr="SUP_PATH"/>]</log>
             <log>INFO: Destination [<value expr="DNIS"/>]</log>
@@ -237,6 +234,7 @@
                     <!-- If the origDNIS variable is equal to the current tmpDNIS, we're likely dealing with a
                     blindtransfer request that needs to go to voice mail -->
                     <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+                	<assign name="importedValue" expr="extendJsonObject(importedValue, 'toExt', origDNIS)"/>
                     <send data="'dialog.user.listenApp'" target="session.id"/>
                 <else/>
                     <if cond="importedValue.length &gt; 0">
@@ -284,6 +282,7 @@
                         <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
                         <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
                         <send data="'dialog.user.writeCDR'" target="session.id"/> <!-- Write CDR of call -->
+                    	<assign name="importedValue" expr="extendJsonObject(importedValue, 'toExt', tmpDNIS)"/>
                         <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
                     <else/>
                         <send data="'dialog.user.chkBlkList'" target="session.id"/>
@@ -298,7 +297,7 @@
                 <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>
                 <assign name="state" expr="'dnisNotAssigned'"/>
-                <assign name="promptList" expr="'PsorryExtension|V' + tmpDNIS +'|' + 'pisNotAssigned'"/>
+                <assign name="promptList" expr="'PsorryExtension|V' + tmpDNIS +'|' + 'pisNotAssigned|'"/>
                 <dialogstart src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList"/>
             <else/>
                 <!-- This covers situations where our request to the controller failed. We'll allow the dial to proceed -->
@@ -335,7 +334,7 @@
                 <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>
                 <assign name="state" expr="'aniNotAssigned'"/>
-                <assign name="promptList" expr="'PsorryExtension|V' + tmpANI +'|' + 'pisNotAssigned'"/>
+                <assign name="promptList" expr="'PsorryExtension|V' + tmpANI +'|' + 'pisNotAssigned|'"/>
                 <dialogstart src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList"/>
             <elseif cond="((evt.values.status == 'Failure') || (evt.values.result == 'true'))"/>
                 <send data="'dialog.user.call'" target="session.id"/>
@@ -562,7 +561,8 @@
                 <var name="id" expr="'LSTNAPP_0030'"/>
                 <var name="source" expr="'findMe'"/>
                 <var name="operation" expr="'set'"/>
-                <var name="value" expr="getTimeDifference(startTime,endTime)"/>
+                <var name="sysAccessTime" expr="getJsonVal(importedValue,'sysAccessTime')"/>
+                <var name="value" expr="getTimeDifference(sysAccessTime,startTime)"/>
                 <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
                 <assign name="id" expr="'LSTNAPP_0035'"/>
                 <assign name="operation" expr="'increment'"/>
@@ -674,16 +674,14 @@
             <log>INFO: Entered [dialog.user.monitor] with state [<value expr="state"/>]</log>
             <log target="status"><value expr="tmpDNIS"/></log>
             <assign name="state" expr="'monitor'"/>
-            <assign name="II_SB_promptID" expr="''"/>
-            <var name="FLD_TERMCHAR" expr="'#'"/>
-            <var name="II_SB_FLD_INTERRUPT" expr="'true'"/>
-            <var name="II_SB_FLD_TIMEOUT" expr="'3600'"/>
-            <var name="FLD_LENGTH" expr="''"/>
-            <var name="DGT_TIMEOUT" expr="'3s'"/>
-            <var name="II_SB_repeat" expr="''"/>
-            <var name="II_SB_interval" expr="''"/>
-            <assign name="match_key" expr="getJsonVal(importedValue, 'dialHotKeys')"/>
-            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" connectionid="listenToID" namelist="match_key FLD_TERMCHAR II_SB_promptID II_SB_repeat II_SB_interval DGT_TIMEOUT FLD_LENGTH II_SB_FLD_TIMEOUT II_SB_FLD_INTERRUPT"/>
+            <var name="cutIn" expr="'true'"/>
+            <var name="fldTermChar" expr="'#'"/>
+            <var name="dgtTimeOut" expr="'3s'"/>
+            <assign name="promptList" expr="''"/>
+            <var name="fldTimeOut" expr="'3600s'"/>
+            <var name="hotKeyList" expr="getJsonVal(importedValue, 'dialHotKeys')"/>
+            <assign name="match_key" expr="hotKeyList"/>
+            <dialogstart src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList cutIn fldTermChar dgtTimeOut fldTimeOut "/>
 		</transition>
 
         <transition state="monitor" event="dialog.exit" name="evt">
@@ -725,8 +723,8 @@
             <!-- Checks user's short code key press -->
             <log>INFO: Entered [dialog.user.chkCode] with state [<value expr="state"/>]</log>
             <if cond="((code == VOICEMAIL_XFER) &amp;&amp; (userEntry.length &gt; 0) &amp;&amp; (userEntry.length &lt; EXT_LENGTH))">
-                <assign name="state" expr="'xferToVoiceMail'"/>
                 <assign name="origDNIS" expr="''"/>
+                <assign name="state" expr="'xferToVoiceMail'"/>
                 <log>INFO: Transfer [<value expr="tmpANI"/>] to voicemail box [<value expr="userEntry"/>]</log>
                 <disconnect connectionid="obconnid"/>
             <elseif cond="((code == BLIND_XFER) &amp;&amp; (userEntry.length &gt; 0))"/>
@@ -761,8 +759,8 @@
             <assign name="endTime" expr="getTimeStamp(3)"/>
             <assign name="callResult" expr="callResult + ': Transferred to mailbox ' + userEntry"/>
             <send data="'dialog.user.writeCDR'" target="session.id"/> <!-- Write CDR of call -->
-            <assign name="DNIS" expr="userEntry"/>
             <assign name="LISTEN_APP" expr="'listen_voicemail'"/>   <!-- Transfer to voicemail application -->
+           	<assign name="importedValue" expr="extendJsonObject(importedValue, 'toExt', userEntry)"/>
             <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
         </transition>
 
@@ -1091,11 +1089,11 @@
             <var name="II_SB_repeat" expr="'n'"/>
             <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
             <if cond="callResult == 'No Answer'">
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'noAnswer.00.wav ' + AUDIO_PATH + 'tryAgainLater.00.wav ' +  AUDIO_PATH+'thankYou.00.wav ' + AUDIO_PATH + 'goodbye.00.wav'"/>
+                <assign name="promptList" expr="'PnoAnswer|PtryAgainLater|PthankYou|Pgoodbye|'"/>
             <else/>
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'callFailed2.00.wav'"/>
+                <assign name="promptList" expr="'PcallFailed2|'"/>
             </if>
-            <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+            <dialogstart src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList"/>
         </transition>
 
 		<transition event="attendedtransferrequest" name="evt">
@@ -1127,13 +1125,6 @@
     	        <var  name="cntrlURL" expr="getJsonVal(importedValue,'cntrlURL')"/>
 	            <assign  name="cntrlURL" expr="changeSuffix(cntrlURL,'/','api')"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'cntrlURL', cntrlURL)"/>
-                <if cond="LISTEN_APP == 'listen_voicemail'">
-                    <if cond="((origDNIS != undefined) &amp;&amp; (origDNIS.length &gt; 0) &amp;&amp; (isFwd == 'true'))">
-                        <!-- If we're dealing with an extension that was forwarded, we need to use the original
-                        voicemail not where the call was forwarded to -->
-                        <assign name="DNIS" expr="origDNIS"/>
-                    </if>
-                </if>            
                 <assign name="II_SB_status" expr="''"/>
                 <assign name="II_SB_transfer" expr="'yes'"/>
                 <assign name="II_SB_obcallid" expr="obconnid"/>
@@ -1142,10 +1133,8 @@
             <else/>
                 <!-- Play service error prompts -->
                 <assign name="state" expr="'cntrlDown'"/>
-                <var name="II_SB_repeat" expr="'n'"/>
-                <var name="II_SB_interval" expr="''"/> <!-- Number of milliseconds repeat -->
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceErr.00.wav'+' '+AUDIO_PATH+'tryAgainLater.00.wav'+' '+AUDIO_PATH+'thankYou.00.wav'+' '+AUDIO_PATH+'goodbye.00.wav'"/>
-                <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
+                 <assign name="promptList" expr="'PserviceErr|PtryAgainLater|PthankYou|Pgoodbye|'"/>
+                <dialogstart src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList"/>
             </if>
         </transition>
 
