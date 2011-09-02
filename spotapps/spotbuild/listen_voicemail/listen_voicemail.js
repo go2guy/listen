@@ -56,3 +56,10 @@ function getGreetingURL (returnVal) {
         greeting = greeting.split('file:')[1];
     return greeting;
 }
+
+function vmPostParams (fileLocation,  subID, duration, fileSize, ANI, transcriptionTxt) {
+    var ani = getnum(ANI);
+    if (ani.length == 0)
+        ani = 'Anonymous';
+    return "{\"uri\": \"file:"+fileLocation +"\",\"transcription\":\""+transcriptionTxt+"\",\"duration\":\""+duration+"\",\"fileSize\":\""+fileSize+"\",\"leftBy\":\""+ani+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
+}

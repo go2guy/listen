@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_256_4(DNIS,fileLocation,subID,duration,fileSize,ANI,hostName,transcriptionTxt)
+            function II_SB_JS_function_256_4(fileLocation,subID,duration,fileSize,ANI,transcriptionTxt)
             {
-	            return "{\"uri\": \"file:"+fileLocation +"\",\"transcription\":\""+transcriptionTxt+"\",\"duration\":\""+duration+"\",\"fileSize\":\""+fileSize+"\",\"leftBy\":\""+getnum(ANI)+"\",\"subscriber\": { \"href\": \"/subscribers/"+subID+"\"}}";
+	            return vmPostParams (fileLocation,  subID, duration, fileSize, ANI, transcriptionTxt);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Set Params</log>
             <log>INFO: Entered run-javascript.vxml [256_4]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_256_4(DNIS,fileLocation,subID,duration,fileSize,ANI,hostName,transcriptionTxt)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_256_4(fileLocation,subID,duration,fileSize,ANI,transcriptionTxt)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="params" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
