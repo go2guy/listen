@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/24/2011
+    <!-- Last Modified 09/06/2011
        *   @Name	transferHold.ccxml
        *   @Desc	This script handles the logic for transferring a party
                     that's currently on hold to a new call -->
@@ -126,8 +126,15 @@
             <!-- Our move was successful. Next, we'll join the connection ids of the two parties -->
             <log>INFO: Entered [dialog.user.moveSuccessful] with state [<value expr="state"/>]</log>
     	    <assign name="state" expr="'joinID'"/>
-            <assign name="obconnid" expr="evt.ibconnid"/>
-            <assign name="tmpDNIS" expr="evt.tmpANI"/>
+            <var name="currentANI" expr="ANI"/>
+            <var name="currentTmpANI" expr="tmpANI"/>
+            <var name="currentIbconnid" expr="ibconnid"/>
+            <assign name="ANI" expr="evt.ANI"/>
+            <assign name="tmpANI" expr="evt.tmpANI"/>
+            <assign name="ibconnid" expr="evt.ibconnid"/>
+            <assign name="DNIS" expr="currentANI"/>
+            <assign name="tmpDNIS" expr="currentTmpANI"/>
+            <assign name="obconnid" expr="currentIbconnid"/>
             <join id1="ibconnid" id2="obconnid"/>
         </transition>
 
@@ -180,13 +187,11 @@
         <transition event="dialog.user.writeCDR" name="evt">
             <!-- Write Call History and Stat -->
             <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
-            <assign name="ANI" expr="tmpANI"/>
-            <assign name="DNIS" expr="tmpDNIS"/>
             <var name="request" expr="'post'"/>
             <var name="resource" expr="'addCallHistory'"/>
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>
-            <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
+            <var name="params" expr="cdrParams(startTime, endTime, callType, tmpANI, tmpDNIS, callResult, organization)"/>
             <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
         </transition>
 

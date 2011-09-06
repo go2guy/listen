@@ -952,7 +952,7 @@
             <else/>
                 <assign name="dltAniRecord" expr="'true'"/>
                 <assign name="callResult" expr="'Call pick up from: ' + requestFromID + ' successful'"/>
-                <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="ibconnid tmpANI"/>
+                <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="ibconnid ANI tmpANI"/>
                 <send data="'dialog.user.writeCDR'" target="session.id" delay="'250ms'"/>
                 <send data="'dialog.user.endCall'" target="session.id" delay="'500ms'"/>
             </if>
@@ -1283,12 +1283,10 @@
         <transition event="dialog.user.writeCDR" name="evt">
             <!-- Write Call History and Stat -->
             <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
-            <assign name="ANI" expr="tmpANI"/>
-            <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
             <var name="resource" expr="'addCallHistory'"/>
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>
-            <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
+            <var name="params" expr="cdrParams(startTime, endTime, callType, tmpANI, tmpDNIS, callResult, organization)"/>
             <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
 
             <var name="id" expr="''"/>

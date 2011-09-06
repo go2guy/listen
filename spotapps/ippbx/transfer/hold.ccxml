@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 08/29/2011
+    <!-- Last Modified 09/06/2011
        *   @Name	hold.ccxml
        *   @Desc	This script handles the logic for placing a call on hold -->
 
@@ -389,12 +389,10 @@
         <transition event="dialog.user.writeCDR" name="evt">
             <!-- Write Call History and Stat -->
             <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
-            <assign name="ANI" expr="tmpANI"/>
-            <assign name="DNIS" expr="tmpDNIS"/>  <!-- Strip off outside line prefix -->
             <var name="resource" expr="'addCallHistory'"/>
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>
-            <var name="params" expr="cdrParams(startTime, endTime, callType, ANI, DNIS, callResult, organization)"/>
+            <var name="params" expr="cdrParams(startTime, endTime, callType, tmpANI, tmpDNIS, callResult, organization)"/>
             <send data="'cdrInfo'" target="getJsonVal(importedValue,'HTTPcontroller')" targettype="'basichttp'" namelist="fromCCXML cntrlURL request resource params"/>
         </transition>
 
