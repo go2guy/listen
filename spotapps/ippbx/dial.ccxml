@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/01/2011
+    <!-- Last Modified 09/06/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -1038,6 +1038,7 @@
 
 		<transition event="dialog.user.callFailed" name="evt">
             <log>INFO: Entered [dialog.user.callFailed] with state [<value expr="state"/>]</log>
+            <assign name="ringToneID" expr="''"/>
             <if cond="((dialFailReason == 'DIALTIMEOUT') || (dialFailReason == REQUEST_TIMEOUT))"> <!-- Reached max ring time -->
                 <log target="status">Call not answered</log>
                 <assign name="callResult" expr="'No Answer'"/>
@@ -1233,6 +1234,7 @@
         <transition event="dialog.user.terminate" name="evt">
             <log>INFO: Entered [dialog.user.terminate] with state [<value expr="state"/>]</log>
    	    	<dialogterminate dialogid="dialogID" immediate="true"/>
+            <assign name="ringToneID" expr="''"/>
         </transition>
 
         <transition event="dialog.exit" name="evt">
