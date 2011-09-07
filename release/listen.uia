@@ -56,7 +56,7 @@
 
         <system>
             <name>python</name>
-            <rpmRegex>iipython</rpmRegex>
+            <rpmRegex>iipython-[0-9]</rpmRegex>
             <group>webserver</group>
             <group>ivrserver</group>
             <group>all</group>

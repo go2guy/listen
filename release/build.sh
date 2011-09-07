@@ -117,7 +117,7 @@ cat locations.mf | egrep -v "^[[:space:]]*(#|!|$)" | \
     done
 
 # Put iiInstall config file in place
-cp iiInstall.uia $BUILDROOT/interact/packages/conf/
+cp listen.uia $BUILDROOT/interact/packages/conf/
 
 # Validate uia files against dtd...
 echo
