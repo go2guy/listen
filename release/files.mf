@@ -42,7 +42,7 @@
 /interact/packages/conf/iixap.uia
 
 # iitools files
-/interact/packages/iipython-*.rpm
+/interact/packages/iipython-[0-9]*.rpm
 /interact/packages/iijava-*.rpm
 /interact/packages/conf/iipython.uia
 /interact/packages/conf/iijava.uia
