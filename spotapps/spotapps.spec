@@ -15,7 +15,7 @@ URL: http://www.iivip.com
 Packager: applications <applications@iivip.com>
 BuildArch: %{_arch}
 BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
-Requires: spotbuild-vip
+Requires: spotbuild-vip, ghostscript
 
 %define debug_package %{nil}
 
