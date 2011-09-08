@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
+    <!-- Last Modified 05/26/2010
+       *   @Name	dnisMap.vxml
+       *   @Desc	This script checks the DNIS mapping on the controller  -->
+
+    <var name="tmpDNIS"/>
+    <var name="importedValue"/>
+    <var name="organization"/>
+    <var name="subscriber"/>
+    <var name="count" expr="0"/>
+    <var name="accessNumber"/>
+ 
+	<form id="beginDocument">
+		<block>
+	        <log>INFO: Entered beginDocument</log>
+            <log>INFO: DNIS - <value expr="tmpDNIS"/></log>
+            <log>INFO: importedValue - <value expr="importedValue"/></log>
+            <assign name="resource" expr="'getAccessNumber'"/>
+            <assign name="organization" expr="getJsonVal(importedValue, 'organization')"/>
+            <assign name="params" expr="setInfo(tmpDNIS,organization)"/>
+            <assign name="request"  expr="'get'"/>
+            <assign name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','meta')"/>
+            <goto next="#sendEvent"/>
+        </block>
+    </form>
+
+    <form id="sendEvent">
+        <block>
+            <log>INFO: Entered sendEvent</log>
+            <data name="apiObj" srcexpr="getJsonVal(importedValue, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="result" expr="apiObj.Result" />
+            <if cond="status == 'Failure'">
+                <assign name="logText" expr="'checkDID.vxml: sendEvent returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+']. DNIS ['+ getnum(tmpDNIS) + '].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <else/>
+                    <log>INFO: No mapping for checkDID</log>
+                </if>
+            <else/>
+                <log>INFO: checkDID is mapped to [<value expr="result"/>]</log>
+                <if cond="getJsonVal(result, 'count') == 0">
+                    <assign name="status" expr="'Failure'" />
+                    <assign name="result" expr="''" />
+                    <goto next="#exit"/>
+                <else/>
+                    <assign name="subscriber" expr="getSubscriber(result)"/>
+                    <log>INFO: subscriber is <value expr="subscriber"/></log>
+                    <goto next="#setParamsForPhonenum"/>
+                </if>
+            </if>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="setParamsForPhonenum">
+		<block>                                   
+            <log>INFO: Entered setParamsGetPhonenum</log>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="params" expr="setAccess(subscriber)"/>
+
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','api')"/>
+            <goto next="#sendEventGetPhonenum"/>
+        </block>
+    </form>
+
+    <form id="sendEventGetPhonenum">
+        <block>
+            <log>INFO: Entered sendEventGetPhonenum</log>
+            <data name="apiObj" srcexpr="getJsonVal(importedValue, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="result" expr="apiObj.Result" />
+            <if cond="status == 'Failure'">
+                <assign name="logText" expr="'checkDID.vxml: sendEventGetPhonenum returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+']. DNIS ['+ getnum(tmpDNIS) + '].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <else/>
+                    <log>INFO: No mapping for checkDID</log>
+                </if>
+            <else/>
+                <log>INFO: checkDID is mapped to [<value expr="result"/>]</log>
+                <goto next="#setParamsForExt"/>
+            </if>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="setParamsForExt">
+		<block>                                   
+            <log>INFO: Entered setParamsGetPhonenum</log>
+            <assign name="resource" expr="'accessNumbers'"/>
+            <assign name="accessNumber" expr="getExtension(result, count)"/>            
+            <if cond="accessNumber == 'END'">
+                <assign name="status" expr="'Failure'" />
+                <assign name="result" expr="''" />
+                <goto next="#exit"/>
+            </if>
+            <assign name="params" expr="'/' + accessNumber"/>
+            <assign name="count" expr="count + 1"/>
+            <log>INFO: count - <value expr="count"/></log>
+            <assign name="cntrlURL" expr="changeSuffix(cntrlURL,'/','api')"/>
+            <goto next="#sendEventGetExt"/>
+        </block>
+    </form>
+
+    <form id="sendEventGetExt">
+        <block>
+            <log>INFO: Entered sendEventGetPhonenum</log>
+            <data name="apiObj" srcexpr="getJsonVal(importedValue, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
+            <assign name="status" expr="apiObj.Status" />
+            <assign name="result" expr="apiObj.Result" />
+            <if cond="status == 'Failure'">
+                <assign name="logText" expr="'checkDID.vxml: sendEventGetExt returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+']. DNIS ['+ getnum(tmpDNIS) + '].'"/>
+                <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
+                <log target="logFile"><value expr="logText"/></log>
+                <assign name="reason" expr="getInfo(apiObj.Reason)" />
+                <if cond="reason == 'CNTRL_DOWN'">
+                    <log>ERROR: Unable to connect with controller</log>
+                    <assign name="errID" expr="cntrlErrID"/>
+                    <goto next="#serviceError"/>
+                <else/>
+                    <log>INFO: No mapping for checkDID</log>
+                </if>
+            <else/>
+                <log>INFO: sendEventGetExt [<value expr="result"/>]</log>
+                <if cond="getJsonVal(result, 'type') == 'EXTENSION'">
+                    <assign name="status" expr="'Success'" />
+                    <assign name="result" expr="getJsonVal(result, 'number')" />
+                    <goto next="#exit"/>
+                <else/>
+                    <goto next="#setParamsForExt"/>
+                </if>
+            </if>
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="serviceError">
+        <block>
+            <log>INFO: Entered serviceError</log>
+        </block>
+        <subdialog name="sendSTAT" srcexpr="'file:'+TRANS_PATH+'sendSTAT.vxml'">
+            <param name="id" expr="errID"/>
+            <param name="statServer" expr="getJsonVal(importedValue, 'STATcontroller')"/>
+        </subdialog>
+        <block>
+            <assign name="status" expr="'CNTRL_DOWN'" />
+            <assign name="result" expr="''" />
+            <goto next="#exit"/>
+        </block>
+    </form>
+
+    <form id="exit">
+        <block>
+            <exit namelist="status result"/>
+        </block>
+    </form>
+
+    <catch event="error.badfetch">  <!-- This logic handles connection errors to the SPOT webserver -->
+        <log>ERROR: Unable to connect with local webserver</log>
+        <assign name="status" expr="''" />
+        <assign name="result" expr="''" />
+        <exit namelist="status result"/>
+    </catch>
+
+    <script>
+        <![CDATA[
+            function getInfo(inString) {
+                var result = 'CNTRL_DOWN';
+                var tmpVal = new String(inString);
+                var list = tmpVal.split(' ');
+                var cnt = 0;
+                var numeric = new RegExp(/^[+-]?(\d+|\d+\.\d+)$/);
+                while (cnt < list.length) {
+                    if (numeric.test(list[cnt])) {
+                        result = 'CNTRL_UP';
+                        break;
+                    }
+                    cnt++;
+                }
+                return result;
+            }
+
+            function setInfo(tempDNIS, organization) {
+                return '?number=' + tempDNIS + '&organization=' + organization;
+            }
+
+            function getSubscriber(returnVal) {
+                var index = 0;
+                var key = 'subscriber';
+                var result = getResultsKeyValue(returnVal, index, key);
+                return getNextElement('L', result.href, '/');
+            }
+
+            function setAccess(subscriber) {
+                return '?subscriber=/subscriber/' + subscriber;
+            }
+
+            function getExtension(returnVal, count) {
+                var result = eval("("+returnVal+")");
+                if(result.results.length <= count)
+                {
+                    return 'END'
+                }
+                accessNumber = result.results[count];
+                return getNextElement('L', accessNumber.href, '/');
+            }
+
+        ]]>
+    </script>
+
+</vxml>

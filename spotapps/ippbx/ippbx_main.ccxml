@@ -112,7 +112,21 @@
             <elseif cond="tmpANI.length &lt; EXT_LENGTH"/> <!-- Assume this is an external call from an extension -->
                 <assign name="callType" expr="'external'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
-            <else/> <!-- We've encountered an unusual error, since we couldn't match any known case. End the call -->
+            <else/> <!-- Checking if the call is a DID call -->
+                <assign name="state" expr="'finalCall'"/>
+                <dialogstart src="'file:'+APP_PATH+'checkDID.vxml'" namelist="tmpDNIS importedValue"/>
+            </if>
+		</transition>
+
+        <transition state="finalCall" event="dialog.exit" name="evt">
+                <assign name="state" expr="'idle'"/>
+            <if cond="evt.values.status == 'Success'">
+                <!-- Call was a DID, setting up extension to dial -->
+                <assign name="tmpDNIS" expr="evt.values.result"/>
+                <assign name="callType" expr="'external'"/>
+                <send data="'dialog.user.dial'" target="session.id"/>
+            <else/>
+                <!-- We've encountered an unusual error, since we couldn't match any known case. End the call -->
                 <var name="logText" expr="'ippbx_main.ccxml: Unable to match current call to any ippbx route. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + '].'"/>
                 <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
                 <assign name="state" expr="'error'"/>
