@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/01/2011
+    <!-- Last Modified 09/12/2011
        *   @Name	chkPhoneConfig.vxml
        *   @Desc	This script is part of the forwarding/findMe logic for an extension.
                     Here, we check if an extension is forwarded or has a findMe configuration -->
@@ -48,9 +48,7 @@
                 <else/>
                     <log>INFO: No information on controller</log>
                     <assign name="reason" expr="apiObj.Reason" />
-                    <if cond="inString('403',reason,' ')"> <!-- Extension is disabled -->
-                        <goto next="#exit"/>
-                    <elseif cond="whichRsrc == 'canDial'"/>
+                    <if cond="whichRsrc == 'canDial'">
                         <assign name="errID" expr="blkListID"/>
                         <goto next="#serviceError"/>
                     <else/>
@@ -67,7 +65,11 @@
         <block>
             <log>INFO: Entered chkSubInfo</log>
             <var name="count" expr="getJsonVal(result, 'count')"/>
-            <if cond="count == 1">
+            <if cond="count == 0">
+                <assign name="status" expr="'Failure'"/>
+                <assign name="reason" expr="'NOT_FOUND'"/>
+                <goto next="#exit"/>
+            <elseif cond="count == 1"/>
                 <log target="status">Get Sub Info</log>
                 <assign name="subID" expr="getResultsKeyValue(result, 0, 'subscriber')"/>
                 <assign name="subID" expr="getNextElement('L',subID, '/')"/>

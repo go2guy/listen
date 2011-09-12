@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/06/2011
+    <!-- Last Modified 09/12/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -290,14 +290,14 @@
                 <else/>
                     <send data="'dialog.user.chkBlkList'" target="session.id"/>
                 </if>
-            <elseif cond="inString('403',reason,' ')"/> <!-- This implies the DNIS is disabled -->
+            <elseif cond="reason == 'NOT_FOUND'"/> <!-- This implies the DNIS is disabled or currently not assigned -->
                 <log target="status">[<value expr="tmpDNIS"/>] not assigned</log>
                 <log>INFO: [<value expr="tmpDNIS"/>] is not assigned</log>
                 <var name="logText" expr="'dial.ccxml: Caller ['+ tmpANI +'] attempted to dial disabled extension ['+ tmpDNIS + ']'"/>
                 <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>
                 <assign name="state" expr="'dnisNotAssigned'"/>
-                <assign name="promptList" expr="'PsorryExtension|V' + tmpDNIS +'|' + 'pisNotAssigned|'"/>
+                <assign name="promptList" expr="'PsorryExtension|V' + tmpDNIS +'|' + 'PisNotAssigned|'"/>
                 <dialogstart src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList"/>
             <else/>
                 <!-- This covers situations where our request to the controller failed. We'll allow the dial to proceed -->
@@ -327,14 +327,14 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <var name="reason" expr="evt.values.reason"/>
-            <if cond="inString('403',reason,' ')"> <!-- ANI is a disabled extension -->
-                <log target="status">[<value expr="tmpDNIS"/>] not permitted</log>
+            <if cond="reason == 'NOT_FOUND'"> <!-- ANI is a disabled extension -->
+                <log target="status">[<value expr="tmpANI"/>] not permitted</log>
                 <log>INFO: [<value expr="tmpANI"/>] is not assigned</log>
                 <var name="logText" expr="'dial.ccxml: Call attempt from disabled extension ['+ tmpANI +']'"/>
                 <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>
                 <assign name="state" expr="'aniNotAssigned'"/>
-                <assign name="promptList" expr="'PsorryExtension|V' + tmpANI +'|' + 'pisNotAssigned|'"/>
+                <assign name="promptList" expr="'PsorryExtension|V' + tmpANI +'|' + 'PisNotAssigned|'"/>
                 <dialogstart src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList"/>
             <elseif cond="((evt.values.status == 'Failure') || (evt.values.result == 'true'))"/>
                 <send data="'dialog.user.call'" target="session.id"/>
