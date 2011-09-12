@@ -68,6 +68,13 @@ td.col-public {
 
     <table class="mobile-phones">
       <caption><g:message code="page.profile.phones.caption.mobilePhones"/></caption>
+      <thead>
+        <th class="col-number"><g:message code="phoneNumber.number.label"/></th>
+        <th class="col-provider"><g:message code="mobilePhone.smsDomain.label"/></th>
+        <th class="col-public"><g:message code="mobilePhone.isPublic.label"/></th>
+        <th class="col-button"></th>
+        <th class="col-button"></th>
+      </thead>
       <tbody>
         <tr class="add highlighted">
           <g:form controller="profile" action="addMobilePhone" method="post">
@@ -83,13 +90,6 @@ td.col-public {
     </table>
 
     <table class="mobile-phones">
-      <thead>
-        <th class="col-number"><g:message code="phoneNumber.number.label"/></th>
-        <th class="col-provider"><g:message code="mobilePhone.smsDomain.label"/></th>
-        <th class="col-public"><g:message code="mobilePhone.isPublic.label"/></th>
-        <th class="col-button"></th>
-        <th class="col-button"></th>
-      </thead>
       <tbody>
         <g:if test="${mobilePhoneList.size() > 0}">
           <g:each in="${mobilePhoneList}" var="mobilePhone" status="i">
@@ -120,6 +120,12 @@ td.col-public {
 
     <table class="other-phones">
       <caption><g:message code="page.profile.phones.caption.otherPhones"/></caption>
+      <thead>
+        <th class="col-number"><g:message code="phoneNumber.number.label"/></th>
+        <th class="col-public"><g:message code="otherPhone.isPublic.label"/></th>
+        <th class="col-button"></th>
+        <th class="col-button"></th>
+      </thead>
       <tbody>
         <tr class="add highlighted">
           <g:form controller="profile" action="addOtherPhone" method="post">
@@ -134,12 +140,6 @@ td.col-public {
     </table>
 
     <table class="other-phones">
-      <thead>
-        <th class="col-number"><g:message code="phoneNumber.number.label"/></th>
-        <th class="col-public"><g:message code="otherPhone.isPublic.label"/></th>
-        <th class="col-button"></th>
-        <th class="col-button"></th>
-      </thead>
       <tbody>
         <g:if test="${otherPhoneList.size() > 0}">
           <g:each in="${otherPhoneList}" var="otherPhone" status="i">
