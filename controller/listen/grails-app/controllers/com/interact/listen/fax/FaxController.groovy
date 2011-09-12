@@ -55,9 +55,9 @@ class FaxController {
             def detector = new FileTypeDetector()
             response.contentType = detector.detectContentType(fax.file)
         } catch(FileTypeDetectionException e) {
-            response.contentType = 'application/octet-stream'
+            response.contentType = 'application/pdf'
         }
-        response.setHeader('Content-disposition', "attachment;filename=${fax.file.name}")
+        response.setHeader('Content-disposition', "inline;filename=${fax.file.name}")
 
         response.outputStream << fax.file.newInputStream()
         response.flushBuffer()
