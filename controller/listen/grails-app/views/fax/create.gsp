@@ -118,7 +118,7 @@ div.upload-error {
         <listen:infoSnippet summaryCode="page.fax.create.snippet.summary" contentCode="page.fax.create.snippet.content"/>
 
         <ul class="form-buttons">
-          <g:submitButton name="create" value="Create"/>
+          <g:submitButton name="create" value="Send"/>
         </ul>
       </fieldset>
     </g:uploadForm>
