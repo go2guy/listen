@@ -106,8 +106,8 @@ begin - begin
 144_5 - assign-variable
 144_141 - run-javascript
 144_73 - assign-variable
-65_54 - math
 144_74 - decision
+65_54 - math
 144_145 - log
 144_146 - run-javascript
 144_147 - run-javascript
@@ -386,8 +386,10 @@ hang-up - hang-up
 143_138 - run-javascript
 67_73 - decision
 143_140 - run-javascript
+143_168 - run-javascript
 102_19 - run-javascript
 143_90 - data-query
+143_164 - decision
 177_12 - data-query
 103_163 - audio-input
 103_161 - audio-input
@@ -399,5 +401,6 @@ hang-up - hang-up
 231_118 - assign-variable
 231_116 - assign-variable
 61_40 - run-javascript
+143_160 - decision
 103_32 - decision
 192_22 - decision

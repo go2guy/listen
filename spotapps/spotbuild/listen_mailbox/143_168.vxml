@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'143_168'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'143_160'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_143_127(grtngList)
+            function II_SB_JS_function_143_168(grtngList,count)
             {
-	            return getJsonVal(grtngList, 'count');
+	            var key = 'type';return getResultsKeyValue(grtngList, count, key);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Count</log>
-            <log>INFO: Entered run-javascript.vxml [143_127]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_143_127(grtngList)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="newCount" expr="II_SB_userJava" />   
+            <log target="status">Get Type</log>
+            <log>INFO: Entered run-javascript.vxml [143_168]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_143_168(grtngList,count)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="status" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
