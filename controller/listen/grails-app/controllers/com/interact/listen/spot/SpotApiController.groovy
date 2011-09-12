@@ -1141,6 +1141,7 @@ class SpotApiController {
                 'subscriber': "/subscribers/${it.owner.id}",
                 'href': "/accessNumbers/${it.id}",
                 'number': it.number,
+                'type': it.type(),
                 'ip': (it.instanceOf(Extension) ? it.ip : '')
             ]
         }
