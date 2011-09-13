@@ -328,7 +328,7 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <var name="reason" expr="evt.values.reason"/>
-            <if cond="reason == 'NOT_FOUND'"> <!-- ANI is a disabled extension -->
+            <if cond="((reason == 'NOT_FOUND') &amp;&amp; (isDID == 'false'))"> <!-- ANI is a disabled extension -->
                 <log target="status">[<value expr="tmpANI"/>] not permitted</log>
                 <log>INFO: [<value expr="tmpANI"/>] is not assigned</log>
                 <var name="logText" expr="'dial.ccxml: Call attempt from disabled extension ['+ tmpANI +']'"/>
