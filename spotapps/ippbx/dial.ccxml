@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/12/2011
+    <!-- Last Modified 09/13/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -34,6 +34,7 @@
     <var name="EXT_LENGTH"/>        <!-- Extension length -->
     <var name="importedValue"/>     <!-- Imported Value. Values passed in from Listen application -->
     <var name="origDNIS"/>          <!-- Stores the original DNIS in a forwarded scenario -->
+    <var name="isDID"/>             <!-- Tells if it is a did -->
 
     <!-- Global Vars -->
     <var name="request" expr="'post'"/>
@@ -1068,7 +1069,7 @@
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             <else/>
                 <var name="tmp" expr="getExtID(DNIS)"/>
-                <if cond="((tmp.length &lt; EXT_LENGTH) || (isFwd == 'true'))">  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+                <if cond="((tmp.length &lt; EXT_LENGTH) || (isFwd == 'true') || (isDID == 'true'))">  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
                     <if cond="isFwd == 'true'">
                         <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
                         <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
