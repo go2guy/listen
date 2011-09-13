@@ -110,7 +110,7 @@
             <elseif cond="(tmpDNIS.length &lt; EXT_LENGTH) &amp;&amp; (tmpDNIS[0] != '9')"/>    <!-- Assume this is an internal call between extensions -->
                 <assign name="callType" expr="'extension'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
-            <elseif cond="tmpANI.length &lt; EXT_LENGTH"/> <!-- Assume this is an external call from an extension -->
+            <elseif cond="((tmpANI.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH))"/> <!-- Assume this is an external call from an extension -->
                 <assign name="callType" expr="'external'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
             <else/> <!-- Checking if the call is a DID call -->

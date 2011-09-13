@@ -291,9 +291,9 @@
                 <else/>
                     <send data="'dialog.user.chkBlkList'" target="session.id"/>
                 </if>
-            <elseif cond="reason == 'NOT_FOUND'"/> <!-- This implies the DNIS is disabled or currently not assigned -->
-                <log target="status">[<value expr="tmpDNIS"/>] not assigned</log>
-                <log>INFO: [<value expr="tmpDNIS"/>] is not assigned</log>
+            <elseif cond="reason == 'FORBIDDEN'"/> <!-- This implies the DNIS is disabled -->
+                <log target="status">[<value expr="tmpDNIS"/>] is disabled</log>
+                <log>INFO: [<value expr="tmpDNIS"/>] is disabled</log>
                 <var name="logText" expr="'dial.ccxml: Caller ['+ tmpANI +'] attempted to dial disabled extension ['+ tmpDNIS + ']'"/>
                 <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>
@@ -328,9 +328,9 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="inVXML" expr="'n'"/>
             <var name="reason" expr="evt.values.reason"/>
-            <if cond="((reason == 'NOT_FOUND') &amp;&amp; (isDID == 'false'))"> <!-- ANI is a disabled extension -->
-                <log target="status">[<value expr="tmpANI"/>] not permitted</log>
-                <log>INFO: [<value expr="tmpANI"/>] is not assigned</log>
+            <if cond="reason == 'FORBIDDEN'"> <!-- ANI is a disabled extension -->
+                <log target="status">[<value expr="tmpANI"/>] is disabled</log>
+                <log>INFO: [<value expr="tmpANI"/>] is disabled</log>
                 <var name="logText" expr="'dial.ccxml: Call attempt from disabled extension ['+ tmpANI +']'"/>
                 <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
                 <log target="logFile"><value expr="logText"/></log>

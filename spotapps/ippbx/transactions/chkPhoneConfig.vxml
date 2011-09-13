@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <vxml version="2.0" application="file:/interact/apps/spotbuild/ippbx/root.vxml">
-    <!-- Last Modified 09/12/2011
+    <!-- Last Modified 09/13/2011
        *   @Name	chkPhoneConfig.vxml
        *   @Desc	This script is part of the forwarding/findMe logic for an extension.
                     Here, we check if an extension is forwarded or has a findMe configuration -->
@@ -21,7 +21,7 @@
 
     <form id="getSubscriberID">
         <block>
-            <assign name="resource" expr="'listPhoneNumbers'"/>
+            <assign name="resource" expr="'lookupAccessNumber'"/>
             <assign name="gotoForm" expr="'#chkSubInfo'"/>
             <assign name="request"  expr="'get'"/>
             <assign name="cntrlURL" expr="getJsonVal(listenArgs, 'cntrlURL')"/>
@@ -46,9 +46,11 @@
                     <assign name="errID" expr="cntrlErrID"/>
                     <goto next="#serviceError"/>
                 <else/>
-                    <log>INFO: No information on controller</log>
                     <assign name="reason" expr="apiObj.Reason" />
-                    <if cond="whichRsrc == 'canDial'">
+                    <if cond="inString('403',reason,' ')"> <!-- Implies extension is disabled -->
+                        <assign name="reason" expr="'FORBIDDEN'"/>
+                        <goto next="#exit"/>
+                    <elseif cond="whichRsrc == 'canDial'"/>
                         <assign name="errID" expr="blkListID"/>
                         <goto next="#serviceError"/>
                     <else/>
@@ -65,14 +67,9 @@
         <block>
             <log>INFO: Entered chkSubInfo</log>
             <var name="count" expr="getJsonVal(result, 'count')"/>
-            <if cond="count == 0">
-                <assign name="status" expr="'Failure'"/>
-                <assign name="reason" expr="'NOT_FOUND'"/>
-                <goto next="#exit"/>
-            <elseif cond="count == 1"/>
+            <if cond="count == 1">
                 <log target="status">Get Sub Info</log>
-                <assign name="subID" expr="getResultsKeyValue(result, 0, 'subscriber')"/>
-                <assign name="subID" expr="getNextElement('L',subID, '/')"/>
+                <assign name="subID" expr="getSubID(result)"/>
                 <assign name="resource" expr="whichRsrc"/>
                 <if cond="resource == 'canDial'">
                     <assign name="params" expr="setParams(subID, destination, whichRsrc, listenArgs)"/>
@@ -126,7 +123,7 @@
     <script>
         <![CDATA[
             function setAccess(inStr, importedValue) {
-                return "?_fields=subscriber&number=" + inStr + "&organization=" + getJsonVal(importedValue, 'organization');
+                return "?number=" + inStr + "&organization=" + getJsonVal(importedValue, 'organization');
             }
 
             function setParams(inStr, ext, resource, importedValue) {
@@ -142,6 +139,11 @@
                     return 'true';
                 else
                     return 'false';
+            }
+
+            function getSubID(result) {
+                var tmpObj = getResultsKeyValue(result, 0, 'subscriber');
+                return getNextElement('L',tmpObj.href,'/');
             }
 
             function getInfo(inString) {
