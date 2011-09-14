@@ -113,7 +113,7 @@ function checkMbxMenuInput(enableOutDial, enablePagingSupport, userInput)
     return userInput;
 }
 
-function setParamsForCallEnd(passValues, ANI, callResult, organization) {
+function setParamsForCallEndMailbox(passValues, ANI, callResult, organization) {
     var duration = getJsonVal(passValues, 'callTime');
     if(duration == '')
     {

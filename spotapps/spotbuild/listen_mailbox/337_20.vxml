@@ -11,7 +11,7 @@
         <![CDATA[
             function II_SB_JS_function_337_20(subID,organization,callResult,passValues)
             {
-	            return setParamsForCallEnd(passValues, subID, callResult, organization);
+	            return setParamsForCallEndMailbox(passValues, subID, callResult, organization);
             }
         ]]>
     </script>
