@@ -75,7 +75,7 @@
     <var name="fromCCXML" expr="'DIAL'"/>
     <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
     <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
-    <var name="waitList" expr="'callConnected,dialing,findMe,stopFindMe,disconnected,gotSignal,blindXfer,attemptRingPickUp,attemptMove,gotXferReq'"/>
+    <var name="waitList" expr="'callConnected,dialing,findMe,stopFindMe,disconnected,disconnectVC,gotSignal,blindXfer,attemptRingPickUp,attemptMove,gotXferReq'"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -1077,7 +1077,7 @@
             	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', '')"/>
             	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
                     <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
-                <elseif cond="((tmp.length &lt; EXT_LENGTH) || (isFwd == 'true') || (isDID == 'true'))"/>  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+                <elseif cond="((tmpDNIS.length &lt; EXT_LENGTH) || (isFwd == 'true') || (isDID == 'true'))"/>  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
                     <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                     <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
                 <else/>
@@ -1215,7 +1215,7 @@
             <var name="callTime" expr="getTimeDifference(startTime,endTime)"/>
             <assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', callTime)"/>
             <assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
-            <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
+            <send data="'dialog.user.listenApp'" target="session.id" delay="'500ms'"/>
         </transition>
 
         <transition event="dialog.user.deleteRecord" name="evt">
