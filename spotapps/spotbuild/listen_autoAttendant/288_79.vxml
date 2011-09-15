@@ -9,14 +9,14 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set NoAns Prompt</log>
-            <log>INFO: Entered assign-variable.vxml [288_35]</log>
-            <log>INFO: Current value [<value expr="promptVar"/>]</log>
-<assign name="promptVar" expr="'noAnswer'+''" />
-<log>INFO: Updated value [<value expr="promptVar"/>]</log>
-<log>INFO: Current value [<value expr="nxtPath"/>]</log>
-<assign name="nxtPath" expr="'chkVoicemail'+''" />
+	    <log target="status">Set nxtPath</log>
+            <log>INFO: Entered assign-variable.vxml [288_79]</log>
+            <log>INFO: Current value [<value expr="nxtPath"/>]</log>
+<assign name="nxtPath" expr="'callFinished'+''" />
 <log>INFO: Updated value [<value expr="nxtPath"/>]</log>
+<log>INFO: Current value [<value expr="callResult"/>]</log>
+<assign name="callResult" expr="'Call Answered'+''" />
+<log>INFO: Updated value [<value expr="callResult"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>
