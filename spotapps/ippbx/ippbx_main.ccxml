@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/13/2011
+    <!-- Last Modified 09/15/2011
        *   @Name	ippbx_main.ccxml
        *   @Desc	Starting point of the PBX application. This script primarily
                     handles routing an incoming call based on the dialed number -->
@@ -82,7 +82,7 @@
         <transition event="dialog.user.chk_ANI" name="evt">
             <!-- Here, we determine if this call originated internally or externally. -->
             <log>INFO: Entered [dialog.user.chk_ANI] with state [<value expr="state"/>]</log>
-            <if cond="tmpANI.length &lt; EXT_LENGTH">  <!-- If this is true, we can assume caller is internal to the pbx. -->
+            <if cond="((tmpANI.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH))">  <!-- If this is true, we can assume caller is internal to the pbx. -->
                 <!-- We need to set their status in the db as actvie -->
                 <var name="id" expr="ibconnid"/>
                 <var name="flag" expr="'insert'"/>
@@ -125,7 +125,7 @@
                 <!-- Call was a DID, setting up extension to dial -->
                 <assign name="isDID" expr="'true'"/>
                 <assign name="tmpDNIS" expr="evt.values.result"/>
-                <assign name="callType" expr="'external'"/>
+                <assign name="callType" expr="'extension'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
             <else/>
                 <!-- We've encountered an unusual error, since we couldn't match any known case. End the call -->
