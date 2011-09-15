@@ -9,11 +9,11 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Variables</log>
-            <log>INFO: Entered assign-variable.vxml [91_97]</log>
-            <log>INFO: Current value [<value expr="tmpVal"/>]</log>
-<assign name="tmpVal" expr="'adminHungUp'+''" />
-<log>INFO: Updated value [<value expr="tmpVal"/>]</log>
+	    <log target="status">Reset Path</log>
+            <log>INFO: Entered assign-variable.vxml [105_185]</log>
+            <log>INFO: Current value [<value expr="whichPath"/>]</log>
+<assign name="whichPath" expr="prevPath+''" />
+<log>INFO: Updated value [<value expr="whichPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

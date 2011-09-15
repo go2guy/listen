@@ -96,6 +96,7 @@ begin - begin
 115_106 - run-javascript
 113_19 - run-javascript
 115_105 - log
+105_185 - assign-variable
 115_107 - run-javascript
 105_182 - run-javascript
 105_84 - assign-variable
@@ -159,7 +160,9 @@ begin - begin
 82_82 - decision
 111_13 - send-custom-event
 85_76 - log
+109_111 - run-javascript
 85_77 - run-javascript
+109_112 - run-javascript
 85_78 - run-javascript
 83_9 - decision
 83_3 - run-javascript

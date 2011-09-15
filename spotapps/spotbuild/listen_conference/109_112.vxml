@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'105_120'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'109_111'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_105_74(passValues,ANI,phoneNumber,outDialStop,organization,callResult)
+            function II_SB_JS_function_109_112(passValues)
             {
-	                var duration = getJsonVal(passValues, 'callTime');    if(duration == '')    {    duration = 0;    }    var callStartTime = getJsonVal(passValues, 'callStartTime');    if(callStartTime == '')    {        callStartTime = (new Date().getTime());    }return "{\"date\": \""+iiDateToISO(callStartTime)+"\", \"service\": \"Conferencing\", \"duration\":"+duration+", \"ani\":\""+getnum(ANI)+"\", \"result\":\""+callResult+"\", \"dnis\":\""+getJsonVal(passValues, 'destination')+"\", \"organization\": {\"href\":\""+organization+"\"}}";
+	            return getJsonVal(passValues, 'lstnChannel');
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Set Params</log>
-            <log>INFO: Entered run-javascript.vxml [105_74]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_105_74(passValues,ANI,phoneNumber,outDialStop,organization,callResult)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="params" expr="II_SB_userJava" />   
+            <log target="status">Reset lstnChannel</log>
+            <log>INFO: Entered run-javascript.vxml [109_112]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_109_112(passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="lstnChannel" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

@@ -9,9 +9,9 @@
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_91_132(passValues,phoneNumber,appStartTime,userID,isInfoSaved,confID,audioURL,tmpVal,prevPath,isAdmin)
+            function II_SB_JS_function_91_132(passValues,phoneNumber,appStartTime,userID,isInfoSaved,confID,audioURL,tmpVal,prevPath,isAdmin,lstnChannel,lstnSub)
             {
-	            passValues = extendJsonObject(passValues, 'dialReturnApp', 'listen_conference');passValues = extendJsonObject(passValues, 'isAdmin', isAdmin);passValues = extendJsonObject(passValues, 'tmpVal', tmpVal);passValues = extendJsonObject(passValues, 'prevPath', prevPath);passValues = extendJsonObject(passValues, 'audioURL', audioURL);passValues = extendJsonObject(passValues, 'userID', userID);passValues = extendJsonObject(passValues, 'isInfoSaved', isInfoSaved);passValues = extendJsonObject(passValues, 'confID', confID);passValues = extendJsonObject(passValues, 'appStartTime', appStartTime);passValues = extendJsonObject(passValues, 'dialHotKeys', '*');passValues = extendJsonObject(passValues, 'dialInterrupt', 'inbound');return extendJsonObject(passValues, 'destination', phoneNumber);
+	            passValues = extendJsonObject(passValues, 'dialReturnApp', 'listen_conference');passValues = extendJsonObject(passValues, 'isAdmin', isAdmin);passValues = extendJsonObject(passValues, 'tmpVal', tmpVal);passValues = extendJsonObject(passValues, 'prevPath', prevPath);passValues = extendJsonObject(passValues, 'audioURL', audioURL);passValues = extendJsonObject(passValues, 'userID', userID);passValues = extendJsonObject(passValues, 'isInfoSaved', isInfoSaved);passValues = extendJsonObject(passValues, 'confID', confID);passValues = extendJsonObject(passValues, 'appStartTime', appStartTime);passValues = extendJsonObject(passValues, 'dialHotKeys', '*');passValues = extendJsonObject(passValues, 'dialInterrupt', 'inbound');passValues = extendJsonObject(passValues, 'lstnChannel', lstnChannel);passValues = extendJsonObject(passValues, 'lstnSub', lstnSub);return extendJsonObject(passValues, 'destination', phoneNumber);
             }
         ]]>
     </script>
@@ -20,7 +20,7 @@
         <block>
             <log target="status">Add Destination</log>
             <log>INFO: Entered run-javascript.vxml [91_132]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_91_132(passValues,phoneNumber,appStartTime,userID,isInfoSaved,confID,audioURL,tmpVal,prevPath,isAdmin)"/>   <!-- Call Javascript funtion and store result -->
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_91_132(passValues,phoneNumber,appStartTime,userID,isInfoSaved,confID,audioURL,tmpVal,prevPath,isAdmin,lstnChannel,lstnSub)"/>   <!-- Call Javascript funtion and store result -->
             <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
