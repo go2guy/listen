@@ -1059,31 +1059,29 @@
                     <assign name="callResult" expr="'Call Failed'"/>
                 </if>
             </if>
-            <if cond="((state == 'findMe') &amp;&amp; (returnApp.length == 0))"> <!-- Implies a pbx findMe call -->
-                <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
+            <assign name="status" expr="callResult"/> <!-- Save off call result status -->
+            <if cond="state == 'findMe'">
                 <assign name="callResult" expr="'Find Me Call: ' + callResult"/>
-                <send data="'dialog.user.writeCDR'" target="session.id"/>
+            <elseif cond="isFwd == 'true'"/>
+                <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
+                <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
+            <else/>
+                <!-- No changes here -->
+            </if>
+            <send data="'dialog.user.writeCDR'" target="session.id"/> <!-- Send CDR -->
+            <if cond="returnApp.length &gt; 0"> <!-- Dial request originated from different listen app. Return to it -->
+                <assign name="LISTEN_APP" expr="returnApp"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', '')"/>
+              	<assign name="importedValue" expr="extendJsonObject(importedValue, 'toExt', tmpDNIS)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', status)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
+                <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
+            <elseif cond="((tmpDNIS.length &lt; EXT_LENGTH) || (isFwd == 'true') || (isDID == 'true') || (state == 'findMe'))"/>  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+                <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             <else/>
-                <assign name="status" expr="callResult"/> <!-- Save off call result status -->
-                <if cond="isFwd == 'true'"> <!-- Update call result to write correct CDR -->
-                    <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
-                    <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
-                </if>
-                <send data="'dialog.user.writeCDR'" target="session.id"/> <!-- Send CDR -->
-                <if cond="returnApp.length &gt; 0"> <!-- Dial request originated from different listen app. Return to it -->
-                    <assign name="LISTEN_APP" expr="returnApp"/>
-            	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', status)"/>
-            	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', '')"/>
-            	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
-                    <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
-                <elseif cond="((tmpDNIS.length &lt; EXT_LENGTH) || (isFwd == 'true') || (isDID == 'true'))"/>  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
-                    <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
-                    <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
-                <else/>
-                    <assign name="state" expr="'callError'"/>
-                    <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
-                </if>
+                <assign name="state" expr="'callError'"/>
+                <join id1="ibconnid" id2="'VXML_CHANNEL'"/>
             </if>
 		</transition>
 

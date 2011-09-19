@@ -5,13 +5,13 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'246_28'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'246_25'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
             function II_SB_JS_function_246_7(passValues)
             {
-	            return setVoicemailObj(passValues);
+	            var ext = getnum(getJsonVal(passValues, 'destination'));return extendJsonObject(passValues,'toExt',ext);
             }
         ]]>
     </script>

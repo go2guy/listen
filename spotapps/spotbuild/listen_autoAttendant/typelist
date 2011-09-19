@@ -42,9 +42,7 @@ begin - begin
 262_24 - run-javascript
 286_39 - assign-variable
 286_35 - run-javascript
-288_79 - assign-variable
 286_37 - assign-variable
-288_77 - assign-variable
 243_35 - decision
 170_48 - run-javascript
 242_28 - assign-variable
@@ -84,7 +82,6 @@ begin - begin
 262_5 - assign-variable
 249_5 - assign-variable
 hang-up - hang-up
-246_28 - run-javascript
 246_25 - assign-variable
 288_34 - assign-variable
 288_35 - assign-variable
