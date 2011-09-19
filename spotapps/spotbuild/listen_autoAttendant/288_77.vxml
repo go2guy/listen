@@ -5,18 +5,18 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'190_4'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'288_93'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Failed Prompt</log>
-            <log>INFO: Entered assign-variable.vxml [288_34]</log>
+	    <log target="status">Set nxtPath</log>
+            <log>INFO: Entered assign-variable.vxml [288_77]</log>
             <log>INFO: Current value [<value expr="nxtPath"/>]</log>
-<assign name="nxtPath" expr="'chkVoicemail'+''" />
+<assign name="nxtPath" expr="'callFinished'+''" />
 <log>INFO: Updated value [<value expr="nxtPath"/>]</log>
-<log>INFO: Current value [<value expr="promptVar"/>]</log>
-<assign name="promptVar" expr="'callFailed'+''" />
-<log>INFO: Updated value [<value expr="promptVar"/>]</log>
+<log>INFO: Current value [<value expr="callResult"/>]</log>
+<assign name="callResult" expr="'Call Answered'+''" />
+<log>INFO: Updated value [<value expr="callResult"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

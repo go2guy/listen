@@ -16,7 +16,7 @@
 	    lgt     :Length is Greater Then ex - lgt,1,getInput
 	    else    :Else                   ex - else,endCall	-->
 
-    <var name="II_SB_expList" expr="'=,'+'Caller Hung Up'+',286_37|=,'+'Called Party Hung Up'+',286_37|=,'+'No Answer'+',288_35|=,'+'Call Failed'+',288_34|=,'+'Busy'+',288_35|=,'+'Number Black Listed'+',288_34|else,288_34'"/>	<!-- List of expression to be evaluated -->
+    <var name="II_SB_expList" expr="'=,'+'Caller Hung Up'+',288_79|=,'+'Called Party Hung Up'+',288_77|=,'+'Number Black Listed'+',288_91|=,'+'No Answer'+',288_89|=,'+'Call Failed'+',288_87|=,'+'Busy'+',288_84|=,'+'Extension Not Assigned'+',288_81|else,288_34'"/>	<!-- List of expression to be evaluated -->
     <var name="II_SB_operand1" expr="callResult"/>   			<!-- User defined value to be used as an operand in the expression -->
     <var name="II_SB_operand2" expr="''"/>						<!-- Second operand used in the expression -->
     <var name="II_SB_operator" expr="''"/>						<!-- Operator used in expression -->
