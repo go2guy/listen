@@ -121,8 +121,8 @@ begin - begin
 144_139 - log
 177_6 - assign-variable
 177_7 - decision
-206_7 - audio-input
 144_62 - decision
+206_7 - audio-input
 144_133 - log
 204_3 - run-javascript
 206_9 - assign-variable
@@ -323,7 +323,12 @@ hang-up - hang-up
 143_4 - run-javascript
 61_39 - log
 192_12 - decision
+231_135 - assign-variable
+231_134 - assign-variable
+231_133 - assign-variable
+231_132 - assign-variable
 177_38 - decision
+231_131 - assign-variable
 140_96 - audio-input
 141_70 - run-javascript
 140_5 - decision
@@ -333,6 +338,7 @@ hang-up - hang-up
 61_23 - record-audio
 177_45 - log
 177_43 - audio-input
+231_130 - assign-variable
 60_47 - assign-variable
 67_162 - run-javascript
 231_124 - assign-variable
@@ -393,6 +399,7 @@ hang-up - hang-up
 231_118 - assign-variable
 231_116 - assign-variable
 61_40 - run-javascript
+192_29 - data-query
 143_160 - decision
 103_32 - decision
 192_22 - decision
