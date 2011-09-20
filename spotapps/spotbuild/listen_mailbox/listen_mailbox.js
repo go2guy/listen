@@ -126,3 +126,10 @@ function setParamsForCallEndMailbox(passValues, ANI, callResult, organization) {
     }
     return "{\"date\": \""+iiDateToISO(callStartTime)+"\", \"service\": \""+getJsonVal(passValues, 'callType')+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+getJsonVal(passValues, 'destination')+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
 }
+
+function setSearchParams (subID, organization) {
+    if((subID.length == 0) || (subID == undefined))
+        subID = 'Anonymous';
+
+    return '?number=' + subID + '&organization=' + organization;
+}
