@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/14/2011
+    <!-- Last Modified 09/21/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -96,8 +96,7 @@
     <var name="AUDIO_PATH" expr="''"/>      <!-- Audio Path. Directory for audio files -->
     <var name="SIP_SERVER" expr="''"/>      <!-- Name of SIP Trunk server for inbound/outbound calls -->
     <var name="BLIND_XFER" expr="'2'"/>
-    <var name="ATTND_XFER" expr="'3'"/>
-    <var name="SHORT_CODE" expr="'**'"/>
+    <var name="SHORT_CODE" expr="'*'"/>
     <var name="VOICEMAIL_XFER" expr="'1'"/>
 
 
@@ -543,10 +542,17 @@
 		<transition event="connection.connected" name="evt">
             <!-- The dial attempt was successful. Let's terminate the ring tone on the caller's side (if neccessary)-->
             <log>INFO: Entered [connection.connected] with state [<value expr="state"/>]</log>
+            <log target="status"><value expr="tmpDNIS"/></log>
             <assign name="callResult" expr="'Call Answered'"/>
             <assign name="startTime" expr="getTimeStamp(3)"/>
+            <var name="resource" expr="'startCall'"/>   <!-- Send call start time info to controller -->
+            <var name="params" expr="callInfoParams(session.id, tmpANI, tmpDNIS)"/>
+            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <if cond="dialogID.length &gt; 0">
        	    	<dialogterminate dialogid="dialogID" immediate="true"/>
+            </if>
+            <if cond="isFwd == 'true'">
+                <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
             </if>
             <if cond="state == 'progressing'"> <!-- Go monitor call -->
                 <send data="'dialog.user.keyPress'" target="session.id" delay="'250ms'"/>
@@ -578,9 +584,6 @@
     		    <assign name="state" expr="'callConnected'"/>
                 <send data="'dialog.user.joinID'" target="session.id" delay="'250ms'"/>
             </if>
-            <var name="resource" expr="'startCall'"/>   <!-- Send call start time info to controller -->
-            <var name="params" expr="callInfoParams(session.id, tmpANI, tmpDNIS)"/>
-            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
 		</transition>
 
 		<transition event="dialog.user.stopFindMe" name="evt">
@@ -650,13 +653,14 @@
             <!-- In here, we determin which connection ID we're going to monitor for key presses -->
             <log>INFO: Entered [dialog.user.keyPress] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'keyPress'"/>
-            <var name="id" expr="getJsonVal(importedValue, 'dialInterrupt')"/>
-            <if cond="id == 'inbound'">
+            <if cond="((isFwd == 'true') &amp;&amp; (tmpDNIS.length &gt; EXT_LENGTH))">
+                <assign name="listenToID" expr="obconnid"/>
+                <join id1="'VXML_CHANNEL'" id2="obconnid" duplex="'half'"/>
+            <elseif cond="returnApp.length &gt; 0"/>
                 <assign name="listenToID" expr="ibconnid"/>
                 <join id1="'VXML_CHANNEL'" id2="ibconnid" duplex="'half'"/>
             <else/>
-                <assign name="listenToID" expr="obconnid"/>
-                <join id1="'VXML_CHANNEL'" id2="obconnid" duplex="'half'"/>
+                <!-- Wait here for next event -->
             </if>
 		</transition>
 
@@ -680,7 +684,7 @@
             <var name="fldTimeOut" expr="'3600s'"/>
             <var name="hotKeyList" expr="getJsonVal(importedValue, 'dialHotKeys')"/>
             <assign name="match_key" expr="hotKeyList"/>
-            <dialogstart dialogid="dialogID" src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList cutIn fldTermChar dgtTimeOut fldTimeOut "/>
+            <dialogstart dialogid="dialogID" src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList cutIn fldTermChar dgtTimeOut fldTimeOut"/>
 		</transition>
 
         <transition state="monitor" event="dialog.exit" name="evt">
@@ -688,30 +692,23 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="dialogID" expr="''"/>
             <assign name="userEntry" expr="evt.values.userEntry"/>
-            <if cond="returnApp.length &gt; 0">
-                <if cond="userEntry == match_key">
-                    <assign name="LISTEN_APP" expr="returnApp"/>
-                    <assign name="endTime" expr="getTimeStamp(3)"/>
-                    <var name="callTime" expr="getTimeDifference(startTime,endTime)"/>
-            	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', callTime)"/>
-            	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
-            	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'keyPress', userEntry)"/>
-            	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'outBoundID', obconnid)"/>
-            	    <assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', callResult)"/>
-                    <send data="'dialog.user.listenApp'" target="session.id"/>
-                <else/>
-                    <log>INFO: Invalid short code [<value expr="code"/>]</log>
-    		        <assign name="state" expr="'callConnected'"/>
-                    <send data="'dialog.user.monitor'" target="session.id"/>
-                </if>
+            <if cond="((inString(userEntry,match_key,',')) &amp;&amp; (returnApp.length &gt; 0))">
+                <assign name="LISTEN_APP" expr="returnApp"/>
+                <assign name="endTime" expr="getTimeStamp(3)"/>
+                <var name="callTime" expr="getTimeDifference(startTime,endTime)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', callTime)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'keyPress', userEntry)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'outBoundID', obconnid)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', callResult)"/>
+                <send data="'dialog.user.listenApp'" target="session.id"/>
             <else/>
-                <assign name="code" expr="userEntry[0] + userEntry[1]"/>
-                <if cond="code == SHORT_CODE">
-                    <assign name="code" expr="userEntry[2]"/>
-                    <assign name="userEntry" expr="iiSubstr(userEntry,3,-1)"/>
+                <if cond="userEntry[0] == SHORT_CODE">
+                    <assign name="code" expr="userEntry[1]"/>
+                    <assign name="userEntry" expr="iiSubstr(userEntry,2,-1)"/>
                     <send data="'dialog.user.chkCode'" target="session.id"/>
                 <else/>
-                    <log>INFO: Invalid short code [<value expr="code"/>]</log>
+                    <log>INFO: Invalid short code [<value expr="userEntry"/>]</log>
     		        <assign name="state" expr="'callConnected'"/>
                     <send data="'dialog.user.monitor'" target="session.id"/>
                 </if>
@@ -722,11 +719,12 @@
             <!-- Checks user's short code key press -->
             <log>INFO: Entered [dialog.user.chkCode] with state [<value expr="state"/>]</log>
             <if cond="((code == VOICEMAIL_XFER) &amp;&amp; (userEntry.length &gt; 0) &amp;&amp; (userEntry.length &lt; EXT_LENGTH))">
+                <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
                 <assign name="origDNIS" expr="''"/>
                 <assign name="state" expr="'xferToVoiceMail'"/>
                 <log>INFO: Transfer [<value expr="tmpANI"/>] to voicemail box [<value expr="userEntry"/>]</log>
                 <disconnect connectionid="obconnid"/>
-            <elseif cond="((code == BLIND_XFER) &amp;&amp; (userEntry.length &gt; 0))"/>
+            <elseif cond="((code == BLIND_XFER) &amp;&amp; (userEntry.length &gt; 0) &amp;&amp; (userEntry.length &lt; EXT_LENGTH))"/>
                 <log>INFO: Blind Transfer [<value expr="tmpANI"/>] to [<value expr="userEntry"/>]</log>
                 <log target="status">Blind transfer request</log>
                 <assign name="state" expr="'blindXfer'"/>
@@ -744,18 +742,10 @@
             <!-- We've received the disconnect event -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <!-- Send end call status to controller -->
-            <var name="params" expr="callInfoParams(session.id, '', '')"/>
             <var name="resource" expr="'endCall'"/>
-            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
-            <if cond="tmpDNIS.length &lt; EXT_LENGTH">
-                <!-- Let's remove the disconnected party's info from the active clients table -->
-                <var name="id" expr="obconnid"/>
-                <var name="sessionID" expr="''"/>
-                <var name="flag" expr="'delete'"/>
-                <var name="extension" expr="tmpDNIS"/>
-                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
-            </if>
             <assign name="endTime" expr="getTimeStamp(3)"/>
+            <var name="params" expr="callInfoParams(session.id, '', '')"/>
+            <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
             <assign name="callResult" expr="callResult + ': Transferred to mailbox ' + userEntry"/>
             <send data="'dialog.user.writeCDR'" target="session.id"/> <!-- Write CDR of call -->
             <assign name="LISTEN_APP" expr="'listen_voicemail'"/>   <!-- Transfer to voicemail application -->
@@ -1158,6 +1148,9 @@
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
+            <if cond="isFwd == 'true'">
+                <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
+            </if>
             <var name="resource" expr="'endCall'"/>
             <assign name="endTime" expr="getTimeStamp(3)"/>
             <var name="params" expr="callInfoParams(session.id, '', '')"/>
@@ -1190,9 +1183,6 @@
                 <var name="operation" expr="'set'"/>
                 <var name="value" expr="getTimeDifference(startTime,endTime)"/>
                 <send data="'statInfo'" target="getJsonVal(importedValue,'STATcontroller')" targettype="'basichttp'" namelist="id source value operation"/>
-            <elseif cond="isFwd == 'true'"/>
-                <assign name="callResult" expr="'Forwarded Call: ' + callResult + ' at ' + tmpDNIS"/>
-                <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
             </if>
             <var name="dltAniRecord" expr="'true'"/>
             <var name="dltDnisRecord" expr="'true'"/>
