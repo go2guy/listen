@@ -661,6 +661,7 @@
                 <join id1="'VXML_CHANNEL'" id2="ibconnid" duplex="'half'"/>
             <else/>
                 <!-- Wait here for next event -->
+                <assign name="state" expr="'monitor'"/>
             </if>
 		</transition>
 
