@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/21/2011
+    <!-- Last Modified 09/26/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -56,6 +56,7 @@
     <var name="userEntry" expr="''"/>
     <var name="code" expr="''"/>
     <var name="isFwd" expr="'false'"/>
+    <var name="findMeNumber" expr="''"/>
     <var name="LINE_NUMBER" expr="''"/>
     <var name="startTime" expr="getTimeStamp(3)"/>
     <var name="endTime" expr="startTime"/>
@@ -562,7 +563,8 @@
                 <assign name="obconnid" expr="evt.connectionid"/>
                 <assign name="tmpDNIS" expr="getExtID(DNIS)"/> <!-- Reset tmp dnis info -->
                 <assign name="findMeIDList" expr="shrink(evt.connectionid,findMeIDList,'|')"/>
-                <assign name="callResult" expr="'Find Me: ' + callResult + ' at ' + getJsonVal(findMeObj, evt.connectionid)"/>
+                <assign name="findMeNumber" expr="getJsonVal(findMeObj, evt.connectionid)"/>
+                <assign name="callResult" expr="'Find Me: ' + callResult + ' at ' + findMeNumber"/>
                 <var name="id" expr="'LSTNAPP_0030'"/>
                 <var name="source" expr="'findMe'"/>
                 <var name="operation" expr="'set'"/>
@@ -653,7 +655,8 @@
             <!-- In here, we determin which connection ID we're going to monitor for key presses -->
             <log>INFO: Entered [dialog.user.keyPress] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'keyPress'"/>
-            <if cond="((isFwd == 'true') &amp;&amp; (tmpDNIS.length &gt; EXT_LENGTH))">
+            <if cond="(((isFwd == 'true') &amp;&amp; (tmpDNIS.length &gt; EXT_LENGTH)) || (findMeNumber.length &gt; EXT_LENGTH))">
+                <!-- This implies that the pbx extension was forwarded to an external number or had a find me configuration for an external number -->
                 <assign name="listenToID" expr="obconnid"/>
                 <join id1="'VXML_CHANNEL'" id2="obconnid" duplex="'half'"/>
             <elseif cond="returnApp.length &gt; 0"/>
