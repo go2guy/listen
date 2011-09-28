@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/21/2011
+    <!-- Last Modified 09/28/2011
        *   @Name	blindTransfer.ccxml
        *   @Desc	This script handles the logic for doing a blind call transfer -->
 
@@ -39,13 +39,10 @@
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
     <var name="record" expr="''"/>
-    <var name="inVXML" expr="'n'"/>     <!-- In VXML. Determines if this session is currently running a vxml dialog -->
-    <var name="dialogID" expr="''"/>    <!-- Dialog ID. Stores value of last VXML dialog that was started -->
-    <var name="TRANS_PATH" expr="''"/>  <!-- Transactions Path. Directory for transaction files -->
     <var name="blindXferID" expr="''"/> <!-- Blind Tranfer ID. ID involved in a blind transfer -->
     <var name="LINE_NUMBER" expr="''"/>
-    <var name="startTime" expr="getTimeStamp(3)"/>
-    <var name="endTime" expr="startTime"/>
+    <var name="startTime"/>
+    <var name="endTime"/>
     <var name="callResult" expr="'Call Answered'"/>
     <var name="maxTime" expr="''"/>
     <var name="id" expr="''"/>
@@ -55,8 +52,6 @@
     <var name="extension" expr="''"/>
     <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
     <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
-    <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
-
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
     <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"/>    <!-- Location of Java script file -->
 
@@ -73,6 +68,8 @@
                 var duration = endTime - startTime;
                 if(endTime == '0')
                     duration = '0';
+                if(ANI.length == 0)
+                    ANI = 'Anonymous Caller';
                 return "{\"date\": \""+iiDateToISO(startTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
             }
         ]]>
@@ -83,8 +80,11 @@
             <!-- Load ccxml document. Set variables -->
             <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
             <assign name="state" expr="'loaded'"/>
-            <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <log target="status">Blind transfer signal</log>
+            <if cond="startTime == undefined">
+                <assign name="startTime" expr="getTimeStamp(3)"/>
+                <assign name="endTime" expr="startTime"/>
+            </if>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
             <send data="'dialog.user.blindTransfer'" target="session.id"/>
         </transition>
@@ -100,7 +100,6 @@
             <else/> <!-- Outbound (callee) initiated blind transfer -->
                 <assign name="blindXferID" expr="DNIS"/>    <!-- Save off current destination number for future use -->
             </if>
-            <log>LADI: ANI [<value expr="ANI"/>]</log>
     	    <assign name="state" expr="'disconnectXfer'"/>
 			<disconnect connectionid="id"/> <!-- Disconnect caller -->
 		</transition>
@@ -124,7 +123,6 @@
                 <assign name="dltDnisRecord" expr="'true'"/>
                 <send data="'dialog.user.endCall'" target="session.id" delay="'750ms'"/>
             </if>
-            <log>LADI: ANI2 [<value expr="ANI"/>]</log>
             <var name="resource" expr="'endCall'"/>
             <assign name="endTime" expr="getTimeStamp(3)"/>
             <var name="params" expr="callInfoParams(session.id, '', '')"/>
@@ -157,7 +155,6 @@
             <if cond="tmpDNIS.length &lt; EXT_LENGTH">
                 <assign name="callType" expr="'extension'"/>
             </if>
-            <log>LADI: ANI3 [<value expr="ANI"/>]</log>
             <fetch next="'file:'+APP_PATH+'dial.ccxml'" namelist="SB_PATH APP_PATH EXT_LENGTH ibconnid origDNIS tmpDNIS DNIS tmpANI ANI callType importedValue II_SB_line II_SB_CODE_DIR II_SB_ibcallid II_SB_obcallid II_SB_projectSource II_SB_transfer II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type"/>
         </transition>
 
@@ -213,10 +210,6 @@
             <assign name="state" expr="'errorEnd'"/>
             <var name="logText" expr="'blindTransfer.ccxml: Global error catch. ANI ['+ tmpANI +'] DNIS ['+ tmpDNIS + ']. Reason [' + evt.reason + ']'"/>
             <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
-            <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
-            <if cond="inVXML == 'y'">
-                <send data="'dialog.user.terminate'" target="session.id"/>
-            </if>
             <var name="dltAniRecord" expr="'true'"/>
             <var name="dltDnisRecord" expr="'true'"/>
             <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord" delay="'250ms'"/>

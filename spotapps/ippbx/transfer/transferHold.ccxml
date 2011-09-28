@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/06/2011
+    <!-- Last Modified 09/28/2011
        *   @Name	transferHold.ccxml
        *   @Desc	This script handles the logic for transferring a party
                     that's currently on hold to a new call -->
@@ -45,8 +45,8 @@
     <var name="LINE_NUMBER" expr="''"/>
     <var name="LIB_PATH" expr="''"/>        <!-- Lib Path. Direcotry for lib files -->
     <var name="AUDIO_PATH" expr="''"/>      <!-- Audio Path. Directory for audio files -->
-    <var name="startTime" expr="getTimeStamp(3)"/>
-    <var name="endTime" expr="startTime"/>
+    <var name="startTime"/>
+    <var name="endTime"/>
     <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
     <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
@@ -57,6 +57,8 @@
                 var duration = endTime - startTime;
                 if(endTime == '0')
                     duration = '0';
+                if(ANI.length == 0)
+                    ANI = 'Anonymous Caller';
                 return "{\"date\": \""+iiDateToISO(startTime)+"\", \"service\": \""+callType+"\", \"duration\":"+duration+", \"ani\":\""+ANI+"\", \"dnis\":\""+DNIS+"\", \"result\":\""+callResult+"\", \"organization\": {\"href\":\""+organization+"\"}}";
             }
         ]]>
@@ -73,6 +75,10 @@
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <assign name="tmpDNIS" expr="getNextElement(1,tmpDNIS,'#9')"/>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
+            <if cond="startTime == undefined">
+                <assign name="startTime" expr="getTimeStamp(3)"/>
+                <assign name="endTime" expr="startTime"/>
+            </if>
             <send data="'dialog.user.getInfo'" target="session.id"/>
         </transition>
 
@@ -92,6 +98,12 @@
             <if cond="((holdSID.length != 0) &amp;&amp; (holdSID != undefined) &amp;&amp; (holdSID != 'Failure'))">
                 <var name="requestToID" expr="tmpDNIS"/>
                 <var name="requestFromID" expr="tmpANI"/>
+                <if cond="requestToID.length == 0">
+                    <var name="requestToID" expr="'Anonymous Caller'"/>
+                </if>
+                <if cond="requestFromID.length == 0">
+                    <var name="requestFromID" expr="'Anonymous Caller'"/>
+                </if>
                 <var name="moveRequestSID" expr="session.id"/>  <!-- Save off current session id for future use -->
                 <!-- This send event below should end up in either dial.ccxml or hold.ccxml; 
                 depending on when the "pick up" is attempted -->

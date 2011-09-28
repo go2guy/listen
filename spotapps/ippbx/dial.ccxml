@@ -58,8 +58,8 @@
     <var name="isFwd" expr="'false'"/>
     <var name="findMeNumber" expr="''"/>
     <var name="LINE_NUMBER" expr="''"/>
-    <var name="startTime" expr="getTimeStamp(3)"/>
-    <var name="endTime" expr="startTime"/>
+    <var name="startTime"/>
+    <var name="endTime"/>
     <var name="match_key" expr="''"/>
     <var name="findMeObj" expr="''"/>
     <var name="findMeIDList" expr="''"/>
@@ -91,7 +91,6 @@
     <var name="REQUEST_TIMEOUT" expr="'408'"/>  <!-- Dialed attempt timed out -->
 
     <!-- Constants -->
-    <var name="SUP_PATH" expr="''"/>        <!-- Support Path. Directory for support files -->
     <var name="LISTEN_APP" expr="''"/>
     <var name="TRANS_PATH" expr="''"/>      <!-- Transactions Path. Directory for transaction files -->
     <var name="AUDIO_PATH" expr="''"/>      <!-- Audio Path. Directory for audio files -->
@@ -99,7 +98,6 @@
     <var name="BLIND_XFER" expr="'2'"/>
     <var name="SHORT_CODE" expr="'*'"/>
     <var name="VOICEMAIL_XFER" expr="'1'"/>
-
 
     <script src="file:/interact/apps/spotbuild/lib/js/lib.js"/>    <!-- Location of Java script file -->
     <script src="file:/interact/apps/spotbuild/lib/js/stringify.js"/>    <!-- Location of Java script file -->
@@ -195,16 +193,18 @@
             <!-- Loaded new ccxml script. Set variables -->
             <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
             <assign name="AUDIO_PATH" expr="APP_PATH+'audio/'"/>
-            <assign name="SUP_PATH" expr="APP_PATH+'support/'"/>
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <assign name="state" expr="'loaded'"/>
             <log>INFO: APP Path [<value expr="APP_PATH"/>]</log>
             <log>INFO: Audio Path [<value expr="AUDIO_PATH"/>]</log>
-            <log>INFO: Suppport Path [<value expr="SUP_PATH"/>]</log>
             <log>INFO: Destination [<value expr="DNIS"/>]</log>
             <log>INFO: Origination [<value expr="ANI"/>]</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
             <log>INFO: Inbound connection ID [<value expr="ibconnid"/>]</log>
+            <if cond="startTime == undefined">
+                <assign name="startTime" expr="getTimeStamp(3)"/>
+                <assign name="endTime" expr="startTime"/>
+            </if>
             <if cond="tmpDNIS == '0'">
                 <!-- If caller dialed zero, we'll call the operator's extension -->
                 <assign name="tmpDNIS" expr="officeOptr"/>
@@ -825,6 +825,13 @@
                 <assign name="endTime" expr="getTimeStamp(3)"/>
                 <var name="params" expr="callInfoParams(session.id, '', '')"/>
                 <send data="'dialog.user.callInfo'" target="session.id" namelist="params resource"/>
+                <if cond="tmpANI.length &lt; EXT_LENGTH"> <!-- Remove the caller's record in the db -->
+                    <var name="id" expr="ibconnid"/>
+                    <var name="sessionID" expr="''"/>
+                    <var name="flag" expr="'delete'"/>
+                    <var name="extension" expr="tmpANI"/>
+                    <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
+                </if>
             <else/> <!-- This is for ringing pick up. Here, we disconnect our dial attempt -->
                 <assign name="state" expr="'ringPickUpDisc'"/>
                 <disconnect connectionid="obconnid"/>
@@ -848,9 +855,9 @@
             <var name="logText" expr="'dial.ccxml: Error while attempting to perform call transfer. Unable to unjoin ['+ tmpANI +'] from ['+ tmpDNIS + ']. Reason [evt.reason]'"/>
             <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
-            <var name="dltAniRecord" expr="'true'"/>
+            <var name="dltAniRecord" expr="'false'"/>
             <var name="dltDnisRecord" expr="'true'"/>
-            <assign name="callResult" expr="callResult + ': Transfer to ' + requestFromID + ' failed'"/>
+            <assign name="callResult" expr="callResult + ': Attended Transfer to ' + requestFromID + ' failed'"/>
             <send data="'dialog.user.writeCDR'" target="session.id"/>
             <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord"/>
         </transition>
@@ -858,14 +865,6 @@
         <transition state="attdXferMoveDisc" event="connection.disconnected" name="evt" cond="evt.connectionid == ibconnid">
             <!-- Got the disconnect -->
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
-            <!-- Remove the caller's record in the db -->
-            <if cond="tmpANI.length &lt; EXT_LENGTH">
-                <var name="id" expr="ibconnid"/>
-                <var name="sessionID" expr="''"/>
-                <var name="flag" expr="'delete'"/>
-                <var name="extension" expr="tmpANI"/>
-                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
-            </if>
 		    <assign name="state" expr="'attdXferVChnnel'"/>
             <join id1="obconnid" id2="'VXML_CHANNEL'"/>
         </transition>
@@ -876,14 +875,6 @@
             <var name="logText" expr="'dial.ccxml: Error while attempting to disconnect [tmpANI] during a call transfer. Reason [evt.reason]'"/>
             <assign name="logText" expr="writeLog('DIAL',LINE_NUMBER,logText)"/>
             <log target="logFile"><value expr="logText"/></log>
-            <!-- Remove the caller's record in the db -->
-            <if cond="tmpANI.length &lt; EXT_LENGTH">
-                <var name="id" expr="ibconnid"/>
-                <var name="sessionID" expr="''"/>
-                <var name="flag" expr="'delete'"/>
-                <var name="extension" expr="tmpANI"/>
-                <send data="'updateClient'" target="DB_PATH+'activeClients.php'" targettype="'basichttp'" namelist="extension id flag sessionID maxTime"/>
-            </if>
 		    <assign name="state" expr="'attdXferVChnnel'"/>
             <join id1="obconnid" id2="'VXML_CHANNEL'"/>
         </transition>
@@ -941,7 +932,7 @@
             <if cond="state == 'attdXferMoveAttempt'">
                 <assign name="state" expr="'endCall'"/>
                 <assign name="dltDnisRecord" expr="'true'"/>
-                <assign name="callResult" expr="callResult + ': Attended transfer to ' + requestFromID + ' successful'"/>
+                <assign name="callResult" expr="callResult + ': Attended transfer of ' + requestFromID + ' successful'"/>
                 <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="obconnid"/>
                 <send data="'dialog.user.deleteRecord'" target="session.id" namelist="dltAniRecord dltDnisRecord" delay="'250ms'"/>
             <else/>
