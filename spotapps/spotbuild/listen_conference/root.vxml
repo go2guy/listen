@@ -118,7 +118,7 @@
 	<var name="project" expr="'LISTEN_CONFERENCE'" />
 	<var name="application" expr="''" />
 	<var name="EXT_SUFFIX" expr="''" />
-    <var name="callResult" expr="''" />
+	<var name="callResult" expr="''" />
 
 
     <!-- Conference Variables -->

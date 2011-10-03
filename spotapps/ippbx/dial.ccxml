@@ -76,7 +76,7 @@
     <var name="fromCCXML" expr="'DIAL'"/>
     <var name="DB_PATH" expr="'http://localhost/ippbx/'"/>
     <var name="logFile" expr="'file:/interact/logs/exceptionLog'"/>
-    <var name="waitList" expr="'callConnected,dialing,findMe,stopFindMe,disconnected,disconnectVC,gotSignal,blindXfer,attemptRingPickUp,attemptMove,gotXferReq'"/>
+    <var name="waitList" expr="'monitor_progressing,callConnected,dialing,findMe,stopFindMe,disconnected,disconnectVC,gotSignal,blindXfer,attemptRingPickUp,attemptMove,gotXferReq'"/>
 
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
@@ -536,9 +536,48 @@
 		</transition>
 
 		<transition state="progressing" event="conference.joined" name="evt">
-            <!-- Our join attempt was successful. Wait for next event -->
+            <!-- Our join attempt was successful. -->
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+            <if cond="returnApp.length &gt; 0">
+                <assign name="state" expr="'monitor_progressing'"/>
+                <join id1="'VXML_CHANNEL'" id2="ibconnid" duplex="'half'"/> <!-- Listen for *2 -->
+            <else/>
+            <!-- Wait for next event -->
+            </if>
 		</transition>
+
+		<transition state="monitor_progressing" event="conference.joined" name="evt">
+            <!-- Our join attempt was successful. Listen for key press -->
+            <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
+            <send data="'dialog.user.monitorProgressing'" target="session.id" namelist="params resource"/>
+        </transition>
+
+		<transition state="monitor_progressing" event="dialog.user.monitorProgressing" name="evt">
+            <log>INFO: Entered [dialog.user.monitorProgressing] with state [<value expr="state"/>]</log>
+            <var name="cutIn" expr="'true'"/>
+            <var name="fldTermChar" expr="'2'"/>
+            <var name="dgtTimeOut" expr="'3s'"/>
+            <assign name="promptList" expr="''"/>
+            <var name="fldTimeOut" expr="'60s'"/>
+            <dialogstart dialogid="dialogID" src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList cutIn fldTermChar dgtTimeOut fldTimeOut"/>
+		</transition>
+
+        <transition state="monitor_progressing" event="dialog.exit" name="evt">
+            <!-- Back from monitor dialog -->
+            <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
+            <assign name="dialogID" expr="''"/>
+            <assign name="userEntry" expr="evt.values.userEntry"/>
+            <if cond="((userEntry == '*') &amp;&amp; (returnApp.length &gt; 0))">
+                <assign name="LISTEN_APP" expr="returnApp"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', '')"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'keyPress', '*2')"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
+            	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', 'Called Party Hung Up')"/>
+                <send data="'dialog.user.listenApp'" target="session.id"/>
+            <else/>
+                <send data="'dialog.user.monitorProgressing'" target="session.id" namelist="params resource"/>
+            </if>
+        </transition>
 
 		<transition event="connection.connected" name="evt">
             <!-- The dial attempt was successful. Let's terminate the ring tone on the caller's side (if neccessary)-->
@@ -557,6 +596,10 @@
             </if>
             <if cond="state == 'progressing'"> <!-- Go monitor call -->
                 <send data="'dialog.user.keyPress'" target="session.id" delay="'250ms'"/>
+            <elseif cond="state == 'monitor_progressing'"/>
+                <!-- Call transition that monitors the call for key presses -->
+  		        <assign name="state" expr="'callConnected'"/>
+                <send data="'dialog.user.monitor'" target="session.id" delay="'250ms'"/>
             <elseif cond="state == 'findMe'"/>
                 <assign name="fmGrpCnt" expr="0"/>
                 <assign name="fmGrpIndex" expr="0"/>
@@ -688,7 +731,7 @@
             <var name="fldTimeOut" expr="'3600s'"/>
             <var name="hotKeyList" expr="getJsonVal(importedValue, 'dialHotKeys')"/>
             <assign name="match_key" expr="hotKeyList"/>
-            <dialogstart dialogid="dialogID" src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList cutIn fldTermChar dgtTimeOut fldTimeOut"/>
+            <dialogstart dialogid="dialogID" src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList cutIn fldTermChar dgtTimeOut fldTimeOut hotKeyList"/>
 		</transition>
 
         <transition state="monitor" event="dialog.exit" name="evt">

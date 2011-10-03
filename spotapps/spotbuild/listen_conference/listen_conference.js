@@ -221,3 +221,25 @@ function isConfRecording (isRecording, isAdmin) {
     else
         return "false";
 }
+
+function saveVars(passValues,phoneNumber,appStartTime,userID,isInfoSaved,confID,audioURL,tmpVal,prevPath,isAdmin,lstnChannel,lstnSub,isInteractiveCall,destAudioFile,subscriber) {
+        var result = eval("("+passValues+")");
+        result.dialReturnApp = 'listen_conference';
+        result.isAdmin = isAdmin;
+        result.tmpVal = tmpVal;
+        result.prevPath = prevPath;
+        result.audioURL = audioURL;
+        result.userID = userID;;
+        result.isInfoSaved = isInfoSaved;
+        result.confID = confID;
+        result.appStartTime = appStartTime;
+        result.dialHotKeys = '*';
+        result.dialInterrupt = 'inbound';
+        result.lstnChannel = lstnChannel;
+        result.lstnSub = lstnSub;
+        result.destination = phoneNumber;
+        result.destAudioFile = destAudioFile;
+        result.isInteractiveCall = isInteractiveCall;
+        result.subscriber = subscriber;
+        return iiStringify(result);
+}
