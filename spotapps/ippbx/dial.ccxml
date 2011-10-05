@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/26/2011
+    <!-- Last Modified 10/05/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -568,15 +568,26 @@
             <assign name="dialogID" expr="''"/>
             <assign name="userEntry" expr="evt.values.userEntry"/>
             <if cond="((userEntry == '*') &amp;&amp; (returnApp.length &gt; 0))">
+                <disconnect connectionid="obconnid"/>   <!-- Caller wants to disconnect outbound call -->
                 <assign name="LISTEN_APP" expr="returnApp"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callTime', '')"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'keyPress', '*2')"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', 'Called Party Hung Up')"/>
-                <send data="'dialog.user.listenApp'" target="session.id"/>
+                <send data="'dialog.user.listenApp'" target="session.id" delay="'500ms'"/>
             <else/>
                 <send data="'dialog.user.monitorProgressing'" target="session.id" namelist="params resource"/>
             </if>
+        </transition>
+
+		<transition state="monitor_progressing" event="connection.disconnected" name="evt">
+            <!-- Our disconnect attempt was successful. Wait for next event -->
+            <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
+        </transition>
+
+		<transition state="monitor_progressing" event="connection.failed" name="evt">
+            <!-- Our disconnect attempt was failed. Wait for next event -->
+            <log>INFO: Entered [connection.failed] with state [<value expr="state"/>]</log>
         </transition>
 
 		<transition event="connection.connected" name="evt">
