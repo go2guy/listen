@@ -538,7 +538,7 @@
 		<transition state="progressing" event="conference.joined" name="evt">
             <!-- Our join attempt was successful. -->
             <log>INFO: Entered [conference.joined] with state [<value expr="state"/>]</log>
-            <if cond="returnApp.length &gt; 0">
+            <if cond="((returnApp != 'listen_autoAttendant') &amp;&amp; (returnApp.length &gt; 0))">
                 <assign name="state" expr="'monitor_progressing'"/>
                 <join id1="'VXML_CHANNEL'" id2="ibconnid" duplex="'half'"/> <!-- Listen for *2 -->
             <else/>
