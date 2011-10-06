@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 10/05/2011
+    <!-- Last Modified 10/06/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -713,9 +713,6 @@
                 <!-- This implies that the pbx extension was forwarded to an external number or had a find me configuration for an external number -->
                 <assign name="listenToID" expr="obconnid"/>
                 <join id1="'VXML_CHANNEL'" id2="obconnid" duplex="'half'"/>
-            <elseif cond="returnApp.length &gt; 0"/>
-                <assign name="listenToID" expr="ibconnid"/>
-                <join id1="'VXML_CHANNEL'" id2="ibconnid" duplex="'half'"/>
             <else/>
                 <!-- Wait here for next event -->
                 <assign name="state" expr="'monitor'"/>
@@ -777,9 +774,8 @@
             <!-- Checks user's short code key press -->
             <log>INFO: Entered [dialog.user.chkCode] with state [<value expr="state"/>]</log>
             <if cond="((code == VOICEMAIL_XFER) &amp;&amp; (userEntry.length &gt; 0) &amp;&amp; (userEntry.length &lt; EXT_LENGTH))">
-                <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
-                <assign name="origDNIS" expr="''"/>
                 <assign name="state" expr="'xferToVoiceMail'"/>
+             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'toExt', userEntry)"/>
                 <log>INFO: Transfer [<value expr="tmpANI"/>] to voicemail box [<value expr="userEntry"/>]</log>
                 <disconnect connectionid="obconnid"/>
             <elseif cond="((code == BLIND_XFER) &amp;&amp; (userEntry.length &gt; 0) &amp;&amp; (userEntry.length &lt; EXT_LENGTH))"/>
@@ -788,6 +784,9 @@
                 <assign name="state" expr="'blindXfer'"/>
                 <assign name="xferConnID" expr="obconnid"/>
                 <assign name="URI" expr="userEntry"/>
+                <if cond="isFwd == 'true'">
+                    <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
+                </if>
                 <send data="'dialog.user.blindXfer'" target="session.id"/>
             <else/>
                 <log>INFO: Invalid short code [<value expr="code"/>]</log>
@@ -827,7 +826,7 @@
 		<transition state="blindXfer" event="dialog.user.blindXfer" name="evt">
             <!-- Blind Transfer request. Call the transfer script -->
             <log>INFO: Entered [dialog.user.blindXfer] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI callType ibconnid obconnid importedValue URI xferConnID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+            <fetch next="'file:'+APP_PATH+'transfer/blindTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH origDNIS tmpDNIS DNIS tmpANI ANI callType callResult ibconnid obconnid importedValue URI xferConnID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
 		</transition>
 
 		<transition state="monitor" event="connection.signal" name="evt">
@@ -1157,7 +1156,7 @@
         <transition state="gotXferReq" event="dialog.user.transfer" name="evt">
             <!-- Here, we call the attended transfer ccxml script that handles joining the call legs -->
             <log>INFO: Entered [dialog.user.transfer] with state [<value expr="state"/>]</log>
-            <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI callType ibconnid obconnid importedValue URI xferConnID xferSID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
+            <fetch next="'file:'+APP_PATH+'transfer/attendedTransfer.ccxml'" namelist="APP_PATH SB_PATH EXT_LENGTH tmpDNIS DNIS tmpANI ANI callType callResult ibconnid obconnid importedValue URI xferConnID xferSID startTime endTime II_SB_VXML_LIB II_SB_status II_SB_local II_SB_remote II_SB_originator II_SB_protocol II_SB_connectionID II_SB_type II_SB_ibcallid II_SB_transfer II_SB_projectSource II_SB_obcallid II_SB_CODE_DIR II_SB_line II_SB_importedValue"/>
         </transition>
 
         <transition event="dialog.user.listenApp" name="evt">
@@ -1198,9 +1197,6 @@
             <log>INFO: Entered [connection.disconnected] with state [<value expr="state"/>]</log>
             <log>INFO: Detected hangup</log>
             <log>INFO: Call type [<value expr="callType"/>]</log>
-            <if cond="isFwd == 'true'">
-                <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
-            </if>
             <var name="resource" expr="'endCall'"/>
             <assign name="endTime" expr="getTimeStamp(3)"/>
             <var name="params" expr="callInfoParams(session.id, '', '')"/>
@@ -1320,6 +1316,9 @@
         <transition event="dialog.user.writeCDR" name="evt">
             <!-- Write Call History and Stat -->
             <log>INFO: Entered [dialog.user.writeCDR] with state [<value expr="state"/>]</log>
+            <if cond="isFwd == 'true'">
+                <assign name="tmpDNIS" expr="getExtID(origDNIS)"/>
+            </if>
             <var name="resource" expr="'addCallHistory'"/>
             <var name="cntrlURL" expr="getJsonVal(importedValue, 'cntrlURL')"/>
             <var name="organization" expr="getJsonVal(importedValue, 'organization')"/>

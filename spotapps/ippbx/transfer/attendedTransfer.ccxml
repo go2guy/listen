@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/28/2011
+    <!-- Last Modified 10/06/2011
        *   @Name	attendedTransfer.ccxml
        *   @Desc	This script handles the logic for do an attended call transfer-->
 
@@ -35,6 +35,7 @@
     <var name="EXT_LENGTH"/>    <!-- Extensions are less than seven digit numbers -->
     <var name="SB_PATH"/>       <!-- Spotbuild Path. Base directory for spotbuild -->
     <var name="importedValue"/> <!-- Imported Value. Values passed in from Listen application -->
+    <var name="callResult"/>
 
     <!-- Global Vars -->
     <var name="state" expr="'idle'"/>   <!-- State. Used to track which state a transition is in -->
@@ -45,7 +46,6 @@
     <var name="LINE_NUMBER" expr="''"/>
     <var name="startTime"/>
     <var name="endTime"/>
-    <var name="callResult" expr="'Call Answered'"/>
     <var name="maxTime" expr="''"/>
     <var name="id" expr="''"/>
     <var name="request" expr="'post'"/>
@@ -88,6 +88,9 @@
             <if cond="startTime == undefined">
                 <assign name="startTime" expr="getTimeStamp(3)"/>
                 <assign name="endTime" expr="startTime"/>
+            </if>
+            <if cond="callResult == undefined">
+                <assign name="callResult" expr="'Call Answered'"/>
             </if>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
             <send data="'dialog.user.attendedTransfer'" target="session.id"/>

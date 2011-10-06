@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 09/28/2011
+    <!-- Last Modified 10/06/2011
        *   @Name	hold.ccxml
        *   @Desc	This script handles the logic for placing a call on hold -->
 
@@ -53,7 +53,7 @@
     <var name="requestFromID" expr="''"/>
     <var name="startTime"/>
     <var name="endTime"/>
-    <var name="callResult" expr="'Call Answered'"/>
+    <var name="callResult" expr="''"/>
     <var name="maxTime" expr="''"/>
     <var name="id" expr="''"/>
     <var name="request" expr="'post'"/>
