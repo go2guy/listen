@@ -25,7 +25,7 @@
     <install>
         <pre>
             <process state='running'>
-                <name>mysqld</name>
+                <name>Mysql</name>
                 <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
                 <start>/sbin/service mysqld start</start>
             </process>
@@ -173,7 +173,7 @@
     <rollback>
         <pre>
             <process state='running'>
-                <name>mysqld</name>
+                <name>Mysql</name>
                 <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
                 <start>/sbin/service mysqld start</start>
             </process>
@@ -193,7 +193,7 @@
     <uninstall>
         <pre>
             <process state='running'>
-                <name>mysqld</name>
+                <name>Mysql</name>
                 <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
                 <start>/sbin/service mysqld start</start>
             </process>

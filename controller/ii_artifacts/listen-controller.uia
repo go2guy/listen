@@ -10,17 +10,17 @@
 
     <install>
         <pre>
+            <process state="running">
+                <name>Mysql</name>
+                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
+                <start>/sbin/service mysqld start</start>
+            </process>
+
             <process state="stopped">
-                <name>listen controller</name>
+                <name>Listen Controller</name>
                 <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
                 <start>/sbin/service listen-controller start</start>
                 <stop>/sbin/service listen-controller stop</stop>
-            </process>
-
-            <process state="running">
-                <name>mysqld</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
             </process>
 
             <rpm state="greater-than-or-equal">
@@ -62,17 +62,17 @@
 
     <rollback>
         <pre>
+            <process state="running">
+                <name>Mysql</name>
+                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
+                <start>/sbin/service mysqld start</start>
+            </process>
+
             <process state="stopped">
-                <name>listen controller</name>
+                <name>Listen Controller</name>
                 <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
                 <start>/sbin/service listen-controller start</start>
                 <stop>/sbin/service listen-controller stop</stop>
-            </process>
-
-            <process state="running">
-                <name>mysqld</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
             </process>
 
             <rpm state="greater-than-or-equal">
@@ -90,17 +90,17 @@
 
     <uninstall>
         <pre>
+            <process state="running">
+                <name>Mysql</name>
+                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
+                <start>/sbin/service mysqld start</start>
+            </process>
+
             <process state="stopped">
-                <name>listen controller</name>
+                <name>Listen Controller</name>
                 <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
                 <start>/sbin/service listen-controller start</start>
                 <stop>/sbin/service listen-controller stop</stop>
-            </process>
-
-            <process state="running">
-                <name>mysqld</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
             </process>
 
             <rpm state="greater-than-or-equal">
