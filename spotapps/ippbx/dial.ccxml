@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 10/06/2011
+    <!-- Last Modified 11/10/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -736,7 +736,7 @@
             <var name="fldTermChar" expr="'#'"/>
             <var name="dgtTimeOut" expr="'3s'"/>
             <assign name="promptList" expr="''"/>
-            <var name="fldTimeOut" expr="'3600s'"/>
+            <var name="fldTimeOut" expr="'28800s'"/>
             <var name="hotKeyList" expr="getJsonVal(importedValue, 'dialHotKeys')"/>
             <assign name="match_key" expr="hotKeyList"/>
             <dialogstart dialogid="dialogID" src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList cutIn fldTermChar dgtTimeOut fldTimeOut hotKeyList"/>
@@ -747,7 +747,10 @@
             <log>INFO: Entered [dialog.exit] with state [<value expr="state"/>]</log>
             <assign name="dialogID" expr="''"/>
             <assign name="userEntry" expr="evt.values.userEntry"/>
-            <if cond="((inString(userEntry,match_key,',')) &amp;&amp; (returnApp.length &gt; 0))">
+            <if cond="userEntry.length == 0">
+    		    <assign name="state" expr="'callConnected'"/>
+                <send data="'dialog.user.monitor'" target="session.id"/>
+            <elseif cond="((inString(userEntry,match_key,',')) &amp;&amp; (returnApp.length &gt; 0))"/>
                 <assign name="LISTEN_APP" expr="returnApp"/>
                 <assign name="endTime" expr="getTimeStamp(3)"/>
                 <var name="callTime" expr="getTimeDifference(startTime,endTime)"/>
