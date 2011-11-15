@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 10/06/2011
+    <!-- Last Modified 11/15/2011
        *   @Name	hold.ccxml
        *   @Desc	This script handles the logic for placing a call on hold -->
 
@@ -115,7 +115,7 @@
                 <assign name="extension" expr="tmpANI"/>
             <else/> <!-- Called party initiated request -->
                 <assign name="holdID" expr="ibconnid"/> <!-- Put the caller on hold -->
-                <assign name="holdRecord" expr="ibconnid + '|' + tmpANI"/>
+                <assign name="holdRecord" expr="ibconnid + '|' + tmpANI + '|' + ANI"/>
                 <assign name="activeID" expr="obconnid"/>
                 <assign name="id" expr="obconnid"/>
                 <assign name="extension" expr="tmpDNIS"/>
@@ -310,9 +310,10 @@
             <log>INFO: Entered [move.successful] with state [<value expr="state"/>]</log>
             <var name="ibconnid" expr="getNextElement(0,holdRecord,'|')"/>
             <var name="tmpANI" expr="getNextElement(1,holdRecord,'|')"/>
+            <var name="ANI" expr="getNextElement(2,holdRecord,'|')"/>
             <assign name="callResult" expr="'Call pick up from: ' + requestFromID + ' successful'"/>
             <send data="'dialog.user.writeCDR'" target="session.id"/>
-            <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="ibconnid tmpANI"/>
+            <send data="'dialog.user.moveSuccessful'" target="moveRequestSID" namelist="ibconnid tmpANI ANI"/>
             <assign name="state" expr="'endCall'"/>
             <send data="'dialog.user.endCall'" target="session.id" delay="'250ms'"/>
         </transition>
