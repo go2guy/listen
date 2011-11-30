@@ -109,8 +109,8 @@
                 depending on when the "pick up" is attempted -->
                 <send data="'dialog.user.moveRequest'" target="holdSID" namelist="moveRequestSID requestToID requestFromID"/>
             <else/>
-                <!-- Looks like we had some issues. End this call. -->
-                <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceError2.00.wav ' + AUDIO_PATH + 'notifyAdmin.00.wav ' +  AUDIO_PATH+'thankYou.00.wav ' + AUDIO_PATH + 'goodbye.00.wav'"/>
+                <!-- Looks like we had some issues. Play fast busy and end this call. -->
+                <assign name="callResult" expr="'Unable to find a live call associated with ' + tmpDNIS"/>
                 <send data="'dialog.user.playErrorMessage'" target="session.id"/>
             </if>
         </transition>
@@ -124,6 +124,7 @@
             <assign name="state" expr="'playErrorMsg'"/>
             <var name="II_SB_repeat" expr="'n'"/>
             <var name="II_SB_interval" expr="''"/>
+            <assign name="II_SB_promptID" expr="AUDIO_PATH+'busy.00.wav'"/>
             <dialogstart src="'file:'+LIB_PATH+'audioPlayBack.vxml'" namelist="II_SB_promptID II_SB_repeat II_SB_interval"/>
         </transition>
 
@@ -160,7 +161,6 @@
         <transition event="dialog.user.moveFailed" name="evt">
             <!-- Our move failed. Play error and end this call -->
             <log>INFO: Entered [dialog.user.moveFailed] with state [<value expr="state"/>]</log>
-            <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceError2.00.wav ' + AUDIO_PATH + 'notifyAdmin.00.wav ' +  AUDIO_PATH+'thankYou.00.wav ' + AUDIO_PATH + 'goodbye.00.wav'"/>
             <send data="'dialog.user.playErrorMessage'" target="session.id"/>
         </transition>
 
@@ -236,7 +236,6 @@
         <transition state="dbInfo" event="error.send.targetunavailable" name="evt">
             <!-- Looks like the call we are trying to transfer is gone. Caller most likely hung up -->
             <assign name="state" expr="'errorEnd'"/>
-            <assign name="II_SB_promptID" expr="AUDIO_PATH+'busy.00.wav'"/>
             <assign name="callResult" expr="'Unable to complete call pickup because calling party hung up'"/>
             <send data="'dialog.user.playErrorMessage'" target="session.id"/>
         </transition>
@@ -247,7 +246,6 @@
             <log>ERROR: Entered [Error*] with state [<value expr="state"/>]</log>
             <log>INFO: Reason [<value expr="evt.reason"/>]</log>
             <assign name="state" expr="'errorEnd'"/>
-            <assign name="II_SB_promptID" expr="AUDIO_PATH+'serviceError2.00.wav ' + AUDIO_PATH + 'notifyAdmin.00.wav ' +  AUDIO_PATH+'thankYou.00.wav ' + AUDIO_PATH + 'goodbye.00.wav'"/>
             <send data="'dialog.user.playErrorMessage'" target="session.id"/>
         </transition>
 
