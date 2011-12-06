@@ -22,7 +22,8 @@
 /interact/packages/conf/xmlsecurity.uia
 
 # dmv files
-/interact/packages/dmv-*.rpm
+/interact/packages/dmv-[0-9]*.rpm
+/interact/packages/conf/dmv.uia
 
 # spotbuild-vip files
 /interact/packages/spotbuild-vip-*.rpm
