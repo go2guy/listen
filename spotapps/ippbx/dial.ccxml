@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 11/10/2011
+    <!-- Last Modified 12/12/2011
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -1047,7 +1047,7 @@
             <var name="finalConfigIndex" expr="fmConfigCnt - 1"/>
             <if cond="((fmConfigIndex == finalConfigIndex) &amp;&amp; (fmFailedCalls == fmGrpCnt))">
                 <!-- Done with all find me groups. Unable to find party -->
-                <assign name="tmpDNIS" expr="getnum(DNIS)"/> <!-- Reset tmp dnis info -->
+                <assign name="tmpDNIS" expr="getExtID(DNIS)"/> <!-- Reset tmp dnis info -->
                 <assign name="dialFailReason" expr="evt.reason"/>
                 <if cond="dialogID.length &gt; 0">
                	    <dialogterminate dialogid="dialogID" immediate="true"/> <!-- Stop ringing tone on caller side -->
