@@ -11,9 +11,20 @@
     <install>
         <pre>
             <process state="running">
-                <name>Mysql</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
+                <name>MySQL</name>
+                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
+                <start>
+                    if [ -f /etc/init.d/mysqld ]
+                    then
+                        /sbin/service mysqld start
+                    elif [ -f /etc/init.d/mysql ]
+                    then
+                        /sbin/service mysql start
+                    else
+                        echo "Unable to run mysql start command"
+                        exit 1
+                    fi
+                </start>
             </process>
 
             <process state="stopped">
@@ -32,6 +43,21 @@
                 <name>uia</name>
                 <version>5.0.0</version>
             </rpm>
+
+            <scripts focus="background" onerror="die">
+                <![CDATA[
+                    if [ ! -e /var/lib/mysql/listen2 ]
+                    then
+                        # Make sure we can log in as root with no password if we are going to need to.
+                        if [ `mysql --user=root -e "" &>/dev/null; echo $?` -ne 0 ]
+                        then
+                            echo "Unable to log into mysql as root with no password. This ability is needed to load schema information on this machine."
+                            exit 1
+                        fi
+                    fi
+                ]]>
+            </scripts>
+
         </pre>
 
         <inquiry>
@@ -51,7 +77,7 @@
             <script focus="background" onerror="report">
                 <![CDATA[
                     #!/bin/bash
-                    if [ ! -d /var/lib/mysql/listen2/ ]
+                    if [ ! -e /var/lib/mysql/listen2/ ]
                     then
                         mysql --user=root -e "create database if not exists listen2"
                     fi
@@ -63,9 +89,20 @@
     <rollback>
         <pre>
             <process state="running">
-                <name>Mysql</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
+                <name>MySQL</name>
+                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
+                <start>
+                    if [ -f /etc/init.d/mysqld ]
+                    then
+                        /sbin/service mysqld start
+                    elif [ -f /etc/init.d/mysql ]
+                    then
+                        /sbin/service mysql start
+                    else
+                        echo "Unable to run mysql start command"
+                        exit 1
+                    fi
+                </start>
             </process>
 
             <process state="stopped">
@@ -91,9 +128,20 @@
     <uninstall>
         <pre>
             <process state="running">
-                <name>Mysql</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
+                <name>MySQL</name>
+                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
+                <start>
+                    if [ -f /etc/init.d/mysqld ]
+                    then
+                        /sbin/service mysqld start
+                    elif [ -f /etc/init.d/mysql ]
+                    then
+                        /sbin/service mysql start
+                    else
+                        echo "Unable to run mysql start command"
+                        exit 1
+                    fi
+                </start>
             </process>
 
             <process state="stopped">

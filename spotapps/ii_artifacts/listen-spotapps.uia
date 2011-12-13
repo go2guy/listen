@@ -24,10 +24,21 @@
 
     <install>
         <pre>
-            <process state='running'>
-                <name>Mysql</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
+            <process state="running">
+                <name>MySQL</name>
+                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
+                <start>
+                    if [ -f /etc/init.d/mysqld ]
+                    then
+                        /sbin/service mysqld start
+                    elif [ -f /etc/init.d/mysql ]
+                    then
+                        /sbin/service mysql start
+                    else
+                        echo "Unable to run mysql start command"
+                        exit 1
+                    fi
+                </start>
             </process>
 
             <rpm state="greater-than-or-equal">
@@ -39,6 +50,21 @@
                 <name>uia</name>
                 <version>5.0.0</version>
             </rpm>
+
+            <script focus="background" onerror="die">
+                <![CDATA[
+                    #!/bin/bash
+                    if [ ! -e /var/lib/mysql/ip_pbx/ ]
+                    then
+                        # Make sure we can log in as root with no password if we are going to need to.
+                        if [ `mysql --user=root -e "" &>/dev/null; echo $?` -ne 0 ]
+                        then
+                            echo "Unable to log into mysql as root with no password. This ability is needed to load schema information on this machine."
+                            exit 1
+                        fi
+                    fi
+                ]]>
+            </script>
         </pre>
 
         <inquiry>
@@ -155,7 +181,7 @@
             <script focus="background" onerror="report">
                 <![CDATA[
                     #!/bin/bash
-                    if [ ! -d /var/lib/mysql/ip_pbx/ ]
+                    if [ ! -e /var/lib/mysql/ip_pbx/ ]
                     then
                         echo "Creating IPPBX database."
                         mysql --user=root -v < /interact/apps/spotbuild/ippbx/sql/ippbx_schema.sql
@@ -172,10 +198,21 @@
 
     <rollback>
         <pre>
-            <process state='running'>
-                <name>Mysql</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
+            <process state="running">
+                <name>MySQL</name>
+                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
+                <start>
+                    if [ -f /etc/init.d/mysqld ]
+                    then
+                        /sbin/service mysqld start
+                    elif [ -f /etc/init.d/mysql ]
+                    then
+                        /sbin/service mysql start
+                    else
+                        echo "Unable to run mysql start command"
+                        exit 1
+                    fi
+                </start>
             </process>
 
             <rpm state="greater-than-or-equal">
@@ -192,10 +229,21 @@
 
     <uninstall>
         <pre>
-            <process state='running'>
-                <name>Mysql</name>
-                <statusRegex>^/usr/lib.*/mysqld(\s|$)</statusRegex>
-                <start>/sbin/service mysqld start</start>
+            <process state="running">
+                <name>MySQL</name>
+                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
+                <start>
+                    if [ -f /etc/init.d/mysqld ]
+                    then
+                        /sbin/service mysqld start
+                    elif [ -f /etc/init.d/mysql ]
+                    then
+                        /sbin/service mysql start
+                    else
+                        echo "Unable to run mysql start command"
+                        exit 1
+                    fi
+                </start>
             </process>
 
             <rpm state="greater-than-or-equal">
