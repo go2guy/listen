@@ -44,7 +44,7 @@
                 <version>5.0.0</version>
             </rpm>
 
-            <scripts focus="background" onerror="die">
+            <script focus="background" onerror="die">
                 <![CDATA[
                     if [ ! -e /var/lib/mysql/listen2 ]
                     then
@@ -56,7 +56,7 @@
                         fi
                     fi
                 ]]>
-            </scripts>
+            </script>
 
         </pre>
 
