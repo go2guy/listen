@@ -26,7 +26,7 @@ class NewVoicemailRecurringNotificationJob {
                 if(differenceInMinutes > 0 && differenceInMinutes % 10 == 0) {
                     sendSms(voicemail)
                     afterHoursConfigs.each { config ->
-                        if(pref.user == config.mobileNumber.owner) {
+                        if(pref.user == config.mobilePhone.owner) {
                             if(config.alternateNumber && config.alternateNumber != '') {
                                 log.debug "Sending alternate-number page to ${config.alternateNumber}"
                                 voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber, Stat.NEW_VOICEMAIL_RECURRING_SMS_ALTERNATE)
