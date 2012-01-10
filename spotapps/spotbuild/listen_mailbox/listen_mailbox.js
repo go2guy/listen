@@ -11,7 +11,7 @@ function getVmDateTime(result, flag) {
     var vmDateCreated = getJsonVal(result, 'dateCreated');
     if (flag == 'date') {
         var dateVal = vmDateCreated.split('T')[0].split('-');
-        result = dateVal[1]+'-'+dateVal[1]+'-'+dateVal[2]+'_dd';
+        result = dateVal[0]+'-'+dateVal[1]+'-'+dateVal[2]+'_dd';
     }
     else if (flag == 'time') {
         var timeVal = vmDateCreated.split('T')[1].split(':');
