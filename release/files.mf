@@ -1,49 +1,52 @@
 # UIA Configuration files.
-/interact/packages/conf/listen.uia
+uia-[0-9].*.rpm
+listen.uia
 
 # Controller files
-/interact/packages/listen-controller-*.rpm
-/interact/packages/conf/listen-controller.uia
+listen-controller-.*.rpm
+listen-controller.uia
 
 # Spot Apps files
-/interact/packages/listen-spotapps-*.rpm
-/interact/packages/conf/listen-spotapps.uia
+listen-spotapps-.*.rpm
+listen-spotapps.uia
 
 # Stats collection files
-/interact/packages/statcollector-*.rpm
-/interact/packages/conf/statcollector.uia
+statcollector-.*.rpm
+statcollector.uia
 
 # dts plugin for stats client
-/interact/packages/statcollector_dts-*.rpm
-/interact/packages/conf/statcollector_dts.uia
+statcollector_dts-.*.rpm
+statcollector_dts.uia
 
 # xmlsecurity files
-/interact/packages/xmlsecurity-*.rpm
-/interact/packages/conf/xmlsecurity.uia
+xmlsecurity-.*.rpm
+xmlsecurity.uia
 
 # dmv files
-/interact/packages/dmv-[0-9]*.rpm
-/interact/packages/conf/dmv.uia
+dmv-[0-9].*.rpm
+dmv.uia
 
 # spotbuild-vip files
-/interact/packages/spotbuild-vip-*.rpm
-/interact/packages/conf/spotbuild-vip.uia
+spotbuild-vip-.*.rpm
+spotbuild-vip.uia
 
 # arcade files
-/interact/packages/iiacs-V*.rpm
-/interact/packages/iiacs-audio-V*.rpm
-/interact/packages/iiacs-softspot-V*.rpm
-/interact/packages/iiserv-V*.rpm
-/interact/packages/iiserv-snmp-V*.rpm
-/interact/packages/iiserv-tool-V*.rpm
-/interact/packages/iixap-V*.rpm
-/interact/packages/conf/iiacs.uia
-/interact/packages/conf/iiacs-softspot.uia
-/interact/packages/conf/iiserv.uia
-/interact/packages/conf/iixap.uia
+iiacs-V.*.rpm
+iiacs-audio-V.*.rpm
+iiacs-softspot-V.*.rpm
+iiserv-V.*.rpm
+iiserv-snmp-V.*.rpm
+iiserv-tool-V.*.rpm
+iixap-V.*.rpm
+iiacs.uia
+iiacs-softspot.uia
+iiserv.uia
+iixap.uia
 
 # iitools files
-/interact/packages/iipython-[0-9]*.rpm
-/interact/packages/iijava-*.rpm
-/interact/packages/conf/iipython.uia
-/interact/packages/conf/iijava.uia
+iipython-[0-9].*.rpm
+iipython.uia
+
+# iijava files
+iijava-.*.rpm
+iijava.uia
