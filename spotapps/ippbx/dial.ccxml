@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ccxml PUBLIC '-//W3C/DTD CCXML 1.0//EN' "http://www.w3.org/TR/ccxml/ccxml.dtd">
 <ccxml version="1.0">
-    <!-- Last Modified 12/12/2011
+    <!-- Last Modified 03/15/2012
        *   @Name	dial.ccxml
        *   @Desc	This script handles all out dial activities. -->
 
@@ -1210,7 +1210,8 @@
        	    	<dialogterminate dialogid="dialogID" immediate="true"/>
             </if>
             <if cond="returnApp.length &gt; 0"> <!-- Dial request originated from different listen app. Return to it -->
-                <if cond="evt.connectionid == ibconnid">
+                <if cond="evt.connectionid == ibconnid">    <!-- Caller hung up -->
+                    <assign name="ibconnid" expr="''"/> <!-- Remove inbound connection id. We don't want to attempt a join on this -->
                     <assign name="status" expr="'Caller Hung Up'"/>
                 <else/>
                     <assign name="status" expr="'Called Party Hung Up'"/>
