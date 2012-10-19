@@ -1,6 +1,6 @@
 # UIA Configuration files.
 uia-[0-9].*.rpm
-listen.uia
+Listen.uia
 
 # Controller files
 listen-controller-.*.rpm
