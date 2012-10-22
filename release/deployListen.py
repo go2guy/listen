@@ -232,7 +232,7 @@ def doupgrade():
     deploy.run(["service", "mysqld", "start"], failonerror=False)
 
     if hostname == controllerserver:
-        deploy.run(["/interact/packages/iiInstall.py", "--noinput", "install", "--replacepkgs", masterpkg, "all"])
+        deploy.run(["/interact/packages/iiInstall.py", "--noinput", "install", masterpkg, "all"])
 
         deploy.run(["service", "httpd", "start"])
         deploy.run(["service", "vipStart", "start"])
