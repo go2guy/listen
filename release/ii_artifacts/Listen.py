@@ -2,9 +2,9 @@
 import interface
 import os
 
-class listenAction(interface.Action):
+class ListenAction(interface.Action):
     INCLUDED_PACKAGES = ['all']
 
     def __init__(self, masterpkg, uiapkg):
-        super(listenAction, self).__init__(masterpkg, uiapkg)
+        super(ListenAction, self).__init__(masterpkg, uiapkg)
 
