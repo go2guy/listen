@@ -221,8 +221,8 @@ def doinstall():
     license()
 
     # execute listed startup commands 
-    for command,action in startlist.iteritems():
-        deploy.run([command, action])
+    #for command,action in startlist.iteritems():
+    #    deploy.run([command, action])
 
 def doupgrade():
     # install uia packages
