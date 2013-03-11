@@ -142,6 +142,8 @@ class SpotApiController {
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
         
+        log.debug "add conference participant json : [${config.alternateNumber}]"
+        
         def conference = Conference.get(getIdFromHref(json.conference.href))
         if(!conference) {
             response.sendError(HSR.SC_BAD_REQUEST, "Property [conference] with value [${params.conference.href}] references a non-existent entity")
@@ -175,7 +177,9 @@ class SpotApiController {
             participant.recordedName = audio
             participant.sessionId = json.sessionID
 
+            log.debug "Attempt to save participant : [${participant.ani}]"
             if(!(participant.validate() && participant.save())) {
+                log.error "Failed to add conference participant : [${participant.ani}]"
                 status.setRollbackOnly()
                 response.sendError(HSR.SC_BAD_REQUEST, beanErrors(participant))
                 return
