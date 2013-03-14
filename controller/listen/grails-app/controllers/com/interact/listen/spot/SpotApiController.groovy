@@ -142,8 +142,8 @@ class SpotApiController {
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
         
-        log.debug "add conference participant json : [${config.alternateNumber}]"
-        
+        log.debug "add conference participant json : [${json}]"
+
         def conference = Conference.get(getIdFromHref(json.conference.href))
         if(!conference) {
             response.sendError(HSR.SC_BAD_REQUEST, "Property [conference] with value [${params.conference.href}] references a non-existent entity")
@@ -168,7 +168,22 @@ class SpotApiController {
                 return
             }
 
-            participant.ani = json.number
+            log.debug "Query participant table for: [${json.number}][${conference}]"
+            def aniList = Participant.createCriteria().list(max: 5, offset: 0) {
+                like('ani', "${json.number}%")
+                eq('conference', conference)
+            }
+            log.debug "Found:  [${aniList.totalCount}]"
+            
+            if (aniList.totalCount != 0) {
+                participant.ani = "${json.number}(${aniList.totalCount})"
+                log.debug "ani already exists, alter number provided : [${participant.ani}]"
+            }
+            else {
+                participant.ani = json.number
+                log.debug "ani does not already exists, use number provided : [${participant.ani}]"
+            }
+            
             participant.conference = conference
             participant.isAdmin = json.isAdmin
             participant.isAdminMuted = json.isAdminMuted
@@ -178,6 +193,7 @@ class SpotApiController {
             participant.sessionId = json.sessionID
 
             log.debug "Attempt to save participant : [${participant.ani}]"
+            
             if(!(participant.validate() && participant.save())) {
                 log.error "Failed to add conference participant : [${participant.ani}]"
                 status.setRollbackOnly()
