@@ -35,7 +35,7 @@ class GoogleAuthService {
     {
         if(token == null)
         {
-            invalidateCachedToken();
+            invalidateCachedTokenObjects();
         }
     }
     
@@ -62,7 +62,7 @@ class GoogleAuthService {
 
     synchronized void setByPassword(String user, String password)
     {
-        invalidateCachedToken();
+        invalidateCachedTokenObjects();
         
         try
         {
@@ -79,7 +79,7 @@ class GoogleAuthService {
     
     public synchronized void setByToken(String user, String authToken)
     {
-        invalidateCachedToken();
+        invalidateCachedTokenObjects();
         
         def config = config()
         config.authUser = user
@@ -102,7 +102,7 @@ class GoogleAuthService {
         return lastError ?: Error.Unknown
     }
 
-    private void invalidateCachedToken()
+    private void invalidateCachedTokenObjects()
     {
         def config = config()
         config.authToken = ''

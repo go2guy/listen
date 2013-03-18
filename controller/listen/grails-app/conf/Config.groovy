@@ -89,7 +89,8 @@ log4j = {
                 }
 
                 println "Log directory is [${dir}]"
-
+                println "Appname is [${appName}]"
+                
                 def file = new File(dir)
                 if(file.exists()) {
                     if(!file.isDirectory()) {

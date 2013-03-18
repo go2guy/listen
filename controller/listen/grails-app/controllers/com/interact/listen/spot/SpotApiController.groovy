@@ -201,6 +201,8 @@ class SpotApiController {
                 return
             }
 
+            log.debug "We've saved the participant : [${participant.ani}] id [${participant.id}]"
+            
             historyService.joinedConference(participant)
 
             if(participant.isAdmin) {

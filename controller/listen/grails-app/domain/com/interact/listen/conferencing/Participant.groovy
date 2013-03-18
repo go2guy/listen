@@ -33,6 +33,8 @@ class Participant {
     }
 
     def beforeInsert() {
-        user = User.lookupByPhoneNumber(ani)
+        //The ani man come in the format of XXX(Y), get XXX as the actual ani
+        def strippedAni = ani.tokenize('(')[0]
+        user = User.lookupByPhoneNumber(strippedAni)
     }
 }

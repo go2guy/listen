@@ -62,7 +62,7 @@ public enum GoogleAuth
     {
         if(token == null || token.equals(currentToken))
         {
-            invalidateCachedToken();
+            invalidateCachedTokenObjects();
         }
     }
     
@@ -77,7 +77,7 @@ public enum GoogleAuth
 
     public synchronized void setByPassword(String user, String password)
     {
-        invalidateCachedToken();
+        invalidateCachedTokenObjects();
         
         try
         {
@@ -97,7 +97,7 @@ public enum GoogleAuth
     
     public synchronized void setByToken(String user, String authToken)
     {
-        invalidateCachedToken();
+        invalidateCachedTokenObjects();
         currentToken = authToken == null ? "" : authToken;
         Configuration.set(Property.Key.GOOGLE_AUTH_TOKEN, currentToken);
         Configuration.set(Property.Key.GOOGLE_AUTH_USER, user);
@@ -123,7 +123,7 @@ public enum GoogleAuth
         return lastError == null ? Error.Unknown : lastError;
     }
     
-    private void invalidateCachedToken()
+    private void invalidateCachedTokenObjects()
     {
         currentToken = null;
         lastError = null;

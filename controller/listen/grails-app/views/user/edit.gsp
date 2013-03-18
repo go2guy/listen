@@ -18,17 +18,18 @@
         <g:hiddenField name="id" value="${user.id}"/>
 
         <label for="username"><g:message code="user.username.label"/></label>
-        <g:textField name="username" value="${fieldValue(bean: user, field: 'username')}" maxlength="50"${user?.isActiveDirectory ? ' disabled="disabled" readonly="readonly" class="disabled"' : ''}/>
 
         <g:if test="${user?.isActiveDirectory}">
-          <h3 class="active-directory-label">This is an Active Directory account.</h3>
+            <g:textField name="username" value="${fieldValue(bean: user, field: 'username')}" maxlength="50" disabled="disabled" readonly="readonly" class="disabled"/>
+            <h3 class="active-directory-label">This is an Active Directory account.</h3>
         </g:if>
         <g:else>
-          <label for="pass"><g:message code="user.new.pass.label"/></label>
-          <g:passwordField name="pass" class="${listen.validationClass(bean: user, field: 'pass')}"/>
+            <g:textField name="username" value="${fieldValue(bean: user, field: 'username')}" maxlength="50"/>
+            <label for="pass"><g:message code="user.new.pass.label"/></label>
+            <g:passwordField name="pass" class="${listen.validationClass(bean: user, field: 'pass')}"/>
 
-          <label for="confirm"><g:message code="user.new.confirm.label"/></label>
-          <g:passwordField name="confirm" class="${listen.validationClass(bean: user, field: 'confirm')}"/>
+             <label for="confirm"><g:message code="user.new.confirm.label"/></label>
+             <g:passwordField name="confirm" class="${listen.validationClass(bean: user, field: 'confirm')}"/>
         </g:else>
 
         <label for="realName"><g:message code="user.realName.label"/></label>
