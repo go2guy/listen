@@ -185,7 +185,7 @@ class OrganizationController {
             SingleOrganizationConfiguration.unset()
         } else {
             flash.successMessage = "Single organization set to ${organization.name}"
-            SingleOrganizationConfiguration.set(organization)
+            SingleOrganizationConfiguration.thisSet(organization)
         }
 
         redirect(action: 'list')

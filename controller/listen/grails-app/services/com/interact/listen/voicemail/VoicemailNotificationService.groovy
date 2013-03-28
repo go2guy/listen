@@ -14,6 +14,7 @@ class VoicemailNotificationService {
 
     void sendNewVoicemailEmail(Voicemail voicemail) {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)
+        
         if(!preferences) {
             log.warn "No VoicemailPreferences configured for user [${voicemail.owner}]"
             return
@@ -22,6 +23,8 @@ class VoicemailNotificationService {
         if(!preferences.isEmailNotificationEnabled) {
             log.debug "User is not set to receive e-mail notifications"
             return
+        } else {
+            log.debug "New voicemail email to [${voicemail.owner.username}] at [${preferences.emailNotificationAddress}] for voicemail id [${voicemail.id}]"
         }
 
         if(!emailTimeRestrictionsAllow(preferences)) {
@@ -52,7 +55,7 @@ You currently have ${newCount} new message${newCount == 1 ? '' : 's'}.<br/><br/>
 ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to this message. Contact a system administrator for assistance.)'}
 </body></html>
 """
-
+        log.debug "Kick it to the background service"
         backgroundService.execute("New voicemail email to [${voicemail.owner.username}] at [${address}] for voicemail id [${voicemail.id}]", {
             sendMail {
                 if(file) {

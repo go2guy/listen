@@ -1,5 +1,7 @@
 package com.interact.listen
 
+import com.interact.listen.OtherPhone
+
 class OtherPhoneService {
     def cloudToDeviceService
     def historyService

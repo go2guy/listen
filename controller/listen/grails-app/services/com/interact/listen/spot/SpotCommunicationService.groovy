@@ -136,13 +136,14 @@ class SpotCommunicationService {
     private void sendRequest(Map<String, String> params) throws IOException, SpotCommunicationException {
         log.debug "Sending SPOT HTTP request with params ${params} to ${SpotSystem.count()} SPOT systems"
         def failed = []
+        int status = -1
         SpotSystem.findAll().each {
             def httpClient = new HttpClientImpl()
 
             String uri = it.name + "/ccxml/createsession";
             httpClient.post(uri, params);
 
-            int status = httpClient.getResponseStatus();
+            status = httpClient.getResponseStatus();
             if(!isSuccessStatus(status)) {
                 failed << it
             }
@@ -150,6 +151,8 @@ class SpotCommunicationService {
         if(failed.size() > 0) {
             throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System(s) at [" + (failed.collect { it.uri }.join(',')) + "]");
         }
+        
+        log.debug "Completed sendRequest [${failed.size()}]"
     }
 
     private boolean isSuccessStatus(int status) {

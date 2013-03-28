@@ -7,7 +7,7 @@ class SingleOrganizationConfiguration {
         SingleOrganizationConfiguration.count() > 0
     }
 
-    static void set(Organization organization) {
+    static void thisSet(Organization organization) {
         SingleOrganizationConfiguration.withTransaction {
             unset()
 

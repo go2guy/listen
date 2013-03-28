@@ -1,6 +1,11 @@
 import com.interact.listen.license.LicenseService
 import com.interact.listen.license.ListenFeature
+
+import grails.util.Environment
 import org.apache.log4j.Logger
+
+import org.joda.time.*
+import org.joda.time.contrib.hibernate.*
 
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
@@ -14,6 +19,7 @@ import org.apache.log4j.Logger
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
+println "Our appname is [${appName}]"
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -59,6 +65,7 @@ grails.exceptionresolver.params.exclude = ['password']
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
+        println "production Appname is [${appName}]"
         grails.serverURL = "http://www.changeme.com"
     }
     development {
@@ -75,6 +82,8 @@ log4j = {
     // Example of changing the log pattern for the default console
     // appender:
     //
+    def appName = grails.util.Metadata.current.'app.name'
+    println "log4j Appname is [${appName}]"
     appenders {
         def defaultPattern = '%d{ISO8601} [%10.10t] [%18.18c] %5p: %m%n'
         console name: 'stdout', layout: pattern(conversionPattern: defaultPattern)
@@ -188,16 +197,23 @@ grails.plugins.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, con
     }
 }
 
+grails.gorm.autoFlush=true
 // Joda-Time plugin, other mappings:
+//import org.joda.time.*
+//import org.joda.time.contrib.hibernate.*
 grails.gorm.default.mapping = {
-	"user-type" type: org.joda.time.contrib.hibernate.PersistentDateTime, class: org.joda.time.DateTime
-	"user-type" type: org.joda.time.contrib.hibernate.PersistentDuration, class: org.joda.time.Duration
-	"user-type" type: org.joda.time.contrib.hibernate.PersistentInstant, class: org.joda.time.Instant
-	"user-type" type: org.joda.time.contrib.hibernate.PersistentInterval, class: org.joda.time.Interval
-	"user-type" type: org.joda.time.contrib.hibernate.PersistentLocalDate, class: org.joda.time.LocalDate
-	"user-type" type: org.joda.time.contrib.hibernate.PersistentLocalTimeAsString, class: org.joda.time.LocalTime
-	"user-type" type: org.joda.time.contrib.hibernate.PersistentLocalDateTime, class: org.joda.time.LocalDateTime
-	"user-type" type: org.joda.time.contrib.hibernate.PersistentPeriod, class: org.joda.time.Period
+    //'user-type' (type: PersistentDateTime, class: DateTime)
+    //'user-type' (type: PersistentLocalDate, class: LocalDate)
+    
+   
+    "user-type" type: org.joda.time.contrib.hibernate.PersistentDateTime, class: org.joda.time.DateTime
+    "user-type" type: org.joda.time.contrib.hibernate.PersistentDuration, class: org.joda.time.Duration
+    "user-type" type: org.joda.time.contrib.hibernate.PersistentInstant, class: org.joda.time.Instant
+    "user-type" type: org.joda.time.contrib.hibernate.PersistentInterval, class: org.joda.time.Interval
+    "user-type" type: org.joda.time.contrib.hibernate.PersistentLocalDate, class: org.joda.time.LocalDate
+    "user-type" type: org.joda.time.contrib.hibernate.PersistentLocalTimeAsString, class: org.joda.time.LocalTime
+    "user-type" type: org.joda.time.contrib.hibernate.PersistentLocalDateTime, class: org.joda.time.LocalDateTime
+    "user-type" type: org.joda.time.contrib.hibernate.PersistentPeriod, class: org.joda.time.Period
 
     'user-type' type: com.interact.listen.PersistentFileUri, class: File
 }

@@ -58,7 +58,7 @@ class BootStrap {
                                                                contextPath: 'interact'],
                                                               licenseService.licensableFeatures())
 
-                SingleOrganizationConfiguration.set(organization)
+                SingleOrganizationConfiguration.thisSet(organization)
 
                 def operator = createOperator('Operator', 'Operator McSillyPants', 'operator@example.com', 'super', organization)
                 def user = createUser('User', 'User McSillypants', 'user@example.com', 'super', organization)
