@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Listen - <g:layoutTitle/> - Interact Incorporated</title>
+    <title>Listen - <g:layoutTitle/> - NewNet Communication Technologies</title>
     <link rel="shortcut icon" href="${resource(dir: 'resources/app/images', file: 'favicon.ico')}">
     <link rel="stylesheet" href="${resource(dir: 'resources/yui-2.8.0r4', file: 'reset-fonts.css')}">
     <link rel="stylesheet" href="${resource(dir: 'resources/app/css', file: 'common.css')}">

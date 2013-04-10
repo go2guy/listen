@@ -98,7 +98,7 @@
                     <form id="alerts-configuration-form">
                       <fieldset>
                         <legend>Alerts</legend>
-                        <div class="help">Interact's Realize&trade; monitoring system can send alerts if the Listen&trade; system goes down. Enter the URL for Realize&trade; and the Alert to be updated. When the Alternate Pager Number changes, the configured Alert will be updated with the new number.</div>
+                        <div class="help">NewNet's Realize&trade; monitoring system can send alerts if the Listen&trade; system goes down. Enter the URL for Realize&trade; and the Alert to be updated. When the Alternate Pager Number changes, the configured Alert will be updated with the new number.</div>
                         <table>
                           <tbody>
                             <tr>

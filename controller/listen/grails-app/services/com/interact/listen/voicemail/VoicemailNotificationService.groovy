@@ -42,7 +42,8 @@ class VoicemailNotificationService {
         def file = voicemail.audio.file
 
         def subj = "New voicemail from ${voicemail.from()}"
-        def body = """
+        log.debug "voice mail subject [${subj}]"
+        def myBody = """
 <html><body>
 You received a new voicemail from ${voicemail.from()} at ${voicemail.dateCreated}.<br/><br/>
 
@@ -55,8 +56,10 @@ You currently have ${newCount} new message${newCount == 1 ? '' : 's'}.<br/><br/>
 ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to this message. Contact a system administrator for assistance.)'}
 </body></html>
 """
-        log.debug "Kick it to the background service"
-        backgroundService.execute("New voicemail email to [${voicemail.owner.username}] at [${address}] for voicemail id [${voicemail.id}]", {
+
+        log.debug "Kick email processing into the background"
+        backgroundService.execute("Background-New voicemail email to [${voicemail.owner.username}] at [${address}] for voicemail id [${voicemail.id}]", {
+
             sendMail {
                 if(file) {
                     // 'multipart true' must be first for multipart messages
@@ -65,16 +68,20 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
 
                 to address
                 subject subj
-                html body
+                html myBody
                 // call 'attach' last, see http://jira.grails.org/browse/GPMAIL-60
                 if(file) {
                     attach "${attachedFileName}", "application/octet-stream", file.bytes
                 }
             }
-
+            log.debug "Background-after sendMail"
             statWriterService.send(Stat.NEW_VOICEMAIL_EMAIL)
+            log.debug "Background-after stat writer service"
             historyService.sentNewVoicemailEmail(voicemail)
+            log.debug "Background-after history written"
         })
+        
+        log.debug "After background service sendMail"
     }
     
     void sendNewFaxEmail(Fax fax) {
@@ -102,7 +109,7 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
             def file = fax.file
     
             def subj = "New fax from ${fax.from()}"
-            def body = """
+            def myBody = """
     <html><body>
     You received a new fax from ${fax.from()} at ${fax.dateCreated}.<br/><br/>
 
@@ -121,7 +128,7 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
     
                     to address
                     subject subj
-                    html body
+                    html myBody
                     // call 'attach' last, see http://jira.grails.org/browse/GPMAIL-60
                     if(file) {
                         attach "${attachedFileName}", "application/octet-stream", file.bytes

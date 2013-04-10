@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Listen - <g:layoutTitle/> - Interact Incorporated</title>
+    <title>Listen - <g:layoutTitle/> - NewNet Communication Technologies</title>
     <link rel="shortcut icon" href="${resource(dir: 'resources/app/images', file: 'favicon.ico')}">
     <script type="text/javascript" src="${resource(dir: 'resources/jquery', file: 'jquery-1.4.2.min.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'resources/jquery', file: 'jquery-ui-1.8rc3.custom.min.js')}"></script>

@@ -12,6 +12,6 @@ class CopyrightTagLibTests extends TagLibUnitTestCase {
     void testCopyright0() {
         final def thisYear = new DateTime().year
         tagLib.copyright()
-        assertEquals "Listen &copy;2010-${thisYear} Interact Incorporated, <a href='http://www.interactincorporated.com' title='Interact Incorporated'>interactincorporated.com</a>", tagLib.out.toString()
+        assertEquals "Listen &copy;2012-${thisYear} NewNet Communication Technologies, <a href='http://www.newnet.com' title='NewNet Communication Technologies'>newnet.com</a>", tagLib.out.toString()
     }
 }

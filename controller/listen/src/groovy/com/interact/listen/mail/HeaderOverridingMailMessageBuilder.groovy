@@ -8,6 +8,10 @@ import org.springframework.mail.MailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.mail.javamail.MimeMailMessage
 
+// We've defined this overriding class because we desired to support the sending of email by organization, which means that we also desired to be able to send
+// email notifications through various organization's email servers.  By default, the mail grails plugin only allows host, protocol, properties to be set via the config.groovy,
+// so by overriding this class we are providing a more configurable solution.
+
 class HeaderOverridingMailMessageBuilder extends MailMessageBuilder {
 
     def mailConfigurationService
@@ -40,28 +44,53 @@ class HeaderOverridingMailMessageBuilder extends MailMessageBuilder {
     }
 
     MailMessage sendMessage() {
+        log.debug "Overriding sendMessage"
+        
         def configuration = mailConfigurationService.getConfiguration()
         if(!configuration) {
             log.debug "No available mail configuration, using default values"
             return super.sendMessage()
         }
+        
+        log.debug "get protocol             [${mailSender.getProtocol()}]"
+        log.debug "get host                 [${mailSender.getHost()}]"
+        log.debug "get port                 [${mailSender.getPort()}]"
+        log.debug "get password             [<protected>]"
+        log.debug "get username             [${mailSender.getUsername()}]"
+        log.debug "get java mail properties [${mailSender.getJavaMailProperties()}]"
+        
+        mailSender.setDefaultEncoding('utf-8')
 
-        def sender = new JavaMailSenderImpl()
-        sender.defaultEncoding = 'utf-8'
-
-        log.debug "Using configured host [${configuration.host}]"
-        sender.host = configuration.host
+        log.debug "Using configured email host [${configuration.host}]"
+        mailSender.setHost(configuration.host)
 
         if(configuration.username) {
             log.debug "Using configured username [${configuration.username}]"
-            sender.username = configuration.username
+            mailSender.setUsername(configuration.username)
         }
 
         if(configuration.password) {
             log.debug "Using configured password [<protected>]"
-            sender.password = configuration.password
+            mailSender.setPassword(configuration.password)
         }
 
+        if(configuration?.protocol) {
+            log.debug "Using configured email protocol [${configuration.protocol}]"
+            mailSender.setProtocol(configuration.protocol)
+        }
+        else {
+            log.debug "No overriding protocol has been configured using default [${mailSender.getProtocol()}]"
+        }
+        
+        if(configuration?.port) {
+            log.debug "Using configured email port [${configuration.port}]"
+            mailSender.setPort(configuration.port.toInteger())
+        }
+        else if (mailSender.getProtocol() == "smtp") {
+            log.debug "Setting default smtp email port [587]"
+            mailSender.setPort(587)
+        }
+                
         def message = finishMessage()
 
         if(configuration.defaultFrom) {
@@ -69,7 +98,22 @@ class HeaderOverridingMailMessageBuilder extends MailMessageBuilder {
             message.from = configuration.defaultFrom
         }
 
-        sender.send(message instanceof MimeMailMessage ? message.mimeMessage : message)
+        if (log.traceEnabled) {
+            log.trace("Sending mail ${getDescription(message)}} ...")
+        }
+
+        log.debug "Using protocol     [${mailSender.getProtocol()}]"
+        log.debug "Using host         [${mailSender.getHost()}]"
+        log.debug "Using port         [${mailSender.getPort()}]"
+        log.debug "Using password     [<protected>]"
+        log.debug "Using username     [${mailSender.getUsername()}]"
+        log.debug "Using username     [${mailSender.getJavaMailProperties()}]"
+        
+        mailSender.send(message instanceof MimeMailMessage ? message.mimeMessage : message)
+
+        if (log.traceEnabled) {
+            log.trace("Sent mail ${getDescription(message)}} ...")
+        }
 
         message
     }

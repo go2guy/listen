@@ -4,15 +4,15 @@
 %define STARTDIR %(pwd)
 %define _arch noarch
 
-Summary: Interact Listen Controller
+Summary: NewNet Listen Controller
 Name: listen-controller
 Version: %(echo "${VERSION}")
 Release: %(echo "${RELEASE}")
-License: Copyright (c) Interact Incorporated. All Rights Reserved.
+License: Copyright (c) NewNet Communication Technologies. All Rights Reserved.
 Group: Interact
-URL: http://www.iivip.com
-Vendor: Interact Incorporated
-Packager: javagroup <javagroup@iivip.com>
+URL: http://www.newnet.com
+Vendor: NewNet Communication Technologies
+Packager: listen <listenpkg@newnet.com>
 BuildArch: %{_arch}
 Requires: xmlsecurity, iijava, mysql-server
 

@@ -54,10 +54,10 @@ ListenRestore - Listen restore functions
 =back
 
 =head1 AUTHOR
-Kevin Murray (murrayk@iivip.com)
+Kevin Murray
 
 =head1 COPYRIGHT
-Copyright 2010 Interact Incorporated
+Copyright 2013 NewNet Communication Technologies.
 
 =cut
 

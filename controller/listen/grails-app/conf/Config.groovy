@@ -221,12 +221,15 @@ grails.gorm.default.mapping = {
 // Mail plugin
 grails {
     mail {
-        host = 'localhost'
-        username = ''
-        password = ''
+      host = "localhost"
+      username = ""
+      password = ""
+      props = ["mail.smtp.starttls.enable":"true",
+               "mail.smtp.port":"587"]
     }
-}
-grails.mail.default.from = 'listen@localhost'
+ }
+
+grails.mail.default.from = 'listen@newnet.com'
 
 // Database Migrations plugin
 environments {

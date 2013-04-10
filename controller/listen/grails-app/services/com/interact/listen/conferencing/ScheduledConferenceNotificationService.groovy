@@ -225,7 +225,7 @@ ${phoneNumberHtml}\
         def iso = ISODateTimeFormat.basicDateTimeNoMillis()
 
         b << 'BEGIN:VCALENDAR\n'
-        b << 'PRODID:-//Interact Incorporated//Listen//EN\n'
+        b << 'PRODID:-//NewNet Communication Technologies//Listen//EN\n'
         b << 'VERSION:2.0\n'
         b << 'METHOD:REQUEST\n'
         b << 'X-MS-OLK-FORCEINSPECTOROPEN:TRUE\n'
@@ -277,7 +277,7 @@ ${phoneNumberHtml}\
         def iso = ISODateTimeFormat.basicDateTimeNoMillis()
 
         b << 'BEGIN:VCALENDAR\n'
-        b << 'PRODID:-//Interact Incorporated//Listen//EN\n'
+        b << 'PRODID:-//NewNet Communication Technologies//Listen//EN\n'
         b << 'VERSION:2.0\n'
         b << 'METHOD:CANCEL\n'
         b << 'X-MS-OLK-FORCEINSPECTOROPEN:TRUE\n'

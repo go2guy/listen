@@ -4,15 +4,15 @@
 %define STARTDIR %(pwd)
 %define _arch noarch
 
-Summary: Interact Incorporated Listen SPOT Applications package
+Summary: NewNet Communication Technologies Listen SPOT Applications package
 Name: listen-spotapps
 Version: 0.2
 Release: %(svnversion | cut -d ':' -f 1)
-License: Copyright (c) Interact Incorporated. All Rights Reserved.
+License: Copyright (c) NewNet Communication Technologies. All Rights Reserved.
 Group: Interact
-Vendor: Interact Incorporated
-URL: http://www.iivip.com
-Packager: applications <applications@iivip.com>
+Vendor: NewNet Communication Technologies
+URL: http://www.newnet.com
+Packager: applications <applications@newnet.com>
 BuildArch: %{_arch}
 BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
 Requires: spotbuild-vip, ghostscript, mysql-server
@@ -33,7 +33,7 @@ Requires: spotbuild-vip, ghostscript, mysql-server
 # this description.
 #######################################################################
 %description
-    Interact Incorporated Listen SPOT Applications package.
+    NewNet Communication Technologies Listen SPOT Applications package.
 
 #######################################################################
 # The prep command section is used to unpack the source code into a

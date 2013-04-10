@@ -78,7 +78,7 @@ if(subscriber.getIsAdministrator()) { %>
       </div>
       
       <div id="footer">
-        Listen &copy;2010-<%= new LocalDate().getYear() %> Interact Incorporated, <a href="http://www.iivip.com/">iivip.com</a>
+        Listen &copy;2010-<%= new LocalDate().getYear() %> NewNet Communication Technologies, <a href="http://www.newnet.com/">newnet.com</a>
         </div>
     </div>
 

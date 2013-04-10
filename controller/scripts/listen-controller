@@ -3,11 +3,9 @@
 # listen-controller      Start/Stop listen-controller
 #
 # chkconfig: 345 62 38
-# description: listen-controller is part of the Interact Listen solution
+# description: listen-controller is part of the NewNet Communication Technologies Listen solution
 #
 # processname: java
-#
-# By: Nick Walter - waltern@iivip.com
 #
 
 . /etc/init.d/functions

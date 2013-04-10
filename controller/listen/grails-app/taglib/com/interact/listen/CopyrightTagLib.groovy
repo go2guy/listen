@@ -6,6 +6,6 @@ class CopyrightTagLib {
     static namespace = 'listen'
 
     def copyright = { attrs ->
-        out << "Listen &copy;2010-${new DateTime().getYear()} Interact Incorporated, <a href='http://www.interactincorporated.com' title='Interact Incorporated'>interactincorporated.com</a>"
+        out << "Listen &copy;2010-${new DateTime().getYear()} NewNet Communication Technologies, <a href='http://www.newnet.com' title='NewNet'>newnet.com</a>"
     }
 }

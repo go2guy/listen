@@ -5,7 +5,7 @@
     <tlibversion>1.0</tlibversion>
     <jspversion>1.1</jspversion>
     <shortname>listen</shortname>
-    <info>Interact Incorporated Listen Tag Library</info>
+    <info>NewNet Communication Technologies Listen Tag Library</info>
 
     <tag>
         <name>resource</name>

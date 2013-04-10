@@ -50,6 +50,7 @@ beans = {
         userDetailsService = ref('gormUserDetailsService')
     }
 
+    //MAILOVERIDE 
     customMailMessageBuilderFactory(com.interact.listen.mail.MailMessageBuilderFactory) {
         it.autowire = true
     }

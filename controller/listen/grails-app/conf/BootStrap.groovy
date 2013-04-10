@@ -12,6 +12,7 @@ import org.joda.time.Duration
 
 class BootStrap {
 
+    //MAILOVERIDE
     def customMailMessageBuilderFactory
     def ldapService
     def licenseService
@@ -24,7 +25,7 @@ class BootStrap {
     def init = { servletContext ->
         statWriterService.send(Stat.CONTROLLER_STARTUP)
 
-        // override mail service factory bean
+        //MAILOVERIDE override mail service factory bean
         mailService.mailMessageBuilderFactory = customMailMessageBuilderFactory
 
         def ctx = servletContext.getAttribute(ApplicationAttributes.APPLICATION_CONTEXT)
@@ -62,7 +63,7 @@ class BootStrap {
 
                 def operator = createOperator('Operator', 'Operator McSillyPants', 'operator@example.com', 'super', organization)
                 def user = createUser('User', 'User McSillypants', 'user@example.com', 'super', organization)
-                def rob = createUser('Rob', 'Rob Hruska', 'hruskar@iivip.com', 'super', organization)
+                def rob = createUser('Rob', 'Brian Johnston', 'brian.johnston@newnet.com', 'super', organization)
                 def phillip = createUser('Phillip', 'Phillip Rapp', 'user@example.com', 'super', organization)
 
                 def ad = User.findByUsername('adirectory')
