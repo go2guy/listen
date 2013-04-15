@@ -7,7 +7,11 @@ class MailConfiguration {
     String username = CH.config.grails.mail.username
     String password = CH.config.grails.mail.password
     String defaultFrom = CH.config.grails.mail.default.from
+    String protocol
+    Integer port
 
+    static transients = ['protocol', 'port']
+    
     static constraints = {
         host blank: false
         username nullable: true, blank: true
