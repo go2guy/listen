@@ -249,9 +249,15 @@ codenarc.maxPriority3Violations = 0
 // Listen configuration
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
 com.interact.listen.conferencing.defaultPinLength = 6
-com.interact.listen.activeDirectory.server = 'iiserver01'
-com.interact.listen.activeDirectory.domain = 'interact.nonreg'
-com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=iivip,dc=com')
+
+//com.interact.listen.activeDirectory.server = 'iiserver01'
+//com.interact.listen.activeDirectory.domain = 'interact.nonreg'
+//com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=iivip,dc=com')
+//com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.port', '389')
+
+com.interact.listen.activeDirectory.server = 'na-ne-dc01'
+com.interact.listen.activeDirectory.domain = 'newnet.local'
+com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=newnet,dc=local')
 com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.port', '389')
 
 // page:     https://test.authorize.net
