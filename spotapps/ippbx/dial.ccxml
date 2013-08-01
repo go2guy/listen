@@ -146,7 +146,7 @@
                                 //We have an inbound ani to work with
                                 var incomAni = tmpAni[1].split('@');
                                 if (incomAni.length == 2){
-                                    ani = 'sip:' + incomAni[0]
+                                    ani = ani
                                 }
                                 else {
                                     ani = 'sip:' + callerID + '@' + sipURL
