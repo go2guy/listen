@@ -81,6 +81,7 @@
     <!-- Out dial vars -->
     <var name="CALL_ANI" expr="''"/>
     <var name="CALL_DNIS" expr="''"/>
+    <var name="OUTBOUND_PBX_CALLERID" expr="''"/>
     <var name="OUTSIDE_LINE" expr="'9'"/>
     <var name="callResult" expr="'No Answer'"/>
 
@@ -125,10 +126,47 @@
                 return result[0].replace(/\D/g,'');
             }
 
-            function setANI (ani) {
-                var tmp = ani.split('sip:')[0];
-                if (tmp.length != 0)
+            function setANI (ani, dnis, callerID, sipURL) {
+                var tmpAni = ani.split('sip:');
+                if (tmpAni[0].length != 0)
                     ani = 'sip:' + ani;
+
+                var tmpDnis = dnis.split('sip:');
+                if (tmpDnis.length == 2) {
+                    // We have a dnis, if the call is going outbound we'll use the caller id, otherwise use ani
+                    var DNIS = tmpDnis[1].split('@')
+                    if (DNIS.length == 2) {
+                        if (DNIS[0].length > 6) {
+                            // use caller id since we're going outbound
+                            ani = 'sip:' + callerID + '@' + sipURL
+                        }
+                        else {
+                            // we're calling inbound, so use the ani
+                            if (tmpAni.length == 2) {
+                                //We have an inbound ani to work with
+                                var incomAni = tmpAni[1].split('@');
+                                if (incomAni.length == 2){
+                                    ani = 'sip:' + incomAni[0]
+                                }
+                                else {
+                                    ani = 'sip:' + callerID + '@' + sipURL
+                                }
+                            }
+                            else {
+                                // Something is not right with the inbound ANI
+                                ani = 'sip:' + callerID + '@' + sipURL
+                            }
+                        }
+                    }
+                    else {
+                        // The dnis we're calling isn't formatted as expected, use the default
+                        ani = 'sip:' + callerID + '@' + sipURL
+                    }
+                }
+                else {
+                    // bad news, we don't know where it came from so just use the default
+                    ani = 'sip:' + callerID + '@' + sipURL
+                }
                 return ani;
             }
 
@@ -429,11 +467,8 @@
             ring tone to the caller. Once call gets picked up, we'll end it (the ring tone). -->
             <log>INFO: Entered [dialog.user.call] with state [<value expr="state"/>]</log>
             <var name="OBCALL.noproxy" expr="'false'"/>
-            <if cond="((tmpANI.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,''))))">
-                <assign name="CALL_ANI" expr="'sip:' + getJsonVal(importedValue, 'sipFrom') + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
-            <else/>
-                <assign name="CALL_ANI" expr="setANI(ANI)"/>
-            </if>
+            <log>INFO: DNIS Information[<value expr="tmpDNIS"/>]</log>
+
             <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
                 <if cond="ip.length &gt; 0">
                     <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + '@' + ip"/>
@@ -460,6 +495,17 @@
                     <assign name="CALL_DNIS" expr="''"/>
                 </if>
             </if>
+            <log>INFO: CALL_DNIS Information[<value expr="CALL_DNIS"/>]</log>
+
+            <if cond="((tmpANI.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,''))))">
+                <assign name="CALL_ANI" expr="'sip:' + getJsonVal(importedValue, 'sipFrom') + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
+            <else/>
+                <log>INFO: ANI for outbound call[<value expr="ANI"/>]</log>
+                <assign name="SIP_SERVER" expr="getJsonVal(importedValue, 'sipURL')"/>
+                <assign name="CALL_ANI" expr="setANI(ANI, CALL_DNIS, '4024768786', SIP_SERVER)"/> 
+                <log>INFO: Actual ANI for outbound call[<value expr="CALL_ANI"/>]</log>
+            </if>
+
             <if cond="CALL_DNIS.length &gt; 0">
                 <createcall connectionid="obconnid" dest="CALL_DNIS" callerid="CALL_ANI" hints="OBCALL" timeout="TIME_OUT + 's'"/>
                 <if cond="state == 'findMe'">
