@@ -81,13 +81,16 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
         props[Context.SECURITY_CREDENTIALS] = password as String
         props[Context.PROVIDER_URL] = url as String
 
-        log.debug "AD authentication, principal = [{$principal}], url = [${url}]"
+        log.debug "AD authentication, user = [{$username}], url = [${url}]"
 
         try {
             LdapContext context = new InitialLdapContext(props, null)
-            SearchResult searchResult = queryUserRecord(domain, principal, context)
-
+            SearchResult searchResult = queryUserRecord(domain, username, context)
+            log.debug "We got past the query user record"
             try {
+                log.debug "Display Name [${extractAttribute(searchResult, 'displayName')}]"
+                log.debug "Mail [${extractAttribute(searchResult, 'mail')}]"
+                log.debug "telephoneNumber [${extractAttribute(searchResult, 'telephoneNumber')}]"
                 return [
                     displayName: extractAttribute(searchResult, 'displayName'),
                     mail: extractAttribute(searchResult, 'mail'),
@@ -99,7 +102,9 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
         } catch(AuthenticationException e) {
             try {
                 def explanation = e.explanation
+                log.warn "AD authentication error [${explanation}]"
                 int ldapErrorCode = Integer.parseInt(explanation.split('LDAP: error code')[1].split(' ')[0])
+                log.warn "AD authentication error code [${ldapErrorCode}]"
                 switch(ldapErrorCode) {
                     case 49: // 49: invalid credentials
                         throw new BadCredentialsException('Invalid credentials', e)
@@ -107,12 +112,14 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
                         throw new AuthenticationServiceException('Authentication error', e)
                 }
             } catch(NumberFormatException f) {
-                log.warn 'Could not parse error information from explanation'
+                log.warn "Could not parse error information from explanation [${f}]"
                 throw new AuthenticationServiceException('Authentication error (could not identify explanation)', f)
             }
         } catch(NamingException e) {
             log.error e
             throw new AuthenticationServiceException('Authentication error', e)
+        } catch(AuthenticationServiceException e) {
+            log.warn "Authentication problem [${e}]"
         }
 
         throw new AuthenticationServiceException('Authentication error (Unknown)')
@@ -187,22 +194,25 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
         return dc.toString();
     }
 
-    private SearchResult queryUserRecord(String domain, String principal, DirContext context)
+    private SearchResult queryUserRecord(String domain, String accountName, DirContext context)
     {
         try
         {
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            String search = "(& (userPrincipalName=" + principal + ")(objectClass=user))";
+            //String search = "(& (userPrincipalName=" + principal + ")(objectClass=user))";
+            String search = "(& (sAMAccountName=" + accountName + ")(objectClass=user))";
             NamingEnumeration<SearchResult> results = context.search(toDC(domain), search, controls);
             if(!results.hasMore())
             {
-                throw new AuthenticationServiceException("Cannot locate user information for [" + principal + "]");
+                log.warn "Cannot locate account information for [${accountName}]"
+                throw new AuthenticationServiceException("Cannot locate account information for [" + accountName + "]");
             }
             return results.next();
         }
         catch(NamingException e)
         {
+            log.error "We have a problem with name exception [${accountName}]"
             throw new AuthenticationServiceException('Authentication error', e);
         }
     }
