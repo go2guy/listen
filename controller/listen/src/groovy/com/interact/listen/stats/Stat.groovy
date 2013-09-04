@@ -31,7 +31,8 @@ enum Stat {
     TRANSCRIPTION_FAILED                  ('2019'),
     NEW_FAX_EMAIL                         ('2020'),
     NEW_FAX_SMS                           ('2021'),
-
+    AFTER_HOURS_MSG_PRESENT               ('2022'),
+    
     // Listen -> SPOT communication
     SPOT_AUTO_DIAL_DIAL                   ('5000'),
     SPOT_CONF_EVENT_BRIDGE_DIAL           ('5001'),

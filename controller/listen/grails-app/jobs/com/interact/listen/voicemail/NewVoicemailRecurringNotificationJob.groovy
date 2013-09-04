@@ -10,6 +10,7 @@ class NewVoicemailRecurringNotificationJob {
         cron name: 'newVoicemailNotificationTrigger', cronExpression: '0 0/1 * * * ?'
     }
 
+    def statWriterService
     def voicemailNotificationService
 
     def execute() {
@@ -21,8 +22,17 @@ class NewVoicemailRecurringNotificationJob {
             def newVoicemails = Voicemail.findAllByOwnerAndIsNew(pref.user, true)
             log.debug "Found ${newVoicemails.size()} new voicemails for ${pref.user}"
             newVoicemails.each { voicemail ->
+                
+                afterHoursConfigs.each { config ->
+                    if(pref.user == config.mobilePhone.owner) {
+                        // Generate after hours stat right here!!
+                        log.debug "After Hours voice mail is present since [${voicemail.dateCreated}], peg stat"
+                        statWriterService.send(Stat.AFTER_HOURS_MSG_PRESENT)
+                    }
+                }
                 def differenceInMinutes = Minutes.minutesBetween(voicemail.dateCreated, now).minutes
                 log.debug "Minutes between [${voicemail.dateCreated}] and [${now}]: ${differenceInMinutes}"
+                
                 if(differenceInMinutes > 0 && differenceInMinutes % 10 == 0) {
                     sendSms(voicemail)
                     afterHoursConfigs.each { config ->
