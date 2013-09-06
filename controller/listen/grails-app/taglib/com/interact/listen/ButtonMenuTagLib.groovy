@@ -77,7 +77,8 @@ class ButtonMenuTagLib {
 
                 if(user.organization) {
                     def afterHours = AfterHoursConfiguration.findByOrganization(user.organization)
-                    if(afterHours?.mobilePhone) {
+                    //if(afterHours?.mobilePhone) {
+                    if (afterHours) {
                         button(attrs.button == 'afterHours', 'profile', 'afterHours', 'button.menu.profile.afterHours')
                     }
                 }

@@ -53,3 +53,4 @@ class NewVoicemailRecurringNotificationJob {
         voicemailNotificationService.sendNewVoicemailSms(voicemail, null, Stat.NEW_VOICEMAIL_RECURRING_SMS)
     }
 }
+
