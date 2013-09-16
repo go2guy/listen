@@ -1,5 +1,6 @@
 package com.interact.listen.voicemail
 
+import com.interact.listen.User
 import com.interact.listen.stats.Stat
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import org.joda.time.DateTime
@@ -24,7 +25,7 @@ class NewVoicemailRecurringNotificationJob {
             newVoicemails.each { voicemail ->
                 
                 afterHoursConfigs.each { config ->
-                    if(pref.user == config.mobilePhone.owner) {
+                    if(checkIfPegStat(pref.user, config)) {
                         // Generate after hours stat right here!!
                         log.debug "After Hours voice mail is present since [${voicemail.dateCreated}], peg stat"
                         statWriterService.send(Stat.AFTER_HOURS_MSG_PRESENT)
@@ -36,7 +37,7 @@ class NewVoicemailRecurringNotificationJob {
                 if(differenceInMinutes > 0 && differenceInMinutes % 10 == 0) {
                     sendSms(voicemail)
                     afterHoursConfigs.each { config ->
-                        if(pref.user == config.mobilePhone.owner) {
+                        if(checkIfPegStat(pref.user, config)) {
                             if(config.alternateNumber && config.alternateNumber != '') {
                                 log.debug "Sending alternate-number page to ${config.alternateNumber}"
                                 voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber, Stat.NEW_VOICEMAIL_RECURRING_SMS_ALTERNATE)
@@ -48,6 +49,28 @@ class NewVoicemailRecurringNotificationJob {
         }
     }
 
+    private boolean checkIfPegStat(User user, AfterHoursConfiguration config) {
+        log.debug "Check to see if we should peg stat for user [${user.username}]"
+        
+        def pegStat = false
+        def afterHoursUser = config.mobilePhone?.owner
+        if(!afterHoursUser) {
+            def afterHoursUser = 'After Hours'
+            log.debug "Looking for after hours user based upon configured username[${afterHoursUser}]"
+            afterHoursUser = User.findByUsername(afterHoursUser)
+            if(!afterHoursUser) {
+                log.warn "After hours subscriber is not found"
+            }
+        }
+        
+        if(user.username == afterHoursUser.username) {
+            log.debug "Matched after hours user by user name"
+            pegStat = true
+        }
+        
+        return pegStat
+    }
+    
     private void sendSms(Voicemail voicemail) {
         log.debug "Sending recurring notification for user [${voicemail.owner}] for voicemail received [${voicemail.dateCreated}]"
         voicemailNotificationService.sendNewVoicemailSms(voicemail, null, Stat.NEW_VOICEMAIL_RECURRING_SMS)

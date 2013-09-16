@@ -804,34 +804,46 @@ class SpotApiController {
     def getAfterHoursSubscriber = {
         if(!params.organization) {
             response.sendError(HSR.SC_BAD_REQUEST, "Missing required parameter [organization]")
+            log.warn 'Missing required parameter [organization]'
             return
         }
 
         def organization = Organization.get(getIdFromHref(params.organization))
         if(!organization) {
             response.sendError(HSR.SC_BAD_REQUEST, "Organization not found with href [${params.organization}]")
+            log.warn 'Organization not found with href [${params.organization}]'
             return
         }
 
         if(!organization.enabled) {
             response.sendError(HSR.SC_FORBIDDEN)
+            log.warn "Organization not enabled"
             return
         }
 
         def afterHoursConfig = AfterHoursConfiguration.findByOrganization(organization)
         if(!afterHoursConfig) {
             response.sendError(HSR.SC_NOT_FOUND)
+            log.warn "After hours not configured"
             return
         }
 
         def subscriber = afterHoursConfig.mobilePhone?.owner
         if(!subscriber) {
-            response.sendError(HSR.SC_NOT_FOUND)
-            return
+            log.warn "Didn't find after hours user based upon mobile"
+            def afterHoursUser = 'After Hours'
+            log.debug "Looking for after hours user based upon configured username[${afterHoursUser}]"
+            subscriber = User.findByUsername(afterHoursUser)
+            if(!subscriber) {
+                response.sendError(HSR.SC_NOT_FOUND)
+                log.warn "After hours subscriber is not found"
+                return
+            }
         }
-
+        
         if(!subscriber.enabled()) {
             response.sendError(HSR.SC_FORBIDDEN)
+            log.warn "After hours subscriber is not enabled"
             return
         }
 
