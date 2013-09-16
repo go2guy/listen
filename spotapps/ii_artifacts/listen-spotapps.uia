@@ -18,6 +18,7 @@
             <ENTRY>/interact/apps/spotbuild/listen_mailbox/root.vxml</ENTRY>
             <ENTRY>/interact/apps/spotbuild/listen_afterHours/root.vxml</ENTRY>
             <ENTRY>/interact/apps/spotbuild/ippbx/root.vxml</ENTRY>
+			<ENTRY>/interact/apps/spotbuild/ippbx/dial.ccxml</ENTRY>
         </PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
@@ -157,6 +158,22 @@
                     <tag>var</tag>
                     <attribute>expr</attribute>
                     <location>/interact/apps/spotbuild/listen_main/root.vxml</location>
+                </property>
+            </question>
+
+            <question level="not_in_backup" severity="ask">
+                <text>Enter the phone number to use as the PBX caller Id on outbound calls</text>
+                <default>''</default>
+                <validateRegex>^${HOSTNAME}|''$</validateRegex>
+                <validateInfo>The value must be all numeric and at least 10 digits. The value may not be blank.</validateInfo>
+
+                <property format="ccvxml" action="update" quotes="yes">
+                    <name>pbxObCallerId</name>
+                    <group>PBX</group>
+                    <description>PBX Outbound Number</description>
+                    <tag>var</tag>
+                    <attribute>expr</attribute>
+                    <location>/interact/apps/spotbuild/ippbx/dial.ccxml</location>
                 </property>
             </question>
 
