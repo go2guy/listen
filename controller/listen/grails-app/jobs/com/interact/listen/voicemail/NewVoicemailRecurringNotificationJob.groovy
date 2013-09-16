@@ -5,6 +5,7 @@ import com.interact.listen.stats.Stat
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import org.joda.time.DateTime
 import org.joda.time.Minutes
+import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
 
 class NewVoicemailRecurringNotificationJob {
     static triggers = {
@@ -55,7 +56,7 @@ class NewVoicemailRecurringNotificationJob {
         def pegStat = false
         def afterHoursUser = config.mobilePhone?.owner
         if(!afterHoursUser) {
-            def afterHoursUser = 'After Hours'
+            afterHoursUser = CH.config.com.interact.listen.afterHours.username
             log.debug "Looking for after hours user based upon configured username[${afterHoursUser}]"
             afterHoursUser = User.findByUsername(afterHoursUser)
             if(!afterHoursUser) {

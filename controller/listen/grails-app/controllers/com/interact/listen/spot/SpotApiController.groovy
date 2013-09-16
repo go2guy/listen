@@ -293,7 +293,7 @@ class SpotApiController {
                 voicemailNotificationService.sendNewVoicemailSms(voicemail)
 
                 def config = AfterHoursConfiguration.findByOrganization(voicemail.owner.organization)
-                if(config && voicemail.owner == config.mobilePhone?.owner && config.alternateNumber?.length() > 0) {
+                if(config && voicemail.owner.username == grailsApplication.config.com.interact.listen.afterHours.username && config.alternateNumber?.length() > 0) {
                     log.debug "Sending alternate-number page to ${config.alternateNumber}"
                     voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber, Stat.NEW_VOICEMAIL_SMS_ALTERNATE)
                 }
@@ -831,7 +831,7 @@ class SpotApiController {
         def subscriber = afterHoursConfig.mobilePhone?.owner
         if(!subscriber) {
             log.warn "Didn't find after hours user based upon mobile"
-            def afterHoursUser = 'After Hours'
+            def afterHoursUser = grailsApplication.config.com.interact.listen.afterHours.username
             log.debug "Looking for after hours user based upon configured username[${afterHoursUser}]"
             subscriber = User.findByUsername(afterHoursUser)
             if(!subscriber) {

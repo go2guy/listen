@@ -250,10 +250,8 @@ codenarc.maxPriority3Violations = 0
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
 com.interact.listen.conferencing.defaultPinLength = 6
 
-//com.interact.listen.activeDirectory.server = 'iiserver01'
-//com.interact.listen.activeDirectory.domain = 'interact.nonreg'
-//com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=iivip,dc=com')
-//com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.port', '389')
+// After Hours Configuration
+com.interact.listen.afterHours.username = 'After Hours'
 
 com.interact.listen.activeDirectory.server = 'na-ne-dc01'
 com.interact.listen.activeDirectory.domain = 'newnet.local'
