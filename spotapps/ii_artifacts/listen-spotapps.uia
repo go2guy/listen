@@ -164,7 +164,7 @@
             <question level="not_in_backup" severity="ask">
                 <text>Enter the phone number to use as the PBX caller Id on outbound calls</text>
                 <default>''</default>
-                <validateRegex>^${HOSTNAME}|''$</validateRegex>
+                <validateRegex>^[0-9]+$</validateRegex>
                 <validateInfo>The value must be all numeric and at least 10 digits. The value may not be blank.</validateInfo>
 
                 <property format="ccvxml" action="update" quotes="yes">
