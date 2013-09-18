@@ -170,7 +170,7 @@
                 <property format="ccvxml" action="update" quotes="yes">
                     <name>pbxObCallerId</name>
                     <group>PBX</group>
-                    <description>PBX Outbound Number</description>
+                    <description>Outbound Caller ID</description>
                     <tag>var</tag>
                     <attribute>expr</attribute>
                     <location>/interact/apps/spotbuild/ippbx/dial.ccxml</location>
