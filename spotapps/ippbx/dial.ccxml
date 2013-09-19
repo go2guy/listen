@@ -37,7 +37,7 @@
     <var name="isDID"/>             <!-- Tells if it is a did -->
 
     <!-- Global Vars -->
-	<var name="pbxObCallerId" expr="''" /> <!-- Config PBX Outbound Caller ID -->	
+    <var name="pbxObCallerId" expr="''" /> <!-- Config Default Outbound Caller ID -->	
     <var name="request" expr="'post'"/>
     <var name="maxTime" expr="0"/>
     <var name="ip" expr="''"/>              <!-- IP. IP Address of phone client -->

@@ -18,7 +18,7 @@
             <ENTRY>/interact/apps/spotbuild/listen_mailbox/root.vxml</ENTRY>
             <ENTRY>/interact/apps/spotbuild/listen_afterHours/root.vxml</ENTRY>
             <ENTRY>/interact/apps/spotbuild/ippbx/root.vxml</ENTRY>
-			<ENTRY>/interact/apps/spotbuild/ippbx/dial.ccxml</ENTRY>
+            <ENTRY>/interact/apps/spotbuild/ippbx/dial.ccxml</ENTRY>
         </PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
@@ -169,7 +169,7 @@
 
                 <property format="ccvxml" action="update" quotes="yes">
                     <name>pbxObCallerId</name>
-                    <group>PBX</group>
+                    <group>Default</group>
                     <description>Outbound Caller ID</description>
                     <tag>var</tag>
                     <attribute>expr</attribute>
