@@ -37,7 +37,6 @@
     <var name="isDID"/>             <!-- Tells if it is a did -->
 
     <!-- Global Vars -->
-    <var name="pbxObCallerId" expr="''" /> <!-- Config Default Outbound Caller ID -->	
     <var name="request" expr="'post'"/>
     <var name="maxTime" expr="0"/>
     <var name="ip" expr="''"/>              <!-- IP. IP Address of phone client -->
@@ -503,6 +502,7 @@
             <else/>
                 <log>INFO: ANI for outbound call[<value expr="ANI"/>]</log>
                 <assign name="SIP_SERVER" expr="getJsonVal(importedValue, 'sipURL')"/>
+				<var name="pbxObCallerId" expr="getJsonVal(importedValue, 'pbxObCallerId')"/>
                 <assign name="CALL_ANI" expr="setANI(ANI, CALL_DNIS, pbxObCallerId, SIP_SERVER)"/> 
                 <log>INFO: Actual ANI for outbound call[<value expr="CALL_ANI"/>]</log>
             </if>
