@@ -20,13 +20,15 @@
             <!-- Loaded new ccxml script -->
             <log>INFO: Entered [ccxml.loaded] with state [<value expr="state"/>]</log>
             <var name="action" expr="getAction(importedValue)"/>
-            <if cond="action == 'EXIT'">
+			<var name="client" expr="getNextElement(1,action,'|')"/>
+            <if cond="((action == 'EXIT') || (client == '') || (client == undefined))">
                 <send data="'dialog.user.endCall'" target="session.id"/>
             <else/>
                 <var name="messages" expr="getNextElement(0,action,'|')"/>
-                <var name="dest" expr="'sip:' + getNextElement(1,action,'|')"/>
+                <var name="dest" expr="'sip:' + client"/>
                 <var name="VOIP_NO_PROXY" expr="getNextElement(2,action,'|') + ''"/>
                 <send data="'messagelightcontrol'" target="'iisip'" targettype="'x-iievent'"  namelist="dest messages VOIP_NO_PROXY"/>
+				<send data="'dialog.user.endCall'" target="session.id" delay="'3000ms'"/>
             </if>
         </transition>
 
