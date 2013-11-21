@@ -59,7 +59,7 @@
 	<var name="value" expr="''" />
 	<var name="operation" expr="''" />
 	<var name="artifactsDIR" expr="''" />
-	<var name="msgDIR" expr="'/voicemail/messages/'" />
+	<var name="msgDIR" expr="'/voicemail/message/'" />
 	<var name="isMsgSaved" expr="'false'" />
 	<var name="appStartTime" expr="''" />
 	<var name="appEndTime" expr="''" />
