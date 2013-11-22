@@ -31,7 +31,20 @@ class MessagesController {
         params.order = params.order ? params.order : 'desc'
         def list = InboxMessage.findAllByOwner(user, params)
         def count = InboxMessage.countByOwner(user)
+        
+        log.debug "Found [${count}] messages in mailbox of [${user.username}]"
 
+        list.each { message ->
+            
+            if(message.instanceOf(Voicemail)) {
+                log.debug "Voice Message [${message.id}] [${message?.audio.file}]"
+            } else if(message.instanceOf(Fax)) {
+                log.debug "Fax Message [${message.id}] [${message?.fax.file}]"
+            } else {
+                log.debug "Unknown Message Type [${message.id}] [${message}]"
+            }
+        }
+        
         render(view: 'inbox', model: [messageList: list, messageTotal: count])
     }
 

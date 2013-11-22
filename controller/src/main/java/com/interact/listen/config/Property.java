@@ -31,7 +31,7 @@ public class Property
         CONFERENCING_PINLENGTH   ("com.interact.listen.conferencing.pinLength",  "10"),
 
         /* Phone number of the Interact pager phone */
-        PAGER_NUMBER             ("com.interact.listen.pagerNumber",             "4024292889"),
+        PAGER_NUMBER             ("com.interact.listen.pagerNumber",             "4024299999"),
 
         /* Alternate number to dial when the pager phone is notified of new voicemail */
         ALTERNATE_NUMBER         ("com.interact.listen.alternateNumber",         ""),

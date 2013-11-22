@@ -158,26 +158,30 @@ You have correctly configured your settings to receive Listen email notification
     }
 
     void sendNewVoicemailSms(Voicemail voicemail, def toAddress = null, Stat stat = Stat.NEW_VOICEMAIL_SMS) {
-        def preferences = VoicemailPreferences.findByUser(voicemail.owner)
-        if(!preferences) {
-            log.warn "No VoicemailPreferences configured for user [${voicemail.owner}]"
-            return
-        }
-
-        if(!preferences.isSmsNotificationEnabled) {
-            log.debug "User is not set to receive sms notifications"
-            return
-        }
-
-        if(!smsTimeRestrictionsAllow(preferences)) {
-            log.debug "Time restrictions disallow sending notification"
-            return
-        }
-
-        def address = toAddress ?: preferences.smsNotificationAddress
+        def address = toAddress
+        
         if(!address) {
-            log.debug "VoicemailPreferences.smsNotificationAddress is not set"
-            return
+            def preferences = VoicemailPreferences.findByUser(voicemail.owner)
+            if(!preferences) {
+                log.warn "No VoicemailPreferences configured for user [${voicemail.owner}]"
+                return
+            }
+    
+            if(!preferences.isSmsNotificationEnabled) {
+                log.debug "User is not set to receive sms notifications"
+                return
+            }
+    
+            if(!smsTimeRestrictionsAllow(preferences)) {
+                log.debug "Time restrictions disallow sending notification"
+                return
+            }
+    
+            address = preferences.smsNotificationAddress
+            if(!address) {
+                log.debug "VoicemailPreferences.smsNotificationAddress is not set"
+                return
+            }
         }
 
         def voicemailFrom = voicemail.from()
