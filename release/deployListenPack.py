@@ -102,7 +102,7 @@ def prep():
                 "service collector stop",
                 "service statistics stop",
                 "service tomcat stop",
-                "service mysqld stop"]
+                "service mysql stop"]
 
     killprocs = ["/interact/.*/iiMoap",
                  "/interact/.*/iiSysSrvr",
@@ -110,7 +110,7 @@ def prep():
                  "java.*app=STATISTICS",
                  "jsvc",
                  "/interact/.*/listen-controller",
-                 "mysqld"]
+                 "mysql"]
 
     deploy.stop(stopcmds, killprocs)
 
@@ -135,7 +135,7 @@ def prep():
 
 def install():
     # Start up mysql - needed for realize install.
-    deploy.run(["service", "mysqld", "start"])
+    deploy.run(["service", "mysql", "start"])
 
     # Make it executable
     os.chmod(pack, 0700)

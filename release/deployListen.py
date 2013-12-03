@@ -181,7 +181,7 @@ def prepcommon():
     print("Preparing for deployment")
     stopcmds = ["service listen-controller stop",
                 "service collector stop",
-                "service mysqld stop",
+                "service mysql stop",
                 "service httpd stop",
                 "service vipStart stop"]
 
@@ -189,7 +189,7 @@ def prepcommon():
                  "/interact/.*/iiSysSrvr",
                  "/interact/.*/collector",
                  "/interact/.*/listen-controller",
-                 "mysqld"]
+                 "mysql"]
 
     deploy.stop(stopcmds, killprocs)
 
@@ -203,8 +203,8 @@ def doinstall():
     # install uia packages
     deploy.run(["rpm", "-Uvh", uiapkg])
 
-    # Make sure mysqld is running
-    deploy.run(["service", "mysqld", "start"], failonerror=False)
+    # Make sure mysql is running
+    deploy.run(["service", "mysql", "start"], failonerror=False)
 
     # define an empty list for startup commands
     startlist = {}
@@ -228,8 +228,8 @@ def doupgrade():
     # install uia packages
     deploy.run(["rpm", "-Uvh", "--replacepkgs", uiapkg])
 
-    # Make sure mysqld is running
-    deploy.run(["service", "mysqld", "start"], failonerror=False)
+    # Make sure mysql is running
+    deploy.run(["service", "mysql", "start"], failonerror=False)
 
     if hostname == controllerserver:
         deploy.run(["/interact/packages/iiInstall.py", "--noinput", "install", masterpkg, "all"])
