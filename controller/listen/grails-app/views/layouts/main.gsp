@@ -379,9 +379,17 @@ ul.messages.error {
             <li class="attendant<g:if test="${pageProperty(name: 'meta.tab') == 'attendant'}"> current</g:if>"><g:link controller="attendant"><g:message code="tab.menu.attendant"/></g:link></li>
           </sec:ifAllGranted>
         </listen:canAccess>
+
         <sec:ifAllGranted roles="ROLE_CUSTODIAN">
           <li class="organization<g:if test="${pageProperty(name: 'meta.tab') == 'organization'}"> current</g:if>"><g:link controller="organization"><g:message code="tab.menu.organizations"/></g:link></li>
         </sec:ifAllGranted>
+
+        <listen:canAccess feature="Listen ACD">
+          %{-- <sec:ifAllGranted roles="ROLE_ACD_USER"> --}%
+            <li class="acd<g:if test="${pageProperty(name: 'meta.tab') == 'acd'}"> current</g:if>"><g:link controller="acd"><g:message code="tab.menu.acd"/></g:link></li>
+          %{-- </sec:ifAllGranted> --}%
+        </listen:canAccess>
+
       </ul>
 
       <g:set var="tab" value="${pageProperty(name: 'meta.tab')}"/>

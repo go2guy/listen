@@ -2,51 +2,58 @@ package com.interact.listen
 
 import com.interact.listen.pbx.Extension
 import org.joda.time.DateTime
+import com.interact.listen.acd.Skill
+import com.interact.listen.acd.Status
 
 class User {
 
-	boolean accountExpired
-	boolean accountLocked
+  boolean accountExpired
+  boolean accountLocked
     boolean isActiveDirectory = false
     String emailAddress
-	boolean enabled
+  boolean enabled
     DateTime lastLogin
     Organization organization // TODO should user belongsTo organization? (maybe be tricky if organization is nullable)
-	String password
+  String password
     String realName
-	boolean passwordExpired
-	String username
+  boolean passwordExpired
+  String username
 
     String pass
     String confirm
 
-    static transients = ['pass', 'confirm', 'enabledForLogin'] // used for confirming a password
+    /* ACD use settings */
+    static hasMany = [phoneNumbers: PhoneNumber, skills: Skill]
+    Status status = Status.AVAILABLE
 
-    static hasMany = [phoneNumbers: PhoneNumber]
+    static transients = ['pass', 'confirm', 'enabledForLogin', 'status']
+    /* pass & confirm are solely for password confirmation,
+       enabledForLogin is used for ???,
+       status is used for ACD functionality */
 
     // TODO should organization be nullable (below)?
-	static constraints = {
+  static constraints = {
         emailAddress blank: false, email: true, maxSize: 100
         lastLogin nullable: true
         organization nullable: true
-		password blank: false
+    password blank: false
         realName blank: false, maxSize: 50
-		username blank: false, unique: 'organization', maxSize: 50, matches: '^[^:]+$'
+    username blank: false, unique: 'organization', maxSize: 50, matches: '^[^:]+$'
 
         // transient pass and confirm validation for screen entry
         pass nullable: true, blank: true, validator: { val, obj ->
             return ((val?.trim()?.length() > 0 || obj?.confirm?.trim()?.length() > 0) && val != obj.confirm) ? 'does.not.match' : true
         }
         confirm nullable: true, blank: true
-	}
+  }
 
-	static mapping = {
-		password column: '`password`'
-	}
+  static mapping = {
+    password column: '`password`'
+  }
 
-	Set<Role> getAuthorities() {
-		UserRole.findAllByUser(this).collect { it.role } as Set
-	}
+  Set<Role> getAuthorities() {
+    UserRole.findAllByUser(this).collect { it.role } as Set
+  }
 
     boolean hasRole(String authority) {
         def roleStrings = getAuthorities().collect { it.authority }

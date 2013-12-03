@@ -90,12 +90,13 @@ log4j = {
 
         environments {
             production {
-                def dir = System.getProperty('catalina.base')
-                if(!dir) {
-                    dir = '/interact/listen/logs'
-                } else {
-                    dir += '/logs'
-                }
+                def dir = '/interact/listen/logs'
+                /* def dir = System.getProperty('catalina.base') */
+                /* if(!dir) { */
+                    /* dir = '/interact/listen/logs' */
+                /* } else { */
+                    /* dir += '/logs' */
+                /* } */
 
                 println "Log directory is [${dir}]"
                 println "Appname is [${appName}]"
@@ -126,7 +127,8 @@ log4j = {
             root { warn 'stdout' }
         }
         production {
-            root { warn 'file' }
+            /* root { warn 'file' } */
+            root { warn 'stdout' }
         }
     }
 
@@ -146,19 +148,16 @@ log4j = {
            'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
 
     debug  'grails.app',
-           'com.interact'/*,
-           'org.apache.directory.server',
-           'org.apache.mina',
-           'groovy.grails.ldap.server'*/
+           'com.interact'
 }
 
-environments {
-    production {
-        def logger = Logger.getRootLogger()
-        logger.removeAppender('stdout')
+/* environments { */
+    /* production { */
+        /* def logger = Logger.getRootLogger() */
+        /* logger.removeAppender('stdout') */
         // see http://stackoverflow.com/questions/2410955/why-is-grails-in-tomcat-logging-to-both-catalina-out-and-my-custom-file-appende
-    }
-}
+    /* } */
+/* } */
 
 // Spring Security Core plugin:
 grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.interact.listen.User'
