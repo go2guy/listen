@@ -7,7 +7,7 @@ import com.interact.license.client.Feature;
  */
 public enum ListenFeature implements Feature
 {
-    ACD                 ("Listen ACD",          "ACD", false),
+    ACD                 ("Listen ACD",          "ACD", true),
     ACTIVE_DIRECTORY    ("Listen AD",           "Active Directory", false),
     AFTERHOURS          ("Listen After Hours",  "After Hours", true),
     ATTENDANT           ("Listen Attendant",    "Attendant", true),

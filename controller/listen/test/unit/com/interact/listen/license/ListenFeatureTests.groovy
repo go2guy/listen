@@ -4,7 +4,7 @@ class ListenFeatureTests extends GroovyTestCase {
 
     // which features are per-organization and which are not
     void testGetIsPerOrganization0() {
-        assertFalse ListenFeature.ACD.isPerOrganization
+        asserTrue ListenFeature.ACD.isPerOrganization
         assertFalse ListenFeature.ACTIVE_DIRECTORY.isPerOrganization
 
         assertTrue ListenFeature.AFTERHOURS.isPerOrganization
