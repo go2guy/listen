@@ -48,11 +48,15 @@
 
     <mkdir dir="${deploy.dir}"/>
     <mkdir dir="${deploy.dir}/logs"/>
+    <mkdir dir="${deploy.dir}/db"/>
 
     <copy todir="${deploy.dir}/lib" verbose="true">
       <fileset dir="listen/target" includes="*.war"/>
     </copy>
     <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts" verbose="true"/>
+    <copy todir="${deploy.dir}/db" verbose="true">
+      <fileset dir="${basedir}/db" includes="*/*"/>
+    </copy>
   </target>
 
   <target name="undeploy" description="--> Removes any deployed artifacts">

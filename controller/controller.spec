@@ -59,6 +59,7 @@ Requires: xmlsecurity, iijava, mysql-server
     # Include everything in the /interact/listen directory
     %dir /interact/listen/logs
     /interact/listen/lib/listen-controller.war
+    /interact/listen/db/*
     %config /interact/listen/scripts/listen-controller
 
 #######################################################################
@@ -96,6 +97,7 @@ chkconfig --add listen-controller
 if [ "$1" -le "0" ]; then
   chkconfig --del listen-controller
   rm -f /etc/init.d/listen-controller
+  unlink /etc/init.d/listen
 fi
 
 
