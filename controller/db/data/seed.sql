@@ -1,9 +1,14 @@
 use listen2;
 
 /* This appears to be invalid data */
-/* LOCK TABLES `audio` WRITE; */
-/* INSERT INTO `audio` VALUES (1,0,'2013-11-05 15:54:59',NULL,'PT0S','2013-11-05 15:54:59','','file:/interact/listen/artifacts/2/voicemail/greeting/357-greeting.wav'); */
-/* UNLOCK TABLES; */
+LOCK TABLES `audio` WRITE;
+INSERT INTO `audio` VALUES (1,0,'2013-11-05 15:54:59',NULL,'PT0S','2013-11-05 15:54:59','','file:/interact/listen/artifacts/2/voicemail/greeting/357-greeting.wav');
+UNLOCK TABLES;
+
+
+LOCK TABLES `user` WRITE;
+INSERT INTO `user` VALUES (2,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'4bc6ef18248a1160d1812a741f6e867f3baff7ac3a20b40be8018be41448ffd4','\0','Mimio Listen Custodian','Custodian','\0'),(3,3,'\0','\0','scott.farwell@newnet.com','^A','2013-11-05 16:10:10',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Scott Farwell','scott','\0'),(4,3,'\0','\0','ricardo.mastroleo@newnet.com','^A','2013-11-18 15:10:49',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ricardo Mastroleo','ricardo','\0'),(5,2,'\0','\0','ladi.akinyemi@newnet.com','^A','2013-11-05 16:18:37',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ladi Akinyemi','ladi','\0'),(6,0,'\0','\0','testlisten@newnet.com','^A',NULL,1,'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','\0','test Listen','testlisten','\0');
+UNLOCK TABLES;
 
 
 LOCK TABLES `call_data` WRITE;
@@ -11,46 +16,14 @@ INSERT INTO `call_data` VALUES (1,1,'4024768786','4024292891','2013-11-05 15:55:
 UNLOCK TABLES;
 
 
-LOCK TABLES `call_history` WRITE;
-INSERT INTO `call_history` VALUES (1,0,'4024768786','2013-11-05 15:55:42','4024292891','PT5.224S',NULL,1,NULL,'Call Answered'),(2,0,'4024768786','2013-11-05 15:57:56','4024292891','PT191.424S',NULL,1,NULL,'Call Answered'),(3,0,'4024768786','2013-11-06 08:42:15','4024292891','PT191.655S',NULL,1,NULL,'Call Answered'),(4,0,'4024768786','2013-11-18 16:09:55','338','PT2.916S',NULL,1,6,'Call Answered'),(5,0,'4024768786','2013-11-20 14:12:52','338','PT0S',NULL,1,6,'Call Failed'),(6,0,'4024768786','2013-11-21 13:48:29','338','PT32.906S',NULL,1,6,'Call Answered');
-UNLOCK TABLES;
+/* LOCK TABLES `call_history` WRITE; */
+/* INSERT INTO `call_history` VALUES (1,0,'4024768786','2013-11-05 15:55:42','4024292891','PT5.224S',NULL,1,NULL,'Call Answered'),(2,0,'4024768786','2013-11-05 15:57:56','4024292891','PT191.424S',NULL,1,NULL,'Call Answered'),(3,0,'4024768786','2013-11-06 08:42:15','4024292891','PT191.655S',NULL,1,NULL,'Call Answered'),(4,0,'4024768786','2013-11-18 16:09:55','338','PT2.916S',NULL,1,6,'Call Answered'),(5,0,'4024768786','2013-11-20 14:12:52','338','PT0S',NULL,1,6,'Call Failed'),(6,0,'4024768786','2013-11-21 13:48:29','338','PT32.906S',NULL,1,6,'Call Answered'); */
+/* UNLOCK TABLES; */
 
 
 LOCK TABLES `conference` WRITE;
 INSERT INTO `conference` VALUES (1,0,NULL,'Brian Johnston\'s Conference','\0','\0',2,NULL,NULL),(2,0,NULL,'Scott Farwell\'s Conference','\0','\0',3,NULL,NULL),(3,0,NULL,'Ricardo Mastroleo\'s Conference','\0','\0',4,NULL,NULL),(4,0,NULL,'Ladi Akinyemi\'s Conference','\0','\0',5,NULL,NULL),(5,0,NULL,'test Listen\'s Conference','\0','\0',6,NULL,NULL);
 UNLOCK TABLES;
-
-
-/* LOCK TABLES `conferencing_configuration` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `device_registration` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `device_registration_registered_types` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `find_me_number` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `find_me_preferences` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `global_outdial_restriction` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `google_auth_configuration` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `inbox_message` WRITE; */
-/* UNLOCK TABLES; */
 
 
 /* LOCK TABLES `mail_configuration` WRITE; */
@@ -68,23 +41,14 @@ UNLOCK TABLES;
 /* UNLOCK TABLES; */
 
 
-LOCK TABLES `menu_group` WRITE;
-INSERT INTO `menu_group` VALUES (1,16,'','Mimio In Office',1);
-UNLOCK TABLES;
-
-
-/* LOCK TABLES `menu_group_time_restriction` WRITE; */
-/* UNLOCK TABLES; */
-
-
 LOCK TABLES `number_route` WRITE;
 INSERT INTO `number_route` VALUES (1,0,'Attendant',NULL,1,'4022612738','EXTERNAL');
 UNLOCK TABLES;
 
 
-LOCK TABLES `organization` WRITE;
-INSERT INTO `organization` VALUES (1,0,'Mimio','mimio','');
-UNLOCK TABLES;
+/* LOCK TABLES `organization` WRITE; */
+/* INSERT INTO `organization` VALUES (1,0,'Mimio','mimio',''); */
+/* UNLOCK TABLES; */
 
 
 LOCK TABLES `organization_enabled_features` WRITE;
@@ -156,10 +120,6 @@ UNLOCK TABLES;
 /* LOCK TABLES `transcription_configuration` WRITE; */
 /* UNLOCK TABLES; */
 
-
-LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES (2,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'4bc6ef18248a1160d1812a741f6e867f3baff7ac3a20b40be8018be41448ffd4','\0','Mimio Listen Custodian','Custodian','\0'),(3,3,'\0','\0','scott.farwell@newnet.com','^A','2013-11-05 16:10:10',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Scott Farwell','scott','\0'),(4,3,'\0','\0','ricardo.mastroleo@newnet.com','^A','2013-11-18 15:10:49',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ricardo Mastroleo','ricardo','\0'),(5,2,'\0','\0','ladi.akinyemi@newnet.com','^A','2013-11-05 16:18:37',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ladi Akinyemi','ladi','\0'),(6,0,'\0','\0','testlisten@newnet.com','^A',NULL,1,'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','\0','test Listen','testlisten','\0');
-UNLOCK TABLES;
 
 
 /* LOCK TABLES `user_file` WRITE; */

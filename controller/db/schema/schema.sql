@@ -1,32 +1,33 @@
+drop database if exists listen2;
 create database if not exists listen2;
 use listen2;
 
 
-DROP TABLE IF EXISTS `DATABASECHANGELOG`;
-CREATE TABLE `DATABASECHANGELOG` (
-  `ID` varchar(63) NOT NULL,
-  `AUTHOR` varchar(63) NOT NULL,
-  `FILENAME` varchar(200) NOT NULL,
-  `DATEEXECUTED` datetime NOT NULL,
-  `ORDEREXECUTED` int(11) NOT NULL,
-  `EXECTYPE` varchar(10) NOT NULL,
-  `MD5SUM` varchar(35) default NULL,
-  `DESCRIPTION` varchar(255) default NULL,
-  `COMMENTS` varchar(255) default NULL,
-  `TAG` varchar(255) default NULL,
-  `LIQUIBASE` varchar(20) default NULL,
-  PRIMARY KEY  (`ID`,`AUTHOR`,`FILENAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/* DROP TABLE IF EXISTS `DATABASECHANGELOG`; */
+/* CREATE TABLE `DATABASECHANGELOG` ( */
+  /* `ID` varchar(63) NOT NULL, */
+  /* `AUTHOR` varchar(63) NOT NULL, */
+  /* `FILENAME` varchar(200) NOT NULL, */
+  /* `DATEEXECUTED` datetime NOT NULL, */
+  /* `ORDEREXECUTED` int(11) NOT NULL, */
+  /* `EXECTYPE` varchar(10) NOT NULL, */
+  /* `MD5SUM` varchar(35) default NULL, */
+  /* `DESCRIPTION` varchar(255) default NULL, */
+  /* `COMMENTS` varchar(255) default NULL, */
+  /* `TAG` varchar(255) default NULL, */
+  /* `LIQUIBASE` varchar(20) default NULL, */
+  /* PRIMARY KEY  (`ID`,`AUTHOR`,`FILENAME`) */
+/* ) ENGINE=InnoDB DEFAULT CHARSET=latin1; */
 
 
-DROP TABLE IF EXISTS `DATABASECHANGELOGLOCK`;
-CREATE TABLE `DATABASECHANGELOGLOCK` (
-  `ID` int(11) NOT NULL,
-  `LOCKED` tinyint(1) NOT NULL,
-  `LOCKGRANTED` datetime default NULL,
-  `LOCKEDBY` varchar(255) default NULL,
-  PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/* DROP TABLE IF EXISTS `DATABASECHANGELOGLOCK`; */
+/* CREATE TABLE `DATABASECHANGELOGLOCK` ( */
+  /* `ID` int(11) NOT NULL, */
+  /* `LOCKED` tinyint(1) NOT NULL, */
+  /* `LOCKGRANTED` datetime default NULL, */
+  /* `LOCKEDBY` varchar(255) default NULL, */
+  /* PRIMARY KEY  (`ID`) */
+/* ) ENGINE=InnoDB DEFAULT CHARSET=latin1; */
 
 
 DROP TABLE IF EXISTS `action`;
@@ -42,6 +43,44 @@ CREATE TABLE `action` (
   `application_name` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `organization`;
+CREATE TABLE `organization` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `context_path` varchar(50) NOT NULL,
+  `enabled` bit(1) NOT NULL default b'1',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `name_unique_1307548966223` (`name`),
+  UNIQUE KEY `context_path` (`context_path`),
+  UNIQUE KEY `context_path_unique_1309965401489` (`context_path`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `account_expired` bit(1) NOT NULL,
+  `account_locked` bit(1) NOT NULL,
+  `email_address` varchar(100) NOT NULL,
+  `enabled` bit(1) NOT NULL,
+  `last_login` datetime default NULL,
+  `organization_id` bigint(20) default NULL,
+  `password` varchar(255) NOT NULL,
+  `password_expired` bit(1) NOT NULL,
+  `real_name` varchar(50) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `is_active_directory` bit(1) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `FK36EBCB56D05B56` (`organization_id`),
+  KEY `unique-username` (`organization_id`,`username`),
+  CONSTRAINT `user_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+
 
 DROP TABLE IF EXISTS `action_history`;
 CREATE TABLE `action_history` (
@@ -64,6 +103,41 @@ CREATE TABLE `action_history` (
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
 
 
+DROP TABLE IF EXISTS `audio`;
+CREATE TABLE `audio` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `date_created` datetime NOT NULL,
+  `description` varchar(200) default NULL,
+  `duration` varchar(255) NOT NULL,
+  `last_updated` datetime NOT NULL,
+  `transcription` longtext NOT NULL,
+  `file` varchar(1000) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `phone_number`;
+CREATE TABLE `phone_number` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `forwarded_to` varchar(50) default NULL,
+  `greeting_id` bigint(20) default NULL,
+  `is_public` bit(1) default NULL,
+  `number` varchar(50) NOT NULL,
+  `owner_id` bigint(20) NOT NULL,
+  `class` varchar(255) NOT NULL,
+  `ip` varchar(50) default NULL,
+  `sms_domain` varchar(50) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `ip` (`ip`),
+  KEY `FKDB80433A12722FBB` (`greeting_id`),
+  KEY `FKDB80433A6D23A06E` (`owner_id`),
+  CONSTRAINT `phone_number_greeting_i_fk` FOREIGN KEY (`greeting_id`) REFERENCES `audio` (`id`),
+  CONSTRAINT `phone_number_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+
 DROP TABLE IF EXISTS `after_hours_configuration`;
 CREATE TABLE `after_hours_configuration` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -80,19 +154,6 @@ CREATE TABLE `after_hours_configuration` (
   CONSTRAINT `FK7C7614E359C40479` FOREIGN KEY (`mobile_phone_id`) REFERENCES `phone_number` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
-DROP TABLE IF EXISTS `audio`;
-CREATE TABLE `audio` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `version` bigint(20) NOT NULL,
-  `date_created` datetime NOT NULL,
-  `description` varchar(200) default NULL,
-  `duration` varchar(255) NOT NULL,
-  `last_updated` datetime NOT NULL,
-  `transcription` longtext NOT NULL,
-  `file` varchar(1000) default NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `call_data`;
@@ -275,6 +336,19 @@ CREATE TABLE `mail_configuration` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
+DROP TABLE IF EXISTS `menu_group`;
+CREATE TABLE `menu_group` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `is_default` bit(1) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  `organization_id` bigint(20) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `FKFA3CAB9F56D05B56` (`organization_id`),
+  CONSTRAINT `menu_group_organization_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -307,17 +381,21 @@ CREATE TABLE `menu_action` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-DROP TABLE IF EXISTS `menu_group`;
-CREATE TABLE `menu_group` (
+DROP TABLE IF EXISTS `time_restriction`;
+CREATE TABLE `time_restriction` (
   `id` bigint(20) NOT NULL auto_increment,
   `version` bigint(20) NOT NULL,
-  `is_default` bit(1) NOT NULL,
-  `name` varchar(30) NOT NULL,
-  `organization_id` bigint(20) NOT NULL,
-  PRIMARY KEY  (`id`),
-  KEY `FKFA3CAB9F56D05B56` (`organization_id`),
-  CONSTRAINT `menu_group_organization_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+  `end_time` varchar(255) NOT NULL,
+  `friday` bit(1) NOT NULL,
+  `monday` bit(1) NOT NULL,
+  `saturday` bit(1) NOT NULL,
+  `start_time` varchar(255) NOT NULL,
+  `sunday` bit(1) NOT NULL,
+  `thursday` bit(1) NOT NULL,
+  `tuesday` bit(1) NOT NULL,
+  `wednesday` bit(1) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `menu_group_time_restriction`;
@@ -345,21 +423,6 @@ CREATE TABLE `number_route` (
   KEY `unique-label` (`type`,`organization_id`,`label`),
   KEY `unique-pattern` (`type`,`organization_id`,`pattern`),
   CONSTRAINT `number_route_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
-
-DROP TABLE IF EXISTS `organization`;
-CREATE TABLE `organization` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `version` bigint(20) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `context_path` varchar(50) NOT NULL,
-  `enabled` bit(1) NOT NULL default b'1',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`),
-  UNIQUE KEY `name_unique_1307548966223` (`name`),
-  UNIQUE KEY `context_path` (`context_path`),
-  UNIQUE KEY `context_path_unique_1309965401489` (`context_path`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
@@ -418,6 +481,19 @@ CREATE TABLE `outgoing_fax` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+DROP TABLE IF EXISTS `user_file`;
+CREATE TABLE `user_file` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `detected_type` varchar(255) NOT NULL,
+  `file` varchar(1000) default NULL,
+  `owner_id` bigint(20) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `FK143669706D23A06E` (`owner_id`),
+  CONSTRAINT `FK143669706D23A06E` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 DROP TABLE IF EXISTS `outgoing_fax_user_file`;
 CREATE TABLE `outgoing_fax_user_file` (
   `outgoing_fax_source_files_id` bigint(20) default NULL,
@@ -453,27 +529,6 @@ CREATE TABLE `participant` (
   CONSTRAINT `participant_recorded_name_fk` FOREIGN KEY (`recorded_name_id`) REFERENCES `audio` (`id`),
   CONSTRAINT `participant_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-DROP TABLE IF EXISTS `phone_number`;
-CREATE TABLE `phone_number` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `version` bigint(20) NOT NULL,
-  `forwarded_to` varchar(50) default NULL,
-  `greeting_id` bigint(20) default NULL,
-  `is_public` bit(1) default NULL,
-  `number` varchar(50) NOT NULL,
-  `owner_id` bigint(20) NOT NULL,
-  `class` varchar(255) NOT NULL,
-  `ip` varchar(50) default NULL,
-  `sms_domain` varchar(50) default NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `ip` (`ip`),
-  KEY `FKDB80433A12722FBB` (`greeting_id`),
-  KEY `FKDB80433A6D23A06E` (`owner_id`),
-  CONSTRAINT `phone_number_greeting_i_fk` FOREIGN KEY (`greeting_id`) REFERENCES `audio` (`id`),
-  CONSTRAINT `phone_number_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `pin`;
@@ -575,22 +630,6 @@ CREATE TABLE `spot_system` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
-DROP TABLE IF EXISTS `time_restriction`;
-CREATE TABLE `time_restriction` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `version` bigint(20) NOT NULL,
-  `end_time` varchar(255) NOT NULL,
-  `friday` bit(1) NOT NULL,
-  `monday` bit(1) NOT NULL,
-  `saturday` bit(1) NOT NULL,
-  `start_time` varchar(255) NOT NULL,
-  `sunday` bit(1) NOT NULL,
-  `thursday` bit(1) NOT NULL,
-  `tuesday` bit(1) NOT NULL,
-  `wednesday` bit(1) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 DROP TABLE IF EXISTS `transcription_configuration`;
 CREATE TABLE `transcription_configuration` (
@@ -607,39 +646,6 @@ CREATE TABLE `transcription_configuration` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `version` bigint(20) NOT NULL,
-  `account_expired` bit(1) NOT NULL,
-  `account_locked` bit(1) NOT NULL,
-  `email_address` varchar(100) NOT NULL,
-  `enabled` bit(1) NOT NULL,
-  `last_login` datetime default NULL,
-  `organization_id` bigint(20) default NULL,
-  `password` varchar(255) NOT NULL,
-  `password_expired` bit(1) NOT NULL,
-  `real_name` varchar(50) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `is_active_directory` bit(1) NOT NULL,
-  PRIMARY KEY  (`id`),
-  KEY `FK36EBCB56D05B56` (`organization_id`),
-  KEY `unique-username` (`organization_id`,`username`),
-  CONSTRAINT `user_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-
-
-DROP TABLE IF EXISTS `user_file`;
-CREATE TABLE `user_file` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `version` bigint(20) NOT NULL,
-  `detected_type` varchar(255) NOT NULL,
-  `file` varchar(1000) default NULL,
-  `owner_id` bigint(20) NOT NULL,
-  PRIMARY KEY  (`id`),
-  KEY `FK143669706D23A06E` (`owner_id`),
-  CONSTRAINT `FK143669706D23A06E` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `user_role`;
