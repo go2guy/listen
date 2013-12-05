@@ -1,34 +1,6 @@
-drop database if exists listen2;
+/* drop database if exists listen2; */
 create database if not exists listen2;
 use listen2;
-
-
-/* DROP TABLE IF EXISTS `DATABASECHANGELOG`; */
-/* CREATE TABLE `DATABASECHANGELOG` ( */
-  /* `ID` varchar(63) NOT NULL, */
-  /* `AUTHOR` varchar(63) NOT NULL, */
-  /* `FILENAME` varchar(200) NOT NULL, */
-  /* `DATEEXECUTED` datetime NOT NULL, */
-  /* `ORDEREXECUTED` int(11) NOT NULL, */
-  /* `EXECTYPE` varchar(10) NOT NULL, */
-  /* `MD5SUM` varchar(35) default NULL, */
-  /* `DESCRIPTION` varchar(255) default NULL, */
-  /* `COMMENTS` varchar(255) default NULL, */
-  /* `TAG` varchar(255) default NULL, */
-  /* `LIQUIBASE` varchar(20) default NULL, */
-  /* PRIMARY KEY  (`ID`,`AUTHOR`,`FILENAME`) */
-/* ) ENGINE=InnoDB DEFAULT CHARSET=latin1; */
-
-
-/* DROP TABLE IF EXISTS `DATABASECHANGELOGLOCK`; */
-/* CREATE TABLE `DATABASECHANGELOGLOCK` ( */
-  /* `ID` int(11) NOT NULL, */
-  /* `LOCKED` tinyint(1) NOT NULL, */
-  /* `LOCKGRANTED` datetime default NULL, */
-  /* `LOCKEDBY` varchar(255) default NULL, */
-  /* PRIMARY KEY  (`ID`) */
-/* ) ENGINE=InnoDB DEFAULT CHARSET=latin1; */
-
 
 DROP TABLE IF EXISTS `action`;
 CREATE TABLE `action` (
