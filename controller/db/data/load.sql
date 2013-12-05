@@ -41,9 +41,9 @@ INSERT INTO `role` VALUES (1,0,'ROLE_CUSTODIAN'),(2,0,'ROLE_ATTENDANT_ADMIN'),(3
 UNLOCK TABLES;
 
 
-LOCK TABLES `single_organization_configuration` WRITE; */
-INSERT INTO `single_organization_configuration` VALUES (1,0,1); */
-UNLOCK TABLES; */
+LOCK TABLES `single_organization_configuration` WRITE;
+INSERT INTO `single_organization_configuration` VALUES (1,0,1);
+UNLOCK TABLES;
 
 
 LOCK TABLES `spot_system` WRITE;

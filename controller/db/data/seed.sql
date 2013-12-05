@@ -16,29 +16,9 @@ INSERT INTO `call_data` VALUES (1,1,'4024768786','4024292891','2013-11-05 15:55:
 UNLOCK TABLES;
 
 
-/* LOCK TABLES `call_history` WRITE; */
-/* INSERT INTO `call_history` VALUES (1,0,'4024768786','2013-11-05 15:55:42','4024292891','PT5.224S',NULL,1,NULL,'Call Answered'),(2,0,'4024768786','2013-11-05 15:57:56','4024292891','PT191.424S',NULL,1,NULL,'Call Answered'),(3,0,'4024768786','2013-11-06 08:42:15','4024292891','PT191.655S',NULL,1,NULL,'Call Answered'),(4,0,'4024768786','2013-11-18 16:09:55','338','PT2.916S',NULL,1,6,'Call Answered'),(5,0,'4024768786','2013-11-20 14:12:52','338','PT0S',NULL,1,6,'Call Failed'),(6,0,'4024768786','2013-11-21 13:48:29','338','PT32.906S',NULL,1,6,'Call Answered'); */
-/* UNLOCK TABLES; */
-
-
 LOCK TABLES `conference` WRITE;
 INSERT INTO `conference` VALUES (1,0,NULL,'Brian Johnston\'s Conference','\0','\0',2,NULL,NULL),(2,0,NULL,'Scott Farwell\'s Conference','\0','\0',3,NULL,NULL),(3,0,NULL,'Ricardo Mastroleo\'s Conference','\0','\0',4,NULL,NULL),(4,0,NULL,'Ladi Akinyemi\'s Conference','\0','\0',5,NULL,NULL),(5,0,NULL,'test Listen\'s Conference','\0','\0',6,NULL,NULL);
 UNLOCK TABLES;
-
-
-/* LOCK TABLES `mail_configuration` WRITE; */
-/* INSERT INTO `mail_configuration` VALUES (1,0,'listen@newnet.com','pod51018.outlook.com','Summer2013!','listen@newnet.com'); */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `menu` WRITE; */
-/* INSERT INTO `menu` VALUES (12,0,34,'',1,'In Office Attendant','newestinofficewelcome.wav',35); */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `menu_action` WRITE; */
-/* INSERT INTO `menu_action` VALUES (12,36),(12,37),(12,38); */
-/* UNLOCK TABLES; */
 
 
 LOCK TABLES `number_route` WRITE;
@@ -46,35 +26,9 @@ INSERT INTO `number_route` VALUES (1,0,'Attendant',NULL,1,'4022612738','EXTERNAL
 UNLOCK TABLES;
 
 
-/* LOCK TABLES `organization` WRITE; */
-/* INSERT INTO `organization` VALUES (1,0,'Mimio','mimio',''); */
-/* UNLOCK TABLES; */
-
-
 LOCK TABLES `organization_enabled_features` WRITE;
 INSERT INTO `organization_enabled_features` VALUES (1,'IPPBX'),(1,'FINDME'),(1,'CONFERENCING'),(1,'ATTENDANT'),(1,'BROADCAST'),(1,'VOICEMAIL');
 UNLOCK TABLES;
-
-
-/* LOCK TABLES `outdial_restriction` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `outdial_restriction_exception` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `outgoing_fax` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `outgoing_fax_user_file` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `participant` WRITE; */
-/* UNLOCK TABLES; */
-
 
 LOCK TABLES `phone_number` WRITE;
 INSERT INTO `phone_number` VALUES (1,1,NULL,1,NULL,'357',2,'com.interact.listen.pbx.Extension',NULL,NULL),(2,0,NULL,NULL,NULL,'371',3,'com.interact.listen.pbx.Extension',NULL,NULL),(3,0,NULL,NULL,NULL,'112',4,'com.interact.listen.pbx.Extension',NULL,NULL),(4,0,NULL,NULL,NULL,'116',5,'com.interact.listen.pbx.Extension',NULL,NULL),(5,1,NULL,NULL,NULL,'338',6,'com.interact.listen.pbx.Extension',NULL,NULL);
@@ -84,46 +38,6 @@ UNLOCK TABLES;
 LOCK TABLES `pin` WRITE;
 INSERT INTO `pin` VALUES (1,0,1,'394047','ACTIVE'),(2,0,1,'828577','ADMIN'),(3,0,1,'259507','PASSIVE'),(4,0,2,'478301','ACTIVE'),(5,0,2,'460858','ADMIN'),(6,0,2,'020274','PASSIVE'),(7,0,3,'691106','ACTIVE'),(8,0,3,'519479','ADMIN'),(9,0,3,'188413','PASSIVE'),(10,0,4,'502138','ACTIVE'),(11,0,4,'962468','ADMIN'),(12,0,4,'267099','PASSIVE'),(13,0,5,'898090','ACTIVE'),(14,0,5,'082916','ADMIN'),(15,0,5,'314673','PASSIVE');
 UNLOCK TABLES;
-
-
-/* LOCK TABLES `prompt_override` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `recording` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `role` WRITE; */
-/* INSERT INTO `role` VALUES (1,0,'ROLE_CUSTODIAN'),(2,0,'ROLE_ATTENDANT_ADMIN'),(3,0,'ROLE_ORGANIZATION_ADMIN'),(4,0,'ROLE_CONFERENCE_USER'),(5,0,'ROLE_FAX_USER'),(6,0,'ROLE_FINDME_USER'),(7,0,'ROLE_VOICEMAIL_USER'); */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `scheduled_conference` WRITE; */
-/* UNLOCK TABLES; */
-
-
-LOCK TABLES `single_organization_configuration` WRITE;
-INSERT INTO `single_organization_configuration` VALUES (1,0,1);
-UNLOCK TABLES;
-
-
-/* LOCK TABLES `spot_system` WRITE; */
-/* INSERT INTO `spot_system` VALUES (1,0,'http://listen1.nimblevox.com/spot'); */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `time_restriction` WRITE; */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `transcription_configuration` WRITE; */
-/* UNLOCK TABLES; */
-
-
-
-/* LOCK TABLES `user_file` WRITE; */
-/* UNLOCK TABLES; */
 
 
 LOCK TABLES `user_role` WRITE;
@@ -136,5 +50,3 @@ INSERT INTO `voicemail_preferences` VALUES (1,1,'brian.johnston@newnet.com','',
 UNLOCK TABLES;
 
 
-/* LOCK TABLES `voicemail_preferences_time_restriction` WRITE; */
-/* UNLOCK TABLES; */

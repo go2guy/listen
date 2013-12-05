@@ -1,4 +1,4 @@
-/* drop database if exists listen2; */
+drop database if exists listen2;
 create database if not exists listen2;
 use listen2;
 
