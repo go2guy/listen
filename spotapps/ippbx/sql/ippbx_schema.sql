@@ -23,10 +23,12 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 
 CREATE TABLE IF NOT EXISTS `active_clients` (
+  id bigint(20) not null primary key auto_increment,
   `connection_id` varchar(255) NOT NULL,
   `client` varchar(50) NOT NULL,
   `session_id` varchar(255) default NULL,
-  `time_stamp` int(11) NOT NULL
+  `time_stamp` int(11) NOT NULL,
+  index (time_stamp)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
