@@ -26,8 +26,9 @@ INSERT INTO `number_route` VALUES (1,0,'Attendant',NULL,1,'4022612738','EXTERNAL
 UNLOCK TABLES;
 
 
+/* %%mark%% */
 LOCK TABLES `organization_enabled_features` WRITE;
-INSERT INTO `organization_enabled_features` VALUES (1,'IPPBX'),(1,'FINDME'),(1,'CONFERENCING'),(1,'ATTENDANT'),(1,'BROADCAST'),(1,'VOICEMAIL');
+INSERT INTO `organization_enabled_features` VALUES (1,1,'IPPBX'),(2,1,'FINDME'),(3,1,'CONFERENCING'),(4,1,'ATTENDANT'),(5,1,'BROADCAST'),(6,1,'VOICEMAIL');
 UNLOCK TABLES;
 
 LOCK TABLES `phone_number` WRITE;

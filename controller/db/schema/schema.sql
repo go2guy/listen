@@ -208,12 +208,15 @@ CREATE TABLE `device_registration` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+/* %%mark%% */
 DROP TABLE IF EXISTS `device_registration_registered_types`;
 CREATE TABLE `device_registration_registered_types` (
+  id bigint(20) not null primary key auto_increment,
   `device_registration_id` bigint(20) NOT NULL,
   `registered_type` varchar(255) default NULL,
   KEY `FK4606E719490FB402` (`device_registration_id`),
-  CONSTRAINT `FK4606E719490FB402` FOREIGN KEY (`device_registration_id`) REFERENCES `device_registration` (`id`)
+  CONSTRAINT `FK4606E719490FB402` FOREIGN KEY (`device_registration_id`) REFERENCES `device_registration` (`id`),
+  index (registered_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -342,14 +345,17 @@ CREATE TABLE `menu` (
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
 
+/* %%mark%% */
 DROP TABLE IF EXISTS `menu_action`;
 CREATE TABLE `menu_action` (
+  id bigint(20) not null primary key auto_increment,
   `menu_keypress_actions_id` bigint(20) default NULL,
   `action_id` bigint(20) default NULL,
   KEY `FK424A6D162E667B4` (`menu_keypress_actions_id`),
   KEY `FK424A6D16C2B2CDD5` (`action_id`),
   CONSTRAINT `menu_action_action_id_fk` FOREIGN KEY (`action_id`) REFERENCES `action` (`id`),
-  CONSTRAINT `menu_action_menu_keypress_fk` FOREIGN KEY (`menu_keypress_actions_id`) REFERENCES `menu` (`id`)
+  CONSTRAINT `menu_action_menu_keypress_fk` FOREIGN KEY (`menu_keypress_actions_id`) REFERENCES `menu` (`id`),
+  index (action_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -370,14 +376,17 @@ CREATE TABLE `time_restriction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+/* %%mark%% */
 DROP TABLE IF EXISTS `menu_group_time_restriction`;
 CREATE TABLE `menu_group_time_restriction` (
+  id bigint(20) not null primary key auto_increment,
   `menu_group_restrictions_id` bigint(20) default NULL,
   `time_restriction_id` bigint(20) default NULL,
   KEY `FK910B81FA382B3C56` (`menu_group_restrictions_id`),
   KEY `FK910B81FA6B8BA9DE` (`time_restriction_id`),
   CONSTRAINT `menu_group_time_menu_grou_fk` FOREIGN KEY (`menu_group_restrictions_id`) REFERENCES `menu_group` (`id`),
-  CONSTRAINT `menu_group_time_time_rest_fk` FOREIGN KEY (`time_restriction_id`) REFERENCES `time_restriction` (`id`)
+  CONSTRAINT `menu_group_time_time_rest_fk` FOREIGN KEY (`time_restriction_id`) REFERENCES `time_restriction` (`id`),
+  index (time_restriction_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -398,12 +407,15 @@ CREATE TABLE `number_route` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
+/* %%mark%% */
 DROP TABLE IF EXISTS `organization_enabled_features`;
 CREATE TABLE `organization_enabled_features` (
+  id bigint(20) not null primary key auto_increment,
   `organization_id` bigint(20) NOT NULL,
   `listen_feature` varchar(255) default NULL,
   KEY `FK8CA0C50756D05B56` (`organization_id`),
-  CONSTRAINT `organization_en_organizat_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+  CONSTRAINT `organization_en_organizat_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
+  index (listen_feature)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -466,15 +478,18 @@ CREATE TABLE `user_file` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+/* %%mark%% */
 DROP TABLE IF EXISTS `outgoing_fax_user_file`;
 CREATE TABLE `outgoing_fax_user_file` (
+  id bigint(20) not null primary key auto_increment,
   `outgoing_fax_source_files_id` bigint(20) default NULL,
   `user_file_id` bigint(20) default NULL,
   `source_files_idx` int(11) default NULL,
   KEY `FK7A26073B813442AD` (`user_file_id`),
   KEY `FK7A26073B74452195` (`outgoing_fax_source_files_id`),
   CONSTRAINT `FK7A26073B813442AD` FOREIGN KEY (`user_file_id`) REFERENCES `user_file` (`id`),
-  CONSTRAINT `outgo_fax_user_outgo_fax_sour_id_fk` FOREIGN KEY (`outgoing_fax_source_files_id`) REFERENCES `outgoing_fax` (`id`)
+  CONSTRAINT `outgo_fax_user_outgo_fax_sour_id_fk` FOREIGN KEY (`outgoing_fax_source_files_id`) REFERENCES `outgoing_fax` (`id`),
+  index (user_file_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -651,8 +666,10 @@ CREATE TABLE `voicemail_preferences` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 
+/* %%mark%% */
 DROP TABLE IF EXISTS `voicemail_preferences_time_restriction`;
 CREATE TABLE `voicemail_preferences_time_restriction` (
+  id bigint(20) not null primary key auto_increment,
   `voicemail_preferences_email_time_restrictions_id` bigint(20) default NULL,
   `time_restriction_id` bigint(20) default NULL,
   `voicemail_preferences_sms_time_restrictions_id` bigint(20) default NULL,
@@ -661,5 +678,6 @@ CREATE TABLE `voicemail_preferences_time_restriction` (
   KEY `FK566E6E5776CE5F94` (`voicemail_preferences_sms_time_restrictions_id`),
   CONSTRAINT `voicemail_prefe2_email_time_fk` FOREIGN KEY (`voicemail_preferences_email_time_restrictions_id`) REFERENCES `voicemail_preferences` (`id`),
   CONSTRAINT `voicemail_prefe2_sms_time_r_fk` FOREIGN KEY (`voicemail_preferences_sms_time_restrictions_id`) REFERENCES `voicemail_preferences` (`id`),
-  CONSTRAINT `voicemail_prefe2_time_restr_fk` FOREIGN KEY (`time_restriction_id`) REFERENCES `time_restriction` (`id`)
+  CONSTRAINT `voicemail_prefe2_time_restr_fk` FOREIGN KEY (`time_restriction_id`) REFERENCES `time_restriction` (`id`),
+  index (voicemail_preferences_sms_time_restrictions_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

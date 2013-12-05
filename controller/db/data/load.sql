@@ -32,8 +32,9 @@ INSERT INTO `menu` VALUES (12,0,34,'',1,'In Office Attendant','newestinofficewe
 UNLOCK TABLES;
 
 
+/* %%mark%% */
 LOCK TABLES `menu_action` WRITE;
-INSERT INTO `menu_action` VALUES (12,36),(12,37),(12,38);
+INSERT INTO `menu_action` VALUES (1,12,36),(2,12,37),(3,12,38);
 UNLOCK TABLES;
 
 LOCK TABLES `role` WRITE;
