@@ -6,11 +6,13 @@ import com.interact.listen.android.GoogleAuthConfiguration
 import com.interact.listen.conferencing.ConferencingConfiguration
 import com.interact.listen.history.*
 import com.interact.listen.license.ListenFeature
+import com.interact.listen.acd.*
 import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import org.joda.time.LocalDateTime
 import org.joda.time.Period
+import org.apache.log4j.Logger
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
@@ -250,6 +252,144 @@ class AdministrationController {
         redirect(action: 'outdialing')
     }
 
+    def skills = {
+        
+        log.debug "Lets access ACD skills"
+        
+        render(view: 'skills', model: skillModel())
+    }
+    
+    def addSkill = {
+        
+        log.debug "Add new skill with params [${params}]"
+        
+        def organization = authenticatedUser.organization
+        def skill = new Skill()
+        
+        skill.skillname = params.skillname
+        skill.organization = organization
+        skill.description = params.description
+
+        if(skill.validate() && skill.save()) {
+            historyService.createdSkill(skill)
+            flash.successMessage = message(code: 'skill.created.message')
+            redirect(action: 'skills')
+        } else {
+            def model = skillModel()
+            model.newSkill = skill
+            render(view: 'skills', model: model)
+        }
+    }
+
+    def editSkill = {
+        
+        log.debug "Edit skill with params [${params}]"
+        
+        def organization = authenticatedUser.organization
+        def skill = Skill.get(params.id)
+        if(!skill) {
+            flash.errorMessage = message(code: 'skill.notFound.message')
+            redirect(action: 'skills')
+            return
+        }
+        
+        def orgUsers = User.findAllByOrganizationAndEnabled(organization, true, [sort: 'realName', order: 'asc'])
+        def skillUsers = UserSkill.findAllBySkill(skill)
+        
+        render(view: 'editSkill', model: [skill: skill, orgUsers: orgUsers, skillUsers: skillUsers] )
+    }
+
+    def updateSkill = {
+        
+        log.debug "Update skill with params [${params}]"
+        
+        def skill = Skill.get(params.id)
+        if(!skill) {
+            flash.errorMessage = message(code: 'skill.notFound.message')
+            redirect(action: 'skills')
+            return
+        }
+        
+        // Do the simple part and update the skill
+        skill.skillname = params.skillname
+        skill.description = params.description
+        skill.save()
+        
+        // We're going to make a list of our skills so we can work with it easier
+        def userIds = []
+        if (params.userIds.getClass() == String) {
+            userIds << params.userIds
+        } else {
+            params.userIds.each { id ->
+                userIds << id
+            }
+        }
+        
+        log.debug "Skill [${skill.skillname}] is needed for userIds [${userIds}]"
+
+        // loop through existing users.  Remove users that are no longer selected.  Remove users that we aleady have from the users list that we plan on adding
+        def skillUsers = UserSkill.findAllBySkill(skill)
+        skillUsers.each { skillUser ->
+            
+            if ( userIds.contains(skillUser.user.id.toString()) ) {
+                log.debug "User [${skillUser.user.username}] already has skill [${skill.skillname}] and we are keeping it"
+                // we'll remove it from the users list, since we already have it and don't need to add it to the db
+                userIds.remove(skillUser.user.id.toString())
+            } else {
+                log.debug "User [${skillUser.user.username}] has skill [${skill.skillname}] and we need to delete it"
+                historyService.deletedUserSkill(skillUser)
+                skillUser.delete()
+            }
+        }
+         
+        // We should now be left with a list of users that has removed users that already have the skill, and we've deleted user skills from the db that are no longer selected
+        userIds.each { userId ->
+            
+            def userskill = new UserSkill()
+            userskill.user = User.findById(userId.toInteger())
+            if(!userskill.user) {
+                flash.errorMessage = message(code: 'user.notFound.message')
+                redirect(action: 'skills')
+                return
+            }
+            
+            log.debug "Working to add skill [${skill.skillname}] to user [${userskill.user.username}]"
+
+            userskill.skill = skill
+            
+            if(userskill.validate() && userskill.save()) {
+                historyService.addedUserSkill(userskill)
+            } else {
+                log.error "Failed to add skill [${skill.skillname}] to user [${userskill.user.username}]"
+            }
+        }
+        
+        historyService.updatedSkill(skill)
+        flash.successMessage = message(code: 'skill.updated.message')
+        
+        def model = skillModel()
+        render(view: 'skills', model: model)
+    }
+    
+    def deleteSkill = {
+
+        log.debug "Delete skill with params [${params}]"
+        
+        def skill = Skill.get(params.id)
+        if(!skill) {
+            flash.errorMessage = message(code: 'skill.notFound.message')
+            redirect(action: 'skills')
+            return
+        }
+
+        skill.delete()
+        historyService.deletedSkill(skill)
+        flash.successMessage = message(code: 'skill.deleted.message')
+        
+        def model = skillModel()
+        render(view: 'skills', model: model)
+    }
+    
     def history = {
         def organization = authenticatedUser.organization
 
@@ -285,7 +425,7 @@ class AdministrationController {
     def outdialing = {
         render(view: 'outdialing', model: outdialingModel())
     }
-
+    
     def phones = {
         render(view: 'phones', model: phonesModel())
     }
@@ -641,6 +781,32 @@ class AdministrationController {
         ]
     }
 
+    private def skillModel() {
+        def organization = authenticatedUser.organization
+        log.debug "Checking skills for organization [${organization.name}]"
+        def skills = Skill.findAllByOrganization(organization, [sort: 'skillname', order: 'asc'])
+        log.debug "Organization [${organization.id}] has [${skills.size()}] skills configured"
+        def skillsCount = []
+        skills.each { skill ->
+            def userskills = UserSkill.findAllBySkill(skill)
+            def userCount = 0
+            userskills.each { userskill ->
+                if (userskill.user.enabled == true){
+                    userCount++
+                } else {
+                    log.debug "Will not count user [${userskill.user.realName}] as they are disabled"
+                }
+            }
+            skill.userCount = userCount
+            skillsCount << skill
+            log.debug "Organization [${organization.id}] has [${skill}] skill [${skill.userCount}]"
+        }
+        
+        return [
+            skills: skillsCount
+        ] 
+    }
+    
     private def routingModel() {
         def organization = authenticatedUser.organization
         def external = NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.EXTERNAL, [sort: 'pattern', order: 'asc'])

@@ -360,34 +360,32 @@ ul.messages.error {
 
       <ul id="application-menu" class="tab-menu">
         <listen:canAccessAny features="VOICEMAIL,FAX">
-          <sec:ifAnyGranted roles="ROLE_VOICEMAIL_USER,ROLE_FAX_USER">
-            <li class="messages<g:if test="${['messages', 'voicemail', 'fax'].contains(pageProperty(name: 'meta.tab'))}"> current</g:if>"><g:link controller="messages" action="inbox"><g:message code="tab.menu.messages"/><span id="new-message-count">(<listen:newMessageCount/>)</span></g:link></li>
-          </sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_VOICEMAIL_USER,ROLE_FAX_USER">
+              <li class="messages<g:if test="${['messages', 'voicemail', 'fax'].contains(pageProperty(name: 'meta.tab'))}"> current</g:if>"><g:link controller="messages" action="inbox"><g:message code="tab.menu.messages"/><span id="new-message-count">(<listen:newMessageCount/>)</span></g:link></li>
+            </sec:ifAnyGranted>
         </listen:canAccessAny>
         <listen:canAccess feature="CONFERENCING">
-          <sec:ifAllGranted roles="ROLE_CONFERENCE_USER">
-            <li class="conferencing<g:if test="${pageProperty(name: 'meta.tab') == 'conferencing'}"> current</g:if>"><g:link controller="conferencing"><g:message code="tab.menu.conferencing"/></g:link></li>
-          </sec:ifAllGranted>
+            <sec:ifAllGranted roles="ROLE_CONFERENCE_USER">
+              <li class="conferencing<g:if test="${pageProperty(name: 'meta.tab') == 'conferencing'}"> current</g:if>"><g:link controller="conferencing"><g:message code="tab.menu.conferencing"/></g:link></li>
+            </sec:ifAllGranted>
         </listen:canAccess>
         <listen:canAccess feature="FINDME">
-          <sec:ifAllGranted roles="ROLE_FINDME_USER">
-            <li class="findme<g:if test="${pageProperty(name: 'meta.tab') == 'findme'}"> current</g:if>"><g:link controller="findme"><g:message code="tab.menu.findme"/></g:link></li>
-          </sec:ifAllGranted>
+            <sec:ifAllGranted roles="ROLE_FINDME_USER">
+              <li class="findme<g:if test="${pageProperty(name: 'meta.tab') == 'findme'}"> current</g:if>"><g:link controller="findme"><g:message code="tab.menu.findme"/></g:link></li>
+            </sec:ifAllGranted>
         </listen:canAccess>
         <listen:canAccess feature="ATTENDANT">
-          <sec:ifAllGranted roles="ROLE_ATTENDANT_ADMIN">
-            <li class="attendant<g:if test="${pageProperty(name: 'meta.tab') == 'attendant'}"> current</g:if>"><g:link controller="attendant"><g:message code="tab.menu.attendant"/></g:link></li>
-          </sec:ifAllGranted>
+            <sec:ifAllGranted roles="ROLE_ATTENDANT_ADMIN">
+                <li class="attendant<g:if test="${pageProperty(name: 'meta.tab') == 'attendant'}"> current</g:if>"><g:link controller="attendant"><g:message code="tab.menu.attendant"/></g:link></li>
+            </sec:ifAllGranted>
         </listen:canAccess>
-
-        <sec:ifAllGranted roles="ROLE_CUSTODIAN">
-          <li class="organization<g:if test="${pageProperty(name: 'meta.tab') == 'organization'}"> current</g:if>"><g:link controller="organization"><g:message code="tab.menu.organizations"/></g:link></li>
-        </sec:ifAllGranted>
-
-        <listen:canAccess feature="Listen ACD">
-          %{-- <sec:ifAllGranted roles="ROLE_ACD_USER"> --}%
-            <li class="acd<g:if test="${pageProperty(name: 'meta.tab') == 'acd'}"> current</g:if>"><g:link controller="acd"><g:message code="tab.menu.acd"/></g:link></li>
-          %{-- </sec:ifAllGranted> --}%
+            <sec:ifAllGranted roles="ROLE_CUSTODIAN">
+                <li class="organization<g:if test="${pageProperty(name: 'meta.tab') == 'organization'}"> current</g:if>"><g:link controller="organization"><g:message code="tab.menu.organizations"/></g:link></li>
+            </sec:ifAllGranted>
+        <listen:canAccess feature="ACD">
+            <sec:ifAllGranted roles="ROLE_ACD_USER">
+                <li class="acd<g:if test="${pageProperty(name: 'meta.tab') == 'acd'}"> current</g:if>"><g:link controller="acd"><g:message code="tab.menu.acd"/></g:link></li>
+            </sec:ifAllGranted>
         </listen:canAccess>
 
       </ul>

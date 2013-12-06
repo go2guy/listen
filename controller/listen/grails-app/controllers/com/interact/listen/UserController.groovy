@@ -3,6 +3,9 @@ package com.interact.listen
 import com.interact.listen.license.ListenFeature
 import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse
+import com.interact.listen.acd.*
+import com.interact.listen.history.*
+import org.apache.log4j.Logger
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class UserController {
@@ -63,7 +66,21 @@ class UserController {
             return
         }
 
-        render(view: 'edit', model: [user: user])
+        log.debug "Lets edit user [${user.username}]"
+        
+        def organization = user.organization
+        log.debug "During edit, we'll check skills for organization [${organization.name}]"
+        def orgSkills = Skill.findAllByOrganization(organization, [sort: 'skillname', order: 'asc'])
+        orgSkills.each { skill ->
+            log.debug "During user edit, organization [${organization.name}] has [${skill}]"
+        }
+        
+        def userSkills = UserSkill.findAllByUser(user)
+        
+        render(view: 'edit', 
+            model: [user: user, 
+            orgSkills: orgSkills,
+            userSkills: userSkills])
     }
 
     def enable = {
@@ -132,6 +149,7 @@ class UserController {
     }
 
     def save = {
+        log.debug "Save User params [${params}]"
         def user = userCreationService.createUser(params, authenticatedUser.organization)
         if(user.hasErrors()) {
             render(view: 'create', model: [user: user])
@@ -177,6 +195,7 @@ class UserController {
     }
 
     def update = {
+        log.debug "Update User params [${params}]"
         def user = User.get(params.id)
         if(!user) {
             flash.errorMessage = 'User not found'

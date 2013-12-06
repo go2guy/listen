@@ -4,6 +4,7 @@ import com.interact.listen.*
 import com.interact.listen.attendant.*
 import com.interact.listen.conferencing.*
 import com.interact.listen.fax.*
+import com.interact.listen.acd.*
 import com.interact.listen.pbx.*
 import com.interact.listen.pbx.findme.*
 import com.interact.listen.voicemail.*
@@ -253,6 +254,33 @@ class HistoryService {
               onUser: voicemail.owner)
     }
 
+    void addedUserSkill(UserSkill userSkill) {
+        write(action: Action.ADDED_ACD_SKILL_USER,
+              description: "Add ACD skill [${userSkill.skill.skillname}]",
+              onUser: userSkill.user )
+    }
+    
+    void deletedUserSkill(UserSkill userSkill) {
+        write(action: Action.DELETED_ACD_SKILL_USER,
+              description: "Removed ACD skill [${userSkill.skill.skillname}]",
+              onUser: userSkill.user )
+    }
+    
+    void createdSkill(Skill skill) {
+        write(action: Action.CREATED_ACD_SKILL,
+              description: "Created ACD skill [${skill.skillname}] for org [${skill.organization}]")
+    }
+
+    void updatedSkill(Skill skill) {
+        write(action: Action.UPDATED_ACD_SKILL,
+              description: "Updated ACD skill [${skill.skillname}] for org [${skill.organization}]")
+    }
+        
+    void deletedSkill(Skill skill) {
+        write(action: Action.DELETED_ACD_SKILL,
+              description: "Deleted ACD skill [${skill.skillname}] for org [${skill.organization}]")
+    }
+    
     void disabledAndroidCloudToDevice() {
         write(action: Action.DISABLED_ANDROID_CLOUD_TO_DEVICE,
               description: "Disabled Android Cloud-to-Device")

@@ -21,6 +21,9 @@ class ButtonMenuTagLib {
                 button(attrs.button == 'phones', 'administration', 'phones', 'button.menu.administration.phones')
                 button(attrs.button == 'outdialing', 'administration', 'outdialing', 'button.menu.administration.outdialing')
                 button(attrs.button == 'configuration', 'administration', 'configuration', 'button.menu.administration.configuration')
+                if(licenseService.canAccess(ListenFeature.ACD)) {
+                    button(attrs.button == 'skills', 'administration', 'skills', 'button.menu.administration.skills')
+                }
                 button(attrs.button == 'android', 'administration', 'android', 'button.menu.administration.android')
                 button(attrs.button == 'history', 'administration', 'history', 'button.menu.administration.history')
                 button(attrs.button == 'reports', 'reports', 'list', 'button.menu.administration.reports')

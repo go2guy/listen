@@ -681,3 +681,30 @@ CREATE TABLE `voicemail_preferences_time_restriction` (
   CONSTRAINT `voicemail_prefe2_time_restr_fk` FOREIGN KEY (`time_restriction_id`) REFERENCES `time_restriction` (`id`),
   index (voicemail_preferences_sms_time_restrictions_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `skill`;
+CREATE TABLE `skill` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `version` bigint(20) NOT NULL,
+  `skillname` varchar(32) NOT NULL,
+  `organization_id` bigint(20) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `skillname` (`skillname`,`organization_id`),
+  KEY `FK7C7614E356D05B56` (`organization_id`),
+  CONSTRAINT `skill_organiza_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `user_skill`;
+CREATE TABLE `user_skill` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `version` bigint(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
+  `skill_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`,`skill_id`),
+  KEY `FK7C7614E356D05D43` (`user_id`),
+  KEY `FK7C7614E356D05D53` (`skill_id`),
+  CONSTRAINT `user_skill_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
+  CONSTRAINT `user_skill_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  

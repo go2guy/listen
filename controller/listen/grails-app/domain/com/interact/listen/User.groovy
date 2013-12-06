@@ -7,17 +7,17 @@ import com.interact.listen.acd.Status
 
 class User {
 
-  boolean accountExpired
-  boolean accountLocked
+    boolean accountExpired
+    boolean accountLocked
     boolean isActiveDirectory = false
     String emailAddress
-  boolean enabled
+    boolean enabled
     DateTime lastLogin
     Organization organization // TODO should user belongsTo organization? (maybe be tricky if organization is nullable)
-  String password
+    String password
     String realName
-  boolean passwordExpired
-  String username
+    boolean passwordExpired
+    String username
 
     String pass
     String confirm
@@ -32,13 +32,13 @@ class User {
        status is used for ACD functionality */
 
     // TODO should organization be nullable (below)?
-  static constraints = {
+    static constraints = {
         emailAddress blank: false, email: true, maxSize: 100
         lastLogin nullable: true
         organization nullable: true
-    password blank: false
+        password blank: false
         realName blank: false, maxSize: 50
-    username blank: false, unique: 'organization', maxSize: 50, matches: '^[^:]+$'
+        username blank: false, unique: 'organization', maxSize: 50, matches: '^[^:]+$'
 
         // transient pass and confirm validation for screen entry
         pass nullable: true, blank: true, validator: { val, obj ->
