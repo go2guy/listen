@@ -75,10 +75,13 @@ class UserController {
             log.debug "During user edit, organization [${organization.name}] has [${skill}]"
         }
         
+        def acdLicense = licenseService.canAccess(ListenFeature.ACD)
+        
         def userSkills = UserSkill.findAllByUser(user)
         
         render(view: 'edit', 
             model: [user: user, 
+            acdLicense: acdLicense,
             orgSkills: orgSkills,
             userSkills: userSkills])
     }

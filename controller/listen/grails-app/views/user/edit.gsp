@@ -40,9 +40,11 @@
         <label for="emailAddress"><g:message code="user.emailAddress.label"/></label>
         <g:textField name="emailAddress" value="${fieldValue(bean: user, field: 'emailAddress')}" class="${listen.validationClass(bean: user, field: 'emailAddress')}"/>
 
-        <label for="skills"><g:message code="user.skills.label"/></label>
-        <g:select id="skillIds" name="skillIds" multiple="multiple" optionKey="id" optionValue="skillname" from="${orgSkills}" value="${userSkills.skill}"/>
-    
+        <g:if test="${acdLicense}">
+            <label for="skills"><g:message code="user.skills.label"/></label>
+            <g:select id="skillIds" name="skillIds" multiple="multiple" optionKey="id" optionValue="skillname" from="${orgSkills}" value="${userSkills.skill}"/>
+        </g:if>
+            
         <ul class="form-buttons">
           <li><g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/></li>
         </ul>

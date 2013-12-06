@@ -1,4 +1,5 @@
 package com.interact.listen
+import com.interact.listen.license.ListenFeature
 import com.interact.listen.acd.*
 import com.interact.listen.history.*
 import org.apache.log4j.Logger
@@ -8,6 +9,7 @@ class UserService {
     def historyService
     def ldapService
     def springSecurityService
+    def licenseService
 
     User update(User user, def params, boolean byOperator = false) {
         def originalEmailAddress = user.emailAddress
@@ -29,51 +31,53 @@ class UserService {
         if(user.validate() && user.save()) {
             cloudToDeviceService.sendContactSync()
 
-            log.debug "User has been saved, lets save skills [${params.skillIds}]"
-            // We're going to make a list of our skills so we can work with it easier
-            def skillIds = []
-            if (params.skillIds.getClass() == String) {
-                skillIds << params.skillIds
-            } else {
-                params.skillIds.each { id ->
-                    skillIds << id
-                }
-            }
-            
-            log.debug "Params skill count [${skillIds}][${skillIds.size()}]"
-            // loop through existing user skills.  Remove skills that are no longer selected.  Remove skills that we aleady have from the skills list that we plan on adding
-            def existingUserSkills = UserSkill.findAllByUser(user)
-            def skillCnt = UserSkill.countByUser(user)
-            log.debug "Found [${skillCnt}] skills for this user"
-            existingUserSkills.each { existingUserSkill ->
-                if ( skillIds.contains(existingUserSkill.skill.id.toString()) ) {
-                    log.debug "User [${user.username}] already has skill [${existingUserSkill.skill.skillname}] and we are keeping it"
-                    // we'll remove it from the skills list, since we already have it and don't need to add it to the db
-                    skillIds.remove(existingUserSkill.skill.id.toString())
+            if (licenseService.canAccess(ListenFeature.ACD)) {
+                log.debug "User has been saved, lets save skills [${params.skillIds}]"
+                // We're going to make a list of our skills so we can work with it easier
+                def skillIds = []
+                if (params.skillIds.getClass() == String) {
+                    skillIds << params.skillIds
                 } else {
-                    log.debug "User [${user.username}] already has skill [${existingUserSkill.skill.skillname}] and we need to delete it"
-                    historyService.deletedUserSkill(existingUserSkill)
-                    existingUserSkill.delete()
+                    params.skillIds.each { id ->
+                        skillIds << id
+                    }
                 }
-            }
+                
+                log.debug "Params skill count [${skillIds}][${skillIds.size()}]"
+                // loop through existing user skills.  Remove skills that are no longer selected.  Remove skills that we aleady have from the skills list that we plan on adding
+                def existingUserSkills = UserSkill.findAllByUser(user)
+                def skillCnt = UserSkill.countByUser(user)
+                log.debug "Found [${skillCnt}] skills for this user"
+                existingUserSkills.each { existingUserSkill ->
+                    if ( skillIds.contains(existingUserSkill.skill.id.toString()) ) {
+                        log.debug "User [${user.username}] already has skill [${existingUserSkill.skill.skillname}] and we are keeping it"
+                        // we'll remove it from the skills list, since we already have it and don't need to add it to the db
+                        skillIds.remove(existingUserSkill.skill.id.toString())
+                    } else {
+                        log.debug "User [${user.username}] already has skill [${existingUserSkill.skill.skillname}] and we need to delete it"
+                        historyService.deletedUserSkill(existingUserSkill)
+                        existingUserSkill.delete()
+                    }
+                }
+                        
+                // We should now be left with a list that has removed skills we already have, and we've deleted skills from the db that are no longer selected   
+                skillIds.each { skillId ->
                     
-            // We should now be left with a list that has removed skills we already have, and we've deleted skills from the db that are no longer selected   
-            skillIds.each { skillId ->
-                
-                log.debug "Working to add skill [${skillId}]"
-                def userskill = new UserSkill()
-                userskill.skill = Skill.findById(skillId.toInteger())
-                log.debug "User [${user.username}] requires skill [${userskill.skill.skillname}]"
-
-                userskill.user = user
-                
-                if(userskill.validate() && userskill.save()) {
-                    historyService.addedUserSkill(userskill)
-                } else {
-                    log.error "Failed to add skill [${userskill.skill.skillname}] to user [${user.username}]"
+                    log.debug "Working to add skill [${skillId}]"
+                    def userskill = new UserSkill()
+                    userskill.skill = Skill.findById(skillId.toInteger())
+                    log.debug "User [${user.username}] requires skill [${userskill.skill.skillname}]"
+    
+                    userskill.user = user
+                    
+                    if(userskill.validate() && userskill.save()) {
+                        historyService.addedUserSkill(userskill)
+                    } else {
+                        log.error "Failed to add skill [${userskill.skill.skillname}] to user [${user.username}]"
+                    }
                 }
             }
-            
+                
             if(originalEmailAddress != user.emailAddress) {
                 historyService.changedAccountEmailAddress(user, originalEmailAddress)
                 if(user.organization) {
