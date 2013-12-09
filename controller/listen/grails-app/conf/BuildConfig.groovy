@@ -58,7 +58,7 @@ grails.project.dependency.resolution = {
         compile('shared-ldap:shared-ldap:0.9.12')
         compile('shared-ldap:shared-ldap-constants:0.9.12')
         compile('commons-dbcp:commons-dbcp:1.4')
-        compile('org.apache.directory.server:apacheds-all:jar:1.5.4')
+//        compile('org.apache.directory.server:apacheds-all:jar:1.5.4')
 
         runtime 'commons-codec:commons-codec:1.4',
                 'commons-io:commons-io:1.4',
