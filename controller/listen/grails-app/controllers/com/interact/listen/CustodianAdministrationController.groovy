@@ -1,7 +1,8 @@
 package com.interact.listen
 
 import com.interact.listen.mail.MailConfiguration
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+//import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_CUSTODIAN'])
 class CustodianAdministrationController {

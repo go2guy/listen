@@ -1,7 +1,8 @@
 package com.interact.listen
 
 import com.interact.listen.pbx.Extension
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+//import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
 
 @Secured(['ROLE_SPOT_API'])

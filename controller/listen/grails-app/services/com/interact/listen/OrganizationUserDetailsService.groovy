@@ -1,8 +1,9 @@
 package com.interact.listen
 
+import grails.plugin.springsecurity.userdetails.GormUserDetailsService
 import org.apache.log4j.Logger
-import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+//import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -11,7 +12,7 @@ class OrganizationUserDetailsService extends GormUserDetailsService {
 
     private Logger _log = Logger.getLogger(getClass())
 
-	def grailsApplication
+//	def grailsApplication
 
     @Override
     UserDetails loadUserByUsername(String compositeUsername, boolean loadRoles) throws UsernameNotFoundException {

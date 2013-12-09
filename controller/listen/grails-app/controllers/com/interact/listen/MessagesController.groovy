@@ -2,7 +2,9 @@ package com.interact.listen
 
 import com.interact.listen.voicemail.Voicemail
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import org.joda.time.format.PeriodFormatterBuilder
 
 @Secured(['ROLE_VOICEMAIL_USER', 'ROLE_FAX_USER'])

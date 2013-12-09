@@ -8,7 +8,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CONFERENCE_HISTORY")
+@Table(name = "conference_history")
 public class ConferenceHistory extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

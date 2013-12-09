@@ -1,63 +1,63 @@
 class UrlMappings {
 
-	static mappings = {
+    static mappings = {
         "/api/accessNumbers"(controller: 'spotApi') {
             action = [
-                GET: 'listPhoneNumbers'
+                    GET: 'listPhoneNumbers'
             ]
         }
         "/api/accessNumbers/$id"(controller: 'spotApi') {
             action = [
-                GET: 'getPhoneNumber',
-                PUT: 'updatePhoneNumber'
+                    GET: 'getPhoneNumber',
+                    PUT: 'updatePhoneNumber'
             ]
         }
         "/api/callDetailRecords"(controller: 'spotApi', action: 'addCallHistory')
         "/api/conferences/$id"(controller: 'spotApi') {
             action = [
-                'GET': 'getConference',
-                'PUT': 'updateConference'
+                    'GET': 'getConference',
+                    'PUT': 'updateConference'
             ]
         }
         "/api/participants"(controller: 'spotApi') {
             action = [
-                'GET': 'getParticipants',
-                'POST': 'addParticipant'
+                    'GET': 'getParticipants',
+                    'POST': 'addParticipant'
             ]
         }
         "/api/participants/$id"(controller: 'spotApi') {
             action = [
-                'DELETE': 'deleteParticipant',
-                'PUT': 'updateParticipant'
+                    'DELETE': 'deleteParticipant',
+                    'PUT': 'updateParticipant'
             ]
         }
         "/api/pins"(controller: 'spotApi') {
             action = [
-                'GET': 'getPin'
+                    'GET': 'getPin'
             ]
         }
         "/api/subscribers"(controller: 'spotApi') {
             action = [
-                'GET': 'listUsers'
+                    'GET': 'listUsers'
             ]
         }
         "/api/subscribers/$id"(controller: 'spotApi') {
             action = [
-                'GET': 'getUser',
-                'PUT': 'updateUser'
+                    'GET': 'getUser',
+                    'PUT': 'updateUser'
             ]
         }
         "/api/voicemails"(controller: 'spotApi') {
             action = [
-                'GET': 'listVoicemails',
-                'POST': 'addVoicemail'
+                    'GET': 'listVoicemails',
+                    'POST': 'addVoicemail'
             ]
         }
         "/api/voicemails/$id"(controller: 'spotApi') {
             action = [
-                DELETE: 'deleteVoicemail',
-                GET: 'getVoicemail',
-                PUT: 'updateVoicemail'
+                    DELETE: 'deleteVoicemail',
+                    GET: 'getVoicemail',
+                    PUT: 'updateVoicemail'
             ]
         }
         "/api/routeCall"(controller: 'callRouting', action: 'routeCall')
@@ -80,21 +80,22 @@ class UrlMappings {
         "/meta/contacts/numberContacts/$id"(controller: 'spotApi', action: 'androidNumberContact')
         "/meta/registerDevice"(controller: 'spotApi') {
             action = [
-                GET: 'androidGetDeviceRegistration',
-                PUT: 'androidUpdateDeviceRegistration'
+                    GET: 'androidGetDeviceRegistration',
+                    PUT: 'androidUpdateDeviceRegistration'
             ]
         }
 
         "/$organizationContext/$controller?/$action?/$id?"{
             controller = { controller ?: 'login' }
         }
-		"/$controller/$action?/$id?"{
-			constraints {
-				// apply constraints here
-			}
-		}
+        "/$controller/$action?/$id?"{
+            constraints {
+                // apply constraints here
+            }
+        }
 /*		"/"(view:"/index")*/
         "/"(controller: "index")
-		"500"(view:'/error')
-	}
+        "500"(view:'/error')
+    }
 }
+

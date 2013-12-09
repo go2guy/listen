@@ -11,7 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.*;
 
 @Entity
-@Table(name = "CALL_RESTRICTION")
+@Table(name = "call_restriction")
 public class CallRestriction extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

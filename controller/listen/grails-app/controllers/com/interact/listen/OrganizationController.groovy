@@ -4,7 +4,9 @@ import com.interact.listen.license.ListenFeature
 import com.interact.listen.attendant.MenuGroup
 import com.interact.listen.pbx.NumberRoute
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_CUSTODIAN'])
 class OrganizationController {

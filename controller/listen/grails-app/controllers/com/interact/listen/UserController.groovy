@@ -1,7 +1,9 @@
 package com.interact.listen
 
 import com.interact.listen.license.ListenFeature
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse
 import com.interact.listen.acd.*
 import com.interact.listen.history.*

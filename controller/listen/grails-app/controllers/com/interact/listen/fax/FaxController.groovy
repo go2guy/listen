@@ -3,7 +3,9 @@ package com.interact.listen.fax
 import com.interact.listen.UserFile
 import com.interact.listen.util.FileTypeDetector
 import com.interact.listen.util.FileTypeDetectionException
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse
 import org.joda.time.format.DateTimeFormat
 import org.springframework.web.multipart.MultipartFile

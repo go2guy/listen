@@ -28,7 +28,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 @Entity
-@Table(name = "SUBSCRIBER")
+@Table(name = "subscriber")
 public class Subscriber extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

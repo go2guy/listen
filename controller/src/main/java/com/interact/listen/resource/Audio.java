@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(name = "AUDIO")
+@Table(name = "audio")
 public abstract class Audio extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

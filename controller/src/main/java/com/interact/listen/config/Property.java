@@ -7,7 +7,7 @@ import javax.persistence.*;
 import org.apache.commons.lang.StringUtils;
 
 @Entity
-@Table(name = "PROPERTY")
+@Table(name = "property")
 public class Property
 {
     public static enum Key

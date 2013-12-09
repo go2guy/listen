@@ -1,6 +1,6 @@
 import com.interact.listen.SingleOrganizationConfiguration
 import com.interact.listen.stats.Stat
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class LogoutController {
 

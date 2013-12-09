@@ -257,7 +257,11 @@ class TransientGrailsLdapServer implements InitializingBean, DisposableBean, Bea
 		while (ldifReader.hasNext()) {
 			def entry = ldifReader.next()
 			def ldif = LdifUtils.convertToLdif(entry, Integer.MAX_VALUE)
-			directoryService.adminSession.add(directoryService.newEntry(ldif, entry.dn.toString()))
+            String entryString = entry.dn.toString();
+            org.apache.directory.server.core.entry.ServerEntry serverEntry =
+                directoryService.newEntry(ldif, entryString);
+            org.apache.directory.server.core.CoreSession coreSession = directoryService.getAdminSession();
+			coreSession.add(serverEntry);
 		}
 	}
 

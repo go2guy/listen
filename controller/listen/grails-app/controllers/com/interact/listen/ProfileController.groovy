@@ -5,7 +5,9 @@ import com.interact.listen.history.CallHistory
 import com.interact.listen.pbx.Extension
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {

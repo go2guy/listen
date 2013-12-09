@@ -1,45 +1,43 @@
 import com.interact.listen.license.LicenseService
-import com.interact.listen.license.ListenFeature
-
-import grails.util.Environment
-import org.apache.log4j.Logger
 
 import org.joda.time.*
-import org.joda.time.contrib.hibernate.*
 
-// locations to search for config files that get merged into the main config
-// config files can either be Java properties files or ConfigSlurper scripts
+// locations to search for config files that get merged into the main config;
+// config files can be ConfigSlurper scripts, Java properties files, or classes
+// in the classpath in ConfigSlurper format
 
 // grails.config.locations = [ "classpath:${appName}-config.properties",
 //                             "classpath:${appName}-config.groovy",
 //                             "file:${userHome}/.grails/${appName}-config.properties",
 //                             "file:${userHome}/.grails/${appName}-config.groovy"]
 
-// if(System.properties["${appName}.config.location"]) {
+// if (System.properties["${appName}.config.location"]) {
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
-println "Our appname is [${appName}]"
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
-grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
-                      xml: ['text/xml', 'application/xml'],
-                      text: 'text/plain',
-                      js: 'text/javascript',
-                      rss: 'application/rss+xml',
-                      atom: 'application/atom+xml',
-                      css: 'text/css',
-                      csv: 'text/csv',
-                      all: '*/*',
-                      json: ['application/json','text/json'],
-                      form: 'application/x-www-form-urlencoded',
-                      multipartForm: 'multipart/form-data',
-                      xls: 'application/vnd.ms-excel'
-                    ]
+grails.mime.types = [
+    all:           '*/*',
+    atom:          'application/atom+xml',
+    css:           'text/css',
+    csv:           'text/csv',
+    form:          'application/x-www-form-urlencoded',
+    html:          ['text/html','application/xhtml+xml'],
+    js:            'text/javascript',
+    json:          ['application/json', 'text/json'],
+    multipartForm: 'multipart/form-data',
+    rss:           'application/rss+xml',
+    text:          'text/plain',
+    xml:           ['text/xml', 'application/xml']
+]
 
 // URL Mapping Cache Max Size, defaults to 5000
 //grails.urlmapping.cache.maxsize = 1000
+
+// What URL patterns should be processed by the resources plugin
+grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "none" // none, html, base64
@@ -54,63 +52,43 @@ grails.scaffolding.templates.domainSuffix = 'Instance'
 grails.json.legacy.builder = false
 // enabled native2ascii conversion of i18n properties files
 grails.enable.native2ascii = true
-// whether to install the java.util.logging bridge for sl4j. Disable for AppEngine!
-grails.logging.jul.usebridge = true
 // packages to include in Spring bean scanning
 grails.spring.bean.packages = []
+// whether to disable processing of multi part requests
+grails.web.disable.multipart=false
 
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
-// set per-environment serverURL stem for creating absolute links
-environments {
-    production {
-        println "production Appname is [${appName}]"
-        grails.serverURL = "http://www.changeme.com"
-    }
-    development {
-        grails.serverURL = "http://localhost:8080/${appName}"
-    }
-    test {
-        grails.serverURL = "http://localhost:8080/${appName}"
-    }
+// configure auto-caching of queries by default (if false you can cache individual queries with 'cache: true')
+grails.hibernate.cache.queries = false
 
+environments {
+    development {
+        grails.logging.jul.usebridge = true
+    }
+    production {
+        grails.logging.jul.usebridge = false
+        // TODO: grails.serverURL = "http://www.changeme.com"
+    }
 }
 
 // log4j configuration
 log4j = {
-    // Example of changing the log pattern for the default console
-    // appender:
+    // Example of changing the log pattern for the default console appender:
     //
+    //appenders {
+    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+    //}
+
     def appName = grails.util.Metadata.current.'app.name'
-    println "log4j Appname is [${appName}]"
     appenders {
         def defaultPattern = '%d{ISO8601} [%10.10t] [%18.18c] %5p: %m%n'
         console name: 'stdout', layout: pattern(conversionPattern: defaultPattern)
 
         environments {
             production {
-                def dir = System.getProperty('catalina.base')
-                if(!dir) {
-                    dir = '/interact/listen/logs'
-                } else {
-                    dir += '/logs'
-                }
-
-                println "Log directory is [${dir}]"
-                println "Appname is [${appName}]"
-                
-                def file = new File(dir)
-                if(file.exists()) {
-                    if(!file.isDirectory()) {
-                        def fallback = System.getProperty('java.io.tmpdir')
-                        println "Log directory [${dir}] exists but is not a directory, using [${fallback}] instead"
-                        dir = fallback
-                    }
-                } else {
-                    println "Log directory [${dir}] does not exist, creating"
-                    file.mkdirs()
-                }
+                def dir = '/interact/listen/logs'
 
                 rollingFile name: 'file', maxFileSize: '100MB', maxBackupIndex: '7', file: "${dir}/${appName}.log", layout: pattern(conversionPattern: defaultPattern)
                 rollingFile name: 'StackTrace', maxFileSize: '10MB', maxBackupIndex: '7', file: "${dir}/${appName}-stacktrace.log"
@@ -120,52 +98,41 @@ log4j = {
 
     environments {
         development {
-            root { debug 'stdout' }
+            root { warn 'stdout' }
         }
         test {
             root { warn 'stdout' }
         }
         production {
-            root { debug 'file' }
+            /* root { warn 'file' } */
+            root { warn 'stdout' }
         }
     }
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-           'org.codehaus.groovy.grails.web.pages', //  GSP
-           'org.codehaus.groovy.grails.web.sitemesh', //  layouts
-           'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping', // URL mapping
-           'org.codehaus.groovy.grails.commons', // core / classloading
-           'org.codehaus.groovy.grails.plugins', // plugins
-           'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-           'org.springframework',
-           'org.hibernate',
-           'net.sf.ehcache.hibernate'
+            'org.codehaus.groovy.grails.web.pages', //  GSP
+            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+            'org.codehaus.groovy.grails.web.mapping', // URL mapping
+            'org.codehaus.groovy.grails.commons', // core / classloading
+            'org.codehaus.groovy.grails.plugins', // plugins
+            'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+            'org.springframework',
+            'org.hibernate',
+            'net.sf.ehcache.hibernate'
 
     warn   'org.mortbay.log',
-           'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
+            'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
 
     debug  'grails.app',
-           'com.interact'/*,
-           'org.apache.directory.server',
-           'org.apache.mina',
-           'groovy.grails.ldap.server'*/
+            'com.interact'
 }
 
-environments {
-    production {
-        def logger = Logger.getRootLogger()
-        logger.removeAppender('stdout')
-        // see http://stackoverflow.com/questions/2410955/why-is-grails-in-tomcat-logging-to-both-catalina-out-and-my-custom-file-appende
-    }
-}
-
-// Spring Security Core plugin:
-grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.interact.listen.User'
-grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.interact.listen.UserRole'
-grails.plugins.springsecurity.userLookup.enabledPropertyName = 'enabledForLogin'
-grails.plugins.springsecurity.authority.className = 'com.interact.listen.Role'
-grails.plugins.springsecurity.useSecurityEventListener = true
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.interact.listen.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.interact.listen.UserRole'
+grails.plugin.springsecurity.userLookup.enabledPropertyName = 'enabledForLogin'
+grails.plugin.springsecurity.authority.className = 'com.interact.listen.Role'
+grails.plugin.springsecurity.useSecurityEventListener = true
 
 def providers = []
 providers << 'apiKeyAuthenticationProvider'
@@ -173,20 +140,20 @@ providers << 'daoAuthenticationProvider'
 
 def licenseService = new LicenseService()
 licenseService.afterPropertiesSet()
-if(licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
+//if(licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
     providers << 'activeDirectoryAuthenticationProvider'
-}
+//}
 providers << 'anonymousAuthenticationProvider'
-grails.plugins.springsecurity.providerNames = providers
+grails.plugin.springsecurity.providerNames = providers
 
-grails.plugins.springsecurity.filterChain.chainMap = [
-    '/api/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
-    '/faxApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
-    '/spotApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
-    '/meta/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
-    '/**': 'JOINED_FILTERS'
+grails.plugin.springsecurity.filterChain.chainMap = [
+        '/api/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
+        '/faxApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
+        '/spotApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
+        '/meta/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
+        '/**': 'JOINED_FILTERS'
 ]
-grails.plugins.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, context ->
+grails.plugin.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, context ->
     com.interact.listen.User.withTransaction {
         def user = context.springSecurityService.getCurrentUser()
         user.lastLogin = new org.joda.time.DateTime()
@@ -198,14 +165,8 @@ grails.plugins.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, con
 }
 
 grails.gorm.autoFlush=true
-// Joda-Time plugin, other mappings:
-//import org.joda.time.*
-//import org.joda.time.contrib.hibernate.*
+
 grails.gorm.default.mapping = {
-    //'user-type' (type: PersistentDateTime, class: DateTime)
-    //'user-type' (type: PersistentLocalDate, class: LocalDate)
-    
-   
     "user-type" type: org.joda.time.contrib.hibernate.PersistentDateTime, class: org.joda.time.DateTime
     "user-type" type: org.joda.time.contrib.hibernate.PersistentDuration, class: org.joda.time.Duration
     "user-type" type: org.joda.time.contrib.hibernate.PersistentInstant, class: org.joda.time.Instant
@@ -221,13 +182,13 @@ grails.gorm.default.mapping = {
 // Mail plugin
 grails {
     mail {
-      host = "localhost"
-      username = ""
-      password = ""
-      props = ["mail.smtp.starttls.enable":"true",
-               "mail.smtp.port":"587"]
+        host = "localhost"
+        username = ""
+        password = ""
+        props = ["mail.smtp.starttls.enable":"true",
+                "mail.smtp.port":"587"]
     }
- }
+}
 
 grails.mail.default.from = 'listen@newnet.com'
 
@@ -238,13 +199,6 @@ environments {
         grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
     }
 }
-
-// Codenarc plugin
-codenarc.propertiesFile = 'grails-app/conf/codenarc/codenarc.properties'
-codenarc.extraIncludeDirs = ['grails-app/jobs']
-codenarc.maxPriority1Violations = 0
-codenarc.maxPriority2Violations = 0
-codenarc.maxPriority3Violations = 0
 
 // Listen configuration
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
@@ -264,9 +218,26 @@ com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.por
 com.interact.listen.authorizenet.loginId = '9u9rhMY2hS2'
 com.interact.listen.authorizenet.transactionKey = '6s6Z7U5z2WnyA2Xz'
 
-/*ldapServers {
-    listen {
-        base = com.interact.listen.ldap.basedn
-        port = com.interact.listen.ldap.port as int
+// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
+
+/* remove this line 
+// GSP settings
+grails {
+    views {
+        gsp {
+            encoding = 'UTF-8'
+            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+            codecs {
+                expression = 'html' // escapes values inside null
+                scriptlet = 'none' // escapes output from scriptlets in GSPs
+                taglib = 'none' // escapes output from taglibs
+                staticparts = 'none' // escapes output from static template parts
+            }
+        }
+        // escapes all not-encoded output at final stage of outputting
+        filteringCodecForContentType {
+            //'text/html' = 'html'
+        }
     }
-}*/
+}
+remove this line */

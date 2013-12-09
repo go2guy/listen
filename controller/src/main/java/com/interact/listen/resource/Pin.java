@@ -10,7 +10,7 @@ import java.security.SecureRandom;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PIN")
+@Table(name = "pin")
 public class Pin extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

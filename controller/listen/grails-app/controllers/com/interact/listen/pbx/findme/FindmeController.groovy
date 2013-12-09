@@ -2,7 +2,9 @@ package com.interact.listen.pbx.findme
 
 import com.interact.listen.pbx.Extension
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
 
 @Secured(['ROLE_FINDME_USER'])

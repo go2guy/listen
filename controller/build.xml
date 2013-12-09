@@ -1,8 +1,11 @@
-<project name="listen" default="war">
+<project name="listen" default="rpm">
   <property name="target.dir"      value="${basedir}/target"/>
   <property name="deploy.dir"      value="/interact/listen"/>
+  <property name="listen.deploy.dir"      value="/interact/listen"/>
+  <property name="tomcat.deploy.dir"      value="/interact/tomcat"/>
   <property name="war.staging.dir" value="${target.dir}/staging/war"/>
   <property name="rpm.staging.dir" value="${target.dir}/staging/rpm"/>
+  <include file="${basedir}/listen/build.xml" as="grails-app"/>
 
   <property name="deploy.version" value="0.2"/>
   <exec outputproperty="deploy.release" executable="svnversion">
@@ -15,13 +18,6 @@
       </outputfilterchain>
     </redirector>
   </exec>
-
-  <target name="clean" description="--> Removes build artifacts created by this script">
-    <delete dir="${rpm.staging.dir}" failonerror="false"/>
-    <delete failonerror="false">
-      <fileset dir="ii_artifacts" includes="**/*.rpm"/>
-    </delete>
-  </target>
 
   <target name="test-with-coverage">
     <exec executable="grails" dir="${basedir}/listen">
@@ -41,19 +37,17 @@
     </exec>
   </target>
 
-  <target name="deploy" description="--> Deploys the application">
-    <exec executable="grails" dir="${basedir}/listen">
-      <arg value="prod executable-war"/>
-    </exec>
+  <target name="deploy" depends="grails-app.clean, grails-app.war" description="--> Deploys the application">
 
-    <mkdir dir="${deploy.dir}"/>
     <mkdir dir="${deploy.dir}/logs"/>
     <mkdir dir="${deploy.dir}/db"/>
 
-    <copy todir="${deploy.dir}/lib" verbose="true">
-      <fileset dir="listen/target" includes="*.war"/>
-    </copy>
-    <copy file="${basedir}/scripts/listen-controller" todir="${deploy.dir}/scripts" verbose="true"/>
+    <mkdir dir="${deploy.dir}/../../${tomcat.deploy.dir}/webapps"/>
+
+    <copy todir="${deploy.dir}/../../${tomcat.deploy.dir}/webapps" verbose="true">
+          <fileset dir="${basedir}/listen/target" includes="*.war"/>
+      </copy>
+
     <copy todir="${deploy.dir}/db" verbose="true">
       <fileset dir="${basedir}/db" includes="*/*"/>
     </copy>

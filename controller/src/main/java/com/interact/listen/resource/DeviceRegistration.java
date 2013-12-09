@@ -20,7 +20,7 @@ import org.hibernate.annotations.SortType;
 import org.hibernate.criterion.*;
 
 @Entity
-@Table(name = "DEVICE_REGISTRATION")
+@Table(name = "device_registration")
 public class DeviceRegistration extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

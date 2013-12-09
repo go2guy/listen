@@ -14,7 +14,7 @@ URL: http://www.newnet.com
 Vendor: NewNet Communication Technologies
 Packager: listen <listenpkg@newnet.com>
 BuildArch: %{_arch}
-Requires: xmlsecurity, iijava, mysql-server
+Requires: xmlsecurity, iijava, iitomcat
 
 %define __spec_install_post /usr/lib/rpm/brp-compress
 %define _topdir %(echo "${TOPDIR}")
@@ -58,9 +58,11 @@ Requires: xmlsecurity, iijava, mysql-server
 
     # Include everything in the /interact/listen directory
     %dir /interact/listen/logs
-    /interact/listen/lib/listen-controller.war
-    /interact/listen/db/*
-    %config /interact/listen/scripts/listen-controller
+    /interact/listen
+    /interact/tomcat/webapps/listen-controller.war
+#    /interact/listen/lib/listen-controller.war
+#    /interact/listen/db/*
+#    %config /interact/listen/scripts/listen-controller
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
@@ -85,8 +87,32 @@ Requires: xmlsecurity, iijava, mysql-server
 # The post section lists actions to be performed after installation
 #######################################################################
 %post
-ln -sf /interact/listen/scripts/listen-controller /etc/init.d/listen-controller
-chkconfig --add listen-controller
+#ln -sf /interact/listen/scripts/listen-controller /etc/init.d/listen-controller
+#chkconfig --add listen-controller
+
+    logfile="/interact/packages/logs/uia.log"
+    if [ ! -d `dirname ${logfile}` ]
+    then
+        mkdir -p `dirname ${logfile}`
+        if [ $? -ne 0 ]
+        then
+            echo "Error creating logs directory [ `dirname ${logfile}` ]."
+            logfile=/dev/null
+        fi
+    fi
+
+    # Remove everything from the /work directory so that the cache's are cleared.
+    rm -rf /interact/tomcat/work/*
+
+    # Remove the war directory from webapps.
+    for warpkg in `rpm -ql %{name}-%{version}-%{release} | grep "\.war"`
+    do
+        wardir=`basename "${warpkg}" | sed -e "s@\.war@@g"`
+        if [ -d /interact/tomcat/webapps/${wardir}/ ]
+        then
+            rm -rf /interact/tomcat/webapps/${wardir}/
+        fi
+    done
 
 
 #######################################################################
@@ -94,11 +120,22 @@ chkconfig --add listen-controller
 # un-installation
 #######################################################################
 %preun
-if [ "$1" -le "0" ]; then
-  chkconfig --del listen-controller
-  rm -f /etc/init.d/listen-controller
-  unlink /etc/init.d/listen
-fi
+#if [ "$1" -le "0" ]; then
+#  chkconfig --del listen-controller
+#  rm -f /etc/init.d/listen-controller
+#  unlink /etc/init.d/listen
+#fi
+
+    logfile="/interact/packages/logs/uia.log"
+    if [ ! -d `dirname ${logfile}` ]
+    then
+        mkdir -p `dirname ${logfile}`
+        if [ $? -ne 0 ]
+        then
+            echo "Error creating logs directory [ `dirname ${logfile}` ]."
+            logfile=/dev/null
+        fi
+    fi
 
 
 

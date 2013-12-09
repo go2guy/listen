@@ -15,7 +15,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 @Entity
-@Table(name = "FIND_ME_NUMBER")
+@Table(name = "find_me_number")
 public class FindMeNumber extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

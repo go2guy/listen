@@ -13,7 +13,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 @Entity
-@Table(name = "ATTENDANT_MENU")
+@Table(name = "attendant_menu")
 public class Menu implements IvrCommand
 {
     public static final String TOP_MENU_NAME = "Top Menu"; // TODO fix hard-coded; perhaps an 'isPermanent' field

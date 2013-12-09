@@ -50,8 +50,8 @@ public final class HibernateUtil
     {
         DEV   ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
         TEST  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
-        STAGE ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1"),
-        PROD  ("jdbc:mysql://localhost/listen", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1");
+        STAGE ("jdbc:mysql://localhost/listen2", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1"),
+        PROD  ("jdbc:mysql://krislisten.newnet.local/listen2?zeroDateTimeBehavior=convertToNull", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1");
 
         private final String dbUrl, dbUsername, dbPassword, dbDialect, dbDriver, dbTestQuery;
         private final String guiPassword;
@@ -146,7 +146,7 @@ public final class HibernateUtil
             config.setProperty("hibernate.connection.provider_class", "org.hibernate.connection.C3P0ConnectionProvider");
             config.setProperty("hibernate.current_session_context_class", "thread");
             config.setProperty("hibernate.dialect", dbDialect);
-            config.setProperty("hibernate.show_sql", "false");
+            config.setProperty("hibernate.show_sql", "true");
             config.setProperty("hibernate.transaction.factory_class", "org.hibernate.transaction.JDBCTransactionFactory");
 
             // application classes
@@ -382,7 +382,7 @@ public final class HibernateUtil
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
             database.setDefaultSchemaName(connection.getCatalog());
 
-            liquibase = new Liquibase("changelog.xml", new ClassLoaderFileOpener(), connection);
+            liquibase = new Liquibase("changelog_new.xml", new ClassLoaderFileOpener(), connection);
             liquibase.update(null);
         }
         finally

@@ -1,39 +1,64 @@
-grails.project.source.level = 1.6
+grails.servlet.version = "2.5" // Change depending on target container compliance (2.5 or 3.0)
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
+grails.project.target.level = 1.6
+grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 grails.project.war.file = "target/listen-controller.war"
+
+// uncomment (and adjust settings) to fork the JVM to isolate classpaths
+//grails.project.fork = [
+//   run: [maxMemory:1024, minMemory:64, debug:false, maxPerm:256]
+//]
+
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
-        // uncomment to disable ehcache
+        // specify dependency exclusions here; for example, uncomment this to disable ehcache:
         // excludes 'ehcache'
     }
-    log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    log "debug" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    checksums true // Whether to verify checksums on resolve
+    legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
+
     repositories {
+        inherits true // Whether to inherit repository definitions from plugins
+
         grailsPlugins()
         grailsHome()
         grailsCentral()
 
+        mavenLocal()
+        mavenCentral()
+
+        mavenRepo "http://repo.grails.org/grails/libs-releases/"
+        mavenRepo "http://m2repo.spockframework.org/ext/"
+        mavenRepo "http://m2repo.spockframework.org/snapshots/"
+        mavenRepo "http://repo.spring.io/milestone/"
+        mavenRepo "http://download.java.net/maven/2/"
         mavenRepo "http://megatron:8081/nexus/content/groups/public"
-
-        // uncomment the below to enable remote dependency resolution
-        // from public Maven repositories
-        //mavenLocal()
-        //mavenCentral()
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo "http://repo1.maven.org/maven2"
     }
+
     dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
+        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
 
-        compile 'org.mortbay.jetty:jetty:6.1.24',
-                'org.mortbay.jetty:jetty-util:6.1.24'
+        // runtime 'mysql:mysql-connector-java:5.1.20'
+        compile("joda-time:joda-time-hibernate:1.3") {
+            excludes "joda-time", "hibernate"
+        }
 
-        test 'mysql:mysql-connector-java:5.1.13'
+//        compile('org.apache.mina:mina-core:2.0.4')
+        compile('org.apache.mina:mina-core:1.1.6')
+        compile('license-client:license-client:1.0')
+        compile('realize-client:realize-client:1.0')
+        compile('apacheds:apacheds-core:1.5.4')
+        compile('apacheds:apacheds-protocol-shared:1.5.4')
+        compile('shared-ldap:shared-ldap:0.9.12')
+        compile('shared-ldap:shared-ldap-constants:0.9.12')
+        compile('commons-dbcp:commons-dbcp:1.4')
+        compile('org.apache.directory.server:apacheds-all:jar:1.5.4')
 
         runtime 'commons-codec:commons-codec:1.4',
                 'commons-io:commons-io:1.4',
@@ -46,11 +71,46 @@ grails.project.dependency.resolution = {
                 'org.apache.tika:tika-core:0.9',
                 'org.apache.tika:tika-parsers:0.9',
                 'net.sourceforge.jexcelapi:jxl:2.6.12'
-    }
-}
 
-coverage {
-    exclusions = [
-        '**changelog**'
-    ]
+        runtime('mysql-connector:mysql-connector-java:5.1.12')
+
+        compile('anet:anet-java-sdk:1.4.5')
+        compile('prettytime:prettytime:2.1.3.Final')
+    }
+
+    plugins {
+        build ":tomcat:7.0.47"
+        runtime ":jquery:1.8.3"
+        runtime ":resources:1.1.6"
+        compile ':spring-security-core:1.2.7.3'
+//        compile ":ldap-server:0.1.8"
+        compile ':mail:1.0', {
+            excludes 'spring-test'
+        }
+//        compile ":tika-parser:1.3.0.1"
+//        compile ":jxl:0.54"
+        compile ":hibernate:3.6.10.4"
+        compile ":spring-security-ldap:2.0-RC2"
+        compile ":joda-time:1.4"
+
+//        runtime ":database-migration:1.2.1"
+
+        compile ':cache:1.0.1'
+    }
+
+    def deps = [
+            "shared-asn1-0.9.12.jar",
+            "shared-asn1-codec-0.9.12.jar",
+            "shared-bouncycastle-reduced-0.9.12.jar",
+            "shared-ldap-0.9.12.jar",
+            "shared-ldap-constants-0.9.12.jar"]
+
+    grails.war.dependencies = {
+        fileset(dir: "lib") {
+            for (pattern in deps) {
+                println("Including " + pattern)
+                include(name: pattern)
+            }
+        }
+    }
 }

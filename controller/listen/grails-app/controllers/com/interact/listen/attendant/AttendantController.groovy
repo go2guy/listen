@@ -1,7 +1,9 @@
 package com.interact.listen.attendant
 
 import com.interact.listen.util.FileTypeDetector
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import org.json.simple.JSONArray
 import org.json.simple.JSONValue
 

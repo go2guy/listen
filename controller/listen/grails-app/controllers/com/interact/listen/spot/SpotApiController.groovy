@@ -13,7 +13,9 @@ import com.interact.listen.stats.*
 import com.interact.listen.voicemail.*
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import java.net.URI
 import javax.servlet.http.HttpServletResponse as HSR
 import org.apache.commons.lang.StringUtils
@@ -303,7 +305,6 @@ class SpotApiController {
         }
     }
 
-    @Secured(['ROLE_VOICEMAIL_USER'])
     def androidEmailContact = {
         def user = authenticatedUser
         def contact = User.get(params.id)
@@ -323,7 +324,6 @@ class SpotApiController {
         render json as JSON
     }
 
-    @Secured(['ROLE_VOICEMAIL_USER'])
     def androidEmailContacts = {
         def user = authenticatedUser
 
@@ -356,7 +356,6 @@ class SpotApiController {
         }
     }
 
-    @Secured(['ROLE_VOICEMAIL_USER'])
     def androidGetDeviceRegistration = {
         def user = authenticatedUser
         def deviceType = DeviceRegistration.DeviceType.valueOf(params.deviceType)
@@ -378,7 +377,6 @@ class SpotApiController {
         render json as JSON
     }
 
-    @Secured(['ROLE_VOICEMAIL_USER'])
     def androidNumberContact = {
         def user = authenticatedUser
         def number = PhoneNumber.get(params.id)
@@ -399,7 +397,6 @@ class SpotApiController {
         render json as JSON
     }
 
-    @Secured(['ROLE_VOICEMAIL_USER'])
     def androidNumberContacts = {
         def user = authenticatedUser
 
@@ -451,7 +448,6 @@ class SpotApiController {
         }
     }
 
-    @Secured(['ROLE_VOICEMAIL_USER'])
     def androidUpdateDeviceRegistration = {
         def user = authenticatedUser
 
@@ -512,7 +508,6 @@ class SpotApiController {
         response.flushBuffer()
     }
 
-    @Secured(['ROLE_VOICEMAIL_USER'])
     def androidVoicemailDownload = {
         if(!params.id) {
             response.sendError(HSR.SC_BAD_REQUEST, "Missing required parameter [id]")
@@ -612,7 +607,7 @@ class SpotApiController {
         response.flushBuffer()
     }
 
-    @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
+//    @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
     def deleteVoicemail = {
         def voicemail = Voicemail.get(params.id)
         if(!voicemail) {
@@ -1192,7 +1187,7 @@ class SpotApiController {
         render json as JSON
     }
 
-    @Secured(['ROLE_VOICEMAIL_USER', 'ROLE_SPOT_API'])
+//    @Secured(['ROLE_VOICEMAIL_USER', 'ROLE_SPOT_API'])
     def listUsers = {
         def organization = Organization.get(getIdFromHref(params.organization))
 
@@ -1243,7 +1238,7 @@ class SpotApiController {
         }
     }
 
-    @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
+//    @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
     def listVoicemails = {
         // TODO it would be ideal if we could separate this out into two different APIs,
         //   one for SPOT systems and another for the Android app
@@ -1729,7 +1724,7 @@ class SpotApiController {
         }
     }
 
-    @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
+//    @Secured(['ROLE_SPOT_API', 'ROLE_VOICEMAIL_USER'])
     def updateVoicemail = {
         def voicemail = Voicemail.get(params.id)
         if(!voicemail) {

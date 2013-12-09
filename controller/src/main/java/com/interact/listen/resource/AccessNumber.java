@@ -20,7 +20,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 @Entity
-@Table(name = "ACCESS_NUMBER")
+@Table(name = "access_number")
 public class AccessNumber extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

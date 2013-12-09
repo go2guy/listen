@@ -1,0 +1,39 @@
+<project name="listen-grails-app" basedir="." default="war" >
+
+    <dirname property="grails-app.basedir" file="${ant.file.listen-grails-app}"/>
+    <property name="target.dir"      value="${basedir}/target"/>
+    <property name="deploy.dir"      value="/interact/listen"/>
+    <property name="war.staging.dir" value="${target.dir}/staging/war"/>
+    <property name="rpm.staging.dir" value="${target.dir}/staging/rpm"/>
+    <property name="tomcat.dir" value="/interact/tomcat"/>
+    <property environment="env"/>
+    <property name="grails.exec" value="${env.GRAILS_HOME}/bin/grails"/>
+
+    <property name="deploy.version" value="1.0"/>
+
+    <target name="hudson" depends="clean, war"/>
+
+    <!-- =================================
+            target: clean
+           ================================= -->
+    <target name="clean" description="--> Cleans a Grails application">
+        <exec executable="${grails.exec}" failonerror="true" dir="${grails-app.basedir}">
+            <arg value="clean"/>
+        </exec>
+        <delete file="stacktrace.log" failonerror="false" verbose="true"/>
+        <delete failonerror="false">
+            <fileset dir="." includes="*.rpm"/>
+            <fileset dir="." includes="*.html"/>
+        </delete>
+    </target>
+
+    <!-- =================================
+          target: war
+         ================================= -->
+    <target name="war" description="--> Creates a WAR of a Grails application">
+        <mkdir dir="lib"/>
+        <exec executable="${grails.exec}" failonerror="true" dir="${grails-app.basedir}">
+            <arg value="prod war --stacktrace --verbose"/>
+        </exec>
+    </target>
+</project>

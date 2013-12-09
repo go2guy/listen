@@ -18,7 +18,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.*;
 
 @Entity
-@Table(name = "PARTICIPANT")
+@Table(name = "participant")
 public class Participant extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

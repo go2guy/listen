@@ -1,8 +1,9 @@
 package com.interact.listen
 
 import com.interact.listen.license.ListenFeature
-import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils as SSU
+import grails.plugin.springsecurity.annotation.Secured
+//import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.SpringSecurityUtils as SSU
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class IndexController {

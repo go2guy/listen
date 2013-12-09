@@ -19,7 +19,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.*;
 
 @Entity
-@Table(name = "CONFERENCE")
+@Table(name = "conference")
 public class Conference extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

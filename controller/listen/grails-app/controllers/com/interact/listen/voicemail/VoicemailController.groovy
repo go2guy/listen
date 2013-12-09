@@ -3,7 +3,9 @@ package com.interact.listen.voicemail
 import com.interact.listen.*
 import com.interact.listen.pbx.*
 import grails.converters.*
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
 
 @Secured(['ROLE_VOICEMAIL_USER'])

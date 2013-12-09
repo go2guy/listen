@@ -1,7 +1,9 @@
 package com.interact.listen
 
 import com.interact.listen.history.CallHistory
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import jxl.*
 import jxl.write.*
 import org.joda.time.DateTime

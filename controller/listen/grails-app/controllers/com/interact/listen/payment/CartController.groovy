@@ -1,6 +1,8 @@
 package com.interact.listen.payment
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class CartController {

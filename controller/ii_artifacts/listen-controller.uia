@@ -3,37 +3,12 @@
     <iiLoader>
         <TYPES></TYPES>
         <PATH>
-            <ENTRY>/interact/listen/scripts/listen-controller</ENTRY>
         </PATH>
         <SAVFILE></SAVFILE>
     </iiLoader>
 
     <install>
         <pre>
-            <process state="running">
-                <name>MySQL</name>
-                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
-                <start>
-                    if [ -f /etc/init.d/mysqld ]
-                    then
-                        /sbin/service mysqld start
-                    elif [ -f /etc/init.d/mysql ]
-                    then
-                        /sbin/service mysql start
-                    else
-                        echo "Unable to run mysql start command"
-                        exit 1
-                    fi
-                </start>
-            </process>
-
-            <process state="stopped">
-                <name>Listen Controller</name>
-                <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
-                <start>/sbin/service listen-controller start</start>
-                <stop>/sbin/service listen-controller stop</stop>
-            </process>
-
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.8.0</version>
@@ -43,75 +18,11 @@
                 <name>uia</name>
                 <version>5.0.0</version>
             </rpm>
-
-            <script focus="background" onerror="die">
-                <![CDATA[
-                    if [ ! -e /var/lib/mysql/listen2 ]
-                    then
-                        # Make sure we can log in as root with no password if we are going to need to.
-                        if [ `mysql --user=root -e "" &>/dev/null; echo $?` -ne 0 ]
-                        then
-                            echo "Unable to log into mysql as root with no password. This ability is needed to load schema information on this machine."
-                            exit 1
-                        fi
-                    fi
-                ]]>
-            </script>
-
         </pre>
-
-        <inquiry>
-            <question level="not_in_backup" severity="ask">
-                <text>Enter the controller port</text>
-                <default>9091</default>
-                <validateRegex preset="DIGITS"/>
-
-                <property format="cfg" action="update">
-                    <name>PORT</name>
-                    <location>/interact/listen/scripts/listen-controller</location>
-                </property>
-            </question>
-        </inquiry>
-
-        <post>
-            <script focus="background" onerror="report">
-                <![CDATA[
-                    #!/bin/bash
-                    if [ ! -e /var/lib/mysql/listen2/ ]
-                    then
-                        mysql --user=root -e "create database if not exists listen2"
-                    fi
-                ]]>
-            </script>
-        </post>
     </install>
 
     <rollback>
         <pre>
-            <process state="running">
-                <name>MySQL</name>
-                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
-                <start>
-                    if [ -f /etc/init.d/mysqld ]
-                    then
-                        /sbin/service mysqld start
-                    elif [ -f /etc/init.d/mysql ]
-                    then
-                        /sbin/service mysql start
-                    else
-                        echo "Unable to run mysql start command"
-                        exit 1
-                    fi
-                </start>
-            </process>
-
-            <process state="stopped">
-                <name>Listen Controller</name>
-                <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
-                <start>/sbin/service listen-controller start</start>
-                <stop>/sbin/service listen-controller stop</stop>
-            </process>
-
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.8.0</version>
@@ -127,30 +38,6 @@
 
     <uninstall>
         <pre>
-            <process state="running">
-                <name>MySQL</name>
-                <statusRegex>^[^\s]*/mysqld([\s]|$)</statusRegex>
-                <start>
-                    if [ -f /etc/init.d/mysqld ]
-                    then
-                        /sbin/service mysqld start
-                    elif [ -f /etc/init.d/mysql ]
-                    then
-                        /sbin/service mysql start
-                    else
-                        echo "Unable to run mysql start command"
-                        exit 1
-                    fi
-                </start>
-            </process>
-
-            <process state="stopped">
-                <name>Listen Controller</name>
-                <statusRegex>^[^\s]*java[\s].*-jar.*listen-controller.war</statusRegex>
-                <start>/sbin/service listen-controller start</start>
-                <stop>/sbin/service listen-controller stop</stop>
-            </process>
-
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.8.0</version>

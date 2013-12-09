@@ -2,7 +2,9 @@ package com.interact.listen.fax
 
 import com.interact.listen.User
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
+
+//import grails.plugins.springsecurity.Secured
 import java.net.URI
 import javax.servlet.http.HttpServletResponse
 

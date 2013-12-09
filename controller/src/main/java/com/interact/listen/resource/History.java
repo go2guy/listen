@@ -13,7 +13,7 @@ import org.hibernate.criterion.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(name = "HISTORY")
+@Table(name = "history")
 public abstract class History extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

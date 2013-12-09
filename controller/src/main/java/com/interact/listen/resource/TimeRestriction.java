@@ -14,7 +14,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 
 @Entity
-@Table(name = "TIME_RESTRICTION")
+@Table(name = "time_restriction")
 public class TimeRestriction extends Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;

@@ -1,6 +1,6 @@
 package com.interact.listen.acd
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 /* @Secured(['ROLE_ACD_USER']) */
 class ConferencingController {
