@@ -22,14 +22,13 @@ class User {
     String pass
     String confirm
 
-    /* ACD use settings */
+    /* ACD user settings */
     static hasMany = [phoneNumbers: PhoneNumber, skills: Skill]
-    Status status = Status.AVAILABLE
+    Status status
 
-    static transients = ['pass', 'confirm', 'enabledForLogin', 'status']
+    static transients = ['pass', 'confirm', 'enabledForLogin']
     /* pass & confirm are solely for password confirmation,
-       enabledForLogin is used for ???,
-       status is used for ACD functionality */
+       enabledForLogin is used for ??? */
 
     // TODO should organization be nullable (below)?
     static constraints = {

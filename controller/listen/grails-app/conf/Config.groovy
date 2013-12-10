@@ -192,13 +192,14 @@ grails {
 
 grails.mail.default.from = 'listen@newnet.com'
 
-// Database Migrations plugin
-environments {
-    production {
-        grails.plugin.databasemigration.updateOnStart = true
-        grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
-    }
-}
+/* %%mark%% */
+/* // Database Migrations plugin */
+/* environments { */
+    /* production { */
+        /* grails.plugin.databasemigration.updateOnStart = true */
+        /* grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy'] */
+    /* } */
+/* } */
 
 // Listen configuration
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number

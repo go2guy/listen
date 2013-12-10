@@ -31,6 +31,13 @@ class ButtonMenuTagLib {
 
                 break
 
+            case 'acd':
+                out << '<ul class="button-menu">'
+                button(attrs.button == 'status', 'acd', 'status', 'button.menu.acd.status')
+                out << '</ul>'
+
+                break
+
             case 'attendant':
 
                 out << '<ul class="button-menu">'

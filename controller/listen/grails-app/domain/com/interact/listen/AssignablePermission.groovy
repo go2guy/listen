@@ -6,7 +6,8 @@ enum AssignablePermission {
     FAX            ('ROLE_FAX_USER',           'Fax',                 true),
     FIND_ME        ('ROLE_FINDME_USER',        'Find Me / Follow Me', true),
     VOICEMAIL      ('ROLE_VOICEMAIL_USER',     'Voicemail',           true),
-    ADMINISTRATION ('ROLE_ORGANIZATION_ADMIN', 'Administration',      false)
+    ADMINISTRATION ('ROLE_ORGANIZATION_ADMIN', 'Administration',      false),
+    ACD            ('ROLE_ACD_USER',           'ACD',                 false)
 
     String authority
     String description
