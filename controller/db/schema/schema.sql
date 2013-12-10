@@ -32,6 +32,16 @@ CREATE TABLE `organization` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
+DROP TABLE IF EXISTS `status`;
+CREATE TABLE `status` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `version` bigint(20) NOT NULL,
+  `name` varchar(32) NOT NULL UNIQUE,
+  `description` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+
+
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -47,9 +57,11 @@ CREATE TABLE `user` (
   `real_name` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
   `is_active_directory` bit(1) NOT NULL,
+   status_id bigint (20) DEFAULT 1,
   PRIMARY KEY  (`id`),
   KEY `FK36EBCB56D05B56` (`organization_id`),
   KEY `unique-username` (`organization_id`,`username`),
+  FOREIGN KEY (status_id) REFERENCES status (id),
   CONSTRAINT `user_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
@@ -208,7 +220,6 @@ CREATE TABLE `device_registration` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-/* %%mark%% */
 DROP TABLE IF EXISTS `device_registration_registered_types`;
 CREATE TABLE `device_registration_registered_types` (
   id bigint(20) not null primary key auto_increment,
@@ -345,7 +356,6 @@ CREATE TABLE `menu` (
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
 
-/* %%mark%% */
 DROP TABLE IF EXISTS `menu_action`;
 CREATE TABLE `menu_action` (
   id bigint(20) not null primary key auto_increment,
@@ -376,7 +386,6 @@ CREATE TABLE `time_restriction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-/* %%mark%% */
 DROP TABLE IF EXISTS `menu_group_time_restriction`;
 CREATE TABLE `menu_group_time_restriction` (
   id bigint(20) not null primary key auto_increment,
@@ -407,7 +416,6 @@ CREATE TABLE `number_route` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 
-/* %%mark%% */
 DROP TABLE IF EXISTS `organization_enabled_features`;
 CREATE TABLE `organization_enabled_features` (
   id bigint(20) not null primary key auto_increment,
@@ -478,7 +486,6 @@ CREATE TABLE `user_file` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-/* %%mark%% */
 DROP TABLE IF EXISTS `outgoing_fax_user_file`;
 CREATE TABLE `outgoing_fax_user_file` (
   id bigint(20) not null primary key auto_increment,
@@ -666,7 +673,6 @@ CREATE TABLE `voicemail_preferences` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 
-/* %%mark%% */
 DROP TABLE IF EXISTS `voicemail_preferences_time_restriction`;
 CREATE TABLE `voicemail_preferences_time_restriction` (
   id bigint(20) not null primary key auto_increment,
@@ -707,4 +713,4 @@ CREATE TABLE `user_skill` (
   KEY `FK7C7614E356D05D53` (`skill_id`),
   CONSTRAINT `user_skill_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
   CONSTRAINT `user_skill_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-  
+)

@@ -11,8 +11,13 @@ INSERT INTO `organization` VALUES (1,0,'Mimio','mimio','');
 UNLOCK TABLES;
 
 
+LOCK TABLES `status` WRITE;
+INSERT INTO `status` VALUES (1,0,'Available','Available'),(2,0,'Unavailable','Unavailable');
+UNLOCK TABLES;
+
+
 LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Mimio Listen Custodian','Custodian','\0');
+INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Mimio Listen Custodian','Custodian','\0',1);
 UNLOCK TABLES;
 
 
@@ -32,13 +37,12 @@ INSERT INTO `menu` VALUES (12,0,34,'',1,'In Office Attendant','newestinofficewe
 UNLOCK TABLES;
 
 
-/* %%mark%% */
 LOCK TABLES `menu_action` WRITE;
 INSERT INTO `menu_action` VALUES (1,12,36),(2,12,37),(3,12,38);
 UNLOCK TABLES;
 
 LOCK TABLES `role` WRITE;
-INSERT INTO `role` VALUES (1,0,'ROLE_CUSTODIAN'),(2,0,'ROLE_ATTENDANT_ADMIN'),(3,0,'ROLE_ORGANIZATION_ADMIN'),(4,0,'ROLE_CONFERENCE_USER'),(5,0,'ROLE_FAX_USER'),(6,0,'ROLE_FINDME_USER'),(7,0,'ROLE_VOICEMAIL_USER',(8,0,'ROLE_ACD_USER');
+INSERT INTO `role` VALUES (1,0,'ROLE_CUSTODIAN'),(2,0,'ROLE_ATTENDANT_ADMIN'),(3,0,'ROLE_ORGANIZATION_ADMIN'),(4,0,'ROLE_CONFERENCE_USER'),(5,0,'ROLE_FAX_USER'),(6,0,'ROLE_FINDME_USER'),(7,0,'ROLE_VOICEMAIL_USER'),(8,0,'ROLE_ACD_USER');
 UNLOCK TABLES;
 
 
