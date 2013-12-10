@@ -1,5 +1,5 @@
 drop database if exists listen2;
-create database if not exists listen2;
+create database if not exists listen2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 use listen2;
 
 DROP TABLE IF EXISTS `action`;
@@ -14,7 +14,7 @@ CREATE TABLE `action` (
   `number` varchar(255) default NULL,
   `application_name` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `organization`;
@@ -29,7 +29,7 @@ CREATE TABLE `organization` (
   UNIQUE KEY `name_unique_1307548966223` (`name`),
   UNIQUE KEY `context_path` (`context_path`),
   UNIQUE KEY `context_path_unique_1309965401489` (`context_path`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `status`;
@@ -39,7 +39,7 @@ CREATE TABLE `status` (
   `name` varchar(32) NOT NULL UNIQUE,
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `user`;
@@ -63,7 +63,7 @@ CREATE TABLE `user` (
   KEY `unique-username` (`organization_id`,`username`),
   FOREIGN KEY (status_id) REFERENCES status (id),
   CONSTRAINT `user_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `action_history`;
@@ -84,7 +84,7 @@ CREATE TABLE `action_history` (
   CONSTRAINT `action_history_by_user_id_fk` FOREIGN KEY (`by_user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `action_history_on_user_id_fk` FOREIGN KEY (`on_user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `action_history_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `audio`;
@@ -98,7 +98,7 @@ CREATE TABLE `audio` (
   `transcription` longtext NOT NULL,
   `file` varchar(1000) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `phone_number`;
@@ -119,7 +119,7 @@ CREATE TABLE `phone_number` (
   KEY `FKDB80433A6D23A06E` (`owner_id`),
   CONSTRAINT `phone_number_greeting_i_fk` FOREIGN KEY (`greeting_id`) REFERENCES `audio` (`id`),
   CONSTRAINT `phone_number_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `after_hours_configuration`;
@@ -136,7 +136,7 @@ CREATE TABLE `after_hours_configuration` (
   KEY `FK7C7614E359C40479` (`mobile_phone_id`),
   CONSTRAINT `after_hours_conf_organiza_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   CONSTRAINT `FK7C7614E359C40479` FOREIGN KEY (`mobile_phone_id`) REFERENCES `phone_number` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -152,7 +152,7 @@ CREATE TABLE `call_data` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `session_id` (`session_id`),
   UNIQUE KEY `session_id_unique_1311604373502` (`session_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `call_history`;
@@ -174,7 +174,7 @@ CREATE TABLE `call_history` (
   CONSTRAINT `call_history_from_user__fk` FOREIGN KEY (`from_user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `call_history_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   CONSTRAINT `call_history_to_user_id_fk` FOREIGN KEY (`to_user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `conference`;
@@ -191,7 +191,7 @@ CREATE TABLE `conference` (
   PRIMARY KEY  (`id`),
   KEY `FK2B5F451C6D23A06E` (`owner_id`),
   CONSTRAINT `conference_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `conferencing_configuration`;
@@ -203,7 +203,7 @@ CREATE TABLE `conferencing_configuration` (
   PRIMARY KEY  (`id`),
   KEY `FKC3E7621056D05B56` (`organization_id`),
   CONSTRAINT `FKC3E7621056D05B56` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `device_registration`;
@@ -217,7 +217,7 @@ CREATE TABLE `device_registration` (
   PRIMARY KEY  (`id`),
   KEY `FKA5BAB00213CF056` (`user_id`),
   CONSTRAINT `FKA5BAB00213CF056` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `device_registration_registered_types`;
@@ -228,7 +228,7 @@ CREATE TABLE `device_registration_registered_types` (
   KEY `FK4606E719490FB402` (`device_registration_id`),
   CONSTRAINT `FK4606E719490FB402` FOREIGN KEY (`device_registration_id`) REFERENCES `device_registration` (`id`),
   index (registered_type)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `find_me_number`;
@@ -243,7 +243,7 @@ CREATE TABLE `find_me_number` (
   PRIMARY KEY  (`id`),
   KEY `FK71CAACCA13CF056` (`user_id`),
   CONSTRAINT `find_me_number_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `find_me_preferences`;
@@ -257,7 +257,7 @@ CREATE TABLE `find_me_preferences` (
   PRIMARY KEY  (`id`),
   KEY `FK46C4D61713CF056` (`user_id`),
   CONSTRAINT `find_me_preferenc_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `global_outdial_restriction`;
@@ -266,7 +266,7 @@ CREATE TABLE `global_outdial_restriction` (
   `version` bigint(20) NOT NULL,
   `pattern` varchar(50) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `google_auth_configuration`;
@@ -281,7 +281,7 @@ CREATE TABLE `google_auth_configuration` (
   `next_retry` datetime default NULL,
   `retry_timeout` bigint(20) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `inbox_message`;
@@ -307,7 +307,7 @@ CREATE TABLE `inbox_message` (
   CONSTRAINT `voicemail_forwarded__fk` FOREIGN KEY (`forwarded_by_id`) REFERENCES `user` (`id`),
   CONSTRAINT `voicemail_left_by_id_fk` FOREIGN KEY (`left_by_id`) REFERENCES `user` (`id`),
   CONSTRAINT `voicemail_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `mail_configuration`;
@@ -319,7 +319,7 @@ CREATE TABLE `mail_configuration` (
   `password` varchar(255) default NULL,
   `username` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `menu_group`;
@@ -332,7 +332,7 @@ CREATE TABLE `menu_group` (
   PRIMARY KEY  (`id`),
   KEY `FKFA3CAB9F56D05B56` (`organization_id`),
   CONSTRAINT `menu_group_organization_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `menu`;
@@ -353,7 +353,7 @@ CREATE TABLE `menu` (
   CONSTRAINT `menu_default_ac_fk` FOREIGN KEY (`default_action_id`) REFERENCES `action` (`id`),
   CONSTRAINT `menu_menu_group_fk` FOREIGN KEY (`menu_group_id`) REFERENCES `menu_group` (`id`),
   CONSTRAINT `menu_timeout_ac_fk` FOREIGN KEY (`timeout_action_id`) REFERENCES `action` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `menu_action`;
@@ -366,7 +366,7 @@ CREATE TABLE `menu_action` (
   CONSTRAINT `menu_action_action_id_fk` FOREIGN KEY (`action_id`) REFERENCES `action` (`id`),
   CONSTRAINT `menu_action_menu_keypress_fk` FOREIGN KEY (`menu_keypress_actions_id`) REFERENCES `menu` (`id`),
   index (action_id)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `time_restriction`;
@@ -383,7 +383,7 @@ CREATE TABLE `time_restriction` (
   `tuesday` bit(1) NOT NULL,
   `wednesday` bit(1) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `menu_group_time_restriction`;
@@ -396,7 +396,7 @@ CREATE TABLE `menu_group_time_restriction` (
   CONSTRAINT `menu_group_time_menu_grou_fk` FOREIGN KEY (`menu_group_restrictions_id`) REFERENCES `menu_group` (`id`),
   CONSTRAINT `menu_group_time_time_rest_fk` FOREIGN KEY (`time_restriction_id`) REFERENCES `time_restriction` (`id`),
   index (time_restriction_id)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `number_route`;
@@ -413,7 +413,7 @@ CREATE TABLE `number_route` (
   KEY `unique-label` (`type`,`organization_id`,`label`),
   KEY `unique-pattern` (`type`,`organization_id`,`pattern`),
   CONSTRAINT `number_route_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `organization_enabled_features`;
@@ -424,7 +424,7 @@ CREATE TABLE `organization_enabled_features` (
   KEY `FK8CA0C50756D05B56` (`organization_id`),
   CONSTRAINT `organization_en_organizat_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   index (listen_feature)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `outdial_restriction`;
@@ -439,7 +439,7 @@ CREATE TABLE `outdial_restriction` (
   KEY `FK3AAF28CBD9654CD0` (`target_id`),
   CONSTRAINT `outdial_restrict_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   CONSTRAINT `outdial_restrict_target_id_fk` FOREIGN KEY (`target_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `outdial_restriction_exception`;
@@ -453,7 +453,7 @@ CREATE TABLE `outdial_restriction_exception` (
   KEY `FKB8C7B1DBD9654CD0` (`target_id`),
   CONSTRAINT `outdial_restric2_restrictio_fk` FOREIGN KEY (`restriction_id`) REFERENCES `outdial_restriction` (`id`),
   CONSTRAINT `outdial_restric2_target_id_fk` FOREIGN KEY (`target_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `outgoing_fax`;
@@ -470,7 +470,7 @@ CREATE TABLE `outgoing_fax` (
   PRIMARY KEY  (`id`),
   KEY `FK39FA57CABED31AC` (`sender_id`),
   CONSTRAINT `FK39FA57CABED31AC` FOREIGN KEY (`sender_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `user_file`;
@@ -483,7 +483,7 @@ CREATE TABLE `user_file` (
   PRIMARY KEY  (`id`),
   KEY `FK143669706D23A06E` (`owner_id`),
   CONSTRAINT `FK143669706D23A06E` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `outgoing_fax_user_file`;
@@ -497,7 +497,7 @@ CREATE TABLE `outgoing_fax_user_file` (
   CONSTRAINT `FK7A26073B813442AD` FOREIGN KEY (`user_file_id`) REFERENCES `user_file` (`id`),
   CONSTRAINT `outgo_fax_user_outgo_fax_sour_id_fk` FOREIGN KEY (`outgoing_fax_source_files_id`) REFERENCES `outgoing_fax` (`id`),
   index (user_file_id)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `participant`;
@@ -522,7 +522,7 @@ CREATE TABLE `participant` (
   CONSTRAINT `participant_conference_fk` FOREIGN KEY (`conference_id`) REFERENCES `conference` (`id`),
   CONSTRAINT `participant_recorded_name_fk` FOREIGN KEY (`recorded_name_id`) REFERENCES `audio` (`id`),
   CONSTRAINT `participant_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `pin`;
@@ -535,7 +535,7 @@ CREATE TABLE `pin` (
   PRIMARY KEY  (`id`),
   KEY `FK1B1957B2692B3` (`conference_id`),
   CONSTRAINT `pin_conference_fk` FOREIGN KEY (`conference_id`) REFERENCES `conference` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `prompt_override`;
@@ -552,7 +552,7 @@ CREATE TABLE `prompt_override` (
   KEY `FK90874447DD97B406` (`use_menu_id`),
   CONSTRAINT `FK90874447138FACA6` FOREIGN KEY (`overrides_menu_id`) REFERENCES `menu_group` (`id`),
   CONSTRAINT `FK90874447DD97B406` FOREIGN KEY (`use_menu_id`) REFERENCES `menu_group` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `recording`;
@@ -566,7 +566,7 @@ CREATE TABLE `recording` (
   KEY `FK3B387DF17B2692B3` (`conference_id`),
   CONSTRAINT `recording_audio_id_fk` FOREIGN KEY (`audio_id`) REFERENCES `audio` (`id`),
   CONSTRAINT `recording_conference_id_fk` FOREIGN KEY (`conference_id`) REFERENCES `conference` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `role`;
@@ -577,7 +577,7 @@ CREATE TABLE `role` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `authority` (`authority`),
   UNIQUE KEY `authority_unique_1307548966258` (`authority`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `scheduled_conference`;
@@ -601,7 +601,7 @@ CREATE TABLE `scheduled_conference` (
   KEY `FK44069BEE57EDA238` (`scheduled_by_id`),
   CONSTRAINT `scheduled_conf_for_confer_fk` FOREIGN KEY (`for_conference_id`) REFERENCES `conference` (`id`),
   CONSTRAINT `scheduled_conf_scheduled_b_fk` FOREIGN KEY (`scheduled_by_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `single_organization_configuration`;
@@ -612,7 +612,7 @@ CREATE TABLE `single_organization_configuration` (
   PRIMARY KEY  (`id`),
   KEY `FKA64DE54156D05B56` (`organization_id`),
   CONSTRAINT `FKA64DE54156D05B56` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `spot_system`;
@@ -621,7 +621,7 @@ CREATE TABLE `spot_system` (
   `version` bigint(20) NOT NULL,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 
@@ -637,7 +637,7 @@ CREATE TABLE `transcription_configuration` (
   UNIQUE KEY `organization_id_unique_1307548966277` (`organization_id`),
   KEY `FKF351DC0956D05B56` (`organization_id`),
   CONSTRAINT `transcription_c_organizat_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -651,7 +651,7 @@ CREATE TABLE `user_role` (
   KEY `FK143BF46A5C122C76` (`role_id`),
   CONSTRAINT `user_role_role_id_fk` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`),
   CONSTRAINT `user_role_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `voicemail_preferences`;
@@ -670,7 +670,7 @@ CREATE TABLE `voicemail_preferences` (
   PRIMARY KEY  (`id`),
   KEY `FK1C02A5A213CF056` (`user_id`),
   CONSTRAINT `voicemail_prefer_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `voicemail_preferences_time_restriction`;
@@ -686,7 +686,7 @@ CREATE TABLE `voicemail_preferences_time_restriction` (
   CONSTRAINT `voicemail_prefe2_sms_time_r_fk` FOREIGN KEY (`voicemail_preferences_sms_time_restrictions_id`) REFERENCES `voicemail_preferences` (`id`),
   CONSTRAINT `voicemail_prefe2_time_restr_fk` FOREIGN KEY (`time_restriction_id`) REFERENCES `time_restriction` (`id`),
   index (voicemail_preferences_sms_time_restrictions_id)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `skill`;
 CREATE TABLE `skill` (
@@ -699,7 +699,7 @@ CREATE TABLE `skill` (
   UNIQUE KEY `skillname` (`skillname`,`organization_id`),
   KEY `FK7C7614E356D05B56` (`organization_id`),
   CONSTRAINT `skill_organiza_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `user_skill`;
 CREATE TABLE `user_skill` (
@@ -713,4 +713,4 @@ CREATE TABLE `user_skill` (
   KEY `FK7C7614E356D05D53` (`skill_id`),
   CONSTRAINT `user_skill_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
   CONSTRAINT `user_skill_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
