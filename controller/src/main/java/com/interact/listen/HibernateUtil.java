@@ -51,7 +51,7 @@ public final class HibernateUtil
         DEV   ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
         TEST  ("jdbc:hsqldb:mem:listendb",      "sa",   "", "org.hibernate.dialect.HSQLDialect",        "org.hsqldb.jdbcDriver", "super", "SELECT 1 FROM SUBSCRIBER"),
         STAGE ("jdbc:mysql://localhost/listen2", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1"),
-        PROD  ("jdbc:mysql://krislisten.newnet.local/listen2?zeroDateTimeBehavior=convertToNull", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1");
+        PROD  ("jdbc:mysql://localhost/listen2?zeroDateTimeBehavior=convertToNull", "root", "", "org.hibernate.dialect.MySQLInnoDBDialect", "com.mysql.jdbc.Driver", "Int3ract!Inc", "SELECT 1");
 
         private final String dbUrl, dbUsername, dbPassword, dbDialect, dbDriver, dbTestQuery;
         private final String guiPassword;
