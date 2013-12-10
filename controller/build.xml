@@ -48,6 +48,10 @@
           <fileset dir="${basedir}/listen/target" includes="*.war"/>
       </copy>
 
+    <copy file="${basedir}/src/properties/listen-controller.properties"
+          tofile="${deploy.dir}/../../${tomcat.deploy.dir}/lib/listen-controller.properties" overwrite="true"
+          verbose="true"/>
+
     <copy todir="${deploy.dir}/db" verbose="true">
       <fileset dir="${basedir}/db" includes="*/*"/>
     </copy>

@@ -36,4 +36,14 @@
             <arg value="prod war --stacktrace --verbose"/>
         </exec>
     </target>
+
+    <!-- =================================
+          target: deploy
+         ================================= -->
+    <target name="deploy" depends="war" description="--> Deploys">
+        <copy file="${basedir}/src/properties/listen-controller.properties"
+              tofile="${tomcat.dir}/lib/listen-controller.properties" overwrite="true" verbose="true"/>
+        <copy file="${basedir}/target/listen-controller.war" tofile="${tomcat.dir}/webapps/listen-controller.war"
+              overwrite="true" verbose="true"/>
+    </target>
 </project>

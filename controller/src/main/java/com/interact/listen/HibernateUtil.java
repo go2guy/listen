@@ -35,7 +35,6 @@ import org.hibernate.engine.SessionFactoryImplementor;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
-@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "REC_CATCH_EXCEPTION", justification = "For any Throwable we need to rethrow it as an ExceptionInInitializerError")
 public final class HibernateUtil
 {
     public static final Environment ENVIRONMENT = Environment.valueOf(System.getProperty("com.interact.listen.env", "PROD"));
@@ -178,7 +177,7 @@ public final class HibernateUtil
 
             SESSION_FACTORY = config.buildSessionFactory();
 
-            doLiquibaseUpgrades();
+//            doLiquibaseUpgrades();
 
             Session session = getSessionFactory().getCurrentSession();
             Transaction transaction = session.beginTransaction();
@@ -365,35 +364,6 @@ public final class HibernateUtil
         session.save(timeoutAction);
     }
 
-    private static void doLiquibaseUpgrades() throws SQLException, LiquibaseException
-    {
-        Liquibase liquibase = null;
-        try
-        {
-            LOG.debug("Executing Liquibase updates");
-
-            // Connection connection = config.buildSettings().getConnectionProvider().getConnection();
-            Connection connection = ((SessionFactoryImplementor)SESSION_FACTORY).getConnectionProvider().getConnection();
-            if(connection == null)
-            {
-                throw new RuntimeException("Could not get connection to perform Liquibase updates");
-            }
-
-            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
-            database.setDefaultSchemaName(connection.getCatalog());
-
-            liquibase = new Liquibase("changelog_new.xml", new ClassLoaderFileOpener(), connection);
-            liquibase.update(null);
-        }
-        finally
-        {
-            if(liquibase != null && liquibase.getDatabase() != null)
-            {
-                liquibase.getDatabase().close();
-            }
-        }
-    }
-    
     private static void startBackgroundJobs() throws SchedulerException, ParseException
     {
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();

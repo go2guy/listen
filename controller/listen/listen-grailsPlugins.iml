@@ -4,11 +4,11 @@
     <facet type="web" name="GrailsWeb">
       <configuration>
         <webroots>
-          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/joda-time-1.4/grails-app/views" relative="/" />
-          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-core-2.0-RC2/grails-app/views" relative="/" />
-          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/mail-1.0/web-app" relative="/" />
-          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/mail-1.0/grails-app/views" relative="/" />
-          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/jquery-1.8.3/web-app" relative="/" />
+          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-core-2.0-RC2/grails-app/views" relative="/" />
+          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/joda-time-1.4/grails-app/views" relative="/" />
+          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/mail-1.0/web-app" relative="/" />
+          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/mail-1.0/grails-app/views" relative="/" />
+          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/jquery-1.8.3/web-app" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -21,66 +21,65 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/cache-1.0.1">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/cache-1.0.1/src/java" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/cache-1.0.1/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/cache-1.0.1/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/cache-1.0.1/grails-app/taglib" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/hibernate-3.6.10.4">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/hibernate-3.6.10.4/src/java" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/hibernate-3.6.10.4/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/hibernate-3.6.10.4/grails-app/i18n" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/hibernate-3.6.10.4">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/hibernate-3.6.10.4/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/hibernate-3.6.10.4/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/hibernate-3.6.10.4/grails-app/i18n" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/joda-time-1.4">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/joda-time-1.4/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/joda-time-1.4/grails-app/taglib" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/joda-time-1.4">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/joda-time-1.4/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/joda-time-1.4/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/jquery-1.8.3">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/jquery-1.8.3/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/jquery-1.8.3/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/jquery-1.8.3/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/jquery-1.8.3/grails-app/taglib" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/jquery-1.8.3">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/jquery-1.8.3/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/jquery-1.8.3/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/jquery-1.8.3/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/jquery-1.8.3/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/ldap-server-0.1.8">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/ldap-server-0.1.8/src/groovy" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/mail-1.0">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/mail-1.0/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/mail-1.0/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/mail-1.0/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/mail-1.0/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/mail-1.0">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/mail-1.0/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/mail-1.0/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/mail-1.0/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/mail-1.0/grails-app/taglib" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/resources-1.1.6">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/resources-1.1.6/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/resources-1.1.6/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/resources-1.1.6/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/resources-1.1.6/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/resources-1.1.6">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/resources-1.1.6/src/java" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/resources-1.1.6/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/resources-1.1.6/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/resources-1.1.6/grails-app/taglib" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-core-2.0-RC2">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-core-2.0-RC2/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-core-2.0-RC2/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-core-2.0-RC2/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-core-2.0-RC2/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-core-2.0-RC2/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-core-2.0-RC2/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-core-2.0-RC2">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-core-2.0-RC2/src/java" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-core-2.0-RC2/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-core-2.0-RC2/grails-app/i18n" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-core-2.0-RC2/grails-app/controllers" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-core-2.0-RC2/grails-app/services" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-core-2.0-RC2/grails-app/taglib" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-ldap-2.0-RC2">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/spring-security-ldap-2.0-RC2/src/java" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-ldap-2.0-RC2">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/spring-security-ldap-2.0-RC2/src/java" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/tomcat-7.0.47">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/tomcat-7.0.47/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/tomcat-7.0.47/src/groovy" isTestSource="false" />
     </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/tomcat-7.0.47">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/tomcat-7.0.47/src/java" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/tomcat-7.0.47/src/groovy" isTestSource="false" />
-    </content>
-    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/webxml-1.4.1">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/webxml-1.4.1">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.3.3" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="runtime" level="project" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (listen-grailsPlugins)">
         <CLASSES>
+          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/joda-time-1.4/lib" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework/spring-orm/jars/spring-orm-3.2.5.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-entitymanager/jars/hibernate-entitymanager-3.6.10.Final.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.grails/grails-datastore-gorm-hibernate-core/jars/grails-datastore-gorm-hibernate-core-2.0.4.RELEASE.jar!/" />
@@ -135,6 +134,7 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/edu.ucar/netcdf/jars/netcdf-4.2-min.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tika/tika-parsers/bundles/tika-parsers-0.9.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tika/tika-core/bundles/tika-core-0.9.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.googlecode.json-simple/json-simple/jars/json-simple-1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.james/apache-mime4j/jars/apache-mime4j-0.6.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.httpcomponents/httpmime/jars/httpmime-4.0.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
@@ -146,13 +146,11 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-jasper/jars/tomcat-embed-jasper-7.0.47.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-catalina-ant/jars/tomcat-catalina-ant-7.0.47.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.47.jar!/" />
-          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/joda-time-1.4/lib" />
-          <root url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/ldap-server-0.1.8/lib" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-configuration/commons-configuration/jars/commons-configuration-1.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/joda-time-1.4/lib" recursive="false" />
-        <jarDirectory url="file://$USER_HOME$/.grails/2.3.3/projects/listen-test/plugins/ldap-server-0.1.8/lib" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/joda-time-1.4/lib" recursive="false" />
       </library>
     </orderEntry>
   </component>

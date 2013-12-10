@@ -65,9 +65,13 @@ grails.hibernate.cache.queries = false
 
 environments {
     development {
+        grails.config.locations = [ "classpath:listen-controller.properties",
+                "file:src/properties/listen-controller.properties" ]
         grails.logging.jul.usebridge = true
     }
     production {
+        grails.config.locations = [ "classpath:listen-controller.properties",
+                "file:src/properties/listen-controller.properties" ]
         grails.logging.jul.usebridge = false
         // TODO: grails.serverURL = "http://www.changeme.com"
     }
@@ -98,14 +102,13 @@ log4j = {
 
     environments {
         development {
-            root { warn 'stdout' }
+            root { debug 'stdout' }
         }
         test {
             root { warn 'stdout' }
         }
         production {
-            /* root { warn 'file' } */
-            root { warn 'stdout' }
+            root { debug 'file' }
         }
     }
 
