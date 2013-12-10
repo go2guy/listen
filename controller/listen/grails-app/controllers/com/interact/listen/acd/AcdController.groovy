@@ -1,6 +1,8 @@
 package com.interact.listen.acd
 
-import grails.plugins.springsecurity.Secured
+/* import grails.plugins.springsecurity.Secured */
+
+import grails.plugin.springsecurity.annotation.Secured
 import com.interact.listen.acd.Status
 
 @Secured(['ROLE_ACD_USER'])
