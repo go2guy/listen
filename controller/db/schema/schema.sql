@@ -81,8 +81,8 @@ CREATE TABLE `action_history` (
   KEY `FKC510738B26425C6E` (`by_user_id`),
   KEY `FKC510738B2F0C55F6` (`on_user_id`),
   KEY `FKC510738B56D05B56` (`organization_id`),
-  CONSTRAINT `action_history_by_user_id_fk` FOREIGN KEY (`by_user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `action_history_on_user_id_fk` FOREIGN KEY (`on_user_id`) REFERENCES `user` (`id`),
+  CONSTRAINT `action_history_by_user_id_fk` FOREIGN KEY (`by_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `action_history_on_user_id_fk` FOREIGN KEY (`on_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `action_history_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 
@@ -118,7 +118,7 @@ CREATE TABLE `phone_number` (
   KEY `FKDB80433A12722FBB` (`greeting_id`),
   KEY `FKDB80433A6D23A06E` (`owner_id`),
   CONSTRAINT `phone_number_greeting_i_fk` FOREIGN KEY (`greeting_id`) REFERENCES `audio` (`id`),
-  CONSTRAINT `phone_number_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `phone_number_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
@@ -171,9 +171,9 @@ CREATE TABLE `call_history` (
   KEY `FKC404C7B356D05B56` (`organization_id`),
   KEY `FKC404C7B388BFFA92` (`to_user_id`),
   KEY `FKC404C7B3F96764C1` (`from_user_id`),
-  CONSTRAINT `call_history_from_user__fk` FOREIGN KEY (`from_user_id`) REFERENCES `user` (`id`),
+  CONSTRAINT `call_history_from_user__fk` FOREIGN KEY (`from_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `call_history_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
-  CONSTRAINT `call_history_to_user_id_fk` FOREIGN KEY (`to_user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `call_history_to_user_id_fk` FOREIGN KEY (`to_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
@@ -190,7 +190,7 @@ CREATE TABLE `conference` (
   `start_time` datetime default NULL,
   PRIMARY KEY  (`id`),
   KEY `FK2B5F451C6D23A06E` (`owner_id`),
-  CONSTRAINT `conference_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `conference_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
@@ -216,7 +216,7 @@ CREATE TABLE `device_registration` (
   `user_id` bigint(20) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FKA5BAB00213CF056` (`user_id`),
-  CONSTRAINT `FKA5BAB00213CF056` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `FKA5BAB00213CF056` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -242,7 +242,7 @@ CREATE TABLE `find_me_number` (
   `user_id` bigint(20) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK71CAACCA13CF056` (`user_id`),
-  CONSTRAINT `find_me_number_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `find_me_number_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -256,7 +256,7 @@ CREATE TABLE `find_me_preferences` (
   `user_id` bigint(20) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK46C4D61713CF056` (`user_id`),
-  CONSTRAINT `find_me_preferenc_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `find_me_preferenc_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -304,9 +304,9 @@ CREATE TABLE `inbox_message` (
   KEY `FKC34DFDE99BC21612` (`left_by_id`),
   KEY `FKC34DFDE9FC1CAE6F` (`forwarded_by_id`),
   CONSTRAINT `voicemail_audio_id_fk` FOREIGN KEY (`audio_id`) REFERENCES `audio` (`id`),
-  CONSTRAINT `voicemail_forwarded__fk` FOREIGN KEY (`forwarded_by_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `voicemail_left_by_id_fk` FOREIGN KEY (`left_by_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `voicemail_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `voicemail_forwarded__fk` FOREIGN KEY (`forwarded_by_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `voicemail_left_by_id_fk` FOREIGN KEY (`left_by_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `voicemail_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -438,7 +438,7 @@ CREATE TABLE `outdial_restriction` (
   KEY `FK3AAF28CB56D05B56` (`organization_id`),
   KEY `FK3AAF28CBD9654CD0` (`target_id`),
   CONSTRAINT `outdial_restrict_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
-  CONSTRAINT `outdial_restrict_target_id_fk` FOREIGN KEY (`target_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `outdial_restrict_target_id_fk` FOREIGN KEY (`target_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -452,7 +452,7 @@ CREATE TABLE `outdial_restriction_exception` (
   KEY `FKB8C7B1DBAF1F7D18` (`restriction_id`),
   KEY `FKB8C7B1DBD9654CD0` (`target_id`),
   CONSTRAINT `outdial_restric2_restrictio_fk` FOREIGN KEY (`restriction_id`) REFERENCES `outdial_restriction` (`id`),
-  CONSTRAINT `outdial_restric2_target_id_fk` FOREIGN KEY (`target_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `outdial_restric2_target_id_fk` FOREIGN KEY (`target_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -469,7 +469,7 @@ CREATE TABLE `outgoing_fax` (
   `status` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK39FA57CABED31AC` (`sender_id`),
-  CONSTRAINT `FK39FA57CABED31AC` FOREIGN KEY (`sender_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `FK39FA57CABED31AC` FOREIGN KEY (`sender_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -482,7 +482,7 @@ CREATE TABLE `user_file` (
   `owner_id` bigint(20) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK143669706D23A06E` (`owner_id`),
-  CONSTRAINT `FK143669706D23A06E` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `FK143669706D23A06E` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -521,7 +521,7 @@ CREATE TABLE `participant` (
   KEY `participant_ani_uk` (`conference_id`,`ani`),
   CONSTRAINT `participant_conference_fk` FOREIGN KEY (`conference_id`) REFERENCES `conference` (`id`),
   CONSTRAINT `participant_recorded_name_fk` FOREIGN KEY (`recorded_name_id`) REFERENCES `audio` (`id`),
-  CONSTRAINT `participant_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `participant_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -600,7 +600,7 @@ CREATE TABLE `scheduled_conference` (
   KEY `FK44069BEE42175DBD` (`for_conference_id`),
   KEY `FK44069BEE57EDA238` (`scheduled_by_id`),
   CONSTRAINT `scheduled_conf_for_confer_fk` FOREIGN KEY (`for_conference_id`) REFERENCES `conference` (`id`),
-  CONSTRAINT `scheduled_conf_scheduled_b_fk` FOREIGN KEY (`scheduled_by_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `scheduled_conf_scheduled_b_fk` FOREIGN KEY (`scheduled_by_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -650,7 +650,7 @@ CREATE TABLE `user_role` (
   KEY `FK143BF46A13CF056` (`user_id`),
   KEY `FK143BF46A5C122C76` (`role_id`),
   CONSTRAINT `user_role_role_id_fk` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`),
-  CONSTRAINT `user_role_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `user_role_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -669,7 +669,7 @@ CREATE TABLE `voicemail_preferences` (
   `user_id` bigint(20) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK1C02A5A213CF056` (`user_id`),
-  CONSTRAINT `voicemail_prefer_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `voicemail_prefer_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
@@ -711,6 +711,6 @@ CREATE TABLE `user_skill` (
   UNIQUE KEY `user_id` (`user_id`,`skill_id`),
   KEY `FK7C7614E356D05D43` (`user_id`),
   KEY `FK7C7614E356D05D53` (`skill_id`),
-  CONSTRAINT `user_skill_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
-  CONSTRAINT `user_skill_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `user_skill_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_skill_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
