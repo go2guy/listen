@@ -534,7 +534,7 @@ CREATE TABLE `pin` (
   `pin_type` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FK1B1957B2692B3` (`conference_id`),
-  CONSTRAINT `pin_conference_fk` FOREIGN KEY (`conference_id`) REFERENCES `conference` (`id`)
+  CONSTRAINT `pin_conference_fk` FOREIGN KEY (`conference_id`) REFERENCES `conference` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 
