@@ -141,6 +141,7 @@ o: ${user.organization.name}
     }
 
     private void addAttribute(String dn, def attribute, def value) {
+        return
         def modifications = [
             new ClientModification(ModificationOperation.ADD_ATTRIBUTE, new DefaultClientAttribute(attribute, value))
         ] as List
@@ -150,6 +151,7 @@ o: ${user.organization.name}
 
     // does a remove followed by an add (good for attributes that support multiple values)
     private void replaceAttribute(String dn, def attribute, def oldValue, def newValue) {
+        return
         def modifications = [
             new ClientModification(ModificationOperation.REMOVE_ATTRIBUTE, new DefaultClientAttribute(attribute, oldValue)),
             new ClientModification(ModificationOperation.ADD_ATTRIBUTE, new DefaultClientAttribute(attribute, newValue))
@@ -160,6 +162,7 @@ o: ${user.organization.name}
 
     // does a straight replace (good for attributes that cannot be removed); should not be used for multi-value attributes
     private void changeAttribute(String dn, def attribute, def value) {
+        return
         def modifications = [
             new ClientModification(ModificationOperation.REPLACE_ATTRIBUTE, new DefaultClientAttribute(attribute, value))
         ] as List
@@ -167,6 +170,7 @@ o: ${user.organization.name}
     }
 
     private void removeAttribute(String dn, def attribute, def value) {
+        return
         def modifications = [
             new ClientModification(ModificationOperation.REMOVE_ATTRIBUTE, new DefaultClientAttribute(attribute, value))
         ]
@@ -175,6 +179,7 @@ o: ${user.organization.name}
     }
 
     private void modify(LdapDN dn, List modifications) {
+        return
         try {
             listenLdapServer.directoryService.adminSession.modify(dn, modifications)
         } catch(LdapAttributeInUseException e) {
@@ -185,12 +190,15 @@ o: ${user.organization.name}
     }
 
     private def addLdif(String ldif) {
+        return
         log.debug "Adding LDIF: ${ldif}"
         try {
             listenLdapServer.loadLdif(ldif)
+            log.debug "Finished loading ldif without chuncks"
         } catch(LdapNameAlreadyBoundException e) {
             log.error e
         }
+        log.debug "Finished addLdif without chuncks"
     }
 
     private def baseDn() {

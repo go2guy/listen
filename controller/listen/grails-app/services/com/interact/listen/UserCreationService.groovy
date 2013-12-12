@@ -1,8 +1,10 @@
 package com.interact.listen
 
 import com.interact.listen.conferencing.Conference
+import com.interact.listen.acd.Status
 import com.interact.listen.conferencing.PinType
 import com.interact.listen.voicemail.VoicemailPreferences
+import org.apache.log4j.Logger
 
 class UserCreationService {
     def cloudToDeviceService
@@ -35,17 +37,22 @@ class UserCreationService {
             roles << 'ROLE_ATTENDANT_ADMIN'
         }
 
+        log.debug "Create standard user with params [${params}]"
         def user = create(params, organization, roles)
         if(!user.errors.hasErrors()) {
+            log.debug "create user didn't have errors, lets LDAP"
             ldapService.addUser(user)
             if(params.extension) {
                 def p = [
                     number: params.extension,
                     ip: params.ip,
-                    'owner.id': user.id
+                    'owner.id': user.id,
+                    owner: user
                 ]
+                log.debug "Calling extension service create"
                 def extension = extensionService.create(p, false)
                 if(!extension.hasErrors()) {
+                    log.debug "adding phone numbers"
                     user.addToPhoneNumbers(extension)
                 }
             }
@@ -53,9 +60,17 @@ class UserCreationService {
             // TODO default passcode should be configurable?
             new VoicemailPreferences(passcode: '1234', user: user).save()
             createDefaultConference(user)
+        } else {
+            log.error "user create had errors! [${user.errors}]"
         }
 
-        cloudToDeviceService.sendContactSync()
+        try {
+            log.debug "Attempt cloudtodeviceServcie"
+            cloudToDeviceService.sendContactSync()
+        } catch (Exception e) {
+            log.error "Exception caught from cloud to device service [${e}]"
+        }
+
         return user
     }
 
@@ -66,8 +81,11 @@ class UserCreationService {
             // will be null if pass is blank, which should trigger validation error
             user.password = springSecurityService.encodePassword(user.pass)
         }
+        
         user.organization = organization
+        log.debug "We're going to create user [${user.username}] with org [${user.organization.id}][${user.organization}]"
         user.enabled = true
+        user.status = Status.findByName('Unavailable')
 
         // TODO passwords need to be salted
         // TODO allow Role configuration via user create/edit screens

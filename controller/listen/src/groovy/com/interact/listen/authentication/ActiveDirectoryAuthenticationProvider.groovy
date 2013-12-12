@@ -30,10 +30,12 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
     public Authentication authenticate(Authentication auth) {
         // if for some reason we received a principal with an organization id, remove it
         def principal = auth.principal
+        def orgId = 0
         if(principal.contains(':')) {
-            def index = principal.indexOf(':')
-            principal = principal.substring(index + 1)
-            log.debug "Removed organization id from principal [${auth.principal}], resulting in [${principal}]"
+            def principalList = principal.tokenize(':')
+            principal = principalList[1]
+            orgId = principalList[0]
+            log.debug "Removed organization id [${orgId}] from principal [${auth.principal}], resulting in [${principal}]"
         }
 
         def ad = validateActiveDirectoryUser(principal, auth.credentials)
@@ -42,8 +44,14 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
             return null
         }
 
-        createUserIfNotExists(principal, ad)
-
+        try {
+            log.debug "lets create a new user if they don't exist"
+            createUserIfNotExists(principal, orgId, ad)
+            log.debug "got past create user if not exists"
+        } catch (Exception e) {
+            log.error("Exception caught while attempting to create user [${e}]")
+        }
+        
         try {
             def userDetails = userDetailsService.loadUserByUsername(principal)
 
@@ -125,13 +133,13 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
         throw new AuthenticationServiceException('Authentication error (Unknown)')
     }
 
-    private void createUserIfNotExists(def username, def ad) {
+    private void createUserIfNotExists(def username, def organizationId, def ad) {
         def exists = User.countByUsername(username) > 0
         if(exists) {
             return
         }
 
-        log.debug "Creating new AD user [${username}], displayName [${ad.displayName}], mail [${ad.mail}]"
+        log.debug "Creating new AD user [${username}], orgId [${organizationId}] displayName [${ad.displayName}], mail [${ad.mail}]"
 
         def params = [
             username: username,
@@ -150,7 +158,20 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
         }
 
         User.withTransaction { status ->
-            def organization = retrieveOrganization()
+            log.debug "Find users organization by id [${organizationId.toInteger()}]"
+            def organization = Organization.get(organizationId.toInteger())
+            if (!organization) {
+                log.debug "Find organization by luck"
+                organization = retrieveOrganization()
+            }
+            
+            if (!organization) {
+                log.debug "No organization found for [${username}]"
+                throw new AuthenticationServiceException('Authentication error (could not resolve organization)')
+            }
+            else {
+                log.debug "creating new user [${username}] with org [${organization}]"
+            }
             def user = userCreationService.createUser(params, organization)
             if(user.hasErrors()) {
                 log.error "Attempted to create new user, but there were validation errors: ${user.errors}"

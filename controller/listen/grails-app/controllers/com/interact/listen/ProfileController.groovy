@@ -6,6 +6,7 @@ import com.interact.listen.pbx.Extension
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.log4j.Logger
 
 //import grails.plugins.springsecurity.Secured
 
@@ -168,7 +169,9 @@ class ProfileController {
 
     def phones = {
         // TODO custodian users shouldnt really be able to get here, or to any other phone actions
-        render(view: 'phones', model: phonesModel())
+        def model = phonesModel()
+        log.debug "Profile controller rendering phone view [${model.extensionList.size()}][${model.mobilePhoneList.size()}][${model.otherPhoneList.size()}]"
+        render(view: 'phones', model: model)
     }
 
     def saveAfterHours = {

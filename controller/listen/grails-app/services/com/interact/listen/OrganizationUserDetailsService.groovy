@@ -27,6 +27,7 @@ class OrganizationUserDetailsService extends GormUserDetailsService {
             if(compositeUsername.split(':').length == 2) {
                 def s = compositeUsername.split(':')
                 username = s[1]
+                _log.debug "Look for organization based upon [${s[0]}]"
                 def organization = Organization.get(s[0])
 
                 _log.debug "Username [${username}], Organization [${organization.name}]"

@@ -168,39 +168,39 @@ td.col-public {
     </table>
 
     <script type="text/javascript">
-$(document).ready(function() {
-    ${/* FIXME globally namespaced function */}
-    function checkAndIndicateBlocked(el) {
-       var field = $(el);
-       var number = field.val();
-       $.ajax({
-           type: 'GET',
-           url: '${request.contextPath}/profile/canDial',
-           data: {
-               number: number
-           },
-           success: function(data) {
-               var hasIndicator = field.next('.blocked-number').length > 0;
-               if(data.canDial && hasIndicator) {
-                   field.next('.blocked-number').remove()
-               } else if(!data.canDial && !hasIndicator) {
-                   field.after('<span class="blocked-number error" title="You are not allowed to dial ' + number + '">Blocked</span>');
-               }
-           },
-           dataType: 'json'
-       }); 
-    }
-    $('.check-for-blocked').keyup(function(e) {
-        util.typewatch(function() {
-            checkAndIndicateBlocked(e.target);
-        }, 500);
-    }).bind('paste', function(e) {
-        // delay since it takes time for the text to actually paste
-        setTimeout(checkAndIndicateBlocked(e.target), 100);
-    }).change(function(e) {
-        checkAndIndicateBlocked(e.target);
-    });
-});
+        checkAndIndicateBlocked: function(el) {
+            var field = $(el);
+            var number = field.val();
+            $.ajax({
+                type: 'GET',
+                url: '${request.contextPath}/profile/canDial',
+                data: {
+                    number: number
+                },
+                success: function(data) {
+                    var hasIndicator = field.next('.blocked-number').length > 0;
+                    if(data.canDial && hasIndicator) {
+                        field.next('.blocked-number').remove()
+                    } else if(!data.canDial && !hasIndicator) {
+                        field.after('<span class="blocked-number error" title="You are not allowed to dial ' + number + '">Blocked</span>');
+                    }
+                },
+                dataType: 'json'
+            });
+         }
+                
+        $(document).ready(function() {
+            $('.check-for-blocked').keyup(function(e) {
+                util.typewatch(function() {
+                    checkAndIndicateBlocked(e.target);
+                }, 500);
+            }).bind('paste', function(e) {
+                // delay since it takes time for the text to actually paste
+                setTimeout(checkAndIndicateBlocked(e.target), 100);
+            }).change(function(e) {
+                checkAndIndicateBlocked(e.target);
+            });
+        });
     </script>
     <listen:autocomplete selector=".forwarded-to" data="my.phones"/>
   </body>

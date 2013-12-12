@@ -9,8 +9,12 @@ class CloudToDeviceService {
 
     def sendContactSync() {
         def syncType = C2DMessaging.Type.SYNC_CONTACTS
-        log.debug 'Sending C2DM contact sync to all devices'
-        cloudToDeviceMessaging.enqueueAllSyncMessages(DeviceType.ANDROID, syncType, null)
+        try {
+            log.debug 'Sending C2DM contact sync to all devices'
+            cloudToDeviceMessaging.enqueueAllSyncMessages(DeviceType.ANDROID, syncType, null)
+        } catch (Exception e) {
+            log.error 'Failed C2DM contacy sync [${e}]'
+        }
     }
 
     def sendVoicemailSync(User user) {
@@ -18,7 +22,11 @@ class CloudToDeviceService {
         log.debug "Sending C2DM voicemail sync to ${user}"
 
         // FIXME handle current device id (used to come from PersistenceService
-        cloudToDeviceMessaging.enqueueDeviceSyncMessage(user.id, syncType, null)
+        try {
+            cloudToDeviceMessaging.enqueueDeviceSyncMessage(user.id, syncType, null)
+        } catch (Exception e) {
+            log.error 'Failed Sending C2DM voicemail sync [${e}]'
+        }
     }
 
     // the following methods are called by the C2D* java files to avoid
@@ -26,9 +34,13 @@ class CloudToDeviceService {
 
     public void deleteRegistration(String registrationId) {
         log.info("request to delete registrations for [${registrationId}]")
-        DeviceRegistration.findAllByRegistrationToken(registrationId).each {
-            log.debug "Removing device registration [${it}]"
-            it.delete(flush: true)
+        try {
+            DeviceRegistration.findAllByRegistrationToken(registrationId).each {
+                log.debug "Removing device registration [${it}]"
+                it.delete(flush: true)
+            }
+        } catch (Exception e) {
+            log.debug "Failed to delete device registration [${e}]"
         }
     }
 
