@@ -762,10 +762,7 @@ class AdministrationController {
 
     private def outdialingModel() {
         def organization = authenticatedUser.organization
-//        def globalRestrictions = GlobalOutdialRestriction.findAll([sort: 'pattern', order: 'asc'])
-        def globalRestrictions = GlobalOutdialRestriction.createCriteria().list(){
-            order('pattern','asc')
-        }
+        def globalRestrictions = GlobalOutdialRestriction.findAllByPatternLike('%', [sort: 'pattern', order: 'asc'])
         def restrictions = OutdialRestriction.findAllByOrganization(organization, [sort: 'pattern', order: 'asc'])
         def exceptions = OutdialRestrictionException.createCriteria().list([sort: 'restriction', order: 'asc']) {
             // TODO ultimately i would like to provide [sort: 'restriction.target'] to the list() method above. however,

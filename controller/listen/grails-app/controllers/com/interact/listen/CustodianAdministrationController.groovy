@@ -1,8 +1,9 @@
 package com.interact.listen
 
+import com.interact.listen.GlobalOutdialRestriction
 import com.interact.listen.mail.MailConfiguration
 import grails.plugin.springsecurity.annotation.Secured
-//import grails.plugins.springsecurity.Secured
+import org.apache.log4j.Logger
 
 @Secured(['ROLE_CUSTODIAN'])
 class CustodianAdministrationController {
@@ -17,10 +18,12 @@ class CustodianAdministrationController {
     ]
 
     def index = {
+        log.debug "Custodian administration goto outdialing from index"
         redirect(action: 'outdialing')
     }
 
     def addRestriction = {
+        log.debug "Custodian administration add restriction"
         def restriction = new GlobalOutdialRestriction()
         restriction.pattern = params.pattern
 
@@ -35,6 +38,7 @@ class CustodianAdministrationController {
     }
 
     def deleteRestriction = {
+        log.debug "Custodian administration delete restriction"
         if(!params.id) {
             flash.errorMessage = 'Restriction not found'
             redirect(action: 'outdialing')
@@ -54,16 +58,21 @@ class CustodianAdministrationController {
     }
 
     def mail = {
+        log.debug "Custodian administration goto mail from mail"
         def list = MailConfiguration.list()
         def mail = list.size() > 0 ? list[0] : new MailConfiguration()
         render(view: 'mail', model: [mail: mail])
     }
 
     def outdialing = {
-        render(view: 'outdialing', model: restrictionModel())
+        log.debug "Custodian administration goto outdialing from outdialing"
+        def model = restrictionModel()
+        log.debug "Custodian administration going to render view outdialing"
+        render(view: 'outdialing', model: model)
     }
 
     def saveMail = {
+        log.debug "Custodian administration save mail"
         def list = MailConfiguration.list()
         def mail = list.size() > 0 ? list[0] : new MailConfiguration()
         mail.properties = params
@@ -77,6 +86,7 @@ class CustodianAdministrationController {
     }
 
     def updateRestriction = {
+        log.debug "Custodian administration update restriction"
         if(!params.id) {
             flash.errorMessage = 'Restriction not found'
             redirect(action: 'restrictions')
@@ -103,7 +113,8 @@ class CustodianAdministrationController {
     }
 
     private def restrictionModel() {
-        def restrictions = GlobalOutdialRestriction.findAll([sort: 'pattern', order: 'asc'])
+        // Gorm failed me here.  without the 'ByPatternLike' on this 'findAll' the 'findAll' would throw exception
+        def restrictions = GlobalOutdialRestriction.findAllByPatternLike('%', [sort: 'pattern', order: 'asc'])
         return [
             restrictions: restrictions,
         ]
