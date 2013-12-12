@@ -6,8 +6,13 @@ INSERT INTO `audio` VALUES (1,0,'2013-11-05 15:54:59',NULL,'PT0S','2013-11-05 15
 UNLOCK TABLES;
 
 
+LOCK TABLES `acd_user_status` WRITE;
+INSERT INTO `acd_user_status` VALUES (2,0,1),(3,0,1),(4,0,1),(5,0,1),(6,0,1),(7,0,1);
+UNLOCK TABLES;
+
+
 LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES (2,4,'\0','\0','brian.johnston@newnet.com','^A','2013-11-05 16%;%08%;%21',1,'4bc6ef18248a1160d1812a741f6e867f3baff7ac3a20b40be8018be41448ffd4','\0','Brian Johnston','operator','\0',1),(3,3,'\0','\0','scott.farwell@newnet.com','^A','2013-11-05 16:10:10',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Scott Farwell','scott','\0',1),(4,3,'\0','\0','ricardo.mastroleo@newnet.com','^A','2013-11-18 15:10:49',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ricardo Mastroleo','ricardo','\0',1),(5,2,'\0','\0','ladi.akinyemi@newnet.com','^A','2013-11-05 16:18:37',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ladi Akinyemi','ladi','\0',1),(6,0,'\0','\0','testlisten@newnet.com','^A',NULL,1,'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','\0','test Listen','testlisten','\0',1);
+INSERT INTO `user` VALUES (2,4,'\0','\0','brian.johnston@newnet.com','^A','2013-11-05 16:08:21',1,'4bc6ef18248a1160d1812a741f6e867f3baff7ac3a20b40be8018be41448ffd4','\0','Brian Johnston','operator','\0',2),(3,3,'\0','\0','scott.farwell@newnet.com','^A','2013-11-05 16:10:10',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Scott Farwell','scott','\0',3),(4,3,'\0','\0','ricardo.mastroleo@newnet.com','^A','2013-11-18 15:10:49',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ricardo Mastroleo','ricardo','\0',4),(5,2,'\0','\0','ladi.akinyemi@newnet.com','^A','2013-11-05 16:18:37',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ladi Akinyemi','ladi','\0',5),(6,0,'\0','\0','testlisten@newnet.com','^A',NULL,1,'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','\0','test Listen','testlisten','\0',6),(7,12,'\0','\0','daniel.walter@newnet.com','','2013-11-26 17:15:17',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Daniel Walter','dwalter','\0',7);
 UNLOCK TABLES;
 
 
@@ -17,7 +22,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `conference` WRITE;
-INSERT INTO `conference` VALUES (1,0,NULL,'Brian Johnston\'s Conference','\0','\0',2,NULL,NULL),(2,0,NULL,'Scott Farwell\'s Conference','\0','\0',3,NULL,NULL),(3,0,NULL,'Ricardo Mastroleo\'s Conference','\0','\0',4,NULL,NULL),(4,0,NULL,'Ladi Akinyemi\'s Conference','\0','\0',5,NULL,NULL),(5,0,NULL,'test Listen\'s Conference','\0','\0',6,NULL,NULL);
+INSERT INTO `conference` VALUES (1,0,NULL,'Brian Johnston\'s Conference','\0','\0',2,NULL,NULL),(2,0,NULL,'Scott Farwell\'s Conference','\0','\0',3,NULL,NULL),(3,0,NULL,'Ricardo Mastroleo\'s Conference','\0','\0',4,NULL,NULL),(4,0,NULL,'Ladi Akinyemi\'s Conference','\0','\0',5,NULL,NULL),(5,0,NULL,'test Listen\'s Conference','\0','\0',6,NULL,NULL),(6,0,NULL,'Daniel Walter\'s Conference','\0','\0',7,NULL,NULL);
 UNLOCK TABLES;
 
 
@@ -41,7 +46,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `user_role` WRITE;
-INSERT INTO `user_role` VALUES (2,1),(3,2),(4,2),(5,2),(6,2),(7,2),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),(2,4),(3,4),(4,4),(5,4),(6,4),(7,4),(2,5),(3,5),(4,5),(5,5),(6,5),(7,5),(4,6),(5,6),(6,6),(7,6),(8,2),(8,3),(8,4),(8,5),(8,6);
+INSERT INTO `user_role` VALUES (2,1),(3,2),(4,2),(5,2),(6,2),(7,2),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),(2,4),(3,4),(4,4),(5,4),(6,4),(7,4),(2,5),(3,5),(4,5),(5,5),(6,5),(7,5),(4,6),(5,6),(6,6),(7,6),(8,2),(8,3),(8,4),(8,5),(8,6),(2,6),(3,6),(1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7),(8,7);
 UNLOCK TABLES;
 
 

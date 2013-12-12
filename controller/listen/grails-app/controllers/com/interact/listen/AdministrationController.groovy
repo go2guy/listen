@@ -2,7 +2,6 @@ package com.interact.listen
 
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-//import grails.plugins.springsecurity.Secured
 import com.interact.listen.android.GoogleAuthConfiguration
 import com.interact.listen.conferencing.ConferencingConfiguration
 import com.interact.listen.history.*

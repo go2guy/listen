@@ -2,6 +2,7 @@ drop database if exists listen2;
 create database if not exists listen2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 use listen2;
 
+
 DROP TABLE IF EXISTS `action`;
 CREATE TABLE `action` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -32,13 +33,23 @@ CREATE TABLE `organization` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `status`;
-CREATE TABLE `status` (
+DROP TABLE IF EXISTS `acd_queue_status`;
+CREATE TABLE `acd_queue_status` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `version` bigint(20) NOT NULL,
   `name` varchar(32) NOT NULL UNIQUE,
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `acd_user_status`;
+CREATE TABLE `acd_user_status` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `version` bigint(20) NOT NULL,
+  `acd_queue_status_id` bigint(20) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (acd_queue_status_id) REFERENCES acd_queue_status (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 
@@ -57,11 +68,11 @@ CREATE TABLE `user` (
   `real_name` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
   `is_active_directory` bit(1) NOT NULL,
-   status_id bigint (20) DEFAULT 1,
+   acd_user_status_id bigint (20) DEFAULT 1,
   PRIMARY KEY  (`id`),
   KEY `FK36EBCB56D05B56` (`organization_id`),
   KEY `unique-username` (`organization_id`,`username`),
-  FOREIGN KEY (status_id) REFERENCES status (id),
+  FOREIGN KEY (acd_user_status_id) REFERENCES acd_user_status (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
@@ -624,7 +635,6 @@ CREATE TABLE `spot_system` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-
 DROP TABLE IF EXISTS `transcription_configuration`;
 CREATE TABLE `transcription_configuration` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -638,8 +648,6 @@ CREATE TABLE `transcription_configuration` (
   KEY `FKF351DC0956D05B56` (`organization_id`),
   CONSTRAINT `transcription_c_organizat_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 
 
 DROP TABLE IF EXISTS `user_role`;

@@ -4,7 +4,7 @@
 DEFINED_TARGETS='schema_install data_install seed_install release drop install seed schema_upgrade upgrade'
 
 user='root'
-pass=''
+# pass=''
 
 # . ~/.bash_profile
 . build.env
@@ -21,28 +21,28 @@ fail_on_error()
 
 data_install ()
 {
-  mysql -u $user -p "$pass" < /interact/listen/db/data/load.sql
+  mysql -u $user < /interact/listen/db/data/load.sql
   fail_on_error data_install
 }
 
 seed_install ()
 {
-  mysql -u $user -p "$pass" < /interact/listen/db/data/seed.sql
+  mysql -u $user < /interact/listen/db/data/seed.sql
   fail_on_error seed_install
 }
 
 schema_install () {
-  mysql -u $user -p "$pass" < /interact/listen/db/schema/schema.sql
+  mysql -u $user < /interact/listen/db/schema/schema.sql
   fail_on_error schema_install
 }
 
 schema_upgrade () {
-  mysql -u $user -p "$pass" < /interact/listen/db/schema/upgrade.sql
+  mysql -u $user < /interact/listen/db/schema/upgrade.sql
   fail_on_error schema_upgrade
 }
 
 data_upgrade () {
-  mysql -u $user -p "$pass" < /interact/listen/db/data/upgrade.sql
+  mysql -u $user < /interact/listen/db/data/upgrade.sql
   fail_on_error seed_upgrade
 }
 
@@ -55,7 +55,7 @@ install() {
 }
 
 drop() {
-  mysql -u $user -p "$pass" < /interact/listen/db/schema/drop.sql
+  mysql -u $user < /interact/listen/db/schema/drop.sql
   fail_on_error drop
 }
 

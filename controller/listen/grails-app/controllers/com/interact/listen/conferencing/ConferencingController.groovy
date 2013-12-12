@@ -2,7 +2,6 @@ package com.interact.listen.conferencing
 
 import grails.plugin.springsecurity.annotation.Secured
 
-//import grails.plugins.springsecurity.Secured
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
 

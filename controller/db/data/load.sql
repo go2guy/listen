@@ -11,15 +11,19 @@ INSERT INTO `organization` VALUES (1,0,'Mimio','mimio','');
 UNLOCK TABLES;
 
 
-LOCK TABLES `status` WRITE;
-INSERT INTO `status` VALUES (1,0,'Available','Available'),(2,0,'Unavailable','Unavailable');
+LOCK TABLES `acd_queue_status` WRITE;
+INSERT INTO `acd_queue_status` VALUES (1,0,'Available','Available'),(2,0,'Unavailable','Unavailable');
+UNLOCK TABLES;
+
+
+LOCK TABLES `acd_user_status` WRITE;
+INSERT INTO `acd_user_status` VALUES (1,0,1);
 UNLOCK TABLES;
 
 
 LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Mimio Listen Custodian','Custodian','\0',1);
 UNLOCK TABLES;
-
 
 
 LOCK TABLES `mail_configuration` WRITE;

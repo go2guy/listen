@@ -102,7 +102,8 @@ log4j = {
 
     environments {
         development {
-            root { debug 'stdout' }
+            /* root { debug 'stdout' } */
+            root { debug 'file' }
         }
         test {
             root { warn 'stdout' }
