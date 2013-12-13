@@ -1,15 +1,19 @@
 package com.interact.listen.attendant
 
 import com.interact.listen.attendant.action.*
+import com.interact.listen.acd.*
 import com.interact.listen.voicemail.TimeRestriction
 import org.joda.time.LocalTime
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.JSONValue
+import org.apache.log4j.Logger
+import org.springframework.context.MessageSource
 
 class MenuGroupService {
 
     def springSecurityService
+    MessageSource messageSource
 
     def saveGroups(def jsonGroups) {
         
@@ -117,31 +121,45 @@ class MenuGroupService {
 
     private Action keyToAction(String key)
     {
-        if(key == 'Go To A Menu...')
+        log.debug "We've received action [${key}]"
+        
+        if(key == "${messageSource.getMessage('attendant.menugroup.goToAMenu', null, null)}")
         {
+            log.debug "Action goToAMenu"
             return new GoToMenuAction()
         }
-        else if(key == 'Dial A Number...')
+        else if(key == "${messageSource.getMessage('attendant.menugroup.dialANumber', null, null)}")
         {
+            log.debug "Action dialANumber"
             return new DialNumberAction()
         }
-        else if(key == 'Dial What They Pressed')
+        else if(key == "${messageSource.getMessage('attendant.menugroup.dialWhatTheyPressed', null, null)}")
         {
+            log.debug "Action dialWhatTheyPressed"
             return new DialPressedNumberAction()
         }
-        else if(key == 'Launch An Application...')
+        else if(key == "${messageSource.getMessage('attendant.menugroup.launchAnApplication', null, null)}")
         {
+            log.debug "Action launchAnApplication"
             return new LaunchApplicationAction()
         }
-        else if(key == 'Replay This Menu')
+        else if(key == "${messageSource.getMessage('attendant.menugroup.replayThisMenu', null, null)}")
         {
+            log.debug "Action replayMenuAction"
             return new ReplayMenuAction()
         }
-        else if(key == 'End The Call')
+        else if(key == "${messageSource.getMessage('attendant.menugroup.routeToAnACD', null, null)}")
         {
+            log.debug "Action routeToAnACDAction"
+            return new RouteToAnACDAction()
+        }
+        else if(key == "${messageSource.getMessage('attendant.menugroup.endTheCall', null, null)}")
+        {
+            log.debug "Action endTheCall"
             return new EndCallAction()
         }
 
+        log.error "We've received an action we can't handled [${key}]"
         throw new IllegalArgumentException("Cannot create Action from unknown key [${key}]")
     }
 
@@ -165,7 +183,17 @@ class MenuGroupService {
         {
             action.applicationName = argument
         }
-
+        else if(action?.instanceOf(RouteToAnACDAction))
+        {
+            log.debug "We've selected ACD Action [${argument}][${action}]"
+            def skill = Skill.findBySkillname(argument)
+            if (skill) {
+                log.debug "We've found the appropriate skill [${skill.skillname}]"
+                action.skill = skill
+            } else {
+                log.error "We didn't find skill for skillname [${argument}]"
+            }
+        }
         if(action == null)
         {
             throw new AssertionError("Action [${directive}] for keypress [${keypress}] is not a valid action")

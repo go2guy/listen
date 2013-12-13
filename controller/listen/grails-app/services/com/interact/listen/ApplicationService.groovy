@@ -13,10 +13,6 @@ class ApplicationService {
         if(licenseService.canAccess(ListenFeature.AFTERHOURS, organization)) {
             applications << 'After Hours'
         }
-
-        if(licenseService.canAccess(ListenFeature.ACD, organization)) {
-            applications << 'ACD'
-        }
         
         if(licenseService.canAccess(ListenFeature.ATTENDANT, organization)) {
             applications << 'Attendant'

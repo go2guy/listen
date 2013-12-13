@@ -1,6 +1,8 @@
 package com.interact.listen.attendant
 
 import com.interact.listen.attendant.action.*
+import com.interact.listen.acd.*
+import org.apache.log4j.Logger
 
 class AttendantTagLib {
     static namespace = 'listen'
@@ -33,12 +35,13 @@ class AttendantTagLib {
     def actionSelect = { attrs ->
         def action = attrs.action
         out << '<select class="action-select">'
-        out << '<option' + (action?.instanceOf(DialNumberAction) ? ' selected="selected"' : '') + '>Dial A Number...</option>'
-        out << '<option' + (action?.instanceOf(DialPressedNumberAction) ? ' selected="selected"' : '') + '>Dial What They Pressed</option>'
-        out << '<option' + (action?.instanceOf(EndCallAction) ? ' selected="selected"' : '') + '>End The Call</option>'
-        out << '<option' + (action?.instanceOf(GoToMenuAction) ? ' selected="selected"' : '') + '>Go To A Menu...</option>'
-        out << '<option' + (action?.instanceOf(LaunchApplicationAction) ? ' selected="selected"' : '') + '>Launch An Application...</option>'
-        out << '<option' + (!action || action.instanceOf(ReplayMenuAction) ? ' selected="selected"' : '') + '>Replay This Menu</option>'
+        out << '<option' + (action?.instanceOf(DialNumberAction) ? ' selected="selected"' : '') + '> ' + message(code: 'attendant.menugroup.dialANumber') + '</option>'
+        out << '<option' + (action?.instanceOf(DialPressedNumberAction) ? ' selected="selected"' : '') + '> ' + message(code: 'attendant.menugroup.dialWhatTheyPressed') + '</option>'
+        out << '<option' + (action?.instanceOf(EndCallAction) ? ' selected="selected"' : '') + '> ' + message(code: 'attendant.menugroup.endTheCall') + '</option>'
+        out << '<option' + (action?.instanceOf(GoToMenuAction) ? ' selected="selected"' : '') + '> ' + message(code: 'attendant.menugroup.goToAMenu') + '</option>'
+        out << '<option' + (action?.instanceOf(RouteToAnACDAction) ? ' selected="selected"' : '') + '> ' + message(code: 'attendant.menugroup.routeToAnACD') + '</option>'
+        out << '<option' + (action?.instanceOf(LaunchApplicationAction) ? ' selected="selected"' : '') + '> ' + message(code: 'attendant.menugroup.launchAnApplication') + '</option>'
+        out << '<option' + (!action || action.instanceOf(ReplayMenuAction) ? ' selected="selected"' : '') + '> ' + message(code: 'attendant.menugroup.replayThisMenu') + '</option>'
         out << '</select>'
     }
 
@@ -79,6 +82,22 @@ class AttendantTagLib {
         out << '</select>'
     }
 
+    def acdSelect = { attrs ->
+        def action = attrs.action
+        def skillInput = attrs.skill
+        
+        def user = springSecurityService.getCurrentUser()
+        def skills = Skill.findAllByOrganization(user.organization, [sort: 'skillname', order: 'asc'])
+        
+        out << '<select class="acd-select"' + (action?.instanceOf(RouteToAnACDAction) ? '' : ' style="display: none;"') + '>'
+        out << '<option>-- Select An ACD --</option>'
+        skills.each { skill ->
+            out << '<option' + (action?.instanceOf(RouteToAnACDAction) && action?.skill && action?.skill.id == skill.id ? ' selected="selected"' : '') + ">${fieldValue(bean: skill, field: 'skillname')}</option>"
+            log.debug "After building option"
+        }
+        out << '</select>'
+    }
+    
     def entryMenuSelect = { attrs ->
         def group = attrs.group
 

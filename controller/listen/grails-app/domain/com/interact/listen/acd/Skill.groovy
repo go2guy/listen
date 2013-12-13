@@ -8,8 +8,9 @@ class Skill {
     Organization organization
     String description
     Integer userCount = 0
+    Integer menuCount = 0
     
-    static transients = ['userCount']
+    static transients = ['userCount', 'menuCount']
     
     static hasMany = [ userSkill : UserSkill ]
      

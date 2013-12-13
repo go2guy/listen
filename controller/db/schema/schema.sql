@@ -13,6 +13,7 @@ CREATE TABLE `action` (
   `destination_menu_group_name` varchar(255) default NULL,
   `destination_menu_name` varchar(255) default NULL,
   `number` varchar(255) default NULL,
+  `skill_id` bigint(20) default NULL,
   `application_name` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;

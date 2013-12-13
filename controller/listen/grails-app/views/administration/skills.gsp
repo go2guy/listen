@@ -12,6 +12,9 @@ tr.add td.col-button {
     width: 10%;
 }
 
+tr.disabled {
+    color: #999999;
+}
 .col-pattern,
 .col-target,
 .col-restriction {
@@ -41,6 +44,7 @@ tr.add td.col-button {
           <tr>
             <th class="col-skillname"><g:message code="page.administration.acd.skills.column.skillname"/></th>
             <th class="col-userCount"><g:message code="page.administration.acd.skills.column.userCount"/></th>
+            <th class="col-menuCount"><g:message code="page.administration.acd.skills.column.menuCount"/></th>
             <th class="col-button"></th>
             <th class="col-button"></th>
           </tr>
@@ -51,6 +55,7 @@ tr.add td.col-button {
               <g:form controller="administration" action="editSkill" method="post">
                 <td class="col-skillname">${skill?.skillname}</td>
                 <td class="col-usercount">${skill?.userCount}</td>
+                <td class="col-menucount">${skill?.menuCount}</td>
 
                 <td class="col-button">
                   <g:hiddenField name="id" value="${skill.id}"/>
@@ -60,7 +65,12 @@ tr.add td.col-button {
               <g:form controller="administration" action="deleteSkill" method="post">
                 <td class="col-button">
                   <g:hiddenField name="id" value="${skill.id}"/>
-                  <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}"/>
+                  <g:if test="${skill.menuCount == 0}">
+                      <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}"/>
+                  </g:if>
+                  <g:else>
+                      <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}" readonly"readonly" class="disabled" disabled="disabled" title="Cannot delete skill that is currently associated with a menu"/>
+                  </g:else>
                 </td>
               </g:form>
             </tr>

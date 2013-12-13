@@ -12,6 +12,7 @@
     <listen:attendantApplicationSelect action="${action}"/>
     <listen:dialNumberInput action="${action}"/>
     <listen:menuSelect group="${group}" action="${action}"/>
+    <listen:acdSelect skill="${skill}" action="${action}"/>
   </td>
   <td class="cell-delete-action">
     <g:if test="${type == 'keypress'}">

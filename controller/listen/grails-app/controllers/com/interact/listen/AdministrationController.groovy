@@ -7,6 +7,7 @@ import com.interact.listen.conferencing.ConferencingConfiguration
 import com.interact.listen.history.*
 import com.interact.listen.license.ListenFeature
 import com.interact.listen.acd.*
+import com.interact.listen.attendant.action.RouteToAnACDAction
 import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
@@ -381,7 +382,17 @@ class AdministrationController {
             redirect(action: 'skills')
             return
         }
-
+        
+        // Check to see if there are any actions configured with this skill id
+        def actionACD = RouteToAnACDAction.countBySkill(skill)
+        if (menuCount > 0) {
+            log.info "Found [${menuCount}] actions associated with skill [${skill.skillname}]"
+            flash.errorMessage = message(code: 'page.administration.acd.skills.assocaitedWithMenu.message')
+            redirect(action: 'skills')
+            return
+        }
+        
+        log.debug "Actually delete skill [${skill.skillname}]"
         skill.delete()
         historyService.deletedSkill(skill)
         flash.successMessage = message(code: 'skill.deleted.message')
@@ -800,8 +811,13 @@ class AdministrationController {
             skill.userCount = userCount
             skillsCount << skill
             log.debug "Organization [${organization.id}] has [${skill}] skill [${skill.userCount}]"
+            
+            // Check to see if there are any actions configured with this skill id
+            def menuCount = RouteToAnACDAction.countBySkill(skill)
+            log.info "Found [${menuCount}] menus using skill [${skill.skillname}]"
+            skill.menuCount = menuCount
         }
-        
+
         return [
             skills: skillsCount
         ] 

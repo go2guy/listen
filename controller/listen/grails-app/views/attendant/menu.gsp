@@ -132,6 +132,9 @@ select.application-select,
 select.menu-select {
     width: 200px;
 }
+select.acd-select {
+    width: 200px;
+}
 
 input.menu-label {
     display: inline;
@@ -229,7 +232,14 @@ button.delete-menu {
 .addTimeRestriction {
     margin: 0 0 5px 10px;
 }
-    </style>
+
+  <g:set var="dialWhatThePressed" value="${g.message(code: 'attendant.menugroup.dialWhatTheyPressed')}" scope="page"/>
+  <g:set var="dialANumber" value="${g.message(code: 'attendant.menugroup.dialANumber')}" scope="page"/>
+  <g:set var="goToAMenu" value="${g.message(code: 'attendant.menugroup.goToAMenu')}" scope="page"/>
+  <g:set var="launchAnApplication" value="${g.message(code: 'attendant.menugroup.launchAnApplication')}" scope="page"/>
+  <g:set var="routeToAnACD" value="${g.message(code: 'attendant.menugroup.routeToAnACD')}" scope="page"/>
+  
+  </style>
   </head>
   <body>
     <listen:infoSnippet summaryCode="page.attendant.menu.snippet.summary" contentCode="page.attendant.menu.snippet.content"/>
@@ -285,6 +295,7 @@ button.delete-menu {
     </g:form>
 
     <script type="text/javascript">
+    
 $(document).ready(function() {
 
     var attendant = {
@@ -292,14 +303,14 @@ $(document).ready(function() {
         addKeypressAction: function(table) {
             var group = $(table).closest('.menu-group');
             var clone = $('.action-row-template', group).clone(true).removeClass('action-row-template');
-            $('.application-select, .number-to-dial, .menu-select', clone).hide();
-            $('.action-select', clone).val('Dial What They Pressed');
+            $('.application-select, .number-to-dial, .menu-select, .acd-select', clone).hide();
+            $('.action-select', clone).val(${dialWhatTheyPressed});
             $('tr.default:first', table).before(clone);
         },
 
         addMenu: function(group) {
             var clone = $('#menu-template').clone(true).removeAttr('id');
-            $('.application-select, .number-to-dial, .menu-select', clone).hide();
+            $('.application-select, .number-to-dial, .menu-select, .acd-select', clone).hide();
             var table = clone.find('table');
             attendant.addKeypressAction(table);
 
@@ -381,7 +392,7 @@ $(document).ready(function() {
             checkEmpty('menu-label');
             checkEmpty('keypress');
             checkEmpty('number-to-dial');
-
+            
             $('.all-menus .menu-select').each(function() {
                 var el = $(this);
                 if(el.is(':visible') && el.val() === '-- Select A Menu --') {
@@ -389,7 +400,15 @@ $(document).ready(function() {
                     el.addClass('field-error');
                 }
             });
-            
+        
+            $('.acd-select').each(function() {
+                var el = $(this);
+                if(el.is(':visible') && el.val() === '-- Select An ACD --') {
+                    valid = false;
+                    el.addClass('field-error');
+                }
+            });
+                    
             $('.all-menus .options-prompt').each(function() {
                 var el = $(this);
                 if(el.val() === '-- No Prompt --') {
@@ -460,15 +479,16 @@ $(document).ready(function() {
                         };
 
                         switch(directive) {
-                            case 'Dial A Number...':
+                            case "${dialANumber}":
                                 action.argument = $('.number-to-dial', row).val();
                                 break;
-
-                            case 'Go To A Menu...':
+                            case "${goToAMenu}":
                                 action.argument = $('.menu-select', row).val();
                                 break;
-
-                            case 'Launch An Application...':
+                            case "${routeToAnACD}":
+                                action.argument = $('.acd-select', row).val();
+                                break;
+                            case "${launchAnApplication}":
                                 action.argument = $('.application-select', row).val();
                                 break;
                         }
@@ -643,16 +663,19 @@ $(document).ready(function() {
     $('.action-select').change(function(e) {
         var sel = $(e.target);
         var optionsCell = sel.parent('td').next('td');
-        $('.application-select, .number-to-dial, .menu-select', optionsCell).hide();
+        $('.application-select, .number-to-dial, .menu-select, .acd-select', optionsCell).hide();
         switch(sel.val()) {
-            case 'Dial A Number...':
+            case "${dialANumber}":
                 var field = $('.number-to-dial', optionsCell);
                 field.show();
                 break;
-            case 'Go To A Menu...':
+            case "${goToAMenu}":
                 $('.menu-select', optionsCell).show();
                 break;
-            case 'Launch An Application...':
+            case "${routeToAnACD}":
+                $('.acd-select', optionsCell).show();
+                break;
+            case "${launchAnApplication}":
                 $('.application-select', optionsCell).show();
                 break;
             default:
