@@ -19,8 +19,21 @@ class AcdController {
 
     def updateStatus = {
         def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
+        log.debug("params.status [${params.status}]")
+        log.debug("params.contactNumber [${params.contactNumber}]")
         acd_user_status.acdQueueStatus = AcdQueueStatus.findByName(params.status)
-        acd_user_status.save(flush: true)
+        log.debug("acd_user_status.acdQueueStatus.name [${acd_user_status.acdQueueStatus.name}]")
+        acd_user_status.contactNumber = PhoneNumber.findByNumber(params.contactNumber)
+        log.debug("acd_user_status.contactNumber [${acd_user_status.contactNumber}]")
+
+        try {
+          if (acd_user_status.validate())
+            acd_user_status.save(flush: true)
+        }
+        catch (Exception e) {
+          log.debug "Caught excpetion saving acd user status [${e}]"
+        }
+
         redirect(action: 'status')
     }
 

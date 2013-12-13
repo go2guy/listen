@@ -85,16 +85,32 @@ class UserCreationService {
         user.organization = organization
         log.debug "We're going to create user [${user.username}] with org [${user.organization.id}][${user.organization}]"
         user.enabled = true
-        user.acdUserStatus.acdQueueStatus = AcdQueueStatus.findByName('Unavailable')
+
+        def acdUserStatus = new AcdUserStatus()
+        acdUserStatus.owner = user
+        acdUserStatus.acdQueueStatus = AcdQueueStatus.findByName('Unavailable')
+
+        try {
+          if (acdUserStatus.validate())
+            acdUserStatus.save()
+        }
+        catch (Exception e) {
+          log.error "Exception caught trying to create acd user status entry [${e}]"
+        }
 
         // TODO passwords need to be salted
         // TODO allow Role configuration via user create/edit screens
 
-        if(user.validate() && user.save()) {
-            roles.each {
-                UserRole.create(user, Role.findByAuthority(it))
-            }
-            historyService.createdUser(user)
+        try {
+          if(user.validate() && user.save()) {
+              roles.each {
+                  UserRole.create(user, Role.findByAuthority(it))
+              }
+              historyService.createdUser(user)
+          }
+        }
+        catch (Exception e) {
+          log.error "Exception caught trying to create acd user status entry [${e}]"
         }
 
         return user
