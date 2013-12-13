@@ -3,7 +3,7 @@ package com.interact.listen.acd
 import grails.plugin.springsecurity.annotation.Secured
 import com.interact.listen.acd.AcdQueueStatus
 import com.interact.listen.acd.AcdUserStatus
-import com.intersect.listen.pbx.Extension
+import com.interact.listen.pbx.Extension
 
 @Secured(['ROLE_ACD_USER'])
 class AcdController {
