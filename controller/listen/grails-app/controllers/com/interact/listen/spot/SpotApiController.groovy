@@ -91,29 +91,16 @@ class SpotApiController {
 
         try
         {
-            def formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
             def json = JSON.parse(request)
             response.status = HSR.SC_CREATED
 
-            AcdCall acdCall = new AcdCall();
-            acdCall.setAni(json.ani);
-            acdCall.setDnis(json.dnis);
-            acdCall.setSkill(acdService.menuSelectionToSkill(json.selection))
-            acdCall.setSessionId(json.sessionId);
-            acdCall.setEnqueueTime(new DateTime());
-            acdCall.setCallStatus(AcdCallStatus.WAITING);
+            acdService.acdCallAdd(json.ani, json.dnis, json.selection, json.sessionId)
 
-            if(acdCall.validate() && acdCall.save())
-            {
-                response.flushBuffer()
-            }
-            else
-            {
-                throw new Exception(beanErrors(acdCall));
-            }
+            response.flushBuffer()
         }
         catch(Exception e)
         {
+            log.error("Exception adding ACD Call: " + e.getMessage());
             response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
         }
     }
@@ -127,33 +114,12 @@ class SpotApiController {
             response.status = HSR.SC_CREATED
 
             acdService.acdCallStatusUpdate(json.sessionId, json.status);
-            AcdCall acdCall = AcdCall.findBySessionId(json.sessionId);
 
-            if(acdCall != null)
-            {
-                if(json.status.equalsIgnoreCase(AcdCallStatus.CONNECTED.toString()))
-                {
-                    //Call was connected
-                    acdCall.callStatus = AcdCallStatus.CONNECTED;
-                }
-                else if(json.status.equalsIgnoreCase(AcdCallStatus.CONNECTED.toString()))
-                {
-                    //Call was connected
-                    acdCall.callStatus = AcdCallStatus.CONNECTED;
-                }
-            }
-
-            if(acdCall.validate() && acdCall.save())
-            {
-                response.flushBuffer();
-            }
-            else
-            {
-                throw new Exception(beanErrors(acdCall));
-            }
+            response.flushBuffer();
         }
         catch(Exception e)
         {
+            log.error("Exception updating ACD Call: " + e.getMessage());
             response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
         }
     }

@@ -68,14 +68,17 @@ class AcdService
 
         if(acdCall != null)
         {
-            if(status.equalsIgnoreCase(AcdCallStatus.CONNECTED.toString()))
+            AcdCallStatus thisStatus = AcdCallStatus.valueOf(status);
+
+            switch(thisStatus)
             {
-                //Call was connected
-                acdCallConnected(acdCall);
-            }
-            else if(status.equalsIgnoreCase(AcdCallStatus.COMPLETED.toString()))
-            {
-                acdCallCompleted(acdCall);
+                case AcdCallStatus.CONNECTED:
+                    //Call was connected
+                    acdCallConnected(acdCall);
+                    break;
+                case AcdCallStatus.COMPLETED:
+                    acdCallCompleted(acdCall);
+                    break;
             }
         }
     }
@@ -98,7 +101,27 @@ class AcdService
 
         if(acdCall.validate() && acdCall.save())
         {
-            response.flushBuffer();
+            log.debug("Call connect processing completed successfully.")
+        }
+        else
+        {
+            throw new Exception(beanErrors(acdCall));
+        }
+    }
+
+    void acdCallAdd(String ani, String dnis, String selection, String sessionId) throws Exception
+    {
+        AcdCall acdCall = new AcdCall();
+        acdCall.setAni(ani);
+        acdCall.setDnis(dnis);
+        acdCall.setSkill(menuSelectionToSkill(selection))
+        acdCall.setSessionId(sessionId);
+        acdCall.setEnqueueTime(new DateTime());
+        acdCall.setCallStatus(AcdCallStatus.WAITING);
+
+        if(acdCall.validate() && acdCall.save())
+        {
+            log.debug("Sucessfully added call to queue.")
         }
         else
         {
@@ -136,5 +159,15 @@ class AcdService
         {
             log.debug("No agents available to handle call");
         }
+    }
+
+    private def beanErrors(def bean) {
+        def result = new StringBuilder()
+        g.eachError(bean: bean) {
+            result << g.message(error: it)
+            result << "\n"
+        }
+        log.debug "Built beanErrors: ${result}"
+        return result.toString()
     }
 }
