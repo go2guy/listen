@@ -49,7 +49,7 @@ CREATE TABLE `acd_user_status` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `version` bigint(20) NOT NULL,
   `acd_queue_status_id` bigint(20) NOT NULL DEFAULT 1,
-  'status_modified' datetime,
+  `status_modified` datetime,
   `onacall` bit(1) NOT NULL default 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (acd_queue_status_id) REFERENCES acd_queue_status (id)
