@@ -723,3 +723,21 @@ CREATE TABLE `user_skill` (
   CONSTRAINT `user_skill_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_skill_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `acd_call`;
+CREATE TABLE `acd_call` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `version` bigint(20) NOT NULL,
+  `ani` varchar(255) NOT NULL,
+  `dnis` varchar(255) NOT NULL,
+  `skill_id` bigint(20) NOT NULL,
+  `session_id` varchar(255) NOT NULL,
+  `enqueue_time` datetime NOT NULL,
+  `call_status` varchar(50) NOT NULL,
+  `ivr` varchar(255),
+  `last_modified` datetime,
+  `user_id` bigint(20),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `acd_call_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
+  CONSTRAINT `acd_call_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

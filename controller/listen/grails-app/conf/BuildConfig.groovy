@@ -59,7 +59,6 @@ grails.project.dependency.resolution = {
         compile('shared-ldap:shared-ldap-constants:0.9.12')
         compile('commons-dbcp:commons-dbcp:1.4')
         compile('commons-configuration:commons-configuration:1.9')
-//        compile('org.apache.directory.server:apacheds-all:jar:1.5.4')
 
         runtime 'commons-codec:commons-codec:1.4',
                 'commons-io:commons-io:1.4',
@@ -81,22 +80,19 @@ grails.project.dependency.resolution = {
 
     plugins {
         build ":tomcat:7.0.47"
-        runtime ":jquery:1.8.3"
-        runtime ":resources:1.1.6"
-        compile ':spring-security-core:1.2.7.3'
-//        compile ":ldap-server:0.1.8"
+
+        compile ':cache:1.0.1'
+        compile ":hibernate:3.6.10.4"
+        compile ":joda-time:1.4"
         compile ':mail:1.0', {
             excludes 'spring-test'
         }
-//        compile ":tika-parser:1.3.0.1"
-//        compile ":jxl:0.54"
-        compile ":hibernate:3.6.10.4"
+        compile ":quartz:1.0.1"
+        compile ':spring-security-core:1.2.7.3'
         compile ":spring-security-ldap:2.0-RC2"
-        compile ":joda-time:1.4"
 
-//        runtime ":database-migration:1.2.1"
-
-        compile ':cache:1.0.1'
+        runtime ":jquery:1.8.3"
+        runtime ":resources:1.1.6"
     }
 
     def deps = [

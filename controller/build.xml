@@ -48,7 +48,7 @@
           <fileset dir="${basedir}/listen/target" includes="*.war"/>
       </copy>
 
-    <copy file="${basedir}/listen/src/properties/listen-controller.properties"
+    <copy file="${basedir}/src/properties/listen-controller.properties"
           tofile="${deploy.dir}/../../${tomcat.deploy.dir}/lib/listen-controller.properties" overwrite="true"
           verbose="true"/>
 

@@ -102,8 +102,7 @@ log4j = {
 
     environments {
         development {
-            /* root { debug 'stdout' } */
-            root { debug 'file' }
+            root { info 'stdout' }
         }
         test {
             root { warn 'stdout' }
@@ -222,6 +221,8 @@ com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.por
 // password: Int3ract!Inc
 com.interact.listen.authorizenet.loginId = '9u9rhMY2hS2'
 com.interact.listen.authorizenet.transactionKey = '6s6Z7U5z2WnyA2Xz'
+
+com.interact.listen.acd.agent.waitTime = 15
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 

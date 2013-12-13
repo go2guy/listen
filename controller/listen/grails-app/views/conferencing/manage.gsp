@@ -405,7 +405,7 @@ var conference = {
                     });
                 }
 
-                // 1. loop through table rows and remove rows that dont exist in the new data
+                // 1. loop through table rows and remove rows that don't exist in the new data
 
                 var tbody = $('#callers table tbody');
 

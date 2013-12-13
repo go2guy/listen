@@ -1,6 +1,8 @@
 package com.interact.listen.spot
 
 import com.interact.listen.*
+import com.interact.listen.acd.AcdCall
+import com.interact.listen.acd.AcdCallStatus
 import com.interact.listen.android.DeviceRegistration
 import com.interact.listen.attendant.*
 import com.interact.listen.attendant.action.*
@@ -16,7 +18,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 //import grails.plugins.springsecurity.Secured
-import java.net.URI
 import javax.servlet.http.HttpServletResponse as HSR
 import org.apache.commons.lang.StringUtils
 import org.joda.time.*
@@ -25,6 +26,7 @@ import org.joda.time.format.DateTimeFormat
 @Secured(['ROLE_SPOT_API'])
 class SpotApiController {
     static allowedMethods = [
+        addAcdQueue: 'POST',
         addCallHistory: 'POST',
         addConferenceRecording: 'POST',
         addParticipant: 'POST',
@@ -60,6 +62,7 @@ class SpotApiController {
         menuAction: 'GET',
         register: 'POST',
         setPhoneNumber: 'POST',
+        updateAcdCall: 'PUT',
         updateConference: 'PUT',
         updateFindMeExpiration: 'PUT',
         updateFindMeNumber: 'PUT',
@@ -68,6 +71,7 @@ class SpotApiController {
         updateVoicemail: 'PUT'
     ]
 
+    def acdService
     def audioDownloadService
     def cloudToDeviceService
     def conferenceService
@@ -80,6 +84,79 @@ class SpotApiController {
     def messageLightService
     def statWriterService
     def voicemailNotificationService
+
+    def addAcdCall =
+    {
+        log.debug("Entering addAcdCall");
+
+        try
+        {
+            def formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+            def json = JSON.parse(request)
+            response.status = HSR.SC_CREATED
+
+            AcdCall acdCall = new AcdCall();
+            acdCall.setAni(json.ani);
+            acdCall.setDnis(json.dnis);
+            acdCall.setSkill(acdService.menuSelectionToSkill(json.selection))
+            acdCall.setSessionId(json.sessionId);
+            acdCall.setEnqueueTime(new DateTime());
+            acdCall.setCallStatus(AcdCallStatus.WAITING);
+
+            if(acdCall.validate() && acdCall.save())
+            {
+                response.flushBuffer()
+            }
+            else
+            {
+                throw new Exception(beanErrors(acdCall));
+            }
+        }
+        catch(Exception e)
+        {
+            response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    def updateAcdCall =
+    {
+        log.debug("Entering updateAcdCall");
+        try
+        {
+            def json = JSON.parse(request)
+            response.status = HSR.SC_CREATED
+
+            acdService.acdCallStatusUpdate(json.sessionId, json.status);
+            AcdCall acdCall = AcdCall.findBySessionId(json.sessionId);
+
+            if(acdCall != null)
+            {
+                if(json.status.equalsIgnoreCase(AcdCallStatus.CONNECTED.toString()))
+                {
+                    //Call was connected
+                    acdCall.callStatus = AcdCallStatus.CONNECTED;
+                }
+                else if(json.status.equalsIgnoreCase(AcdCallStatus.CONNECTED.toString()))
+                {
+                    //Call was connected
+                    acdCall.callStatus = AcdCallStatus.CONNECTED;
+                }
+            }
+
+            if(acdCall.validate() && acdCall.save())
+            {
+                response.flushBuffer();
+            }
+            else
+            {
+                throw new Exception(beanErrors(acdCall));
+            }
+        }
+        catch(Exception e)
+        {
+            response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
+        }
+    }
 
     def addCallHistory = {
         def formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")

@@ -39,10 +39,4 @@ beans = {
         grailsApplication = ref('grailsApplication')
         userDetailsService = ref('gormUserDetailsService')
     }
-
-    /*listenLdapServer(com.interact.grails.ldap.server.TransientGrailsLdapServer) {
-        base = CH.config.com.interact.listen.ldap.basedn
-        port = CH.config.com.interact.listen.ldap.port as int
-    }*/
-
 }
