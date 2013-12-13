@@ -2,12 +2,17 @@ use listen2;
 
 
 LOCK TABLES `action` WRITE;
-INSERT INTO `action` VALUES (34,0,NULL,'','com.interact.listen.attendant.action.ReplayMenuAction',NULL,NULL,NULL,NULL),(35,0,NULL,'','com.interact.listen.attendant.action.ReplayMenuAction',NULL,NULL,NULL,NULL),(36,0,'*','','com.interact.listen.attendant.action.LaunchApplicationAction',NULL,NULL,NULL,'Mailbox'),(37,0,'???','thankYou1Moment.wav','com.interact.listen.attendant.action.DialPressedNumberAction',NULL,NULL,NULL,NULL),(38,0,'1','sorryInvalidNumber.wav','com.interact.listen.attendant.action.ReplayMenuAction',NULL,NULL,NULL,NULL);
+INSERT INTO `action` VALUES (34,0,NULL,'','com.interact.listen.attendant.action.ReplayMenuAction',NULL,NULL,NULL,NULL,NULL),(35,0,NULL,'','com.interact.listen.attendant.action.ReplayMenuAction',NULL,NULL,NULL,NULL,NULL),(36,0,'*','','com.interact.listen.attendant.action.LaunchApplicationAction',NULL,NULL,NULL,NULL,'Mailbox'),(37,0,'???','thankYou1Moment.wav','com.interact.listen.attendant.action.DialPressedNumberAction',NULL,NULL,NULL,NULL,NULL),(38,0,'1','sorryInvalidNumber.wav','com.interact.listen.attendant.action.ReplayMenuAction',NULL,NULL,NULL,NULL,NULL);
 UNLOCK TABLES;
 
 
 LOCK TABLES `organization` WRITE;
 INSERT INTO `organization` VALUES (1,0,'Mimio','mimio','');
+UNLOCK TABLES;
+
+
+LOCK TABLES `user` WRITE;
+INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Mimio Listen Custodian','Custodian','\0');
 UNLOCK TABLES;
 
 
@@ -17,12 +22,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `acd_user_status` WRITE;
-INSERT INTO `acd_user_status` VALUES (1,0,1);
-UNLOCK TABLES;
-
-
-LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Mimio Listen Custodian','Custodian','\0',1);
+INSERT INTO `acd_user_status` VALUES (1,1,0,1,NULL,NULL,0);
 UNLOCK TABLES;
 
 

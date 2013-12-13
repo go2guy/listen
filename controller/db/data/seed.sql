@@ -6,13 +6,18 @@ INSERT INTO `audio` VALUES (1,0,'2013-11-05 15:54:59',NULL,'PT0S','2013-11-05 15
 UNLOCK TABLES;
 
 
-LOCK TABLES `acd_user_status` WRITE;
-INSERT INTO `acd_user_status` VALUES (2,0,1),(3,0,1),(4,0,1),(5,0,1),(6,0,1),(7,0,1);
+LOCK TABLES `user` WRITE;
+INSERT INTO `user` VALUES (2,4,'\0','\0','brian.johnston@newnet.com','^A','2013-11-05 16:08:21',1,'4bc6ef18248a1160d1812a741f6e867f3baff7ac3a20b40be8018be41448ffd4','\0','Brian Johnston','operator','\0'),(3,3,'\0','\0','scott.farwell@newnet.com','^A','2013-11-05 16:10:10',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Scott Farwell','scott','\0'),(4,3,'\0','\0','ricardo.mastroleo@newnet.com','^A','2013-11-18 15:10:49',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ricardo Mastroleo','ricardo','\0'),(5,2,'\0','\0','ladi.akinyemi@newnet.com','^A','2013-11-05 16:18:37',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ladi Akinyemi','ladi','\0'),(6,0,'\0','\0','testlisten@newnet.com','^A',NULL,1,'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','\0','test Listen','testlisten','\0'),(7,12,'\0','\0','daniel.walter@newnet.com','','2013-11-26 17:15:17',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Daniel Walter','dwalter','\0');
 UNLOCK TABLES;
 
 
-LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES (2,4,'\0','\0','brian.johnston@newnet.com','^A','2013-11-05 16:08:21',1,'4bc6ef18248a1160d1812a741f6e867f3baff7ac3a20b40be8018be41448ffd4','\0','Brian Johnston','operator','\0',2),(3,3,'\0','\0','scott.farwell@newnet.com','^A','2013-11-05 16:10:10',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Scott Farwell','scott','\0',3),(4,3,'\0','\0','ricardo.mastroleo@newnet.com','^A','2013-11-18 15:10:49',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ricardo Mastroleo','ricardo','\0',4),(5,2,'\0','\0','ladi.akinyemi@newnet.com','^A','2013-11-05 16:18:37',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Ladi Akinyemi','ladi','\0',5),(6,0,'\0','\0','testlisten@newnet.com','^A',NULL,1,'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','\0','test Listen','testlisten','\0',6),(7,12,'\0','\0','daniel.walter@newnet.com','','2013-11-26 17:15:17',1,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Daniel Walter','dwalter','\0',7);
+LOCK TABLES `phone_number` WRITE;
+INSERT INTO `phone_number` VALUES (1,1,NULL,1,NULL,'357',2,'com.interact.listen.pbx.Extension',NULL,NULL),(2,0,NULL,NULL,NULL,'371',3,'com.interact.listen.pbx.Extension',NULL,NULL),(3,0,NULL,NULL,NULL,'112',4,'com.interact.listen.pbx.Extension',NULL,NULL),(4,0,NULL,NULL,NULL,'116',5,'com.interact.listen.pbx.Extension',NULL,NULL),(5,1,NULL,NULL,NULL,'338',6,'com.interact.listen.pbx.Extension',NULL,NULL),(6,1,NULL,NULL,NULL,'333',7,'com.interact.listen.pbx.Extension',NULL,NULL),(7,1,NULL,NULL,NULL,'777',7,'com.interact.listen.pbx.Extension',NULL,NULL);
+UNLOCK TABLES;
+
+
+LOCK TABLES `acd_user_status` WRITE;
+INSERT INTO `acd_user_status` VALUES (2,2,0,1,NULL,NULL,0),(3,3,0,1,NULL,NULL,0),(4,4,0,1,NULL,NULL,0),(5,5,0,1,NULL,NULL,0),(6,6,0,1,NULL,NULL,0),(7,7,0,1,NULL,NULL,0);
 UNLOCK TABLES;
 
 
@@ -33,10 +38,6 @@ UNLOCK TABLES;
 
 LOCK TABLES `organization_enabled_features` WRITE;
 INSERT INTO `organization_enabled_features` VALUES (1,1,'IPPBX'),(2,1,'FINDME'),(3,1,'CONFERENCING'),(4,1,'ATTENDANT'),(5,1,'BROADCAST'),(6,1,'VOICEMAIL'),(7,1,'ACD');
-UNLOCK TABLES;
-
-LOCK TABLES `phone_number` WRITE;
-INSERT INTO `phone_number` VALUES (1,1,NULL,1,NULL,'357',2,'com.interact.listen.pbx.Extension',NULL,NULL),(2,0,NULL,NULL,NULL,'371',3,'com.interact.listen.pbx.Extension',NULL,NULL),(3,0,NULL,NULL,NULL,'112',4,'com.interact.listen.pbx.Extension',NULL,NULL),(4,0,NULL,NULL,NULL,'116',5,'com.interact.listen.pbx.Extension',NULL,NULL),(5,1,NULL,NULL,NULL,'338',6,'com.interact.listen.pbx.Extension',NULL,NULL);
 UNLOCK TABLES;
 
 

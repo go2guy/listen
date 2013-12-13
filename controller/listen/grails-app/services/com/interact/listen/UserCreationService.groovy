@@ -85,7 +85,7 @@ class UserCreationService {
         user.organization = organization
         log.debug "We're going to create user [${user.username}] with org [${user.organization.id}][${user.organization}]"
         user.enabled = true
-        user.status = Status.findByName('Unavailable')
+        user.acdUserStatus.acdQueueStatus = AcdQueueStatus.findByName('Unavailable')
 
         // TODO passwords need to be salted
         // TODO allow Role configuration via user create/edit screens

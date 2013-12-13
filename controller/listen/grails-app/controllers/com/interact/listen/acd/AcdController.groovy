@@ -3,7 +3,7 @@ package com.interact.listen.acd
 import grails.plugin.springsecurity.annotation.Secured
 import com.interact.listen.acd.AcdQueueStatus
 import com.interact.listen.acd.AcdUserStatus
-import com.interact.listen.pbx.Extension
+import com.interact.listen.PhoneNumber
 
 @Secured(['ROLE_ACD_USER'])
 class AcdController {
@@ -18,27 +18,27 @@ class AcdController {
     }
 
     def updateStatus = {
-        def cu = authenticatedUser
-        cu.acdUserStatus.acdQueueStatus = AcdQueueStatus.findByName(params.status)
-        cu.save(flush: true)
+        def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
+        acd_user_status.acdQueueStatus = AcdQueueStatus.findByName(params.status)
+        acd_user_status.save(flush: true)
         redirect(action: 'status')
     }
 
     def status = {
-        def status = authenticatedUser?.acdUserStatus?.acdQueueStatus?.name
-        def options = AcdQueueStatus.findAll()
-        def option_names = []
+        def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
+        def status = acd_user_status?.acdQueueStatus?.name
+        def contactNumber = acd_user_status?.contactNumber
+        def optionNames = []
+        def phoneNumbers = []
 
-        options.each() { option ->
-          option_names.add(option.name)
+        AcdQueueStatus.findAll().each() { option ->
+          optionNames.add(option.name)
         }
 
-        /* def phoneNumbers = [] */
-        /* PhoneNumber.findAll().each() { number -> */
-          /* phoneNumbers.add(number.number) */
-        /* } */
+        PhoneNumber.findAllByOwner(authenticatedUser).each() { number ->
+          phoneNumbers.add(number.number)
+        }
 
-        /* render(view: 'status', model: [status: status, option_names: option_names, phoneNumbers: phoneNumbers]) */
-        render(view: 'status', model: [status: status, option_names: option_names])
+        render(view: 'status', model: [status: status, optionNames: optionNames, phoneNumbers: phoneNumbers, contactNumber: contactNumber])
     }
 }

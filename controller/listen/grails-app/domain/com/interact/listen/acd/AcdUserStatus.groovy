@@ -2,14 +2,15 @@ package com.interact.listen.acd
 
 import com.interact.listen.User
 import com.interact.listen.acd.AcdQueueStatus
+import com.interact.listen.PhoneNumber
 import org.joda.time.DateTime
 
-class AcdUserStatus
-{
-    User user
-    AcdQueueStatus acdQueueStatus
-    DateTime statusModified
-    boolean onACall
+class AcdUserStatus {
+  User owner
+  AcdQueueStatus acdQueueStatus
+  DateTime statusModified
+  boolean onACall
+  PhoneNumber contactNumber
 
-    static belongsTo = [user: User]
+  /* static belongsTo = [user: User] */
 }

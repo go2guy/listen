@@ -34,28 +34,6 @@ CREATE TABLE `organization` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `acd_queue_status`;
-CREATE TABLE `acd_queue_status` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `version` bigint(20) NOT NULL,
-  `name` varchar(32) NOT NULL UNIQUE,
-  `description` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
-
-
-DROP TABLE IF EXISTS `acd_user_status`;
-CREATE TABLE `acd_user_status` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `version` bigint(20) NOT NULL,
-  `acd_queue_status_id` bigint(20) NOT NULL DEFAULT 1,
-  `status_modified` datetime,
-  `onacall` bit(1) NOT NULL default 0,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (acd_queue_status_id) REFERENCES acd_queue_status (id)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
-
-
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -71,34 +49,11 @@ CREATE TABLE `user` (
   `real_name` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
   `is_active_directory` bit(1) NOT NULL,
-   acd_user_status_id bigint (20) DEFAULT 1,
   PRIMARY KEY  (`id`),
   KEY `FK36EBCB56D05B56` (`organization_id`),
   KEY `unique-username` (`organization_id`,`username`),
-  FOREIGN KEY (acd_user_status_id) REFERENCES acd_user_status (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
-
-
-DROP TABLE IF EXISTS `action_history`;
-CREATE TABLE `action_history` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `version` bigint(20) NOT NULL,
-  `action` varchar(255) NOT NULL,
-  `by_user_id` bigint(20) default NULL,
-  `channel` varchar(255) NOT NULL,
-  `date_created` datetime NOT NULL,
-  `description` varchar(255) NOT NULL,
-  `on_user_id` bigint(20) default NULL,
-  `organization_id` bigint(20) default NULL,
-  PRIMARY KEY  (`id`),
-  KEY `FKC510738B26425C6E` (`by_user_id`),
-  KEY `FKC510738B2F0C55F6` (`on_user_id`),
-  KEY `FKC510738B56D05B56` (`organization_id`),
-  CONSTRAINT `action_history_by_user_id_fk` FOREIGN KEY (`by_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `action_history_on_user_id_fk` FOREIGN KEY (`on_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `action_history_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `audio`;
@@ -136,6 +91,53 @@ CREATE TABLE `phone_number` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `acd_queue_status`;
+CREATE TABLE `acd_queue_status` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `version` bigint(20) NOT NULL,
+  `name` varchar(32) NOT NULL UNIQUE,
+  `description` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `acd_user_status`;
+CREATE TABLE `acd_user_status` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `owner_id` bigint(20) NOT NULL,
+  `version` bigint(20) NOT NULL,
+  `acd_queue_status_id` bigint(20) NOT NULL DEFAULT 1,
+  `contact_number_id` bigint(20),
+  `status_modified` datetime,
+  `onacall` bit(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (owner_id) REFERENCES user (id),
+  FOREIGN KEY (acd_queue_status_id) REFERENCES acd_queue_status (id),
+  FOREIGN KEY (contact_number_id) REFERENCES phone_number (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `action_history`;
+CREATE TABLE `action_history` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `by_user_id` bigint(20) default NULL,
+  `channel` varchar(255) NOT NULL,
+  `date_created` datetime NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `on_user_id` bigint(20) default NULL,
+  `organization_id` bigint(20) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `FKC510738B26425C6E` (`by_user_id`),
+  KEY `FKC510738B2F0C55F6` (`on_user_id`),
+  KEY `FKC510738B56D05B56` (`organization_id`),
+  CONSTRAINT `action_history_by_user_id_fk` FOREIGN KEY (`by_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `action_history_on_user_id_fk` FOREIGN KEY (`on_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `action_history_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `after_hours_configuration`;
 CREATE TABLE `after_hours_configuration` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -151,7 +153,6 @@ CREATE TABLE `after_hours_configuration` (
   CONSTRAINT `after_hours_conf_organiza_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
   CONSTRAINT `FK7C7614E359C40479` FOREIGN KEY (`mobile_phone_id`) REFERENCES `phone_number` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 
 DROP TABLE IF EXISTS `call_data`;

@@ -12,9 +12,9 @@
       <table>
         <tbody>
           <g:form controller="acd" action="updateStatus" method="post">
-          %{-- <tr><td><g:select name="status" from="${options}" value="${status}"/></tr></td> --}%
-          <tr><td><g:select name="status" from="${option_names}" value="${status}"/></tr></td>
-          %{-- <tr><td>Timer: 00:00:00</td></tr> --}%
+          <tr><td><g:select name="status" from="${optionNames}" value="${status}"/></tr></td>
+          <tr><td><h3>Contact Number:</h3></td></tr>
+          <tr><td><g:select name="contactNumber" from="${phoneNumbers}" value="${contactNumber}"/></tr></td>
           <tr><td><g:submitButton name="update_status" value="${g.message(code: 'default.button.update.label')}"/></td></tr>
           </g:form>
         </tbody>

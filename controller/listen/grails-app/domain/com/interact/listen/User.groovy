@@ -3,7 +3,7 @@ package com.interact.listen
 import com.interact.listen.pbx.Extension
 import org.joda.time.DateTime
 import com.interact.listen.acd.Skill
-import com.interact.listen.acd.AcdUserStatus
+/* import com.interact.listen.acd.AcdUserStatus */
 
 class User {
 
@@ -24,7 +24,6 @@ class User {
 
     /* ACD user settings */
     static hasMany = [phoneNumbers: PhoneNumber, skills: Skill]
-    AcdUserStatus acdUserStatus
 
     static transients = ['pass', 'confirm', 'enabledForLogin']
     /* pass & confirm are solely for password confirmation,
