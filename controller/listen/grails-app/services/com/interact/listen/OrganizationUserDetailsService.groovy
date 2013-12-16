@@ -12,18 +12,18 @@ class OrganizationUserDetailsService extends GormUserDetailsService {
 
     private Logger _log = Logger.getLogger(getClass())
 
-//	def grailsApplication
+//  def grailsApplication
 
     @Override
     UserDetails loadUserByUsername(String compositeUsername, boolean loadRoles) throws UsernameNotFoundException {
-		def conf = SpringSecurityUtils.securityConfig
-		Class<?> User = grailsApplication.getDomainClass(conf.userLookup.userDomainClassName).clazz
+        def conf = SpringSecurityUtils.securityConfig
+        Class<?> User = grailsApplication.getDomainClass(conf.userLookup.userDomainClassName).clazz
 
         _log.debug "Authenticating [${compositeUsername}] with loadRoles [${loadRoles}]"
 
         def user
         def username
-		User.withTransaction { status ->
+        User.withTransaction { status ->
             if(compositeUsername.split(':').length == 2) {
                 def s = compositeUsername.split(':')
                 username = s[1]
@@ -62,7 +62,7 @@ class OrganizationUserDetailsService extends GormUserDetailsService {
 
             Collection<GrantedAuthority> authorities = loadAuthorities(user, username, loadRoles)
             return createUserDetails(user, authorities)
-		}
+        }
     }
 
     @Override

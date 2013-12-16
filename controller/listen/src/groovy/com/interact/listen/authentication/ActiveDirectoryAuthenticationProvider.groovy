@@ -38,7 +38,13 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
             log.debug "Removed organization id [${orgId}] from principal [${auth.principal}], resulting in [${principal}]"
         }
 
-        def ad = validateActiveDirectoryUser(principal, auth.credentials)
+        def ad = null
+        try {
+            ad = validateActiveDirectoryUser(principal, auth.credentials)
+        } catch (Exception e) {
+            log.info "User [${principal}] resulted in exception [${e}] "
+        }
+        
         if(!ad) {
             log.debug "User [${principal}] does not exist on Active Directory server"
             return null
@@ -111,7 +117,7 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
             try {
                 def explanation = e.explanation
                 log.warn "AD authentication error [${explanation}]"
-                int ldapErrorCode = Integer.parseInt(explanation.split('LDAP: error code')[1].split(' ')[0])
+                int ldapErrorCode = Integer.parseInt(explanation.split('LDAP: error code')[1].split(' ')[1])
                 log.warn "AD authentication error code [${ldapErrorCode}]"
                 switch(ldapErrorCode) {
                     case 49: // 49: invalid credentials
@@ -136,6 +142,7 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
     private void createUserIfNotExists(def username, def organizationId, def ad) {
         def exists = User.countByUsername(username) > 0
         if(exists) {
+            log.debug "user [${username}] already exists, so no need to create it"
             return
         }
 
