@@ -15,6 +15,8 @@ class RequestInformationFilters {
                     log.debug "  Method         [${request.method}]"
                     log.debug "  URI            [${request.requestURI}]"
                     log.debug "  Query String   [${request.queryString}]"
+
+                    log.debug "  Full Params: [${params}]"
                 
                     def names = request.headerNames
                     while(names.hasMoreElements()) {

@@ -18,17 +18,15 @@ class AcdController {
     }
 
     def updateStatus = {
+        /* log.debug "AcdController.updateStatus: params[${params}]" */
         def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
-        log.debug("params.status [${params.status}]")
-        log.debug("params.contactNumber [${params.contactNumber}]")
         acd_user_status.acdQueueStatus = AcdQueueStatus.findByName(params.status)
-        log.debug("acd_user_status.acdQueueStatus.name [${acd_user_status.acdQueueStatus.name}]")
         acd_user_status.contactNumber = PhoneNumber.findByNumber(params.contactNumber)
-        log.debug("acd_user_status.contactNumber [${acd_user_status.contactNumber}]")
 
         try {
           if (acd_user_status.validate())
-            acd_user_status.save(flush: true)
+            if (!acd_user_status.save(failOnError: true, flush: true))
+              log.debug "Could not update user acd status."
         }
         catch (Exception e) {
           log.debug "Caught excpetion saving acd user status [${e}]"
@@ -40,7 +38,7 @@ class AcdController {
     def status = {
         def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
         def status = acd_user_status?.acdQueueStatus?.name
-        def contactNumber = acd_user_status?.contactNumber
+        def contactNumber = acd_user_status?.contactNumber?.number
         def optionNames = []
         def phoneNumbers = []
 
@@ -52,6 +50,7 @@ class AcdController {
           phoneNumbers.add(number.number)
         }
 
+        /* log.debug "Rendering view with parameters [status: ${status}, optionNames: ${optionNames}, phoneNumbers: ${phoneNumbers}, contactNumber: ${contactNumber}" */
         render(view: 'status', model: [status: status, optionNames: optionNames, phoneNumbers: phoneNumbers, contactNumber: contactNumber])
     }
 }

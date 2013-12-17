@@ -90,14 +90,6 @@ class UserCreationService {
         acdUserStatus.owner = user
         acdUserStatus.acdQueueStatus = AcdQueueStatus.findByName('Unavailable')
 
-        try {
-          if (acdUserStatus.validate())
-            acdUserStatus.save()
-        }
-        catch (Exception e) {
-          log.error "Exception caught trying to create acd user status entry [${e}]"
-        }
-
         // TODO passwords need to be salted
         // TODO allow Role configuration via user create/edit screens
 
@@ -108,6 +100,16 @@ class UserCreationService {
               }
               historyService.createdUser(user)
           }
+        }
+        catch (Exception e) {
+          log.error "Exception caught trying to create user [${e}]"
+        }
+
+        /* Create user acd status entry */
+        try {
+          if (acdUserStatus.validate())
+            if (!acdUserStatus.save(failOnError: true, flush: true))
+              log.debug "Could not create Acd Status Entry for new user."
         }
         catch (Exception e) {
           log.error "Exception caught trying to create acd user status entry [${e}]"

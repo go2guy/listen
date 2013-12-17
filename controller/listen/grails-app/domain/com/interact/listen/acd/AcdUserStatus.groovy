@@ -12,5 +12,10 @@ class AcdUserStatus {
   boolean onACall
   PhoneNumber contactNumber
 
+  static constraints = {
+    statusModified nullable: true
+    contactNumber nullable: true
+  }
+
   /* static belongsTo = [user: User] */
 }
