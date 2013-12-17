@@ -1449,7 +1449,7 @@ class SpotApiController {
                 command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/') + 1) + entry.override.optionsPrompt
                 log.debug "Overrode default prompt with [${command.args.audioFile}]"
             }
-
+            log.debug "doAction [${command}]"
             render(command as JSON)
             return
         }
@@ -1484,7 +1484,8 @@ class SpotApiController {
             doAction = menu
         }
 
-        def command = doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore)
+        def command = doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore, grailsApplication.config.com.interact.listen.artifactsDirectory)
+        log.debug "doAction attendant [${command}]"
         render(command as JSON)
     }
 

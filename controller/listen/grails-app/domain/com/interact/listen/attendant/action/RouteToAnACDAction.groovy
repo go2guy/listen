@@ -11,4 +11,21 @@ class RouteToAnACDAction extends Action {
     static constraints = {
         skill nullable: true
     }
+    
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory) {
+        def args = [
+            skillId: skill.id,
+            skillname: skill.skillname,
+            onHoldMsg: artifactsDirectory + '/acd/' + skill.id + '/onHoldMsg.wav',
+            onHoldMsgExtended: artifactsDirectory + '/acd/' + skill.id  + '/onHoldMsgExtended.wav',
+            onHoldMusic: artifactsDirectory + '/acd/' + skill.id  + '/onHoldMusic.wav',
+            connectMsg: artifactsDirectory + '/acd/' + skill.id  + '/connectMsg.wav'
+        ]
+
+        return [
+            promptBefore: !promptBefore || promptBefore.trim() == '' ? '' : promptDirectory + '/' + promptBefore,
+            action: 'ROUTE_TO_AN_ACD',
+            args: args
+        ]
+    }
 }
