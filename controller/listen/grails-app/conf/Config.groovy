@@ -224,6 +224,9 @@ com.interact.listen.authorizenet.transactionKey = '6s6Z7U5z2WnyA2Xz'
 
 com.interact.listen.acd.agent.waitTime = 15
 
+// listen artifacts directory - not everything is using this at the moment
+com.interact.listen.artifactsDirectory = '/interact/listen/artifacts'
+
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 
 /* remove this line 

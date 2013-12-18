@@ -14,6 +14,7 @@ class RouteToAnACDAction extends Action {
     
     def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory) {
         def args = [
+            applicationName: 'ACD',
             skillId: skill.id,
             skillname: skill.skillname,
             onHoldMsg: artifactsDirectory + '/acd/' + skill.id + '/onHoldMsg.wav',
@@ -24,7 +25,7 @@ class RouteToAnACDAction extends Action {
 
         return [
             promptBefore: !promptBefore || promptBefore.trim() == '' ? '' : promptDirectory + '/' + promptBefore,
-            action: 'ROUTE_TO_AN_ACD',
+            action: 'LAUNCH_APPLICATION',
             args: args
         ]
     }
