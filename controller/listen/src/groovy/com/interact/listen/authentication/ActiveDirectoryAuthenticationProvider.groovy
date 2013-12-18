@@ -117,7 +117,8 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
             try {
                 def explanation = e.explanation
                 log.warn "AD authentication error [${explanation}]"
-                int ldapErrorCode = Integer.parseInt(explanation.split('LDAP: error code')[1].split(' ')[1])
+                String errorString = explanation.split('LDAP: error code ')[1].split(' ')[0];
+                int ldapErrorCode = Integer.parseInt(errorString);
                 log.warn "AD authentication error code [${ldapErrorCode}]"
                 switch(ldapErrorCode) {
                     case 49: // 49: invalid credentials
