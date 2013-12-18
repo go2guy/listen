@@ -12,7 +12,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'73d1b1b1bc1dabfb97f216d897b7968e44b06457920f00f2dc6c1ed3be25ad4c','\0','Mimio Listen Custodian','Custodian','\0');
+INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Listen Custodian','Custodian','\0');
 UNLOCK TABLES;
 
 
