@@ -23,7 +23,9 @@ beans = {
         authenticationManager = ref('authenticationManager')
     }
 
-    apiKeyAuthenticationProvider(com.interact.listen.authentication.ApiKeyAuthenticationProvider)
+    apiKeyAuthenticationProvider(com.interact.listen.authentication.ApiKeyAuthenticationProvider){
+        grailsApplication = ref('grailsApplication')
+    }
 
     // most of our user lookups are based on organizations, so overwrite the default Spring Security UserDetailsService
     userDetailsService(com.interact.listen.OrganizationUserDetailsService) {

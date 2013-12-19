@@ -1,8 +1,8 @@
 package com.interact.listen.spot
 
-import com.interact.listen.*
-import com.interact.listen.acd.AcdCall
-import com.interact.listen.acd.AcdCallStatus
+import com.interact.listen.Audio
+import com.interact.listen.CallData
+import com.interact.listen.WildcardNumberMatcher
 import com.interact.listen.android.DeviceRegistration
 import com.interact.listen.attendant.*
 import com.interact.listen.attendant.action.*
@@ -16,12 +16,15 @@ import com.interact.listen.voicemail.*
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 
-//import grails.plugins.springsecurity.Secured
+import java.security.InvalidParameterException
 import javax.servlet.http.HttpServletResponse as HSR
 import org.apache.commons.lang.StringUtils
 import org.joda.time.*
 import org.joda.time.format.DateTimeFormat
+
+
 
 @Secured(['ROLE_SPOT_API'])
 class SpotApiController {
@@ -85,41 +88,73 @@ class SpotApiController {
     def statWriterService
     def voicemailNotificationService
 
+    /**
+     * Add an acd call to the queue.
+     */
     def addAcdCall =
     {
-        log.debug("Entering addAcdCall");
+        if(log.isDebugEnabled())
+        {
+            log.debug("Entering addAcdCall");
+        }
 
         try
         {
             def json = JSON.parse(request)
             response.status = HSR.SC_CREATED
 
-            acdService.acdCallAdd(json.ani, json.dnis, json.selection, json.sessionId)
+            if(json.ani && json.dnis && json.selection && json.sessionId)
+            {
+                acdService.acdCallAdd(json.ani, json.dnis, json.selection, json.sessionId)
+            }
+            else
+            {
+                throw new InvalidParameterException("Missing required parameter for Add Acd Call request");
+            }
 
             response.flushBuffer()
         }
         catch(Exception e)
         {
-            log.error("Exception adding ACD Call: " + e.getMessage());
+            log.error("Exception adding ACD Call: " + e.getMessage(), e);
             response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
         }
     }
 
+    /**
+     * Update an existing queued acd call.
+     */
     def updateAcdCall =
     {
-        log.debug("Entering updateAcdCall");
+        if(log.isDebugEnabled())
+        {
+            log.debug("Entering updateAcdCall");
+        }
+
         try
         {
             def json = JSON.parse(request)
             response.status = HSR.SC_CREATED
 
-            acdService.acdCallStatusUpdate(json.sessionId, json.status);
+            if(json.sessionId && json.status)
+            {
+                acdService.acdCallStatusUpdate(json.sessionId, json.status);
+            }
+            else
+            {
+                throw new InvalidParameterException("Missing required parameter for ACD Queue Update.")
+            }
 
             response.flushBuffer();
         }
+        catch(ConverterException ce)
+        {
+            log.error("Exception parsing Update Acd Call request : " + ce.getMessage());
+            response.sendError(HSR.SC_BAD_REQUEST, ce.getMessage());
+        }
         catch(Exception e)
         {
-            log.error("Exception updating ACD Call: " + e.getMessage());
+            log.error("Exception updating ACD Call: " + e.getMessage(), e);
             response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
         }
     }
