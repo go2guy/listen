@@ -13,6 +13,8 @@ import com.interact.listen.pbx.*
 import com.interact.listen.pbx.findme.*
 import com.interact.listen.stats.*
 import com.interact.listen.voicemail.*
+import com.interact.listen.User
+import com.interact.listen.Organization
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
