@@ -71,7 +71,7 @@ class AcdService
             eq("skill", requestedSkill)
             user {
                 acdUserStatus {
-                    eq("acdQueueStatus", AcdQueueStatus.AVAILABLE)
+                    eq("acdQueueStatus", AcdQueueStatus.Available)
                     le("statusModified", agentTime)
                     eq("onACall", false)
                     order("statusModified", "asc")
