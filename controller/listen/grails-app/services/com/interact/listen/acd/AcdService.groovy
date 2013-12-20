@@ -2,6 +2,7 @@ package com.interact.listen.acd
 
 import com.interact.listen.User
 import com.interact.listen.exceptions.ListenAcdException
+import com.interact.listen.spot.SpotCommunicationException
 import grails.validation.ValidationErrors
 import org.joda.time.DateTime
 import org.springframework.validation.FieldError
@@ -51,8 +52,19 @@ class AcdService
     {
         User returnVal = null;
 
-        DateTime agentTime =
-            DateTime.now().minusSeconds(Integer.parseInt(grailsApplication.config.com.interact.listen.acd.agent.waitTime))
+        int agentWaitTime = 0;
+
+        //For some reason we can't guarantee what the type of this config value is
+        if(grailsApplication.config.com.interact.listen.acd.agent.waitTime instanceof String)
+        {
+            agentWaitTime = Integer.parseInt(grailsApplication.config.com.interact.listen.acd.agent.waitTime)
+        }
+        else
+        {
+            agentWaitTime = grailsApplication.config.com.interact.listen.acd.agent.waitTime;
+        }
+
+        DateTime agentTime = DateTime.now().minusSeconds(agentWaitTime);
 
         def userSkillCriteria = UserSkill.createCriteria();
         def results = userSkillCriteria.list(max: 1) {
@@ -96,7 +108,9 @@ class AcdService
                     acdCallConnected(acdCall);
                     break;
                 case AcdCallStatus.COMPLETED:
-                    acdCallCompleted(acdCall);
+                case AcdCallStatus.DISCONNECTED:
+                case AcdCallStatus.VOICEMAIL:
+                    acdCallCompleted(acdCall, thisStatus);
                     break;
                 case AcdCallStatus.CONNECT_FAIL:
                     acdCallConnectFailed(acdCall);
@@ -118,7 +132,7 @@ class AcdService
      * @param sessionId The sessionid of the call.
      * @throws ListenAcdException If an exception adding the call to the queue.
      */
-    void acdCallAdd(String ani, String dnis, String selection, String sessionId) throws ListenAcdException
+    void acdCallAdd(String ani, String dnis, String selection, String sessionId, String ivr) throws ListenAcdException
     {
         AcdCall acdCall = new AcdCall();
         acdCall.setAni(ani);
@@ -132,6 +146,7 @@ class AcdService
         acdCall.setSkill(skill);
         acdCall.setSessionId(sessionId);
         acdCall.setCallStatus(AcdCallStatus.WAITING);
+        acdCall.setIvr(ivr);
 
         if(acdCall.validate() && acdCall.save())
         {
@@ -167,18 +182,39 @@ class AcdService
 
             //Set agent onacall to true
             agent.acdUserStatus.onACall = true;
-            agent.acdUserStatus.statusModified = DateTime.now();
-            agent.save(flush: true)
+            agent.save();
+
+            boolean sessionExistsOnIvr = true;
 
             //Send request to ivr
-            spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId, agent.phoneNumbers.asList().get(0).number);
+            try
+            {
+                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
+                        agent.phoneNumbers.asList().get(0).number);
+            }
+            catch(SpotCommunicationException sce)
+            {
+                //for now, we are going to assume this means that this session does not exist any longer
+                sessionExistsOnIvr = false;
+            }
 
-            //Set call status to "ivrconnectRequested"
-            thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
-            thisCall.setUser(agent);
-            thisCall.save(flush: true);
+            if(sessionExistsOnIvr)
+            {
+                //Set call status to "ivrconnectRequested"
+                thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
+                thisCall.setUser(agent);
+                thisCall.save(flush: true);
 
-            //Now we just have to wait for the IVR to respond that it was connected
+                //Now we just have to wait for the IVR to respond that it was connected
+            }
+            else
+            {
+                //Free up the agent
+                freeAgent(agent);
+
+                //Delete call from queue. Leave status since we don't really know what happened.
+                removeCall(thisCall, null);
+            }
         }
         else
         {
@@ -193,34 +229,28 @@ class AcdService
      * Execute when ACD Call has completed.
      *
      * @param acdCall The call to complete.
-     * @exception If unable to set call to completed.
+     * @throws ListenAcdException If unable to set call to completed.
      */
-    private void acdCallCompleted(AcdCall acdCall) throws ListenAcdException
+    private void acdCallCompleted(AcdCall acdCall, AcdCallStatus status) throws ListenAcdException
     {
-        if(acdCall.callStatus != AcdCallStatus.CONNECTED)
-        {
-            throw new ListenAcdException("Attempting to Complete a call in invalid status[" +
-                    acdCall.callStatus.toString() + "]");
-        }
         //Free the user
         freeAgent(acdCall.user);
 
-        //Delete from queue
-        acdCall.delete();
+        //Delete from queue.
+        removeCall(acdCall, status);
     }
 
     /**
      * Execute when an ACD Call has connected.
      *
      * @param acdCall The call to set as connected.
-     * @exception If unable to set call to completed.
+     * @throws ListenAcdException If unable to set call to completed.
      */
     private void acdCallConnected(AcdCall acdCall) throws ListenAcdException
     {
         if(acdCall.callStatus != AcdCallStatus.CONNECT_REQUESTED)
         {
-            throw new ListenAcdException("Attempting to Connect a call in invalid status[" +
-                    acdCall.callStatus.toString() + "]");
+            log.warn("Attempting to Connect a call in invalid status[" + acdCall.callStatus.toString() + "]");
         }
 
         acdCall.callStatus = AcdCallStatus.CONNECTED;
@@ -278,10 +308,16 @@ class AcdService
      */
     private void freeAgent(User user)
     {
-        //Free the user
-        user.acdUserStatus.onACall = false;
-        user.acdUserStatus.statusModified = DateTime.now();
-        user.save(flush: true);
+        if(user != null)
+        {
+            //Free the user
+            user.acdUserStatus.onACall = false;
+            user.save(flush: true);
+        }
+        else
+        {
+            log.warn("Attempted to free a non existent user.");
+        }
     }
 
     /**
@@ -308,5 +344,26 @@ class AcdService
         }
 
         return resultString;
+    }
+
+    /**
+     * Remove a call from the queue. Update status first to keep the history.
+     *
+     * @param call The call to remove.
+     */
+    private void removeCall(AcdCall call, AcdCallStatus lastStatus)
+    {
+        //Set the status so it is preserved in the history
+        if(lastStatus != null)
+        {
+            call.callStatus = lastStatus;
+            call.save(flush: true);
+        }
+
+        AcdCallHistory history = new AcdCallHistory(call);
+        history.insert();
+
+        //Delete from the queue
+        call.delete();
     }
 }

@@ -7,6 +7,7 @@ import com.interact.listen.android.DeviceRegistration
 import com.interact.listen.attendant.*
 import com.interact.listen.attendant.action.*
 import com.interact.listen.conferencing.*
+import com.interact.listen.exceptions.ListenAcdException
 import com.interact.listen.history.CallHistory
 import com.interact.listen.license.ListenFeature
 import com.interact.listen.pbx.*
@@ -107,7 +108,7 @@ class SpotApiController {
 
             if(json.ani && json.dnis && json.selection && json.sessionId)
             {
-                acdService.acdCallAdd(json.ani, json.dnis, json.selection, json.sessionId)
+                acdService.acdCallAdd(json.ani, json.dnis, json.selection, json.sessionId, request.remoteAddr)
             }
             else
             {
@@ -153,6 +154,11 @@ class SpotApiController {
         {
             log.error("Exception parsing Update Acd Call request : " + ce.getMessage());
             response.sendError(HSR.SC_BAD_REQUEST, ce.getMessage());
+        }
+        catch(ListenAcdException lae)
+        {
+            log.error("Listen ACD Exception: " + lae.getMessage());
+            response.sendError(HSR.SC_BAD_REQUEST, lae.getMessage());
         }
         catch(Exception e)
         {

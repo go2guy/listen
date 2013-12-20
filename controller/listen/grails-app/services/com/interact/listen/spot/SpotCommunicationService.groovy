@@ -103,8 +103,20 @@ class SpotCommunicationService {
         buildAndSendRequest(importedValue);
     }
 
-    def sendAcdConnectEvent(def sessionId, def number) throws IOException, SpotCommunicationException {
-        log.info("Sending AcdConnectEvent, sessionId[" + sessionId + "], number[" + number + "]")
+    /**
+     * Send request to SPOT to connect a queued caller to a number.
+     *
+     * @param sessionId The sessionId of the call.
+     * @param number The number to connect to.
+     * @throws IOException If an IOException.
+     * @throws SpotCommunicationException If
+     */
+    def sendAcdConnectEvent(def sessionId, def number) throws IOException, SpotCommunicationException
+    {
+        if(log.isInfoEnabled())
+        {
+            log.info("Sending AcdConnectEvent, sessionId[" + sessionId + "], number[" + number + "]")
+        }
 
         //TODO: Uncomment when implemented on IVR
         /*Map<String, Object> importedValue = new TreeMap<String, Object>();
@@ -126,16 +138,23 @@ class SpotCommunicationService {
 
     private void buildAndSendRequest(Map<String, Object> importedValue) throws IOException, SpotCommunicationException
     {
-        try {
+        try
+        {
             def user = springSecurityService.getCurrentUser()
             if(user)
             {
                 importedValue.put("initiatingSubscriber", "${user.id}");
             }
-        } catch(MissingPropertyException e) {
-            // handles a non-User principal
-            log.debug 'MissingPropertyException while building SPOT request, probably an API user'
         }
+        catch(MissingPropertyException e)
+        {
+            // handles a non-User principal
+            if(log.isDebugEnabled())
+            {
+                log.debug 'MissingPropertyException while building SPOT request, probably an API user'
+            }
+        }
+
         importedValue.put("initiatingChannel", Channel.GUI.toString());
 
         Map<String, String> params = new TreeMap<String, String>();
@@ -145,26 +164,38 @@ class SpotCommunicationService {
         sendRequest(params);
     }
 
-    private void sendRequest(Map<String, String> params) throws IOException, SpotCommunicationException {
-        log.debug "Sending SPOT HTTP request with params ${params} to ${SpotSystem.count()} SPOT systems"
+    private void sendRequest(Map<String, String> params) throws IOException, SpotCommunicationException
+    {
+        if(log.isDebugEnabled())
+        {
+            log.debug "Sending SPOT HTTP request with params ${params} to ${SpotSystem.count()} SPOT systems"
+        }
+
         def failed = []
         int status = -1
-        SpotSystem.findAll().each {
+        SpotSystem.findAll().each
+        {
             def httpClient = new HttpClientImpl()
 
             String uri = it.name + "/ccxml/createsession";
             httpClient.post(uri, params);
 
             status = httpClient.getResponseStatus();
-            if(!isSuccessStatus(status)) {
+            if(!isSuccessStatus(status))
+            {
                 failed << it
             }
         }
-        if(failed.size() > 0) {
-            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System(s) at [" + (failed.collect { it.uri }.join(',')) + "]");
+        if(failed.size() > 0)
+        {
+            throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System(s) at [" +
+                    (failed.collect { it.uri }.join(',')) + "]", status);
         }
-        
-        log.debug "Completed sendRequest [${failed.size()}]"
+
+        if(log.isDebugEnabled())
+        {
+            log.debug "Completed sendRequest [${failed.size()}]"
+        }
     }
 
     private boolean isSuccessStatus(int status) {
