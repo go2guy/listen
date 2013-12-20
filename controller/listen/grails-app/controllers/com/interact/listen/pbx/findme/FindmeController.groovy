@@ -3,7 +3,8 @@ package com.interact.listen.pbx.findme
 import com.interact.listen.pbx.Extension
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 //import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
 
@@ -53,9 +54,9 @@ class FindmeController {
         def user = authenticatedUser
 
         // hacky value override since we declared it twice on the page, causing it to come in as an array
+        
         params.expires = 'struct'
-        log.debug "Saving Find Me configuration, params = ${params}"
-
+        log.debug "Saving Find Me configuration, params after = ${params}"
         def jsonGroups = JSON.parse(params.jsonGroups)
         def groups = []
 
@@ -85,13 +86,16 @@ class FindmeController {
         def oldSendReminder = preferences.sendReminder
         def oldReminderNumber = preferences.reminderNumber
 
-        preferences.properties['expires', 'sendReminder'] = params
+        preferences.properties['sendReminder'] = params
+        
+        preferences.expires = new DateTime(params?.expires_year.toInteger(), params?.expires_month.toInteger(), params?.expires_day.toInteger(), params?.expires_hour.toInteger(), params?.expires_minute.toInteger())
+        
         if(params.smsNumber?.trim() == '') {
             preferences.reminderNumber = null
         } else {
             preferences.reminderNumber = params.smsNumber + '@' + params.smsProvider
         }
-
+        
         def oldNumbers = FindMeNumber.findAllByUserForHistory(user)
 
         FindMeNumber.withTransaction { status ->
@@ -134,6 +138,8 @@ class FindmeController {
                 flash.successMessage = 'Your Find Me / Follow Me configuration has been saved'
                 redirect(action: 'configure')
             } else {
+                log.error "Find Me / Follow Me configuration not saved"
+                log.debug "Error preferences [${preferences.errors}]"
                 status.setRollbackOnly()
                 render(view: 'configure', model: [groups: groups, preferences: preferences])
             }

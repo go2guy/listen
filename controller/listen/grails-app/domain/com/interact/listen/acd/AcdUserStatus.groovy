@@ -29,6 +29,13 @@ class AcdUserStatus
             this.statusModified = DateTime.now();
         }
     }
+  
+  def toggleStatus() {
+      if (this.acdQueueStatus == AcdQueueStatus.Unavailable)
+          this.acdQueueStatus = AcdQueueStatus.Available
+      else
+          this.acdQueueStatus = AcdQueueStatus.Unavailable
+  }
 }
 
 enum AcdQueueStatus
@@ -57,4 +64,5 @@ enum AcdQueueStatus
     {
         name()
     }
+
 }

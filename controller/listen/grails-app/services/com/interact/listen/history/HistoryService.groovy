@@ -281,6 +281,18 @@ class HistoryService {
               description: "Deleted ACD skill [${skill.skillname}] for org [${skill.organization}]")
     }
     
+    void toggleACDStatus(AcdUserStatus acdUserStatus) {
+        write(action: Action.UPDATED_ACD_STATUS,
+              description: "Updated ACD status to [${acdUserStatus.acdQueueStatus.toString()}]",
+              onUser: acdUserStatus.owner )
+    }
+        
+    void updatedACDContactNumber(AcdUserStatus acdUserStatus) {
+        write(action: Action.UPDATED_ACD_CONTACTNUMBER,
+              description: "Updated ACD contact number to [${acdUserStatus.contactNumber.number}]",
+              onUser: acdUserStatus.owner )
+    }
+    
     void disabledAndroidCloudToDevice() {
         write(action: Action.DISABLED_ANDROID_CLOUD_TO_DEVICE,
               description: "Disabled Android Cloud-to-Device")

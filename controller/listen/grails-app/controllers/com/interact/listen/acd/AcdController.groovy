@@ -3,15 +3,21 @@ package com.interact.listen.acd
 import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdUserStatus
 import com.interact.listen.PhoneNumber
+import com.interact.listen.history.*
+import org.joda.time.DateTime
 
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['ROLE_ACD_USER'])
 class AcdController {
+    
+    def historyService
+    
     static allowedMethods = [
-      index: 'GET',
-      status: 'GET',
-      updateStatus: 'POST'
+        index: 'GET',
+        status: 'GET',
+        toggleStatus: 'POST',
+        updateNumber: 'POST'
     ]
 
     def index = {
@@ -19,59 +25,109 @@ class AcdController {
     }
 
     def callQueue = {
-      def calls = AcdCall.findAll()
-      render(view: 'callQueue', model: [calls: calls])
+        def calls = AcdCall.findAll()
+        render(view: 'callQueue', model: [calls: calls])
     }
-
+    
     def pollQueue = {
-      def json = [:]
-      json.calls = AcdCall.findAll()
-      
-      render(contentType: 'application/json') {
-        json
-      }
-    }
-
-    def status = {
-      def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
-      def status = acd_user_status?.acdQueueStatus?.toString()
-      def contactNumber = acd_user_status?.contactNumber?.number
-      def phoneNumbers = []
-
-      def optionNames = AcdQueueStatus.values()
-
-      PhoneNumber.findAllByOwner(authenticatedUser).each() { number ->
-        phoneNumbers.add(number.number)
-      }
-
-      def model = [
-        status: status,
-        optionNames: optionNames,
-        phoneNumbers: phoneNumbers,
-        contactNumber: contactNumber
-      ]
-
-      log.debug "Rendering view [status] with model [${model}]"
-      render(view: 'status', model: model)
-    }
-
-    def updateStatus = {
-      def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
-      acd_user_status.acdQueueStatus = AcdQueueStatus.fromString(params.status)
-      acd_user_status.contactNumber = PhoneNumber.findByNumber(params.contactNumber)
-
-      try {
-        if (acd_user_status.validate()) {
-          if (!acd_user_status.save(failOnError: true, flush: true)) {
-            log.debug "Could not update user acd status."
-          }
+        def json = [:]
+        json.calls = AcdCall.findAll()
+        
+        render(contentType: 'application/json') {
+          json
         }
       }
-      catch (Exception e) {
-        log.debug "Caught exception saving acd user status [${e}]"
-      }
+    
+    def toggleStatus = {
+        log.debug "AcdController.toggleStatus: params[${params}]"
+        def acdUserStatus = AcdUserStatus.findByOwner(authenticatedUser)
+        if (!acdUserStatus) {
+            log.error "Failed to find acd user status, maybe not serious"
+            flash.errorMessage = message(code: 'page.acd.status.statusChange.failure.message', args: [params?.toggle_status])
+            redirect(action: 'status')
+            return
+        }
+        
+        log.debug "Before Toggle user [${acdUserStatus.owner.username}] to status [${acdUserStatus.acdQueueStatus}]"
+        
+        acdUserStatus.toggleStatus()
+        acdUserStatus.statusModified = DateTime.now();
+        
+        log.debug "Updating user [${acdUserStatus.owner.username}] to status [${acdUserStatus.acdQueueStatus}]"
+        
+        if (acdUserStatus.acdQueueStatus && acdUserStatus.validate() && acdUserStatus.save(failOnError: true, flush: true)) {
+            log.debug "Successfully changed user [${acdUserStatus.owner.username}] to status [${acdUserStatus.acdQueueStatus}]"
+            historyService.toggleACDStatus(acdUserStatus)
+            flash.successMessage = message(code: 'page.acd.status.statusChange.successful.message', args: [acdUserStatus.acdQueueStatus])
+        } else {
+            log.error "Could not update user acd status."
+            flash.errorMessage = message(code: 'page.acd.status.statusChange.failure.message', args: [params?.toggle_status])
+        }
+        
+        redirect(action: 'status')
+        return
+    }
+    
+    def updateNumber = {
+        log.debug "AcdController.updateNumber: params[${params}]"
+        def acdUserStatus = AcdUserStatus.findByOwner(authenticatedUser)
+        if (!acdUserStatus) {
+            log.error "Failed to find acd user status, maybe not serious"
+            flash.errorMessage = message(code: 'page.acd.status.statusChange.failure.message', args: [params?.toggle_status])
+            redirect(action: 'status')
+            return
+        }
+        
+        acdUserStatus.contactNumber = PhoneNumber.findByOwnerAndNumber(authenticatedUser, params?.contactNumber)
 
-      redirect(action: 'status')
+        if (acdUserStatus.contactNumber && acdUserStatus.validate() && acdUserStatus.save(failOnError: true, flush: true)) {
+            log.debug "Successfully changed user [${acdUserStatus.owner.username}] to contact number [${acdUserStatus.contactNumber.number}]"
+            historyService.updatedACDContactNumber(acdUserStatus)
+            flash.successMessage = message(code: 'page.acd.status.statusChange.successful.message', args: [acdUserStatus.contactNumber.number])
+        } else {
+            log.error "Failed to find phone number [${params?.contactNumber}]"
+            flash.errorMessage = message(code: 'page.acd.status.statusNumber.failure.message', args: [params?.contactNumber])
+        }
+                
+        redirect(action: 'status')
+    }
+    
+    def status = {
+        def acdUserStatus = AcdUserStatus.findByOwner(authenticatedUser)
+        if (!acdUserStatus) {
+            log.debug "user does not currently have an acd user status [${acdUserStatus}]"
+            acdUserStatus = new AcdUserStatus()
+            acdUserStatus.owner = authenticatedUser
+            acdUserStatus.acdQueueStatus = AcdQueueStatus.Unavailable
+            /* Create user acd status entry, as they should have had one already */
+            if (acdUserStatus.validate() && acdUserStatus.save(failOnError: true, flush: true)) {
+                log.error "Created acd user status for this user [${acdUserStatus.owner}]"
+            } else {
+                log.error "Could not create Acd Status Entry for new user."
+            }
+        }
+
+        def status = acdUserStatus?.acdQueueStatus?.toString()
+        def contactNumber = acdUserStatus?.contactNumber?.number
+        def optionNames = AcdQueueStatus.values()
+        
+        log.debug "User status contact number [${contactNumber}]"
+        
+        def phoneNumbers = []
+        PhoneNumber.findAllByOwner(authenticatedUser).each() { number ->
+            phoneNumbers.add(number.number)
+            log.debug "Adding phone number [${number.number}]"
+        }
+        
+        def model = [
+            status: status,
+            optionNames: optionNames,
+            phoneNumbers: phoneNumbers,
+            contactNumber: contactNumber
+          ]
+        
+        log.debug "Rendering view [status] with model [${model}]"
+        render(view: 'status', model: model)
     }
 
 }

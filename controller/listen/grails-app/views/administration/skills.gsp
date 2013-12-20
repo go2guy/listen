@@ -5,22 +5,22 @@
     <meta name="tab" content="administration"/>
     <meta name="button" content="skills"/>
     <style type="text/css">
-table { margin-bottom: 10px; }
-
-tr.add td.col-button {
-    text-align: center;
-    width: 10%;
-}
-
-tr.disabled {
-    color: #999999;
-}
-.col-pattern,
-.col-target,
-.col-restriction {
-    width: 45%;
-}
-.col-button { width: 5%; }
+        table { margin-bottom: 10px; }
+        
+        tr.add td.col-button {
+            text-align: center;
+            width: 10%;
+        }
+        
+        tr.disabled {
+            color: #999999;
+        }
+        .col-pattern,
+        .col-target,
+        .col-restriction {
+            width: 45%;
+        }
+        .col-button { width: 5%; }
     </style>
   </head>
   <body>
@@ -69,7 +69,7 @@ tr.disabled {
                       <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}"/>
                   </g:if>
                   <g:else>
-                      <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}" readonly"readonly" class="disabled" disabled="disabled" title="Cannot delete skill that is currently associated with a menu"/>
+                      <g:submitButton name="delete" value="${g.message(code: 'default.button.delete.label')}" readonly"readonly" class="disabled" disabled="disabled" title="${g.message(code: 'page.administration.acd.skills.assocaitedWithMenu.message')}"/>
                   </g:else>
                 </td>
               </g:form>

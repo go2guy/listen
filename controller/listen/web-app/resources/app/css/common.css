@@ -257,6 +257,41 @@ button:hover {
     color: #FFFFFF;
 }
 
+input[type=submit].Available,
+input[type=button].Available,
+input[type=reset].Available,
+button.available {
+    width: 100px;
+    background-color: #A3FF47 !important;
+}
+
+input[type=submit].Available:hover,
+input[type=button].Available:hover,
+input[type=reset].Available:hover,
+button.Available:hover {
+    width: 100px;
+    background-color: #054B7A;
+    color: #FFFFFF;
+}
+
+input[type=submit].Unavailable,
+input[type=button].Unavailable,
+input[type=reset].Unavailable,
+button.Unavailable {
+    width: 100px;
+    background-color: #FFCC00 !important;
+
+}
+
+input[type=submit].Unavailable:hover,
+input[type=button].Unavailable:hover,
+input[type=reset].Unavailable:hover,
+button.Unavailable:hover {
+    width: 100px;
+    background-color: #054B7A;
+    color: #FFFFFF;
+}
+
 input[type=submit].disabled,
 input[type=button].disabled,
 input[type=reset].disabled,

@@ -92,7 +92,9 @@ enum Action {
     UPDATED_ACD_SKILL,
     DELETED_ACD_SKILL,
     ADDED_ACD_SKILL_USER,
-    DELETED_ACD_SKILL_USER;
+    DELETED_ACD_SKILL_USER,
+    UPDATED_ACD_STATUS,
+    UPDATED_ACD_CONTACTNUMBER;
 
     String toString() {
         def name = name().toLowerCase().replaceAll(/_/, ' ')

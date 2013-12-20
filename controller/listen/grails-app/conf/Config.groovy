@@ -120,7 +120,6 @@ log4j = {
             'org.codehaus.groovy.grails.commons', // core / classloading
             'org.codehaus.groovy.grails.plugins', // plugins
             'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-            'org.springframework',
             'org.hibernate',
             'net.sf.ehcache.hibernate'
 
@@ -128,6 +127,7 @@ log4j = {
             'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
 
     debug  'grails.app',
+            'org.springframework',
             'com.interact'
 }
 
