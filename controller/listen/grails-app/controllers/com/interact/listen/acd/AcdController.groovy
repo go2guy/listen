@@ -1,56 +1,77 @@
 package com.interact.listen.acd
 
-import grails.plugin.springsecurity.annotation.Secured
-import com.interact.listen.acd.AcdQueueStatus
+import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdUserStatus
 import com.interact.listen.PhoneNumber
+
+import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['ROLE_ACD_USER'])
 class AcdController {
     static allowedMethods = [
-        index: 'GET',
-        status: 'GET',
-        updateStatus: 'POST'
+      index: 'GET',
+      status: 'GET',
+      updateStatus: 'POST'
     ]
 
     def index = {
-        redirect(action: 'status')
+      redirect(action: 'status')
     }
 
-    def updateStatus = {
-        /* log.debug "AcdController.updateStatus: params[${params}]" */
-        def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
-        acd_user_status.acdQueueStatus = AcdQueueStatus.findByName(params.status)
-        acd_user_status.contactNumber = PhoneNumber.findByNumber(params.contactNumber)
+    def callQueue = {
+      def calls = AcdCall.findAll()
+      render(view: 'callQueue', model: [calls: calls])
+    }
 
-        try {
-          if (acd_user_status.validate())
-            if (!acd_user_status.save(failOnError: true, flush: true))
-              log.debug "Could not update user acd status."
-        }
-        catch (Exception e) {
-          log.debug "Caught excpetion saving acd user status [${e}]"
-        }
-
-        redirect(action: 'status')
+    def pollQueue = {
+      def json = [:]
+      json.calls = AcdCall.findAll()
+      
+      render(contentType: 'application/json') {
+        json
+      }
     }
 
     def status = {
-        def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
-        def status = acd_user_status?.acdQueueStatus?.name
-        def contactNumber = acd_user_status?.contactNumber?.number
-        def optionNames = []
-        def phoneNumbers = []
+      def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
+      def status = acd_user_status?.acdQueueStatus?.toString()
+      def contactNumber = acd_user_status?.contactNumber?.number
+      def phoneNumbers = []
 
-        AcdQueueStatus.findAll().each() { option ->
-          optionNames.add(option.name)
-        }
+      def optionNames = AcdQueueStatus.values()
 
-        PhoneNumber.findAllByOwner(authenticatedUser).each() { number ->
-          phoneNumbers.add(number.number)
-        }
+      PhoneNumber.findAllByOwner(authenticatedUser).each() { number ->
+        phoneNumbers.add(number.number)
+      }
 
-        /* log.debug "Rendering view with parameters [status: ${status}, optionNames: ${optionNames}, phoneNumbers: ${phoneNumbers}, contactNumber: ${contactNumber}" */
-        render(view: 'status', model: [status: status, optionNames: optionNames, phoneNumbers: phoneNumbers, contactNumber: contactNumber])
+      def model = [
+        status: status,
+        optionNames: optionNames,
+        phoneNumbers: phoneNumbers,
+        contactNumber: contactNumber
+      ]
+
+      log.debug "Rendering view [status] with model [${model}]"
+      render(view: 'status', model: model)
     }
+
+    def updateStatus = {
+      def acd_user_status = AcdUserStatus.findByOwner(authenticatedUser)
+      acd_user_status.acdQueueStatus = AcdQueueStatus.fromString(params.status)
+      acd_user_status.contactNumber = PhoneNumber.findByNumber(params.contactNumber)
+
+      try {
+        if (acd_user_status.validate()) {
+          if (!acd_user_status.save(failOnError: true, flush: true)) {
+            log.debug "Could not update user acd status."
+          }
+        }
+      }
+      catch (Exception e) {
+        log.debug "Caught exception saving acd user status [${e}]"
+      }
+
+      redirect(action: 'status')
+    }
+
 }

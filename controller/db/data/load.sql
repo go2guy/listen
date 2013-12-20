@@ -16,13 +16,13 @@ INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05
 UNLOCK TABLES;
 
 
-LOCK TABLES `acd_queue_status` WRITE;
-INSERT INTO `acd_queue_status` VALUES (1,0,'Available','Available'),(2,0,'Unavailable','Unavailable');
-UNLOCK TABLES;
+/* LOCK TABLES `acd_queue_status` WRITE; */
+/* INSERT INTO `acd_queue_status` VALUES (1,0,'Available','Available'),(2,0,'Unavailable','Unavailable'); */
+/* UNLOCK TABLES; */
 
 
 LOCK TABLES `acd_user_status` WRITE;
-INSERT INTO `acd_user_status` VALUES (1,1,0,1,NULL,NULL,0);
+INSERT INTO `acd_user_status` VALUES (1,1,0,'AVAILABLE',NULL,NULL,0);
 UNLOCK TABLES;
 
 

@@ -209,6 +209,7 @@ span.recording-status.started {
     </style>
   </head>
   <body>
+%{-- %%mark%% --}%
     <h3 id="conference-status" class="conference-status-${conference.isStarted ? 'started' : 'waiting'}">${conference.isStarted ? 'Started (' + listen.prettytime(date: conference.startTime) + ')' : 'Waiting for administrator'}</h3>
     <h3 id="conference-name">${fieldValue(bean: conference, field: 'description')}</h3>
 
@@ -361,6 +362,7 @@ span.recording-status.started {
 
     <script type="text/javascript">
 
+%{-- %%mark%% --}%
 var conference = {
     poll: function() {
         $.ajax({
@@ -393,6 +395,7 @@ var conference = {
                     $('.start-recording-form').show();
                 }
 
+%{-- %%mark%% --}%
                 var placeholder = $('#no-caller-placeholder');
                 var table = $('#callers > table, #callers > div.pagination');
                 if(data.participants.list.length == 0 && !placeholder.is(':visible')) {

@@ -25,6 +25,7 @@ class AcdCall
     AcdCallStatus callStatus;
     String ivr;
     User user;
+
     DateTime lastModified;
 
     /**
@@ -55,5 +56,3 @@ enum AcdCallStatus
     COMPLETED,
     CONNECT_FAIL
 }
-
-

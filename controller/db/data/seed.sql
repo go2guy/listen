@@ -17,7 +17,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `acd_user_status` WRITE;
-INSERT INTO `acd_user_status` VALUES (2,2,0,1,NULL,NULL,0),(3,3,0,1,NULL,NULL,0),(4,4,0,1,NULL,NULL,0),(5,5,0,1,NULL,NULL,0),(6,6,0,1,NULL,NULL,0),(7,7,0,1,NULL,NULL,0);
+INSERT INTO `acd_user_status` VALUES (2,2,0,'AVAILABLE',NULL,NULL,0),(3,3,0,'AVAILABLE',NULL,NULL,0),(4,4,0,'AVAILABLE',NULL,NULL,0),(5,5,0,'AVAILABLE',NULL,NULL,0),(6,6,0,'AVAILABLE',NULL,NULL,0),(7,7,0,'AVAILABLE',NULL,NULL,0);
 UNLOCK TABLES;
 
 
@@ -55,4 +55,10 @@ LOCK TABLES `voicemail_preferences` WRITE;
 INSERT INTO `voicemail_preferences` VALUES (1,1,'brian.johnston@newnet.com','','\0','4321','OLDEST_TO_NEWEST','\0',NULL,'\0',2),(2,0,NULL,'\0','\0','1234','OLDEST_TO_NEWEST','\0',NULL,'\0',3),(3,0,NULL,'\0','\0','1234','OLDEST_TO_NEWEST','\0',NULL,'\0',4),(4,0,NULL,'\0','\0','1234','OLDEST_TO_NEWEST','\0',NULL,'\0',5),(5,0,NULL,'\0','\0','1234','OLDEST_TO_NEWEST','\0',NULL,'\0',6);
 UNLOCK TABLES;
 
+LOCK TABLES `skill` WRITE;
+INSERT INTO `skill` VALUES (1,0,'Tech',1,'Technical Support');
+UNLOCK TABLES;
 
+LOCK TABLES `acd_call` WRITE;
+INSERT INTO `acd_call` VALUES (1,0,'test ani','test dnis',1,'test session id','2013-11-21 13:47:34','WAITING','test ivr','2013-11-21 13:47:34',1);
+UNLOCK TABLES;

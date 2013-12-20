@@ -91,28 +91,17 @@ CREATE TABLE `phone_number` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `acd_queue_status`;
-CREATE TABLE `acd_queue_status` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `version` bigint(20) NOT NULL,
-  `name` varchar(32) NOT NULL UNIQUE,
-  `description` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
-
-
 DROP TABLE IF EXISTS `acd_user_status`;
 CREATE TABLE `acd_user_status` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `owner_id` bigint(20) NOT NULL,
   `version` bigint(20) NOT NULL,
-  `acd_queue_status_id` bigint(20) NOT NULL DEFAULT 1,
+  `acd_queue_status` varchar(50) NOT NULL,
   `contact_number_id` bigint(20),
   `status_modified` datetime,
   `onacall` bit(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (owner_id) REFERENCES user (id),
-  FOREIGN KEY (acd_queue_status_id) REFERENCES acd_queue_status (id),
   FOREIGN KEY (contact_number_id) REFERENCES phone_number (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

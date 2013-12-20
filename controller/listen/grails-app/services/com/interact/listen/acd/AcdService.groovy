@@ -51,7 +51,6 @@ class AcdService
     {
         User returnVal = null;
 
-        def availStatus = AcdQueueStatus.findByName("Available");
         DateTime agentTime =
             DateTime.now().minusSeconds(Integer.parseInt(grailsApplication.config.com.interact.listen.acd.agent.waitTime))
 
@@ -60,7 +59,7 @@ class AcdService
             eq("skill", requestedSkill)
             user {
                 acdUserStatus {
-                    eq("acdQueueStatus", availStatus)
+                    eq("acdQueueStatus", AcdQueueStatus.AVAILABLE)
                     le("statusModified", agentTime)
                     eq("onACall", false)
                     order("statusModified", "asc")

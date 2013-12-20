@@ -34,6 +34,7 @@ class ButtonMenuTagLib {
             case 'acd':
                 out << '<ul class="button-menu">'
                 button(attrs.button == 'status', 'acd', 'status', 'button.menu.acd.status')
+                button(attrs.button == 'callQueue', 'acd', 'callQueue', 'button.menu.acd.callQueue')
                 out << '</ul>'
 
                 break
