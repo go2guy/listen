@@ -103,7 +103,7 @@ class UserCreationService {
 
         def acdUserStatus = new AcdUserStatus()
         acdUserStatus.owner = user
-        acdUserStatus.acdQueueStatus = AcdQueueStatus.UNAVAILABLE
+        acdUserStatus.acdQueueStatus = AcdQueueStatus.Unavailable;
 
         /* Create user acd status entry */
         try {
