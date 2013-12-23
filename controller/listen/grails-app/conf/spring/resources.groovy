@@ -41,4 +41,14 @@ beans = {
         grailsApplication = ref('grailsApplication')
         userDetailsService = ref('gormUserDetailsService')
     }
+
+    if(grailsApplication.config.com.interact.listen.log4j.config)
+    {
+        log4jConfigurer(org.springframework.beans.factory.config.MethodInvokingFactoryBean)
+        {
+            targetClass = 'org.springframework.util.Log4jConfigurer'
+            targetMethod = 'initLogging'
+            arguments = ['file:' + grailsApplication.config.com.interact.listen.log4j.config,60000]
+        }
+    }
 }

@@ -18,7 +18,7 @@
            ================================= -->
     <target name="clean" description="--> Cleans a Grails application">
         <exec executable="${grails.exec}" failonerror="true" dir="${grails-app.basedir}">
-            <arg value="clean"/>
+            <arg value="prod clean"/>
         </exec>
         <delete file="stacktrace.log" failonerror="false" verbose="true"/>
         <delete failonerror="false">
@@ -43,6 +43,8 @@
     <target name="deploy" depends="war" description="--> Deploys">
         <copy file="${basedir}/src/properties/listen-controller.properties"
               tofile="${tomcat.dir}/lib/listen-controller.properties" overwrite="true" verbose="true"/>
+        <copy file="${basedir}/src/properties/log4j.properties"
+              tofile="${tomcat.dir}/lib/log4j.listen.properties" overwrite="true" verbose="true"/>
         <copy file="${basedir}/target/listen-controller.war" tofile="${tomcat.dir}/webapps/listen-controller.war"
               overwrite="true" verbose="true"/>
     </target>

@@ -1,5 +1,5 @@
 import com.interact.listen.license.LicenseService
-
+import grails.util.Environment
 import org.joda.time.*
 
 // locations to search for config files that get merged into the main config;
@@ -72,63 +72,59 @@ environments {
     production {
         grails.config.locations = [ "classpath:listen-controller.properties",
                 "file:src/properties/listen-controller.properties" ]
+        ]
         grails.logging.jul.usebridge = false
-        // TODO: grails.serverURL = "http://www.changeme.com"
     }
 }
 
 // log4j configuration
-log4j = {
-    // Example of changing the log pattern for the default console appender:
-    //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
+switch(Environment.current) {
+    case Environment.DEVELOPMENT:
+    case Environment.TEST:
+        log4j = {
+            // Example of changing the log pattern for the default console appender:
+            //
+            //appenders {
+            //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+            //}
 
-    def appName = grails.util.Metadata.current.'app.name'
-    appenders {
-        def defaultPattern = '%d{ISO8601} [%10.10t] [%18.18c] %5p: %m%n'
-        console name: 'stdout', layout: pattern(conversionPattern: defaultPattern)
-
-        environments {
-            production {
-                def dir = '/interact/listen/logs'
-
-                rollingFile name: 'file', maxFileSize: '100MB', maxBackupIndex: '7', file: "${dir}/${appName}.log", layout: pattern(conversionPattern: defaultPattern)
-                rollingFile name: 'StackTrace', maxFileSize: '10MB', maxBackupIndex: '7', file: "${dir}/${appName}-stacktrace.log"
+            def appName = grails.util.Metadata.current.'app.name'
+            appenders {
+                def defaultPattern = '%d{ISO8601} [%10.10t] [%18.18c] %5p: %m%n'
+                console name: 'stdout', layout: pattern(conversionPattern: defaultPattern)
             }
-        }
-    }
 
-    environments {
-        development {
-            root { info 'stdout' }
-        }
-        test {
-            root { warn 'stdout' }
-        }
-        production {
-            root { debug 'file' }
-        }
-    }
+            environments {
+                development {
+                    root { info 'stdout' }
+                }
+                test {
+                    root { warn 'stdout' }
+                }
+            }
 
-    error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-            'org.codehaus.groovy.grails.web.pages', //  GSP
-            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
-            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-            'org.codehaus.groovy.grails.web.mapping', // URL mapping
-            'org.codehaus.groovy.grails.commons', // core / classloading
-            'org.codehaus.groovy.grails.plugins', // plugins
-            'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-            'org.hibernate',
-            'net.sf.ehcache.hibernate'
+            error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
+                    'org.codehaus.groovy.grails.web.pages', //  GSP
+                    'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+                    'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+                    'org.codehaus.groovy.grails.web.mapping', // URL mapping
+                    'org.codehaus.groovy.grails.commons', // core / classloading
+                    'org.codehaus.groovy.grails.plugins', // plugins
+                    'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+                    'org.hibernate',
+                    'net.sf.ehcache.hibernate'
 
-    warn   'org.mortbay.log',
-            'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
+            warn   'org.mortbay.log',
+                    'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
 
-    debug  'grails.app',
-            'org.springframework',
-            'com.interact'
+            debug  'grails.app',
+                    'org.springframework',
+                    'com.interact'
+        }
+        break;
+    case Environment.PRODUCTION:
+        com.interact.listen.log4j.config = '/interact/tomcat/lib/log4j.listen.properties'
+        break;
 }
 
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.interact.listen.User'

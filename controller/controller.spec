@@ -61,6 +61,7 @@ Requires: xmlsecurity, iijava, iitomcat
     /interact/listen
     /interact/tomcat/webapps/listen-controller.war
     %config(noreplace) /interact/tomcat/lib/listen-controller.properties
+    %config(noreplace) /interact/tomcat/lib/log4j.listen.properties
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,

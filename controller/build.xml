@@ -47,10 +47,11 @@
     <copy todir="${deploy.dir}/../../${tomcat.deploy.dir}/webapps" verbose="true">
           <fileset dir="${basedir}/listen/target" includes="*.war"/>
       </copy>
-
     <copy file="${basedir}/listen/src/properties/listen-controller.properties"
           tofile="${deploy.dir}/../../${tomcat.deploy.dir}/lib/listen-controller.properties" overwrite="true"
           verbose="true"/>
+    <copy file="${basedir}/listen/src/properties/log4j.properties"
+          tofile="${deploy.dir}/../../${tomcat.deploy.dir}/lib/log4j.listen.properties" overwrite="true" verbose="true"/>
 
     <copy todir="${deploy.dir}/db" verbose="true">
       <fileset dir="${basedir}/db" includes="*/*"/>
