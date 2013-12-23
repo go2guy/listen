@@ -72,7 +72,6 @@ environments {
     production {
         grails.config.locations = [ "classpath:listen-controller.properties",
                 "file:src/properties/listen-controller.properties" ]
-        ]
         grails.logging.jul.usebridge = false
     }
 }
