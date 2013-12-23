@@ -99,6 +99,7 @@ CREATE TABLE `acd_user_status` (
   `acd_queue_status` varchar(50) NOT NULL,
   `contact_number_id` bigint(20),
   `status_modified` datetime,
+  `onacall_modified` datetime,
   `onacall` bit(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (owner_id) REFERENCES user (id),

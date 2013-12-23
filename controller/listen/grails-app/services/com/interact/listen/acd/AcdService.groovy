@@ -25,7 +25,7 @@ class AcdService
      */
     Skill menuSelectionToSkill(String selection)
     {
-        Skill skill = Skill.findBySkillname(selection);
+        Skill skill = Skill.get(Integer.parseInt(selection));
 
         return skill;
     }
@@ -72,9 +72,9 @@ class AcdService
             user {
                 acdUserStatus {
                     eq("acdQueueStatus", AcdQueueStatus.Available)
-                    le("statusModified", agentTime)
+                    le("onacallModified", agentTime)
                     eq("onACall", false)
-                    order("statusModified", "asc")
+                    order("onacallModified", "asc")
                 }
             }
         }

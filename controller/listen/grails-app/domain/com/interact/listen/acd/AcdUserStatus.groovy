@@ -8,13 +8,15 @@ class AcdUserStatus
 {
     User owner
     AcdQueueStatus AcdQueueStatus
-    DateTime statusModified
+    DateTime statusModified = DateTime.now();
     boolean onACall
+    DateTime onacallModified = DateTime.now();
     PhoneNumber contactNumber
 
     static constraints =
         {
             statusModified nullable: true
+            onacallModified nullable: true
             contactNumber nullable: true
         }
 
@@ -26,16 +28,16 @@ class AcdUserStatus
         //Update modified time if changing whether on a call or not
         if (this.isDirty("onACall"))
         {
-            this.statusModified = DateTime.now();
+            this.onacallModified = DateTime.now();
         }
     }
-  
-  def toggleStatus() {
-      if (this.acdQueueStatus == AcdQueueStatus.Unavailable)
-          this.acdQueueStatus = AcdQueueStatus.Available
-      else
-          this.acdQueueStatus = AcdQueueStatus.Unavailable
-  }
+
+    def toggleStatus() {
+        if (this.acdQueueStatus == AcdQueueStatus.Unavailable)
+            this.acdQueueStatus = AcdQueueStatus.Available
+        else
+            this.acdQueueStatus = AcdQueueStatus.Unavailable
+    }
 }
 
 enum AcdQueueStatus
@@ -64,5 +66,4 @@ enum AcdQueueStatus
     {
         name()
     }
-
 }
