@@ -56,7 +56,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `spot_system` WRITE;
-INSERT INTO `spot_system` VALUES (1,0,'http://listen1.nimblevox.com/spot');
+INSERT INTO `spot_system` VALUES (1,0,'http://localhost/spot');
 UNLOCK TABLES;
 
 

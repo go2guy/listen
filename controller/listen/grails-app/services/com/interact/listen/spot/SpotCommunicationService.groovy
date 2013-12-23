@@ -118,13 +118,12 @@ class SpotCommunicationService {
             log.info("Sending AcdConnectEvent, sessionId[" + sessionId + "], number[" + number + "]")
         }
 
-        //TODO: Uncomment when implemented on IVR
-        /*Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "ACD");
         importedValue.put("action", "CONNECT");
         importedValue.put("sessionId", sessionId);
         importedValue.put("number", number);
-        buildAndSendRequest(importedValue);*/
+        buildAndSendRequest(importedValue);
     }
 
     private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {
