@@ -43,6 +43,18 @@ class AcdService
     }
 
     /**
+     * List all calls.
+     *
+     * @return List of calls.
+     */
+    def listAllCalls()
+    {
+        def callList = AcdCall.list();
+
+        return callList;
+    }
+
+    /**
      * Get a user who is available based on the requested skill.
      *
      * @param requestedSkill The skill requested.
@@ -95,12 +107,21 @@ class AcdService
      */
     def acdCallStatusUpdate(String sessionId, String status) throws ListenAcdException
     {
+        AcdCallStatus thisStatus = AcdCallStatus.valueOf(status);
+        return acdCallStatusUpdate(sessionId, thisStatus);
+    }
+    /**
+     * Update the status of an ACD Call in the queue.
+     *
+     * @param sessionId The sessionId of the call.
+     * @param status The status to set the call to.
+     */
+    def acdCallStatusUpdate(String sessionId, AcdCallStatus thisStatus) throws ListenAcdException
+    {
         AcdCall acdCall = AcdCall.findBySessionId(sessionId);
 
         if(acdCall != null)
         {
-            AcdCallStatus thisStatus = AcdCallStatus.valueOf(status);
-
             switch(thisStatus)
             {
                 case AcdCallStatus.CONNECTED:
@@ -114,6 +135,9 @@ class AcdService
                     break;
                 case AcdCallStatus.CONNECT_FAIL:
                     acdCallConnectFailed(acdCall);
+                    break;
+                case AcdCallStatus.WAITING:
+                    acdCallWaiting(acdCall);
                     break;
             }
         }
@@ -163,66 +187,84 @@ class AcdService
      *
      * @param thisCall The call to process.
      */
-    public void processWaitingCall(AcdCall thisCall)
+    public void processWaitingCall(AcdCall thisCall) throws ListenAcdException
     {
-        if(log.isDebugEnabled())
-        {
-            log.debug("Waiting call: " + thisCall.ani + ", skill: " + thisCall.skill.toString() + ", enqueueTime: " +
-                thisCall.enqueueTime.toString());
-        }
-
-        User agent = getAvailableUser(thisCall.skill);
-
-        if(agent != null)
+        try
         {
             if(log.isDebugEnabled())
             {
-                log.debug("Agent to handle call: " + agent.realName);
+                log.debug("Waiting call: " + thisCall.ani + ", skill: " + thisCall.skill.toString() + ", enqueueTime: " +
+                    thisCall.enqueueTime.toString());
             }
 
-            //Set agent onacall to true
-            agent.acdUserStatus.onACall = true;
-            agent.save();
+            User agent = getAvailableUser(thisCall.skill);
 
-            boolean sessionExistsOnIvr = true;
-
-            //Send request to ivr
-            try
+            if(agent != null)
             {
-                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
-                        agent.phoneNumbers.asList().get(0).number);
-            }
-            catch(SpotCommunicationException sce)
-            {
-                //for now, we are going to assume this means that this session does not exist any longer
-                sessionExistsOnIvr = false;
-            }
+                if(log.isDebugEnabled())
+                {
+                    log.debug("Agent to handle call: " + agent.realName);
+                }
 
-            if(sessionExistsOnIvr)
-            {
-                //Set call status to "ivrconnectRequested"
-                thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
-                thisCall.setUser(agent);
-                thisCall.save(flush: true);
+                //Set agent onacall to true
+                agent.acdUserStatus.onACall = true;
+                agent.save(flush: true);
 
-                //Now we just have to wait for the IVR to respond that it was connected
+                boolean sessionExistsOnIvr = true;
+
+                //Send request to ivr
+                try
+                {
+                    spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
+                            agent.phoneNumbers.asList().get(0).number);
+                }
+                catch(SpotCommunicationException sce)
+                {
+                    //for now, we are going to assume this means that this session does not exist any longer
+                    sessionExistsOnIvr = false;
+                }
+
+                if(sessionExistsOnIvr)
+                {
+                    //Set call status to "ivrconnectRequested"
+                    thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
+                    thisCall.setUser(agent);
+                    thisCall.save(flush: true);
+
+                    //Now we just have to wait for the IVR to respond that it was connected
+                }
+                else
+                {
+                    //Free up the agent
+                    freeAgent(agent);
+
+                    //Delete call from queue. Leave status since we don't really know what happened.
+                    removeCall(thisCall, null);
+                }
             }
             else
             {
-                //Free up the agent
-                freeAgent(agent);
-
-                //Delete call from queue. Leave status since we don't really know what happened.
-                removeCall(thisCall, null);
+                if(log.isInfoEnabled())
+                {
+                    log.info("No agents available to handle call");
+                }
             }
         }
-        else
+        catch(Exception e)
         {
-            if(log.isInfoEnabled())
-            {
-                log.info("No agents available to handle call");
-            }
+            log.error("Exception processing waiting call: " + e, e);
+            throw new ListenAcdException(e.getMessage());
         }
+    }
+
+    public int getWaitingMax()
+    {
+        return Integer.parseInt(grailsApplication.config.com.interact.listen.acd.waiting.max);
+    }
+
+    public int getConnectMax()
+    {
+        return Integer.parseInt(grailsApplication.config.com.interact.listen.acd.connect_request.max);
     }
 
     /**
@@ -254,12 +296,37 @@ class AcdService
         }
 
         acdCall.callStatus = AcdCallStatus.CONNECTED;
+        acdCall.callStart = DateTime.now();
 
         if(acdCall.validate() && acdCall.save())
         {
             if(log.isDebugEnabled())
             {
                 log.debug("Call connect processing completed successfully.")
+            }
+        }
+        else
+        {
+            throw new ListenAcdException(beanErrors(acdCall));
+        }
+    }
+
+    /**
+     * Set a call to waiting status.
+     *
+     * @param acdCall The call to set as connected.
+     * @throws ListenAcdException If unable to set call to waiting.
+     */
+    private void acdCallWaiting(AcdCall acdCall) throws ListenAcdException
+    {
+        acdCall.callStatus = AcdCallStatus.WAITING;
+        acdCall.user = null;
+
+        if(acdCall.validate() && acdCall.save(flush: true))
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Call status update completed successfully.")
             }
         }
         else
@@ -357,6 +424,7 @@ class AcdService
         if(lastStatus != null)
         {
             call.callStatus = lastStatus;
+            call.callEnd = DateTime.now();
             call.save(flush: true);
         }
 

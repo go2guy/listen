@@ -4,6 +4,7 @@ import com.interact.listen.User
 import com.interact.listen.history.Channel
 import com.interact.listen.httpclient.HttpClientImpl
 import com.interact.listen.stats.Stat
+import grails.converters.JSON
 import org.joda.time.format.DateTimeFormat
 
 class SpotCommunicationService {
@@ -126,6 +127,8 @@ class SpotCommunicationService {
         buildAndSendRequest(importedValue);
     }
 
+
+
     private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "MSG_LIGHT"); // monosodium glutimate light, on!
@@ -158,7 +161,9 @@ class SpotCommunicationService {
 
         Map<String, String> params = new TreeMap<String, String>();
         params.put("uri", "/interact/apps/iistart.ccxml");
-        def json = importedValue.encodeAsJSON()
+//        def json = importedValue.encodeAsJSON()
+        def theJson = importedValue as JSON
+        String json = theJson.toString(false);
         params.put("II_SB_importedValue", json);
         sendRequest(params);
     }

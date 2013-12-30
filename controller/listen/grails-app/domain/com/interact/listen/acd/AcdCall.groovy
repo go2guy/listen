@@ -15,6 +15,8 @@ class AcdCall
         enqueueTime nullable: true
         lastModified nullable: true
         autoTimestamp: true
+        callStart nullable: true
+        callEnd nullable: true
     }
 
     String ani;
@@ -25,6 +27,8 @@ class AcdCall
     AcdCallStatus callStatus;
     String ivr;
     User user;
+    DateTime callStart;
+    DateTime callEnd;
 
     DateTime lastModified;
 

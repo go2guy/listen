@@ -13,6 +13,8 @@ class AcdCallHistory
         autoTimestamp: true
         dequeueTime nullable: true
         userId nullable: true
+        callStart nullable: true
+        callEnd nullable: true
     }
 
     String ani;
@@ -25,6 +27,8 @@ class AcdCallHistory
     long userId;
     DateTime lastModified;
     DateTime dequeueTime;
+    DateTime callStart;
+    DateTime callEnd;
 
     public AcdCallHistory(AcdCall callRecord)
     {
@@ -41,6 +45,8 @@ class AcdCallHistory
             this.userId = callRecord.user.id;
         }
         this.lastModified = callRecord.lastModified;
+        this.callStart = callRecord.callStart;
+        this.callEnd = callRecord.callEnd;
     }
 
     /**

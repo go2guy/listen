@@ -730,6 +730,8 @@ CREATE TABLE `acd_call` (
   `ivr` varchar(255),
   `last_modified` datetime,
   `user_id` bigint(20),
+  `call_start` datetime,
+  `call_end` datetime,
   PRIMARY KEY (`id`),
   CONSTRAINT `acd_call_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
   CONSTRAINT `acd_call_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
@@ -748,6 +750,8 @@ CREATE TABLE `acd_call_history` (
   `ivr` varchar(255),
   `last_modified` datetime,
   `user_id` bigint(20),
+  `call_start` datetime,
+  `call_end` datetime,
   `dequeue_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
