@@ -12,7 +12,10 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES (1,5,'\0','\0','iisupport@newnet.com','^A','2013-11-05 15:23:38',NULL,'$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Listen Custodian','Custodian','\0');
+INSERT INTO `user` (id, version, account_expired, account_locked, email_address, enabled, last_login, organization_id,
+    password, password_expired, real_name, username, is_active_directory)
+  VALUES (1,5,'\0','\0','iisupport@newnet.com',1,'2013-11-05 15:23:38',NULL,
+    '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Listen Custodian','Custodian','\0');
 UNLOCK TABLES;
 
 
@@ -22,7 +25,8 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `acd_user_status` WRITE;
-INSERT INTO `acd_user_status` VALUES (1,1,0,'AVAILABLE',NULL,NULL,0);
+INSERT INTO `acd_user_status` (id, owner_id, version, acd_queue_status, contact_number_id, status_modified, onacall,
+                               onacall_modified) VALUES (1,1,0,'AVAILABLE',NULL,NULL,0,NULL);
 UNLOCK TABLES;
 
 
