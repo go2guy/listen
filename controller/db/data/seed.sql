@@ -7,7 +7,23 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES (2,4,'\0','\0','operator@newnet.com','^A','2013-11-05 16:08:21',1,'$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Operator','operator','\0'),(3,3,'\0','\0','scott@newnet.com','^A','2013-11-05 16:10:10',1,'$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Scott Farwell','scott','\0'),(4,3,'\0','\0','ricardo@newnet.com','^A','2013-11-18 15:10:49',1,'$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Ricardo Mastroleo','ricardo','\0'),(5,2,'\0','\0','ladi@newnet.com','^A','2013-11-05 16:18:37',1,'$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Ladi Akinyemi','ladi','\0'),(6,0,'\0','\0','testlisten@newnet.com','^A',NULL,1,'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','\0','test Listen','testlisten','\0'),(7,12,'\0','\0','daniel@newnet.com','','2013-11-26 17:15:17',1,'$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Daniel Walter','dwalter','\0');
+INSERT INTO `user` (id, version, account_expired, account_locked, email_address, enabled, last_login, organization_id,
+                    password, password_expired, real_name, username, is_active_directory)
+      VALUES
+        (2,4,'\0','\0','operator@newnet.com',1,'2013-11-05 16:08:21',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Operator','operator','\0'),
+        (3,3,'\0','\0','scott@newnet.com',1,'2013-11-05 16:10:10',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Scott Farwell','scott','\0'),
+        (4,3,'\0','\0','ricardo@newnet.com',1,'2013-11-18 15:10:49',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Ricardo Mastroleo','ricardo','\0'),
+        (5,2,'\0','\0','ladi@newnet.com',1,'2013-11-05 16:18:37',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Ladi Akinyemi','ladi','\0'),
+        (6,0,'\0','\0','testlisten@newnet.com',1,NULL,1,
+          '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','\0','test Listen','testlisten','\0'),
+        (7,12,'\0','\0','daniel@newnet.com',1,'2013-11-26 17:15:17',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Daniel Walter','dwalter','\0'),
+        (8,0,'\0','\0','iisupport@newnet.com',1,'2013-11-05 15:23:38',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','ACD Voicemail','acdvoicemail','\0');
 UNLOCK TABLES;
 
 
@@ -17,7 +33,16 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `acd_user_status` WRITE;
-INSERT INTO `acd_user_status` VALUES (2,2,0,'Available',NULL,NULL,0),(3,3,0,'Available',NULL,NULL,0),(4,4,0,'Available',NULL,NULL,0),(5,5,0,'Available',NULL,NULL,0),(6,6,0,'Available',NULL,NULL,0),(7,7,0,'Available',NULL,NULL,0);
+INSERT INTO `acd_user_status` (id, owner_id, version, acd_queue_status, contact_number_id, status_modified, onacall,
+                               onacall_modified)
+        VALUES
+        (2,2,0,'Available',NULL,NULL,0,NULL),
+        (3,3,0,'Available',NULL,NULL,0,NULL),
+        (4,4,0,'Available',NULL,NULL,0,NULL),
+        (5,5,0,'Available',NULL,NULL,0,NULL),
+        (6,6,0,'Available',NULL,NULL,0,NULL),
+        (7,7,0,'Available',NULL,NULL,0,NULL),
+        (8,8,0,'VoicemailBox',NULL,NULL,0,NULL);
 UNLOCK TABLES;
 
 

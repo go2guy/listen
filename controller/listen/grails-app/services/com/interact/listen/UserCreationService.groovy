@@ -89,30 +89,28 @@ class UserCreationService {
         // TODO passwords need to be salted
         // TODO allow Role configuration via user create/edit screens
 
-        try {
-          if(user.validate() && user.save()) {
-              roles.each {
-                  UserRole.create(user, Role.findByAuthority(it))
-              }
-              historyService.createdUser(user)
-          }
+        try
+        {
+            AcdUserStatus theStatus = AcdUserStatus.create(user);
+            user.acdUserStatus = theStatus;
+
+            if(user.validate())
+            {
+                user = user.save();
+                if(user)
+                {
+                    roles.each
+                    {
+                        UserRole.create(user, Role.findByAuthority(it))
+                    }
+                    historyService.createdUser(user)
+
+                }
+            }
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
           log.error "Exception caught trying to create user [${e}]"
-        }
-
-        def acdUserStatus = new AcdUserStatus()
-        acdUserStatus.owner = user
-        acdUserStatus.acdQueueStatus = AcdQueueStatus.Unavailable;
-
-        /* Create user acd status entry */
-        try {
-          if (acdUserStatus.validate())
-            if (!acdUserStatus.save(failOnError: true, flush: true))
-              log.debug "Could not create Acd Status Entry for new user."
-        }
-        catch (Exception e) {
-          log.error "Exception caught trying to create acd user status entry [${e}]"
         }
 
         return user

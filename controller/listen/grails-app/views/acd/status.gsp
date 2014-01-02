@@ -22,14 +22,18 @@
           <g:form controller="acd" action="toggleStatus" method="post">
               <tr>
                   <td class="col-button">
-                      <g:submitButton name="toggle_status" value="${status}" class="${status}" title="${status == 'Available' ? g.message(code: 'page.acd.status.button.available') : g.message(code: 'page.acd.status.button.unavailable')}"/>
+                      <g:set var="titleMessage" value="" />
+                      <g:submitButton name="toggle_status" value="${status}" class="${status}"
+                                      title="${g.message(code: 'page.acd.status.button.' + status)}"
+                                      disabled="${statusDisabled}" />
                   </td>
               </tr>
           </g:form>
           <g:form controller="acd" action="updateNumber" method="post">
               <tr><td><h3>Contact Number:</h3></td></tr>
               <tr><td><g:select name="contactNumber" from="${phoneNumbers}" value="${contactNumber}"/></tr></td>
-              <tr><td><g:submitButton name="update_status" value="${g.message(code: 'default.button.update.label')}"/></td></tr>
+              <tr><td><g:submitButton name="update_status" value="${g.message(code: 'default.button.update.label')}"/>
+              </td></tr>
           </g:form>
         </tbody>
       </table>

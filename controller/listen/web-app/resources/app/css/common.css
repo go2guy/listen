@@ -211,7 +211,7 @@ fieldset.vertical ul.checkbox-list {
 fieldset.vertical ul.checkbox-list label {
     display: inline;
     margin-left: 10px;
-}*/
+}
 
 label {
     font-size: 14px;
@@ -280,7 +280,6 @@ input[type=reset].Unavailable,
 button.Unavailable {
     width: 100px;
     background-color: #FFCC00 !important;
-
 }
 
 input[type=submit].Unavailable:hover,
@@ -290,6 +289,14 @@ button.Unavailable:hover {
     width: 100px;
     background-color: #054B7A;
     color: #FFFFFF;
+}
+
+input[type=submit].VoicemailBox,
+input[type=button].VoicemailBox,
+input[type=reset].VoicemailBox,
+button.VoicemailBox {
+    width: 100px;
+    background-color: #32A7D4 !important;
 }
 
 input[type=submit].disabled,

@@ -108,6 +108,7 @@ class AcdController {
         }
 
         def status = acdUserStatus?.acdQueueStatus?.toString()
+        def statusDisabled = acdUserStatus?.acdQueueStatus?.isDisabled();
         def contactNumber = acdUserStatus?.contactNumber?.number
         def optionNames = AcdQueueStatus.values()
         
@@ -121,6 +122,7 @@ class AcdController {
         
         def model = [
             status: status,
+            statusDisabled: statusDisabled,
             optionNames: optionNames,
             phoneNumbers: phoneNumbers,
             contactNumber: contactNumber

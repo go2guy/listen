@@ -111,13 +111,13 @@ switch(Environment.current) {
                     'org.codehaus.groovy.grails.plugins', // plugins
                     'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
                     'org.hibernate',
-                    'net.sf.ehcache.hibernate'
+                    'net.sf.ehcache.hibernate',
+                    'org.springframework'
 
             warn   'org.mortbay.log',
                     'grails.app.tagLib.com.energizedwork.grails.plugins.jodatime'
 
             debug  'grails.app',
-                    'org.springframework',
                     'com.interact'
         }
         break;

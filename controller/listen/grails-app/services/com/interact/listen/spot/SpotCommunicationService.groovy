@@ -127,6 +127,29 @@ class SpotCommunicationService {
         buildAndSendRequest(importedValue);
     }
 
+    /**
+     * Send request to SPOT to connect a queued caller to voicemail.
+     *
+     * @param sessionId The sessionId of the call.
+     * @param number The number to connect to.
+     * @throws IOException If an IOException.
+     * @throws SpotCommunicationException If
+     */
+    def sendAcdVoicemailEvent(def sessionId, def number) throws IOException, SpotCommunicationException
+    {
+        if(log.isInfoEnabled())
+        {
+            log.info("Sending AcdConnectEvent, sessionId[" + sessionId + "], number[" + number + "]")
+        }
+
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        importedValue.put("application", "ACD");
+        importedValue.put("action", "CONNECT");
+        importedValue.put("sessionId", sessionId);
+        importedValue.put("number", number);
+        buildAndSendRequest(importedValue);
+    }
+
 
 
     private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {

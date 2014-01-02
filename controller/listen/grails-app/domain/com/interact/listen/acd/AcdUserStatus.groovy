@@ -9,7 +9,7 @@ class AcdUserStatus
     User owner
     AcdQueueStatus AcdQueueStatus
     DateTime statusModified = DateTime.now();
-    boolean onACall
+    boolean onACall = false;
     DateTime onacallModified = DateTime.now();
     PhoneNumber contactNumber
 
@@ -20,6 +20,10 @@ class AcdUserStatus
             contactNumber nullable: true
         }
 
+    static AcdUserStatus create(User user, boolean flush = false)
+    {
+        new AcdUserStatus(owner: user, AcdQueueStatus: AcdQueueStatus.Unavailable);//.save(flush: flush, insert: true)
+    }
     /**
      * Executed before an update.
      */
@@ -43,7 +47,8 @@ class AcdUserStatus
 enum AcdQueueStatus
 {
     Available("Available"),
-    Unavailable("Unavailable")
+    Unavailable("Unavailable"),
+    VoicemailBox("VoicemailBox")
 
     final String value
 
@@ -65,5 +70,10 @@ enum AcdQueueStatus
     String getKey()
     {
         name()
+    }
+
+    boolean isDisabled()
+    {
+        return value.equals(VoicemailBox.toString());
     }
 }

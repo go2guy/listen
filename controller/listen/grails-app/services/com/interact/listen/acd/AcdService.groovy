@@ -1,5 +1,6 @@
 package com.interact.listen.acd
 
+import com.interact.listen.PhoneNumber
 import com.interact.listen.User
 import com.interact.listen.exceptions.ListenAcdException
 import com.interact.listen.spot.SpotCommunicationException
@@ -130,7 +131,6 @@ class AcdService
                     break;
                 case AcdCallStatus.COMPLETED:
                 case AcdCallStatus.DISCONNECTED:
-                case AcdCallStatus.VOICEMAIL:
                     acdCallCompleted(acdCall, thisStatus);
                     break;
                 case AcdCallStatus.CONNECT_FAIL:
@@ -138,6 +138,9 @@ class AcdService
                     break;
                 case AcdCallStatus.WAITING:
                     acdCallWaiting(acdCall);
+                    break;
+                case AcdCallStatus.VOICEMAIL:
+                    acdCallVoicemail(acdCall);
                     break;
             }
         }
@@ -259,13 +262,56 @@ class AcdService
 
     public int getWaitingMax()
     {
-        return Integer.parseInt(grailsApplication.config.com.interact.listen.acd.waiting.max);
+        int returnVal;
+
+        if(grailsApplication.config.com.interact.listen.acd.waiting.max instanceof String)
+        {
+            returnVal = Integer.parseInt(grailsApplication.config.com.interact.listen.acd.waiting.max);
+        }
+        else
+        {
+            returnVal = grailsApplication.config.com.interact.listen.acd.waiting.max;
+        }
+
+        return returnVal;
     }
 
     public int getConnectMax()
     {
-        return Integer.parseInt(grailsApplication.config.com.interact.listen.acd.connect_request.max);
+        int returnVal;
+
+        if(grailsApplication.config.com.interact.listen.acd.connect_request.max instanceof String)
+        {
+            returnVal = Integer.parseInt(grailsApplication.config.com.interact.listen.acd.connect_request.max);
+        }
+        else
+        {
+            returnVal = grailsApplication.config.com.interact.listen.acd.connect_request.max;
+        }
+
+        return returnVal;
     }
+
+    public String getVoicemailBox()
+    {
+        String returnVal;
+
+        def userCriteria = User.createCriteria();
+        def results = userCriteria.list(max: 1) {
+            acdUserStatus {
+                eq("acdQueueStatus", AcdQueueStatus.VoicemailBox)
+            }
+        }
+
+        if(results != null && results.size() > 0)
+        {
+            PhoneNumber vmNumber = results.get(0).acdUserStatus.contactNumber;
+            returnVal = vmNumber.number;
+        }
+
+        return returnVal;
+    }
+
 
     /**
      * Execute when ACD Call has completed.
@@ -320,6 +366,35 @@ class AcdService
     private void acdCallWaiting(AcdCall acdCall) throws ListenAcdException
     {
         acdCall.callStatus = AcdCallStatus.WAITING;
+        acdCall.user = null;
+
+        if(acdCall.validate() && acdCall.save(flush: true))
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Call status update completed successfully.")
+            }
+        }
+        else
+        {
+            throw new ListenAcdException(beanErrors(acdCall));
+        }
+    }
+
+    /**
+     * Set a call to voicemail status.
+     *
+     * @param acdCall The call to set as voicemail.
+     * @throws ListenAcdException If unable to set call to voicemail.
+     */
+    private void acdCallVoicemail(AcdCall acdCall) throws ListenAcdException
+    {
+        if(acdCall.user)
+        {
+            freeAgent(acdCall.user);
+        }
+
+        acdCall.callStatus = AcdCallStatus.VOICEMAIL;
         acdCall.user = null;
 
         if(acdCall.validate() && acdCall.save(flush: true))

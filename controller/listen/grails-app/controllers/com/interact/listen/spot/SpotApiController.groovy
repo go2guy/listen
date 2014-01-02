@@ -2,7 +2,10 @@ package com.interact.listen.spot
 
 import com.interact.listen.Audio
 import com.interact.listen.CallData
+import com.interact.listen.MobilePhone
+import com.interact.listen.PhoneNumber
 import com.interact.listen.WildcardNumberMatcher
+import com.interact.listen.acd.AcdCallStatus
 import com.interact.listen.android.DeviceRegistration
 import com.interact.listen.attendant.*
 import com.interact.listen.attendant.action.*
@@ -32,7 +35,7 @@ import org.joda.time.format.DateTimeFormat
 @Secured(['ROLE_SPOT_API'])
 class SpotApiController {
     static allowedMethods = [
-        addAcdQueue: 'POST',
+        addAcdCall: 'POST',
         addCallHistory: 'POST',
         addConferenceRecording: 'POST',
         addParticipant: 'POST',
@@ -51,6 +54,7 @@ class SpotApiController {
         deleteVoicemail: 'DELETE',
         dial: 'GET',
         dnisLookup: 'GET',
+        getAcdVoicemail: 'GET',
         getAfterHoursSubscriber: 'GET',
         getConference: 'GET',
         getEnabledFeatureStatus: 'GET',
@@ -165,6 +169,31 @@ class SpotApiController {
             log.error("Exception updating ACD Call: " + e.getMessage(), e);
             response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
         }
+    }
+
+    def getAcdVoicemail =
+    {
+        def json = JSON.parse(request)
+        response.status = HSR.SC_CREATED
+
+        if(json.sessionId)
+        {
+            acdService.acdCallStatusUpdate(json.sessionId, AcdCallStatus.VOICEMAIL);
+        }
+
+        String number = acdService.getVoicemailBox();
+
+        if(!number)
+        {
+            response.sendError(HSR.SC_NOT_FOUND)
+            return
+        }
+
+        def result = [
+                number: number
+        ]
+
+        render(result as JSON)
     }
 
     def addCallHistory = {

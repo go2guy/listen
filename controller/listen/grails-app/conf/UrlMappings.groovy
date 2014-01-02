@@ -1,12 +1,28 @@
 class UrlMappings {
 
     static mappings = {
-        "/api/acdCall"(controller: 'spotApi') {
+        "/api/acdCall"(controller: 'spotApi')
+        {
             action = [
                     POST: 'addAcdCall',
-                    PUT: 'updateAcdCall'
             ]
         }
+
+        "/api/acdCall/voicemail"(controller: 'spotApi')
+                {
+                    action = [
+                            GET: 'getAcdVoicemail'
+                    ]
+                }
+
+        "/api/acdCall/$junk"(controller: 'spotApi')
+        {
+            action = [
+                PUT: 'updateAcdCall'
+            ]
+        }
+
+
 
         "/api/accessNumbers"(controller: 'spotApi') {
             action = [
