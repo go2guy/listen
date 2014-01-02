@@ -1,4 +1,5 @@
 import com.interact.listen.license.LicenseService
+import com.interact.listen.license.ListenFeature
 import grails.util.Environment
 import org.joda.time.*
 
@@ -138,9 +139,10 @@ providers << 'daoAuthenticationProvider'
 
 def licenseService = new LicenseService()
 licenseService.afterPropertiesSet()
-//if(licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
+if(licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY))
+{
     providers << 'activeDirectoryAuthenticationProvider'
-//}
+}
 providers << 'anonymousAuthenticationProvider'
 grails.plugin.springsecurity.providerNames = providers
 
