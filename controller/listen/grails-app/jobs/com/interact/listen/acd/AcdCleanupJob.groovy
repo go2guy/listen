@@ -1,5 +1,6 @@
 package com.interact.listen.acd
 
+import com.interact.listen.User
 import com.interact.listen.exceptions.ListenAcdException
 import org.joda.time.DateTime
 import org.joda.time.Seconds
@@ -28,6 +29,7 @@ class AcdCleanupJob
 
         int waitingMax = acdService.getWaitingMax();
         int connectMax = acdService.getConnectMax();
+        int enqueueMax = acdService.getEnqueueMax();
 
         //Get all calls enqueued too long
 
@@ -42,11 +44,21 @@ class AcdCleanupJob
         {
             try
             {
+                //Find calls enqueued too long
+                int enqueueTime = Seconds.secondsBetween(thisCall.enqueueTime, DateTime.now()).getSeconds();
+                if(enqueueTime > enqueueMax)
+                {
+                    log.error("AcdCall[" + thisCall.id + "] queued beyond the maximum allowed time!");
+                    //Send them to voicemail
+                    acdService.acdCallVoicemail(thisCall);
+                    continue;
+                }
+
                 switch(thisCall.callStatus)
                 {
                     case AcdCallStatus.WAITING:
                         //Verify they haven't been waiting too long
-                        int waitingTime = Seconds.secondsBetween(thisCall.enqueueTime, DateTime.now()).getSeconds();
+                        int waitingTime = Seconds.secondsBetween(thisCall.lastModified, DateTime.now()).getSeconds();
                         if(waitingTime > waitingMax)
                         {
                             log.error("AcdCall[" + thisCall.id + "] waiting beyond the maximum allowed time!");
@@ -69,6 +81,24 @@ class AcdCleanupJob
             catch(ListenAcdException ace)
             {
                 log.error("Exception processing cleanup job: " + ace, ace);
+            }
+        }
+
+        cleanOnACallUsers();
+    }
+
+    private void cleanOnACallUsers()
+    {
+        List<User>  badUsers = AcdUserStatus.executeQuery("Select a.owner from AcdUserStatus a where onACall=1 " +
+                "and a.owner not in (select b.user from AcdCall b where user is not null)");
+        log.info("Number of users with incorrect onACall status:" + badUsers.size());
+
+        if(badUsers != null && !badUsers.isEmpty())
+        {
+            for(User thisUser : badUsers)
+            {
+                thisUser.acdUserStatus.onACall = false;
+                thisUser.save();
             }
         }
     }

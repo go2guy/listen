@@ -295,6 +295,22 @@ class AcdService
         return returnVal;
     }
 
+    public int getEnqueueMax()
+    {
+        int returnVal;
+
+        if(grailsApplication.config.com.interact.listen.acd.enqueue.max instanceof String)
+        {
+            returnVal = Integer.parseInt(grailsApplication.config.com.interact.listen.acd.enqueue.max);
+        }
+        else
+        {
+            returnVal = grailsApplication.config.com.interact.listen.acd.enqueue.max;
+        }
+
+        return returnVal;
+    }
+
     public String getVoicemailBox(String sessionId)
     {
         String returnVal;
@@ -342,8 +358,6 @@ class AcdService
      */
     private void acdCallVoicemailPrivate(AcdCall acdCall, String number) throws ListenAcdException
     {
-        boolean sessionExistsOnIvr = true;
-
         //Send request to the IVR
         try
         {
@@ -356,35 +370,16 @@ class AcdService
         catch(SpotCommunicationException sce)
         {
             log.error("SPOT Communication Exception sending ACD Voicemail Event: " + sce, sce);
-            sessionExistsOnIvr = false;
         }
 
         //Go on, though
-
         if(acdCall.user)
         {
             freeAgent(acdCall.user);
         }
 
-
-        if(sessionExistsOnIvr)
-        {
-            acdCall.callStatus = AcdCallStatus.VOICEMAIL;
-            acdCall.user = null;
-
-            if(acdCall.validate() && acdCall.save(flush: true))
-            {
-                if(log.isDebugEnabled())
-                {
-                    log.debug("Call status update completed successfully.")
-                }
-            }
-        }
-        else
-        {
-            //Delete call from queue. Leave status since we don't really know what happened.
-            removeCall(acdCall, null);
-        }
+        //Delete call from queue.
+        removeCall(acdCall, AcdCallStatus.VOICEMAIL);
     }
 
 

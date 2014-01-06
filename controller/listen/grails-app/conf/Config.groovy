@@ -222,6 +222,7 @@ com.interact.listen.authorizenet.transactionKey = '6s6Z7U5z2WnyA2Xz'
 com.interact.listen.acd.agent.waitTime = 15
 com.interact.listen.acd.waiting.max = 300
 com.interact.listen.acd.connect_request.max = 10
+com.interact.listen.acd.enqueue.max = 300
 com.interact.listen.api.adminSignature = 'a80f3b59eec04c24abff14b8b2c8e93d'
 
 
