@@ -49,8 +49,9 @@ class AcdCleanupJob
                         int waitingTime = Seconds.secondsBetween(thisCall.enqueueTime, DateTime.now()).getSeconds();
                         if(waitingTime > waitingMax)
                         {
-                            //Just log for now
                             log.error("AcdCall[" + thisCall.id + "] waiting beyond the maximum allowed time!");
+                            //Send them to voicemail
+                            acdService.acdCallVoicemail(thisCall);
                         }
                         break;
                    case AcdCallStatus.CONNECT_REQUESTED:
@@ -60,7 +61,7 @@ class AcdCleanupJob
                        {
                            //Set back to waiting
                            log.error("AcdCall[" + thisCall.id + "] connect_requested beyond the maximum allowed time!");
-//                           acdService.acdCallStatusUpdate(thisCall.sessionId, AcdCallStatus.WAITING);
+                           acdService.acdCallStatusUpdate(thisCall.sessionId, AcdCallStatus.WAITING);
                        }
                        break;
                 }
