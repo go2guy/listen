@@ -110,11 +110,12 @@ class AcdService
      * @param sessionId The sessionId of the call.
      * @param status The status to set the call to.
      */
-    def acdCallStatusUpdate(String sessionId, String status) throws ListenAcdException
+    def acdCallStatusUpdate(String sessionId, String thisStatus) throws ListenAcdException
     {
-        AcdCallStatus thisStatus = AcdCallStatus.valueOf(status);
-        return acdCallStatusUpdate(sessionId, thisStatus);
+        AcdCallStatus acdStatus = AcdCallStatus.valueOf(thisStatus);
+        return acdCallStatusUpdate(sessionId, acdStatus);
     }
+
     /**
      * Update the status of an ACD Call in the queue.
      *
@@ -135,6 +136,7 @@ class AcdService
                     break;
                 case AcdCallStatus.COMPLETED:
                 case AcdCallStatus.DISCONNECTED:
+                case AcdCallStatus.VOICEMAIL:
                     acdCallCompleted(acdCall, thisStatus);
                     break;
                 case AcdCallStatus.CONNECT_FAIL:
@@ -142,9 +144,6 @@ class AcdService
                     break;
                 case AcdCallStatus.WAITING:
                     acdCallWaiting(acdCall);
-                    break;
-                case AcdCallStatus.VOICEMAIL:
-                    acdCallVoicemail(acdCall);
                     break;
             }
         }
@@ -296,24 +295,96 @@ class AcdService
         return returnVal;
     }
 
-    public String getVoicemailBox()
+    public String getVoicemailBox(String sessionId)
     {
         String returnVal;
 
-        def userCriteria = User.createCriteria();
-        def results = userCriteria.list(max: 1) {
-            acdUserStatus {
-                eq("acdQueueStatus", AcdQueueStatus.VoicemailBox)
+        //Get the skill requested in the session
+        AcdCall theCall = AcdCall.findBySessionId(sessionId);
+
+        def userSkillCriteria = UserSkill.createCriteria();
+        def results = userSkillCriteria.list(max: 1) {
+            eq("skill", theCall.skill)
+            user {
+                acdUserStatus {
+                    eq("acdQueueStatus", AcdQueueStatus.VoicemailBox)
+                }
             }
         }
 
         if(results != null && results.size() > 0)
         {
-            PhoneNumber vmNumber = results.get(0).acdUserStatus.contactNumber;
+            PhoneNumber vmNumber = results.get(0).user.acdUserStatus.contactNumber;
             returnVal = vmNumber.number;
         }
 
         return returnVal;
+    }
+
+    /**
+     * Set a call to voicemail status.
+     *
+     * @param acdCall The call to set as voicemail.
+     * @throws ListenAcdException If unable to set call to voicemail.
+     */
+    public void acdCallVoicemail(AcdCall acdCall) throws ListenAcdException
+    {
+        String number = getVoicemailBox(acdCall.sessionId);
+        acdCallVoicemailPrivate(acdCall, number);
+    }
+
+    /**
+     * Set a call to voicemail status. Had to add Private to the classname because Grails is bogus and doesn't allow
+     * overloading a method, which is a standard object oriented practice. Bogus.
+     *
+     * @param acdCall The call to set as voicemail.
+     * @throws ListenAcdException If unable to set call to voicemail.
+     */
+    private void acdCallVoicemailPrivate(AcdCall acdCall, String number) throws ListenAcdException
+    {
+        boolean sessionExistsOnIvr = true;
+
+        //Send request to the IVR
+        try
+        {
+            spotCommunicationService.sendAcdVoicemailEvent(acdCall.sessionId, number);
+        }
+        catch(IOException ioe)
+        {
+            log.error("IOException sending ACD Voicemail Event: " + ioe, ioe);
+        }
+        catch(SpotCommunicationException sce)
+        {
+            log.error("SPOT Communication Exception sending ACD Voicemail Event: " + sce, sce);
+            sessionExistsOnIvr = false;
+        }
+
+        //Go on, though
+
+        if(acdCall.user)
+        {
+            freeAgent(acdCall.user);
+        }
+
+
+        if(sessionExistsOnIvr)
+        {
+            acdCall.callStatus = AcdCallStatus.VOICEMAIL;
+            acdCall.user = null;
+
+            if(acdCall.validate() && acdCall.save(flush: true))
+            {
+                if(log.isDebugEnabled())
+                {
+                    log.debug("Call status update completed successfully.")
+                }
+            }
+        }
+        else
+        {
+            //Delete call from queue. Leave status since we don't really know what happened.
+            removeCall(acdCall, null);
+        }
     }
 
 
@@ -369,36 +440,12 @@ class AcdService
      */
     private void acdCallWaiting(AcdCall acdCall) throws ListenAcdException
     {
-        acdCall.callStatus = AcdCallStatus.WAITING;
-        acdCall.user = null;
-
-        if(acdCall.validate() && acdCall.save(flush: true))
-        {
-            if(log.isDebugEnabled())
-            {
-                log.debug("Call status update completed successfully.")
-            }
-        }
-        else
-        {
-            throw new ListenAcdException(beanErrors(acdCall));
-        }
-    }
-
-    /**
-     * Set a call to voicemail status.
-     *
-     * @param acdCall The call to set as voicemail.
-     * @throws ListenAcdException If unable to set call to voicemail.
-     */
-    private void acdCallVoicemail(AcdCall acdCall) throws ListenAcdException
-    {
-        if(acdCall.user)
+        if(acdCall.user != null)
         {
             freeAgent(acdCall.user);
         }
 
-        acdCall.callStatus = AcdCallStatus.VOICEMAIL;
+        acdCall.callStatus = AcdCallStatus.WAITING;
         acdCall.user = null;
 
         if(acdCall.validate() && acdCall.save(flush: true))

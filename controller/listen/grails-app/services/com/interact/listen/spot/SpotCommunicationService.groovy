@@ -139,12 +139,12 @@ class SpotCommunicationService {
     {
         if(log.isInfoEnabled())
         {
-            log.info("Sending AcdConnectEvent, sessionId[" + sessionId + "], number[" + number + "]")
+            log.info("Sending Acd Voicemail Event, sessionId[" + sessionId + "], number[" + number + "]")
         }
 
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "ACD");
-        importedValue.put("action", "CONNECT");
+        importedValue.put("action", "VOICEMAIL");
         importedValue.put("sessionId", sessionId);
         importedValue.put("number", number);
         buildAndSendRequest(importedValue);

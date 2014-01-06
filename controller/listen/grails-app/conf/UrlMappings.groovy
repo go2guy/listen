@@ -8,21 +8,12 @@ class UrlMappings {
             ]
         }
 
-        "/api/acdCall/voicemail"(controller: 'spotApi')
-                {
-                    action = [
-                            GET: 'getAcdVoicemail'
-                    ]
-                }
-
         "/api/acdCall/$junk"(controller: 'spotApi')
         {
             action = [
                 PUT: 'updateAcdCall'
             ]
         }
-
-
 
         "/api/accessNumbers"(controller: 'spotApi') {
             action = [

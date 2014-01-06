@@ -54,7 +54,6 @@ class SpotApiController {
         deleteVoicemail: 'DELETE',
         dial: 'GET',
         dnisLookup: 'GET',
-        getAcdVoicemail: 'GET',
         getAfterHoursSubscriber: 'GET',
         getConference: 'GET',
         getEnabledFeatureStatus: 'GET',
@@ -110,6 +109,11 @@ class SpotApiController {
             def json = JSON.parse(request)
             response.status = HSR.SC_CREATED
 
+            if(log.isDebugEnabled())
+            {
+                log.debug("AddAcdCall JSON: " + json);
+            }
+
             if(json.ani && json.dnis && json.selection && json.sessionId)
             {
                 acdService.acdCallAdd(json.ani, json.dnis, json.selection, json.sessionId, request.remoteAddr)
@@ -120,6 +124,11 @@ class SpotApiController {
             }
 
             response.flushBuffer()
+
+            if(log.isDebugEnabled())
+            {
+                log.debug("Exiting addAcdCall.");
+            }
         }
         catch(Exception e)
         {
@@ -142,6 +151,11 @@ class SpotApiController {
         {
             def json = JSON.parse(request)
             response.status = HSR.SC_CREATED
+
+            if(log.isDebugEnabled())
+            {
+                log.debug("UpdateAcdCall JSON: " + json);
+            }
 
             if(json.sessionId && json.status)
             {
@@ -169,31 +183,11 @@ class SpotApiController {
             log.error("Exception updating ACD Call: " + e.getMessage(), e);
             response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
         }
-    }
 
-    def getAcdVoicemail =
-    {
-        def json = JSON.parse(request)
-        response.status = HSR.SC_CREATED
-
-        if(json.sessionId)
+        if(log.isDebugEnabled())
         {
-            acdService.acdCallStatusUpdate(json.sessionId, AcdCallStatus.VOICEMAIL);
+            log.debug("Exiting updateAcdCall()");
         }
-
-        String number = acdService.getVoicemailBox();
-
-        if(!number)
-        {
-            response.sendError(HSR.SC_NOT_FOUND)
-            return
-        }
-
-        def result = [
-                number: number
-        ]
-
-        render(result as JSON)
     }
 
     def addCallHistory = {
@@ -1549,10 +1543,13 @@ class SpotApiController {
         }
 
         def promptBefore = doAction.promptBefore
-        if(doAction.instanceOf(GoToMenuAction)) {
+        if(doAction.instanceOf(GoToMenuAction))
+        {
             def group = MenuGroup.findByName(doAction.destinationMenuGroupName)
             doAction = Menu.findByMenuGroupAndName(group, doAction.destinationMenuName)
-        } else if(doAction.instanceOf(ReplayMenuAction)) {
+        }
+        else if(doAction.instanceOf(ReplayMenuAction))
+        {
             doAction = menu
         }
 
