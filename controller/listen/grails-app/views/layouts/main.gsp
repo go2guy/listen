@@ -474,6 +474,27 @@ $(document).ready(function() {
         });
     }, 5000);
 </sec:ifAnyGranted>
+
+<sec:ifAnyGranted roles="ROLE_ACD_USER">
+  function getAcdMessageCount() {
+    var displayedCount = $("#new-acd-message-count");
+    var newCount = '(0)';
+    $.ajax({
+      url: '${request.contextPath}/messages/newAcdCount',
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        if ( data.count != displayedCount.text() ) {
+          displayedCount.text(data.count);
+        }
+      }
+    });
+    setTimeout(getAcdMessageCount(),5000);
+  }
+
+  $(document).ready(getAcdMessageCount());
+</sec:ifAnyGranted>
+
 });
 
 $(document).ready(function() {

@@ -94,6 +94,9 @@ class UserCreationService {
             AcdUserStatus theStatus = AcdUserStatus.create(user);
             user.acdUserStatus = theStatus;
 
+            /* def acdUserStatus = AcdUserStatus.findByOwner(user) */
+            /* acdUserStatus.acdQueueStatus = AcdQueueStatus.UNAVAILABLE */
+
             if(user.validate())
             {
                 user = user.save();
@@ -104,7 +107,6 @@ class UserCreationService {
                         UserRole.create(user, Role.findByAuthority(it))
                     }
                     historyService.createdUser(user)
-
                 }
             }
         }

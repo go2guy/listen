@@ -23,7 +23,13 @@ INSERT INTO `user` (id, version, account_expired, account_locked, email_address,
         (7,12,'\0','\0','daniel@newnet.com',1,'2013-11-26 17:15:17',1,
           '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Daniel Walter','dwalter','\0'),
         (8,0,'\0','\0','iisupport@newnet.com',1,'2013-11-05 15:23:38',1,
-          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','ACD Voicemail','acdvoicemail','\0');
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','ACD Voicemail','acdvoicemail','\0'),
+        (9,5,'\0','\0','iisupport@newnet.com',1,'2013-11-05 15:23:38',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','ACD Tech Voicemail','acdtechvoicemail','\0'),
+        (10,5,'\0','\0','iisupport@newnet.com',1,'2013-11-05 15:23:38',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','ACD Finance Voicemail','acdfinancevoicemail','\0'),
+        (11,5,'\0','\0','iisupport@newnet.com',1,'2013-11-05 15:23:38',1,
+          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','ACD Human Resources Voicemail','acdhumanresourcevoicemail','\0');
 UNLOCK TABLES;
 
 
@@ -42,7 +48,10 @@ INSERT INTO `acd_user_status` (id, owner_id, version, acd_queue_status, contact_
         (5,5,0,'Available',NULL,NULL,0,NULL),
         (6,6,0,'Available',NULL,NULL,0,NULL),
         (7,7,0,'Available',NULL,NULL,0,NULL),
-        (8,8,0,'VoicemailBox',NULL,NULL,0,NULL);
+        (8,8,0,'VoicemailBox',NULL,NULL,0,NULL),
+        (9,9,0,'VoicemailBox',NULL,NULL,0,NULL),
+        (10,10,0,'VoicemailBox',NULL,NULL,0,NULL),
+        (11,11,0,'VoicemailBox',NULL,NULL,0,NULL);
 UNLOCK TABLES;
 
 
@@ -72,7 +81,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `user_role` WRITE;
-INSERT INTO `user_role` VALUES (2,1),(3,2),(4,2),(5,2),(6,2),(7,2),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),(2,4),(3,4),(4,4),(5,4),(6,4),(7,4),(2,5),(3,5),(4,5),(5,5),(6,5),(7,5),(4,6),(5,6),(6,6),(7,6),(8,2),(8,3),(8,4),(8,5),(8,6),(2,6),(3,6),(1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7),(8,7);
+INSERT INTO `user_role` VALUES (2,2),(3,2),(4,2),(5,2),(6,2),(7,2),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),(2,4),(3,4),(4,4),(5,4),(6,4),(7,4),(2,5),(3,5),(4,5),(5,5),(6,5),(7,5),(4,6),(5,6),(6,6),(7,6),(8,2),(8,3),(8,4),(8,5),(8,6),(2,6),(3,6),(1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7),(8,7),(7,9),(7,10),(7,11),(8,9),(8,10),(8,11);
 UNLOCK TABLES;
 
 
@@ -81,9 +90,13 @@ INSERT INTO `voicemail_preferences` VALUES (1,1,'brian.johnston@newnet.com','',
 UNLOCK TABLES;
 
 LOCK TABLES `skill` WRITE;
-INSERT INTO `skill` VALUES (1,0,'Tech',1,'Technical Support');
+INSERT INTO `skill` VALUES (1,0,'Tech',1,'Technical Support'),(2,0,'Finance',1,'Finance'),(3,0,'Human Resources',1,'Human Resources');
+UNLOCK TABLES;
+
+LOCK TABLES `user_skill` WRITE;
+INSERT INTO `user_skill` VALUES (1,0,9,1), (2,0,10,2), (3,0,11,3), (4,0,7,1), (5,0,7,2), (6,0,7,3);
 UNLOCK TABLES;
 
 LOCK TABLES `acd_call` WRITE;
-INSERT INTO `acd_call` VALUES (1,0,'test ani','test dnis',1,'test session id','2013-11-21 13:47:34','WAITING','test ivr','2013-11-21 13:47:34',1);
+INSERT INTO `acd_call` VALUES (1,0,'test ani','test dnis',3,'test session id','2013-12-29 13:47:35','WAITING','test ivr','2013-12-29 13:47:35',1,'2013-12-29 13:47:35','2013-12-29 13:47:35'), (2,0,'lfasjdlkasdjjfl','another test dnis',2,'another test session id','2013-12-29 13:47:36','WAITING','another test ivr','2013-12-29 13:47:36',1,'2013-12-29 13:47:36','2013-12-29 13:47:36'), (3,0,'eeeadsflkqljljkklj','yet another test dnis',1,'yet another test session id','2013-12-29 13:47:37','WAITING','yet another test ivr','2013-12-29 13:47:37',1,'2013-12-29 13:47:37','2013-12-29 13:47:37');
 UNLOCK TABLES;

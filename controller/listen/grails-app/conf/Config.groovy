@@ -228,6 +228,13 @@ com.interact.listen.api.adminSignature = 'a80f3b59eec04c24abff14b8b2c8e93d'
 // listen artifacts directory - not everything is using this at the moment
 com.interact.listen.artifactsDirectory = '/interact/listen/artifacts'
 
+// Enable pretty print for JSON and XML.
+environments {
+  development {
+    grails.converters.default.pretty.print = true
+  }
+}
+
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 
 /* remove this line 

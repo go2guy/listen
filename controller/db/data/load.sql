@@ -16,17 +16,11 @@ INSERT INTO `user` (id, version, account_expired, account_locked, email_address,
     password, password_expired, real_name, username, is_active_directory)
   VALUES (1,5,'\0','\0','iisupport@newnet.com',1,'2013-11-05 15:23:38',NULL,
     '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','Listen Custodian','Custodian','\0');
-INSERT INTO `user` (id, version, account_expired, account_locked, email_address, enabled, last_login, organization_id,
-                    password, password_expired, real_name, username, is_active_directory)
-  VALUES (2,5,'\0','\0','iisupport@newnet.com',1,'2013-11-05 15:23:38',NULL,
-          '$2a$10$026QVF/Z7eE3w.6MRN/C3.bhmjMOgUK2ozRwtP6fHkBZmov/9vdEy','\0','ACD Voicemail','acdvoicemail','\0');
 UNLOCK TABLES;
 
 LOCK TABLES `acd_user_status` WRITE;
 INSERT INTO `acd_user_status` (id, owner_id, version, acd_queue_status, contact_number_id, status_modified, onacall,
                                onacall_modified) VALUES (1,1,0,'Available',NULL,NULL,0,NULL);
-INSERT INTO `acd_user_status` (id, owner_id, version, acd_queue_status, contact_number_id, status_modified, onacall,
-                               onacall_modified) VALUES (2,2,0,'VoicemailBox',NULL,NULL,0,NULL);
 UNLOCK TABLES;
 
 
@@ -65,5 +59,5 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `user_role` WRITE;
-INSERT INTO `user_role` VALUES (1,1);
+INSERT INTO `user_role` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1);
 UNLOCK TABLES;

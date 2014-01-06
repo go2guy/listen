@@ -1,5 +1,7 @@
 package com.interact.listen
 
+import com.interact.listen.acd.UserSkill
+import com.interact.listen.acd.AcdService
 import com.interact.listen.fax.Fax
 import com.interact.listen.voicemail.Voicemail
 
@@ -25,6 +27,25 @@ class InboxMessageService {
     def newMessageCount(def user = null) {
         def forUser = user ?: springSecurityService.getCurrentUser()
         return InboxMessage.countByOwnerAndIsNew(forUser, true)
+    }
+
+    def newAcdMessageCount(def user = null) {
+      if ( user == null ) {
+        user = springSecurityService.getCurrentUser()
+      }
+
+      def count = ""
+
+      UserSkill.findAllByUser(user).each() { userSkill ->
+        log.debug "InboxMessageService.newAcdMessageCount(): Getting new voicemail messages for user[${AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname).username}]"
+        count += "(" + InboxMessage.countByOwnerAndIsNew(AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname), true) + ")"
+      }
+
+      if ( count == "" ) {
+        count = "(0)"
+      }
+
+      return count
     }
 
     void toggleStatus(InboxMessage message) {

@@ -4,7 +4,9 @@ import com.interact.listen.PhoneNumber
 import com.interact.listen.User
 import com.interact.listen.exceptions.ListenAcdException
 import com.interact.listen.spot.SpotCommunicationException
+
 import grails.validation.ValidationErrors
+
 import org.joda.time.DateTime
 import org.springframework.validation.FieldError
 
@@ -17,6 +19,7 @@ class AcdService
 {
     def grailsApplication
     def spotCommunicationService
+    private static Map<String,User> skillVoicemailUsers = new HashMap<String,User>()
 
     /**
      * Convert an input selection to a Skill object.
@@ -50,9 +53,10 @@ class AcdService
      */
     def listAllCalls()
     {
-        def callList = AcdCall.list();
+        // def callList = AcdCall.list();
 
-        return callList;
+        // return callList;
+      return AcdCall.list()
     }
 
     /**
@@ -508,5 +512,32 @@ class AcdService
 
         //Delete from the queue
         call.delete();
+    }
+
+    /**
+     * Given an Acd Skill, return the associated voicemail user
+     * @param skill: The associated skill
+     */
+    public static User getVoicemailUserBySkillname(String skillname) {
+      if (skillVoicemailUsers.isEmpty()) {
+        this.populateVoicemailUsers()
+      }
+      return skillVoicemailUsers.get(skillname);
+    }
+
+    /**
+     * Populates hash map associating skills with their respective
+     * voicemail user.
+     */
+    public static void populateVoicemailUsers() {
+      Skill.findAll().each() { skill ->
+        UserSkill.findAllBySkill(skill).find { userSkill ->
+          if ( userSkill.user.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox ) {
+            skillVoicemailUsers.put(skill.skillname, userSkill.user)
+            return true
+          }
+          return false
+        }
+      }
     }
 }

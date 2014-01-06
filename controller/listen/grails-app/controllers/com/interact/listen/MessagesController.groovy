@@ -14,6 +14,7 @@ class MessagesController {
         inbox: 'GET',
         delete: 'POST',
         newCount: 'GET',
+        newAcdCount: 'GET',
         pollingList: 'GET',
         toggleStatus: 'POST',
         setStatus: 'GET'
@@ -83,6 +84,13 @@ class MessagesController {
         render(contentType: 'application/json') {
             count = inboxMessageService.newMessageCount()
         }
+    }
+
+    // ajax
+    def newAcdCount = {
+      render(contentType: 'application/json') {
+        count = inboxMessageService.newAcdMessageCount()
+      }
     }
 
     def toggleStatus = {

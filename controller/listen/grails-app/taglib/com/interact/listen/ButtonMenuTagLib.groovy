@@ -33,7 +33,10 @@ class ButtonMenuTagLib {
 
             case 'acd':
                 out << '<ul class="button-menu">'
-                button(attrs.button == 'status', 'acd', 'status', 'button.menu.acd.status')
+                /* Can't just call button for this one since we have to add a custom span element for the message count */
+                out << '<li class="' + (attrs.button == 'status' ? 'current' : '') + '">'
+                out << g.link(controller: 'acd', action: 'status') { g.message(code: 'button.menu.acd.status') + '<span id="new-acd-message-count">(0)</span>' }
+                out << '</li>'
                 button(attrs.button == 'callQueue', 'acd', 'callQueue', 'button.menu.acd.callQueue')
                 out << '</ul>'
 
@@ -131,7 +134,7 @@ class ButtonMenuTagLib {
         }
     }
 
-    private void button(boolean current, String controller, String action, String code) {
+    def button(boolean current, String controller, String action, String code) {
         out << '<li class="' + (current ? 'current' : '') + '">'
         out << g.link(controller: controller, action: action) { g.message(code: code) }
         out << '</li>'
