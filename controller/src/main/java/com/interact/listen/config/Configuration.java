@@ -15,7 +15,7 @@ public final class Configuration
 
     private Configuration()
     {
-        throw new AssertionError("Cannot instantiate utility class ConfigurationHolder");
+        throw new AssertionError("Cannot instantiate utility class Configuration");
     }
 
     public static synchronized void set(Property.Key key, String value)

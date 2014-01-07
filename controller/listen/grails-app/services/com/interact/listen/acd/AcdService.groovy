@@ -6,7 +6,7 @@ import com.interact.listen.exceptions.ListenAcdException
 import com.interact.listen.spot.SpotCommunicationException
 
 import grails.validation.ValidationErrors
-
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.validation.FieldError
 
@@ -311,7 +311,7 @@ class AcdService
         return returnVal;
     }
 
-    public String getVoicemailBox(String sessionId)
+    public String getVoicemailBox(String sessionId) throws ListenAcdException
     {
         String returnVal;
 
@@ -331,7 +331,15 @@ class AcdService
         if(results != null && results.size() > 0)
         {
             PhoneNumber vmNumber = results.get(0).user.acdUserStatus.contactNumber;
-            returnVal = vmNumber.number;
+            if(vmNumber != null)
+            {
+                returnVal = vmNumber.number;
+            }
+            else
+            {
+                log.error("Voicemail Box not configured for skill[" + theCall.skill + "]");
+                throw new ListenAcdException("Invalid voicmailbox for skill[" + theCall.skill + "]");
+            }
         }
 
         return returnVal;
@@ -494,7 +502,7 @@ class AcdService
      *
      * @param user The user to set as available.
      */
-    private void freeAgent(User user)
+    private static void freeAgent(User user)
     {
         if(user != null)
         {
@@ -504,7 +512,7 @@ class AcdService
         }
         else
         {
-            log.warn("Attempted to free a non existent user.");
+            LogFactory.getLog(this).warn("Attempted to free a non existent user.");
         }
     }
 

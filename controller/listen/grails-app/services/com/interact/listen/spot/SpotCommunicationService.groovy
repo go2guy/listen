@@ -10,6 +10,7 @@ import org.joda.time.format.DateTimeFormat
 class SpotCommunicationService {
     static transactional = false
 
+    def grailsApplication
     def springSecurityService
     def statWriterService
 
@@ -150,6 +151,27 @@ class SpotCommunicationService {
         buildAndSendRequest(importedValue);
     }
 
+    /**
+     * Send request to SPOT to put a caller on hold.
+     *
+     * @param sessionId The sessionId of the call.
+     * @throws IOException If an IOException.
+     * @throws SpotCommunicationException If
+     */
+    def sendAcdOnHoldEvent(def sessionId) throws IOException, SpotCommunicationException
+    {
+        if(log.isInfoEnabled())
+        {
+            log.info("Sending Acd OnHold Event, sessionId[" + sessionId + "]");
+        }
+
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        importedValue.put("application", "ACD");
+        importedValue.put("action", "ON_HOLD");
+        importedValue.put("sessionId", sessionId);
+        buildAndSendRequest(importedValue);
+    }
+
 
 
     private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {
@@ -193,18 +215,39 @@ class SpotCommunicationService {
 
     private void sendRequest(Map<String, String> params) throws IOException, SpotCommunicationException
     {
+        List<String> spotUrls = new ArrayList<String>(1);
+        if(grailsApplication.config.com.interact.listen.spotUrl != null &&
+                !grailsApplication.config.com.interact.listen.spotUrl.isEmpty())
+        {
+            spotUrls.add(grailsApplication.config.com.interact.listen.spotUrl);
+        }
+        else
+        {
+            List<SpotSystem> spotSystems = SpotSystem.findAll();
+            for(SpotSystem thisSystem : spotSystems)
+            {
+                spotUrls.add(thisSystem.name);
+            }
+        }
+
+        sendRequest(params, spotUrls);
+    }
+
+    private void sendRequest(Map<String, String> params, List<String> spotUrls) throws IOException, SpotCommunicationException
+    {
         if(log.isDebugEnabled())
         {
-            log.debug "Sending SPOT HTTP request with params ${params} to ${SpotSystem.count()} SPOT systems"
+            log.debug "Sending SPOT HTTP request with params ${params} to ${spotUrls.size()} SPOT systems"
         }
 
         def failed = []
         int status = -1
-        SpotSystem.findAll().each
+
+        for(String thisSpotUrl : spotUrls)
         {
             def httpClient = new HttpClientImpl()
 
-            String uri = it.name + "/ccxml/createsession";
+            String uri = thisSpotUrl + "/ccxml/createsession";
             httpClient.post(uri, params);
 
             status = httpClient.getResponseStatus();

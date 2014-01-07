@@ -12,7 +12,6 @@ class AcdCallHistory
         lastModified nullable: true
         autoTimestamp: true
         dequeueTime nullable: true
-        userId nullable: true
         callStart nullable: true
         callEnd nullable: true
     }
@@ -39,11 +38,7 @@ class AcdCallHistory
         this.enqueueTime = callRecord.enqueueTime;
         this.callStatus = callRecord.callStatus;
         this.ivr = callRecord.ivr;
-
-        if(callRecord.user != null)
-        {
-            this.userId = callRecord.user.id;
-        }
+        this.userId = callRecord.userId;
         this.lastModified = callRecord.lastModified;
         this.callStart = callRecord.callStart;
         this.callEnd = callRecord.callEnd;

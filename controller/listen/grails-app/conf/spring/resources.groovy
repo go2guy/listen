@@ -1,13 +1,13 @@
-import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
+import grails.util.Holders
 
 // Place your Spring DSL code here
 beans = {
     dataSource(org.apache.commons.dbcp.BasicDataSource) {
 
-        driverClassName = CH.config.dataSource.driverClassName
-        url = CH.config.dataSource.url
-        username = CH.config.dataSource.username
-        password = CH.config.dataSource.password
+        driverClassName = Holders.config.dataSource.driverClassName
+        url = Holders.config.dataSource.url
+        username = Holders.config.dataSource.username
+        password = Holders.config.dataSource.password
 
         minEvictableIdleTimeMillis = 1000 * 60 * 60 * 4
         timeBetweenEvictionRunsMillis = 1000 * 60 * 60 * 4
@@ -16,7 +16,7 @@ beans = {
         testOnBorrow = true
         testWhileIdle = true
         testOnReturn = true
-        validationQuery = CH.config.dataSource.validationQuery
+        validationQuery = Holders.config.dataSource.validationQuery
     }
 
     headerDetailsFilter(com.interact.listen.authentication.HeaderDetailsFilter) {

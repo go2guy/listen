@@ -1,13 +1,15 @@
 package com.interact.listen.conferencing
 
 import com.interact.listen.Organization
-import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
+import grails.util.Holders
 
-class ConferencingConfiguration {
+class ConferencingConfiguration
+{
     Organization organization
-    int pinLength = CH.config.com.interact.listen.conferencing.defaultPinLength
+    int pinLength = Holders.config.com.interact.listen.conferencing.defaultPinLength
 
-    static constraints = {
+    static constraints =
+    {
         pinLength min: 3, max: 32
     }
 }

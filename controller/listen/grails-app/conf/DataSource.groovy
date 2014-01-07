@@ -1,6 +1,5 @@
 dataSource {
     pooled = true
-//    driverClassName = "com.mysql.jdbc.Driver"
     username = "sa"
     password = ""
 }
@@ -29,18 +28,6 @@ environments {
     }
     production {
         dataSource {
-            /*dbCreate = "update"
-            url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
-            pooled = true
-            properties {
-               maxActive = -1
-               minEvictableIdleTimeMillis=1800000
-               timeBetweenEvictionRunsMillis=1800000
-               numTestsPerEvictionRun=3
-               testOnBorrow=true
-               testWhileIdle=true
-               testOnReturn=true
-               validationQuery="SELECT 1"*/
             dialect = 'org.hibernate.dialect.MySQLInnoDBDialect'
             driverClassName = 'org.mariadb.jdbc.Driver'
             url = System.getProperty('com.interact.listen.db.url', 'jdbc:mysql://localhost/listen2?zeroDateTimeBehavior=convertToNull')

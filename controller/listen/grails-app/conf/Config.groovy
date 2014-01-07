@@ -3,19 +3,6 @@ import com.interact.listen.license.ListenFeature
 import grails.util.Environment
 import org.joda.time.*
 
-// locations to search for config files that get merged into the main config;
-// config files can be ConfigSlurper scripts, Java properties files, or classes
-// in the classpath in ConfigSlurper format
-
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
-
-// if (System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
-
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -66,13 +53,10 @@ grails.hibernate.cache.queries = false
 
 environments {
     development {
-        grails.config.locations = [ "classpath:listen-controller.properties",
-                "file:src/properties/listen-controller.properties" ]
         grails.logging.jul.usebridge = true
     }
     production {
-        grails.config.locations = [ "classpath:listen-controller.properties",
-                "file:src/properties/listen-controller.properties" ]
+        grails.config.locations = [ "classpath:listen-controller.properties"]
         grails.logging.jul.usebridge = false
     }
 }
@@ -82,12 +66,6 @@ switch(Environment.current) {
     case Environment.DEVELOPMENT:
     case Environment.TEST:
         log4j = {
-            // Example of changing the log pattern for the default console appender:
-            //
-            //appenders {
-            //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-            //}
-
             def appName = grails.util.Metadata.current.'app.name'
             appenders {
                 def defaultPattern = '%d{ISO8601} [%10.10t] [%18.18c] %5p: %m%n'
@@ -192,16 +170,8 @@ grails {
 
 grails.mail.default.from = 'listen@newnet.com'
 
-/* %%mark%% */
-/* // Database Migrations plugin */
-/* environments { */
-    /* production { */
-        /* grails.plugin.databasemigration.updateOnStart = true */
-        /* grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy'] */
-    /* } */
-/* } */
-
 // Listen configuration
+com.interact.listen.spotUrl = 'http:/localhost/spot'
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
 com.interact.listen.conferencing.defaultPinLength = 6
 
@@ -219,6 +189,8 @@ com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.por
 com.interact.listen.authorizenet.loginId = '9u9rhMY2hS2'
 com.interact.listen.authorizenet.transactionKey = '6s6Z7U5z2WnyA2Xz'
 
+com.interact.listen.acd.callProcessor.repeatInterval = 10000
+com.interact.listen.acd.cleanup.repeatInterval = 20000
 com.interact.listen.acd.agent.waitTime = 15
 com.interact.listen.acd.waiting.max = 300
 com.interact.listen.acd.connect_request.max = 10
@@ -235,27 +207,3 @@ environments {
     grails.converters.default.pretty.print = true
   }
 }
-
-// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
-
-/* remove this line 
-// GSP settings
-grails {
-    views {
-        gsp {
-            encoding = 'UTF-8'
-            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
-            codecs {
-                expression = 'html' // escapes values inside null
-                scriptlet = 'none' // escapes output from scriptlets in GSPs
-                taglib = 'none' // escapes output from taglibs
-                staticparts = 'none' // escapes output from static template parts
-            }
-        }
-        // escapes all not-encoded output at final stage of outputting
-        filteringCodecForContentType {
-            //'text/html' = 'html'
-        }
-    }
-}
-remove this line */

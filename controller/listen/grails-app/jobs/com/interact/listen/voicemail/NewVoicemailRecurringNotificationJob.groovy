@@ -5,20 +5,25 @@ import com.interact.listen.stats.Stat
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import org.joda.time.DateTime
 import org.joda.time.Minutes
-import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
+import grails.util.Holders
 
-class NewVoicemailRecurringNotificationJob {
-    static triggers = {
+class NewVoicemailRecurringNotificationJob
+{
+    static triggers =
+    {
         cron name: 'newVoicemailNotificationTrigger', cronExpression: '0 0/1 * * * ?'
     }
 
     def statWriterService
     def voicemailNotificationService
 
-    def execute() {
+    def execute()
+    {
         def now = new DateTime()
-        def preferences = VoicemailPreferences.findAllWhere(isSmsNotificationEnabled: true, recurringNotificationsEnabled: true)
+        def preferences = VoicemailPreferences.findAllWhere(isSmsNotificationEnabled: true,
+                recurringNotificationsEnabled: true)
         def afterHoursConfigs = AfterHoursConfiguration.findAll()
+
         preferences.each { pref ->
             // does the user have any new voicemails?
             def newVoicemails = Voicemail.findAllByOwnerAndIsNew(pref.user, true)
@@ -41,7 +46,8 @@ class NewVoicemailRecurringNotificationJob {
                         if(checkIfPegStat(pref.user, config)) {
                             if(config.alternateNumber && config.alternateNumber != '') {
                                 log.debug "Sending alternate-number page to ${config.alternateNumber}"
-                                voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber, Stat.NEW_VOICEMAIL_RECURRING_SMS_ALTERNATE)
+                                voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber,
+                                        Stat.NEW_VOICEMAIL_RECURRING_SMS_ALTERNATE)
                             }
                         }
                     }
@@ -55,7 +61,7 @@ class NewVoicemailRecurringNotificationJob {
     private boolean checkAfterHoursVoicemails() {
         def now = new DateTime()
         def afterHoursConfigs = AfterHoursConfiguration.findAll()
-        def afterHoursUser = CH.config.com.interact.listen.afterHours.username
+        def afterHoursUser = Holders.config.com.interact.listen.afterHours.username
         //log.debug "Checking for after hours user based upon configured username[${afterHoursUser}]"
         afterHoursUser = User.findByUsername(afterHoursUser)
         if(!afterHoursUser) {
@@ -90,7 +96,8 @@ class NewVoicemailRecurringNotificationJob {
                     log.debug "We have AF config [${config?.alternateNumber}]"
                     if(config.alternateNumber && config.alternateNumber != '') {
                         log.debug "Sending alternate-number page to ${config.alternateNumber}"
-                        voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber, Stat.NEW_VOICEMAIL_RECURRING_SMS_ALTERNATE)
+                        voicemailNotificationService.sendNewVoicemailSms(voicemail, config.alternateNumber,
+                                Stat.NEW_VOICEMAIL_RECURRING_SMS_ALTERNATE)
                     }
                 }
             }

@@ -1,18 +1,20 @@
 package com.interact.listen.mail
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
+import grails.util.Holders
 
-class MailConfiguration {
-    String host = CH.config.grails.mail.host
-    String username = CH.config.grails.mail.username
-    String password = CH.config.grails.mail.password
-    String defaultFrom = CH.config.grails.mail.default.from
+class MailConfiguration
+{
+    String host = Holders.config.grails.mail.host
+    String username = Holders.config.grails.mail.username
+    String password = Holders.config.grails.mail.password
+    String defaultFrom = Holders.config.grails.mail.default.from
     String protocol
     Integer port
 
     static transients = ['protocol', 'port']
     
-    static constraints = {
+    static constraints =
+    {
         host blank: false
         username nullable: true, blank: true
         password nullable: true, blank: true

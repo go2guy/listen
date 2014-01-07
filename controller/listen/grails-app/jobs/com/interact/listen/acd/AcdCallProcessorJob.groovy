@@ -2,6 +2,7 @@ package com.interact.listen.acd
 
 import com.interact.listen.User
 import com.interact.listen.exceptions.ListenAcdException
+import grails.util.Holders
 import org.joda.time.DateTime
 import org.joda.time.LocalDateTime
 
@@ -13,14 +14,14 @@ import org.joda.time.LocalDateTime
  */
 class AcdCallProcessorJob
 {
+    def acdService
+
     static triggers =
     {
-        simple startDelay: 1000, repeatInterval: 20000
+        simple startDelay: 1000, repeatInterval: Holders.config.com.interact.listen.acd.callProcessor.repeatInterval
     }
 
     def group = "acd"
-
-    def acdService
 
     def execute()
     {

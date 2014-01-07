@@ -4,6 +4,7 @@ import com.interact.listen.Audio
 import com.interact.listen.CallData
 import com.interact.listen.MobilePhone
 import com.interact.listen.PhoneNumber
+import com.interact.listen.TranscriptionConfiguration
 import com.interact.listen.WildcardNumberMatcher
 import com.interact.listen.acd.AcdCallStatus
 import com.interact.listen.android.DeviceRegistration
