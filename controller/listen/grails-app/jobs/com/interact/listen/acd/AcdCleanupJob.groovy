@@ -19,7 +19,8 @@ class AcdCleanupJob
 
     static triggers =
     {
-        simple startDelay: 1000, repeatInterval: Holders.config.com.interact.listen.acd.cleanup.repeatInterval
+//        simple startDelay: 1000, repeatInterval: Holders.config.com.interact.listen.acd.cleanup.repeatInterval
+        simple startDelay: 1000, repeatInterval: 20000
     }
 
     def group = "acd"

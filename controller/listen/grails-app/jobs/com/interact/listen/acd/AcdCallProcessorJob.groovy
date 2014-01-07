@@ -18,7 +18,8 @@ class AcdCallProcessorJob
 
     static triggers =
     {
-        simple startDelay: 1000, repeatInterval: Holders.config.com.interact.listen.acd.callProcessor.repeatInterval
+//        simple startDelay: 1000, repeatInterval: Holders.config.com.interact.listen.acd.callProcessor.repeatInterval
+        simple startDelay: 1000, repeatInterval: 10000
     }
 
     def group = "acd"
