@@ -33,6 +33,8 @@ class CallRoutingController {
             response.sendError(HSR.SC_NOT_FOUND)
         }
 
+        log.debug "routeCall to [${result.application}]"
+        
         render(contentType: 'application/json') {
             application = result.application
             organization = {

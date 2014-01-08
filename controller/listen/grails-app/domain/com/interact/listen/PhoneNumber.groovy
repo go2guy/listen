@@ -9,7 +9,9 @@ class PhoneNumber {
     static belongsTo = User
 
     static constraints = {
+        owner nullable: false
         number blank: false, maxSize: 100, validator: { val, obj ->
+            if(!obj?.owner?.organization) return false
             def existing = PhoneNumber.createCriteria().get {
                 owner {
                     eq('organization', obj.owner.organization)

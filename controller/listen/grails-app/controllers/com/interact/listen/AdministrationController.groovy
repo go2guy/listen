@@ -18,6 +18,7 @@ import org.apache.log4j.Logger
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
     def applicationService
+    def directInwardDialNumberService
     def directMessageNumberService
     def extensionService
     def historyService
@@ -26,6 +27,7 @@ class AdministrationController {
 
     static allowedMethods = [
         index: 'GET',
+        addDirectInwardDialNumber: 'POST',
         addDirectMessageNumber: 'POST',
         addException: 'POST',
         addExtension: 'POST',
@@ -35,6 +37,7 @@ class AdministrationController {
         calls: 'GET',
         callsData: 'GET',
         configuration: 'GET',
+        deleteDirectInwardDialNumber: 'POST',
         deleteDirectMessageNumber: 'POST',
         deleteException: 'POST',
         deleteExtension: 'POST',
@@ -47,6 +50,7 @@ class AdministrationController {
         saveAndroid: 'POST',
         saveConfiguration: 'POST',
         updateDirectMessageNumber: 'POST',
+        updateDirectInwardDialNumber: 'POST',
         updateException: 'POST',
         updateExtension: 'POST',
         updateExternalRoute: 'POST',
@@ -59,8 +63,63 @@ class AdministrationController {
         redirect(action: 'routing')
     }
 
+    def addDirectInwardDialNumber = {
+        log.debug "addDirectInwardDialNumber with params [${params}]"
+        /*
+        def numberRoute = NumberRoute.get(params.id)
+        if(!numberRoute){
+            log.error "No number route found for [${params}]"
+            flash.errorMessage = message(code: 'directInwardDialNumber.notFound.message')
+            redirect(action: 'routing')
+            return
+        }
+        */
+        /*
+        if(!params.owner.id){
+            log.error "No owner was selected for direct message number add [${params}]"
+            flash.errorMessage = message(code: 'directInwardDialNumber.owner.notProvided.message')
+            redirect(action: 'routing')
+            return
+        }
+        */
+        //params.number = numberRoute.pattern
+        log.debug "Add number patter [${params.number}] to params"
+        
+        def directInwardDialNumber = directInwardDialNumberService.create(params)
+        if(directInwardDialNumber.hasErrors()) {
+            def model = routingModel()
+            model.newDirectInwardDialNumber = directInwardDialNumber
+            render(view: 'routing', model: model)
+        } else {
+            flash.successMessage = message(code: 'directInwardDialNumber.created.message')
+            redirect(action: 'routing')
+        }
+    }
+    
     def addDirectMessageNumber = {
+        log.debug "addDirectMessageNumber with params [${params}]"
+        /*
+        def numberRoute = NumberRoute.get(params.id)
+        if(!numberRoute){
+            log.error "No number route found for [${params}]"
+            flash.errorMessage = message(code: 'directMessageNumber.notFound.message')
+            redirect(action: 'routing')
+            return
+        }
+        */
+        /*
+        if(!params.owner.id){
+            log.error "No owner was selected for direct message number add [${params}]"
+            flash.errorMessage = message(code: 'directMessageNumber.owner.notProvided.message')
+            redirect(action: 'routing')
+            return
+        }
+        */
+        //params.number = numberRoute.pattern
+        log.debug "Add number patter [${params.number}] to params"
+        
         def directMessageNumber = directMessageNumberService.create(params)
+        
         if(directMessageNumber.hasErrors()) {
             def model = routingModel()
             model.newDirectMessageNumber = directMessageNumber
@@ -87,15 +146,18 @@ class AdministrationController {
     }
 
     def addInternalRoute = {
+        log.debug "addInternalRoute with params [${params}]"
         def route = new NumberRoute(params)
         route.type = NumberRoute.Type.INTERNAL
         route.organization = authenticatedUser.organization
 
         if(route.validate() && route.save()) {
+            log.debug "We've saved a new internal route"
             historyService.createdRoute(route)
             flash.successMessage = message(code: 'numberRoute.created.message', args: [route.pattern])
             redirect(action: 'routing')
         } else {
+            log.debug "addInternalRoute failed validation [${route.errors()}]"
             def model = routingModel()
             model.newRoute = route
             render(view: 'routing', model: model)
@@ -185,6 +247,19 @@ class AdministrationController {
         render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
     }
 
+    def deleteDirectInwardDialNumber = {
+        def directInwardDialNumber = DirectInwardDialNumber.get(params.id)
+        if(!directInwardDialNumber) {
+            flash.errorMessage = message(code: 'directInwardDialNumber.notFound.message')
+            redirect(action: 'routing')
+            return
+        }
+
+        directInwardDialNumberService.delete(directInwardDialNumber)
+        flash.successMessage = message(code: 'directInwardDialNumber.deleted.message')
+        redirect(action: 'routing')
+    }
+    
     def deleteDirectMessageNumber = {
         def directMessageNumber = DirectMessageNumber.get(params.id)
         if(!directMessageNumber) {
@@ -570,7 +645,34 @@ class AdministrationController {
         }
     }
 
+    def updateDirectInwardDialNumber = {
+        log.debug "updateDirectInwardDialNumber with params [${params}]"
+        def directInwardDialNumber = DirectInwardDialNumber.get(params.id)
+        if(!directInwardDialNumber) {
+            log.error "Couldn't find direct inward number [${params}]"
+            flash.errorMessage = message(code: 'directInwardDialNumber.notFound.message')
+            redirect(action: 'routing')
+            return
+        }
+
+        log.debug "Found did [${directInwardDialNumber.number}]"
+        
+        directInwardDialNumber = directInwardDialNumberService.update(directInwardDialNumber, params)
+        if(directInwardDialNumber.hasErrors()) {
+            log.error "failed to update direct inward number with error [${directInwardDialNumber.errors()}]"
+            def model = routingModel()
+            model.updatedDirectInwardDialNumber = directInwardDialNumber
+            render(view: 'routing', model: model)
+        } else {
+            flash.successMessage = message(code: 'directInwardDialNumber.updated.message')
+            redirect(action: 'routing')
+        }
+        
+        return
+    }
+    
     def updateDirectMessageNumber = {
+        log.debug "updateDirectMessageNumber with params [${params}]"
         def directMessageNumber = DirectMessageNumber.get(params.id)
         if(!directMessageNumber) {
             flash.errorMessage = message(code: 'directMessageNumber.notFound.message')
@@ -618,6 +720,7 @@ class AdministrationController {
     }
 
     def updateExternalRoute = {
+        log.debug "updateExternalRoute with params [${params}]"
         def route = NumberRoute.get(params.id)
         if(!route) {
             flash.errorMessage = message(code: 'numberRoute.notFound.message')
@@ -626,15 +729,17 @@ class AdministrationController {
         }
 
         if(authenticatedUser.organization != route.organization) {
+            log.error "Authorization denied for user [${params}]"
             redirect(controller: 'login', action: 'denied')
             return
         }
-
+        
         route.properties['destination', 'label'] = params
         if(route.validate() && route.save()) {
             flash.successMessage = message(code: 'numberRoute.updated.message')
             redirect(action: 'routing')
         } else {
+            log.error "Failed route update with errors [${route.errors()}]"
             def model = routingModel()
             model.updatedRoute = route
             render(view: 'routing', model: model)
@@ -827,17 +932,69 @@ class AdministrationController {
         def organization = authenticatedUser.organization
         def external = NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.EXTERNAL, [sort: 'pattern', order: 'asc'])
         def internal = NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.INTERNAL, [sort: 'pattern', order: 'asc'])
+        def directInwardDialNumbers = DirectInwardDialNumber.withCriteria {
+            owner {
+                eq('organization', organization)
+            }
+            order('number', 'asc')
+        }
+        
+        def externalDIDs = NumberRoute.findAllByOrganizationAndTypeAndDestination(organization, NumberRoute.Type.EXTERNAL, 'Direct Inward Dial', [sort: 'pattern', order: 'asc'])
+        
+        def filteredExternalDIDs = []
+        externalDIDs.each{ did ->
+            log.debug "Found external DID [${did.pattern}]"
+            def didMatch = directInwardDialNumbers.find{ extDID ->
+                if (extDID.number.toString() == did.pattern.toString()) {
+                    log.debug "Matched configured DID [${extDID.number}] to external DID [${did.pattern}]"
+                    return true
+                } else {
+                    log.debug "No match for configured DID [${extDID.number}] to external DID [${did.pattern}]"
+                    return false
+                }
+            }
+            if (!didMatch) {
+                log.debug "Adding direct inward dial number [${did.pattern}]"
+                filteredExternalDIDs.add(did)
+            }
+        }
+        
         def directMessageNumbers = DirectMessageNumber.withCriteria {
             owner {
                 eq('organization', organization)
             }
             order('number', 'asc')
         }
+        
+        def externalDMs = NumberRoute.findAllByOrganizationAndTypeAndDestination(organization, NumberRoute.Type.EXTERNAL, 'Direct Message', [sort: 'pattern', order: 'asc'])
+        
+        def filteredExternalDMs = []
+        externalDMs.each{ dm ->
+            log.debug "Found external DM [${dm.pattern}]"
+            def dmMatch = directMessageNumbers.find{ extDM ->
+                if (extDM.number.toString() == dm.pattern.toString()) {
+                    log.debug "Matched configured DM [${extDM.number}] to external DM [${dm.pattern}]"
+                    return true
+                } else {
+                    log.debug "No match for configured DM [${extDM.number}] to external DM [${dm.pattern}]"
+                    return false
+                }
+            }
+            if (!dmMatch) {
+                log.debug "Adding direct message number [${dm.pattern}]"
+                filteredExternalDMs.add(dm)
+            }
+        }
+        
         def destinations = applicationService.listApplications()
+        
         return [
             destinations: destinations,
             external: external,
+            externalDIDs: filteredExternalDIDs,
+            externalDMs: filteredExternalDMs,
             internal: internal,
+            directInwardDialNumbers: directInwardDialNumbers,
             directMessageNumbers: directMessageNumbers
         ]
     }

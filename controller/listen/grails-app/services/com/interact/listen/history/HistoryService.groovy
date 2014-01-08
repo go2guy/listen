@@ -141,6 +141,12 @@ class HistoryService {
               onUser: invitation.scheduledBy)
     }
 
+    void createdDirectInwardDialNumber(DirectInwardDialNumber number) {
+        write(action: Action.CREATED_DIRECT_INWARD_DIAL_NUMBER,
+              description: "Created direct inward dial number [${number.number}]",
+              onUser: number.owner)
+    }
+    
     void createdDirectMessageNumber(DirectMessageNumber number) {
         write(action: Action.CREATED_DIRECT_MESSAGE_NUMBER,
               description: "Created direct message number [${number.number}]",
@@ -200,6 +206,12 @@ class HistoryService {
               onUser: recording.conference.owner)
     }
 
+    void deletedDirectInwardDialNumber(def number) {
+        write(action: Action.DELETED_DIRECT_INWARD_DIAL_NUMBER,
+              description: "Deleted direct inward dial number [${number.number}]",
+              onUser: number.owner)
+    }
+    
     void deletedDirectMessageNumber(def number) {
         write(action: Action.DELETED_DIRECT_MESSAGE_NUMBER,
               description: "Deleted direct message number [${number.number}]",

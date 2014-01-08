@@ -17,6 +17,7 @@ tr.add td.col-button {
     padding-right: 5px;
     width: 26%;
 }
+
 .col-destination { width: 34%; }
 .col-label { width: 26%; }
 
@@ -27,6 +28,9 @@ tr.add td.col-button {
 
 #external .col-button { width: 14%; }
 #internal .col-button,
+#directInwardDial .col-button {
+    width: 7%;
+}
 #direct .col-button {
     width: 7%;
 }
@@ -48,7 +52,7 @@ tr.add td.col-button {
               <g:form controller="administration" action="updateExternalRoute" method="post">
                 <td class="col-pattern">${route?.pattern.encodeAsHTML()}</td>
                 <td class="col-destination"><listen:applicationSelect name="destination" value="${route.destination}"/></td>
-                <td class="col-label"><g:textField name="label" value="${fieldValue(bean: route, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}" class="${listen.validationClass(bean: route, field: 'label')}"/></td>
+                <td class="col-label"><g:textField name="label" value="${fieldValue(bean: route, field: 'label')}" placeholder="${g.message(code: 'page.administration.routing.label.placeholder')}" class="${listen.validationClass(bean: route, field: 'label')}"/></td>                
                 <td class="col-button">
                   <g:hiddenField name="id" value="${route.id}"/>
                   <g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/>
@@ -108,18 +112,62 @@ tr.add td.col-button {
     </g:if>
 
     <table>
-      <caption><g:message code="page.administration.routing.direct.caption"/></caption>
+      <caption><g:message code="page.administration.routing.directInwardDial.caption"/></caption>
       <tbody>
         <tr class="add highlighted">
-          <g:form controller="administration" action="addDirectMessageNumber" method="post">
-            <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: newDirectMessageNumber, field: 'number')}" placeholder="${g.message(code: 'page.administration.routing.direct.add.number.placeholder')}" class="${listen.validationClass(bean: newDirectMessageNumber, field: 'number')}"/></td>
-            <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${newDirectMessageNumber?.owner?.id}" class="${listen.validationClass(bean: newDirectMessageNumber, field: 'owner')}"/></td>
-            <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.direct.add.addButton')}"/>
+          <g:form controller="administration" action="addDirectInwardDialNumber" method="post">
+            <td class="col-pattern"><g:select name="number" optionKey="pattern" optionValue="pattern" from="${externalDIDs}" noSelection="${['':'-- Choose Number --']}" style="width: 206px" class="${listen.validationClass(bean: newDirectInwardDialNumber, field: 'number')}"/></td>
+            <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${newDirectInwardDialNumber?.owner?.id}" noSelection="${['':'-- Choose Owner --']}" class="${listen.validationClass(bean: newDirectInwardDialNumber, field: 'owner')}"/></td>
+            <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.directInwardDial.add.addButton')}"/>
           </g:form>
         </tr>
       </tbody>
     </table>
 
+    <g:if test="${directInwardDialNumbers.size() > 0}">
+    <table id="directInwardDial">
+      <thead>
+        <th class="col-pattern"><g:message code="page.administration.routing.directInwardDial.column.number"/></th>
+        <th class="col-owner"><g:message code="page.administration.routing.directInwardDial.column.owner"/></th>
+        <th class="col-button"></th>
+        <th class="col-button"></th>
+      </thead>
+      <tbody>
+        <g:each in="${directInwardDialNumbers}" var="directInwardDialNumber" status="i">
+          <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
+            <g:form controller="administration" action="updateDirectInwardDialNumber" method="post">
+              <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: directInwardDialNumber, field: 'number')}" disabled="true" class="${listen.validationClass(bean: directInwardDialNumber, field: 'number')}"/></td>
+              <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${directInwardDialNumber.owner.id}" class="${listen.validationClass(bean: directInwardDialNumber, field: 'owner')}"/></td>
+              <td class="col-button">
+                <g:hiddenField name="id" value="${directInwardDialNumber.id}"/>
+                <g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/>
+              </td>
+            </g:form>
+            <g:form controller="administration" action="deleteDirectInwardDialNumber" method="post">
+              <td class="col-button">
+                <g:hiddenField name="id" value="${directInwardDialNumber.id}"/>
+                <g:submitButton name="submit" value="${g.message(code: 'default.button.delete.label')}"/>
+              </td>
+            </g:form>
+          </tr>
+        </g:each>
+      </tbody>
+    </table>
+  </g:if>
+
+  <table>
+    <caption><g:message code="page.administration.routing.direct.caption"/></caption>
+    <tbody>
+        <tr class="add highlighted">
+          <g:form controller="administration" action="addDirectMessageNumber" method="post">
+            <td class="col-pattern"><g:select name="number" optionKey="pattern" optionValue="pattern" from="${externalDMs}" noSelection="${['':'-- Choose Number --']}" style="width: 206px" class="${listen.validationClass(bean: newDirectMessageNumber, field: 'number')}"/> </td>
+            <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${newDirectMessageNumber?.owner?.id}" noSelection="${['':'-- Choose Owner --']}" class="${listen.validationClass(bean: newDirectMessageNumber, field: 'owner')}"/></td>
+            <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.routing.direct.add.addButton')}"/>
+          </g:form>
+        </tr>
+    </tbody>
+  </table>
+    
     <g:if test="${directMessageNumbers.size() > 0}">
       <table id="direct">
         <thead>
@@ -132,7 +180,7 @@ tr.add td.col-button {
           <g:each in="${directMessageNumbers}" var="directMessageNumber" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
               <g:form controller="administration" action="updateDirectMessageNumber" method="post">
-                <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: directMessageNumber, field: 'number')}" class="${listen.validationClass(bean: directMessageNumber, field: 'number')}"/></td>
+                <td class="col-pattern"><g:textField name="number" value="${fieldValue(bean: directMessageNumber, field: 'number')}"  disabled="true" class="${listen.validationClass(bean: directMessageNumber, field: 'number')}"/></td>
                 <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${directMessageNumber.owner.id}" class="${listen.validationClass(bean: directMessageNumber, field: 'owner')}"/></td>
                 <td class="col-button">
                   <g:hiddenField name="id" value="${directMessageNumber.id}"/>
