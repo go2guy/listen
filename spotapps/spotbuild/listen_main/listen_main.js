@@ -4,8 +4,11 @@ function getAppName(appName, jsonObj) {
         application = application.toUpperCase();
         if (application == 'MAILBOX' || application == 'DIRECTMAILBOX')
             application = 'VOICEMAIL';
-        if (application == 'FINDMECONFIG')
+        else if (application == 'FINDMECONFIG')
             application = 'FINDME';
+        else if (application == 'DIRECTINWARDDIAL')
+            application = 'IPPBX';
+			
         if (application != 'DIRECTMESSAGE') {
             var licensed = getJsonVal(jsonObj, application);
             if (!licensed)
@@ -13,6 +16,26 @@ function getAppName(appName, jsonObj) {
         }
     }
     switch (appName) {
+        case "Attendant":
+            appName = "listen_autoAttendant";
+            break;
+        case "IP PBX":
+        case "Direct Inward Dial":
+            appName = "ippbx";
+            break;
+        case "Conferencing":
+            appName = "listen_conference";
+            break;
+        case "Voicemail":
+            appName = "listen_voicemail";
+            break;
+        case "Mailbox":
+        case "Direct Mailbox":
+            appName = "listen_mailbox";
+            break;
+		case "ACD":
+			appName = "listen_acd";
+			break;
         case "AUTO_DIAL":
             appName = "listen_autoDial";
             break;
@@ -28,19 +51,6 @@ function getAppName(appName, jsonObj) {
         case "MSG_LIGHT":
             appName = "msgLightCntrl";
             break;
-        case "Conferencing":
-            appName = "listen_conference";
-            break;
-        case "Mailbox":
-        case "Direct Mailbox":
-            appName = "listen_mailbox";
-            break;
-        case "Voicemail":
-            appName = "listen_voicemail";
-            break;
-        case "Attendant":
-            appName = "listen_autoAttendant";
-            break;
         case "Broadcast":
             appName = "broadcast";
             break;
@@ -49,9 +59,6 @@ function getAppName(appName, jsonObj) {
             break;
         case "After Hours":
             appName = "listen_afterHours";
-            break;
-        case "IP PBX":
-            appName = "ippbx";
             break;
         case "Direct Message":
             appName = "directMessage";
