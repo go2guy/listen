@@ -9,25 +9,28 @@ class AttendantTagLib {
 
     def promptFileService
     def springSecurityService
-
-    def promptSelect = { attrs ->
+    
+    // TODO fix hard-coded path
+    static final File storageLocation = new File('/interact/listen/artifacts/attendant')
+    
+    def attendantPromptSelect = { attrs ->
         def value = attrs.value
 
         def user = springSecurityService.getCurrentUser()
 
-        def prompts = promptFileService.listNames(user.organization.id)
+        def prompts = promptFileService.listNames(storageLocation, user.organization.id)
         out << '<select class="' + attrs.class + '">'
         out << '<option>-- No Prompt --</option>'
         prompts.each { prompt ->
             out << '<option' + (value && prompt == value ? ' selected="selected"' : '') + ">${prompt.encodeAsHTML()}</option>"
         }
-        out << '<option>Upload New Prompt...</option>'
+        out << '<option>-- Upload New Prompt --</option>'
         out << '</select>'
     }
 
-    def rawPromptSelect = { attrs ->
+    def rawAttendantPromptSelect = { attrs ->
         def user = springSecurityService.getCurrentUser()
-        def prompts = promptFileService.listNames(user.organization.id)
+        def prompts = promptFileService.listNames(storageLocation, user.organization.id)
         attrs.from = prompts
         out << g.select(attrs)
     }

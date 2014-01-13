@@ -22,6 +22,9 @@ class AttendantController {
     def promptFileService
     def promptOverrideService
 
+    // TODO fix hard-coded path
+    static final File storageLocation = new File('/interact/listen/artifacts/attendant')
+    
     def index = {
         redirect(action: 'menu')
     }
@@ -88,7 +91,7 @@ class AttendantController {
         }
 
         def user = authenticatedUser
-        promptFileService.save(file, user.organization.id)
+        promptFileService.save(storageLocation, file, user.organization.id)
 
         render('Success')
     }

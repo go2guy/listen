@@ -20,10 +20,10 @@ class RouteToAnACDAction extends Action {
             applicationName: 'ACD',
             skillId: skill.id,
             skillname: skill.skillname,
-            onHoldMsg: artifactsDirectory + '/acd/' + skill.id + '/onHoldMsg.wav',
-            onHoldMsgExtended: artifactsDirectory + '/acd/' + skill.id  + '/onHoldMsgExtended.wav',
-            onHoldMusic: artifactsDirectory + '/acd/' + skill.id  + '/onHoldMusic.wav',
-            connectMsg: artifactsDirectory + '/acd/' + skill.id  + '/connectMsg.wav'
+            onHoldMsg: artifactsDirectory + '/acd/' + skill.id + '/' + skill.onHoldMsg,
+            onHoldMsgExtended: artifactsDirectory + '/acd/' + skill.id  + '/' + skill.onHoldMsgExtended,
+            onHoldMusic: artifactsDirectory + '/acd/' + skill.id  + '/' + skill.onHoldMusic,
+            connectMsg: artifactsDirectory + '/acd/' + skill.id  + '/' + skill.connectMsg
         ]
 
         //Determine voicemail extension for the selected skill

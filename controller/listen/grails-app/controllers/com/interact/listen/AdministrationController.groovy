@@ -345,6 +345,10 @@ class AdministrationController {
         skill.skillname = params.skillname
         skill.organization = organization
         skill.description = params.description
+        skill.onHoldMsg = ''
+        skill.onHoldMsgExtended = ''
+        skill.onHoldMusic = ''
+        skill.connectMsg = ''
 
         if(skill.validate() && skill.save()) {
             historyService.createdSkill(skill)
@@ -389,7 +393,24 @@ class AdministrationController {
         // Do the simple part and update the skill
         skill.skillname = params.skillname
         skill.description = params.description
-        skill.save()
+        
+        skill.onHoldMsg = filterACDPrompts(params?.onHoldMsg)
+        log.debug "set onHoldMsg to [${skill.onHoldMsg}]"
+        
+        skill.onHoldMsgExtended = filterACDPrompts(params?.onHoldMsgExtended)
+        log.debug "set onHoldMsgExtended to [${skill.onHoldMsgExtended}]"
+        
+        skill.onHoldMusic = filterACDPrompts(params?.onHoldMusic)
+        log.debug "set onHoldMusic to [${skill.onHoldMusic}]"
+        
+        skill.connectMsg = filterACDPrompts(params?.connectMsg)
+        log.debug "set connectMsg to [${skill.connectMsg}]"
+        
+        if(skill.validate() && skill.save()) {
+            log.debug "We've saved the changes to the skill record"
+        } else {
+            log.error "We've failed to validate skill prior to saving: [${skill.errors()}]"
+        }
         
         // We're going to make a list of our skills so we can work with it easier
         def userIds = []
@@ -445,6 +466,17 @@ class AdministrationController {
         
         def model = skillModel()
         render(view: 'skills', model: model)
+    }
+    
+    private filterACDPrompts( String promptName ) {
+        if(promptName) {
+            if(promptName == "-- No Prompt --")
+                return ''
+            else
+                return promptName
+        } else {
+            return ''
+        }
     }
     
     def deleteSkill = {

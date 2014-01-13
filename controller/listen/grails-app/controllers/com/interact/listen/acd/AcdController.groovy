@@ -6,7 +6,7 @@ import com.interact.listen.acd.Skill
 import com.interact.listen.PhoneNumber
 import com.interact.listen.history.*
 import org.joda.time.DateTime
-
+import com.interact.listen.util.FileTypeDetector
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['ROLE_ACD_USER'])
@@ -19,9 +19,13 @@ class AcdController {
       callQueue: 'GET',
       pollQueue: 'GET'
     ]
-
+    
+    def promptFileService
     def historyService
-
+    
+    // TODO fix hard-coded path
+    static final File storageLocation = new File('/interact/listen/artifacts/acd')
+    
     def index = {
       redirect(action: 'status')
     }
@@ -135,6 +139,26 @@ class AcdController {
         }
 
         redirect(action: 'status')
+    }
+    
+    def uploadPrompt = {
+        def file = request.getFile('uploadFile')
+        if(!file) {
+            render('Please select a file to upload')
+            return
+        }
+
+        def detector = new FileTypeDetector()
+        def detectedType = detector.detectContentType(file.inputStream, file.originalFilename)
+        if(detectedType != 'audio/x-wav') {
+            render('File must be a wav file')
+            return
+        }
+
+        def user = authenticatedUser
+        promptFileService.save(storageLocation, file, user.organization.id)
+
+        render('Success')
     }
 
 }

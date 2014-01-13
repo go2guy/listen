@@ -693,7 +693,7 @@ $(document).ready(function() {
     });
     $('.prompt-select').change(function(e) {
         var sel = $(e.target);
-        if(sel.val() === 'Upload New Prompt...') {
+        if(sel.val() === '-- Upload New Prompt --') {
 
             var dialog = $('#upload-prompt-dialog');
 

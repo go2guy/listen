@@ -10,7 +10,7 @@
   <div class="hideable">
     <label>
       <span class="label-text">Options Prompt</span>
-      <listen:promptSelect class="prompt-select options-prompt" value="${menu?.optionsPrompt}"/>
+      <listen:attendantPromptSelect class="prompt-select options-prompt" value="${menu?.optionsPrompt}"/>
     </label>
 
     <table>

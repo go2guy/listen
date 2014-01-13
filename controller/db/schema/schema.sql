@@ -696,7 +696,11 @@ CREATE TABLE `skill` (
   `version` bigint(20) NOT NULL,
   `skillname` varchar(32) NOT NULL,
   `organization_id` bigint(20) NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,  
+  `on_hold_msg` varchar(255) NOT NULL,
+  `on_hold_msg_extended` varchar(255) NOT NULL,
+  `on_hold_music` varchar(255) NOT NULL,
+  `connect_msg` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `skillname` (`skillname`,`organization_id`),
   KEY `FK7C7614E356D05B56` (`organization_id`),
@@ -733,8 +737,8 @@ CREATE TABLE `acd_call` (
   `call_start` datetime,
   `call_end` datetime,
   PRIMARY KEY (`id`),
-  CONSTRAINT `acd_call_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
-  CONSTRAINT `acd_call_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+  CONSTRAINT `acd_call_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `acd_call_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `acd_call_history`;

@@ -8,6 +8,9 @@ class PromptOverrideService {
     def promptFileService
     def springSecurityService
 
+    // TODO fix hard-coded path
+    static final File storageLocation = new File('/interact/listen/artifacts/attendant')
+    
     PromptOverride create(def params, MultipartFile file = null) {
 
         // TODO using the user organization is a bit inconsistent, since the override
@@ -26,7 +29,7 @@ class PromptOverrideService {
                 promptOverride.optionsPrompt = file.originalFilename
                 promptOverride.errors.rejectValue('optionsPrompt', 'promptOverride.optionsPrompt.must.be.wav')
             } else {
-                def savedFile = promptFileService.save(file, organization.id)
+                def savedFile = promptFileService.save(storageLocation, file, organization.id)
                 promptOverride.optionsPrompt = file.originalFilename
             }
         }

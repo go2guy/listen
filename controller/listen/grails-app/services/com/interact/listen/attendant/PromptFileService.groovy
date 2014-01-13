@@ -4,11 +4,8 @@ import org.springframework.web.multipart.MultipartFile
 
 class PromptFileService {
     static transactional = false
-
-    // TODO fix hard-coded path
-    static final File storage = new File('/interact/listen/artifacts/attendant')
     
-    File save(MultipartFile prompt, def organizationId) {
+    File save(File storage, MultipartFile prompt, def organizationId) {
         def dir = new File(storage, (String)organizationId)
         if(!dir.exists() && !dir.mkdirs()) {
             throw new FileNotFoundException('Could not use organization-specific prompt storage directory')
@@ -25,8 +22,8 @@ class PromptFileService {
         return destination
     }
 
-    def listNames(def organizationId) {
-        def dir = new File(storage, (String)organizationId)
-        return dir.listFiles().collect { it.name }
+    def listNames(def storageLocation, def organizationId) {
+        def dir = new File(storageLocation, (String)organizationId)
+        return dir.listFiles().collect { it.name }.sort()
     }
 }

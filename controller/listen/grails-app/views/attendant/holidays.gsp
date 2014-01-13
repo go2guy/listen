@@ -51,7 +51,7 @@ fieldset.vertical .or-separator {
 
         <label for="optionsPrompt" class="or-option">
           <g:message code="page.attendant.holidays.select.prompt.label"/>
-          <listen:rawPromptSelect name="optionsPrompt" value="${newPromptOverride?.optionsPrompt}"/>
+          <listen:rawAttendantPromptSelect name="optionsPrompt" value="${newPromptOverride?.optionsPrompt}"/>
         </label>
 
         <div class="or-separator"><g:message code="page.attendant.holidays.or.separator"/></div>

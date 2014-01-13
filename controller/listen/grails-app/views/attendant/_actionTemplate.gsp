@@ -6,7 +6,7 @@
     <g:if test="${type == 'default'}">Other Input</g:if>
     <g:if test="${type == 'timeout'}">Timeout (5s)</g:if>
   </td>
-  <td><listen:promptSelect class="prompt-select" value="${action?.promptBefore}"/></td>
+  <td><listen:attendantPromptSelect class="prompt-select" value="${action?.promptBefore}"/></td>
   <td><listen:actionSelect action="${action}"/></td>
   <td>
     <listen:attendantApplicationSelect action="${action}"/>

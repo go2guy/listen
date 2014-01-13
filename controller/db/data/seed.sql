@@ -90,7 +90,7 @@ INSERT INTO `voicemail_preferences` VALUES (1,1,'brian.johnston@newnet.com','',
 UNLOCK TABLES;
 
 LOCK TABLES `skill` WRITE;
-INSERT INTO `skill` VALUES (1,0,'Tech',1,'Technical Support'),(2,0,'Finance',1,'Finance'),(3,0,'Human Resources',1,'Human Resources');
+INSERT INTO `skill` VALUES (1,0,'Tech',1,'Technical Support','','','',''),(2,0,'Finance',1,'Finance','','','',''),(3,0,'Human Resources',1,'Human Resources','','','','');
 UNLOCK TABLES;
 
 LOCK TABLES `user_skill` WRITE;

@@ -7,6 +7,10 @@ class Skill {
     String skillname
     Organization organization
     String description
+    String onHoldMsg
+    String onHoldMsgExtended
+    String onHoldMusic
+    String connectMsg
     Integer userCount = 0
     Integer menuCount = 0
     
