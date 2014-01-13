@@ -29,8 +29,8 @@ class AcdCall
     User user;
     DateTime callStart;
     DateTime callEnd;
-
     DateTime lastModified;
+    boolean onHold = false;
 
     /**
      * Executed prior to an update.
@@ -46,6 +46,7 @@ class AcdCall
     def beforeInsert()
     {
         this.setEnqueueTime(new DateTime());
+        this.setLastModified(DateTime.now());
     }
 }
 

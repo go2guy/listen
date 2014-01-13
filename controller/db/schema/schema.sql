@@ -736,6 +736,7 @@ CREATE TABLE `acd_call` (
   `user_id` bigint(20),
   `call_start` datetime,
   `call_end` datetime,
+  `on_hold` bit(1),
   PRIMARY KEY (`id`),
   CONSTRAINT `acd_call_skill_fk` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `acd_call_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

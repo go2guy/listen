@@ -484,7 +484,7 @@ $(document).ready(function() {
       dataType: 'json',
       cache: false,
       success: function(data) {
-        if ( data.count != displayedCount.text() ) {
+        if (data && data.count != displayedCount.text() ) {
           displayedCount.text(data.count);
         }
       }

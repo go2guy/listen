@@ -37,7 +37,7 @@ class InboxMessageService {
       def count = ""
 
       UserSkill.findAllByUser(user).each() { userSkill ->
-        log.debug "InboxMessageService.newAcdMessageCount(): Getting new voicemail messages for user[${AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname).username}]"
+//        log.debug "InboxMessageService.newAcdMessageCount(): Getting new voicemail messages for user[${AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname).username}]"
         count += "(" + InboxMessage.countByOwnerAndIsNew(AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname), true) + ")"
       }
 

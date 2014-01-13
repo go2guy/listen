@@ -72,7 +72,7 @@
       <table id="keywords" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
-            <th><span><a href="#" onclick='$("#orderBy").val("ani");'>Ani</a></span></th>
+            <th><span><a href="#" onclick='$("#orderBy").val("ani");'>Caller</a></span></th>
             <th><span><a href="#" onclick='$("#orderBy").val("skill");'>Skill</a></span></th>
             <th><span><a href="#" onclick='$("#orderBy").val("enqueueTime");'>Wait Time</a></span></th>
           </tr>

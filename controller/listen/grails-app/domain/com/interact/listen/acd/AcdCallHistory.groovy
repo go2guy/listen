@@ -38,7 +38,10 @@ class AcdCallHistory
         this.enqueueTime = callRecord.enqueueTime;
         this.callStatus = callRecord.callStatus;
         this.ivr = callRecord.ivr;
-        this.userId = callRecord.userId;
+        if(callRecord.userId != null)
+        {
+            this.userId = callRecord.userId;
+        }
         this.lastModified = callRecord.lastModified;
         this.callStart = callRecord.callStart;
         this.callEnd = callRecord.callEnd;

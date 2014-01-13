@@ -41,7 +41,17 @@ class AcdService
      */
     def listWaitingCalls()
     {
-        def waitingList = AcdCall.findAllByCallStatus(AcdCallStatus.WAITING, [sort: 'enqueueTime', order: 'asc']);
+        def waitingList;
+
+        if(getIvr() != null)
+        {
+            waitingList = AcdCall.findAllByCallStatusAndIvr(AcdCallStatus.WAITING, getIvr(),
+                    [sort: 'enqueueTime', order: 'asc']);
+        }
+        else
+        {
+            waitingList = AcdCall.findAllByCallStatus(AcdCallStatus.WAITING, [sort: 'enqueueTime', order: 'asc']);
+        }
 
         return waitingList;
     }
@@ -53,10 +63,18 @@ class AcdService
      */
     def listAllCalls()
     {
-        // def callList = AcdCall.list();
+        def returnVal;
 
-        // return callList;
-      return AcdCall.list()
+        if(getIvr() != null)
+        {
+            returnVal = AcdCall.findAllByIvr(getIvr());
+        }
+        else
+        {
+            returnVal = AcdCall.list();
+        }
+
+        return returnVal;
     }
 
     /**
@@ -222,7 +240,7 @@ class AcdService
                 try
                 {
                     spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
-                            agent.phoneNumbers.asList().get(0).number);
+                            agent.acdUserStatus.contactNumber.number);
                 }
                 catch(SpotCommunicationException sce)
                 {
@@ -563,6 +581,23 @@ class AcdService
 
         //Delete from the queue
         call.delete();
+    }
+
+    /**
+     * Return the ivr for this controller
+     * @return The Ivr.
+     */
+    private String getIvr()
+    {
+        String returnVal = null;
+
+        if(grailsApplication.config.com.interact.listen.ivr != null &&
+                !grailsApplication.config.com.interact.listen.ivr.isEmpty())
+        {
+            returnVal = grailsApplication.config.com.interact.listen.ivr;
+        }
+
+        return returnVal;
     }
 
     /**

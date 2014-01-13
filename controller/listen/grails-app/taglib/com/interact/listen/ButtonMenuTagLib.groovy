@@ -38,6 +38,7 @@ class ButtonMenuTagLib {
                 out << g.link(controller: 'acd', action: 'status') { g.message(code: 'button.menu.acd.status') + '<span id="new-acd-message-count">(0)</span>' }
                 out << '</li>'
                 button(attrs.button == 'callQueue', 'acd', 'callQueue', 'button.menu.acd.callQueue')
+                button(attrs.button == 'currentCall', 'acd', 'currentCall', 'button.menu.acd.currentCall')
                 out << '</ul>'
 
                 break

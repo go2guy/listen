@@ -172,6 +172,26 @@ class SpotCommunicationService {
         buildAndSendRequest(importedValue);
     }
 
+    /**
+     * Send request to SPOT to take a caller off hold.
+     *
+     * @param sessionId The sessionId of the call.
+     * @throws IOException If an IOException.
+     * @throws SpotCommunicationException If
+     */
+    def sendAcdOffHoldEvent(def sessionId) throws IOException, SpotCommunicationException
+    {
+        if(log.isInfoEnabled())
+        {
+            log.info("Sending Acd OffHold Event, sessionId[" + sessionId + "]");
+        }
+
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        importedValue.put("application", "ACD");
+        importedValue.put("action", "OFF_HOLD");
+        importedValue.put("sessionId", sessionId);
+        buildAndSendRequest(importedValue);
+    }
 
 
     private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {

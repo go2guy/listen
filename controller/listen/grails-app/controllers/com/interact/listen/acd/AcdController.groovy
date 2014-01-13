@@ -5,6 +5,7 @@ import com.interact.listen.acd.AcdUserStatus
 import com.interact.listen.acd.Skill
 import com.interact.listen.PhoneNumber
 import com.interact.listen.history.*
+import grails.converters.JSON
 import org.joda.time.DateTime
 import com.interact.listen.util.FileTypeDetector
 import grails.plugin.springsecurity.annotation.Secured
@@ -22,7 +23,8 @@ class AcdController {
     
     def promptFileService
     def historyService
-    
+    def spotCommunicationService
+
     // TODO fix hard-coded path
     static final File storageLocation = new File('/interact/listen/artifacts/acd')
     
@@ -161,4 +163,92 @@ class AcdController {
         render('Success')
     }
 
+    def currentCall =
+    {
+        def call = AcdCall.findAllByUser(authenticatedUser)
+        render(view: 'currentCall', model: [calls: call])
+    }
+
+    def polledCalls =
+    {
+        def calls = AcdCall.findAllByUser(authenticatedUser)
+        render(contentType: 'application/json') {
+            calls
+        }
+    }
+
+    def callerOffHold =
+    {
+        log.debug "AcdController.callerOffHold: params[${params}]"
+
+        boolean success = false;
+
+        AcdCall thisCall = AcdCall.get(params.id);
+
+        if(thisCall)
+        {
+            try
+            {
+                spotCommunicationService.sendAcdOffHoldEvent(thisCall.sessionId);
+                success = true;
+            }
+            catch(Exception e)
+            {
+                log.error("Exception sending off hold event: " + e);
+            }
+        }
+
+        if(success)
+        {
+            thisCall.onHold = false;
+            thisCall.save(flush: true);
+            flash.successMessage = message(code: 'page.acd.call.offHold.success.message');
+        }
+        else
+        {
+            flash.errorMessage = message(code: 'page.acd.call.offHold.fail.message');
+        }
+
+        render(contentType: 'application/json')
+        {
+            thisCall
+        }
+    }
+
+    def callerOnHold =
+    {
+        boolean success = false;
+
+        log.debug "AcdController.callerOnHold: params[${params}]"
+        AcdCall thisCall = AcdCall.get(params.id);
+
+        if(thisCall)
+        {
+            try
+            {
+                spotCommunicationService.sendAcdOnHoldEvent(thisCall.sessionId);
+                success = true;
+            }
+            catch(Exception e)
+            {
+                log.error("Exception sending on hold event: " + e);
+            }
+        }
+
+        if(success)
+        {
+            thisCall.onHold = true;
+            thisCall.save(flush: true);
+            flash.successMessage = message(code: 'page.acd.call.hold.success.message');
+        }
+        else
+        {
+            flash.errorMessage = message(code: 'page.acd.call.hold.fail.message');
+        }
+
+        render(contentType: 'application/json')
+        {
+            thisCall
+        }
+    }
 }

@@ -171,6 +171,7 @@ grails {
 grails.mail.default.from = 'listen@newnet.com'
 
 // Listen configuration
+com.interact.listen.ivr = ''
 com.interact.listen.spotUrl = 'http:/localhost/spot'
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
 com.interact.listen.conferencing.defaultPinLength = 6
@@ -207,3 +208,4 @@ environments {
     grails.converters.default.pretty.print = true
   }
 }
+
