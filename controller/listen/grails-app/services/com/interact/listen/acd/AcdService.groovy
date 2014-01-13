@@ -337,7 +337,7 @@ class AcdService
             }
             else
             {
-                log.error("Voicemail Box not configured for skill[" + theCall.skill + "]");
+                log.error("Voicemail box not configured for skill[" + theCall.skill + "]");
                 throw new ListenAcdException("Invalid voicmailbox for skill[" + theCall.skill + "]");
             }
         }
@@ -345,6 +345,7 @@ class AcdService
         return returnVal;
     }
 
+    
     /**
      * Set a call to voicemail status.
      *
@@ -576,17 +577,48 @@ class AcdService
     }
 
     /**
+     * Given an Acd Skill and a User, set the user to be the voicemailbox for the skill
+     * @param skill: The associated skill
+     * @param user: The associated user
+     */
+    public static void setVoicemailUserBySkillname(Skill skill, User user) {
+      if((skill) && (user)) {
+          LogFactory.getLog(this).debug("Set vm user [${user.realName}] for skill [${skill.skillname}]")
+          def currUser = getVoicemailUserBySkillname(skill.skillname)
+          if (currUser) {
+              LogFactory.getLog(this).debug("Currently user [${currUser.realName}] is associated with skill [${skill.skillname}]")
+              def currUserAcdUserStatus = AcdUserStatus.findByOwner(currUser)
+              if(currUserAcdUserStatus) {
+                  currUserAcdUserStatus.makeUnavailable()
+              }
+          }
+          def newUserAcdUserStatus = AcdUserStatus.findByOwner(user)
+          if(newUserAcdUserStatus) {
+              LogFactory.getLog(this).debug("Setting user [${user.realName}] as vm box for skill [${skill.skillname}]")
+              newUserAcdUserStatus.makeVoicemailBox()
+          }
+          // rebuild our internal has map
+          populateVoicemailUsers()
+      } else {
+          LogFactory.getLog(this).error("Set voice mail user by skill received invalid input")
+      }
+      
+      return 
+    }
+    
+    /**
      * Populates hash map associating skills with their respective
      * voicemail user.
      */
     public static void populateVoicemailUsers() {
-      Skill.findAll().each() { skill ->
+        skillVoicemailUsers = [:]
+        Skill.findAll().each() { skill ->
         UserSkill.findAllBySkill(skill).find { userSkill ->
-          if ( userSkill.user.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox ) {
-            skillVoicemailUsers.put(skill.skillname, userSkill.user)
-            return true
-          }
-          return false
+            if ( userSkill.user.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox ) {
+                skillVoicemailUsers.put(skill.skillname, userSkill.user)
+                return true
+            }
+            return false
         }
       }
     }

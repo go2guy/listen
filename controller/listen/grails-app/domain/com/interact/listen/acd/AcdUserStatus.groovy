@@ -36,6 +36,18 @@ class AcdUserStatus
         }
     }
 
+    def makeAvailable() {
+        this.acdQueueStatus = AcdQueueStatus.Available
+    }
+
+    def makeUnavailable() {
+        this.acdQueueStatus = AcdQueueStatus.Unavailable
+    }
+
+    def makeVoicemailBox() {
+        this.acdQueueStatus = AcdQueueStatus.VoicemailBox
+    }
+    
     def toggleStatus() {
         if (this.acdQueueStatus == AcdQueueStatus.Unavailable)
             this.acdQueueStatus = AcdQueueStatus.Available

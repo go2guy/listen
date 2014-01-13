@@ -375,8 +375,18 @@ class AdministrationController {
         
         def orgUsers = User.findAllByOrganizationAndEnabled(organization, true, [sort: 'realName', order: 'asc'])
         def skillUsers = UserSkill.findAllBySkill(skill)
+        def testUsers = []
+        skillUsers.each{skilluser ->
+            log.debug "User [${skilluser.user}][${skilluser.user.realName}] [${skilluser.user.id}] has skill [${skilluser.skill.skillname}]"
+            testUsers << skilluser.user
+        }
         
-        render(view: 'editSkill', model: [skill: skill, orgUsers: orgUsers, skillUsers: skillUsers] )
+        def vmUser = AcdService.getVoicemailUserBySkillname(skill.skillname)
+        if(vmUser) {
+            log.debug "Skill [${skill.skillname}] is assigned to user [${vmUser.realName}] for voicemail"
+        }
+        
+        render(view: 'editSkill', model: [skill: skill, orgUsers: orgUsers, skillUsers: skillUsers, vmUser: vmUser, testUsers: testUsers] )
     }
 
     def updateSkill = {
@@ -458,6 +468,17 @@ class AdministrationController {
                 historyService.addedUserSkill(userskill)
             } else {
                 log.error "Failed to add skill [${skill.skillname}] to user [${userskill.user.username}]"
+            }
+        }
+        
+        if(params.vmUserId) {
+            
+            def vmUser = User.findById(params.vmUserId.toInteger())
+            if (vmUser) {
+                log.debug "We have vmUserId of [${params.vmUserId}] for user [${vmUser.username}]"
+                AcdService.setVoicemailUserBySkillname(skill, vmUser)
+            } else {
+                log.error "vmUserId [${params.vmUserId}] is invalid!"
             }
         }
         

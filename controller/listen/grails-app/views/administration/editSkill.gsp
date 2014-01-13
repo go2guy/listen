@@ -55,9 +55,16 @@
                 <td><g:message code="page.administration.acd.skills.column.users"/></td>
             </tr>
             <tr class="add highlighted">
-                <td><g:select id="userIds" name="userIds" multiple="multiple" optionKey="id" optionValue="realName" from="${orgUsers}" value="${skillUsers.user}"/></td>
+                <td><g:select id="userIds" name="userIds" multiple="multiple" optionKey="id" optionValue="realName" from="${orgUsers}" value="${skillUsers?.user}"/></td>
             </tr>
-            
+
+            <tr>
+                <td><g:message code="page.administration.acd.skills.column.voiceMailUser"/></td>
+            </tr>
+            <tr class="add highlighted">
+                <td><g:select id="vmUserId" name="vmUserId" optionKey="id" optionValue="realName" from="${skillUsers?.user}" value="${vmUser?.id}" noSelection="${['':'-- Choose Account --']}" /></td>
+            </tr>
+        
             <tr>
                 <td><g:message code="page.administration.acd.skills.promptName.onHoldMsg"/></td>
             </tr>
