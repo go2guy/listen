@@ -24,6 +24,6 @@ class PromptFileService {
 
     def listNames(def storageLocation, def organizationId) {
         def dir = new File(storageLocation, (String)organizationId)
-        return dir.listFiles().collect { it.name }.sort()
+        return dir.listFiles().collect { it.name }.sort(java.text.Collator.instance)
     }
 }
