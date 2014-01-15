@@ -1,10 +1,11 @@
-import static com.interact.listen.FilterUtil.*
+import com.interact.listen.FilterUtil
+import com.interact.listen.FilterUtil.*
 
 class RequestInformationFilters {
     def filters = {
         requestInformation(uri: '/**') {
             before = {
-                if(shouldLog(controllerName, actionName)) {
+                if(new FilterUtil().shouldLog(controllerName, actionName)) {
                     log.debug "Request Details:"
 
                     log.debug "  Params organization context  [${params.organizationContext}]"
