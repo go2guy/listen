@@ -52,7 +52,8 @@ class AcdCleanupJob
                 {
                     log.error("AcdCall[" + thisCall.id + "] queued beyond the maximum allowed time!");
                     //Send them to voicemail
-                    acdService.acdCallVoicemail(thisCall);
+//                    acdService.acdCallVoicemail(thisCall);
+                    //Not doing this now, need to revisit when we have a status transaction with ivr
                     continue;
                 }
 

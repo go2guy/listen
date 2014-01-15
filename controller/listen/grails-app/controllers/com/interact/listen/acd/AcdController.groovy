@@ -343,4 +343,38 @@ class AcdController {
             json
         }
     }
+
+    def disconnectCaller =
+        {
+            boolean success = false;
+
+            if(log.isDebugEnabled())
+            {
+                log.debug "AcdController.disconnectCaller: params[${params}]"
+            }
+
+            AcdCall thisCall = AcdCall.get(params.id);
+
+            if(thisCall)
+            {
+                try
+                {
+                    acdService.disconnectCall(thisCall);
+                    success = true;
+                }
+                catch(Exception e)
+                {
+                    log.error("Exception sending disconnect event: " + e);
+                }
+            }
+
+            def json = [:]
+            json.success = success.toString();
+
+            log.debug(json);
+
+            render(contentType: 'application/json') {
+                json
+            }
+        }
 }

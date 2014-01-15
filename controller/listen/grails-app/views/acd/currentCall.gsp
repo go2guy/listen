@@ -46,8 +46,9 @@
                         <th width=10%>On Hold</th>
                         <th width=25%>Caller</th>
                         <th width=15%>Skill</th>
-                        <th id="transferHeader" width=10%></th>
-                        <th width=40%></th>
+                        <th id="transferHeader" width=7%></th>
+                        <th id="disconnectHeader" width=7%></th>
+                        <th width=41%></th>
 
                     </tr>
                 </thead>
@@ -62,10 +63,15 @@
                                 </td>
                                 <td class="caller" width=25%>${thisCall.ani}</td>
                                 <td class="callerSkill" width=15%>${thisCall.skill.description}</td>
-                                <td class="transfer-button">
+                                <td class="transfer-button"  width=7%>
                                     <button type="button" class="transferButton" id="transferButton"
                                             value="${thisCall.id}"
                                             onclick="transferClicked(this, this.value)">Transfer</button>
+                                </td>
+                                <td class="disconnect-button">
+                                    <button type="button" class="disconnectButton" id="disconnectButton"
+                                            value="${thisCall.id}"
+                                            onclick="disconnectClicked(this, this.value)">Disconnect</button>
                                 </td>
                                 <td class="transfer-dropdown hidden">
                                     <div id="transferDropdownDiv">
@@ -93,9 +99,14 @@
         </td>
         <td class="caller" width="25%"></td>
         <td class="callerSkill" width=15%></td>
-        <td class="transfer-button">
+        <td class="transfer-button" width=7%>
             <button type="button" class="transferButton" id="transferButton" value=""
                     onclick="transferClicked(this, this.value)">Transfer</button>
+        </td>
+        <td class="disconnect-button" >
+            <button type="button" class="disconnectButton" id="disconnectButton"
+                    value=""
+                    onclick="disconnectClicked(this, this.value)">Disconnect</button>
         </td>
         <td class="transfer-dropdown hidden">
             <div id="transferDropdownDiv">
@@ -113,6 +124,7 @@
 
     function transferClicked(e, callId) {
         $('.transfer-button').addClass('hidden');
+        $('.disconnect-button').addClass('hidden');
         $('#transferHeader')[0].innerHTML = "Transfer";
 
         $.ajax({
@@ -162,6 +174,7 @@
                 {
                     listen.showErrorMessage('Unable to transfer call.')
                     $('.transfer-button').removeClass('hidden');
+                    $('.disconnect-button').removeClass('hidden');
                     $('.transfer-dropdown').addClass('hidden');
                     $('#transferHeader')[0].innerHTML = "";
                 }
@@ -172,10 +185,40 @@
     }
 
     function cancelTransferClicked(e) {
-        alert("Cancel Transfer?");
         $('.transfer-button').removeClass('hidden');
+        $('.disconnect-button').removeClass('hidden');
         $('.transfer-dropdown').addClass('hidden');
         $('#transferHeader')[0].innerHTML = "";
+        return true;
+    }
+
+    function disconnectClicked(e) {
+        alert("Disconnect Call?");
+        var callId = $('#hiddenCallId')[0].value;
+
+        $.ajax({
+            url: '${createLink(action: 'disconnectCaller')}?id=' + callId,
+            dataType: 'json',
+            cache: false,
+            success: function(data)
+            {
+                if(data && data.success == "true")
+                {
+                    listen.showSuccessMessage('Call disconnected.')
+//                    $('.transfer-button').removeClass('hidden');
+                    $('.transfer-dropdown').addClass('hidden');
+                    $('#transferHeader')[0].innerHTML = "";
+                }
+                else
+                {
+                    listen.showErrorMessage('Unable to disconnect call.')
+                    $('.transfer-button').removeClass('hidden');
+                    $('.transfer-dropdown').addClass('hidden');
+                    $('#transferHeader')[0].innerHTML = "";
+                }
+            }
+        });
+
         return true;
     }
 
@@ -304,6 +347,8 @@
             }
 
             $('.transferButton', row)[0].value = call.id;
+            $('.disconnectButton', row)[0].value = call.id;
+            $('.transfer-button').removeClass('hidden');
 
             return;
         },

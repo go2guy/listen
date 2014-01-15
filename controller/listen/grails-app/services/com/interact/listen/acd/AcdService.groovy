@@ -143,8 +143,15 @@ class AcdService
             eq("skill", requestedSkill)
             user {
                 acdUserStatus {
-                    eq("acdQueueStatus", AcdQueueStatus.Available)
                     eq("onACall", false)
+                    'in'("acdQueueStatus",[AcdQueueStatus.Available, AcdQueueStatus.VoicemailBox])
+
+/*
+                    eq("acdQueueStatus", AcdQueueStatus.Available)
+                    eq("acdQueueStatus", AcdQueueStatus.VoicemailBox)
+*/
+
+                    order("acdQueueStatus", "asc")
                 }
             }
         }
@@ -279,41 +286,69 @@ class AcdService
             log.debug("Agent to connect to: " + agent.realName);
         }
 
-        //Set agent onacall to true
-        agent.acdUserStatus.onACall = true;
-        agent.save(flush: true);
-
-        boolean sessionExistsOnIvr = true;
-
-        //Send request to ivr
-        try
+        if(agent.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox)
         {
-            spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
-                    agent.acdUserStatus.contactNumber.number);
-        }
-        catch(SpotCommunicationException sce)
-        {
-            //for now, we are going to assume this means that this session does not exist any longer
-            sessionExistsOnIvr = false;
-        }
-
-        if(sessionExistsOnIvr)
-        {
-            //Set call status to "ivrconnectRequested"
-            thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
-            thisCall.setUser(agent);
-            thisCall.save(flush: true);
-
-            //Now we just have to wait for the IVR to respond that it was connected
+            //Connecting to voicemail, use the voicemail logic
+            acdCallVoicemailPrivate(thisCall, agent.acdUserStatus.contactNumber.number);
         }
         else
         {
-            //Free up the agent
-            freeAgent(agent);
+            boolean sessionExistsOnIvr = true;
 
-            //Delete call from queue. Leave status since we don't really know what happened.
-            removeCall(thisCall, null);
+            //Set agent onacall to true
+            agent.acdUserStatus.onACall = true;
+            agent.save(flush: true);
+
+
+            //Send request to ivr
+            try
+            {
+                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
+                        agent.acdUserStatus.contactNumber.number);
+            }
+            catch(SpotCommunicationException sce)
+            {
+                //for now, we are going to assume this means that this session does not exist any longer
+                sessionExistsOnIvr = false;
+            }
+
+            if(sessionExistsOnIvr)
+            {
+                //Set call status to "ivrconnectRequested"
+                thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
+                thisCall.setUser(agent);
+                thisCall.save(flush: true);
+
+                //Now we just have to wait for the IVR to respond that it was connected
+            }
+            else
+            {
+                //Free up the agent
+                freeAgent(agent);
+
+                //Delete call from queue. Leave status since we don't really know what happened.
+                removeCall(thisCall, null);
+            }
         }
+    }
+
+    public void disconnectCall(AcdCall thisCall)
+    {
+        //Send request to ivr
+        try
+        {
+            spotCommunicationService.sendAcdDisconnectEvent(thisCall.sessionId);
+        }
+        catch(SpotCommunicationException sce)
+        {
+            log.error("Exception disconnecting call: " + sce, sce);
+        }
+
+        //Free up the agent
+        freeAgent(thisCall.user);
+
+        //Delete call from queue. Leave status since we don't really know what happened.
+        removeCall(thisCall, null);
     }
 
     public int getWaitingMax()

@@ -129,6 +129,27 @@ class SpotCommunicationService {
     }
 
     /**
+     * Send request to SPOT to disconnect a caller.
+     *
+     * @param sessionId The sessionId of the call.
+     * @throws IOException If an IOException.
+     * @throws SpotCommunicationException If
+     */
+    def sendAcdDisconnectEvent(def sessionId) throws IOException, SpotCommunicationException
+    {
+        if(log.isInfoEnabled())
+        {
+            log.info("Sending AcdDisconnectEvent, sessionId[" + sessionId + "]");
+        }
+
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        importedValue.put("application", "ACD");
+        importedValue.put("action", "DISCONNECT");
+        importedValue.put("sessionId", sessionId);
+        buildAndSendRequest(importedValue);
+    }
+
+    /**
      * Send request to SPOT to connect a queued caller to voicemail.
      *
      * @param sessionId The sessionId of the call.
