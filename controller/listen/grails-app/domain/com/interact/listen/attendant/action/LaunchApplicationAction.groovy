@@ -7,7 +7,7 @@ class LaunchApplicationAction extends Action {
         applicationName nullable: true, blank: false, validator: { val -> return (val == null ? 'nullable' : true) }
     }
 
-    def toIvrCommand(String promptDirectory, String promptBefore) {
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory) {
         def args = [
             applicationName: applicationName
         ]

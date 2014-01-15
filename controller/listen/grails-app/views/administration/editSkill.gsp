@@ -64,7 +64,7 @@
             <tr class="add highlighted">
                 <td><g:select id="vmUserId" name="vmUserId" optionKey="id" optionValue="realName" from="${skillUsers?.user}" value="${vmUser?.id}" noSelection="${['':'-- Choose Account --']}" /></td>
             </tr>
-        
+            
             <tr>
                 <td><g:message code="page.administration.acd.skills.promptName.onHoldMsg"/></td>
             </tr>

@@ -14,12 +14,11 @@
     
   </head>
   <body>
-
-      <h3>${g.message(code: 'page.acd.status.title')}</h3>
           
       <table>
         <tbody>
           <g:form controller="acd" action="toggleStatus" method="post">
+              <tr><td><h3>${g.message(code: 'page.acd.status.yourStatus.label')}</h3></td></tr>
               <tr>
                   <td class="col-button">
                       <g:set var="titleMessage" value="" />
@@ -30,7 +29,7 @@
               </tr>
           </g:form>
           <g:form controller="acd" action="updateNumber" method="post">
-              <tr><td><h3>Contact Number:</h3></td></tr>
+              <tr><td><h3>${g.message(code: 'page.acd.status.yourNumber.label')}</h3></td></tr>
               <tr><td><g:select name="contactNumber" from="${phoneNumbers}" value="${contactNumber}"/></tr></td>
               <tr><td><g:submitButton name="update_status" value="${g.message(code: 'default.button.update.label')}"/>
               </td></tr>
