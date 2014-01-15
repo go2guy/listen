@@ -94,10 +94,14 @@ class AcdCleanupJob
     {
         List<User>  badUsers = AcdUserStatus.executeQuery("Select a.owner from AcdUserStatus a where onACall=1 " +
                 "and a.owner not in (select b.user from AcdCall b where user is not null)");
-        log.info("Number of users with incorrect onACall status:" + badUsers.size());
 
         if(badUsers != null && !badUsers.isEmpty())
         {
+            if(log.isInfoEnabled())
+            {
+                log.info("Number of users with incorrect onACall status:" + badUsers.size());
+            }
+
             for(User thisUser : badUsers)
             {
                 thisUser.acdUserStatus.onACall = false;
