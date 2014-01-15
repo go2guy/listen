@@ -30,6 +30,7 @@
 
     .template { display: none; }
     .initially-hidden { display: none; }
+    .hidden { display: none; }
 
     </style>
 </head>
@@ -43,19 +44,38 @@
                 <thead>
                     <tr>
                         <th width=10%>On Hold</th>
-                        <th>Caller</th>
+                        <th width=25%>Caller</th>
+                        <th width=15%>Skill</th>
+                        <th id="transferHeader" width=10%></th>
+                        <th width=40%></th>
+
                     </tr>
                 </thead>
                 <tbody>
                     <table id="callTable">
                         <g:each in="${calls}" status="i" var="thisCall">
-                            <tr class="${(i % 2) == 0 ? 'even' : 'odd'} data-id="${thisCall.id}">
-                                <input type="hidden" name="id" value="${thisCall.id}"/>
+                            <tr class="${(i % 2) == 0 ? 'even' : 'odd'}" data-id="${thisCall.id}">
+                                <input id="hiddenCallId" type="hidden" name="id" value="${thisCall.id}"/>
                                 <td class="holdBox" width="10%">
                                     <g:checkBox name="holdCheckBox" value="${thisCall.id}" class="case holdCheckbox"
                                                 checked="${thisCall.onHold}" onchange="toggleHold(this, this.value)"/>
                                 </td>
-                                <td class="caller">${thisCall.ani}</td>
+                                <td class="caller" width=25%>${thisCall.ani}</td>
+                                <td class="callerSkill" width=15%>${thisCall.skill.description}</td>
+                                <td class="transfer-button">
+                                    <button type="button" class="transferButton" id="transferButton"
+                                            value="${thisCall.id}"
+                                            onclick="transferClicked(this, this.value)">Transfer</button>
+                                </td>
+                                <td class="transfer-dropdown hidden">
+                                    <div id="transferDropdownDiv">
+                                        <select class="transferAgentSelect" id="transferAgents"></select>
+                                        <button type="button" class="submitTransferButton" id="submitTransferButton"
+                                                onclick="submitTransferClicked(this)">Transfer Call</button>
+                                        <button type="button" class="cancelTransferButton" id="cancelTransferButton"
+                                                onclick="cancelTransferClicked(this)">Cancel</button>
+                                    </div>
+                                </td>
                             </tr>
                         </g:each>
                     </table>
@@ -67,15 +87,97 @@
 
 <table class="template">
     <tr id="call-row-template">
-        <input type="hidden" name="id" value=""/>
+        <input id="hiddenCallId" type="hidden" name="id" value=""/>
         <td class="holdBox" width="10%">
             <g:checkBox name="holdCheckBox" value="" class="case holdCheckbox" checked="" onchange="toggleHold(this, this.value)"/>
         </td>
-        <td class="caller"></td>
+        <td class="caller" width="25%"></td>
+        <td class="callerSkill" width=15%></td>
+        <td class="transfer-button">
+            <button type="button" class="transferButton" id="transferButton" value=""
+                    onclick="transferClicked(this, this.value)">Transfer</button>
+        </td>
+        <td class="transfer-dropdown hidden">
+            <div id="transferDropdownDiv">
+                 <select class="transferAgentSelect" id="transferAgents"></select>
+                <button type="button" class="submitTransferButton" id="submitTransferButton"
+                        onclick="submitTransferClicked(this)">Transfer Call</button>
+                <button type="button" class="cancelTransferButton" id="cancelTransferButton"
+                        onclick="cancelTransferClicked(this)">Cancel</button>
+            </div>
+        </td>
     </tr>
 </table>
 
 <script type="text/javascript">
+
+    function transferClicked(e, callId) {
+        $('.transfer-button').addClass('hidden');
+        $('#transferHeader')[0].innerHTML = "Transfer";
+
+        $.ajax({
+            url: '${createLink(action: 'availableTransferAgents')}?id=' + callId,
+            dataType: 'json',
+            cache: false,
+            success: function(data)
+            {
+                $('.transferAgentSelect').empty();
+
+                if(data && data.users)
+                {
+                    for(var i = 0; i < data.users.length; i++)
+                    {
+                        var thisAgent = data.users[i];
+                        $('.transferAgentSelect').
+                                append('<option value="' + thisAgent.id + '">' + thisAgent.realName + '</option>');
+                    }
+                }
+            }
+        });
+
+//        $('transferButton').addClass('disabled');
+        $('.transfer-dropdown').removeClass('hidden');
+        return true;
+    }
+
+    function submitTransferClicked(e) {
+        alert("Submit Transfer?");
+        var userId = $('.transferAgentSelect')[0].value;
+        var callId = $('#hiddenCallId')[0].value;
+
+        $.ajax({
+            url: '${createLink(action: 'transferCaller')}?id=' + callId + '&userId=' + userId,
+            dataType: 'json',
+            cache: false,
+            success: function(data)
+            {
+                if(data && data.success == "true")
+                {
+                    listen.showSuccessMessage('Call transferred.')
+//                    $('.transfer-button').removeClass('hidden');
+                    $('.transfer-dropdown').addClass('hidden');
+                    $('#transferHeader')[0].innerHTML = "";
+                }
+                else
+                {
+                    listen.showErrorMessage('Unable to transfer call.')
+                    $('.transfer-button').removeClass('hidden');
+                    $('.transfer-dropdown').addClass('hidden');
+                    $('#transferHeader')[0].innerHTML = "";
+                }
+            }
+        });
+
+        return true;
+    }
+
+    function cancelTransferClicked(e) {
+        alert("Cancel Transfer?");
+        $('.transfer-button').removeClass('hidden');
+        $('.transfer-dropdown').addClass('hidden');
+        $('#transferHeader')[0].innerHTML = "";
+        return true;
+    }
 
     function toggleHold(element, callId)
     {
@@ -130,11 +232,11 @@
                         var rowId = parseInt(tr.attr('data-id'), 10);
 
                         var exists = false;
-                        if(data)
+                        if(data && data.calls)
                         {
-                            for(var i = 0; i < data.length; i++)
+                            for(var i = 0; i < data.calls.length; i++)
                             {
-                                if(data[i].id == rowId)
+                                if(data.calls[i].id == rowId)
                                 {
                                     exists = true;
                                     break;
@@ -148,11 +250,11 @@
 
                     // 2. loop through new rows and move existing rows / add new rows
 
-                    if(data.length > 0)
+                    if(data && data.calls && data.calls.length > 0)
                     {
-                        for(var i = 0; i < data.length; i++)
+                        for(var i = 0; i < data.calls.length; i++)
                         {
-                            var call = data[i];
+                            var call = data.calls[i];
 
                             var position = -1;
                             var tr; // will be set if a table row is found for this call
@@ -183,6 +285,7 @@
 
         populate: function(row, call) {
             callList.updateField($('td.caller', row), call.ani);
+            callList.updateField($('td.callerSkill', row), call.skill);
 //            if(row.attr('data-id') != call.id) {
                 row.attr('data-id', call.id);
 //            }
@@ -199,6 +302,8 @@
             {
                 $('.holdCheckbox', row)[0].checked=false;
             }
+
+            $('.transferButton', row)[0].value = call.id;
 
             return;
         },

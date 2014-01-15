@@ -55,6 +55,12 @@ var listen = {
         ca.prepend('<ul class="messages success"><li>' + message + '</li></ul>');
         listen.fadeMessage($('.messages.success', ca));
     },
+    showErrorMessage: function(message) {
+        var ca = $('#content-area');
+        $('.messages.error', ca).remove();
+        ca.prepend('<ul class="messages error"><li>' + message + '</li></ul>');
+        listen.fadeMessage($('.messages.error', ca));
+    },
     fadeMessage: function(element) {
         var el = $(element);
         setTimeout(function() {
@@ -466,7 +472,15 @@ $(document).ready(function() {
             cache: false,
             success: function(data) {
                 var displayedCount = $('#new-message-count');
-                var newCount = '(' + data.count + ')';
+                if(data)
+                {
+                    var newCount = '(' + data.count + ')';
+                }
+                else
+                {
+                    var newCount = 0;
+                }
+
                 if(newCount != displayedCount.text()) {
                     displayedCount.text(newCount);
                 }
@@ -476,7 +490,7 @@ $(document).ready(function() {
 </sec:ifAnyGranted>
 
 <sec:ifAnyGranted roles="ROLE_ACD_USER">
-  function getAcdMessageCount() {
+    setInterval(function getAcdMessageCount() {
     var displayedCount = $("#new-acd-message-count");
     var newCount = '(0)';
     $.ajax({
@@ -489,10 +503,7 @@ $(document).ready(function() {
         }
       }
     });
-    setTimeout(getAcdMessageCount(),5000);
-  }
-
-  $(document).ready(getAcdMessageCount());
+  }, 5000);
 </sec:ifAnyGranted>
 
 });

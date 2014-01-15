@@ -1,5 +1,6 @@
 package com.interact.listen.acd
 
+import com.interact.listen.User
 import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdUserStatus
 import com.interact.listen.acd.Skill
@@ -24,6 +25,7 @@ class AcdController {
     def promptFileService
     def historyService
     def spotCommunicationService
+    def acdService
 
     // TODO fix hard-coded path
     static final File storageLocation = new File('/interact/listen/artifacts/acd')
@@ -37,8 +39,11 @@ class AcdController {
       render(view: 'callQueue', model: [calls: calls])
     }
 
-    def pollQueue = {
+    def pollQueue =
+    {
       def json = [:]
+
+
       json.calls = AcdCall.findAll("from AcdCall as calls order by calls.${params.orderBy}")
       /* For w/e reason, grails only populates the call.skill property with the id for
          the skill, so we need to create a skills field within the json referenced by
@@ -171,9 +176,32 @@ class AcdController {
 
     def polledCalls =
     {
-        def calls = AcdCall.findAllByUser(authenticatedUser)
+        List<AcdCall> calls = AcdCall.findAllByUser(authenticatedUser)
+
+        def json = [:]
+
+        def callJson = [];
+
+        for(AcdCall thisCall : calls)
+        {
+            def c = [:]
+            c.id = thisCall.id;
+            c.ani = thisCall.ani;
+            c.onHold = thisCall.onHold;
+            c.sessionId = thisCall.sessionId;
+            c.skill = thisCall.skill.description;
+            callJson.add(c);
+        }
+
+        json.calls = callJson;
+
+        if(log.isDebugEnabled())
+        {
+            log.debug(json);
+        }
+
         render(contentType: 'application/json') {
-            calls
+            json
         }
     }
 
@@ -249,6 +277,70 @@ class AcdController {
         render(contentType: 'application/json')
         {
             thisCall
+        }
+    }
+
+    def transferCaller =
+        {
+            boolean success = false;
+
+            log.debug "AcdController.transferCaller: params[${params}]"
+            AcdCall thisCall = AcdCall.get(params.id);
+            User transferTo = User.get(params.userId);
+
+            if(thisCall && transferTo)
+            {
+                try
+                {
+                    acdService.connectCall(thisCall, transferTo);
+                    success = true;
+                }
+                catch(Exception e)
+                {
+                    log.error("Exception sending transfer event: " + e);
+                }
+            }
+
+            def json = [:]
+            json.success = success.toString();
+
+            log.debug(json);
+
+            render(contentType: 'application/json') {
+                json
+            }
+        }
+
+    def availableTransferAgents =
+    {
+        def users;
+
+        log.debug "AcdController.availableTransferAgents: params[${params}]"
+        AcdCall thisCall = AcdCall.get(params.id);
+
+        if(thisCall)
+        {
+            users = acdService.getAvailableUsers(thisCall.skill);
+        }
+
+        def json = [:]
+
+        def userJson = [];
+
+        for(UserSkill thisUser : users)
+        {
+            def c = [:]
+            c.id = thisUser.user.id;
+            c.realName = thisUser.user.realName;
+            userJson.add(c);
+        }
+
+        json.users = userJson;
+
+        log.debug(json);
+
+        render(contentType: 'application/json') {
+            json
         }
     }
 }

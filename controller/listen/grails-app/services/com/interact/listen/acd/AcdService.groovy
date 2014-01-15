@@ -43,13 +43,20 @@ class AcdService
     {
         def waitingList;
 
-        if(getIvr() != null)
+        String ivr = getIvr();
+        if(ivr != null)
         {
-            waitingList = AcdCall.findAllByCallStatusAndIvr(AcdCallStatus.WAITING, getIvr(),
+            if(log.isDebugEnabled())
+            {
+                log.debug("Getting waiting calls using ivr[" + ivr + "]");
+            }
+            waitingList = AcdCall.findAllByCallStatusAndIvr(AcdCallStatus.WAITING, ivr,
                     [sort: 'enqueueTime', order: 'asc']);
         }
         else
         {
+            log.warn("IVR not configured, getting waiting calls for any ivr.");
+
             waitingList = AcdCall.findAllByCallStatus(AcdCallStatus.WAITING, [sort: 'enqueueTime', order: 'asc']);
         }
 
@@ -120,6 +127,29 @@ class AcdService
         }
 
         return returnVal;
+    }
+
+    /**
+     * Get a list of users who are available based on the requested skill.
+     *
+     * @param requestedSkill The skill requested.
+     * @return Users who have this skill.
+     */
+    List<UserSkill> getAvailableUsers(Skill requestedSkill)
+    {
+        def userSkillCriteria = UserSkill.createCriteria();
+        def results = userSkillCriteria.list()
+        {
+            eq("skill", requestedSkill)
+            user {
+                acdUserStatus {
+                    eq("acdQueueStatus", AcdQueueStatus.Available)
+                    eq("onACall", false)
+                }
+            }
+        }
+
+        return results;
     }
 
     /**
@@ -225,46 +255,7 @@ class AcdService
 
             if(agent != null)
             {
-                if(log.isDebugEnabled())
-                {
-                    log.debug("Agent to handle call: " + agent.realName);
-                }
-
-                //Set agent onacall to true
-                agent.acdUserStatus.onACall = true;
-                agent.save(flush: true);
-
-                boolean sessionExistsOnIvr = true;
-
-                //Send request to ivr
-                try
-                {
-                    spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
-                            agent.acdUserStatus.contactNumber.number);
-                }
-                catch(SpotCommunicationException sce)
-                {
-                    //for now, we are going to assume this means that this session does not exist any longer
-                    sessionExistsOnIvr = false;
-                }
-
-                if(sessionExistsOnIvr)
-                {
-                    //Set call status to "ivrconnectRequested"
-                    thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
-                    thisCall.setUser(agent);
-                    thisCall.save(flush: true);
-
-                    //Now we just have to wait for the IVR to respond that it was connected
-                }
-                else
-                {
-                    //Free up the agent
-                    freeAgent(agent);
-
-                    //Delete call from queue. Leave status since we don't really know what happened.
-                    removeCall(thisCall, null);
-                }
+                connectCall(thisCall, agent);
             }
             else
             {
@@ -278,6 +269,50 @@ class AcdService
         {
             log.error("Exception processing waiting call: " + e, e);
             throw new ListenAcdException(e.getMessage());
+        }
+    }
+
+    public void connectCall(AcdCall thisCall, User agent)
+    {
+        if(log.isDebugEnabled())
+        {
+            log.debug("Agent to connect to: " + agent.realName);
+        }
+
+        //Set agent onacall to true
+        agent.acdUserStatus.onACall = true;
+        agent.save(flush: true);
+
+        boolean sessionExistsOnIvr = true;
+
+        //Send request to ivr
+        try
+        {
+            spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
+                    agent.acdUserStatus.contactNumber.number);
+        }
+        catch(SpotCommunicationException sce)
+        {
+            //for now, we are going to assume this means that this session does not exist any longer
+            sessionExistsOnIvr = false;
+        }
+
+        if(sessionExistsOnIvr)
+        {
+            //Set call status to "ivrconnectRequested"
+            thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
+            thisCall.setUser(agent);
+            thisCall.save(flush: true);
+
+            //Now we just have to wait for the IVR to respond that it was connected
+        }
+        else
+        {
+            //Free up the agent
+            freeAgent(agent);
+
+            //Delete call from queue. Leave status since we don't really know what happened.
+            removeCall(thisCall, null);
         }
     }
 
