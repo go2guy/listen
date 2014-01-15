@@ -168,6 +168,10 @@
                     listen.showSuccessMessage('Call transferred.')
 //                    $('.transfer-button').removeClass('hidden');
                     $('.transfer-dropdown').addClass('hidden');
+                    $('.transfer-button').removeClass('hidden');
+                    $('.transfer-button').disabled = true;
+                    $('.disconnect-button').removeClass('hidden');
+                    $('.disconnect-button').disabled = true;
                     $('#transferHeader')[0].innerHTML = "";
                 }
                 else
@@ -348,7 +352,8 @@
 
             $('.transferButton', row)[0].value = call.id;
             $('.disconnectButton', row)[0].value = call.id;
-            $('.transfer-button').removeClass('hidden');
+            $('.transfer-button', row).removeClass('hidden');
+            $('.disconnect-button', row).removeClass('hidden');
 
             return;
         },
