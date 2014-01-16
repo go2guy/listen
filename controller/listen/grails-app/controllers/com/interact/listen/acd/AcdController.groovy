@@ -171,11 +171,6 @@ class AcdController
         if (acdUserStatus.acdQueueStatus && acdUserStatus.validate() &&
                 acdUserStatus.save(failOnError: true, flush: true))
         {
-            if(log.isInfoEnabled())
-            {
-                log.info("Successfully changed user [${acdUserStatus.owner.username}] to status [" +
-                        ${acdUserStatus.acdQueueStatus}+ "]");
-            }
             historyService.toggleACDStatus(acdUserStatus)
             flash.successMessage = message(code: 'page.acd.status.statusChange.successful.message', args: [acdUserStatus.acdQueueStatus])
         }
@@ -210,11 +205,6 @@ class AcdController
         if (acdUserStatus.contactNumber && acdUserStatus.validate() &&
                 acdUserStatus.save(failOnError: true, flush: true))
         {
-            if(log.isInfoEnabled())
-            {
-                log.info "Successfully changed user [${acdUserStatus.owner.username}] to contact number [" +
-                        ${acdUserStatus.contactNumber.number} + "]"
-            }
             historyService.updatedACDContactNumber(acdUserStatus)
             flash.successMessage =
                 message(code: 'page.acd.status.statusChange.successful.message',
