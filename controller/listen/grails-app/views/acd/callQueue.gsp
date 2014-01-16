@@ -73,7 +73,9 @@
         <thead>
           <tr>
             <th><span><a href="#" onclick='$("#orderBy").val("ani");'>Caller</a></span></th>
+            <th>Status</th>
             <th><span><a href="#" onclick='$("#orderBy").val("skill");'>Skill</a></span></th>
+            <th>Agent</th>
             <th><span><a href="#" onclick='$("#orderBy").val("enqueueTime");'>Wait Time</a></span></th>
           </tr>
           <input id="orderBy" type="hidden" value="enqueueTime"/>
@@ -82,8 +84,10 @@
           <g:set var="row_count" value="${0}"/>
           <g:each in="${calls}" var="call">
             <tr class="${row_count++ % 2 == 0 ? 'even' : 'odd'}">
-              <td class="even">${call.ani}</td>
-              <td class="odd">${call.skill.skillname}</td>
+              <td>${call.ani}</td>
+              <td>${call.callStatus.toString()}</td>
+              <td>${call.skill.description}</td>
+              <td>${call.user != null ? call.user.realName : ''}</td>
               <script type="text/javascript">
                 document.write('<td calss="even">' + getWaitTime('${call.enqueueTime}') + '</td>');
               </script>
@@ -110,32 +114,30 @@
             var row;
             var row_count = 0;
             var column_count = 0;
-            data.calls.forEach(function(call) {
-              row = "";
-              /* Grails only populates the skill field with the id when working with json, so we need to
-                 loop through the skill to find the corresponding skill name associated with the call */
-              data.skills.forEach(function(skill) {
-                if (skill.id == call.skill.id) {
-                  call.skill.skillname = skill.skillname;
-                  return;
-                }
-              });
+            if(data.calls)
+            {
+                data.calls.forEach(function(call) {
+                  row = "";
+                  column_count = 0;
+                  row += '<tr class="' + (row_count++ % 2 == 0 ? 'even' : 'odd') + '">';
+                  row += '<td class="' + (column_count++ % 2 == 0 ? 'even' : 'odd') + '">' + call.ani + '</td>';
+                  row += '<td class="' + (column_count++ % 2 == 0 ? 'even' : 'odd') + '">' + call.status + '</td>';
+                  row += '<td class="' + (column_count++ % 2 == 0 ? 'even' : 'odd') + '">' + call.skill + '</td>';
+                  row += '<td class="' + (column_count++ % 2 == 0 ? 'even' : 'odd') + '">' + call.user + '</td>';
+                  row += '<td class="' + (column_count++ % 2 == 0 ? 'even' : 'odd') + '">' + getWaitTime(call.enqueueTime) + '</td></tr>';
 
-              column_count = 0;
-              row += '<tr class="' + (row_count++ % 2 == 0 ? 'even' : 'odd') + '">';
-              row += '<td class="' + (column_count++ % 2 == 0 ? 'even' : 'odd') + '">' + call.ani + '</td>';
-              row += '<td class="' + (column_count++ % 2 == 0 ? 'even' : 'odd') + '">' + call.skill.skillname + '</td>';
-              row += '<td class="' + (column_count++ % 2 == 0 ? 'even' : 'odd') + '">' + getWaitTime(call.enqueueTime) + '</td></tr>';
-
-              tbody.append(row);
-            });
+                  tbody.append(row);
+                });
+            }
           }
         });
-        setTimeout(queue.poll, 1000);
       }
     };
 
-    $(document).ready(queue.poll);
+    $(document).ready(function()
+    {
+        setInterval(queue.poll, 1000);
+    });
     </script>
 
   </body>

@@ -42,20 +42,46 @@ class AcdController
 
     def pollQueue =
         {
+            def calls = AcdCall.findAll("from AcdCall as calls order by calls.${params.orderBy}")
+
             def json = [:]
 
+            def callJson = [];
 
-            json.calls = AcdCall.findAll("from AcdCall as calls order by calls.${params.orderBy}")
-            /* For w/e reason, grails only populates the call.skill property with the id for
-               the skill, so we need to create a skills field within the json referenced by
-               skill id to look up the call's requested skill */
-            json.skills = Skill.findAll()
+            for (AcdCall thisCall : calls)
+            {
+                def c = [:]
+                c.id = thisCall.id;
+                c.ani = thisCall.ani;
+                c.onHold = thisCall.onHold;
+                c.sessionId = thisCall.sessionId;
+                c.skill = thisCall.skill.description;
+                if(thisCall.user != null)
+                {
+                    c.user = thisCall.user.realName;
+                }
+                else
+                {
+                    c.user = "";
+                }
+                c.enqueueTime = thisCall.enqueueTime;
+                c.status = thisCall.callStatus.toString();
+                callJson.add(c);
+            }
+
+            json.calls = callJson;
+
+            render(contentType: 'application/json')
+            {
+                json
+            }
 
             if(log.isDebugEnabled())
             {
                 log.debug "Rendering call queue as json [${json.toString()}]"
             }
-            render(contentType: 'application/json') {
+            render(contentType: 'application/json')
+            {
                 json
             }
         }
