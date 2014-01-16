@@ -65,7 +65,7 @@ class AcdController
                     c.user = "";
                 }
                 c.enqueueTime = thisCall.enqueueTime;
-                c.status = thisCall.callStatus.toString();
+                c.status = thisCall.callStatus.viewable();
                 callJson.add(c);
             }
 

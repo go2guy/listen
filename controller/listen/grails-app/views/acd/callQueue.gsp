@@ -85,7 +85,7 @@
           <g:each in="${calls}" var="call">
             <tr class="${row_count++ % 2 == 0 ? 'even' : 'odd'}">
               <td>${call.ani}</td>
-              <td>${call.callStatus.toString()}</td>
+              <td>${call.callStatus.viewable()}</td>
               <td>${call.skill.description}</td>
               <td>${call.user != null ? call.user.realName : ''}</td>
               <script type="text/javascript">

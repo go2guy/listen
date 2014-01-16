@@ -62,4 +62,12 @@ enum AcdCallStatus
     CONNECT_FAIL,
     DISCONNECTED,
     VOICEMAIL
+
+    public String viewable()
+    {
+        StringBuilder sb = new StringBuilder(this.toString().toLowerCase());
+        char firstLetter = sb.charAt(0);
+        sb.setCharAt(0, firstLetter.toUpperCase());
+        return sb.toString();
+    }
 }
