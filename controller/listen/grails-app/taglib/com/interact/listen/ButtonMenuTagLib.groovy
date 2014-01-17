@@ -33,11 +33,13 @@ class ButtonMenuTagLib {
 
             case 'acd':
                 out << '<ul class="button-menu">'
-                /* Can't just call button for this one since we have to add a custom span element for the message count */
-                out << '<li class="' + (attrs.button == 'status' ? 'current' : '') + '">'
-                out << g.link(controller: 'acd', action: 'status') { g.message(code: 'button.menu.acd.status') + '<span id="new-acd-message-count">(0)</span>' }
-                out << '</li>'
+                button(attrs.button == 'status', 'acd', 'status', 'button.menu.acd.status')
                 button(attrs.button == 'callQueue', 'acd', 'callQueue', 'button.menu.acd.callQueue')
+                button(attrs.button == 'callHistory', 'acd', 'callHistory', 'button.menu.acd.callHistory')
+                /* Can't just call button for this one since we have to add a custom span element for the message count */
+                out << '<li class="' + (attrs.button == 'inbox' ? 'current' : '') + '">'
+                out << g.link(controller: 'messages', action: 'acdInbox') { g.message(code: 'button.menu.acd.acdInbox') + '<span id="new-acd-message-count">(0)</span>' }
+                out << '</li>'
                 button(attrs.button == 'currentCall', 'acd', 'currentCall', 'button.menu.acd.currentCall')
                 out << '</ul>'
 

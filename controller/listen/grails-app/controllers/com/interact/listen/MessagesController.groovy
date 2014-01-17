@@ -1,10 +1,11 @@
 package com.interact.listen
 
+import com.interact.listen.acd.AcdService
+import com.interact.listen.acd.UserSkill
 import com.interact.listen.voicemail.Voicemail
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 
-//import grails.plugins.springsecurity.Secured
 import org.joda.time.format.PeriodFormatterBuilder
 
 @Secured(['ROLE_VOICEMAIL_USER', 'ROLE_FAX_USER'])
@@ -12,10 +13,12 @@ class MessagesController {
     static allowedMethods = [
         index: 'GET',
         inbox: 'GET',
+        acdInbox: ['GET', 'POST'],
         delete: 'POST',
         newCount: 'GET',
         newAcdCount: 'GET',
         pollingList: 'GET',
+        acdPollingList: 'GET',
         toggleStatus: 'POST',
         setStatus: 'GET'
     ]
@@ -49,6 +52,55 @@ class MessagesController {
         }
         
         render(view: 'inbox', model: [messageList: list, messageTotal: count])
+    }
+
+    def acdInbox = {
+      def user = authenticatedUser
+      def currentSkill = params.currentSkill
+      def voicemailUser
+      def skillList = []
+
+      // if a current skill has not been specified
+      if ( params?.currentSkill == null ) {
+        // just grab the first skillname available
+        currentSkill = UserSkill.findAllByUser(user)?.pop()?.skill.skillname
+      }
+
+      // use the current skillname to look up the current voicemail user
+      voicemailUser = AcdService.getVoicemailUserBySkillname(currentSkill)
+
+      UserSkill.findAllByUser(user)?.each() { userSkill ->
+        skillList.push(userSkill?.skill?.skillname)
+      }
+
+      params.max = Math.min(params.max ? params.int('max') : 25, 100)
+      params.sort = params.sort ? params.sort : 'dateCreated'
+      params.order = params.order ? params.order : 'desc'
+  
+      def messageList = InboxMessage.findAllByOwner(voicemailUser)
+      def count = InboxMessage.countByOwner(voicemailUser)
+
+      log.debug "Found [${count}] messages in mailbox of [${voicemailUser?.username}]"
+
+      messageList.each() { message ->
+        if(message.instanceOf(Voicemail)) {
+            log.debug "Voice Message [${message.id}] [${message?.audio.file}]"
+        } else if(message.instanceOf(Fax)) {
+            log.debug "Fax Message [${message.id}] [${message?.fax.file}]"
+        } else {
+            log.debug "Unknown Message Type [${message.id}] [${message}]"
+        }
+      }
+
+      def model = [
+        messageList: messageList,
+        messageTotal: count,
+        skillList: skillList,
+        currentSkill: currentSkill
+      ]
+
+      log.debug "Rendering view [acdInbox] with model [${model}]"
+      render(view: 'acdInbox', model: model)
     }
 
     def delete = {
@@ -89,7 +141,7 @@ class MessagesController {
     // ajax
     def newAcdCount = {
       render(contentType: 'application/json') {
-        count = inboxMessageService.newAcdMessageCount()
+        count = inboxMessageService.newAcdMessageCount(params.currentSkill)
       }
     }
 
@@ -129,6 +181,107 @@ class MessagesController {
         params.sort = params.sort ? params.sort : 'dateCreated'
         params.order = params.order ? params.order : 'desc'
         def list = InboxMessage.findAllByOwner(user, params)
+        def visibleIds = params.visibleIds.trim()
+        if(visibleIds.length() > 0) {
+            visibleIds = visibleIds.split(",")
+        }
+        
+        def changes = [:]
+        def returnList = []
+        def currentIds = []
+        def addToScreen = []
+        def removeFromScreen = []
+        def updatedVisibleIds = []
+        def formatter = new PeriodFormatterBuilder()
+            .printZeroNever()
+            .appendMinutes()
+            .appendSuffix('m, ')
+            .printZeroAlways()
+            .minimumPrintedDigits(1)
+            .appendSeconds()
+            .appendSuffix('s')
+            .toFormatter()
+
+        list.each { 
+            currentIds << String.valueOf(it.id)
+            def item = [
+                id: it.id,
+                from: it.from().encodeAsHTML(),
+                dateCreated: listen.prettytime(date: it.dateCreated),
+                dateTitle: joda.format(value: it.dateCreated, style: 'LL'),
+                isNew: it.isNew
+            ]
+
+            if(it.instanceOf(Voicemail)) {
+                item.put('type', 'voicemail')
+                item.put('audio', [
+                    duration: formatter.print(it.audio.duration.toPeriod())
+                ])
+                item.put('transcription', it.audio.transcription.encodeAsHTML())
+            } else {
+                item.put('type', 'fax')
+                item.put('size', listen.megabytes(file: it.file, unavailable: 'Size Unknown'))
+                item.put('pages', it.pages)
+            }
+
+            returnList << item
+        }
+        visibleIds.each { updatedVisibleIds.add(it) }
+
+        def i = 0
+        visibleIds.each {
+            if(!currentIds.contains(visibleIds[i])) {
+                removeFromScreen.add(i)
+                updatedVisibleIds.each {
+                    if(it == i) {
+                        updatedVisibleIds.remove(it)
+                    }
+                }
+            }
+            i++
+        }
+
+        i = 0
+        currentIds.each {
+            if(!updatedVisibleIds.contains(currentIds[i])) {
+                addToScreen.add(i)
+            }
+            i++
+        }
+
+        changes["add"] = addToScreen
+        changes["remove"] = removeFromScreen
+        changes["list"] = returnList
+        changes["currentIds"] = currentIds
+
+        render changes as JSON
+    }
+
+    // ajax
+    def acdPollingList = {
+        def user = authenticatedUser
+        def currentSkill = params.currentSkill
+        def voicemailUser
+        def skillList = []
+
+        // if a current skill has not been specified
+        if ( params?.currentSkill == null ) {
+          // just grab the first skillname available
+          currentSkill = UserSkill.findAllByUser(user)?.pop()?.skill.skillname
+        }
+
+        // use the current skillname to look up the current voicemail user
+        voicemailUser = AcdService.getVoicemailUserBySkillname(currentSkill)
+
+        // Don't believe I need the skilllist for the ajax request
+        // UserSkill.findAllByUser(user)?.each() { userSkill ->
+          // skillList.push(userSkill?.skill?.skillname)
+        // }
+
+        params.max = Math.min(params.max ? params.int('max') : 25, 100)
+        params.sort = params.sort ? params.sort : 'dateCreated'
+        params.order = params.order ? params.order : 'desc'
+        def list = InboxMessage.findAllByOwner(voicemailUser, params)
         def visibleIds = params.visibleIds.trim()
         if(visibleIds.length() > 0) {
             visibleIds = visibleIds.split(",")

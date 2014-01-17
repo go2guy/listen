@@ -4,6 +4,7 @@ import com.interact.listen.User
 import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdUserStatus
 import com.interact.listen.acd.Skill
+import com.interact.listen.User
 import com.interact.listen.PhoneNumber
 import com.interact.listen.history.*
 import grails.converters.JSON
@@ -15,12 +16,13 @@ import grails.plugin.springsecurity.annotation.Secured
 class AcdController
 {
     static allowedMethods = [
-            index: 'GET',
-            status: 'GET',
-            toggleStatus: 'POST',
-            updateNumber: 'POST',
-            callQueue: 'GET',
-            pollQueue: 'GET'
+      index: 'GET',
+      status: 'GET',
+      toggleStatus: 'POST',
+      updateNumber: 'POST',
+      callQueue: 'GET',
+      callHistory: 'GET',
+      pollQueue: 'GET'
     ]
 
     def promptFileService
@@ -36,107 +38,242 @@ class AcdController
     }
 
     def callQueue = {
-        def calls = AcdCall.findAll("from AcdCall as calls order by calls.enqueueTime")
-        render(view: 'callQueue', model: [calls: calls])
+      params.sort = params.sort ?: 'enqueueTime'
+      params.order = params.order ?: 'asc'
+      params.max = params.max ?: 10
+      params.offset = params.offset ?: 0
+
+      def calls = AcdCall.createCriteria().list() {
+        order(params.sort,params.order)
+        maxResults(params.max.toInteger())
+        firstResult(params.offset.toInteger())
+      }
+
+      def callTotal = AcdCall.findAll().size()
+
+      def model = [
+        calls: calls,
+        callTotal: callTotal,
+        sort: params.sort,
+        order: params.order,
+        max: params.max,
+        offset: params.offset
+      ]
+
+      render(view: 'callQueue', model: model)
     }
 
-    def pollQueue =
-        {
-            def calls = AcdCall.findAll("from AcdCall as calls order by calls.${params.orderBy}")
+    def callHistory = {
+      params.sort = params.sort ?: 'enqueueTime'
+      params.order = params.order ?: 'asc'
+      params.max = params.max ?: 10
+      params.offset = params.offset ?: 0
 
-            def json = [:]
+      def calls = AcdCallHistory.createCriteria().list() {
+        order(params.sort,params.order)
+        maxResults(params.max.toInteger())
+        firstResult(params.offset.toInteger())
+      }
 
-            def callJson = [];
+      def callTotal = AcdCallHistory.findAll().size()
 
-            for (AcdCall thisCall : calls)
-            {
-                def c = [:]
-                c.id = thisCall.id;
-                c.ani = thisCall.ani;
-                c.onHold = thisCall.onHold;
-                c.sessionId = thisCall.sessionId;
-                c.skill = thisCall.skill.description;
-                if(thisCall.user != null)
-                {
-                    c.user = thisCall.user.realName;
-                }
-                else
-                {
-                    c.user = "";
-                }
-                c.enqueueTime = thisCall.enqueueTime;
-                c.status = thisCall.callStatus.viewable();
-                callJson.add(c);
-            }
+      def model = [
+        calls: calls,
+        callTotal: callTotal,
+        sort: params.sort,
+        order: params.order,
+        max: params.max,
+        offset: params.offset
+      ]
 
-            json.calls = callJson;
+      render(view: 'callHistory', model: model)
+    }
 
-            render(contentType: 'application/json')
-            {
-                json
-            }
+    def pollQueue = {
+      params.sort = params.sort ?: 'enqueueTime'
+      params.order = params.order ?: 'asc'
+      params.max = params.max ?: 10
+      params.offset = params.offset ?: 0
 
-            if(log.isDebugEnabled())
-            {
-                log.debug "Rendering call queue as json [${json.toString()}]"
-            }
-            render(contentType: 'application/json')
-            {
-                json
-            }
+      def json = [:]
+
+      List<AcdCall> calls = AcdCall.createCriteria().list {
+        order(params.sort,params.order)
+        maxResults(params.max.toInteger())
+        firstResult(params.offset.toInteger())
+      }
+
+      def callJson = []
+      for(AcdCall call : calls) {
+        def c = [:]
+        c.id = call.id
+        c.ani = call.ani
+        c.onHold = call.onHold
+        c.sessionId = call.sessionId
+        c.skill = call.skill.description
+        c.callStatus = call.callStatus.viewable()
+        c.enqueueTime = call.enqueueTime
+        c.lastModified = call.lastModified
+        c.user = ""
+        if ( call.user != null ) {
+          c.user = call.user.realName
         }
+        callJson.add(c)
+      }
+
+      json.calls = callJson
+
+      if ( log.isDebugEnabled()) {
+        log.debug "Rendering call queue as json [${json.toString()}]"
+      }
+
+      render(contentType: 'application/json') {
+        json
+      }
+
+    }
+
+    def pollHistory = {
+      def user = authenticatedUser
+
+      params.sort = params.sort ?: 'enqueueTime'
+      params.order = params.order ?: 'asc'
+      params.max = params.max ?: 10
+      params.offset = params.offset ?: 0
+
+      def json = [:]
+
+      List<AcdCallHistory> calls = AcdCallHistory.createCriteria().list {
+        order(params.sort,params.order)
+        maxResults(params.max.toInteger())
+        firstResult(params.offset.toInteger())
+      }
+
+      def callJson = []
+      for(AcdCallHistory call : calls) {
+        def c = [:]
+        c.id = call.id
+        c.ani = call.ani
+        c.user = ""
+        if ( call.user != null ) {
+          c.user = call.user.realName
+        }
+        c.skill = call.skill.description
+        c.start = call.callStart
+        c.end = call.callEnd
+        c.callStatus = call.callStatus.viewable()
+        c.enqueueTime = call.enqueueTime
+        c.dequeueTime = call.dequeueTime
+        callJson.add(c)
+      }
+
+      json.calls = callJson
+
+      if(log.isDebugEnabled()) {
+        log.debug "Rendering call queue as json [${json.toString()}]"
+      }
+
+      render(contentType: 'application/json') {
+        json
+      }
+    }
 
     def status = {
-        def acdUserStatus = AcdUserStatus.findByOwner(authenticatedUser)
-        if (!acdUserStatus)
-        {
-            if(log.isDebugEnabled())
-            {
-                log.debug "user does not currently have an acd user status [${acdUserStatus}]"
-            }
+      if ( params.paginateOrigin == 'queue' ) {
+        params.queueSort = params.sort
+        params.queueOrder = params.order
+        params.queueMax = params.max
+        params.queueOffset = params.offset
+      }
+      else { // params.paginateOrigin == 'history'
+        params.historySort = params.sort
+        params.historyOrder = params.order
+        params.historyMax = params.max
+        params.historyOffset = params.offset
+      }
 
-            acdUserStatus = new AcdUserStatus()
-            acdUserStatus.owner = authenticatedUser
-            acdUserStatus.acdQueueStatus = AcdQueueStatus.Unavailable
-            /* Create user acd status entry, as they should have had one already */
-            if (acdUserStatus.validate() && acdUserStatus.save(failOnError: true, flush: true))
-            {
-                log.error "Created acd user status for this user [${acdUserStatus.owner}]"
-            }
-            else
-            {
-                log.error "Could not create Acd Status Entry for new user."
-            }
-        }
+      def user = authenticatedUser
+      // Get Agent Status Details
+      def acdUserStatus = AcdUserStatus.findByOwner(user)
+      if (!acdUserStatus) {
+          log.debug "user does not currently have an acd user status [${acdUserStatus}]"
+          acdUserStatus = new AcdUserStatus()
+          acdUserStatus.owner = user
+          acdUserStatus.acdQueueStatus = AcdQueueStatus.Unavailable
+          /* Create user acd status entry, as they should have had one already */
+          if (acdUserStatus.validate() && acdUserStatus.save(failOnError: true, flush: true)) {
+              log.error "Created acd user status for this user [${acdUserStatus.owner}]"
+          } else {
+              log.error "Could not create Acd Status Entry for new user."
+          }
+      }
 
+      def status = acdUserStatus?.acdQueueStatus?.toString()
+      def statusDisabled = acdUserStatus?.acdQueueStatus?.isDisabled()
+      def contactNumber = acdUserStatus?.contactNumber?.number
+      def phoneNumbers = []
 
-        def status = acdUserStatus?.acdQueueStatus?.toString()
-        def statusDisabled = acdUserStatus?.acdQueueStatus?.isDisabled()
-        def contactNumber = acdUserStatus?.contactNumber?.number
-        def phoneNumbers = []
+      PhoneNumber.findAllByOwner(user).each() { number ->
+        phoneNumbers.add(number.number)
+      }
 
-        if(log.isDebugEnabled())
-        {
-            log.debug "User status contact number [${contactNumber}]"
-        }
+      if(log.isDebugEnabled())
+      {
+        log.debug "User status contact number [${contactNumber}]"
+      }
 
-        PhoneNumber.findAllByOwner(authenticatedUser).each() { number ->
-            phoneNumbers.add(number.number)
-        }
+      // Get Agent's Call Queue
+      params.queueSort = params.queueSort ?: 'enqueueTime'
+      params.queueOrder = params.queueOrder ?: 'asc'
+      params.queueMax = params.queueMax ?: 5
+      params.queueOffset = params.queueOffset ?: 0
 
-        def model = [
-                status: status,
-                statusDisabled: statusDisabled,
-                phoneNumbers: phoneNumbers,
-                contactNumber: contactNumber
-        ]
+      def calls = AcdCall.createCriteria().list() {
+        order(params.queueSort,params.queueOrder)
+        maxResults(params.queueMax.toInteger())
+        firstResult(params.queueOffset.toInteger())
+        eq("user",user)
+        eq("callStatus",AcdCallStatus.WAITING)
+      }
 
-        if(log.isDebugEnabled())
-        {
-            log.debug "Rendering view [status] with model [${model}]"
-        }
+      def callTotal = AcdCall.findAllByUser(user).size()
 
-        render(view: 'status', model: model)
+      // Get Agent Call History Details
+      params.historySort = params.historySort ?: 'enqueueTime'
+      params.historyOrder = params.historyOrder ?: 'asc'
+      params.historyMax = params.historyMax ?: 5
+      params.historyOffset = params.historyOffset ?: 0
+
+      def callHistory = AcdCallHistory.createCriteria().list() {
+        order(params.historySort,params.historyOrder)
+        maxResults(params.historyMax.toInteger())
+        firstResult(params.historyOffset.toInteger())
+        eq("user",user)
+      }
+
+      def historyTotal = AcdCallHistory.findAllByUser(user).size()
+
+      // Get User Skills
+      def userSkills = UserSkill.findAllByUser(user)
+
+      def model = [
+        status: status,
+        statusDisabled: statusDisabled,
+        phoneNumbers: phoneNumbers,
+        contactNumber: contactNumber,
+        callHistory: callHistory,
+        callTotal: callTotal,
+        historyTotal: historyTotal,
+        calls: calls,
+        userSkills: userSkills
+      ]
+
+      if(log.isDebugEnabled())
+      {
+        log.debug "Rendering view [status] with model [${model}]"
+      }
+
+      render(view: 'status', model: model)
     }
 
     def toggleStatus =
