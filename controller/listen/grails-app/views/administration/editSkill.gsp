@@ -21,11 +21,26 @@
         .col-button { width: 5%; }
         
         select.prompt-select {
-            width: 205px;
+            width: 256px;
         }
         
         select.options-prompt {
             display: inline;
+        }
+
+        .acdEditHeading
+        {
+            width: 277px;
+        }
+
+        td, th
+        {
+            border-bottom: solid 1px #d3d3d3;
+        }
+
+        .acdEditValue
+        {
+            width: 256px;
         }
     </style>
   </head>
@@ -38,66 +53,50 @@
           <caption><g:message code="page.administration.acd.editSkills.title"/>
           <tbody>
             <tr>
-                <td><g:message code="page.administration.acd.skills.column.skillname"/></td>
-            </tr>
-            <tr class="add highlighted">
-                <td><g:textField name="skillname" value="${fieldValue(bean: skill, field: 'skillname')}"/></td>
+                <td class="acdEditHeading"><g:message code="page.administration.acd.skills.column.skillname"/></td>
+                <td class="acdEditValue"><g:textField name="skillname" value="${fieldValue(bean: skill, field: 'skillname')}"/></td>
             </tr>
 
             <tr>
-                <td><g:message code="page.administration.acd.skills.column.description"/></td>
-            </tr>
-            <tr class="add highlighted">
-                <td><g:textField name="description" value="${fieldValue(bean: skill, field: 'description')}"/></td>
+                <td class="acdEditHeading"><g:message code="page.administration.acd.skills.column.description"/></td>
+                <td class="acdEditValue"><g:textField name="description" value="${fieldValue(bean: skill, field: 'description')}"/></td>
             </tr>
 
             <tr>
-                <td><g:message code="page.administration.acd.skills.column.users"/></td>
-            </tr>
-            <tr class="add highlighted">
-                <td><g:select id="userIds" name="userIds" multiple="multiple" optionKey="id" optionValue="realName" from="${orgUsers}" value="${skillUsers?.user}"/></td>
+                <td class="acdEditHeading"><g:message code="page.administration.acd.skills.column.users"/></td>
+                <td class="acdEditValue"><g:select id="userIds" name="userIds" multiple="multiple" optionKey="id" optionValue="realName" from="${orgUsers}" value="${skillUsers?.user}"/></td>
             </tr>
 
             <tr>
-                <td><g:message code="page.administration.acd.skills.column.voiceMailUser"/></td>
-            </tr>
-            <tr class="add highlighted">
-                <td><g:select id="vmUserId" name="vmUserId" optionKey="id" optionValue="realName" from="${skillUsers?.user}" value="${vmUser?.id}" noSelection="${['':'-- Choose Account --']}" /></td>
+                <td class="acdEditHeading"><g:message code="page.administration.acd.skills.column.voiceMailUser"/></td>
+                <td class="acdEditValue"><g:select id="vmUserId" name="vmUserId" optionKey="id" optionValue="realName" from="${skillUsers?.user}" value="${vmUser?.id}" noSelection="${['':'-- Choose Account --']}" /></td>
             </tr>
             
             <tr>
-                <td><g:message code="page.administration.acd.skills.promptName.onHoldMsg"/></td>
-            </tr>
-            <tr class="add highlighted">
-                <td><listen:acdPromptSelect class="prompt-select" name="onHoldMsg" value="${skill.onHoldMsg}"/></td>
+                <td class="acdEditHeading"><g:message code="page.administration.acd.skills.promptName.onHoldMsg"/></td>
+                <td class="acdEditValue"><listen:acdPromptSelect class="prompt-select" name="onHoldMsg" value="${skill.onHoldMsg}"/></td>
             </tr>
             
             <tr>
-                <td><g:message code="page.administration.acd.skills.promptName.onHoldMsgExtended"/></td>
-            </tr>
-            <tr class="add highlighted">
-                <td><listen:acdPromptSelect class="prompt-select" name="onHoldMsgExtended" value="${skill.onHoldMsgExtended}"/></td>
+                <td class="acdEditHeading"><g:message code="page.administration.acd.skills.promptName.onHoldMsgExtended"/></td>
+                <td class="acdEditValue"><listen:acdPromptSelect class="prompt-select" name="onHoldMsgExtended" value="${skill.onHoldMsgExtended}"/></td>
             </tr>
         
             <tr>
-                <td><g:message code="page.administration.acd.skills.promptName.onHoldMusic"/></td>
-            </tr>
-            <tr class="add highlighted">
-                <td><listen:acdPromptSelect class="prompt-select" name="onHoldMusic" value="${skill.onHoldMusic}"/></td>
+                <td class="acdEditHeading"><g:message code="page.administration.acd.skills.promptName.onHoldMusic"/></td>
+                <td class="acdEditValue"><listen:acdPromptSelect class="prompt-select" name="onHoldMusic" value="${skill.onHoldMusic}"/></td>
             </tr>
         
             <tr>
-                <td><g:message code="page.administration.acd.skills.promptName.connectMsg"/></td>
-            </tr>
-            <tr class="add highlighted">
-                <td><listen:acdPromptSelect class="prompt-select" name="connectMsg" value="${skill.connectMsg}"/></td>
+                <td class="acdEditHeading"><g:message code="page.administration.acd.skills.promptName.connectMsg"/></td>
+                <td class="acdEditValue"><listen:acdPromptSelect class="prompt-select" name="connectMsg" value="${skill.connectMsg}"/></td>
             </tr>
             
           </tbody>
         </table>
 
         <div class="buttons">
-            <g:submitButton name="update" value="${g.message(code: 'default.button.update.label')}"/>
+            <g:submitButton name="update" style="margin-left: 40%" value="${g.message(code: 'default.button.update.label')}"/>
             <g:actionSubmit action="skills" value="${message(code: 'default.button.cancel.label', default: 'Cancel')}"/>
         </div>
         
