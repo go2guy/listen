@@ -7,7 +7,8 @@ import grails.util.Holders
 class BootStrap {
 
     def init = { servletContext ->
-        def licenseService = new LicenseService()
+        def licenseService = new LicenseService();
+        licenseService.afterPropertiesSet();
         if(licenseService.isLicensed(ListenFeature.ACD))
         {
             int callProcessorInterval =

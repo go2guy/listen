@@ -37,9 +37,13 @@ class LicenseService implements InitializingBean {
         return org.enabledFeatures.contains(feature)
     }
 
-    void afterPropertiesSet() {
-        def file = new File('/interact/master/.iiXmlLicense')
-        def validator = new CryptoDsigSignatureValidator()
-        license = new UnleashLicense(file, validator)
+    void afterPropertiesSet()
+    {
+        if(license == null)
+        {
+            File file = new File('/interact/master/.iiXmlLicense');
+            def validator = new CryptoDsigSignatureValidator();
+            license = new UnleashLicense(file, validator)
+        }
     }
 }
