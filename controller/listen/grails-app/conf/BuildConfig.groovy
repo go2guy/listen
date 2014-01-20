@@ -69,7 +69,7 @@ grails.project.dependency.resolution = {
                 'org.apache.httpcomponents:httpmime:4.0.1',
                 'com.googlecode.json-simple:json-simple:1.1',
                 'org.apache.tika:tika-core:0.9',
-                'org.apache.tika:tika-parsers:0.9',
+                'org.apache.commons-pool:commons-pool:1.5.4',
                 'net.sourceforge.jexcelapi:jxl:2.6.12'
 
         runtime('mariadb-client:mariadb-java-client:1.1.5')
