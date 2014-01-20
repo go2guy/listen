@@ -7,11 +7,9 @@ import org.joda.time.DateTime
 import org.joda.time.Seconds
 
 /**
- * Created with IntelliJ IDEA.
  * User: knovak
  * Date: 12/13/13
  * Time: 10:08 AM
- * To change this template use File | Settings | File Templates.
  */
 class AcdCleanupJob
 {
@@ -19,8 +17,6 @@ class AcdCleanupJob
 
     static triggers =
     {
-//        simple startDelay: 1000, repeatInterval: Holders.config.com.interact.listen.acd.cleanup.repeatInterval
-        simple startDelay: 1000, repeatInterval: 20000
     }
 
     def group = "acd"

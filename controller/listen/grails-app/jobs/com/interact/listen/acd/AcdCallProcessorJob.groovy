@@ -7,7 +7,6 @@ import org.joda.time.DateTime
 import org.joda.time.LocalDateTime
 
 /**
- * Created with IntelliJ IDEA.
  * User: knovak
  * Date: 12/11/13
  * Time: 3:48 PM
@@ -15,12 +14,6 @@ import org.joda.time.LocalDateTime
 class AcdCallProcessorJob
 {
     def acdService
-
-    static triggers =
-    {
-//        simple startDelay: 1000, repeatInterval: Holders.config.com.interact.listen.acd.callProcessor.repeatInterval
-        simple startDelay: 1000, repeatInterval: 10000
-    }
 
     def group = "acd"
 
