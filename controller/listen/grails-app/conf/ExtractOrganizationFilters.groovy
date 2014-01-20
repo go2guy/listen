@@ -10,7 +10,8 @@ class ExtractOrganizationFilters {
             before =
             {
                 FilterUtil fu = new FilterUtil();
-                if(fu.shouldLog(controllerName, actionName)) {
+                if(log.isDebugEnabled() && fu.shouldLog(controllerName, actionName))
+                {
                     log.debug "Extracting organization for controller [${controllerName}], action [${actionName}]"
                 }
                 if(!fu.shouldExtractOrganization(controllerName, actionName)) {

@@ -22,6 +22,9 @@ final class FilterUtil
         if(controller.equals('acd') && action.equals('polledCalls')) {
             return false
         }
+        if(controller.equals('profile') && ['index', 'settings','phones'].contains(action)) {
+            return false
+        }
         return true
     }
 

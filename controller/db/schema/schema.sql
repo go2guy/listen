@@ -103,7 +103,7 @@ CREATE TABLE `acd_user_status` (
   `onacall` bit(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (owner_id) REFERENCES user (id),
-  FOREIGN KEY (contact_number_id) REFERENCES phone_number (id)
+  FOREIGN KEY (contact_number_id) REFERENCES phone_number (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
