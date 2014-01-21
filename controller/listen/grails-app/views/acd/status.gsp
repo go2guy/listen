@@ -168,8 +168,13 @@
                 </tr>
                 <g:form controller="acd" action="updateNumber" method="post">
                   <tr><td><h3><g:message code="page.acd.status.yourNumber.label"/></h3></td></tr>
-                  <tr><td><g:select name="contactNumber" from="${phoneNumbers}" value="${contactNumber}"/></td></tr>
-                  <tr><td><g:submitButton name="update_status" value="${g.message(code: 'default.button.update.label')}"/></td></tr>
+                  <tr><td><g:select name="contactNumber"
+                                    optionKey="id"
+                                    optionValue="number"
+                                    from="${phoneNumbers}"
+                                    value="${contactNumber != null ? contactNumber.id : ''}"
+                                    noSelection="['':'-- Select Contact Number --']"
+                                    onchange="submit()"/></td></tr>
                 </g:form>
                 <tr>
                   <td>

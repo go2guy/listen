@@ -29,7 +29,13 @@ class MessagesController {
         redirect(action: 'inbox')
     }
 
-    def inbox = {
+    def inbox =
+    {
+        if(!authenticatedUser)
+        {
+            //Redirect to login
+            redirect(controller: 'login', action: 'auth');
+        }
         def user = authenticatedUser
 
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
