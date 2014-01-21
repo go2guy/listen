@@ -48,17 +48,25 @@
 
       // Given a mysql timestamp returns current difference in HH:MM:SS format
       function getDifference(start,end) {
+
+          if(!start || !end)
+          {
+              return '';
+          }
+
+        var stringStart = start.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
+        var stringEnd = end.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
         // convert mysql timestamp into javascript date
-        var startAsJDate_ = start.split(/[- : T]/);
+        var startAsJDate_ = stringStart.split(/[- : T]/);
         var startAsJDate = new Date(startAsJDate_[0], startAsJDate_[1]-1, startAsJDate_[2], startAsJDate_[3], startAsJDate_[4], startAsJDate_[5]);
 
         // get difference in seconds
-        if ( end == "" ) { // get difference from current time
-          var difference = ((new Date()).valueOf() - start.valueOf()) / 1000;
+        if ( stringEnd == "" ) { // get difference from current time
+          var difference = ((new Date()).valueOf() - stringStart.valueOf()) / 1000;
         }
         else { // get difference from specified time
           // convert mysql timestamp into javascript date
-          var endAsJDate_ = end.split(/[- : T]/);
+          var endAsJDate_ = stringEnd.split(/[- : T]/);
           var endAsJDate = new Date(endAsJDate_[0], endAsJDate_[1]-1, endAsJDate_[2], endAsJDate_[3], endAsJDate_[4], endAsJDate_[5]);
 
           var difference = (endAsJDate.valueOf() - startAsJDate.valueOf());
@@ -96,13 +104,15 @@
           <g:set var="row_count" value="${0}"/>
           <g:each in="${calls}" var="call">
             <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}">
-              <td>${call.callStart.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}</td>
+              <td>${call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}</td>
               <td>${call.ani}</td>
-              <td>${call.skill.description}</td>
-              <td>${call.user.realName}</td>
+              <td>${call.skill}</td>
+              <td>${call.user != null ? call.user : ''}</td>
               <script type="text/javascript">
-                document.write('<td>' + getDifference('${call.callStart.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}','${call.callEnd.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}') + '</td>');
-                document.write('<td>' + getDifference('${call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}','${call.dequeueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}') + '</td>');
+                  var callDuration = getDifference('${call.callStart}','${call.callEnd}');
+                  document.write('<td>' + callDuration + '</td>');
+                  document.write('<td>' + getDifference('${call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}',
+                          '${call.dequeueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}') + '</td>');
               </script>
             </tr>
           </g:each>
@@ -116,9 +126,6 @@
     </div>
 
     <script type="text/javascript">
-    $(document).ready( function () {
-      setInterval(records.poll,10000);
-    });
 
     var records = {
       poll: function() {
@@ -140,7 +147,7 @@
               column_count = 0;
 
               tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
-              tr += '<td>' + formatDate(call.start) + '</td>';
+              tr += '<td>' + call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss") + '</td>';
               tr += '<td>' + call.ani + '</td>';
               tr += '<td>' + call.skill + '</td>';
               tr += '<td>' + call.user + '</td>';

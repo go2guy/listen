@@ -65,9 +65,16 @@ enum AcdCallStatus
 
     public String viewable()
     {
-        StringBuilder sb = new StringBuilder(this.toString().toLowerCase());
+        StringBuffer sb = new StringBuffer(this.toString().toLowerCase());
         char firstLetter = sb.charAt(0);
         sb.setCharAt(0, firstLetter.toUpperCase());
+        int underScore = sb.indexOf("_");
+        if(underScore > -1)
+        {
+            sb.setCharAt(underScore, ' ' as char);
+            sb.setCharAt(underScore + 1, sb.charAt(underScore+1).toUpperCase());
+        }
+
         return sb.toString();
     }
 }

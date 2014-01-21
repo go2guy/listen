@@ -60,6 +60,7 @@ class AcdController
                 offset: params.offset
         ]
 
+
         render(view: 'callQueue', model: model)
     }
 
@@ -75,18 +76,36 @@ class AcdController
             firstResult(params.offset.toInteger())
         }
 
-        def callTotal = AcdCallHistory.findAll().size()
+        def callTotal = AcdCallHistory.findAll().size();
 
-        def model = [
-                calls: calls,
-                callTotal: callTotal,
-                sort: params.sort,
-                order: params.order,
-                max: params.max,
-                offset: params.offset
-        ]
+        def json = [:]
+        def callJson = []
+        for (AcdCallHistory call : calls)
+        {
+            def c = [:]
+            c.ani = call.ani
+            c.skill = call.skill.description
+            c.callStatus = call.callStatus.viewable()
+            c.callStart = call.callStart
+            c.callEnd = call.callEnd
+            c.enqueueTime = call.enqueueTime
+            c.dequeueTime = call.dequeueTime
+            c.user = ""
+            if (call.user != null)
+            {
+                c.user = call.user.realName
+            }
+            callJson.add(c)
+        }
 
-        render(view: 'callHistory', model: model)
+        json.calls = callJson
+        json.callTotal = callTotal
+        json.sort = params.sort
+        json.order = params.order
+        json.max = params.max
+        json.offset = params.offset
+
+        render(view: 'callHistory', model: json)
     }
 
     def pollQueue = {
@@ -125,15 +144,9 @@ class AcdController
 
         json.calls = callJson
 
-        if (log.isDebugEnabled())
-        {
-            log.debug "Rendering call queue as json [${json.toString()}]"
-        }
-
         render(contentType: 'application/json') {
             json
         }
-
     }
 
     def pollHistory = {

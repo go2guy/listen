@@ -14,6 +14,34 @@
         white-space: nowrap;
         overflow: hidden;
       }
+
+      .userColumn {
+        width: 20%
+      }
+
+      .callerColumn {
+          width: 15%
+      }
+
+      .skillColumn {
+          width: 18%
+      }
+
+      .statusColumn {
+          width: 17%
+      }
+
+      .waitColumn {
+          width: 10%
+      }
+
+      .activityColumn {
+          width: 10%
+      }
+
+      .disconnectColumn {
+          width: 10%
+      }
     </style>
 
     <script type="text/javascript">
@@ -63,12 +91,13 @@
       <table id="keywords" class="fixed" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
-            <g:sortableColumn property="user" title="Agent"/>
-            <g:sortableColumn property="ani" title="Caller"/>
-            <g:sortableColumn property="skill" title="Skill"/>
-            <g:sortableColumn property="callStatus" title="Status"/>
-            <g:sortableColumn property="enqueueTime" title="Wait Time"/>
-            <g:sortableColumn property="lastModified" title="Last Activity"/>
+            <g:sortableColumn class="userColumn" property="user" title="Agent"/>
+            <g:sortableColumn class="callerColumn" property="ani" title="Caller"/>
+            <g:sortableColumn class="skillColumn" property="skill" title="Skill"/>
+            <g:sortableColumn class="statusColumn" property="callStatus" title="Status"/>
+            <g:sortableColumn class="waitColumn" property="enqueueTime" title="Wait Time"/>
+            <g:sortableColumn class="activityColumn" property="lastModified" title="Last Activity"/>
+            <th class="disconnectColumn" width=10%></th>
           </tr>
           %{-- Using hidden input to persist data from grails to ajax requests (see queue.poll) --}%
           <input id="sort" type="hidden" value="${sort}"/>
@@ -89,6 +118,11 @@
                 document.write('<td>' + getTimeSince('${call.enqueueTime}') + '</td>');
                 document.write('<td>' + getTimeSince('${call.lastModified}') + '</td>');
               </script>
+                <td class="disconnect-button">
+                    <button type="button" class="disconnectButton" id="disconnectButton"
+                            value="${call.id}"
+                            onclick="disconnectClicked(this, this.value)">Disconnect</button>
+                </td>
             </tr>
           </g:each>
         </tbody>
@@ -104,6 +138,28 @@
     $(document).ready( function () {
       setInterval(queue.poll,1000);
     });
+
+    function disconnectClicked(e, callId) {
+        alert("Disconnect Call?");
+        $.ajax({
+            url: '${createLink(action: 'disconnectCaller')}?id=' + callId,
+            dataType: 'json',
+            cache: false,
+            success: function(data)
+            {
+                if(data && data.success == "true")
+                {
+                    listen.showSuccessMessage('Call disconnected.')
+                }
+                else
+                {
+                    listen.showErrorMessage('Unable to disconnect call.')
+                }
+            }
+        });
+
+        return true;
+    }
 
     var queue = {
       poll: function() {
@@ -132,8 +188,11 @@
                 row += '<td>' + call.skill + '</td>';
                 row += '<td>' + call.callStatus + '</td>';
                 row += '<td>' + getTimeSince(call.enqueueTime) + '</td>';
-                row += '<td>' + getTimeSince(call.lastModified) + '</td></tr>';
-
+                row += '<td>' + getTimeSince(call.lastModified) + '</td>';
+                row += '<td class="disconnect-button">' +
+                        '<button type="button" class="disconnectButton" id="disconnectButton"' +
+                        'value="' + call.id + '"onclick="disconnectClicked(this, this.value)">Disconnect</button></td>';
+                row += '</tr>';
                 tbody.append(row);
               });
             }
