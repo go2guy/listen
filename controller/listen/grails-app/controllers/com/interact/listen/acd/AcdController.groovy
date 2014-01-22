@@ -11,6 +11,7 @@ import grails.converters.JSON
 import org.joda.time.DateTime
 import com.interact.listen.util.FileTypeDetector
 import grails.plugin.springsecurity.annotation.Secured
+import org.joda.time.LocalDateTime
 
 @Secured(['ROLE_ACD_USER'])
 class AcdController
@@ -635,4 +636,87 @@ class AcdController
                         json
                     }
         }
+
+    def exportHistoryToCsv =
+    {
+        if (log.isDebugEnabled())
+        {
+            log.debug "AcdController.exportHistoryToCsv: params[${params}]"
+        }
+
+        List<AcdCallHistory> calls = AcdCallHistory.createCriteria().list() {
+            order('enqueueTime', 'asc')
+        }
+
+        String filename = "acdCallHistoryRecords${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv";
+
+        File tmpfile
+        try
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Creating temp file to extract ACD Call History Records")
+            }
+            tmpfile = File.createTempFile("./" + filename,".tmp");
+            tmpfile.deleteOnExit();
+            if(log.isDebugEnabled())
+            {
+                log.debug("Created tmp file [${tmpfile.getName()}] to extract ACD Call History Records");
+            }
+        }
+        catch (IOException e)
+        {
+            log.error("Failed to create temp file for export ${e}")
+            flash.errorMessage = message(code: 'page.administration.acd.callHistory.exportCSV.fileCreateFailed');
+            redirect(action: "callHistory");
+            //TODO perhaps do something to notify system administrators of an important event?
+            return
+        }
+
+        //Create header row
+        tmpfile << AcdCallHistory.csvHeader();
+        tmpfile << "\n";
+
+        //Write each row
+        for(AcdCallHistory thisHistory : calls)
+        {
+            tmpfile << thisHistory.csvRow();
+            tmpfile << "\n";
+        }
+
+        if(log.isDebugEnabled())
+        {
+            log.debug "Generated ACD Call History Records report of size [${tmpfile.length()}]"
+        }
+
+        //Now write the outputfile
+        response.contentType = 'text/csv';
+        response.setHeader('Content-disposition', "attachment;filename=" + filename);
+        response.setHeader('Content-length', "${tmpfile.length()}")
+
+        OutputStream outStream = new BufferedOutputStream(response.outputStream)
+        InputStream inStream = tmpfile.newInputStream()
+
+        byte[] bytes = new byte[4096]
+        int bytesRead;
+
+        while((bytesRead = inStream.read(bytes)) != -1)
+        {
+            outStream.write(bytes, 0, bytesRead)
+        }
+
+        //Close down
+        inStream.close()
+        outStream.flush()
+        outStream.close()
+
+        if (!tmpfile.delete())
+        {
+            log.error("Failed to delete temporary file [${tmpfile.getName()}]")
+        }
+        else if(log.isDebugEnabled())
+        {
+            log.debug("Succeeded in deleting temporary file [${tmpfile.getName()}]")
+        }
+    }
 }

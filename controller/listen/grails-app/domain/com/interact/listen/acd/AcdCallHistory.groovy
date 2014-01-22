@@ -57,4 +57,31 @@ class AcdCallHistory
         this.setDequeueTime(new DateTime());
     }
 
+    static String csvHeader()
+    {
+        StringBuffer returnVal = new StringBuffer();
+        returnVal.append("caller,");
+        returnVal.append("skill,");
+        returnVal.append("enqueueTime,");
+        returnVal.append("callStatus,");
+        returnVal.append("agent,")
+        returnVal.append("dequeueTime,");
+        returnVal.append("callStart,");
+        returnVal.append("callEnd");
+        return returnVal;
+    }
+
+    String csvRow()
+    {
+        StringBuffer returnVal = new StringBuffer();
+        returnVal.append(this.ani).append(",");
+        returnVal.append(this.skill.skillname).append(",");
+        returnVal.append(this.enqueueTime.toString()).append(",");
+        returnVal.append(this.callStatus.viewable()).append(",");
+        returnVal.append(this.user.username).append(",");
+        returnVal.append(this.dequeueTime.toString()).append(",");
+        returnVal.append(this.callStart.toString()).append(",");
+        returnVal.append(this.callEnd.toString());
+        return returnVal;
+    }
 }

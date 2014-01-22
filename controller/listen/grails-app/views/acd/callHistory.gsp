@@ -83,7 +83,16 @@
   <body>
 
     <div id="callHistory">
-      <h3>Call History:</h3>
+      <div id="callHistoryHeader">
+        <h3>Call History:
+          <g:if test="${callTotal}">
+              <div style="margin-right: 15px; float: right; padding-bottom: 5px;">
+                  <g:link action="exportHistoryToCsv" params="${params}">${message(code:'page.administration.acd.callHistory.exportCSV.label')}</g:link>
+              </div>
+          </g:if>
+        </h3>
+      </div>
+
       <table id="keywords" class="fixed" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
