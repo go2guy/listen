@@ -1,3 +1,4 @@
+<%@ page import="com.interact.listen.User" %>
 <html>
   <head>
     <title><g:message code="page.acd.callQueue.title"/></title>
@@ -14,6 +15,49 @@
         white-space: nowrap;
         overflow: hidden;
       }
+
+      .hidden { display: none; }
+
+      .searchfield {
+          font-size: 14px;
+          display: table-cell;
+          padding-left: 10px;
+          vertical-align: bottom;
+          padding-right: 20px;
+      }
+
+      button.link {
+          background:none;
+          border:none;
+          font-size: 16px;
+          text-decoration: underline;
+      }
+
+      .search {
+          border-bottom: 1px solid #054B7A;
+          padding-top:  10px;
+          padding-bottom:  10px;
+          display: table;
+          width: 100%;
+      }
+
+      .datepicker {
+          width: 120px;
+          height: 25px;
+          font-size: 16px;
+      }
+
+      .filterDropdown {
+          width: 180px;
+      }
+
+      .filterButton {
+          width: 60px;
+          height: 30px;
+          vertical-align: middle;
+      }
+
+
     </style>
 
     <script type="text/javascript">
@@ -84,19 +128,57 @@
 
     <div id="callHistory">
       <div id="callHistoryHeader">
-        <h3>Call History:
-          <g:if test="${callTotal}">
+        <h3 style="padding-bottom: 10px">Call History:
               <div style="margin-right: 15px; float: right; padding-bottom: 5px;">
                   <g:link action="exportHistoryToCsv" params="${params}">${message(code:'page.administration.acd.callHistory.exportCSV.label')}</g:link>
               </div>
-          </g:if>
         </h3>
+      </div>
+
+      <div id="searchDiv">
+          <div id="searchTable" class="search">
+                <g:form controller="acd" action="callHistory" method="get" id="filterForm">
+                    <div style="display: table-row">
+                      <div id="startDateSearch" class="searchfield">
+                        Start Date:
+                        <input id="startDate" name="startDate" placeholder="mm/dd/yyyy" value="${startDate}" class="datepicker"/>
+                      </div>
+                      <div id="endDateSearch" class="searchfield">
+                          End Date:
+                          <input id="endDate" name="endDate" placeholder="mm/dd/yyyy" value="${endDate}" class="datepicker"/>
+                      </div>
+                        <div id="skillSearch" class="searchfield">
+                            Skill:
+                            <g:select name="skill"
+                                      class="filterDropdown"
+                                      optionKey="id"
+                                      optionValue="skillname"
+                                      from="${skillList}"
+                                      value="${skill != null ? skill : ''}"
+                                      noSelection="['':'-All-']" />
+                        </div>
+                      <div id="agentSearch" class="searchfield">
+                            Agent:
+                            <g:select name="agent"
+                                      class="filterDropdown"
+                                      optionKey="id"
+                                      optionValue="realName"
+                                      from="${agentList}"
+                                      value="${agent != null ? agent : ''}"
+                                      noSelection="['':'-All-']" />
+                      </div>
+                      <div id="searchButton" class="searchfield">
+                          <g:submitButton class="filterButton" name="filter" value="Filter"/>
+                      </div>
+                    </div>
+                </g:form>
+              </div>
       </div>
 
       <table id="keywords" class="fixed" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
-            <g:sortableColumn property="callStart" title="Call Start"/>
+            <g:sortableColumn property="callStart" width="20%" title="Call Start"/>
             <g:sortableColumn property="ani" title="Caller"/>
             <g:sortableColumn property="skill" title="Skill"/>
             <g:sortableColumn property="user" title="Agent"/>
@@ -113,7 +195,7 @@
           <g:set var="row_count" value="${0}"/>
           <g:each in="${calls}" var="call">
             <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}">
-              <td>${call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}</td>
+              <td>${call.enqueueTime.toString("MM'/'dd'/'yyyy' 'HH':'mm':'ss")}</td>
               <td>${call.ani}</td>
               <td>${call.skill}</td>
               <td>${call.user != null ? call.user : ''}</td>
@@ -129,12 +211,24 @@
       </table>
     </div>
 
-    <div class="pagination" style="display: ${calls.size() > 0 ? 'block' : 'none'};">
-      <listen:paginateTotal total="${callTotal}" messagePrefix="paginate.total.callHistories"/>
-      <g:paginate total="${callTotal}" maxsteps="5"/>
+    <div class="pagination" style="display: 'block';">
+      <listen:paginateTotal total="${callTotal}" messagePrefix="paginate.total.acdCallHistories"/>
+      <g:paginate action="callHistory" total="${callTotal}" params="${params}"/>
     </div>
 
     <script type="text/javascript">
+
+        $(".link").click(function(){
+            $('#searchDiv').removeClass('hidden');
+        });
+
+        $('.filter').click(function() {
+            var groups = attendant.buildJson();
+            var form = $('#menu-save-form');
+            $('input', form).val(JSON.stringify(groups));
+            form.submit();
+            return false;
+        });
 
     var records = {
       poll: function() {

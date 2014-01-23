@@ -12,6 +12,8 @@ import org.joda.time.DateTime
 import com.interact.listen.util.FileTypeDetector
 import grails.plugin.springsecurity.annotation.Secured
 import org.joda.time.LocalDateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 @Secured(['ROLE_ACD_USER'])
 class AcdController
@@ -63,50 +65,6 @@ class AcdController
 
 
         render(view: 'callQueue', model: model)
-    }
-
-    def callHistory = {
-        params.sort = params.sort ?: 'enqueueTime'
-        params.order = params.order ?: 'asc'
-        params.max = params.max ?: 10
-        params.offset = params.offset ?: 0
-
-        def calls = AcdCallHistory.createCriteria().list() {
-            order(params.sort, params.order)
-            maxResults(params.max.toInteger())
-            firstResult(params.offset.toInteger())
-        }
-
-        def callTotal = AcdCallHistory.findAll().size();
-
-        def json = [:]
-        def callJson = []
-        for (AcdCallHistory call : calls)
-        {
-            def c = [:]
-            c.ani = call.ani
-            c.skill = call.skill.description
-            c.callStatus = call.callStatus.viewable()
-            c.callStart = call.callStart
-            c.callEnd = call.callEnd
-            c.enqueueTime = call.enqueueTime
-            c.dequeueTime = call.dequeueTime
-            c.user = ""
-            if (call.user != null)
-            {
-                c.user = call.user.realName
-            }
-            callJson.add(c)
-        }
-
-        json.calls = callJson
-        json.callTotal = callTotal
-        json.sort = params.sort
-        json.order = params.order
-        json.max = params.max
-        json.offset = params.offset
-
-        render(view: 'callHistory', model: json)
     }
 
     def pollQueue = {
@@ -644,9 +602,16 @@ class AcdController
             log.debug "AcdController.exportHistoryToCsv: params[${params}]"
         }
 
-        List<AcdCallHistory> calls = AcdCallHistory.createCriteria().list() {
-            order('enqueueTime', 'asc')
-        }
+        params.sort = 'enqueueTime'
+        params.order = 'desc'
+        params.max = '1000'
+        params.offset = '0'
+
+        DateTime theStart = getStartDate(params.startDate);
+        DateTime theEnd = getEndDate(params.endDate);
+
+        def calls = acdService.callHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
+                params.agent, params.skill);
 
         String filename = "acdCallHistoryRecords${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv";
 
@@ -718,5 +683,127 @@ class AcdController
         {
             log.debug("Succeeded in deleting temporary file [${tmpfile.getName()}]")
         }
+    }
+
+    def callHistory =
+    {
+        if (log.isDebugEnabled())
+        {
+            log.debug "AcdController.callHistory: params[${params}]";
+        }
+
+        params.sort = params.sort ?: 'enqueueTime'
+        params.order = params.order ?: 'desc'
+        params.max = params.max ?: '100'
+        params.offset = params.offset ?: '0'
+
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
+        DateTime theStart = getStartDate(params.startDate);
+        DateTime theEnd = getEndDate(params.endDate);
+
+        def calls = acdService.callHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
+                            params.agent, params.skill);
+
+        def callTotal = calls.totalCount;
+
+        def json = [:]
+        def callJson = []
+        for (AcdCallHistory call : calls)
+        {
+            def c = [:]
+            c.ani = call.ani
+            c.skill = call.skill.description
+            c.callStatus = call.callStatus.viewable()
+            c.callStart = call.callStart
+            c.callEnd = call.callEnd
+            c.enqueueTime = call.enqueueTime
+            c.dequeueTime = call.dequeueTime
+            c.user = ""
+            if (call.user != null)
+            {
+                c.user = call.user.realName
+            }
+            callJson.add(c)
+        }
+
+        json.calls = callJson
+        json.callTotal = callTotal
+        json.sort = params.sort
+        json.order = params.order
+        json.max = params.max
+        json.offset = params.offset
+        json.filtered = true
+        json.startDate =  dtf.print(theStart);
+        json.endDate = dtf.print(theEnd);
+        json.agent = params.agent;
+
+        def agentJson = [];
+        List<User> agents = acdService.acdAgentList;
+        for (User user : agents)
+        {
+            def d = [:]
+            d.id = user.id;
+            d.realName = user.realName;
+            agentJson.add(d);
+        }
+
+        json.skill = params.skill;
+
+        def skillJson = [];
+        List<Skill> skills = Skill.list(sort: "skillname");
+        for (Skill skill : skills)
+        {
+            def e = [:]
+            e.id = skill.id;
+            e.skillname = skill.description;
+            skillJson.add(e);
+        }
+
+        json.skillList = skillJson;
+        json.agentList = agentJson;
+
+        render(view: 'callHistory', model: json)
+    }
+
+    private def getStartDate(String inputStart)
+    {
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
+        DateTime theStart;
+
+        if(inputStart && !inputStart.isEmpty())
+        {
+            theStart = DateTime.parse(inputStart, dtf);
+        }
+        else
+        {
+            theStart = DateTime.now().minusDays(1);
+        }
+
+        theStart = theStart.withHourOfDay(0);
+        theStart = theStart.withMinuteOfHour(0);
+        theStart = theStart.withSecondOfMinute(0);
+
+        return theStart;
+    }
+
+    private def getEndDate(String inputEnd)
+    {
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
+        DateTime theEnd;
+
+        if(inputEnd && !inputEnd.isEmpty())
+        {
+            theEnd = DateTime.parse(inputEnd, dtf);
+        }
+        else
+        {
+            theEnd = DateTime.now();
+        }
+
+        theEnd = theEnd.withHourOfDay(23);
+        theEnd = theEnd.withMinuteOfHour(59);
+        theEnd = theEnd.withSecondOfMinute(59);
+
+        return theEnd;
     }
 }

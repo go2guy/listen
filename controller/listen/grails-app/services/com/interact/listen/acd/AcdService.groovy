@@ -727,4 +727,53 @@ class AcdService
         }
       }
     }
+
+    /**
+     * Get a list of acd users.
+     *
+     * @return Users.
+     */
+    List<User> getAcdAgentList()
+    {
+        def userCriteria = User.createCriteria();
+        def results = userCriteria.list(sort: "realName")
+        {
+            isNotNull("organization")
+            acdUserStatus {
+                ne("acdQueueStatus",AcdQueueStatus.VoicemailBox)
+            }
+
+            order("realName", "asc")
+        }
+
+
+        return results;
+    }
+
+    def callHistoryList(String sort, String order, String max, String offset, DateTime theStart, DateTime theEnd,
+                        String agentId, String skillId)
+    {
+        def calls = AcdCallHistory.createCriteria().list(
+            sort: sort, order: order, max: max, offset: offset)
+            {
+                ge("enqueueTime", theStart)
+                le("enqueueTime", theEnd)
+
+                if(agentId && !agentId.isEmpty())
+                {
+                    user {
+                        eq("id", Long.parseLong(agentId))
+                    }
+                }
+
+                if(skillId && !skillId.isEmpty())
+                {
+                    skill {
+                        eq("id", Long.parseLong(skillId))
+                    }
+                }
+            }
+
+        return calls;
+    }
 }
