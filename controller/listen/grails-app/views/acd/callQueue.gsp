@@ -121,7 +121,7 @@
                 <td class="disconnect-button">
                     <button type="button" class="disconnectButton" id="disconnectButton"
                             value="${call.id}"
-                            onclick="disconnectClicked(this, this.value)">Disconnect</button>
+                            onclick="disconnectClicked(this, this.value)">Voicemail</button>
                 </td>
             </tr>
           </g:each>
@@ -191,7 +191,7 @@
                 row += '<td>' + getTimeSince(call.lastModified) + '</td>';
                 row += '<td class="disconnect-button">' +
                         '<button type="button" class="disconnectButton" id="disconnectButton"' +
-                        'value="' + call.id + '"onclick="disconnectClicked(this, this.value)">Disconnect</button></td>';
+                        'value="' + call.id + '"onclick="disconnectClicked(this, this.value)">Voicemail</button></td>';
                 row += '</tr>';
                 tbody.append(row);
               });

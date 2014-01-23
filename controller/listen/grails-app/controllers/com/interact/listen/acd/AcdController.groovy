@@ -539,18 +539,18 @@ class AcdController
 
             if (thisCall)
             {
-                users = acdService.getAvailableUsers(thisCall.skill);
+                users = acdService.getAcdAgentList();
             }
 
             def json = [:]
 
             def userJson = [];
 
-            for (UserSkill thisUser : users)
+            for (User thisUser : users)
             {
                 def c = [:]
-                c.id = thisUser.user.id;
-                c.realName = thisUser.user.realName;
+                c.id = thisUser.id;
+                c.realName = thisUser.realName;
                 userJson.add(c);
             }
 
@@ -577,12 +577,12 @@ class AcdController
             {
                 try
                 {
-                    acdService.disconnectCall(thisCall);
+                    acdService.acdCallVoicemail(thisCall);
                     success = true;
                 }
                 catch (Exception e)
                 {
-                    log.error("Exception sending disconnect event: " + e);
+                    log.error("Exception sending voicemail event: " + e);
                 }
             }
 
