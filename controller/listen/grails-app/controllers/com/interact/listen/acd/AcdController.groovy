@@ -44,136 +44,174 @@ class AcdController
     }
 
     def callQueue = {
-        params.sort = params.sort ?: 'enqueueTime'
-        params.order = params.order ?: 'asc'
-        params.max = params.max ?: 10
-        params.offset = params.offset ?: 0
+      if (!authenticatedUser) {
+        //Redirect to login
+        redirect(controller: 'login', action: 'auth');
+      }
+      def user = authenticatedUser
 
-        // if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') { // get all calls
-          def calls = AcdCall.createCriteria().list() {
-              order(params.sort, params.order)
-              maxResults(params.max.toInteger())
-              firstResult(params.offset.toInteger())
-          }
-          def callTotal = AcdCall.findAll().size()
-        // }
-        // else { // Get calls for the current user
-          // def skills = []
-          // UserSkill.findAllbyUser(user).each() { userSkill ->
-            // skills.add(userSkill.skill)
-          // }
-          // def calls = AcdCall.createCriteria().list() {
-              // order(params.sort, params.order)
-              // maxResults(params.max.toInteger())
-              // firstResult(params.offset.toInteger())
-              // 'in'("skill",skills)
-          // }
-          // def allCalls = AcdCall.createCriteria().list() {
-            // 'in'("skill",skills)
-          // }
-          // def callTotal = allCalls.size()
-        // }
+      params.sort = params.sort ?: 'enqueueTime'
+      params.order = params.order ?: 'asc'
+      params.max = params.max ?: 10
+      params.offset = params.offset ?: 0
 
-        def model = [
-                calls: calls,
-                callTotal: callTotal,
-                sort: params.sort,
-                order: params.order,
-                max: params.max,
-                offset: params.offset
-        ]
+      def calls = []
+      def callTotal = 0
 
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all calls
+        calls = AcdCall.createCriteria().list() {
+            order(params.sort, params.order)
+            maxResults(params.max.toInteger())
+            firstResult(params.offset.toInteger())
+        }
+        callTotal = AcdCall.findAll().size()
+      }
+      else { // Get calls for the current user
+        def skills = []
+        UserSkill.findAllByUser(user).each() { userSkill ->
+          skills.add(userSkill.skill)
+        }
+        calls = AcdCall.createCriteria().list() {
+            order(params.sort, params.order)
+            maxResults(params.max.toInteger())
+            firstResult(params.offset.toInteger())
+            'in'("skill",skills)
+        }
+        def allCalls = AcdCall.createCriteria().list() {
+          'in'("skill",skills)
+        }
+        callTotal = allCalls.size()
+      }
 
-        render(view: 'callQueue', model: model)
+      def model = [
+              calls: calls,
+              callTotal: callTotal,
+              sort: params.sort,
+              order: params.order,
+              max: params.max,
+              offset: params.offset
+      ]
+
+      render(view: 'callQueue', model: model)
     }
 
     def pollQueue = {
-        params.sort = params.sort ?: 'enqueueTime'
-        params.order = params.order ?: 'asc'
-        params.max = params.max ?: 10
-        params.offset = params.offset ?: 0
+      def user = authenticatedUser
 
-        def json = [:]
+      params.sort = params.sort ?: 'enqueueTime'
+      params.order = params.order ?: 'asc'
+      params.max = params.max ?: 10
+      params.offset = params.offset ?: 0
 
-        List<AcdCall> calls = AcdCall.createCriteria().list {
-            order(params.sort, params.order)
-            maxResults(params.max.toInteger())
-            firstResult(params.offset.toInteger())
+      def json = [:]
+
+      List<AcdCall> calls = []
+
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all calls
+        calls = AcdCall.createCriteria().list {
+          order(params.sort, params.order)
+          maxResults(params.max.toInteger())
+          firstResult(params.offset.toInteger())
         }
-
-        def callJson = []
-        for (AcdCall call : calls)
-        {
-            def c = [:]
-            c.id = call.id
-            c.ani = call.ani
-            c.onHold = call.onHold
-            c.sessionId = call.sessionId
-            c.skill = call.skill.description
-            c.callStatus = call.callStatus.viewable()
-            c.enqueueTime = call.enqueueTime
-            c.lastModified = call.lastModified
-            c.user = ""
-            if (call.user != null)
-            {
-                c.user = call.user.realName
-            }
-            callJson.add(c)
+      }
+      else { // get calls for current users skillset
+        def skills = []
+        UserSkill.findAllByUser(user).each() { userSkill ->
+          skills.add(userSkill.skill)
         }
-
-        json.calls = callJson
-
-        render(contentType: 'application/json') {
-            json
+        calls = AcdCall.createCriteria().list {
+          order(params.sort, params.order)
+          maxResults(params.max.toInteger())
+          firstResult(params.offset.toInteger())
+          'in'("skill",skills)
         }
+      }
+
+      def callJson = []
+      for (AcdCall call : calls)
+      {
+          def c = [:]
+          c.id = call.id
+          c.ani = call.ani
+          c.onHold = call.onHold
+          c.sessionId = call.sessionId
+          c.skill = call.skill.description
+          c.callStatus = call.callStatus.viewable()
+          c.enqueueTime = call.enqueueTime
+          c.lastModified = call.lastModified
+          c.user = ""
+          if (call.user != null)
+          {
+              c.user = call.user.realName
+          }
+          callJson.add(c)
+      }
+
+      json.calls = callJson
+
+      render(contentType: 'application/json') {
+          json
+      }
     }
 
     def pollHistory = {
-        def user = authenticatedUser
+      def user = authenticatedUser
 
-        params.sort = params.sort ?: 'enqueueTime'
-        params.order = params.order ?: 'asc'
-        params.max = params.max ?: 10
-        params.offset = params.offset ?: 0
+      params.sort = params.sort ?: 'enqueueTime'
+      params.order = params.order ?: 'asc'
+      params.max = params.max ?: 10
+      params.offset = params.offset ?: 0
 
-        def json = [:]
+      def json = [:]
 
-        List<AcdCallHistory> calls = AcdCallHistory.createCriteria().list {
+      List<AcdCallHistory> calls = []
+
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all call history
+        calls = AcdCallHistory.createCriteria().list {
             order(params.sort, params.order)
             maxResults(params.max.toInteger())
             firstResult(params.offset.toInteger())
         }
-
-        def callJson = []
-        for (AcdCallHistory call : calls)
-        {
-            def c = [:]
-            c.id = call.id
-            c.ani = call.ani
-            c.user = ""
-            if (call.user != null)
-            {
-                c.user = call.user.realName
-            }
-            c.skill = call.skill.description
-            c.start = call.callStart
-            c.end = call.callEnd
-            c.callStatus = call.callStatus.viewable()
-            c.enqueueTime = call.enqueueTime
-            c.dequeueTime = call.dequeueTime
-            callJson.add(c)
+      }
+      else { // get call history for current user
+        calls = AcdCallHistory.createCriteria().list {
+            order(params.sort, params.order)
+            maxResults(params.max.toInteger())
+            firstResult(params.offset.toInteger())
+            eq("user",user)
         }
+      }
 
-        json.calls = callJson
+      def callJson = []
+      for (AcdCallHistory call : calls)
+      {
+          def c = [:]
+          c.id = call.id
+          c.ani = call.ani
+          c.user = ""
+          if (call.user != null)
+          {
+              c.user = call.user.realName
+          }
+          c.skill = call.skill.description
+          c.start = call.callStart
+          c.end = call.callEnd
+          c.callStatus = call.callStatus.viewable()
+          c.enqueueTime = call.enqueueTime
+          c.dequeueTime = call.dequeueTime
+          callJson.add(c)
+      }
 
-        if (log.isDebugEnabled())
-        {
-            log.debug "Rendering call queue as json [${json.toString()}]"
-        }
+      json.calls = callJson
 
-        render(contentType: 'application/json') {
-            json
-        }
+      if (log.isDebugEnabled())
+      {
+          log.debug "Rendering call queue as json [${json.toString()}]"
+      }
+
+      render(contentType: 'application/json') {
+          json
+      }
     }
 
     def pollStatus = {
@@ -793,82 +831,106 @@ class AcdController
 
     def callHistory =
     {
-        if (log.isDebugEnabled())
-        {
-            log.debug "AcdController.callHistory: params[${params}]";
+      if (!authenticatedUser) {
+        //Redirect to login
+        redirect(controller: 'login', action: 'auth');
+      }
+      def user = authenticatedUser
+
+      if (log.isDebugEnabled())
+      {
+          log.debug "AcdController.callHistory: params[${params}]";
+      }
+
+      params.sort = params.sort ?: 'enqueueTime'
+      params.order = params.order ?: 'desc'
+      params.max = params.max ?: '100'
+      params.offset = params.offset ?: '0'
+
+      DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
+      DateTime theStart = getStartDate(params.startDate);
+      DateTime theEnd = getEndDate(params.endDate);
+
+      def calls = []
+      if ( !user.hasRole( 'ROLE_ORGANIZATION_ADMIN' ) ) {
+        params.agent = params.agent ?: user.id
+      }
+      params.agent = params.agent ?: ""
+      calls = acdService.callHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
+                      params.agent.toString(), params.skill);
+      def callTotal = calls.totalCount;
+
+      def json = [:]
+      def callJson = []
+      for (AcdCallHistory call : calls)
+      {
+          def c = [:]
+          c.ani = call.ani
+          c.skill = call.skill.description
+          c.callStatus = call.callStatus.viewable()
+          c.callStart = call.callStart
+          c.callEnd = call.callEnd
+          c.enqueueTime = call.enqueueTime
+          c.dequeueTime = call.dequeueTime
+          c.user = ""
+          if (call.user != null)
+          {
+              c.user = call.user.realName
+          }
+          callJson.add(c)
+      }
+
+      json.calls = callJson
+      json.callTotal = callTotal
+      json.sort = params.sort
+      json.order = params.order
+      json.max = params.max
+      json.offset = params.offset
+      json.filtered = true
+      json.startDate =  dtf.print(theStart);
+      json.endDate = dtf.print(theEnd);
+      json.agent = params.agent;
+
+      def agentJson = [];
+      List<User> agents = []
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // find all agents
+        agents = acdService.acdAgentList;
+      }
+      else { // list only the current user
+        agents.add(user)
+      }
+      for (User agent : agents)
+      {
+          def d = [:]
+          d.id = agent.id;
+          d.realName = agent.realName;
+          agentJson.add(d);
+      }
+
+      json.skill = params.skill;
+
+      def skillJson = [];
+      List<Skill> skills = []
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // find all skills
+        skills = Skill.list(sort: "skillname");
+      }
+      else { // find only skills associated with current user
+        UserSkill.findAllByUser(user).each() { userSkill ->
+          skills.add(userSkill.skill)
         }
+      }
+      for (Skill skill : skills)
+      {
+          def e = [:]
+          e.id = skill.id;
+          e.skillname = skill.description;
+          skillJson.add(e);
+      }
 
-        params.sort = params.sort ?: 'enqueueTime'
-        params.order = params.order ?: 'desc'
-        params.max = params.max ?: '100'
-        params.offset = params.offset ?: '0'
+      json.skillList = skillJson;
+      json.agentList = agentJson;
 
-        DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
-        DateTime theStart = getStartDate(params.startDate);
-        DateTime theEnd = getEndDate(params.endDate);
-
-        def calls = acdService.callHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
-                            params.agent, params.skill);
-
-        def callTotal = calls.totalCount;
-
-        def json = [:]
-        def callJson = []
-        for (AcdCallHistory call : calls)
-        {
-            def c = [:]
-            c.ani = call.ani
-            c.skill = call.skill.description
-            c.callStatus = call.callStatus.viewable()
-            c.callStart = call.callStart
-            c.callEnd = call.callEnd
-            c.enqueueTime = call.enqueueTime
-            c.dequeueTime = call.dequeueTime
-            c.user = ""
-            if (call.user != null)
-            {
-                c.user = call.user.realName
-            }
-            callJson.add(c)
-        }
-
-        json.calls = callJson
-        json.callTotal = callTotal
-        json.sort = params.sort
-        json.order = params.order
-        json.max = params.max
-        json.offset = params.offset
-        json.filtered = true
-        json.startDate =  dtf.print(theStart);
-        json.endDate = dtf.print(theEnd);
-        json.agent = params.agent;
-
-        def agentJson = [];
-        List<User> agents = acdService.acdAgentList;
-        for (User user : agents)
-        {
-            def d = [:]
-            d.id = user.id;
-            d.realName = user.realName;
-            agentJson.add(d);
-        }
-
-        json.skill = params.skill;
-
-        def skillJson = [];
-        List<Skill> skills = Skill.list(sort: "skillname");
-        for (Skill skill : skills)
-        {
-            def e = [:]
-            e.id = skill.id;
-            e.skillname = skill.description;
-            skillJson.add(e);
-        }
-
-        json.skillList = skillJson;
-        json.agentList = agentJson;
-
-        render(view: 'callHistory', model: json)
+      render(view: 'callHistory', model: json)
     }
 
     private def getStartDate(String inputStart)

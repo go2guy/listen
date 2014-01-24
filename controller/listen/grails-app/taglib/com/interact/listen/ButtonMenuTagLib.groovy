@@ -37,11 +37,7 @@ class ButtonMenuTagLib {
                 out << '<ul class="button-menu">'
 
                 button(attrs.button == 'status', 'acd', 'status', 'button.menu.acd.status')
-
-                if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) {
-                    button(attrs.button == 'callQueue', 'acd', 'callQueue', 'button.menu.acd.callQueue')
-                }
-
+                button(attrs.button == 'callQueue', 'acd', 'callQueue', 'button.menu.acd.callQueue')
                 if ( SpringSecurityUtils.ifAnyGranted('ROLE_VOICEMAIL_USER,ROLE_FAX_USER') ) {
                   /* Can't just call button for this one since we have to add a custom span element for the message count */
                   // TODO: Enter the value of new messages by default rather than (0)
@@ -49,10 +45,7 @@ class ButtonMenuTagLib {
                   out << g.link(controller: 'messages', action: 'acdInbox') { g.message(code: 'button.menu.acd.acdInbox') + '<span id="new-acd-message-count">(0)</span>' }
                   out << '</li>'
                 }
-
-                if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) {
-                  button(attrs.button == 'callHistory', 'acd', 'callHistory', 'button.menu.acd.callHistory')
-                }
+                button(attrs.button == 'callHistory', 'acd', 'callHistory', 'button.menu.acd.callHistory')
 
                 out << '</ul>'
 
