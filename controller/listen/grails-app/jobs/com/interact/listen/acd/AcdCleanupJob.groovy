@@ -50,7 +50,6 @@ class AcdCleanupJob
                     //Send them to voicemail
 //                    acdService.acdCallVoicemail(thisCall);
                     //Not doing this now, need to revisit when we have a status transaction with ivr
-                    continue;
                 }
 
                 switch(thisCall.callStatus)
