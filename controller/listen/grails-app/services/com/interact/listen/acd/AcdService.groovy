@@ -145,12 +145,6 @@ class AcdService
                 acdUserStatus {
                     eq("onACall", false)
                     'in'("acdQueueStatus",[AcdQueueStatus.Available, AcdQueueStatus.VoicemailBox])
-
-/*
-                    eq("acdQueueStatus", AcdQueueStatus.Available)
-                    eq("acdQueueStatus", AcdQueueStatus.VoicemailBox)
-*/
-
                     order("acdQueueStatus", "asc")
                 }
             }

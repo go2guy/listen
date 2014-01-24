@@ -61,66 +61,65 @@
     </style>
 
     <script type="text/javascript">
-      // Given a time in milliseconds returns a string representation in HH:MM:SS format
-      function formatTime(time) {
-        var hours = Math.floor(time / 3600);
+    // Given a time in milliseconds returns a string representation in HH:MM:SS format
+    function formatTime(time) {
+      var hours = Math.floor(time / 3600);
 
-        if (hours.toString().length == 1) {
-          hours = "0" + hours;
-        }
-
-        var minutes = Math.floor( (time % 3600) / 60 );
-
-        if (minutes.toString().length == 1) {
-          minutes = "0" + minutes;
-        }
-
-        var seconds = Math.floor( ((time % 3600) % 60 ) );
-
-        if (seconds.toString().length == 1) {
-          seconds = "0" + seconds;
-        }
-
-        return (hours + ':' + minutes + ':' + seconds);
+      if (hours.toString().length == 1) {
+        hours = "0" + hours;
       }
 
-      // Removes the annoyances of a mysql timestamp - returns YYYY-MM-DD HH:MM:SS format
-      function formatDate(date) {
-        date = date.split(/[- : T]/);
-        return (date[0] + "-" + date[1] + "-" + date[2] + " " + date[3] + ":" + date[4] + ":" + date[5]);
+      var minutes = Math.floor( (time % 3600) / 60 );
+
+      if (minutes.toString().length == 1) {
+        minutes = "0" + minutes;
       }
 
-      // Given a mysql timestamp returns current difference in HH:MM:SS format
-      function getDifference(start,end) {
+      var seconds = Math.floor( ((time % 3600) % 60 ) );
 
-          if(!start || !end)
-          {
-              return '';
-          }
+      if (seconds.toString().length == 1) {
+        seconds = "0" + seconds;
+      }
 
-        var stringStart = start.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
-        var stringEnd = end.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
+      return (hours + ':' + minutes + ':' + seconds);
+    }
+
+    // Removes the annoyances of a mysql timestamp - returns YYYY-MM-DD HH:MM:SS format
+    function formatDate(date) {
+      date = date.split(/[- : T]/);
+      return (date[0] + "-" + date[1] + "-" + date[2] + " " + date[3] + ":" + date[4] + ":" + date[5]);
+    }
+
+    // Given a mysql timestamp returns current difference in HH:MM:SS format
+    function getDifference(start,end) {
+      if(!start || !end)
+      {
+          return 'N/A';
+      }
+
+      var stringStart = start.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
+      var stringEnd = end.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
+      // convert mysql timestamp into javascript date
+      var startAsJDate_ = stringStart.split(/[- : T]/);
+      var startAsJDate = new Date(startAsJDate_[0], startAsJDate_[1]-1, startAsJDate_[2], startAsJDate_[3], startAsJDate_[4], startAsJDate_[5]);
+
+      // get difference in seconds
+      if ( stringEnd == "now" ) { // get difference from current time
+        var difference = ((new Date()).valueOf() - startAsJDate.valueOf()) / 1000;
+      }
+      else { // get difference from specified time
         // convert mysql timestamp into javascript date
-        var startAsJDate_ = stringStart.split(/[- : T]/);
-        var startAsJDate = new Date(startAsJDate_[0], startAsJDate_[1]-1, startAsJDate_[2], startAsJDate_[3], startAsJDate_[4], startAsJDate_[5]);
+        var endAsJDate_ = stringEnd.split(/[- : T]/);
+        var endAsJDate = new Date(endAsJDate_[0], endAsJDate_[1]-1, endAsJDate_[2], endAsJDate_[3], endAsJDate_[4], endAsJDate_[5]);
 
-        // get difference in seconds
-        if ( stringEnd == "" ) { // get difference from current time
-          var difference = ((new Date()).valueOf() - stringStart.valueOf()) / 1000;
+        var difference = (endAsJDate.valueOf() - startAsJDate.valueOf());
+        if ( difference > 0 ) {
+          difference = Math.floor(difference / 1000);
         }
-        else { // get difference from specified time
-          // convert mysql timestamp into javascript date
-          var endAsJDate_ = stringEnd.split(/[- : T]/);
-          var endAsJDate = new Date(endAsJDate_[0], endAsJDate_[1]-1, endAsJDate_[2], endAsJDate_[3], endAsJDate_[4], endAsJDate_[5]);
+      }
 
-          var difference = (endAsJDate.valueOf() - startAsJDate.valueOf());
-          if ( difference > 0 ) {
-            difference = Math.floor(difference / 1000);
-          }
-        }
-
-        return formatTime(difference);
-     }
+      return formatTime(difference);
+    }
     </script>
 
   </head>

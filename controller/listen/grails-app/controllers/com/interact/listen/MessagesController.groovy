@@ -62,31 +62,51 @@ class MessagesController {
 
     def acdInbox = {
       def user = authenticatedUser
-      def currentSkill = params.currentSkill
       def voicemailUser
       def skillList = []
+      def count = ""
+      def messageList = []
+      def messageTotal = 0
 
-      // if a current skill has not been specified
-      if ( params?.currentSkill == null ) {
-        // just grab the first skillname available
-        currentSkill = UserSkill.findAllByUser(user)?.pop()?.skill.skillname
-      }
-
-      // use the current skillname to look up the current voicemail user
-      voicemailUser = AcdService.getVoicemailUserBySkillname(currentSkill)
-
-      UserSkill.findAllByUser(user)?.each() { userSkill ->
-        skillList.push(userSkill?.skill?.skillname)
-      }
-
+      // reconcile sorting parameters
       params.max = Math.min(params.max ? params.int('max') : 25, 100)
       params.sort = params.sort ? params.sort : 'dateCreated'
       params.order = params.order ? params.order : 'desc'
-  
-      def messageList = InboxMessage.findAllByOwner(voicemailUser)
-      def count = InboxMessage.countByOwner(voicemailUser)
+      params.currentSkill = params.currentSkill ?: 'All'
 
-      log.debug "Found [${count}] messages in mailbox of [${voicemailUser?.username}]"
+      def currentSkill = params.currentSkill
+
+      // compile an associated skill list to populate the select
+      def userSkills = UserSkill.findAllByUser(user)
+      userSkills?.each() { userSkill ->
+        count = inboxMessageService.newAcdMessageCount(userSkill?.skill?.skillname)
+        skillList.push( (userSkill?.skill?.skillname + " " + count ))
+      }
+
+      def userList = []
+      userSkills?.each() { userSkill ->
+        voicemailUser = AcdService.getVoicemailUserBySkillname(userSkill?.skill?.skillname)
+        userList.add(voicemailUser)
+        messageTotal += InboxMessage.countByOwner(voicemailUser)
+      }
+      skillList.push( ("All (" + messageTotal + ")") )
+
+      // use the current skillname to look up the current voicemail user
+      if ( currentSkill != 'All' ) {
+        voicemailUser = AcdService.getVoicemailUserBySkillname(currentSkill)
+
+        messageList = InboxMessage.findAllByOwner(voicemailUser,params)
+        messageTotal = InboxMessage.countByOwner(voicemailUser)
+
+        log.debug "Found [${count}] messages in mailbox of [${voicemailUser?.username}]"
+      }
+      else { // All
+        messageList = InboxMessage.createCriteria().list {
+          order(params.sort,params.order)
+          maxResults(params.max)
+          'in'("owner",userList)
+        }
+      }
 
       messageList.each() { message ->
         if(message.instanceOf(Voicemail)) {
@@ -100,9 +120,12 @@ class MessagesController {
 
       def model = [
         messageList: messageList,
-        messageTotal: count,
+        messageTotal: messageTotal,
         skillList: skillList,
-        currentSkill: currentSkill
+        currentSkill: currentSkill,
+        sort: params.sort,
+        order: params.order,
+        max: params.max
       ]
 
       log.debug "Rendering view [acdInbox] with model [${model}]"
@@ -157,6 +180,7 @@ class MessagesController {
         if(params.order) preserve.order = params.order
         if(params.offset) preserve.offset = params.offset
         if(params.max) preserve.max = params.max
+        def referer = request.getHeader('referer')
 
         // TODO log errors
 
@@ -168,7 +192,7 @@ class MessagesController {
         }
 
         def user = authenticatedUser
-        if(message.owner != user) {
+        if ( message.owner != user && ! referer.contains('acdInbox') ) {
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -176,7 +200,13 @@ class MessagesController {
         inboxMessageService.toggleStatus(message)
 
         flash.successMessage = 'Message status updated'
-        redirect(action: 'inbox', params: preserve)
+
+        if ( referer.contains("acdInbox") ) {
+          redirect(action: 'acdInbox', params: preserve)
+        }
+        else {
+          redirect(action: 'inbox', params: preserve)
+        }
     }
     
     // ajax
@@ -265,29 +295,37 @@ class MessagesController {
 
     // ajax
     def acdPollingList = {
-        def user = authenticatedUser
-        def currentSkill = params.currentSkill
-        def voicemailUser
-        def skillList = []
-
-        // if a current skill has not been specified
-        if ( params?.currentSkill == null ) {
-          // just grab the first skillname available
-          currentSkill = UserSkill.findAllByUser(user)?.pop()?.skill.skillname
-        }
-
-        // use the current skillname to look up the current voicemail user
-        voicemailUser = AcdService.getVoicemailUserBySkillname(currentSkill)
-
-        // Don't believe I need the skilllist for the ajax request
-        // UserSkill.findAllByUser(user)?.each() { userSkill ->
-          // skillList.push(userSkill?.skill?.skillname)
-        // }
-
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
         params.sort = params.sort ? params.sort : 'dateCreated'
         params.order = params.order ? params.order : 'desc'
-        def list = InboxMessage.findAllByOwner(voicemailUser, params)
+        params.currentSkill = params.currentSkill ? params.currentSkill : 'All'
+
+        def user = authenticatedUser
+        def currentSkill = params.currentSkill
+        def voicemailUser
+        def list = []
+
+        // use the current skillname to look up the current voicemail user
+        // and get their messages
+        if ( currentSkill != 'All' ) {
+          voicemailUser = AcdService.getVoicemailUserBySkillname(currentSkill)
+
+          list = InboxMessage.findAllByOwner(voicemailUser,params)
+        }
+        else { // All
+          def userList = []
+
+          UserSkill.findAllByUser(user).each() { userSkill ->
+            userList.add(AcdService.getVoicemailUserBySkillname(userSkill?.skill?.skillname))
+          }
+
+          list = InboxMessage.createCriteria().list {
+            order(params.sort,params.order)
+            maxResults(params.max)
+            'in'("owner",userList)
+          }
+        }
+
         def visibleIds = params.visibleIds.trim()
         if(visibleIds.length() > 0) {
             visibleIds = visibleIds.split(",")
@@ -333,6 +371,7 @@ class MessagesController {
 
             returnList << item
         }
+
         visibleIds.each { updatedVisibleIds.add(it) }
 
         def i = 0

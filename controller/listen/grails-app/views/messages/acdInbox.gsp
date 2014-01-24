@@ -9,24 +9,20 @@
 
   <body>
 
-    <ul class="button-menu">
-      <g:each var="skill" in="${skillList}">
-        <li class="${currentSkill == skill ? 'current' : ''}">
-          <g:link controller="messages" action="acdInbox" params="[currentSkill: skill]">${skill}
-            <span id="${skill.replaceAll(' ','')}-message-count">(0)</span>
-          </g:link>
-        </li>
-      </g:each>
-    </ul>
-    %{-- Temporary spacing fix until I have time to figure out the styling --}%
-    </br>
+    <g:form id="messageForm" url="[action:'acdInbox',controller:'messages']">
+      <select id="currentSkill" name="currentSkill" onchange="this.form.submit()">
+        <g:each in="${skillList}" var="skill">
+          <option id="${skill.replaceAll('\\s\\(\\d+\\)','')}-option" value="${skill.replaceAll('\\s\\(\\d+\\)','')}" ${skill.replaceAll('\\s\\(\\d+\\)','') == currentSkill ? 'selected' : ''}>${skill}</option>
+        </g:each>
+      </select>
+    </g:form>
 
     <g:if test="${messageList.size() > 0}">
       <div class="listHeader">
-        <div class="from columnHeader<g:if test="${params.sort == 'leftBy'}"> sorted ${params.order}</g:if>"><listen:sortLink controller="messages" action="inbox" property="leftBy" title="${g.message(code: 'inboxMessage.leftBy.label')}"/></div><!-- TODO this needs to sort by leftBy.realName, see [http://stackoverflow.com/questions/5708735/how-do-i-sort-by-a-property-on-a-nullable-association-in-grails] -->
-        <div class="received columnHeader<g:if test="${params.sort == 'dateCreated'}"> sorted ${params.order}</g:if>"><listen:sortLink controller="messages" action="inbox" property="dateCreated" title="${g.message(code: 'inboxMessage.dateCreated.label')}"/></div>
+        <div class="from columnHeader<g:if test="${params.sort == 'leftBy'}"> sorted ${params.order}</g:if>"><listen:sortLink controller="messages" action="acdInbox" property="leftBy" title="${g.message(code: 'inboxMessage.leftBy.label')}"/></div><!-- TODO this needs to sort by leftBy.realName, see [http://stackoverflow.com/questions/5708735/how-do-i-sort-by-a-property-on-a-nullable-association-in-grails] -->
+        <div class="received columnHeader<g:if test="${params.sort == 'dateCreated'}"> sorted ${params.order}</g:if>"><listen:sortLink controller="messages" action="acdInbox" property="dateCreated" title="${g.message(code: 'inboxMessage.dateCreated.label')}"/></div>
         <div class="duration columnHeader"></div>
-        <div class="status columnHeader<g:if test="${params.sort == 'isNew'}"> sorted ${params.order}</g:if>"><listen:sortLink controller="messages" action="inbox" property="isNew" title="${g.message(code: 'page.messages.inbox.status.column.header')}"/></div>
+        <div class="status columnHeader<g:if test="${params.sort == 'isNew'}"> sorted ${params.order}</g:if>"><listen:sortLink controller="messages" action="acdInbox" property="isNew" title="${g.message(code: 'page.messages.inbox.status.column.header')}"/></div>
       </div>
     </g:if>
 
@@ -102,7 +98,7 @@
     <g:if test="${messageList.size() > 0}">
       <listen:paginateTotal total="${messageTotal}" messagePrefix="paginate.total.messages"/>
       <div class="pagination">
-        <g:paginate total="${messageTotal}" maxsteps="5" action="inbox"/>
+        <g:paginate total="${messageTotal}" maxsteps="5" action="acdInbox"/>
       </div>
     </g:if>
 
@@ -177,7 +173,7 @@
          });
       }
 
-      setInterval("pollMessages()", 5000);
+      setInterval("pollMessages()", 15000);
 
       function pollMessages() {
         var visibleIds = ''
@@ -188,7 +184,7 @@
 
         $.ajax({
           url: '${request.contextPath}/messages/acdPollingList?visibleIds=' + visibleIds + '${(request.queryString?.length() > 0) ? "&" + request.queryString : ""}' +
-                '&currentSkill=${currentSkill}',
+                '&currentSkill=${currentSkill}&sort=${sort}&order=${order}&max=${max}',
           dataType: 'json',
           cache: false,
           success: function(data, textStatus, xhr) {
@@ -293,15 +289,17 @@
       } // pollMessages
 
       function getMessageCountForSkill(skill) {
-        var displayedCount = $("#" + skill + "-message-count");
-        var newCount = '(0)';
+        var option = $("#" + skill + "-option");
         $.ajax({
           url: '${request.contextPath}/messages/newAcdCount?currentSkill=' + skill,
           dataType: 'json',
           cache: false,
           success: function(data) {
-            if ( data && data.count != displayedCount.text() ) {
-              displayedCount.text(data.count);
+            if ( data ) {
+              var newText = skill + " " + data.count;
+              if ( newText != option.text() ) {
+                option.text(newText);
+              }
             }
           }
         });
@@ -309,14 +307,12 @@
 
       <%
         def javascript = "\$(document).ready( function () { "
-        // javascript += "getMessageCountForSkills(); "
         javascript += "setInterval(getMessageCountForSkills(),5000);"
         javascript += "});\n\n"
         javascript += "function getMessageCountForSkills() {\n"
         skillList.each() { skill ->
-          javascript += "getMessageCountForSkill('" + skill.replaceAll(' ','') + "');\n"
+          javascript += "getMessageCountForSkill('" + skill.replaceAll('\\s\\(\\d+\\)','') + "');\n"
         }
-        // javascript += "setTimeout(getMessageCountForSkills(),5000);\n"
         javascript += "}\n"
         out << javascript
       %>

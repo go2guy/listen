@@ -45,42 +45,65 @@
     </style>
 
     <script type="text/javascript">
-      // Given a mysql timestamp returns current difference in HH:MM:SS format
-      function getTimeSince(date) {
-        var time = "";
-        var timestamp = "";
-        var wait = "";
-        var wait_sec = "";
-        var wait_min = "";
-        var wait_hours = "";
+    // Given a time in milliseconds returns a string representation in HH:MM:SS format
+    function formatTime(time) {
+      var hours = Math.floor(time / 3600);
 
-        // convert mysql timestamp into javascript date
-        timestamp = date.split(/[- : T]/);
-        time = new Date(timestamp[0], timestamp[1]-1, timestamp[2], timestamp[3], timestamp[4], timestamp[5]);
-
-        wait = ((new Date()).valueOf() - time.valueOf()) / 1000;
-
-        wait_hours = Math.floor(wait / 3600);
-
-        if (wait_hours.toString().length == 1) {
-          wait_hours = "0" + wait_hours;
-        }
-
-        wait %= 3600;
-        wait_min = Math.floor(wait / 60);
-
-        if (wait_min.toString().length == 1) {
-          wait_min = "0" + wait_min;
-        }
-
-        wait_sec = Math.floor(wait % 60);
-
-        if (wait_sec.toString().length == 1) {
-          wait_sec = "0" + wait_sec;
-        }
-
-        return (wait_hours + ':' + wait_min + ':' + wait_sec);
+      if (hours.toString().length == 1) {
+        hours = "0" + hours;
       }
+
+      var minutes = Math.floor( (time % 3600) / 60 );
+
+      if (minutes.toString().length == 1) {
+        minutes = "0" + minutes;
+      }
+
+      var seconds = Math.floor( ((time % 3600) % 60 ) );
+
+      if (seconds.toString().length == 1) {
+        seconds = "0" + seconds;
+      }
+
+      return (hours + ':' + minutes + ':' + seconds);
+    }
+
+    // Removes the annoyances of a mysql timestamp - returns YYYY-MM-DD HH:MM:SS format
+    function formatDate(date) {
+      date = date.split(/[- : T]/);
+      return (date[0] + "-" + date[1] + "-" + date[2] + " " + date[3] + ":" + date[4] + ":" + date[5]);
+    }
+
+    // Given a mysql timestamp returns current difference in HH:MM:SS format
+    function getDifference(start,end) {
+      if(!start || !end)
+      {
+          return 'N/A';
+      }
+
+      var stringStart = start.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
+      var stringEnd = end.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
+      // convert mysql timestamp into javascript date
+      var startAsJDate_ = stringStart.split(/[- : T]/);
+      var startAsJDate = new Date(startAsJDate_[0], startAsJDate_[1]-1, startAsJDate_[2], startAsJDate_[3], startAsJDate_[4], startAsJDate_[5]);
+
+      // get difference in seconds
+      if ( stringEnd == "now" ) { // get difference from current time
+        var difference = ((new Date()).valueOf() - startAsJDate.valueOf()) / 1000;
+      }
+      else { // get difference from specified time
+        // convert mysql timestamp into javascript date
+        var endAsJDate_ = stringEnd.split(/[- : T]/);
+        var endAsJDate = new Date(endAsJDate_[0], endAsJDate_[1]-1, endAsJDate_[2], endAsJDate_[3], endAsJDate_[4], endAsJDate_[5]);
+
+        var difference = (endAsJDate.valueOf() - startAsJDate.valueOf());
+        if ( difference > 0 ) {
+          difference = Math.floor(difference / 1000);
+        }
+      }
+
+      return formatTime(difference);
+   }
     </script>
 
   </head>
@@ -115,8 +138,8 @@
               <td>${call.callStatus.viewable()}</td>
               %{-- <td>${call.callStatus.toString()}</td> --}%
               <script type="text/javascript">
-                document.write('<td>' + getTimeSince('${call.enqueueTime}') + '</td>');
-                document.write('<td>' + getTimeSince('${call.lastModified}') + '</td>');
+                document.write('<td>' + getDifference('${call.enqueueTime}','') + '</td>');
+                document.write('<td>' + getDifference('${call.lastModified}','') + '</td>');
               </script>
                 <td class="disconnect-button">
                     <button type="button" class="disconnectButton" id="disconnectButton"
@@ -164,9 +187,6 @@
     var queue = {
       poll: function() {
         $.ajax({
-          /* We actually relying on grails to do the sorting and we simply pass to grails
-            which column we want to order by. The order is set by the onclick function
-            configured for each of the column links. */
           url: '${createLink(action: 'pollQueue')}?sort=' + $("#sort").val() + '&order=' + $("#order").val() +
                 '&max=' + $("#max").val() + '&offset=' + $("#offset").val(),
           dataType: 'json',
@@ -187,8 +207,8 @@
                 row += '<td>' + call.ani + '</td>';
                 row += '<td>' + call.skill + '</td>';
                 row += '<td>' + call.callStatus + '</td>';
-                row += '<td>' + getTimeSince(call.enqueueTime) + '</td>';
-                row += '<td>' + getTimeSince(call.lastModified) + '</td>';
+                row += '<td>' + getDifference(call.enqueueTime,'now') + '</td>';
+                row += '<td>' + getDifference(call.lastModified,'now') + '</td>';
                 row += '<td class="disconnect-button">' +
                         '<button type="button" class="disconnectButton" id="disconnectButton"' +
                         'value="' + call.id + '"onclick="disconnectClicked(this, this.value)">Voicemail</button></td>';

@@ -12,6 +12,7 @@ import org.joda.time.DateTime
 import com.interact.listen.util.FileTypeDetector
 import grails.plugin.springsecurity.annotation.Secured
 import org.joda.time.LocalDateTime
+import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 
@@ -19,13 +20,15 @@ import org.joda.time.format.DateTimeFormatter
 class AcdController
 {
     static allowedMethods = [
-            index: 'GET',
-            status: 'GET',
-            toggleStatus: 'POST',
-            updateNumber: 'POST',
-            callQueue: 'GET',
-            callHistory: 'GET',
-            pollQueue: 'GET'
+      index: 'GET',
+      status: 'GET',
+      toggleStatus: 'POST',
+      updateNumber: 'POST',
+      callQueue: 'GET',
+      callHistory: 'GET',
+      pollQueue: 'GET',
+      pollHistory: 'GET',
+      pollStatus: 'GET'
     ]
 
     def promptFileService
@@ -46,13 +49,30 @@ class AcdController
         params.max = params.max ?: 10
         params.offset = params.offset ?: 0
 
-        def calls = AcdCall.createCriteria().list() {
-            order(params.sort, params.order)
-            maxResults(params.max.toInteger())
-            firstResult(params.offset.toInteger())
-        }
-
-        def callTotal = AcdCall.findAll().size()
+        // if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') { // get all calls
+          def calls = AcdCall.createCriteria().list() {
+              order(params.sort, params.order)
+              maxResults(params.max.toInteger())
+              firstResult(params.offset.toInteger())
+          }
+          def callTotal = AcdCall.findAll().size()
+        // }
+        // else { // Get calls for the current user
+          // def skills = []
+          // UserSkill.findAllbyUser(user).each() { userSkill ->
+            // skills.add(userSkill.skill)
+          // }
+          // def calls = AcdCall.createCriteria().list() {
+              // order(params.sort, params.order)
+              // maxResults(params.max.toInteger())
+              // firstResult(params.offset.toInteger())
+              // 'in'("skill",skills)
+          // }
+          // def allCalls = AcdCall.createCriteria().list() {
+            // 'in'("skill",skills)
+          // }
+          // def callTotal = allCalls.size()
+        // }
 
         def model = [
                 calls: calls,
@@ -156,117 +176,203 @@ class AcdController
         }
     }
 
-    def status =
-        {
-            if (!authenticatedUser)
-            {
-                //Redirect to login
-                redirect(controller: 'login', action: 'auth');
-            }
+    def pollStatus = {
+      def user = authenticatedUser
 
-            def user = authenticatedUser
+      params.queueSort = params.queueSort ?: 'enqueueTime'
+      params.queueOrder = params.queueOrder ?: 'asc'
+      params.queueMax = params.queueMax ?: 10
+      params.queueOffset = params.queueOffset ?: 0
 
-            if (params.paginateOrigin == 'queue')
-            {
-                params.queueSort = params.sort
-                params.queueOrder = params.order
-                params.queueMax = params.max
-                params.queueOffset = params.offset
-            }
-            else
-            { // params.paginateOrigin == 'history'
-                params.historySort = params.sort
-                params.historyOrder = params.order
-                params.historyMax = params.max
-                params.historyOffset = params.offset
-            }
+      params.historySort = params.historySort ?: 'enqueueTime'
+      params.historyOrder = params.historyOrder ?: 'asc'
+      params.historyMax = params.historyMax ?: 10
+      params.historyOffset = params.historyOffset ?: 0
 
-            // Get Agent Status Details
-            def acdUserStatus = AcdUserStatus.findByOwner(user)
-            if (!acdUserStatus)
-            {
-                log.debug "user does not currently have an acd user status [${acdUserStatus}]"
-                acdUserStatus = new AcdUserStatus()
-                acdUserStatus.owner = user
-                acdUserStatus.acdQueueStatus = AcdQueueStatus.Unavailable
-                /* Create user acd status entry, as they should have had one already */
-                if (acdUserStatus.validate() && acdUserStatus.save(failOnError: true, flush: true))
-                {
-                    log.error "Created acd user status for this user [${acdUserStatus.owner}]"
-                }
-                else
-                {
-                    log.error "Could not create Acd Status Entry for new user."
-                }
-            }
+      def json = [:]
 
-            def status = acdUserStatus?.acdQueueStatus?.toString()
-            def statusDisabled = acdUserStatus?.acdQueueStatus?.isDisabled()
-            def contactNumber = acdUserStatus?.contactNumber
-            def phoneNumbers = []
+      // get agent call queue
+      def skills = []
+      UserSkill.findAllByUser(user).each() { UserSkill ->
+        skills.add(userSkill.skill)
+      }
 
-            PhoneNumber.findAllByOwner(user).each() { number ->
-                phoneNumbers.add(number)
-            }
+      List<AcdCall> calls = AcdCall.createCriteria().list {
+        order(params.sort,params.order)
+        maxResults(params.max.toInteger())
+        firstResult(params.offset.toInteger())
+        eq("callStatus",AcdCallStatus.WAITING)
+        'in'("skill",skills)
+      }
 
-            if (log.isDebugEnabled())
-            {
-                log.debug "User status contact number [${contactNumber}]"
-            }
-
-            // Get Agent's Call Queue
-            params.queueSort = params.queueSort ?: 'enqueueTime'
-            params.queueOrder = params.queueOrder ?: 'asc'
-            params.queueMax = params.queueMax ?: 5
-            params.queueOffset = params.queueOffset ?: 0
-
-            def calls = AcdCall.createCriteria().list() {
-                order(params.queueSort, params.queueOrder)
-                maxResults(params.queueMax.toInteger())
-                firstResult(params.queueOffset.toInteger())
-                eq("user", user)
-                eq("callStatus", AcdCallStatus.WAITING)
-            }
-
-            def callTotal = AcdCall.findAllByUser(user).size()
-
-            // Get Agent Call History Details
-            params.historySort = params.historySort ?: 'enqueueTime'
-            params.historyOrder = params.historyOrder ?: 'asc'
-            params.historyMax = params.historyMax ?: 5
-            params.historyOffset = params.historyOffset ?: 0
-
-            def callHistory = AcdCallHistory.createCriteria().list() {
-                order(params.historySort, params.historyOrder)
-                maxResults(params.historyMax.toInteger())
-                firstResult(params.historyOffset.toInteger())
-                eq("user", user)
-            }
-
-            def historyTotal = AcdCallHistory.findAllByUser(user).size()
-
-            // Get User Skills
-            def userSkills = UserSkill.findAllByUser(user)
-
-            def model = [
-                    status: status,
-                    statusDisabled: statusDisabled,
-                    phoneNumbers: phoneNumbers,
-                    contactNumber: contactNumber,
-                    callHistory: callHistory,
-                    callTotal: callTotal,
-                    historyTotal: historyTotal,
-                    calls: calls,
-                    userSkills: userSkills
-            ]
-
-            if (log.isDebugEnabled())
-            {
-                log.debug "Rendering view [status] with model [${model}]"
-            }
-
-            render(view: 'status', model: model)
+      callJson = []
+      for(AcdCall call : calls) {
+        def c = [:]
+        c.id = call.id
+        c.ani = call.ani
+        c.onHold = call.onHold
+        c.sessionId = call.sessionId
+        c.skill = call.skill.description
+        c.callStatus = call.callStatus.viewable()
+        c.enqueueTime = call.enqueueTime
+        c.lastModified = call.lastModified
+        c.user = ""
+        if ( call.user != null ) {
+          c.user = call.user.realName
         }
+        callJson.add(c)
+      }
+
+      json.calls = callJson
+
+      // get agent call history
+      List<AcdCallHistory> callHistory = AcdCallHistory.createCriteria().list {
+        order(params.historySort,params.historyOrder)
+        maxResults(params.historyMax.toInteger())
+        firstResult(params.historyOffset.toInteger())
+        eq("user",user)
+      }
+
+      def callJson = []
+      for(AcdCallHistory call : callHistory) {
+        def c = [:]
+        c.id = call.id
+        c.ani = call.ani
+        c.user = ""
+        if ( call.user != null ) {
+          c.user = call.user.realName
+        }
+        c.skill = call.skill.description
+        c.start = call.callStart
+        c.end = call.callEnd
+        c.callStatus = call.callStatus.viewable()
+        c.enqueueTime = call.enqueueTime
+        c.dequeueTime = call.dequeueTime
+        callJson.add(c)
+      }
+
+      json.history = callJson
+
+      if(log.isDebugEnabled()) {
+        log.debug "Rendering agent status as json [${json.toString()}]"
+      }
+
+      render(contentType: 'application/json') {
+        json
+      }
+    }
+
+    def status = {
+      if (!authenticatedUser)
+      {
+        //Redirect to login
+        redirect(controller: 'login', action: 'auth');
+      }
+
+      def user = authenticatedUser
+
+      // Get Agent Status Details
+      def acdUserStatus = AcdUserStatus.findByOwner(user)
+      if (!acdUserStatus) {
+          log.debug "user does not currently have an acd user status [${acdUserStatus}]"
+          acdUserStatus = new AcdUserStatus()
+          acdUserStatus.owner = user
+          acdUserStatus.acdQueueStatus = AcdQueueStatus.Unavailable
+          /* Create user acd status entry, as they should have had one already */
+          if (acdUserStatus.validate() && acdUserStatus.save(failOnError: true, flush: true)) {
+              log.error "Created acd user status for this user [${acdUserStatus.owner}]"
+          } else {
+              log.error "Could not create Acd Status Entry for new user."
+          }
+      }
+
+      def status = acdUserStatus?.acdQueueStatus?.toString()
+      def statusDisabled = acdUserStatus?.acdQueueStatus?.isDisabled()
+      def contactNumber = acdUserStatus?.contactNumber
+      def phoneNumbers = []
+
+      // Get List of Agent's Available Contact Numbers
+      PhoneNumber.findAllByOwner(user).each() { number ->
+        phoneNumbers.add(number)
+      }
+
+      // Get Agent's Skillset
+      def userSkills = UserSkill.findAllByUser(user)
+
+      // Get Current Call
+      def currentCalls = AcdCall.findAllByUser(user)
+      def currentCallTotal = AcdCall.countByUser(user)
+
+      // Query for waiting calls associated with agent's skillset
+      params.queueSort = params.queueSort ?: 'enqueueTime'
+      params.queueOrder = params.queueOrder ?: 'asc'
+      params.queueMax = params.queueMax ?: 5
+      params.queueOffset = params.queueOffset ?: 0
+
+      def skills = []
+      userSkills.each() { userSkill ->
+        skills.add(userSkill.skill)
+      }
+
+      def calls = AcdCall.createCriteria().list() {
+        order(params.queueSort,params.queueOrder)
+        maxResults(params.queueMax.toInteger())
+        firstResult(params.queueOffset.toInteger())
+        eq("callStatus",AcdCallStatus.WAITING)
+        'in'("skill",skills)
+      }
+
+      if (log.isDebugEnabled())
+      {
+          log.debug "User status contact number [${contactNumber}]"
+      }
+
+      def allCalls = AcdCall.createCriteria().list() {
+        eq("callStatus",AcdCallStatus.WAITING)
+        'in'("skill",skills)
+      }
+      def callTotal = allCalls.size()
+
+      // Get Agent's Call History
+      params.historySort = params.historySort ?: 'enqueueTime'
+      params.historyOrder = params.historyOrder ?: 'asc'
+      // params.historyMax = params.historyMax ?: 5
+      // params.historyOffset = params.historyOffset ?: 0
+
+      // Date today = new Date().clearTime()
+      LocalDate today = new LocalDate()
+
+      def callHistory = AcdCallHistory.createCriteria().list() {
+        order(params.historySort, params.historyOrder)
+        // maxResults(params.historyMax.toInteger())
+        // firstResult(params.historyOffset.toInteger())
+        eq("user", user)
+        ge("enqueueTime",today.toDateTimeAtStartOfDay())
+      }
+
+      // def historyTotal = AcdCallHistory.findAllByUser(user).size()
+      def historyTotal = AcdCallHistory.countByUser(user);
+
+      def model = [
+        status: status,
+        statusDisabled: statusDisabled,
+        phoneNumbers: phoneNumbers,
+        contactNumber: contactNumber,
+        callHistory: callHistory,
+        callTotal: callTotal,
+        historyTotal: historyTotal,
+        calls: calls,
+        userSkills: userSkills,
+        currentCalls: currentCalls,
+        currentCallTotal: currentCallTotal
+      ]
+
+      if (log.isDebugEnabled()) {
+          log.debug "Rendering view [status] with model [${model}]"
+      }
+
+      render(view: 'status', model: model)
+    }
 
     def toggleStatus =
         {

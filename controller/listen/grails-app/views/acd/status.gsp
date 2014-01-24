@@ -11,161 +11,242 @@
           border: 1px solid #6DACD6;
           border-radius: 5px;
           display: block;
-          float: right;
           margin: 10px 0 0 0;
           padding: 5px;
           -webkit-border-radius: 5px;
           width: 288px;
         }
 
+        div #left-column {
+          width: 65%;
+          float: left;
+        }
+
+        div #right-column {
+          width: 30%;
+          float: left;
+          margin: 20px 10px 10px 20px;
+        }
+
         td.col-button {
             text-align: left;
             width: 10%;
         }
+
+        #currentCall table .col-hold-button
+        {
+            text-align: center;
+            width: 11%;
+        }
+
+        .template { display: none; }
+        .initially-hidden { display: none; }
+        .hidden { display: none; }
+
     </style>
 
     <script type="text/javascript">
-      // Given a mysql timestamp returns current difference in HH:MM:SS format
-      function getTimeSince(date) {
-        var time = "";
-        var timestamp = "";
-        var wait = "";
-        var wait_sec = "";
-        var wait_min = "";
-        var wait_hours = "";
+    // Given a time in milliseconds returns a string representation in HH:MM:SS format
+    function formatTime(time) {
+      var hours = Math.floor(time / 3600);
 
-        // convert mysql timestamp into javascript date
-        timestamp = date.split(/[- : T]/);
-        time = new Date(timestamp[0], timestamp[1]-1, timestamp[2], timestamp[3], timestamp[4], timestamp[5]);
-
-        wait = ((new Date()).valueOf() - time.valueOf()) / 1000;
-
-        wait_hours = Math.floor(wait / 3600);
-
-        if (wait_hours.toString().length == 1) {
-          wait_hours = "0" + wait_hours;
-        }
-
-        wait %= 3600;
-        wait_min = Math.floor(wait / 60);
-
-        if (wait_min.toString().length == 1) {
-          wait_min = "0" + wait_min;
-        }
-
-        wait_sec = Math.floor(wait % 60);
-
-        if (wait_sec.toString().length == 1) {
-          wait_sec = "0" + wait_sec;
-        }
-
-        return (wait_hours + ':' + wait_min + ':' + wait_sec);
+      if (hours.toString().length == 1) {
+        hours = "0" + hours;
       }
+
+      var minutes = Math.floor( (time % 3600) / 60 );
+
+      if (minutes.toString().length == 1) {
+        minutes = "0" + minutes;
+      }
+
+      var seconds = Math.floor( ((time % 3600) % 60 ) );
+
+      if (seconds.toString().length == 1) {
+        seconds = "0" + seconds;
+      }
+
+      return (hours + ':' + minutes + ':' + seconds);
+    }
+
+    // Removes the annoyances of a mysql timestamp - returns YYYY-MM-DD HH:MM:SS format
+    function formatDate(date) {
+      date = date.split(/[- : T]/);
+      return (date[0] + "-" + date[1] + "-" + date[2] + " " + date[3] + ":" + date[4] + ":" + date[5]);
+    }
+
+    // Given a mysql timestamp returns current difference in HH:MM:SS format
+    function getDifference(start,end) {
+      if(!start || !end)
+      {
+          return 'N/A';
+      }
+
+      var stringStart = start.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
+      var stringEnd = end.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
+      // convert mysql timestamp into javascript date
+      var startAsJDate_ = stringStart.split(/[- : T]/);
+      var startAsJDate = new Date(startAsJDate_[0], startAsJDate_[1]-1, startAsJDate_[2], startAsJDate_[3], startAsJDate_[4], startAsJDate_[5]);
+
+      // get difference in seconds
+      if ( stringEnd == "now" ) { // get difference from current time
+        var difference = ((new Date()).valueOf() - startAsJDate.valueOf()) / 1000;
+      }
+      else { // get difference from specified time
+        // convert mysql timestamp into javascript date
+        var endAsJDate_ = stringEnd.split(/[- : T]/);
+        var endAsJDate = new Date(endAsJDate_[0], endAsJDate_[1]-1, endAsJDate_[2], endAsJDate_[3], endAsJDate_[4], endAsJDate_[5]);
+
+        var difference = (endAsJDate.valueOf() - startAsJDate.valueOf());
+        if ( difference > 0 ) {
+          difference = Math.floor(difference / 1000);
+        }
+      }
+
+      return formatTime(difference);
+    }
     </script>
 
   </head>
   <body>
 
-    <table id="main-container">
-      <tr id="row-one">
-        <td width="70%" class="column-one">
-          <div id="agent-queue">
-            <h4>Waiting Calls:</h4>
-            <table id="callQueue" cellspacing="0" cellpadding="0">
+    <div id="left-column">
+      <div id="currentCall">
+        <h3>Current Call:</h3>
+        <form id="callForm" method="POST">
+        <div id="callListDiv">
+          <table id="???">
 
-            <thead>
-              <tr>
-                <g:sortableColumn property="ani" title="Caller"/>
-                <g:sortableColumn property="enqueueTime" title="Time On Call"/>
-                <g:sortableColumn property="lastModified" title="Last Activity"/>
-              </tr>
-              <input id="queueSort" type="hidden" value="${queueSort}"/>
-              <input id="queueOrder" type="hidden" value="${queueOrder}"/>
-              <input id="queueMax" type="hidden" value="${queueMax}"/>
-              <input id="queueOffset" type="hidden" value="${queueOffset}"/>
-            </thead>
+          <thead>
+            <tr>
+              <th width=10%>On Hold</th>
+              <th width=25%>Caller</th>
+              <th width=15%>Skill</th>
+              <th id="transferHeader" width=7%></th>
+              <th id="disconnectHeader" width=7%></th>
+              <th width=41%></th>
+            </tr>
+          </thead>
 
-            <tbody>
-              <g:set var="row_count" value="${0}"/>
-              <g:each in="${calls}" var="call">
-                <g:set var="column_count" value="${0}"/>
-                <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"l>
-                  <td>${call.ani}</td>
-                  <script type="text/javascript">
-                  document.write('<td>' + getTimeSince('${call.enqueueTime}') + '</td>');
-                  document.write('<td>' + getTimeSince('${call.lastModified}') + '</td>');
-                  </script>
-                </tr>
-              </g:each>
-            </tbody>
-
-            </table> <!-- callQueue -->
-
-            <div class="pagination" style="display: ${calls.size() > 0 ? 'block' : 'none'};">
-              <listen:paginateTotal total="${callTotal}" messagePrefix="paginate.total.callers"/>
-              <g:paginate total="${callTotal}" max="5" maxsteps="5" params="${[paginateOrigin: 'queue']}"/>
-            </div>
-
-          </div> <!-- agent-queue -->
-
-          <div id="agent-history">
-            <h4>Call History:</h4>
-
-            <table id="history-table" cellspacing="0" cellpadding="0">
-
-              <thead>
-                <tr>
-                  <g:sortableColumn property="ani" title="Caller"/>
-                  <g:sortableColumn property="status" title="Status"/>
-                  <g:sortableColumn property="enqueueTime" title="Time On Call"/>
-                  <g:sortableColumn property="lastModified" title="Last Activity"/>
-                </tr>
-                <input id="historySort" type="hidden" value="${historySort}"/>
-                <input id="historyOrder" type="hidden" value="${historyOrder}"/>
-                <input id="historyMax" type="hidden" value="${historyMax}"/>
-                <input id="historyOffset" type="hidden" value="${historyOffset}"/>
-              </thead>
-
-              <tbody>
-                <g:set var="row_count" value="${0}"/>
-                <g:each in="${callHistory}" var="call">
-                  <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"/>
-                    <td>${call.ani}</td>
-                    <td>${call.callStatus.toString()}</td>
-                    <script type="text/javascript">
-                      document.write('<td>' + getTimeSince('${call.enqueueTime}') + '</td>');
-                      document.write('<td>' + getTimeSince('${call.lastModified}') + '</td>');
-                    </script>
-                  </tr>
-                </g:each>
-              </tbody>
-
-            </table> <!-- history-table -->
-          </div> <!-- agent-history -->
-
-          <div class="pagination" style="display: ${calls.size() > 0 ? 'block' : 'none'};">
-            <listen:paginateTotal total="${historyTotal}" messagePrefix="paginate.total.callHistories"/>
-            <g:paginate total="${historyTotal}" max="5" maxsteps="5" params="${[paginateOrigin: 'history']}"/>
-          </div> <!-- pagination -->
-
-        </td> <!-- column-one -->
-
-        <td class="column-two">
-          <div id="agent-status" class="panel">
-            <h3><g:message code="page.acd.status.yourStatus.label"/></h3>
-
-            <table>
-              <tbody>
-                <tr>
-                  <td class="col-button">
-                    <g:form controller="acd" action="toggleStatus" method="post">
-                    <g:set var="titleMessage" value="" />
-                    <g:submitButton name="toggle_status" value="${status}" class="${status}"
-                                    title="${g.message(code: 'page.acd.status.button.' + status)}"
-                                    disabled="${statusDisabled}" />
-                    </g:form>
+          <tbody>
+            <table id="callTable">
+              <g:each in="${currentCalls}" status="i" var="thisCall">
+                <tr class="${(i % 2) == 0 ? 'even' : 'odd'}" data-id="${thisCall.id}">
+                <input id="hiddenCallId" type="hidden" name="id" value="${thisCall.id}"/>
+                  <td class="holdBox" width="10%">
+                    <g:checkBox name="holdCheckBox" value="${thisCall.id}" class="case holdCheckbox"
+                                checked="${thisCall.onHold}" onchange="toggleHold(this, this.value)"/>
+                  </td>
+                  <td class="caller" width=25%>${thisCall.ani}</td>
+                  <td class="callerSkill" width=15%>${thisCall.skill.description}</td>
+                  <td class="transfer-button"  width=7%>
+                    <button type="button" class="transferButton" id="transferButton"
+                            value="${thisCall.id}"
+                            onclick="transferClicked(this, this.value)">Transfer</button>
+                  </td>
+                  <td class="disconnect-button">
+                    <button type="button" class="disconnectButton" id="disconnectButton"
+                            value="${thisCall.id}"
+                            onclick="disconnectClicked(this, this.value)">Disconnect</button>
+                  </td>
+                  <td class="transfer-dropdown hidden">
+                    <div id="transferDropdownDiv">
+                      <select class="transferAgentSelect" id="transferAgents"></select>
+                      <button type="button" class="submitTransferButton" id="submitTransferButton"
+                              onclick="submitTransferClicked(this)">Transfer Call</button>
+                      <button type="button" class="cancelTransferButton" id="cancelTransferButton"
+                              onclick="cancelTransferClicked(this)">Cancel</button>
+                    </div> <!-- transferDropdownDiv -->
                   </td>
                 </tr>
+              </g:each>
+            </table> <!-- callTable -->
+          </tbody> <!-- ???.tbody -->
+
+          </table> <!-- ??? -->
+        </div> <!-- callListDiv -->
+        </form> <!-- callForm -->
+      </div> <!-- currentCall -->
+
+      <div id="agent-queue">
+        <h3>Waiting Calls:</h3>
+        <table id="callQueue" cellspacing="0" cellpadding="0">
+
+        <thead>
+          <tr>
+            <th>Caller</th>
+            <th>Skill</th>
+            <th>Wait Time</th>
+            <th>Last Activity</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <g:set var="row_count" value="${0}"/>
+          <g:each in="${calls}" var="call">
+            <g:set var="column_count" value="${0}"/>
+            <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"l>
+              <td>${call.ani}</td>
+              <td>${call.skill.description}</td>
+              <script type="text/javascript">
+              document.write('<td>' + getDifference('${call.enqueueTime}','now') + '</td>');
+              document.write('<td>' + getDifference('${call.lastModified}','now') + '</td>');
+              </script>
+            </tr>
+          </g:each>
+        </tbody>
+
+        </table> <!-- callQueue -->
+    </div> <!-- agent-queue -->
+
+    <div id="agent-history">
+      <h3>Call History:</h3>
+
+      <table id="history-table" cellspacing="0" cellpadding="0">
+
+        <thead>
+          <tr>
+            <th>Caller</th>
+            <th>Skill</th>
+            <th>Agent Time</th>
+            <th>Queue Time</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <g:set var="row_count" value="${0}"/>
+          <g:each in="${callHistory}" var="call">
+            <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"/>
+              <td>${call.ani}</td>
+              <td>${call.skill.description}</td>
+              <script type="text/javascript">
+                document.write('<td>' + getDifference('${call.callStart}','${call.callEnd}') + '</td>');
+                document.write('<td>' + getDifference('${call.enqueueTime}','${call.dequeueTime}') + '</td>');
+              </script>
+            </tr>
+          </g:each>
+        </tbody>
+
+      </table> <!-- history-table -->
+    </div> <!-- agent-history -->
+    </div> <!-- left-column -->
+
+    <div id="right-column">
+      <div id="agent-status" class="panel">
+        <h3><g:message code="page.acd.status.yourStatus.label"/></h3>
+
+        <table>
+          <tbody>
+            <tr>
+              <td class="col-button">
+                <g:form controller="acd" action="toggleStatus" method="post">
+                <g:set var="titleMessage" value="" />
+                <g:submitButton name="toggle_status" value="${status}" class="${status}"
+                                title="${g.message(code: 'page.acd.status.button.' + status)}"
+                                disabled="${statusDisabled}" />
+                </g:form>
+              </td>
+            </tr>
                 <g:form controller="acd" action="updateNumber" method="post">
                   <tr><td><h3><g:message code="page.acd.status.yourNumber.label"/></h3></td></tr>
                   <tr><td><g:select name="contactNumber"
@@ -176,24 +257,360 @@
                                     noSelection="['':'-- Select Contact Number --']"
                                     onchange="submit()"/></td></tr>
                 </g:form>
-                <tr>
-                  <td>
-                    <div id="agent-skills">
-                      <h3><g:message code="page.acd.status.yourSkills.label"/></h3>
-                      <ul>
-                        <g:each in="${userSkills}" var="userSkill">
-                          <li>${userSkill.skill.description}</li>
-                        </g:each>
-                      </ul>
-                    </div> <!-- agent-skills -->
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div id="agent-skills">
+                  <h3><g:message code="page.acd.status.yourSkills.label"/></h3>
+                  <ul>
+                    <g:each in="${userSkills}" var="userSkill">
+                      <li>${userSkill.skill.description}</li>
+                    </g:each>
+                  </ul>
+                </div> <!-- agent-skills -->
+              </td>
+              </tr>
+          </tbody>
+        </table>
 
-          </div> <!-- agent-status -->
-        </td> <!-- column-two -->
-      </tr> <!-- row-one -->
-    </table> <!-- main-container -->
+      </div> <!-- agent-status -->
+    </div> <!-- right-column -->
+
+    <table class="template">
+      <tr id="call-row-template">
+        <input id="hiddenCallId" type="hidden" name="id" value=""/>
+        <td class="holdBox" width="10%">
+          <g:checkBox name="holdCheckBox" value="" class="case holdCheckbox" checked="" onchange="toggleHold(this, this.value)"/>
+        </td>
+        <td class="caller" width="25%"></td>
+        <td class="callerSkill" width=15%></td>
+        <td class="transfer-button" width=7%>
+          <button type="button" class="transferButton" id="transferButton" value=""
+                  onclick="transferClicked(this, this.value)">Transfer</button>
+        </td>
+        <td class="disconnect-button" >
+          <button type="button" class="disconnectButton" id="disconnectButton"
+                  value=""
+                  onclick="disconnectClicked(this, this.value)">Disconnect</button>
+        </td>
+        <td class="transfer-dropdown hidden">
+          <div id="transferDropdownDiv">
+            <select class="transferAgentSelect" id="transferAgents"></select>
+              <button type="button" class="submitTransferButton" id="submitTransferButton"
+                      onclick="submitTransferClicked(this)">Transfer Call</button>
+              <button type="button" class="cancelTransferButton" id="cancelTransferButton"
+                      onclick="cancelTransferClicked(this)">Cancel</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <script type="text/javascript">
+    $(document).ready( function () {
+      setInterval(status.poll,1000);
+    });
+
+    var status = {
+      poll: function() {
+        $.ajax({
+          // passing in params to ensure sort and pagination are kept
+          url: '${createLink(action: 'pollStatus')}',
+          dataType: 'json',
+          cache: false,
+          success: function(data) {
+            // update agent call queue
+            var tbody = $("#agent-queue > table > tbody");
+            tbody.empty();
+            var tr;
+            var row_count = 0;
+            data.calls.forEach(function(call) {
+              tr = "";
+
+              tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
+              tr += '<td>' + call.ani + '</td>';
+              tr += '<td>' + call.skill + '</td>';
+              tr += '<td>' + getDifference(call.enqueueTime,'now') + '</td>';
+              tr += '<td>' + getDifference(call.lastModified,'now') + '</td></tr>';
+
+              tbody.append(tr);
+            });
+
+            // update agent call history
+            var tbody = $("#agent-history > table > tbody");
+            tbody.empty();
+            var tr;
+            var row_count = 0;
+            data.history.forEach(function(call) {
+              tr = "";
+
+              tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
+              tr += '<td>' + call.ani + '</td>';
+              tr += '<td>' + call.skill + '</td>';
+              tr += '<td>' + getDifference(call.start,call.end) + '</td>';
+              tr += '<td>' + getDifference(call.enqueueTime,call.dequeueTime) + '</td></tr>';
+
+              tbody.append(tr);
+
+            });
+          } // success
+        }); // $.ajax
+      } // status.poll
+    }; // status
+
+
+    function transferClicked(e, callId) {
+        $('.transfer-button').addClass('hidden');
+        $('.disconnect-button').addClass('hidden');
+        $('#transferHeader')[0].innerHTML = "Transfer";
+
+        $.ajax({
+            url: '${createLink(action: 'availableTransferAgents')}?id=' + callId,
+            dataType: 'json',
+            cache: false,
+            success: function(data)
+            {
+                $('.transferAgentSelect').empty();
+
+                if(data && data.users)
+                {
+                    for(var i = 0; i < data.users.length; i++)
+                    {
+                        var thisAgent = data.users[i];
+                        $('.transferAgentSelect').
+                                append('<option value="' + thisAgent.id + '">' + thisAgent.realName + '</option>');
+                    }
+                }
+            }
+        });
+
+        $('.transfer-dropdown').removeClass('hidden');
+        return true;
+    }
+
+    function submitTransferClicked(e) {
+        alert("Submit Transfer?");
+        var userId = $('.transferAgentSelect')[0].value;
+        var callId = $('#hiddenCallId')[0].value;
+
+        $.ajax({
+            url: '${createLink(action: 'transferCaller')}?id=' + callId + '&userId=' + userId,
+            dataType: 'json',
+            cache: false,
+            success: function(data)
+            {
+                if(data && data.success == "true")
+                {
+                    listen.showSuccessMessage('Call transferred.')
+                    $('.transfer-dropdown').addClass('hidden');
+                    $('.transfer-button').removeClass('hidden');
+                    $('.transfer-button').disabled = true;
+                    $('.disconnect-button').removeClass('hidden');
+                    $('.disconnect-button').disabled = true;
+                    $('#transferHeader')[0].innerHTML = "";
+                }
+                else
+                {
+                    listen.showErrorMessage('Unable to transfer call.')
+                    $('.transfer-button').removeClass('hidden');
+                    $('.disconnect-button').removeClass('hidden');
+                    $('.transfer-dropdown').addClass('hidden');
+                    $('#transferHeader')[0].innerHTML = "";
+                }
+            }
+        });
+
+        return true;
+    }
+
+    function cancelTransferClicked(e) {
+        $('.transfer-button').removeClass('hidden');
+        $('.disconnect-button').removeClass('hidden');
+        $('.transfer-dropdown').addClass('hidden');
+        $('#transferHeader')[0].innerHTML = "";
+        return true;
+    }
+
+    function disconnectClicked(e) {
+        alert("Disconnect Call?");
+        var callId = $('#hiddenCallId')[0].value;
+
+        $.ajax({
+            url: '${createLink(action: 'disconnectCaller')}?id=' + callId,
+            dataType: 'json',
+            cache: false,
+            success: function(data)
+            {
+                if(data && data.success == "true")
+                {
+                    listen.showSuccessMessage('Call disconnected.')
+                    $('.transfer-dropdown').addClass('hidden');
+                    $('#transferHeader')[0].innerHTML = "";
+                }
+                else
+                {
+                    listen.showErrorMessage('Unable to disconnect call.')
+                    $('.transfer-button').removeClass('hidden');
+                    $('.transfer-dropdown').addClass('hidden');
+                    $('#transferHeader')[0].innerHTML = "";
+                }
+            }
+        });
+
+        return true;
+    }
+
+    function toggleHold(element, callId)
+    {
+        if(element.checked)
+        {
+            $.ajax({
+                url: '${createLink(action: 'callerOnHold')}?id=' + callId,
+                dataType: 'json',
+                cache: false,
+                success: function(data)
+                {
+                    if(data)
+                    {
+                        $('.holdCheckbox')[0].checked = data.onHold;
+                    }
+                }
+            });
+        }
+        else
+        {
+            $.ajax({
+                url: '${createLink(action: 'callerOffHold')}?id=' + callId,
+                dataType: 'json',
+                cache: false,
+                success: function(data)
+                {
+                    if(data)
+                    {
+                        $('.holdCheckbox')[0].checked = data.onHold;
+                    }
+                }
+            });
+        }
+    }
+
+    var callList =
+    {
+        poll: function() {
+            $.ajax({
+                url: '${createLink(action: 'polledCalls')}',
+                dataType: 'json',
+                cache: false,
+                success: function(data)
+                {
+                    // 1. loop through table rows and remove rows that don't exist in the new data
+
+                    var tbody = $('#callTable');
+
+                    $('tr', tbody).each(function() {
+                        var tr = $(this);
+                        var rowId = parseInt(tr.attr('data-id'), 10);
+
+                        var exists = false;
+                        if(data && data.calls)
+                        {
+                            for(var i = 0; i < data.calls.length; i++)
+                            {
+                                if(data.calls[i].id == rowId)
+                                {
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(!exists) {
+                            tr.remove();
+                        }
+                    });
+
+                    // 2. loop through new rows and move existing rows / add new rows
+
+                    if(data && data.calls && data.calls.length > 0)
+                    {
+                        for(var i = 0; i < data.calls.length; i++)
+                        {
+                            var call = data.calls[i];
+
+                            var position = -1;
+                            var tr; // will be set if a table row is found for this call
+                            $('tr', tbody).each(function(index) {
+                                var rowId = parseInt($(this).attr('data-id'), 10);
+                                if(rowId === call.id) {
+                                    position = index;
+                                    tr = $(this);
+                                }
+                            });
+
+                            if(position === -1)
+                            {
+                                tr = $('#call-row-template').clone(true).removeAttr('id');
+                                callList.populate(tr, call);
+
+                                if(i === 0 || $('tr', tbody).length === 0)
+                                {
+                                    tbody.prepend(tr);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+
+        populate: function(row, call) {
+            callList.updateField($('td.caller', row), call.ani);
+            callList.updateField($('td.callerSkill', row), call.skill);
+            row.attr('data-id', call.id);
+
+            $('input[name="id"]', row).val(call.id);
+
+            $('.holdCheckbox', row)[0].value=call.id
+
+            if(call.onHold)
+            {
+                $('.holdCheckbox', row)[0].checked=true
+            }
+            else
+            {
+                $('.holdCheckbox', row)[0].checked=false;
+            }
+
+            $('.transferButton', row)[0].value = call.id;
+            $('.disconnectButton', row)[0].value = call.id;
+            $('.transfer-button', row).removeClass('hidden');
+            $('.disconnect-button', row).removeClass('hidden');
+
+            return;
+        },
+
+        updateField: function(field, content, asHtml) {
+            var changed = false;
+            if(asHtml === true) {
+                if(field.html() != content) {
+                    field.html(content);
+                    changed = true;
+                }
+            } else {
+                var c = String(content);
+                if(field.text() != c) {
+                    field.text(c);
+                    changed = true;
+                }
+            }
+            return changed;
+        }
+    };
+
+    $(document).ready(function()
+    {
+        setInterval(callList.poll, 2000);
+    });
+    </script>
   </body>
+
 </html>

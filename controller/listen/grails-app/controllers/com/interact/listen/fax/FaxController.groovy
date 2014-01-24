@@ -34,6 +34,7 @@ class FaxController {
         render(view: 'create', model: [fax: fax])
     }
 
+
     def download = {
         def preserve = [:]
         if(params.sort) preserve.sort = params.sort

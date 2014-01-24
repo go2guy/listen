@@ -32,7 +32,7 @@ class InboxMessageService {
     def newAcdMessageCount(def skill = null) {
       def user
       def count = 0
-      if ( skill == null ) { // find all users via skills associated with current user and retrieve the count
+      if ( skill == null || skill == 'All' ) { // find all users via skills associated with current user and retrieve the count
         user = springSecurityService.getCurrentUser()
         UserSkill.findAllByUser(user).each() { userSkill ->
           log.debug "InboxMessageService.newAcdMessageCount(): Getting new voicemail message count for user[${AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname).username}]"
@@ -41,7 +41,7 @@ class InboxMessageService {
       }
       else { // find only the count associated with the given skill
         user = AcdService.getVoicemailUserBySkillname(skill)
-        log.debug "InboxMessageService.newAcdMessageCount()%;% Getting new voicemail message count for user[${user}]"
+        log.debug "InboxMessageService.newAcdMessageCount(): Getting new voicemail message count for user[${user}]"
         count = InboxMessage.countByOwnerAndIsNew(user,true)
       }
 
