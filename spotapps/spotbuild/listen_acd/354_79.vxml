@@ -5,15 +5,21 @@
        *   @Name   assign-variable.vxml
        *   @Desc   Assigns a value to a global variable -->
 
-    <var name="II_SB_nxtOpt" expr="'356_30'"/>  <!-- Name of next file -->
+    <var name="II_SB_nxtOpt" expr="'354_59'"/>  <!-- Name of next file -->
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Customer Connected</log>
-            <log>INFO: Entered assign-variable.vxml [356_23]</log>
-            <log>INFO: Current value [<value expr="custConnected"/>]</log>
-<assign name="custConnected" expr="'1'+''" />
-<log>INFO: Updated value [<value expr="custConnected"/>]</log>
+	    <log target="status">Set Next Path</log>
+            <log>INFO: Entered assign-variable.vxml [354_79]</log>
+            <log>INFO: Current value [<value expr="successNxtPath"/>]</log>
+<assign name="successNxtPath" expr="'disconnectCall'+''" />
+<log>INFO: Updated value [<value expr="successNxtPath"/>]</log>
+<log>INFO: Current value [<value expr="failedNxtPath"/>]</log>
+<assign name="failedNxtPath" expr="'disconnectCall'+''" />
+<log>INFO: Updated value [<value expr="failedNxtPath"/>]</log>
+<log>INFO: Current value [<value expr="eventName"/>]</log>
+<assign name="eventName" expr="'HANG_UP'+''" />
+<log>INFO: Updated value [<value expr="eventName"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

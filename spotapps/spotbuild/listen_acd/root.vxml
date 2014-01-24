@@ -86,6 +86,8 @@
 	<var name="custConnected" expr="'0'" />
 	<var name="custConnID" expr="'connectionID'" />
 	<var name="agentSID" expr="''" />
+	<var name="confID" expr="''" />
+	<var name="confHoldMsg" expr="''" />
 
 
     <!-- Conference Variables -->

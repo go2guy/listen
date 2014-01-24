@@ -77,6 +77,8 @@
 	<var name="SB_UV_custConnected"/>
 	<var name="SB_UV_custConnID"/>
 	<var name="SB_UV_agentSID"/>
+	<var name="SB_UV_confID"/>
+	<var name="SB_UV_confHoldMsg"/>
 
     
     <form id="beginDocument">
@@ -264,6 +266,12 @@
 			</if>
 			<if cond="SB_UV_agentSID != undefined">
 				<assign name="agentSID" expr="SB_UV_agentSID" />
+			</if>
+			<if cond="SB_UV_confID != undefined">
+				<assign name="confID" expr="SB_UV_confID" />
+			</if>
+			<if cond="SB_UV_confHoldMsg != undefined">
+				<assign name="confHoldMsg" expr="SB_UV_confHoldMsg" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

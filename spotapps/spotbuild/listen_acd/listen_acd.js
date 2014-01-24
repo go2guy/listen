@@ -12,3 +12,4 @@ function setDestination (jsonObj) {
 	}
 	return destination;
 }
+

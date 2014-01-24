@@ -23,17 +23,21 @@
             <assign name="II_SB_valueReceived" expr="getNextElement(1,II_SB_passValues,'|')"/>
             <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
 
+			<if cond="II_SB_eventReceived == 'DISCONNECT'">
+				<assign name="II_SB_assign_NxtOpt" expr="'354_77'"/>
+			</if>
 			<if cond="II_SB_eventReceived == 'JOIN_CONF'">
 				<assign name="II_SB_assign_NxtOpt" expr="'354_27'"/>
+				<assign name="passValues" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'RE_QUEUE'">
 				<assign name="II_SB_assign_NxtOpt" expr="'354_33'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'ON_HOLD'">
-				<assign name="II_SB_assign_NxtOpt" expr="'364_3'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'354_83'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'VOICEMAIL'">
-				<assign name="II_SB_assign_NxtOpt" expr="'361_21'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'354_65'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'CONNECT'">
 				<assign name="II_SB_assign_NxtOpt" expr="'354_45'"/>

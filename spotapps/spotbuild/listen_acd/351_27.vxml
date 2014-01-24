@@ -12,10 +12,10 @@
 	    <log target="status">Set Next Path</log>
             <log>INFO: Entered assign-variable.vxml [351_27]</log>
             <log>INFO: Current value [<value expr="failedNxtPath"/>]</log>
-<assign name="failedNxtPath" expr="'serviceError_vm'+''" />
+<assign name="failedNxtPath" expr="'getMbx'+''" />
 <log>INFO: Updated value [<value expr="failedNxtPath"/>]</log>
 <log>INFO: Current value [<value expr="successNxtPath"/>]</log>
-<assign name="successNxtPath" expr="'serviceError_vm'+''" />
+<assign name="successNxtPath" expr="'getMbx'+''" />
 <log>INFO: Updated value [<value expr="successNxtPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
