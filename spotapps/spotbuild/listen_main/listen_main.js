@@ -8,6 +8,8 @@ function getAppName(appName, jsonObj) {
             application = 'FINDME';
         else if (application == 'DIRECTINWARDDIAL')
             application = 'IPPBX';
+        else if (application == 'MONITORACDCALL')
+            application = 'ACD';
 			
         if (application != 'DIRECTMESSAGE') {
             var licensed = getJsonVal(jsonObj, application);
@@ -35,6 +37,9 @@ function getAppName(appName, jsonObj) {
             break;
 		case "ACD":
 			appName = "listen_acd";
+			break;
+		case "Monitor ACD Call":
+			appName = "listen_monitorACD";
 			break;
         case "AUTO_DIAL":
             appName = "listen_autoDial";
