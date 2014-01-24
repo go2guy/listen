@@ -38,6 +38,7 @@ class ApplicationService {
         if(licenseService.canAccess(ListenFeature.IPPBX, organization)) {
             applications << 'IP PBX'
             applications << 'Direct Inward Dial'
+            applications << 'Monitor ACD Call'
         }
 
         if(licenseService.canAccess(ListenFeature.VOICEMAIL, organization)) {
