@@ -398,7 +398,7 @@ class SpotApiController {
 
             // if they arent using transcriptions, send them the notification immediately
             def preferences = VoicemailPreferences.findByUser(voicemail.owner)
-            log.debug("Voicemail notification preferences transcribe [${preferences.transcribe}] owner [${voicemail.owner}]")
+
             if(preferences && !preferences.transcribe) {
                 log.debug 'Lets send some voice mail notifications'
                 voicemailNotificationService.sendNewVoicemailEmail(voicemail)
