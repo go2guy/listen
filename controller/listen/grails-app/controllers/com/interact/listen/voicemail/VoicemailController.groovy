@@ -37,8 +37,11 @@ class VoicemailController {
         }
 
         if(voicemail.owner != authenticatedUser) {
-            redirect(controller: 'login', action: 'denied')
-            return
+//            redirect(controller: 'login', action: 'denied')
+//            return
+            log.warn("User doesn't have permissions to get this voicemail");
+            //TODO: fix this so acd users can get at acd voicemail account messages.
+
         }
 
         //hard code the mp3 tag to true since the flash player needs mp3 and there is not reason to not
