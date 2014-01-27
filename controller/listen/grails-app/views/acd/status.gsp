@@ -308,10 +308,10 @@
 
     <script type="text/javascript">
     $(document).ready( function () {
-      setInterval(status.poll,1000);
+      setInterval(agentStatus.poll,5000);
     });
 
-    var status = {
+    var agentStatus = {
       poll: function() {
         $.ajax({
           // passing in params to ensure sort and pagination are kept
@@ -335,28 +335,10 @@
 
               tbody.append(tr);
             });
-
-            // update agent call history
-            var tbody = $("#agent-history > table > tbody");
-            tbody.empty();
-            var tr;
-            var row_count = 0;
-            data.history.forEach(function(call) {
-              tr = "";
-
-              tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
-              tr += '<td>' + call.ani + '</td>';
-              tr += '<td>' + call.skill + '</td>';
-              tr += '<td>' + getDifference(call.start,call.end) + '</td>';
-              tr += '<td>' + getDifference(call.enqueueTime,call.dequeueTime) + '</td></tr>';
-
-              tbody.append(tr);
-
-            });
           } // success
         }); // $.ajax
-      } // status.poll
-    }; // status
+      } // agentStatus.poll
+    }; // agentStatus
 
 
     function transferClicked(e, callId) {

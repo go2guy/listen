@@ -219,31 +219,25 @@ class AcdController
 
       params.queueSort = params.queueSort ?: 'enqueueTime'
       params.queueOrder = params.queueOrder ?: 'asc'
-      params.queueMax = params.queueMax ?: 10
-      params.queueOffset = params.queueOffset ?: 0
-
-      params.historySort = params.historySort ?: 'enqueueTime'
-      params.historyOrder = params.historyOrder ?: 'asc'
-      params.historyMax = params.historyMax ?: 10
-      params.historyOffset = params.historyOffset ?: 0
+      params.queueMax = params.queueMax ?: 5
 
       def json = [:]
 
       // get agent call queue
       def skills = []
-      UserSkill.findAllByUser(user).each() { UserSkill ->
+      UserSkill.findAllByUser(user).each() { userSkill ->
         skills.add(userSkill.skill)
       }
 
       List<AcdCall> calls = AcdCall.createCriteria().list {
-        order(params.sort,params.order)
-        maxResults(params.max.toInteger())
-        firstResult(params.offset.toInteger())
+        order(params.queueSort,params.queueOrder)
+        maxResults(params.queueMax.toInteger())
+        // firstResult(params.offset.toInteger())
         eq("callStatus",AcdCallStatus.WAITING)
         'in'("skill",skills)
       }
 
-      callJson = []
+      def callJson = []
       for(AcdCall call : calls) {
         def c = [:]
         c.id = call.id
@@ -262,34 +256,6 @@ class AcdController
       }
 
       json.calls = callJson
-
-      // get agent call history
-      List<AcdCallHistory> callHistory = AcdCallHistory.createCriteria().list {
-        order(params.historySort,params.historyOrder)
-        maxResults(params.historyMax.toInteger())
-        firstResult(params.historyOffset.toInteger())
-        eq("user",user)
-      }
-
-      def callJson = []
-      for(AcdCallHistory call : callHistory) {
-        def c = [:]
-        c.id = call.id
-        c.ani = call.ani
-        c.user = ""
-        if ( call.user != null ) {
-          c.user = call.user.realName
-        }
-        c.skill = call.skill.description
-        c.start = call.callStart
-        c.end = call.callEnd
-        c.callStatus = call.callStatus.viewable()
-        c.enqueueTime = call.enqueueTime
-        c.dequeueTime = call.dequeueTime
-        callJson.add(c)
-      }
-
-      json.history = callJson
 
       if(log.isDebugEnabled()) {
         log.debug "Rendering agent status as json [${json.toString()}]"
@@ -374,16 +340,11 @@ class AcdController
       // Get Agent's Call History
       params.historySort = params.historySort ?: 'enqueueTime'
       params.historyOrder = params.historyOrder ?: 'asc'
-      // params.historyMax = params.historyMax ?: 5
-      // params.historyOffset = params.historyOffset ?: 0
 
-      // Date today = new Date().clearTime()
       LocalDate today = new LocalDate()
 
       def callHistory = AcdCallHistory.createCriteria().list() {
         order(params.historySort, params.historyOrder)
-        // maxResults(params.historyMax.toInteger())
-        // firstResult(params.historyOffset.toInteger())
         eq("user", user)
         ge("enqueueTime",today.toDateTimeAtStartOfDay())
       }
