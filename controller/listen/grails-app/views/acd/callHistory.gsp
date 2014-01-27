@@ -11,9 +11,10 @@
         table-layout: fixed;
       }
 
-      .td {
-        white-space: nowrap;
+      td {
         overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .hidden { display: none; }

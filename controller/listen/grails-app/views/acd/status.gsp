@@ -39,6 +39,16 @@
             width: 11%;
         }
 
+        table.fixed {
+          table-layout: fixed;
+        }
+
+        td.overflow {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
         .template { display: none; }
         .initially-hidden { display: none; }
         .hidden { display: none; }
@@ -115,7 +125,7 @@
         <h3>Current Call:</h3>
         <form id="callForm" method="POST">
         <div id="callListDiv">
-          <table id="???">
+          <table>
 
           <thead>
             <tr>
@@ -170,7 +180,7 @@
 
       <div id="agent-queue">
         <h3>Waiting Calls:</h3>
-        <table id="callQueue" cellspacing="0" cellpadding="0">
+        <table id="callQueue" cellspacing="0" cellpadding="0" class="fixed">
 
         <thead>
           <tr>
@@ -186,11 +196,11 @@
           <g:each in="${calls}" var="call">
             <g:set var="column_count" value="${0}"/>
             <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"l>
-              <td>${call.ani}</td>
-              <td>${call.skill.description}</td>
+              <td class="overflow">${call.ani}</td>
+              <td class="overflow">${call.skill.description}</td>
               <script type="text/javascript">
-              document.write('<td>' + getDifference('${call.enqueueTime}','now') + '</td>');
-              document.write('<td>' + getDifference('${call.lastModified}','now') + '</td>');
+              document.write('<td class="overflow">' + getDifference('${call.enqueueTime}','now') + '</td>');
+              document.write('<td class="overflow">' + getDifference('${call.lastModified}','now') + '</td>');
               </script>
             </tr>
           </g:each>
@@ -202,7 +212,7 @@
     <div id="agent-history">
       <h3>Call History:</h3>
 
-      <table id="history-table" cellspacing="0" cellpadding="0">
+      <table id="history-table" cellspacing="0" cellpadding="0" class="fixed">
 
         <thead>
           <tr>
@@ -217,11 +227,11 @@
           <g:set var="row_count" value="${0}"/>
           <g:each in="${callHistory}" var="call">
             <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"/>
-              <td>${call.ani}</td>
-              <td>${call.skill.description}</td>
+              <td class="overflow">${call.ani}</td>
+              <td class="overflow">${call.skill.description}</td>
               <script type="text/javascript">
-                document.write('<td>' + getDifference('${call.callStart}','${call.callEnd}') + '</td>');
-                document.write('<td>' + getDifference('${call.enqueueTime}','${call.dequeueTime}') + '</td>');
+                document.write('<td class="overflow">' + getDifference('${call.callStart}','${call.callEnd}') + '</td>');
+                document.write('<td class="overflow">' + getDifference('${call.enqueueTime}','${call.dequeueTime}') + '</td>');
               </script>
             </tr>
           </g:each>
@@ -235,7 +245,7 @@
       <div id="agent-status" class="panel">
         <h3><g:message code="page.acd.status.yourStatus.label"/></h3>
 
-        <table>
+        <table class="fixed">
           <tbody>
             <tr>
               <td class="col-button">
@@ -248,8 +258,8 @@
               </td>
             </tr>
                 <g:form controller="acd" action="updateNumber" method="post">
-                  <tr><td><h3><g:message code="page.acd.status.yourNumber.label"/></h3></td></tr>
-                  <tr><td><g:select name="contactNumber"
+                  <tr><td class="overflow"><h3><g:message code="page.acd.status.yourNumber.label"/></h3></td></tr>
+                  <tr><td class="overflow"><g:select name="contactNumber"
                                     optionKey="id"
                                     optionValue="number"
                                     from="${phoneNumbers}"
@@ -260,7 +270,7 @@
               </td>
             </tr>
             <tr>
-              <td>
+              <td class="overflow">
                 <div id="agent-skills">
                   <h3><g:message code="page.acd.status.yourSkills.label"/></h3>
                   <ul>
@@ -328,10 +338,10 @@
               tr = "";
 
               tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
-              tr += '<td>' + call.ani + '</td>';
-              tr += '<td>' + call.skill + '</td>';
-              tr += '<td>' + getDifference(call.enqueueTime,'now') + '</td>';
-              tr += '<td>' + getDifference(call.lastModified,'now') + '</td></tr>';
+              tr += '<td class="overflow">' + call.ani + '</td>';
+              tr += '<td class="overflow">' + call.skill + '</td>';
+              tr += '<td class="overflow">' + getDifference(call.enqueueTime,'now') + '</td>';
+              tr += '<td class="overflow">' + getDifference(call.lastModified,'now') + '</td></tr>';
 
               tbody.append(tr);
             });

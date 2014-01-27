@@ -104,7 +104,7 @@ UNLOCK TABLES;
 LOCK TABLES `acd_call` WRITE;
 INSERT INTO `acd_call` (id, version, ani, dnis, skill_id, session_id, enqueue_time, call_status, ivr, last_modified, user_id, call_start, call_end, on_hold)
        VALUES
-       (1,0,'0000000000','0',3,'0','2013-12-29 13:47:35','WAITING','0','2013-12-29 13:47:35',5,'2013-12-29 13:47:35','2013-12-29 13:47:35','\0'),
+       (1,0,'00000000000000000000000000000000000000000000000000000000000','0',3,'0','2013-12-29 13:47:35','WAITING','0','2013-12-29 13:47:35',5,'2013-12-29 13:47:35','2013-12-29 13:47:35','\0'),
        (2,0,'1','1',2,'1','2013-12-29 13:47:36','WAITING','1','2013-12-29 13:47:36',6,'2013-12-29 13:47:36','2013-12-29 13:47:36','\0'),
        (3,0,'2','2',1,'2','2013-12-29 13:47:37','WAITING','2','2013-12-29 13:47:37',7,'2013-12-29 13:47:37','2013-12-29 13:47:37','\0'),
        (4,0,'3','3',1,'3','2013-12-29 13:47:37','WAITING','3','2013-12-29 13:47:37',12,'2013-12-29 13:47:37','2013-12-29 13:47:37','\0');
@@ -114,7 +114,7 @@ UNLOCK TABLES;
 LOCK TABLES `acd_call_history` WRITE;
 INSERT INTO `acd_call_history` (id, version, ani, dnis, skill_id, session_id, enqueue_time, call_status, ivr, last_modified, user_id, call_start, call_end, dequeue_time)
        VALUES
-       (1,0,'0','0',1,'0','2014-01-25 13:47:35','DISCONNECTED','0','2014-01-25 13:47:35',7,'2014-01-25 13:47:35','2014-01-25 13:47:35','2014-01-25 13:47:35'),
+       (1,0,'00000000000000000000000000000000000000000000000000000000000','0',1,'0','2014-01-25 13:47:35','DISCONNECTED','0','2014-01-25 13:47:35',7,'2014-01-25 13:47:35','2014-01-25 13:47:35','2014-01-25 13:47:35'),
        (2,0,'1','1',1,'1','2014-01-25 13:47:36','DISCONNECTED','1','2014-01-25 13:47:36',7,'2014-01-25 13:47:36','2014-01-25 13:47:36','2014-01-25 13:47:36'),
        (3,0,'2','2',1,'2','2014-01-25 13:47:37','DISCONNECTED','2','2014-01-25 13:47:37',7,'2014-01-25 13:47:37','2014-01-25 13:47:37','2014-01-25 13:47:37'),
        (4,0,'3','3',1,'3','2014-01-25 13:47:38','DISCONNECTED','3','2014-01-25 13:47:38',7,'2014-01-25 13:47:38','2014-01-25 13:47:38','2014-01-25 13:47:38'),
@@ -129,15 +129,3 @@ INSERT INTO `acd_call_history` (id, version, ani, dnis, skill_id, session_id, en
        (13,0,'12','12',1,'12','2014-01-25 13:47:47','DISCONNECTED','12','2014-01-25 13:47:47',7,'2014-01-25 13:47:47','2014-01-25 13:47:47','2014-01-25 13:47:47'),
        (14,0,'12','12',1,'12','2014-01-25 13:47:47','DISCONNECTED','12','2014-01-25 13:47:47',12,'2014-01-25 13:47:47','2014-01-25 13:47:47','2014-01-25 13:47:47');
 UNLOCK TABLES;
-
-/* Voicemail Testing */
-/* LOCK TABLES `audio` WRITE; */
-/* INSERT INTO `audio` (id, version, date_created, description, duration, last_updated, transcription, file) */
-       /* VALUES (2,0,'2014-01-21 09:33:03',NULL,'PT24.1605','2014-01-21 09:33:03','','file:/interact/listen/artifacts/9/voicemail/message/777-20140121093238-9.wav'); */
-/* UNLOCK TABLES; */
-
-
-/* LOCK TABLES `inbox_message` WRITE; */
-/* INSERT INTO `inbox_message` (id, version, ani, audio_id, date_created, forwarded_by_id, is_new, left_by_id, owner_id, class, file, pages) */
-       /* VALUES (1,0,'333',2,'2014-01-21 09:33:03',NULL,'\1',7,9,'com.interact.listen.voicemail.Voicemail',NULL,NULL); */
-/* UNLOCK TABLES; */
