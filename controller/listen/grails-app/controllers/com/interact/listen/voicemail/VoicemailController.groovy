@@ -51,12 +51,15 @@ class VoicemailController {
     }
 
     def saveSettings = {
+        log.debug "Voicemail saveSettings [${params}]"
         def user = authenticatedUser
         def preferences = VoicemailPreferences.findByUser(user)
         if(!preferences) {
+            log.info "Didn't find voicemail preferences for user [${params}]"
             preferences = new VoicemailPreferences()
             preferences.user = user
         }
+        
         def oldPasscode = preferences.passcode
         def oldIsEmailNotificationEnabled = preferences.isEmailNotificationEnabled
         def oldIsSmsNotificationEnabled = preferences.isSmsNotificationEnabled
@@ -67,25 +70,8 @@ class VoicemailController {
         preferences.emailTimeRestrictions.clear()
         preferences.smsTimeRestrictions.clear()
 
-        // theres some serious wtferry going on here with the data binding.
-        // - if we use preferences.properties[...] = params, the association binding for
-        //   restrictions doesnt work properly
-        // - if we use the bindData(preferences, params, '...'), it does work correctly
-        //   but it also AUTOMATICALLY binds the associations, even if theyre not bound
-        //   using bindData().
-        //
-        // it seems to work in its current state, but it sucks. try to avoid changing stuff
-        // here, and test it well if you do.
-
-        if(params.containsKey('transcribe')) {
-            bindData(preferences, params, 'transcribe')
-        }
-        bindData(preferences, params, 'passcode')
-        bindData(preferences, params, 'playbackOrder')
-        bindData(preferences, params, 'isEmailNotificationEnabled')
-        bindData(preferences, params, 'isSmsNotificationEnabled')
-        bindData(preferences, params, 'recurringNotificationEnabled')
-        bindData(preferences, params, 'emailNotificationAddress')
+        // bind the data from params to the preferences
+        preferences.properties = params
 
         if(params.smsNotificationNumber?.trim().length() > 0) {
             preferences.smsNotificationAddress = params.smsNotificationNumber + '@' + params.smsNotificationProvider
@@ -97,7 +83,9 @@ class VoicemailController {
             preferences.emailNotificationAddress = preferences.user.emailAddress
         }
 
+        log.debug "Lets attempt to save preferneces [${preferences.passcode}]"
         if(preferences.validate() && preferences.save()) {
+            log.debug "We saved the preferences [${params}]"
             if(oldPasscode != preferences.passcode) {
                 historyService.changedVoicemailPin(user, oldPasscode, preferences.passcode)
             }
@@ -141,6 +129,7 @@ class VoicemailController {
             flash.successMessage = 'Voicemail Settings Saved'
             redirect(action: 'settings')
         } else {
+            log.error "We failed saved the preferences [${params}]"
             render(view: 'settings', model: [preferences: preferences])
         }
     }
