@@ -214,7 +214,12 @@ class AcdService
     void acdCallAdd(String ani, String dnis, String selection, String sessionId, String ivr) throws ListenAcdException
     {
         AcdCall acdCall = new AcdCall();
-        acdCall.setAni( ani.substring( ani.indexOf(':')+1, ani.indexOf('@') ) );
+        String stringAni = ani.substring( ani.indexOf(':')+1, ani.indexOf('@'));
+        if(stringAni.equalsIgnoreCase("unknown"))
+        {
+            stringAni = "4024768786";
+        }
+        acdCall.setAni(stringAni);
         acdCall.setDnis(dnis);
         Skill skill = menuSelectionToSkill(selection);
         if(skill == null)

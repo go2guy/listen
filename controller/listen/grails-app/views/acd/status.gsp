@@ -220,7 +220,7 @@
       <h3>Call History:</h3>
       <div>
         <g:if test="${historyTotal > 0}">
-          ${historyTotal}
+          %{--${historyTotal}--}%
           <table id="history-table" cellspacing="0" cellpadding="0" class="fixed">
 
             <thead>
