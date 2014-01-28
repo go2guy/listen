@@ -326,18 +326,6 @@ class AcdController
         'in'("skill",skills)
       }
 
-      // begin sip formatting test
-      // AcdCall call = new AcdCall()
-      // def ani = "sip:unknown@66.00.00.00"
-      // call.setAni( ani.substring( ani.indexOf(':')+1, ani.indexOf('@') ) )
-      // call.setDnis("0")
-      // call.setSkill(skills.get(0))
-      // call.setCallStatus(AcdCallStatus.WAITING)
-      // call.setIvr("0")
-
-      // calls.add(call)
-      // end sip formatting test
-
       if (log.isDebugEnabled())
       {
           log.debug "User status contact number [${contactNumber}]"
@@ -814,10 +802,16 @@ class AcdController
           log.debug "AcdController.callHistory: params[${params}]";
       }
 
+      log.debug "params.sort [${params.sort}]"
+      log.debug "params.order [${params.order}]"
+
       params.sort = params.sort ?: 'enqueueTime'
       params.order = params.order ?: 'desc'
       params.max = params.max ?: '100'
       params.offset = params.offset ?: '0'
+
+      log.debug "params.sort [${params.sort}]"
+      log.debug "params.order [${params.order}]"
 
       DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
       DateTime theStart = getStartDate(params.startDate);

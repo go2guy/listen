@@ -78,10 +78,13 @@ class MessagesController {
 
       // compile an associated skill list to populate the select
       def userSkills = UserSkill.findAllByUser(user)
+      def newMessageTotal = 0
       userSkills?.each() { userSkill ->
         count = inboxMessageService.newAcdMessageCount(userSkill?.skill?.skillname)
+        newMessageTotal += count.substring(count.indexOf("(")+1,count.indexOf(")")).toInteger()
         skillList.push( (userSkill?.skill?.skillname + " " + count ))
       }
+      skillList.push( ("All (" + newMessageTotal + ")") )
 
       def userList = []
       userSkills?.each() { userSkill ->
@@ -89,7 +92,6 @@ class MessagesController {
         userList.add(voicemailUser)
         messageTotal += InboxMessage.countByOwner(voicemailUser)
       }
-      skillList.push( ("All (" + messageTotal + ")") )
 
       // use the current skillname to look up the current voicemail user
       if ( currentSkill != 'All' ) {
@@ -305,6 +307,17 @@ class MessagesController {
         def voicemailUser
         def list = []
 
+        // find message count for all skills associated with current user
+        def messageCounts = [:]
+
+        def userSkills = UserSkill.findAllByUser(user)
+
+        userSkills.each() { userSkill ->
+          messageCounts[userSkill.skill.skillname] = inboxMessageService.newAcdMessageCount(userSkill.skill.skillname)
+        }
+
+        messageCounts['All'] = inboxMessageService.newAcdMessageCount('All')
+
         // use the current skillname to look up the current voicemail user
         // and get their messages
         if ( currentSkill != 'All' ) {
@@ -313,6 +326,7 @@ class MessagesController {
           list = InboxMessage.findAllByOwner(voicemailUser,params)
         }
         else { // All
+          // get Voicemail messages for all users
           def userList = []
 
           UserSkill.findAllByUser(user).each() { userSkill ->
@@ -399,6 +413,7 @@ class MessagesController {
         changes["remove"] = removeFromScreen
         changes["list"] = returnList
         changes["currentIds"] = currentIds
+        changes["messageCounts"] = messageCounts
 
         render changes as JSON
     }

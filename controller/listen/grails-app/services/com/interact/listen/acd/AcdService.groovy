@@ -215,10 +215,6 @@ class AcdService
     {
         AcdCall acdCall = new AcdCall();
         String stringAni = ani.substring( ani.indexOf(':')+1, ani.indexOf('@'));
-        if(stringAni.equalsIgnoreCase("unknown"))
-        {
-            stringAni = "4024768786";
-        }
         acdCall.setAni(stringAni);
         acdCall.setDnis(dnis);
         Skill skill = menuSelectionToSkill(selection);

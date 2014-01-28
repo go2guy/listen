@@ -10,6 +10,7 @@ class ButtonMenuTagLib {
 
     def licenseService
     def springSecurityService
+    def inboxMessageService
 
     def buttonMenu = { attrs ->
         if(!attrs.tab) return
@@ -45,7 +46,8 @@ class ButtonMenuTagLib {
                   /* Can't just call button for this one since we have to add a custom span element for the message count */
                   // TODO: Enter the value of new messages by default rather than (0)
                   out << '<li class="' + (attrs.button == 'inbox' ? 'current' : '') + '">'
-                  out << g.link(controller: 'messages', action: 'acdInbox') { g.message(code: 'button.menu.acd.acdInbox') + '<span id="new-acd-message-count">(0)</span>' }
+                  out << g.link(controller: 'messages', action: 'acdInbox') { g.message(code: 'button.menu.acd.acdInbox') + '<span id="new-acd-message-count">' +
+                         inboxMessageService.newAcdMessageCount() + '</span>' }
                   out << '</li>'
                 }
                 button(attrs.button == 'callHistory', 'acd', 'callHistory', 'button.menu.acd.callHistory')

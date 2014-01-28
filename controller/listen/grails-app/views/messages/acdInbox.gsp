@@ -173,7 +173,7 @@
          });
       }
 
-      setInterval("pollMessages()", 15000);
+      setInterval("pollMessages()", 5000);
 
       function pollMessages() {
         var visibleIds = ''
@@ -284,39 +284,20 @@
 
               }
             }
+
+            // update message counts
+            var keys = Object.keys(data.messageCounts);
+            var option
+            var newText
+            keys.forEach( function(key) {
+              option = $("#" + key + "-option");
+              newText = key + " " + data.messageCounts[key];
+              option.text(newText);
+            });
+
           } // success
         }); // $.ajax
       } // pollMessages
-
-      function getMessageCountForSkill(skill) {
-        var option = $("#" + skill + "-option");
-        $.ajax({
-          url: '${request.contextPath}/messages/newAcdCount?currentSkill=' + skill,
-          dataType: 'json',
-          cache: false,
-          success: function(data) {
-            if ( data ) {
-              var newText = skill + " " + data.count;
-              if ( newText != option.text() ) {
-                option.text(newText);
-              }
-            }
-          }
-        });
-      }
-
-      <%
-        def javascript = "\$(document).ready( function () { "
-        javascript += "setInterval(getMessageCountForSkills(),5000);"
-        javascript += "});\n\n"
-        javascript += "function getMessageCountForSkills() {\n"
-        skillList.each() { skill ->
-          javascript += "getMessageCountForSkill('" + skill.replaceAll('\\s\\(\\d+\\)','') + "');\n"
-        }
-        javascript += "}\n"
-        out << javascript
-      %>
-
       </script>
 
   </body>

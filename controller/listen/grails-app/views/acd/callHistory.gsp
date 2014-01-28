@@ -168,7 +168,9 @@
                                       noSelection="['':'-All-']" />
                       </div>
                       <div id="searchButton" class="searchfield">
-                          <g:submitButton class="filterButton" name="filter" value="Filter"/>
+                        <input name="sort" type="hidden" value="${sort}"/>
+                        <input name="order" type="hidden" value="${order}"/>
+                        <g:submitButton class="filterButton" name="filter" value="Filter"/>
                       </div>
                     </div>
                 </g:form>
@@ -178,12 +180,17 @@
       <table id="keywords" class="fixed" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
-            <g:sortableColumn property="callStart" width="20%" title="Call Start"/>
-            <g:sortableColumn property="ani" title="Caller"/>
-            <g:sortableColumn property="skill" title="Skill"/>
-            <g:sortableColumn property="user" title="Agent"/>
-            <g:sortableColumn property="callEnd" title="Time With Agent"/>
-            <g:sortableColumn property="dequeueTime" title="Time On Call"/>
+            <%
+              // reassign sort parameters if they were lost in filtering
+              params.sort = sort
+              params.order = order
+            %>
+            <g:sortableColumn property="callStart" id="call_start_column" width="20%" title="Call Start"/>
+            <g:sortableColumn property="ani" id="caller_column" title="Caller"/>
+            <g:sortableColumn property="skill" id="skill_column" title="Skill"/>
+            <g:sortableColumn property="user" id="agent_column" title="Agent"/>
+            <g:sortableColumn property="callEnd" id="time_with_agent_column" title="Time With Agent"/>
+            <g:sortableColumn property="dequeueTime" id="time_on_call_column" title="Time On Call"/>
           </tr>
           %{-- Using hidden input to persist data from grails to ajax requests (see records.poll) --}%
           <input id="sort" type="hidden" value="${sort}"/>
@@ -217,18 +224,41 @@
     </div>
 
     <script type="text/javascript">
+    $(document).ready( function() {
+      // preserve filter parameters when using sortable columns
+      var params = "&startDate=" + $("#startDate").val() + "&endDate=" + $("#endDate").val() +
+                   "&skill=" + $("#skill").val() + "&agent=" + $("#agent").val();
 
-        $(".link").click(function(){
-            $('#searchDiv').removeClass('hidden');
-        });
+      var anchor = $("#call_start_column > a");
+      anchor.attr('href',anchor.attr('href') + params);
 
-        $('.filter').click(function() {
-            var groups = attendant.buildJson();
-            var form = $('#menu-save-form');
-            $('input', form).val(JSON.stringify(groups));
-            form.submit();
-            return false;
-        });
+      anchor = $("#caller_column > a");
+      anchor.attr('href',anchor.attr('href') + params);
+
+      anchor = $("#skill_column > a");
+      anchor.attr('href',anchor.attr('href') + params);
+ 
+      anchor = $("#agent_column > a");
+      anchor.attr('href',anchor.attr('href') + params);
+ 
+      anchor = $("#time_with_agent_column > a");
+      anchor.attr('href',anchor.attr('href') + params);
+ 
+      anchor = $("#time_on_call_column > a");
+      anchor.attr('href',anchor.attr('href') + params);
+    });
+
+    $(".link").click(function(){
+        $('#searchDiv').removeClass('hidden');
+    });
+
+    $('.filter').click(function() {
+        var groups = attendant.buildJson();
+        var form = $('#menu-save-form');
+        $('input', form).val(JSON.stringify(groups));
+        form.submit();
+        return false;
+    });
 
     var records = {
       poll: function() {
@@ -264,7 +294,6 @@
         }); // $.ajax
       } // records.poll
     }; // records
-   </script>
-
+    </script>
   </body>
 </html>
