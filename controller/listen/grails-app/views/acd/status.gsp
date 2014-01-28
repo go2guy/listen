@@ -178,66 +178,80 @@
         </form> <!-- callForm -->
       </div> <!-- currentCall -->
 
-      <div id="agent-queue">
+      <div id="agent-queue" style="padding: 10px 0px 0px 0px;">
         <h3>Waiting Calls:</h3>
-        <table id="callQueue" cellspacing="0" cellpadding="0" class="fixed">
+        <div>
+          <g:if test="${callTotal > 0}">
+            <table id="callQueue" cellspacing="0" cellpadding="0" class="fixed">
 
-        <thead>
-          <tr>
-            <th>Caller</th>
-            <th>Skill</th>
-            <th>Wait Time</th>
-            <th>Last Activity</th>
-          </tr>
-        </thead>
+            <thead>
+              <tr>
+                <th>Caller</th>
+                <th>Skill</th>
+                <th>Wait Time</th>
+                <th>Last Activity</th>
+              </tr>
+            </thead>
 
-        <tbody>
-          <g:set var="row_count" value="${0}"/>
-          <g:each in="${calls}" var="call">
-            <g:set var="column_count" value="${0}"/>
-            <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"l>
-              <td class="overflow">${call.ani}</td>
-              <td class="overflow">${call.skill.description}</td>
-              <script type="text/javascript">
-              document.write('<td class="overflow">' + getDifference('${call.enqueueTime}','now') + '</td>');
-              document.write('<td class="overflow">' + getDifference('${call.lastModified}','now') + '</td>');
-              </script>
-            </tr>
-          </g:each>
-        </tbody>
+            <tbody>
+              <g:set var="row_count" value="${0}"/>
+              <g:each in="${calls}" var="call">
+                <g:set var="column_count" value="${0}"/>
+                <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"l>
+                  <td class="overflow">${call.ani}</td>
+                  <td class="overflow">${call.skill.description}</td>
+                  <script type="text/javascript">
+                  document.write('<td class="overflow">' + getDifference('${call.enqueueTime}','now') + '</td>');
+                  document.write('<td class="overflow">' + getDifference('${call.lastModified}','now') + '</td>');
+                  </script>
+                </tr>
+              </g:each>
+            </tbody>
 
-        </table> <!-- callQueue -->
-    </div> <!-- agent-queue -->
+            </table> <!-- callQueue -->
+          </g:if>
+          <g:else>
+            <span><g:message code="page.acd.status.noCalls"/></span> 
+          </g:else>
+        </div>
+      </div> <!-- agent-queue -->
 
-    <div id="agent-history">
+    <div id="agent-history" style="padding: 10px 0px 0px 0px;">
       <h3>Call History:</h3>
+      <div>
+        <g:if test="${historyTotal > 0}">
+          ${historyTotal}
+          <table id="history-table" cellspacing="0" cellpadding="0" class="fixed">
 
-      <table id="history-table" cellspacing="0" cellpadding="0" class="fixed">
+            <thead>
+              <tr>
+                <th>Caller</th>
+                <th>Skill</th>
+                <th>Agent Time</th>
+                <th>Queue Time</th>
+              </tr>
+            </thead>
 
-        <thead>
-          <tr>
-            <th>Caller</th>
-            <th>Skill</th>
-            <th>Agent Time</th>
-            <th>Queue Time</th>
-          </tr>
-        </thead>
+            <tbody>
+              <g:set var="row_count" value="${0}"/>
+              <g:each in="${callHistory}" var="call">
+                <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"/>
+                  <td class="overflow">${call.ani}</td>
+                  <td class="overflow">${call.skill.description}</td>
+                  <script type="text/javascript">
+                    document.write('<td class="overflow">' + getDifference('${call.callStart}','${call.callEnd}') + '</td>');
+                    document.write('<td class="overflow">' + getDifference('${call.enqueueTime}','${call.dequeueTime}') + '</td>');
+                  </script>
+                </tr>
+              </g:each>
+            </tbody>
 
-        <tbody>
-          <g:set var="row_count" value="${0}"/>
-          <g:each in="${callHistory}" var="call">
-            <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"/>
-              <td class="overflow">${call.ani}</td>
-              <td class="overflow">${call.skill.description}</td>
-              <script type="text/javascript">
-                document.write('<td class="overflow">' + getDifference('${call.callStart}','${call.callEnd}') + '</td>');
-                document.write('<td class="overflow">' + getDifference('${call.enqueueTime}','${call.dequeueTime}') + '</td>');
-              </script>
-            </tr>
-          </g:each>
-        </tbody>
-
-      </table> <!-- history-table -->
+          </table> <!-- history-table -->
+        </g:if>
+        <g:else>
+          <span><g:message code="page.acd.status.noHistory"/></span>
+        </g:else>
+      </div>
     </div> <!-- agent-history -->
     </div> <!-- left-column -->
 
@@ -318,7 +332,7 @@
 
     <script type="text/javascript">
     $(document).ready( function () {
-      setInterval(agentStatus.poll,5000);
+      setInterval(agentStatus.poll,1000);
     });
 
     var agentStatus = {
@@ -329,22 +343,45 @@
           dataType: 'json',
           cache: false,
           success: function(data) {
-            // update agent call queue
-            var tbody = $("#agent-queue > table > tbody");
-            tbody.empty();
-            var tr;
-            var row_count = 0;
-            data.calls.forEach(function(call) {
-              tr = "";
+            if ( data && data.calls.length > 0 ) {
+              // update agent call queue
+              var tbody = $("#agent-queue > div > table > tbody");
+              // tbody doesn't exist! (jquery has a weird way of checking this)
+              if ( tbody.length == 0 ) {
+                // build it from scratch
+                var div = $("#agent-queue > div");
+                div.empty();
+                div.append('<table id="callQueue" cellspacing="0" cellpadding="0" class="fixed"></table>');
+                var table = $("#callQueue");
+                table.append('<thead><tr><th>Caller</th><th>Skill</th><th>Wait Time</th><th>Last Activity</th></thead>');
+                table.append('<tbody></tbody>');
+                tbody = $("agent-queue > div > table > tbody");
+              }
+              tbody.empty();
+              var tr;
+              var row_count = 0;
+              data.calls.forEach(function(call) {
+                tr = "";
 
-              tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
-              tr += '<td class="overflow">' + call.ani + '</td>';
-              tr += '<td class="overflow">' + call.skill + '</td>';
-              tr += '<td class="overflow">' + getDifference(call.enqueueTime,'now') + '</td>';
-              tr += '<td class="overflow">' + getDifference(call.lastModified,'now') + '</td></tr>';
+                tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
+                tr += '<td class="overflow">' + call.ani + '</td>';
+                tr += '<td class="overflow">' + call.skill + '</td>';
+                tr += '<td class="overflow">' + getDifference(call.enqueueTime,'now') + '</td>';
+                tr += '<td class="overflow">' + getDifference(call.lastModified,'now') + '</td></tr>';
 
-              tbody.append(tr);
-            });
+                tbody.append(tr);
+              });
+            } // if ( data && ... )
+            else { // there were no calls in the queue
+              var tbody = $("#agent-queue > div > table > tbody");
+              // if there were previously calls ( aka tbody exists )
+              if ( tbody.length > 0 ) {
+                // we need to remove the table
+                var div = $("#agent-queue > div");
+                div.empty();
+                div.append('<span>You have no waiting calls.</span>');
+              } // if ( tbody.length > 0 ) ...
+            } // else
           } // success
         }); // $.ajax
       } // agentStatus.poll

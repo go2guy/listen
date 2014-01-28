@@ -326,6 +326,18 @@ class AcdController
         'in'("skill",skills)
       }
 
+      // begin sip formatting test
+      // AcdCall call = new AcdCall()
+      // def ani = "sip:unknown@66.00.00.00"
+      // call.setAni( ani.substring( ani.indexOf(':')+1, ani.indexOf('@') ) )
+      // call.setDnis("0")
+      // call.setSkill(skills.get(0))
+      // call.setCallStatus(AcdCallStatus.WAITING)
+      // call.setIvr("0")
+
+      // calls.add(call)
+      // end sip formatting test
+
       if (log.isDebugEnabled())
       {
           log.debug "User status contact number [${contactNumber}]"
@@ -349,8 +361,7 @@ class AcdController
         ge("enqueueTime",today.toDateTimeAtStartOfDay())
       }
 
-      // def historyTotal = AcdCallHistory.findAllByUser(user).size()
-      def historyTotal = AcdCallHistory.countByUser(user);
+      def historyTotal = callHistory.size()
 
       def model = [
         status: status,
