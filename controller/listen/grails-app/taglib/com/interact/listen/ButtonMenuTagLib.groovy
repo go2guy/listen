@@ -26,7 +26,7 @@ class ButtonMenuTagLib {
                 if(licenseService.canAccess(ListenFeature.ACD)) {
                     button(attrs.button == 'skills', 'administration', 'skills', 'button.menu.administration.skills')
                 }
-                button(attrs.button == 'android', 'administration', 'android', 'button.menu.administration.android')
+//                button(attrs.button == 'android', 'administration', 'android', 'button.menu.administration.android')
                 button(attrs.button == 'history', 'administration', 'history', 'button.menu.administration.history')
                 button(attrs.button == 'reports', 'reports', 'list', 'button.menu.administration.reports')
                 out << '</ul>'
