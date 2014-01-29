@@ -34,6 +34,7 @@ class ProfileController {
         saveAfterHours: 'POST',
         saveSettings: 'POST',
         updateExtension: 'POST',
+        updateDid: 'POST',
         updateMobilePhone: 'POST',
         updateOtherPhone: 'POST'
     ]
@@ -233,6 +234,28 @@ class ProfileController {
         }
     }
 
+    def updateDid = {
+        log.debug "updateDid with params [${params}]"
+        def did = DirectInwardDialNumber.get(params.id)
+        if(!did) {
+            flash.errorMessage = 'DID not found'
+            redirect(action: 'phone')
+            return
+        }
+
+        did.properties['forwardedTo', 'greeting'] = params
+
+        if(did.validate() && did.save()) {
+            log.error "We've saved the did properties"
+            flash.successMessage = 'Direct Inward Dial number updated'
+            redirect(action: 'phones')
+        } else {
+            def model = phonesModel()
+            model.updatedDid = did
+            render(view: 'phones', model: model)
+        }
+    }
+    
     def updateMobilePhone = {
         def mobilePhone = MobilePhone.get(params.id)
         if(!mobilePhone) {
@@ -282,8 +305,13 @@ class ProfileController {
         def otherPhoneList = OtherPhone.withCriteria {
             eq('owner', user)
         }
+        def externalDIDList = DirectInwardDialNumber.withCriteria {
+            eq('owner', user)
+        } 
+
         return [
             extensionList: extensionList,
+            externalDIDList: externalDIDList,
             mobilePhoneList: mobilePhoneList,
             otherPhoneList: otherPhoneList
         ]

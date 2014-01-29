@@ -12,6 +12,11 @@ table { margin-bottom: 10px; }
 #extensions .col-forward { width: 55%; }
 #extensions .col-button { width: 5%; }
 
+#directInwardDial .col-number { width: 30%; }
+#directInwardDial .col-public { width: 10%; }
+#directInwardDial .col-forward { width: 55%; }
+#directInwardDial .col-button { width: 5%; }
+
 .mobile-phones .col-number { width: 30%; }
 .mobile-phones .col-provider { width: 30%; }
 .mobile-phones .col-public { width: 26%; }
@@ -66,6 +71,38 @@ td.col-public {
       </table>
     </g:if>
 
+    <g:if test="${externalDIDList.size() > 0}">
+      <table id="directInwardDial">
+            <caption><g:message code="page.profile.phones.caption.dids"/></caption>
+            <thead>
+              <th class="col-number"><g:message code="did.number.label"/></th>
+              <th class="col-public"><g:message code="mobilePhone.isPublic.label"/></th>
+              <th class="col-forward"><g:message code="did.forwardedTo.label"/></th>
+              <th class="col-button"></th>
+            </thead>
+            <tbody>
+            <g:each in="${externalDIDList}" var="did" status="i">
+              <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
+                <g:form controller="profile" action="updateDid" method="post">
+                  <td class="col-number">${fieldValue(bean: did, field: 'number')}</td>
+                  <td class="col-public"><listen:checkMark value="true"/></td>
+                  <td class="col-forward">
+                    <g:textField name="forwardedTo" value="${fieldValue(bean: did, field: 'forwardedTo')}" class="check-for-blocked forwarded-to ${listen.validationClass(bean: did, field: 'forwardedTo')}" autocomplete="off"/>
+                    <listen:ifCannotDial number="${fieldValue(bean: did, field: 'forwardedTo')}">
+                      <span class="blocked-number error" title="You are not allowed to dial ${fieldValue(bean: did, field: 'forwardedTo')}">Blocked</span>
+                    </listen:ifCannotDial>
+                  </td>
+                  <td class="col-button">
+                    <g:hiddenField name="id" value="${did.id}"/>
+                    <g:submitButton name="save" value="Save"/>
+                  </td>
+                </g:form>
+              </tr>
+            </g:each>
+          </tbody>
+      </table>
+    </g:if>
+    
     <table class="mobile-phones">
       <caption><g:message code="page.profile.phones.caption.mobilePhones"/></caption>
       <thead>
@@ -79,7 +116,7 @@ td.col-public {
         <tr class="add highlighted">
           <g:form controller="profile" action="addMobilePhone" method="post">
             <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newMobilePhone, field: 'number')}" class="${listen.validationClass(bean: newMobilePhone, field: 'number')}"/></td>
-            <td class="col-provider"><listen:mobileProviderSelect name="smsDomain" value="${newMobilePhone?.smsDomain}"/></td>
+            <td class="col-provider"><listen:mobileProviderSelect name="smsDomain" value="${newMobilePhone?.smsDomain}" noSelection="${['':'-- Choose Provider --']}"/></td>
             <td class="col-public"><g:checkBox name="isPublic" value="${newMobilePhone?.isPublic}"/></td>
             <td class="col-button">
               <g:submitButton name="add" value="${g.message(code: 'page.profile.phones.mobilePhones.addButton')}"/>
