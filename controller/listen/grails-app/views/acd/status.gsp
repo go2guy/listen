@@ -28,6 +28,10 @@
           margin: 20px 10px 10px 20px;
         }
 
+        div.padded {
+          padding: 10px 0px 0px 0px;
+        }
+
         td.col-button {
             text-align: left;
             width: 10%;
@@ -178,7 +182,7 @@
         </form> <!-- callForm -->
       </div> <!-- currentCall -->
 
-      <div id="agent-queue" style="padding: 10px 0px 0px 0px;">
+      <div class="padded" id="agent-queue">
         <h3>Waiting Calls:</h3>
         <div>
           <g:if test="${callTotal > 0}">
@@ -216,7 +220,7 @@
         </div>
       </div> <!-- agent-queue -->
 
-    <div id="agent-history" style="padding: 10px 0px 0px 0px;">
+    <div class="padded" id="agent-history">
       <h3>Call History:</h3>
       <div>
         <g:if test="${historyTotal > 0}">
@@ -258,45 +262,36 @@
       <div id="agent-status" class="panel">
         <h3><g:message code="page.acd.status.yourStatus.label"/></h3>
 
-        <table class="fixed">
-          <tbody>
-            <tr>
-              <td class="col-button">
-                <g:form controller="acd" action="toggleStatus" method="post">
-                <g:set var="titleMessage" value="" />
-                <g:submitButton name="toggle_status" value="${status}" class="${status}"
-                                title="${g.message(code: 'page.acd.status.button.' + status)}"
-                                disabled="${statusDisabled}" />
-                </g:form>
-              </td>
-            </tr>
-                <g:form controller="acd" action="updateNumber" method="post">
-                  <tr><td class="overflow"><h3><g:message code="page.acd.status.yourNumber.label"/></h3></td></tr>
-                  <tr><td class="overflow"><g:select name="contactNumber"
-                                    optionKey="id"
-                                    optionValue="number"
-                                    from="${phoneNumbers}"
-                                    value="${contactNumber != null ? contactNumber.id : ''}"
-                                    noSelection="['':'-- Select Contact Number --']"
-                                    onchange="submit()"/></td></tr>
-                </g:form>
-              </td>
-            </tr>
-            <tr>
-              <td class="overflow">
-                <div id="agent-skills">
-                  <h3><g:message code="page.acd.status.yourSkills.label"/></h3>
-                  <ul>
-                    <g:each in="${userSkills}" var="userSkill">
-                      <li>${userSkill.skill.description}</li>
-                    </g:each>
-                  </ul>
-                </div> <!-- agent-skills -->
-              </td>
-              </tr>
-          </tbody>
-        </table>
-
+        <div id="agent-status-toggle">
+          <g:form controller="acd" action="toggleStatus" method="post">
+          <g:set var="titleMessage" value="" />
+          <g:submitButton name="toggle_status" value="${status}" class="${status}"
+                          title="${g.message(code: 'page.acd.status.button.' + status)}"
+                          disabled="${statusDisabled}" />
+          </g:form>
+        </div> <!-- agent-status-toggle -->
+        <div class="padded" id="agent-number">
+          <g:form controller="acd" action="updateNumber" method="post">
+            <h3><g:message code="page.acd.status.yourNumber.label"/></h3>
+            <g:select name="contactNumber" optionKey="id" optionValue="number" from="${phoneNumbers}"
+                      value="${contactNumber != null ? contactNumber.id : ''}" 
+                      noSelection="['':'-- Select Contact Number --']"
+                      onchange="submit()"/>
+          </g:form>
+        </div> <!-- agent-number -->
+        <div class="padded" id="agent-skills">
+          <h3><g:message code="page.acd.status.yourSkills.label"/></h3>
+          <g:if test="${userSkills.size() > 0}">
+            <ul>
+              <g:each in="${userSkills}" var="userSkill">
+                <li>${userSkill.skill.description}</li>
+              </g:each>
+            </ul>
+          </g:if>
+          <g:else>
+            <g:message code="page.acd.status.noConfiguredSkills.label"/>
+          </g:else>
+        </div> <!-- agent-skills -->
       </div> <!-- agent-status -->
     </div> <!-- right-column -->
 

@@ -15,7 +15,7 @@
       </ul>
     </g:if>
 
-    <g:form controller="user" action="update" method="post">
+    <g:form controller="user" action="update" method="post" autocomplete="off">
       <fieldset class="vertical">
         <g:hiddenField name="id" value="${user.id}"/>
 

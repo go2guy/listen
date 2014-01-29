@@ -28,7 +28,8 @@ class AcdController
       callHistory: 'GET',
       pollQueue: 'GET',
       pollHistory: 'GET',
-      pollStatus: 'GET'
+      pollStatus: 'GET',
+      exportHistoryToCsv: 'GET'
     ]
 
     def promptFileService
@@ -56,9 +57,10 @@ class AcdController
       params.offset = params.offset ?: 0
 
       def calls = []
+      def allCalls = []
       def callTotal = 0
 
-      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all calls
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') || user.hasRole('ROLE_QUEUE_USER') ) { // get all calls
         calls = AcdCall.createCriteria().list() {
             order(params.sort, params.order)
             maxResults(params.max.toInteger())
@@ -66,22 +68,26 @@ class AcdController
         }
         callTotal = AcdCall.findAll().size()
       }
-      else { // Get calls for the current user
-        def skills = []
-        UserSkill.findAllByUser(user).each() { userSkill ->
-          skills.add(userSkill.skill)
-        }
-        calls = AcdCall.createCriteria().list() {
-            order(params.sort, params.order)
-            maxResults(params.max.toInteger())
-            firstResult(params.offset.toInteger())
-            'in'("skill",skills)
-        }
-        def allCalls = AcdCall.createCriteria().list() {
-          'in'("skill",skills)
-        }
-        callTotal = allCalls.size()
-      }
+      // else { // Get calls for the current user
+        // def skills = []
+        // UserSkill.findAllByUser(user)?.each() { userSkill ->
+          // skills.add(userSkill.skill)
+        // }
+
+        // if they have no skills there shouldn't be any waiting calls
+        // if ( !skills.isEmpty() ) {
+          // calls = AcdCall.createCriteria().list() {
+              // order(params.sort, params.order)
+              // maxResults(params.max.toInteger())
+              // firstResult(params.offset.toInteger())
+              // 'in'("skill",skills)
+          // }
+          // allCalls = AcdCall.createCriteria().list() {
+            // 'in'("skill",skills)
+          // }
+        // }
+        // callTotal = allCalls.size()
+      // }
 
       def model = [
               calls: calls,
@@ -107,25 +113,25 @@ class AcdController
 
       List<AcdCall> calls = []
 
-      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all calls
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') || user.hasRole('ROLE_QUEUE_USER') ) { // get all calls
         calls = AcdCall.createCriteria().list {
           order(params.sort, params.order)
           maxResults(params.max.toInteger())
           firstResult(params.offset.toInteger())
         }
       }
-      else { // get calls for current users skillset
-        def skills = []
-        UserSkill.findAllByUser(user).each() { userSkill ->
-          skills.add(userSkill.skill)
-        }
-        calls = AcdCall.createCriteria().list {
-          order(params.sort, params.order)
-          maxResults(params.max.toInteger())
-          firstResult(params.offset.toInteger())
-          'in'("skill",skills)
-        }
-      }
+      // else { // get calls for current users skillset
+        // def skills = []
+        // UserSkill.findAllByUser(user).each() { userSkill ->
+          // skills.add(userSkill.skill)
+        // }
+        // calls = AcdCall.createCriteria().list {
+          // order(params.sort, params.order)
+          // maxResults(params.max.toInteger())
+          // firstResult(params.offset.toInteger())
+          // 'in'("skill",skills)
+        // }
+      // }
 
       def callJson = []
       for (AcdCall call : calls)
@@ -225,16 +231,20 @@ class AcdController
 
       // get agent call queue
       def skills = []
-      UserSkill.findAllByUser(user).each() { userSkill ->
+      UserSkill.findAllByUser(user)?.each() { userSkill ->
         skills.add(userSkill.skill)
       }
 
-      List<AcdCall> calls = AcdCall.createCriteria().list {
-        order(params.queueSort,params.queueOrder)
-        maxResults(params.queueMax.toInteger())
-        // firstResult(params.offset.toInteger())
-        eq("callStatus",AcdCallStatus.WAITING)
-        'in'("skill",skills)
+      def calls = []
+      // Should only have waiting calls if one or more skills is assigned
+      if ( !skills.isEmpty() ) {
+        calls = AcdCall.createCriteria().list {
+          order(params.queueSort,params.queueOrder)
+          maxResults(params.queueMax.toInteger())
+          // firstResult(params.offset.toInteger())
+          eq("callStatus",AcdCallStatus.WAITING)
+          'in'("skill",skills)
+        }
       }
 
       def callJson = []
@@ -314,16 +324,20 @@ class AcdController
       params.queueOffset = params.queueOffset ?: 0
 
       def skills = []
-      userSkills.each() { userSkill ->
+      userSkills?.each() { userSkill ->
         skills.add(userSkill.skill)
       }
 
-      def calls = AcdCall.createCriteria().list() {
-        order(params.queueSort,params.queueOrder)
-        maxResults(params.queueMax.toInteger())
-        firstResult(params.queueOffset.toInteger())
-        eq("callStatus",AcdCallStatus.WAITING)
-        'in'("skill",skills)
+      def calls = []
+      // Should only have waiting calls if one or more skills is assigned
+      if ( !skills.isEmpty() ) {
+        calls = AcdCall.createCriteria().list() {
+          order(params.queueSort,params.queueOrder)
+          maxResults(params.queueMax.toInteger())
+          firstResult(params.queueOffset.toInteger())
+          eq("callStatus",AcdCallStatus.WAITING)
+          'in'("skill",skills)
+        }
       }
 
       if (log.isDebugEnabled())
@@ -331,9 +345,13 @@ class AcdController
           log.debug "User status contact number [${contactNumber}]"
       }
 
-      def allCalls = AcdCall.createCriteria().list() {
-        eq("callStatus",AcdCallStatus.WAITING)
-        'in'("skill",skills)
+      def allCalls = []
+      // Should only have waiting calls if one or more skills is assigned
+      if ( !skills.isEmpty() ) {
+        allCalls = AcdCall.createCriteria().list() {
+          eq("callStatus",AcdCallStatus.WAITING)
+          'in'("skill",skills)
+        }
       }
       def callTotal = allCalls.size()
 
