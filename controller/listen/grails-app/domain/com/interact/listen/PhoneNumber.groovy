@@ -31,10 +31,12 @@ class PhoneNumber {
             return 'VOICEMAIL'
         } else if(this.instanceOf(Extension)) {
             return 'EXTENSION'
+        } else if(this.instanceOf(DirectInwardDialNumber)) {
+            return 'DID'
         } else if(this.instanceOf(MobilePhone)) {
             return 'MOBILE'
+        } else {
+            return 'OTHER'
         }
-
-        return 'OTHER'
     }
 }

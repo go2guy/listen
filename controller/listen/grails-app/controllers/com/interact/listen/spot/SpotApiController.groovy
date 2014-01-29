@@ -19,6 +19,8 @@ import com.interact.listen.pbx.findme.*
 import com.interact.listen.stats.*
 import com.interact.listen.voicemail.*
 import com.interact.listen.User
+import com.interact.listen.DirectMessageNumber
+import com.interact.listen.DirectInwardDialNumber
 import com.interact.listen.Organization
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
@@ -1254,29 +1256,12 @@ class SpotApiController {
                 eq('owner', user)
             }
         }
-
-        def total = PhoneNumber.createCriteria().get {
-            projections {
-                count('id')
-            }
-            if(params.number) {
-                eq('number', params.number)
-            }
-            if(organization) {
-                owner {
-                    eq('organization', organization)
-                    eq('enabled', true)
-                }
-            } else {
-                owner {
-                    eq('enabled', true)
-                }
-            }
-            if(user) {
-                eq('owner', user)
-            }
+        def total = list.size()
+        log.debug "listPhoneNumber list size [${total}]"
+        list.each { ph ->
+            log.debug "Found number [${ph.number}]"
         }
-
+        
         def results = list.collect {
             return [
                 'subscriber': "/subscribers/${it.owner.id}",
@@ -1294,6 +1279,7 @@ class SpotApiController {
             results: results
         ]
 
+        //log.debug "list PhoneNumber json [${(json as JSON).toString()}]"
         render json as JSON
     }
 
@@ -1763,6 +1749,7 @@ class SpotApiController {
     }
 
     def updatePhoneNumber = {
+        log.debug "updatePhoneNumber with params [${params}]"
         def phoneNumber = PhoneNumber.get(params.id)
         if(!phoneNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1786,17 +1773,20 @@ class SpotApiController {
                 phoneNumber.owner = user
             }
 
-            if((phoneNumber.instanceOf(Extension) || phoneNumber.instanceOf(DirectMessageNumber)) && json.greetingLocation) {
+            if((phoneNumber.instanceOf(Extension) || phoneNumber.instanceOf(DirectInwardDialNumber) || phoneNumber.instanceOf(DirectMessageNumber)) && json.greetingLocation) {
                 if(!phoneNumber.greeting) {
+                    log.debug "Phone number doesn't have greeting, create one"
                     phoneNumber.greeting = new Audio(duration: new Duration(0))
                 }
                 phoneNumber.greeting.file = new File(new URI(json.greetingLocation))
-
+                log.debug "phone number greeting [${phoneNumber.greeting.file}]"
+                    
                 if(!(phoneNumber.greeting.validate() && phoneNumber.greeting.save())) {
                     status.setRollbackOnly()
                     response.sendError(HSR.SC_BAD_REQUEST, beanErrors(phoneNumber.greeting))
                     return
                 }
+                log.debug "We've saved greeting for user [${phoneNumber.owner}]"
             }
 
             if(json.number) {
@@ -1808,12 +1798,15 @@ class SpotApiController {
             }
 
             if(phoneNumber.validate() && phoneNumber.save()) {
+                log.debug "We've saved the entire phone number record"
                 response.status = HSR.SC_OK
                 response.flushBuffer()
             } else {
+                log.error "We've failed to save phone number changes"
                 status.setRollbackOnly()
                 response.sendError(HSR.SC_BAD_REQUEST, beanErrors(phoneNumber))
             }
+            log.debug "We've completed the update phone number method"
         }
     }
 
