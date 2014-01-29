@@ -51,4 +51,9 @@ beans = {
             arguments = ['file:' + grailsApplication.config.com.interact.listen.log4j.config,60000]
         }
     }
+    
+    customMailMessageBuilderFactory(com.interact.listen.mail.MailMessageBuilderFactory) {
+        it.autowire = true
+    }
+
 }

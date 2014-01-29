@@ -84,6 +84,7 @@ grails.project.dependency.resolution = {
         compile ':cache:1.0.1'
         compile ":hibernate:3.6.10.4"
         compile ":joda-time:1.4"
+        compile ":background-thread:1.6"
         compile ':mail:1.0', {
             excludes 'spring-test'
         }

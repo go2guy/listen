@@ -4,7 +4,10 @@ import com.interact.listen.license.LicenseService
 import com.interact.listen.license.ListenFeature
 import grails.util.Holders
 
-class BootStrap {
+class BootStrap
+{
+    def customMailMessageBuilderFactory
+    def mailService
 
     def init = { servletContext ->
         def licenseService = new LicenseService();
@@ -27,6 +30,8 @@ class BootStrap {
                 AcdCleanupJob.schedule(cleanupInterval);
             }
         }
+
+        mailService.mailMessageBuilderFactory = customMailMessageBuilderFactory
     }
     def destroy = {
     }
