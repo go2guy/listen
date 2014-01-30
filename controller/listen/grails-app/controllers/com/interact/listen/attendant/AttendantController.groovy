@@ -30,6 +30,8 @@ class AttendantController {
     }
 
     def addHoliday = {
+        log.debug "addHoliday with params [${params}]"
+
         def promptOverride = promptOverrideService.create(params, request.getFile('uploadedPrompt'))
         if(promptOverride.hasErrors()) {
             def model = promptOverrideModel()

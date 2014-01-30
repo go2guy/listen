@@ -2,6 +2,7 @@ package com.interact.listen.attendant
 
 import com.interact.listen.util.FileTypeDetector
 import org.springframework.web.multipart.MultipartFile
+import org.joda.time.LocalDate
 
 class PromptOverrideService {
     def historyService
@@ -18,9 +19,17 @@ class PromptOverrideService {
         // if we allow custodians to manage them, we will need to change this
         def user = springSecurityService.getCurrentUser()
         def organization = user.organization
-
-        def promptOverride = new PromptOverride(params)
+        log.debug "promptOverride create with params [${params}]"
+        params.remove('date')
+        def promptOverride = new PromptOverride()
+        // Removing 'date' from the params because it's populated wit 'struct' and this was breaking the validation.
+        params.remove('date')
+        promptOverride.properties = params
+        promptOverride.date = new LocalDate(params?.date_year.toInteger(), params?.date_month.toInteger(), params?.date_day.toInteger())
         promptOverride.validate(['date', 'useMenu', 'overridesMenu'])
+        if (promptOverride.hasErrors()) {
+            log.error "promptOverride has errors [${promptOverride.errors}]"
+        }
 
         if(file && !file.isEmpty()) {
             def detector = new FileTypeDetector()
@@ -36,6 +45,8 @@ class PromptOverrideService {
 
         if(!promptOverride.hasErrors() && promptOverride.save()) {
             historyService.createdAttendantHoliday(promptOverride)
+        } else {
+            log.error "promptOverride has failed with errors [${promptOverride.errors}]"
         }
         return promptOverride
     }

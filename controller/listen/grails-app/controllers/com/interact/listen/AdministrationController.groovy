@@ -157,7 +157,7 @@ class AdministrationController {
             flash.successMessage = message(code: 'numberRoute.created.message', args: [route.pattern])
             redirect(action: 'routing')
         } else {
-            log.debug "addInternalRoute failed validation [${route.errors()}]"
+            log.debug "addInternalRoute failed validation [${route.errors}]"
             def model = routingModel()
             model.newRoute = route
             render(view: 'routing', model: model)
@@ -419,7 +419,7 @@ class AdministrationController {
         if(skill.validate() && skill.save()) {
             log.debug "We've saved the changes to the skill record"
         } else {
-            log.error "We've failed to validate skill prior to saving: [${skill.errors()}]"
+            log.error "We've failed to validate skill prior to saving: [${skill.errors}]"
         }
         
         // We're going to make a list of our skills so we can work with it easier
@@ -712,7 +712,7 @@ class AdministrationController {
         
         directInwardDialNumber = directInwardDialNumberService.update(directInwardDialNumber, params)
         if(directInwardDialNumber.hasErrors()) {
-            log.error "failed to update direct inward number with error [${directInwardDialNumber.errors()}]"
+            log.error "failed to update direct inward number with error [${directInwardDialNumber.errors}]"
             def model = routingModel()
             model.updatedDirectInwardDialNumber = directInwardDialNumber
             render(view: 'routing', model: model)
@@ -792,7 +792,7 @@ class AdministrationController {
             flash.successMessage = message(code: 'numberRoute.updated.message')
             redirect(action: 'routing')
         } else {
-            log.error "Failed route update with errors [${route.errors()}]"
+            log.error "Failed route update with errors [${route.errors}]"
             def model = routingModel()
             model.updatedRoute = route
             render(view: 'routing', model: model)
