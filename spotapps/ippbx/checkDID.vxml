@@ -98,10 +98,10 @@
     </form>
 
     <form id="setParamsForExt">
-		<block>                                   
-            <log>INFO: Entered setParamsGetPhonenum</log>
+		<block>
+            <log>INFO: Entered setParamsForExt</log>
             <assign name="resource" expr="'accessNumbers'"/>
-            <assign name="accessNumber" expr="getExtension(result, count)"/>            
+            <assign name="accessNumber" expr="getExtension(result, count)"/>
             <if cond="accessNumber == 'END'">
                 <assign name="status" expr="'Failure'" />
                 <assign name="result" expr="''" />
@@ -117,10 +117,10 @@
 
     <form id="sendEventGetExt">
         <block>
-            <log>INFO: Entered sendEventGetPhonenum</log>
+            <log>INFO: Entered sendEventGetExt</log>
             <data name="apiObj" srcexpr="getJsonVal(importedValue, 'HTTPcontroller')" method="get" namelist="cntrlURL request resource params" fetchtimeout="1s"/>
             <assign name="status" expr="apiObj.Status" />
-            <assign name="result" expr="apiObj.Result" />
+            <var name="resultObj" expr="apiObj.Result" />
             <if cond="status == 'Failure'">
                 <assign name="logText" expr="'checkDID.vxml: sendEventGetExt returned Failure. Reason [' + apiObj.Reason + ']. Attempted ['+request+'] on ['+resource+'] at ['+cntrlURL+'] using ['+params+']. DNIS ['+ getnum(tmpDNIS) + '].'"/>
                 <assign name="logText" expr="writeLog('IPPBX',LINE_NUMBER,logText)"/>
@@ -134,10 +134,10 @@
                     <log>INFO: No mapping for checkDID</log>
                 </if>
             <else/>
-                <log>INFO: sendEventGetExt [<value expr="result"/>]</log>
-                <if cond="getJsonVal(result, 'type') == 'EXTENSION'">
+                <log>INFO: sendEventGetExt [<value expr="resultObj"/>]</log>
+                <if cond="getJsonVal(resultObj, 'type') == 'EXTENSION'">
                     <assign name="status" expr="'Success'" />
-                    <assign name="result" expr="getJsonVal(result, 'number')" />
+                    <assign name="result" expr="getJsonVal(resultObj, 'number')" />
                     <goto next="#exit"/>
                 <else/>
                     <goto next="#setParamsForExt"/>
