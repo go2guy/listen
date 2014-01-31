@@ -1002,7 +1002,7 @@ class AdministrationController {
                     log.debug "Matched configured DID [${extDID.number}] to external DID [${did.pattern}]"
                     return true
                 } else {
-                    log.debug "No match for configured DID [${extDID.number}] to external DID [${did.pattern}]"
+                    //log.debug "No match for configured DID [${extDID.number}] to external DID [${did.pattern}]"
                     return false
                 }
             }
