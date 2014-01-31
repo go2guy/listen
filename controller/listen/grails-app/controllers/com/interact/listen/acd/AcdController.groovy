@@ -267,10 +267,6 @@ class AcdController
 
       json.calls = callJson
 
-      if(log.isDebugEnabled()) {
-        log.debug "Rendering agent status as json [${json.toString()}]"
-      }
-
       render(contentType: 'application/json') {
         json
       }

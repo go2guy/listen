@@ -114,7 +114,11 @@ class AcdService
             user {
                 acdUserStatus {
                     eq("acdQueueStatus", AcdQueueStatus.Available)
-                    le("onacallModified", agentTime)
+                    or {
+                        le("onacallModified", agentTime)
+                        isNull("onacallModified")
+                    }
+
                     eq("onACall", false)
                     order("onacallModified", "asc")
                 }
@@ -214,7 +218,13 @@ class AcdService
     void acdCallAdd(String ani, String dnis, String selection, String sessionId, String ivr) throws ListenAcdException
     {
         AcdCall acdCall = new AcdCall();
-        String stringAni = ani.substring( ani.indexOf(':')+1, ani.indexOf('@'));
+        String stringAni = ani;
+
+        if(ani.contains(":") && ani.contains("@"))
+        {
+            stringAni = ani.substring( ani.indexOf(':')+1, ani.indexOf('@'));
+        }
+
         acdCall.setAni(stringAni);
         acdCall.setDnis(dnis);
         Skill skill = menuSelectionToSkill(selection);

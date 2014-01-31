@@ -133,7 +133,7 @@
 
           <thead>
             <tr>
-              <th width=10%>On Hold</th>
+              <th width=10%>Hold</th>
               <th width=25%>Caller</th>
               <th width=15%>Skill</th>
               <th id="transferHeader" width=7%></th>
