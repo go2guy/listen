@@ -512,7 +512,7 @@ class AdministrationController {
         }
         
         // Check to see if there are any actions configured with this skill id
-        def actionACD = RouteToAnACDAction.countBySkill(skill)
+        def menuCount = RouteToAnACDAction.countBySkill(skill)
         if (menuCount > 0) {
             log.info "Found [${menuCount}] actions associated with skill [${skill.skillname}]"
             flash.errorMessage = message(code: 'page.administration.acd.skills.assocaitedWithMenu.message')
