@@ -91,6 +91,7 @@ grails.project.dependency.resolution = {
         compile ":quartz:1.0.1"
         compile ':spring-security-core:1.2.7.3'
         compile ":spring-security-ldap:2.0-RC2"
+        compile ":background-thread:1.6"
 
         runtime ":jquery:1.8.3"
         runtime ":resources:1.1.6"

@@ -21,6 +21,10 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/background-thread-1.6">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/background-thread-1.6/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/background-thread-1.6/grails-app/services" isTestSource="false" />
+    </content>
     <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1">
       <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/src/java" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/src/groovy" isTestSource="false" />
@@ -118,25 +122,6 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.mina/mina-core/jars/mina-core-1.1.6.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/joda-time/joda-time-hibernate/jars/joda-time-hibernate-1.3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sourceforge.jexcelapi/jxl/jars/jxl-2.6.12.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/jdom/jdom/jars/jdom-1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/rome/rome/jars/rome-0.9.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/de.l3s.boilerpipe/boilerpipe/jars/boilerpipe-1.1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/com.drewnoakes/metadata-extractor/jars/metadata-extractor-2.4.0-beta-1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.ccil.cowan.tagsoup/tagsoup/jars/tagsoup-1.2.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.geronimo.specs/geronimo-stax-api_1.0_spec/bundles/geronimo-stax-api_1.0_spec-1.0.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.xmlbeans/xmlbeans/jars/xmlbeans-2.3.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.poi/poi-ooxml-schemas/jars/poi-ooxml-schemas-3.7.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.poi/poi-ooxml/jars/poi-ooxml-3.7.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.poi/poi-scratchpad/jars/poi-scratchpad-3.7.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.poi/poi/jars/poi-3.7.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.bouncycastle/bcmail-jdk15/jars/bcmail-jdk15-1.45.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/jempbox/bundles/jempbox-1.4.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/fontbox/bundles/fontbox-1.4.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.pdfbox/pdfbox/bundles/pdfbox-1.4.0.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.commons/commons-compress/jars/commons-compress-1.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-httpclient/commons-httpclient/jars/commons-httpclient-3.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/edu.ucar/netcdf/jars/netcdf-4.2-min.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tika/tika-parsers/bundles/tika-parsers-0.9.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tika/tika-core/bundles/tika-core-0.9.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/com.googlecode.json-simple/json-simple/jars/json-simple-1.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.james/apache-mime4j/jars/apache-mime4j-0.6.jar!/" />

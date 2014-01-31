@@ -42,6 +42,11 @@ beans = {
         userDetailsService = ref('gormUserDetailsService')
     }
 
+    //MAILOVERIDE
+    customMailMessageBuilderFactory(com.interact.listen.mail.MailMessageBuilderFactory) {
+        it.autowire = true
+    }
+
     if(grailsApplication.config.com.interact.listen.log4j.config)
     {
         log4jConfigurer(org.springframework.beans.factory.config.MethodInvokingFactoryBean)

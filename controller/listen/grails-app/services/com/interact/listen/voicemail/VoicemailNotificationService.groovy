@@ -191,7 +191,7 @@ You have correctly configured your settings to receive Listen email notification
         backgroundService.execute("New voicemail SMS to [${voicemail.owner.username}] at [${address}] for voicemail id [${voicemail.id}]", {
             def max = 160
             def message = "New voicemail from ${voicemailFrom}. ${transcription}"
-            def retrieve = voicemailNumber ? " Retreieve it at ${voicemailNumber.pattern}." : ''
+            def retrieve = voicemailNumber ? " Retrieve it at ${voicemailNumber.pattern}." : ''
             if(message.size() + retrieve.size() <= max) {
                 message += retrieve
             } else if(message.size() > max) {
