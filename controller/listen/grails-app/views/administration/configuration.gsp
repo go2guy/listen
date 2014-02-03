@@ -13,6 +13,8 @@
   <body>
     <g:form controller="administration" action="saveConfiguration">
     <listen:canAccess feature="VOICEMAIL">
+    </listen:canAccess>
+    
       <listen:canAccess feature="TRANSCRIPTION">
         <fieldset class="vertical">
           <h3>Audio Transcription</h3>
@@ -25,29 +27,29 @@
             <g:textField name="transcription.phoneNumber" value="${fieldValue(bean: transcription, field: 'phoneNumber')}" class="${listen.validationClass(bean: transcription, field: 'phoneNumber')}"/>
           </div>
         </fieldset>
-       </listen:canAccess>
+     </listen:canAccess>
 
-      <fieldset class="vertical">
-        <h3>After Hours Support</h3>
-
-        <label for="afterHours.mobilePhone.id"><g:message code="afterHoursConfiguration.mobilePhone.label"/></label>
-        <listen:mobilePhoneSelect name="afterHours.mobilePhone.id" optionKey="id" optionValue="number" noSelection="['': 'None']" value="${afterHours?.mobilePhone?.id}"/>
-
-        <label for="afterHours.alternateNumber"><g:message code="afterHoursConfiguration.alternateNumber.label"/></label>
-        <g:textField name="afterHours.alternateNumber" value="${afterHours?.alternateNumberComponents()?.number?.encodeAsHTML()}" class="afterhours-alternatenumber ${listen.validationClass(bean: afterHours, field: 'alternateNumber')}"/>
-
-        <label for="afterHours.provider"><g:message code="page.administration.configuration.afterHours.alternateNumberProvider.label"/></label>
-        <listen:mobileProviderSelect name="afterHours.provider" value="${afterHours?.alternateNumberComponents()?.provider}" class="afterhours-provider"/>
-
-        <listen:autocomplete selector=".afterhours-alternatenumber" data="all.mobiles" providerSelector=".afterhours-provider"/>
-
-        <label for="afterHours.realizeUrl"><g:message code="afterHoursConfiguration.realizeUrl.label"/></label>
-        <g:textField name="afterHours.realizeUrl" value="${fieldValue(bean: afterHours, field: 'realizeUrl')}" class="${listen.validationClass(bean: afterHours, field: 'realizeUrl')}"/>
-        
-        <label for="afterHours.realizeAlertName"><g:message code="afterHoursConfiguration.realizeAlertName.label"/></label>
-        <g:textField name="afterHours.realizeAlertName" value="${fieldValue(bean: afterHours, field: 'realizeAlertName')}" class="${listen.validationClass(bean: afterHours, field: 'realizeAlertName')}"/>
-
-      </fieldset>
+    <listen:canAccess feature="AFTERHOURS">
+         <fieldset class="vertical">
+            <h3>After Hours Support</h3>
+            
+            <label for="afterHours.mobilePhone.id"><g:message code="afterHoursConfiguration.mobilePhone.label"/></label>
+            <listen:mobilePhoneSelect name="afterHours.mobilePhone.id" optionKey="id" optionValue="number" noSelection="['': 'None']" value="${afterHours?.mobilePhone?.id}"/>
+            
+            <label for="afterHours.alternateNumber"><g:message code="afterHoursConfiguration.alternateNumber.label"/></label>
+            <g:textField name="afterHours.alternateNumber" value="${afterHours?.alternateNumberComponents()?.number?.encodeAsHTML()}" class="afterhours-alternatenumber ${listen.validationClass(bean: afterHours, field: 'alternateNumber')}"/>
+            
+            <label for="afterHours.provider"><g:message code="page.administration.configuration.afterHours.alternateNumberProvider.label"/></label>
+            <listen:mobileProviderSelect name="afterHours.provider" value="${afterHours?.alternateNumberComponents()?.provider}" class="afterhours-provider"/>
+            
+            <listen:autocomplete selector=".afterhours-alternatenumber" data="all.mobiles" providerSelector=".afterhours-provider"/>
+            
+            <label for="afterHours.realizeUrl"><g:message code="afterHoursConfiguration.realizeUrl.label"/></label>
+            <g:textField name="afterHours.realizeUrl" value="${fieldValue(bean: afterHours, field: 'realizeUrl')}" class="${listen.validationClass(bean: afterHours, field: 'realizeUrl')}"/>
+            
+            <label for="afterHours.realizeAlertName"><g:message code="afterHoursConfiguration.realizeAlertName.label"/></label>
+            <g:textField name="afterHours.realizeAlertName" value="${fieldValue(bean: afterHours, field: 'realizeAlertName')}" class="${listen.validationClass(bean: afterHours, field: 'realizeAlertName')}"/>
+        </fieldset>
     </listen:canAccess>
 
     <listen:canAccess feature="CONFERENCING">
