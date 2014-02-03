@@ -353,7 +353,7 @@ class AcdController
 
       // Get Agent's Call History
       params.historySort = params.historySort ?: 'enqueueTime'
-      params.historyOrder = params.historyOrder ?: 'asc'
+      params.historyOrder = params.historyOrder ?: 'desc'
 
       LocalDate today = new LocalDate()
 

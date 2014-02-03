@@ -48,25 +48,31 @@
     <script type="text/javascript">
     // Given a time in milliseconds returns a string representation in HH:MM:SS format
     function formatTime(time) {
-      var hours = Math.floor(time / 3600);
+        var milliInHour = 60 * 60 * 1000;
+        var milliInMinute = 60 * 1000;
 
-      if (hours.toString().length == 1) {
-        hours = "0" + hours;
-      }
+        var hours = Math.floor(time / milliInHour);
 
-      var minutes = Math.floor( (time % 3600) / 60 );
+        if (hours.toString().length == 1)
+        {
+            hours = "0" + hours;
+        }
 
-      if (minutes.toString().length == 1) {
-        minutes = "0" + minutes;
-      }
+        var minutes = Math.floor( (time - (hours * milliInHour)) / milliInMinute);
 
-      var seconds = Math.floor( ((time % 3600) % 60 ) );
+        if (minutes.toString().length == 1)
+        {
+            minutes = "0" + minutes;
+        }
 
-      if (seconds.toString().length == 1) {
-        seconds = "0" + seconds;
-      }
+        var seconds = Math.floor(((time - (hours * milliInHour) - (minutes * milliInMinute)) / 1000 ) );
 
-      return (hours + ':' + minutes + ':' + seconds);
+        if (seconds.toString().length == 1)
+        {
+            seconds = "0" + seconds;
+        }
+
+        return (hours + ':' + minutes + ':' + seconds);
     }
 
     // Removes the annoyances of a mysql timestamp - returns YYYY-MM-DD HH:MM:SS format
@@ -82,26 +88,10 @@
           return 'N/A';
       }
 
-      var stringStart = start.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
-      var stringEnd = end.toString("yyyy'-'MM'-'dd HH':'mm':'ss");
-      // convert mysql timestamp into javascript date
-      var startAsJDate_ = stringStart.split(/[- : T]/);
-      var startAsJDate = new Date(startAsJDate_[0], startAsJDate_[1]-1, startAsJDate_[2], startAsJDate_[3], startAsJDate_[4], startAsJDate_[5]);
+      var startTime = new Date(start);
+      var endTime = new Date();
 
-      // get difference in seconds
-      if ( stringEnd == "now" ) { // get difference from current time
-        var difference = ((new Date()).valueOf() - startAsJDate.valueOf()) / 1000;
-      }
-      else { // get difference from specified time
-        // convert mysql timestamp into javascript date
-        var endAsJDate_ = stringEnd.split(/[- : T]/);
-        var endAsJDate = new Date(endAsJDate_[0], endAsJDate_[1]-1, endAsJDate_[2], endAsJDate_[3], endAsJDate_[4], endAsJDate_[5]);
-
-        var difference = (endAsJDate.valueOf() - startAsJDate.valueOf());
-        if ( difference > 0 ) {
-          difference = Math.floor(difference / 1000);
-        }
-      }
+      difference = endTime.getTime() - startTime.getTime();
 
       return formatTime(difference);
    }
