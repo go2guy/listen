@@ -234,7 +234,7 @@ span.recording-status.started {
     <!-- Messages could/should indicate channel, e.g. "Admin muted caller X via TUI" -->
 
     <div id="callers" class="panel">
-      <table style="display: ${participantList.size() > 0 ? 'table' : 'none'};">
+      <table style="display: ${participantList?.size() > 0 ? 'table' : 'none'};">
         <thead>
           <tr>
             <th class="col-status"></th>
@@ -273,11 +273,11 @@ span.recording-status.started {
           </g:each>
         </tbody>
       </table>
-      <div class="pagination" style="display: ${participantList.size() > 0 ? 'block' : 'none'};">
+      <div class="pagination" style="display: ${participantList?.size() > 0 ? 'block' : 'none'};">
         <listen:paginateTotal total="${participantTotal}" messagePrefix="paginate.total.callers"/>
         <g:paginate total="${participantTotal}" maxsteps="5"/>
       </div>
-      <div id="no-caller-placeholder" style="display: ${participantList.size() > 0 ? 'none' : 'block'};">
+      <div id="no-caller-placeholder" style="display: ${participantList?.size() > 0 ? 'none' : 'block'};">
         Nobody has joined the conference.
       </div>
     </div>
@@ -286,7 +286,7 @@ span.recording-status.started {
       <h3>PINs</h3>
       <table>
         <tbody>
-          <g:if test="${conference.pins.size() > 0}">
+          <g:if test="${conference?.pins?.size() > 0}">
             <g:each in="${conference.pins.sort { it.pinType.name() }}" var="pin">
               <tr><td class="col-pinType ${pin.pinType.name().toLowerCase()}-pin">${pin.pinType.displayName().encodeAsHTML()}</td><td class="col-pin ${pin.pinType.name().toLowerCase()}-pin">${pin.number}</td></tr>
             </g:each>
@@ -362,7 +362,6 @@ span.recording-status.started {
 
     <script type="text/javascript">
 
-%{-- %%mark%% --}%
 var conference = {
     poll: function() {
         $.ajax({
@@ -395,7 +394,6 @@ var conference = {
                     $('.start-recording-form').show();
                 }
 
-%{-- %%mark%% --}%
                 var placeholder = $('#no-caller-placeholder');
                 var table = $('#callers > table, #callers > div.pagination');
                 if(data.participants.list.length == 0 && !placeholder.is(':visible')) {

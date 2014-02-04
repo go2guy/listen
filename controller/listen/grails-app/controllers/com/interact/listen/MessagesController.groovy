@@ -103,10 +103,13 @@ class MessagesController {
         log.debug "Found [${count}] messages in mailbox of [${voicemailUser?.username}]"
       }
       else { // All
-        messageList = InboxMessage.createCriteria().list {
-          order(params.sort,params.order)
-          maxResults(params.max)
-          'in'("owner",userList)
+        // If we didn't find any associated voicemail users there won't be any messages
+        if ( !userList.isEmpty() ) {
+          messageList = InboxMessage.createCriteria().list {
+            order(params.sort,params.order)
+            maxResults(params.max)
+            'in'("owner",userList)
+          }
         }
       }
 

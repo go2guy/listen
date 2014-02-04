@@ -707,7 +707,7 @@ class AcdService
               LogFactory.getLog(this).debug("Setting user [${user.realName}] as vm box for skill [${skill.skillname}]")
               newUserAcdUserStatus.makeVoicemailBox()
           }
-          // rebuild our internal has map
+          // rebuild our internal hash map
           populateVoicemailUsers()
       } else {
           LogFactory.getLog(this).error("Set voice mail user by skill received invalid input")

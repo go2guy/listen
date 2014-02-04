@@ -129,8 +129,8 @@
               <td>${call.callStatus.viewable()}</td>
               %{-- <td>${call.callStatus.toString()}</td> --}%
               <script type="text/javascript">
-                document.write('<td>' + getDifference('${call.enqueueTime}','') + '</td>');
-                document.write('<td>' + getDifference('${call.lastModified}','') + '</td>');
+                document.write('<td>' + getDifference('${call.enqueueTime}','now') + '</td>');
+                document.write('<td>' + getDifference('${call.lastModified}','now') + '</td>');
               </script>
                 <td class="disconnect-button">
                     <button type="button" class="disconnectButton" id="disconnectButton"
@@ -143,7 +143,7 @@
       </table>
     </div>
 
-    <div class="pagination" style="display: ${calls.size() > 0 ? 'block' : 'none'};">
+    <div id="pagination" class="pagination" style="display: ${calls.size() > 0 ? 'block' : 'none'};">
       <listen:paginateTotal total="${callTotal}" messagePrefix="paginate.total.callers"/>
       <g:paginate total="${callTotal}" maxsteps="5"/>
     </div>
@@ -188,7 +188,7 @@
             tbody.empty();
             var row = "";
             var row_count = 0;
-            if(data.calls)
+            if(data && data.calls.length > 0)
             {
               data.calls.forEach(function(call) {
                 row = "";
@@ -206,6 +206,21 @@
                 row += '</tr>';
                 tbody.append(row);
               });
+            } // if ( data ...
+            var div = $("#pagination > div");
+            div.empty();
+            if ( data.callTotal ) {
+              if ( data.callTotal == 1 ) {
+                div.append(data.callTotal + " Caller");
+              }
+              else {
+                div.append(data.callTotal + " Callers");
+              }
+              div.show();
+            } // if ( data.callTotal ...
+            else {
+              // div.append("0 Callers");
+              div.hide();
             }
           } // success
         }); // $.ajax

@@ -46,6 +46,7 @@ class AdministrationController {
         history: 'GET',
         outdialing: 'GET',
         phones: 'GET',
+        pollAvailableUsers: 'POST',
         routing: 'GET',
         saveAndroid: 'POST',
         saveConfiguration: 'POST',
@@ -362,7 +363,6 @@ class AdministrationController {
     }
 
     def editSkill = {
-        
         log.debug "Edit skill with params [${params}]"
         
         def organization = authenticatedUser.organization
@@ -376,21 +376,31 @@ class AdministrationController {
         def orgUsers = User.findAllByOrganizationAndEnabled(organization, true, [sort: 'realName', order: 'asc'])
         def skillUsers = UserSkill.findAllBySkill(skill)
         def testUsers = []
+        // users not already serving as a voicemail user
+        def freeUsers = []
         skillUsers.each{skilluser ->
             log.debug "User [${skilluser.user}][${skilluser.user.realName}] [${skilluser.user.id}] has skill [${skilluser.skill.skillname}]"
             testUsers << skilluser.user
+            // if user is not already serving as a voicemail user
+            if ( skilluser.user.acdUserStatus.acdQueueStatus != AcdQueueStatus.VoicemailBox ) {
+              // they are free to be assigned as one
+              log.debug "Adding userskill [${skilluser}] to freeUsers."
+              freeUsers << skilluser
+            }
         }
-        
+       
         def vmUser = AcdService.getVoicemailUserBySkillname(skill.skillname)
+        // We still want to keep the currently assigned voicemail user on the list of assignable users
+        freeUsers << UserSkill.findByUser(vmUser)
+ 
         if(vmUser) {
             log.debug "Skill [${skill.skillname}] is assigned to user [${vmUser.realName}] for voicemail"
         }
         
-        render(view: 'editSkill', model: [skill: skill, orgUsers: orgUsers, skillUsers: skillUsers, vmUser: vmUser, testUsers: testUsers] )
+        render(view: 'editSkill', model: [skill: skill, orgUsers: orgUsers, skillUsers: skillUsers, freeUsers: freeUsers, vmUser: vmUser, testUsers: testUsers] )
     }
 
     def updateSkill = {
-        
         log.debug "Update skill with params [${params}]"
         
         def skill = Skill.get(params.id)
@@ -421,8 +431,13 @@ class AdministrationController {
         } else {
             log.error "We've failed to validate skill prior to saving: [${skill.errors}]"
         }
-        
+
+        // We want to mark the history as soon as any portion of the skill was updated
+        // this doesn't mean the action was successful as a whole.
+        historyService.updatedSkill(skill)
+ 
         // We're going to make a list of our skills so we can work with it easier
+        // The first step is to get the user ids selected on the edit skill screen
         def userIds = []
         if (params.userIds.getClass() == String) {
             userIds << params.userIds
@@ -434,10 +449,9 @@ class AdministrationController {
         
         log.debug "Skill [${skill.skillname}] is needed for userIds [${userIds}]"
 
-        // loop through existing users.  Remove users that are no longer selected.  Remove users that we aleady have from the users list that we plan on adding
+        // loop through existing users.  Remove users that are no longer selected.  Remove users that already have the skill (no use adding them again)
         def skillUsers = UserSkill.findAllBySkill(skill)
         skillUsers.each { skillUser ->
-            
             if ( userIds.contains(skillUser.user.id.toString()) ) {
                 log.debug "User [${skillUser.user.username}] already has skill [${skill.skillname}] and we are keeping it"
                 // we'll remove it from the users list, since we already have it and don't need to add it to the db
@@ -471,20 +485,34 @@ class AdministrationController {
             }
         }
         
-        if(params.vmUserId) {
-            
-            def vmUser = User.findById(params.vmUserId.toInteger())
-            if (vmUser) {
-                log.debug "We have vmUserId of [${params.vmUserId}] for user [${vmUser.username}]"
-                AcdService.setVoicemailUserBySkillname(skill, vmUser)
-            } else {
-                log.error "vmUserId [${params.vmUserId}] is invalid!"
-            }
+        // Make sure we are only assigning a voicemail user that is assigned the current skill
+        def isAssociated = false
+        def vmUser
+        if ( params.vmUserId != "" && params.vmUserId != null ) {
+          vmUser = User.findById(params.vmUserId.toInteger())
+        }
+        UserSkill.findAllBySkill(skill).each() { userSkill ->
+          if ( userSkill.user == vmUser ) {
+            isAssociated = true
+          }
+        }
+
+        if ( isAssociated ) {
+          log.debug "Checking to make sure user [${vmUser.username}] has the assigned skill"
+          if (vmUser) {
+              log.debug "We have vmUserId of [${params.vmUserId}] for user [${vmUser.username}]"
+              AcdService.setVoicemailUserBySkillname(skill, vmUser)
+          } else {
+              log.error "vmUserId [${params.vmUserId}] is invalid!"
+          }
+        }
+        else {
+          flash.errorMessage = message(code: 'skill.vmumissingskill.message')
+          redirect(action: 'skills')
         }
         
-        historyService.updatedSkill(skill)
         flash.successMessage = message(code: 'skill.updated.message')
-        
+       
         def model = skillModel()
         render(view: 'skills', model: model)
     }
@@ -567,6 +595,37 @@ class AdministrationController {
     
     def phones = {
         render(view: 'phones', model: phonesModel())
+    }
+
+    // ajax
+    def pollAvailableUsers = {
+      log.debug "pollAvailableUsers: selected [${params.selected}]"
+
+      // users not already serving as a voicemail user
+      def freeUsers = []
+      def selectedUser
+      def currentVoicemailUser = AcdService.getVoicemailUserBySkillname(params.skill)
+      log.debug "current voicemail user [${currentVoicemailUser?.realName}]"
+
+      params.selected.split(",").each() {username ->
+        selectedUser = User.findByRealName(username)
+        log.debug "Checking whether user [${selectedUser?.realName}] is free"
+        if ( selectedUser.acdUserStatus.acdQueueStatus != AcdQueueStatus.VoicemailBox ||
+             selectedUser.id == currentVoicemailUser.id ) {
+          // bypassing grails render error (concerning json subfields)
+          log.debug "Adding user [${selectedUser?.realName}] to free users."
+          def user = [:]
+          user.id = selectedUser.id
+          user.realName = selectedUser.realName
+          freeUsers << user
+        }
+      }
+
+      def data = [:]
+      data.voicemailUsers = freeUsers
+      data.currentVoicemailUser = currentVoicemailUser.realName
+
+      render data as JSON
     }
 
     def routing = {

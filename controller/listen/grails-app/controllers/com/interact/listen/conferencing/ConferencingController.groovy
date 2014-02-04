@@ -35,6 +35,7 @@ class ConferencingController {
     def recordingService
     def scheduledConferenceNotificationService
     def spotCommunicationService
+    def userCreationService
 
     def index = {
         redirect(action: 'manage')
@@ -195,8 +196,13 @@ class ConferencingController {
         // TODO only works for current user, needs to be usable by admins
         def conference = Conference.findByOwner(user)
         if(!conference) {
-            // TODO render a conference not found view
-            throw new AssertionError("User ${user} does not have a conference")
+          log.warn "A conference was not found for user [${user.realName}]. We'll just create one for now since we're nice like that :)"
+          // TODO render a conference not found view
+          // throw new AssertionError("User ${user} does not have a conference")
+          // Create a standard conference - this should probably only be a temp fix for Mimio
+          userCreationService.createDefaultConference(user)
+          // look up the newly created conference
+          conference = Conference.findByOwner(user)
         }
 
         params.sort = params.sort ?: 'ani'

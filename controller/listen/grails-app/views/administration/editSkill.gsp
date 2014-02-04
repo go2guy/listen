@@ -64,12 +64,12 @@
 
             <tr>
                 <td class="acdEditHeading"><g:message code="page.administration.acd.skills.column.users"/></td>
-                <td class="acdEditValue"><g:select id="userIds" name="userIds" multiple="multiple" optionKey="id" optionValue="realName" from="${orgUsers}" value="${skillUsers?.user}"/></td>
+                <td class="acdEditValue"><g:select id="userIds" name="userIds" multiple="multiple" optionKey="id" optionValue="realName" from="${orgUsers}" value="${skillUsers?.user}" onchange="updateVoicemailUsers()"/></td>
             </tr>
 
             <tr>
                 <td class="acdEditHeading"><g:message code="page.administration.acd.skills.column.voiceMailUser"/></td>
-                <td class="acdEditValue"><g:select id="vmUserId" name="vmUserId" optionKey="id" optionValue="realName" from="${skillUsers?.user}" value="${vmUser?.id}" noSelection="${['':'-- Choose Account --']}" /></td>
+                <td class="acdEditValue"><g:select id="vmUserId" name="vmUserId" optionKey="id" optionValue="realName" from="${freeUsers?.user}" value="${vmUser?.id}" noSelection="${['':'-- Choose Account --']}" /></td>
             </tr>
             
             <tr>
@@ -222,7 +222,34 @@
                 }
             });
         });
-    
+
+      function updateVoicemailUsers() {
+        var selected = $("#userIds").find(":selected");
+        var optionsAsText = "";
+        selected.map( function() {
+          optionsAsText += $(this).text() + ","
+        });
+        // strip off extra comma
+        optionsAsText = optionsAsText.substring(0, optionsAsText.length - 1);
+        var postData = {selected:optionsAsText,skill:'${skill}'};
+        $.ajax({
+          type: "POST",
+          data: postData,
+          url: '${createLink(action: 'pollAvailableUsers')}',
+          success: function(data) {
+            var voicemailUserSelect = $("#vmUserId");
+            var option = "";
+            voicemailUserSelect.empty();
+            voicemailUserSelect.append("<option value>-- Choose Account --</option>");
+            data.voicemailUsers.forEach( function(user) {
+              option = '<option value="' + user.id + '"';
+              option += (data.currentVoicemailUser == user.realName ? ' selected' : '');
+              option += '>' + user.realName + '</option>';
+              voicemailUserSelect.append(option);
+            });
+          }
+        });
+      }
     </script>
   </body>
 </html>

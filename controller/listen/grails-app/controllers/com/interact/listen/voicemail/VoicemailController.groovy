@@ -2,10 +2,10 @@ package com.interact.listen.voicemail
 
 import com.interact.listen.*
 import com.interact.listen.pbx.*
+import com.interact.listen.acd.*
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 
-//import grails.plugins.springsecurity.Secured
 import javax.servlet.http.HttpServletResponse as HSR
 
 @Secured(['ROLE_VOICEMAIL_USER'])
@@ -23,6 +23,13 @@ class VoicemailController {
     def voicemailNotificationService
 
     def download = {
+        def user = authenticatedUser
+
+        if ( !user ) {
+          redirect(controller: 'login', action: 'denied')
+          return
+        }
+
         def preserve = [:]
         if(params.sort) preserve.sort = params.sort
         if(params.order) preserve.order = params.order
@@ -36,12 +43,28 @@ class VoicemailController {
             return
         }
 
-        if(voicemail.owner != authenticatedUser) {
-//            redirect(controller: 'login', action: 'denied')
-//            return
-            log.warn("User doesn't have permissions to get this voicemail");
-            //TODO: fix this so acd users can get at acd voicemail account messages.
+        // Determine whether user should be able to access the voicemail
 
+        // are they the voicemail owner???
+        def authorized = (voicemail.owner == authenticatedUser)
+
+        if ( !authorized ) {
+          // does the voicemail belong to a user designated as an acd skill voicemail user???
+          if ( voicemail.owner.acdUserStatus.acdQueueStatus == AcdQueueStatus.VoicemailBox ) {
+            // if so, is the current user associated with the same skill
+            def voicemailSkill = UserSkill.findByUser(voicemail.owner).skill
+            UserSkill.findAllByUser(user)?.each() { userSkill ->
+              if ( userSkill.skill == voicemailSkill ) {
+                authorized = true
+              }
+            }
+          }
+        }
+
+        // if they're still not authorized...
+        if ( !authorized ) {
+          // redirect to login
+          redirect(controller: 'login', action: 'denied')
         }
 
         //hard code the mp3 tag to true since the flash player needs mp3 and there is not reason to not

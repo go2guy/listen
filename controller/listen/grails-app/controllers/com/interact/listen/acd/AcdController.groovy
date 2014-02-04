@@ -29,7 +29,8 @@ class AcdController
       pollQueue: 'GET',
       pollHistory: 'GET',
       pollStatus: 'GET',
-      exportHistoryToCsv: 'GET'
+      exportHistoryToCsv: 'GET',
+      jsframe: 'GET'
     ]
 
     def promptFileService
@@ -42,6 +43,10 @@ class AcdController
 
     def index = {
         redirect(action: 'status')
+    }
+
+    def jsframe = {
+      render(view: 'jsframe')
     }
 
     def callQueue = {
@@ -98,6 +103,7 @@ class AcdController
               offset: params.offset
       ]
 
+      log.debug "Rending view [callQueue] with model [${model}]"
       render(view: 'callQueue', model: model)
     }
 
@@ -120,6 +126,9 @@ class AcdController
           firstResult(params.offset.toInteger())
         }
       }
+
+      json.callTotal = AcdCall.findAll().size()
+
       // else { // get calls for current users skillset
         // def skills = []
         // UserSkill.findAllByUser(user).each() { userSkill ->
