@@ -33,9 +33,9 @@ tbody .col-light { text-align: center; }
         <tr>
           <g:form controller="administration" action="addExtension" method="post">
             <!-- TODO number needs focus on page load -->
-            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newExtension, field: 'number')}" class="${listen.validationClass(bean: newExtension, field: 'number')}"/></td>
+            <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newExtension, field: 'number')}" class="${listen.validationClass(bean: newExtension, field: 'number')}" placeholder="${g.message(code: 'page.administration.phones.extension.placeholder')}"/></td>
             <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${newExtension?.owner?.id}" class="${listen.validationClass(bean: newExtension, field: 'owner')}" noSelection="${['':'-- Choose Owner --']}"/></td>
-            <td class="col-ip"><g:textField name="ip" value="${fieldValue(bean: newExtension, field: 'ip')}" class="${listen.validationClass(bean: newExtension, field: 'ip')}"/></td>
+            <td class="col-ip"><g:textField name="ip" value="${fieldValue(bean: newExtension, field: 'ip')}" class="${listen.validationClass(bean: newExtension, field: 'ip')}" placeholder="${g.message(code: 'page.administration.phones.ip.placeholder')}"/></td>
             <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.phones.add.button.addExtension')}"/></td>
           </g:form>
         </tr>
