@@ -1208,6 +1208,7 @@ class SpotApiController {
     }
 
     def listPhoneNumbers = {
+        log.debug "listPhoneNumbers with params [${params}]"
         if((params.number && !params.organization) && !params.subscriber && !params.organization) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameters [number] and [organization] or [subscriber] alone or [organization] alone')
             return
@@ -1219,6 +1220,8 @@ class SpotApiController {
             if(!user) {
                 response.sendError(HSR.SC_BAD_REQUEST, "Parameter [subscriber] with value [${params.subscriber}] references a non-existent entity")
                 return
+            } else {
+                log.debug "listPhoneNumbers found user [${user?.id}]"
             }
         }
 
@@ -1226,7 +1229,10 @@ class SpotApiController {
         if(params.organization && !organization) {
             response.sendError(HSR.SC_BAD_REQUEST, "Organization not found with href [${params.organization}]")
             return
+        } else {
+            log.debug "listPhoneNumbers using organization [${organization?.id}]"
         }
+    
 
         if(organization && !organization.enabled) {
             response.sendError(HSR.SC_FORBIDDEN)
