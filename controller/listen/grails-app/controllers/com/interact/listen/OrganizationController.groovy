@@ -140,7 +140,14 @@ class OrganizationController {
         params.order = params.order ?: 'asc'
 
         def total = NumberRoute.countByType(NumberRoute.Type.EXTERNAL)
-        def routes = NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL, params)
+        def routes = NumberRoute.withCriteria {
+            eq('type', NumberRoute.Type.EXTERNAL)
+            and {
+                order('organization', 'asc')
+                order('pattern', 'asc')
+            }
+        }
+        
         render(view: 'routing', model: [routes: routes, routesTotal: total])
     }
 
