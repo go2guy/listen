@@ -239,7 +239,7 @@ class AcdService
         acdCall.setCallStatus(AcdCallStatus.WAITING);
         acdCall.setIvr(ivr);
 
-        if(acdCall.validate() && acdCall.save())
+        if(acdCall.validate() && acdCall.save(flush: true))
         {
             log.debug("Successfully added call to queue.")
         }
@@ -517,7 +517,7 @@ class AcdService
         acdCall.callStatus = AcdCallStatus.CONNECTED;
         acdCall.callStart = DateTime.now();
 
-        if(acdCall.validate() && acdCall.save())
+        if(acdCall.validate() && acdCall.save(flush: true))
         {
             if(log.isDebugEnabled())
             {
@@ -579,7 +579,7 @@ class AcdService
 
         acdCall.user = null;
 
-        if(acdCall.validate() && acdCall.save())
+        if(acdCall.validate() && acdCall.save(flush: true))
         {
             if(log.isDebugEnabled())
             {
@@ -652,8 +652,15 @@ class AcdService
             call.save(flush: true);
         }
 
-        AcdCallHistory history = new AcdCallHistory(call);
-        history.insert(flush: true);
+        try
+        {
+            AcdCallHistory history = new AcdCallHistory(call);
+            history.insert(flush: true);
+        }
+        catch(Exception e)
+        {
+            log.error("Exception writing AcdCallHistory record: " + e, e);
+        }
 
         //Delete from the queue
         call.delete(flush: true);
