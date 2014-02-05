@@ -653,10 +653,10 @@ class AcdService
         }
 
         AcdCallHistory history = new AcdCallHistory(call);
-        history.insert();
+        history.insert(flush: true);
 
         //Delete from the queue
-        call.delete();
+        call.delete(flush: true);
     }
 
     /**
