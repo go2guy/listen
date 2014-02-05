@@ -100,7 +100,7 @@ class AcdCleanupJob
             for(User thisUser : badUsers)
             {
                 thisUser.acdUserStatus.onACall = false;
-                thisUser.save();
+                thisUser.save(flush: true);
             }
         }
     }
