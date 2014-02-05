@@ -136,7 +136,8 @@ public final class HibernateUtil
             config.setProperty("hibernate.c3p0.preferredTestQuery", dbTestQuery);
             config.setProperty("hibernate.c3p0.timeout", "7200");
             config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
-            config.setProperty("hibernate.connection.autocommit", "false");
+            config.setProperty("hibernate.connection.autocommit", "true");
+            LOG.error("KRIS SET AUTOCOMMIT TRUE!!");
             config.setProperty("hibernate.connection.driver_class", dbDriver);
             config.setProperty("hibernate.connection.url", dbUrl);
             config.setProperty("hibernate.connection.username", dbUsername);
