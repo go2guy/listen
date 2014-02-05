@@ -285,7 +285,7 @@ class AcdService
         }
     }
 
-    public void connectCall(AcdCall thisCall, User agent)
+    public void connectCall(AcdCall thisCall, User agent) throws ListenAcdException
     {
         if(log.isDebugEnabled())
         {
@@ -303,8 +303,18 @@ class AcdService
 
             //Set agent onacall to true
             agent.acdUserStatus.onACall = true;
-            agent.save(flush: true);
 
+            if(agent.validate())
+            {
+                agent.save(flush: true);
+            }
+            else
+            {
+                agent.refresh();
+                log.error("Unable to save Agent User Status: " + agent.errors.toString());
+                throw new ListenAcdException("Unable to save Agent[" + agent.username + "] status: " +
+                        agent.errors.toString());
+            }
 
             //Send request to ivr
             try
@@ -569,7 +579,7 @@ class AcdService
     {
         if(acdCall.callStatus != AcdCallStatus.CONNECT_REQUESTED)
         {
-            throw new ListenAcdException("Attempting to Connect Failed a call in invalid status[" +
+            log.warn("Attempting to Connect Failed a call in invalid status[" +
                     acdCall.callStatus.toString() + "]");
         }
 

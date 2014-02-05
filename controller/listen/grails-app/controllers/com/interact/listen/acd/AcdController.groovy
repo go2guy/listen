@@ -640,7 +640,7 @@ class AcdController
                 }
                 catch (Exception e)
                 {
-                    log.error("Exception sending transfer event: " + e);
+                    log.error("Exception sending transfer event to agent[" + transferTo.realName + "] : " + e);
                 }
             }
 

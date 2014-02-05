@@ -53,6 +53,12 @@
           text-overflow: ellipsis;
         }
 
+        .holdBox { width: 50px; }
+
+        .caller { width: 125px; }
+
+        .callerSkill { width: 150px; }
+
         .template { display: none; }
         .initially-hidden { display: none; }
         .hidden { display: none; }
@@ -122,26 +128,26 @@
 
           <thead>
             <tr>
-              <th width=10%>Hold</th>
-              <th width=25%>Caller</th>
-              <th width=15%>Skill</th>
+              <th class="holdBox">Hold</th>
+              <th class="caller">Caller</th>
+              <th class="callerSkill">Skill</th>
               <th id="transferHeader" width=7%></th>
               <th id="disconnectHeader" width=7%></th>
-              <th width=41%></th>
+              <th></th>
             </tr>
           </thead>
 
           <tbody>
             <table id="callTable">
               <g:each in="${currentCalls}" status="i" var="thisCall">
-                <tr class="${(i % 2) == 0 ? 'even' : 'odd'}" data-id="${thisCall.id}">
+                <tr class="even" data-id="${thisCall.id}">
                 <input id="hiddenCallId" type="hidden" name="id" value="${thisCall.id}"/>
-                  <td class="holdBox" width="10%">
+                  <td class="holdBox">
                     <g:checkBox name="holdCheckBox" value="${thisCall.id}" class="case holdCheckbox"
                                 checked="${thisCall.onHold}" onchange="toggleHold(this, this.value)"/>
                   </td>
-                  <td class="caller" width=25%>${thisCall.ani}</td>
-                  <td class="callerSkill" width=15%>${thisCall.skill.description}</td>
+                  <td class="caller">${thisCall.ani}</td>
+                  <td class="callerSkill">${thisCall.skill.description}</td>
                   <td class="transfer-button"  width=7%>
                     <button type="button" class="transferButton" id="transferButton"
                             value="${thisCall.id}"
@@ -190,7 +196,7 @@
               <g:set var="row_count" value="${0}"/>
               <g:each in="${calls}" var="call">
                 <g:set var="column_count" value="${0}"/>
-                <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"l>
+                <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}">
                   <td class="overflow">${call.ani}</td>
                   <td class="overflow">${call.skill.description}</td>
                   <script type="text/javascript">
@@ -285,13 +291,13 @@
     </div> <!-- right-column -->
 
     <table class="template">
-      <tr id="call-row-template">
+      <tr class='even' id="call-row-template">
         <input id="hiddenCallId" type="hidden" name="id" value=""/>
-        <td class="holdBox" width="10%">
+        <td class="holdBox">
           <g:checkBox name="holdCheckBox" value="" class="case holdCheckbox" checked="" onchange="toggleHold(this, this.value)"/>
         </td>
-        <td class="caller" width="25%"></td>
-        <td class="callerSkill" width=15%></td>
+        <td class="caller"></td>
+        <td class="callerSkill"></td>
         <td class="transfer-button" width=7%>
           <button type="button" class="transferButton" id="transferButton" value=""
                   onclick="transferClicked(this, this.value)">Transfer</button>
@@ -401,38 +407,44 @@
     }
 
     function submitTransferClicked(e) {
-        alert("Submit Transfer?");
-        var userId = $('.transferAgentSelect')[0].value;
-        var callId = $('#hiddenCallId')[0].value;
+        if(confirm('Transfer Call?'))
+        {
+            var userId = $('.transferAgentSelect')[0].value;
+            var callId = $('#hiddenCallId')[0].value;
 
-        $.ajax({
-            url: '${createLink(action: 'transferCaller')}?id=' + callId + '&userId=' + userId,
-            dataType: 'json',
-            cache: false,
-            success: function(data)
-            {
-                if(data && data.success == "true")
+            $.ajax({
+                url: '${createLink(action: 'transferCaller')}?id=' + callId + '&userId=' + userId,
+                dataType: 'json',
+                cache: false,
+                success: function(data)
                 {
-                    listen.showSuccessMessage('Call transferred.')
-                    $('.transfer-dropdown').addClass('hidden');
-                    $('.transfer-button').removeClass('hidden');
-                    $('.transfer-button').disabled = true;
-                    $('.disconnect-button').removeClass('hidden');
-                    $('.disconnect-button').disabled = true;
-                    $('#transferHeader')[0].innerHTML = "";
+                    if(data && data.success == "true")
+                    {
+                        listen.showSuccessMessage('Call transferred.')
+                        $('.transfer-dropdown').addClass('hidden');
+                        $('.transfer-button').removeClass('hidden');
+                        $('.transfer-button').disabled = true;
+                        $('.disconnect-button').removeClass('hidden');
+                        $('.disconnect-button').disabled = true;
+                        $('#transferHeader')[0].innerHTML = "";
+                    }
+                    else
+                    {
+                        listen.showErrorMessage('Unable to transfer call.')
+                        $('.transfer-button').removeClass('hidden');
+                        $('.disconnect-button').removeClass('hidden');
+                        $('.transfer-dropdown').addClass('hidden');
+                        $('#transferHeader')[0].innerHTML = "";
+                    }
                 }
-                else
-                {
-                    listen.showErrorMessage('Unable to transfer call.')
-                    $('.transfer-button').removeClass('hidden');
-                    $('.disconnect-button').removeClass('hidden');
-                    $('.transfer-dropdown').addClass('hidden');
-                    $('#transferHeader')[0].innerHTML = "";
-                }
-            }
-        });
+            });
 
-        return true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     function cancelTransferClicked(e) {
@@ -444,32 +456,39 @@
     }
 
     function disconnectClicked(e) {
-        alert("Disconnect Call?");
-        var callId = $('#hiddenCallId')[0].value;
+        if(confirm('Disconnect Call?'))
+        {
+            var callId = $('#hiddenCallId')[0].value;
 
-        $.ajax({
-            url: '${createLink(action: 'disconnectCaller')}?id=' + callId,
-            dataType: 'json',
-            cache: false,
-            success: function(data)
-            {
-                if(data && data.success == "true")
+            $.ajax({
+                url: '${createLink(action: 'disconnectCaller')}?id=' + callId,
+                dataType: 'json',
+                cache: false,
+                success: function(data)
                 {
-                    listen.showSuccessMessage('Call disconnected.')
-                    $('.transfer-dropdown').addClass('hidden');
-                    $('#transferHeader')[0].innerHTML = "";
+                    if(data && data.success == "true")
+                    {
+                        listen.showSuccessMessage('Call disconnected.')
+                        $('.transfer-dropdown').addClass('hidden');
+                        $('#transferHeader')[0].innerHTML = "";
+                    }
+                    else
+                    {
+                        listen.showErrorMessage('Unable to disconnect call.')
+                        $('.transfer-button').removeClass('hidden');
+                        $('.transfer-dropdown').addClass('hidden');
+                        $('#transferHeader')[0].innerHTML = "";
+                    }
                 }
-                else
-                {
-                    listen.showErrorMessage('Unable to disconnect call.')
-                    $('.transfer-button').removeClass('hidden');
-                    $('.transfer-dropdown').addClass('hidden');
-                    $('#transferHeader')[0].innerHTML = "";
-                }
-            }
-        });
+            });
 
-        return true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
     }
 
     function toggleHold(element, callId)
