@@ -484,33 +484,43 @@ class AdministrationController {
                 log.error "Failed to add skill [${skill.skillname}] to user [${userskill.user.username}]"
             }
         }
-        
-        // Make sure we are only assigning a voicemail user that is assigned the current skill
-        def isAssociated = false
-        def vmUser
-        if ( params.vmUserId != "" && params.vmUserId != null ) {
-          vmUser = User.findById(params.vmUserId.toInteger())
-        }
-        UserSkill.findAllBySkill(skill).each() { userSkill ->
-          if ( userSkill.user == vmUser ) {
-            isAssociated = true
-          }
-        }
 
-        if ( isAssociated ) {
-          log.debug "Checking to make sure user [${vmUser.username}] has the assigned skill"
-          if (vmUser) {
-              log.debug "We have vmUserId of [${params.vmUserId}] for user [${vmUser.username}]"
-              AcdService.setVoicemailUserBySkillname(skill, vmUser)
-          } else {
-              log.error "vmUserId [${params.vmUserId}] is invalid!"
+        // remove the previous voicemail user
+        log.debug "vmUser status [${AcdService.getVoicemailUserBySkillname(skill.skillname)?.acdUserStatus?.acdQueueStatus?.toString()}]"
+        AcdService.deleteVoicemailBox(Skill.findBySkillname(skill))
+        
+        // If a voicemail user was selected make sure they are assigned the current skill
+        if ( params.vmUserId != "" && params.vmUserId != null ) {
+          def isAssociated = false
+          def vmUser
+          vmUser = User.findById(params.vmUserId.toInteger())
+          UserSkill.findAllBySkill(skill).each() { userSkill ->
+            if ( userSkill?.user?.id == vmUser?.id ) {
+              isAssociated = true
+            }
+          }
+
+          // if there was a previous voicemail user for the skill we need to remove it
+          // def previousVoicemailUser = AcdService.getVoicemailUserBySkillname(skill)
+          // if ( vmUser?.id != previousVoicemailUser.id ) {
+            // AcdService.deleteVoicemailBox(Skill.findBySkillname(skill))
+          // }
+
+          // if the desired voicemail user is eligible to become a voicemail user, then make it happen
+          if ( isAssociated ) {
+            if (vmUser) {
+                log.debug "We have vmUserId of [${params.vmUserId}] for user [${vmUser.username}]"
+                AcdService.setVoicemailUserBySkillname(skill, vmUser)
+            } else {
+                log.error "vmUserId [${params.vmUserId}] is invalid!"
+            }
+          }
+          else {
+            flash.errorMessage = message(code: 'skill.vmumissingskill.message')
+            redirect(action: 'skills')
           }
         }
-        else {
-          flash.errorMessage = message(code: 'skill.vmumissingskill.message')
-          redirect(action: 'skills')
-        }
-        
+          
         flash.successMessage = message(code: 'skill.updated.message')
        
         def model = skillModel()
@@ -610,20 +620,20 @@ class AdministrationController {
       params.selected.split(",").each() {username ->
         selectedUser = User.findByRealName(username)
         log.debug "Checking whether user [${selectedUser?.realName}] is free"
-        if ( selectedUser.acdUserStatus.acdQueueStatus != AcdQueueStatus.VoicemailBox ||
-             selectedUser.id == currentVoicemailUser.id ) {
+        if ( selectedUser?.acdUserStatus?.acdQueueStatus != AcdQueueStatus?.VoicemailBox ||
+             selectedUser?.id == currentVoicemailUser?.id ) {
           // bypassing grails render error (concerning json subfields)
           log.debug "Adding user [${selectedUser?.realName}] to free users."
           def user = [:]
-          user.id = selectedUser.id
-          user.realName = selectedUser.realName
+          user.id = selectedUser?.id
+          user.realName = selectedUser?.realName
           freeUsers << user
         }
       }
 
       def data = [:]
       data.voicemailUsers = freeUsers
-      data.currentVoicemailUser = currentVoicemailUser.realName
+      data.currentVoicemailUser = currentVoicemailUser?.realName
 
       render data as JSON
     }

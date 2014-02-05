@@ -4,6 +4,7 @@ import com.interact.listen.PhoneNumber
 import com.interact.listen.User
 import com.interact.listen.exceptions.ListenAcdException
 import com.interact.listen.spot.SpotCommunicationException
+import com.interact.listen.acd.AcdUserStatus
 
 import grails.validation.ValidationErrors
 import org.apache.commons.logging.LogFactory
@@ -714,6 +715,24 @@ class AcdService
       }
       
       return 
+    }
+
+    /**
+     * Given an Acd Skill, remove the associated voicemail box for the skill
+     * @param skill: The associated skill
+     */
+    public static void deleteVoicemailBox(Skill skill) {
+      if ( skill ) {
+        def vmUser = getVoicemailUserBySkillname(skill.skillname)
+        if ( vmUser ) {
+          LogFactory.getLog(this).debug("Removing vm user [${vmUser}] for skill [${skill.skillname}]")
+          def userStatus = vmUser.acdUserStatus
+          LogFactory.getLog(this).debug("vmUser queue status [${userStatus.acdQueueStatus.toString()}]")
+          vmUser.acdUserStatus.makeUnavailable()
+          vmUser.acdUserStatus.merge(failonerror: true, flush: true)
+          populateVoicemailUsers()
+        }
+      }
     }
     
     /**

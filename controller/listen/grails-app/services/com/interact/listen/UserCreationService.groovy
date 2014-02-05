@@ -121,8 +121,10 @@ class UserCreationService {
     private def createDefaultConference(user) {
         def conference = new Conference(description: "${user.realName}'s Conference",
                                         owner: user).save()
+        conference.pins = []
         PinType.values().each {
-            randomPinGeneratorService.createConferencePin(conference, it).save()
+            conference.pins << randomPinGeneratorService.createConferencePin(conference, it).save()
         }
+        return conference
     }
 }

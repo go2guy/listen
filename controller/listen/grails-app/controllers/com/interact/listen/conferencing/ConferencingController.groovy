@@ -200,9 +200,7 @@ class ConferencingController {
           // TODO render a conference not found view
           // throw new AssertionError("User ${user} does not have a conference")
           // Create a standard conference - this should probably only be a temp fix for Mimio
-          userCreationService.createDefaultConference(user)
-          // look up the newly created conference
-          conference = Conference.findByOwner(user)
+          conference = userCreationService.createDefaultConference(user)
         }
 
         params.sort = params.sort ?: 'ani'
