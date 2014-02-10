@@ -2,10 +2,10 @@ package com.interact.listen.attendant
 
 import com.interact.listen.Organization
 import org.joda.time.LocalDate
+import org.joda.time.LocalDateTime
 
 class MenuLocatorService {
-    // for the provided organization, finds the appropate entry menu
-    // for the current date and time.
+    // for the provided organization, finds the appropriate entry menu for the current date and time.
     def findEntryMenu(Organization organization) {
 
         def group = MenuGroup.findAllByOrganizationAndIsDefault(organization, false).find {
@@ -22,10 +22,19 @@ class MenuLocatorService {
             group = MenuGroup.findByOrganizationAndIsDefault(organization, true)
         }
 
-        // is there a holiday configured for the group?
-        def override = PromptOverride.findByOverridesMenuAndDate(group, new LocalDate())
-        if(override) {
-            group = override.useMenu
+        LocalDateTime currentTime = new LocalDateTime();
+
+        // Is there an event going on?
+        def c = PromptOverride.createCriteria()
+        List<PromptOverride> override = c.listDistinct() {
+            le('startDate', currentTime)
+            ge('endDate', currentTime)
+            order 'eventType', 'asc'
+        }
+
+        if(override && override.size() > 0)
+        {
+            group = override.get(0).useMenu
         }
 
         def menu = Menu.findByIsEntryAndMenuGroup(true, group)

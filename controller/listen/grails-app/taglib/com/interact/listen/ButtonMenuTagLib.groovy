@@ -60,6 +60,7 @@ class ButtonMenuTagLib {
                 out << '<ul class="button-menu">'
                 button(attrs.button == 'menu', 'attendant', 'menu', 'button.menu.attendant.menu')
                 button(attrs.button == 'holidays', 'attendant', 'holidays', 'button.menu.attendant.holidays')
+                button(attrs.button == 'unscheduledEvent', 'attendant', 'unscheduledEvent', 'button.menu.attendant.unscheduledEvent')
                 out << '</ul>'
 
                 break

@@ -547,15 +547,13 @@ DROP TABLE IF EXISTS `prompt_override`;
 CREATE TABLE `prompt_override` (
   `id` bigint(20) NOT NULL auto_increment,
   `version` bigint(20) NOT NULL,
-  `date` date NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime NOT NULL,
   `options_prompt` varchar(255) NOT NULL,
-  `overrides_menu_id` bigint(20) default NULL,
   `use_menu_id` bigint(20) NOT NULL,
+  `event_type` varchar(25),
   PRIMARY KEY  (`id`),
-  KEY `FK908744472A28807E` (`overrides_menu_id`),
-  KEY `unique-date` (`overrides_menu_id`,`date`),
   KEY `FK90874447DD97B406` (`use_menu_id`),
-  CONSTRAINT `FK90874447138FACA6` FOREIGN KEY (`overrides_menu_id`) REFERENCES `menu_group` (`id`),
   CONSTRAINT `FK90874447DD97B406` FOREIGN KEY (`use_menu_id`) REFERENCES `menu_group` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -61,3 +61,9 @@ UNLOCK TABLES;
 LOCK TABLES `user_role` WRITE;
 INSERT INTO `user_role` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1);
 UNLOCK TABLES;
+
+LOCK TABLES `prompt_override` WRITE;
+INSERT INTO prompt_override (version,options_prompt,use_menu_id,start_date,end_date,event_type)
+  values (0,'closedCompanyEvent.wav',1,now() - interval 2 day, now() - interval 1 day, 'UNSCHEDULED_EVENT');
+UNLOCK TABLES;
+

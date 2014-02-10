@@ -129,9 +129,10 @@ class HistoryService {
               onUser: onUser)
     }
 
-    void createdAttendantHoliday(PromptOverride promptOverride) {
+    void createdAttendantHoliday(PromptOverride promptOverride)
+    {
         write(action: Action.CREATED_ATTENDANT_HOLIDAY,
-              description: "Created attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.overridesMenu.name}] with prompt [${promptOverride.optionsPrompt}]")
+              description: "Created attendant holiday starting [${formatDateTime(promptOverride.startDate)}], ending[${formatDateTime(promptOverride.endDate)} with prompt [${promptOverride.optionsPrompt}]")
 
     }
 
@@ -195,9 +196,10 @@ class HistoryService {
               onUser: user)
     }
 
-    void deletedAttendantHoliday(PromptOverride promptOverride) {
+    void deletedAttendantHoliday(PromptOverride promptOverride)
+    {
         write(action: Action.DELETED_ATTENDANT_HOLIDAY,
-              description: "Deleted attendant holiday on [${formatFriendlyDate(promptOverride.date)}] for menu configuration [${promptOverride.overridesMenu.name}] with prompt [${promptOverride.optionsPrompt}]")
+              description: "Deleted attendant holiday starting [${formatDateTime(promptOverride.startDate)}], ending [${formatDateTime(promptOverride.endDate)}] with prompt [${promptOverride.optionsPrompt}]")
     }
 
     void deletedConferenceRecording(Recording recording) {
@@ -543,13 +545,21 @@ class HistoryService {
               description: "Unmuted caller [${participant.displayName()}] in conference [${participant.conference.description}]")
     }
 
-    private void write(Map map) {
-        def history = new ActionHistory(map)
-        history.byUser = map.containsKey('byUser') ? map.byUser : currentUser()
-        history.organization = history.byUser?.organization ?: history.onUser?.organization
-        history.channel = currentChannel()
-        if(!(history.validate() && history.save())) {
-            log.error('Unable to save ActionHistory: ' + history.errors.allErrors)
+    private void write(Map map)
+    {
+        try
+        {
+            def history = new ActionHistory(map)
+            history.byUser = map.containsKey('byUser') ? map.byUser : currentUser()
+            history.organization = history.byUser?.organization ?: history.onUser?.organization
+            history.channel = currentChannel()
+            if(!(history.validate() && history.save())) {
+                log.error('Unable to save ActionHistory: ' + history.errors.allErrors)
+            }
+        }
+        catch(Exception e)
+        {
+            log.error("Exception writing history: " + e, e);
         }
     }
 
@@ -579,7 +589,8 @@ class HistoryService {
         return request?.getAttribute('tui-channel') ?: Channel.GUI
     }
 
-    private def formatFriendlyDate(def date) {
+    private def formatFriendlyDate(def date)
+    {
         def formatter = DateTimeFormat.forPattern('MMMM d, yyyy')
         return formatter.print(date)
     }

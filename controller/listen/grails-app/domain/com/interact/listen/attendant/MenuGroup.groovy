@@ -21,10 +21,6 @@ class MenuGroup {
         restrictions: 'eager'
     ]
 
-    static mappedBy = [
-        promptOverrides: 'overridesMenu'
-    ]
-
     static constraints = {
         name blank: false, maxSize: 30
     }

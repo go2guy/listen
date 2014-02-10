@@ -96,7 +96,6 @@ class AttendantTagLib {
         out << '<option>-- Select An ACD --</option>'
         skills.each { skill ->
             out << '<option' + (action?.instanceOf(RouteToAnACDAction) && action?.skill && action?.skill.id == skill.id ? ' selected="selected"' : '') + ">${fieldValue(bean: skill, field: 'skillname')}</option>"
-            log.debug "After building option"
         }
         out << '</select>'
     }
