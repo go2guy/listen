@@ -486,7 +486,6 @@ class AdministrationController {
         }
 
         // remove the previous voicemail user
-        log.debug "vmUser status [${AcdService.getVoicemailUserBySkillname(skill.skillname)?.acdUserStatus?.acdQueueStatus?.toString()}]"
         AcdService.deleteVoicemailBox(Skill.findBySkillname(skill))
         
         // If a voicemail user was selected make sure they are assigned the current skill

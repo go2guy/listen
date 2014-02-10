@@ -78,8 +78,23 @@ class UserController {
         }
         
         def acdLicense = licenseService.canAccess(ListenFeature.ACD)
-        
-        def userSkills = UserSkill.findAllByUser(user)
+
+        def skillList = Skill.findAll()
+        def userSkills_ = UserSkill.findAllByUser(user)
+
+        def uSkill = [:]
+        def userSkills = []
+        skillList.each() { skill ->
+          uSkill = [:]
+          uSkill.user = user
+          uSkill.skillname = skill.skillname
+          uSkill.description = skill.description
+          userSkills_.each() { userSkill ->
+          if ( userSkill.skill == skill )
+            uSkill.selected = true
+          }
+          userSkills << uSkill
+        }
         
         render(view: 'edit', 
             model: [user: user, 

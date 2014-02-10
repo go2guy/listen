@@ -711,6 +711,7 @@ CREATE TABLE `user_skill` (
   `version` bigint(20) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   `skill_id` bigint(20) NOT NULL,
+  `priority` int(11) NOT NULL default 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`,`skill_id`),
   KEY `FK7C7614E356D05D43` (`user_id`),

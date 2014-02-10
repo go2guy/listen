@@ -7,6 +7,13 @@
     <meta name="tab" content="users"/>
     <meta name="button" content="edit"/>
     <meta name="page-header" content="${g.message(code: 'page.user.edit.header')}"/>
+
+    <script type="text/javascript">
+      function togglePriority(skill) {
+        var input = $("#" + skill + "-priority");
+        input.attr('disabled') ? input.attr('disabled',false) : input.attr('disabled',true);
+      }
+    </script>
   </head>
   <body>
     <g:if test="${!user.enabled}">
@@ -41,8 +48,23 @@
         <g:textField name="emailAddress" value="${fieldValue(bean: user, field: 'emailAddress')}" class="${listen.validationClass(bean: user, field: 'emailAddress')}"/>
 
         <g:if test="${acdLicense}">
-            <label for="skills"><g:message code="user.skills.label"/></label>
-            <g:select id="skillIds" name="skillIds" multiple="multiple" optionKey="id" optionValue="skillname" from="${orgSkills}" value="${userSkills.skill}"/>
+          <label for="skills"><g:message code="user.skills.label"/></label>
+          <table style="width: 305px;">
+            <thead>
+              <th>Skill</th>
+              <th>Selected</th>
+              <th>Priority</th>
+            </thead>
+            <tbody>
+              <g:each in="${userSkills}" var="skill">
+                <tr>
+                  <td>${skill.skillname}</td>
+                  <td><input id="${skill.skillname}-selected" type="checkbox" onchange="togglePriority('${skill.skillname}')" ${skill.selected ? 'selected' : ''}/></td>
+                  <td><input id="${skill.skillname}-priority" type="text" value="0" ${skill.selected ? 'disabled' : ''} style="width: 30px;"/></td>
+                </tr>
+              </g:each>
+            </tbody>
+          </table>
         </g:if>
             
         <ul class="form-buttons">

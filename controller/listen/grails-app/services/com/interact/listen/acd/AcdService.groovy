@@ -744,7 +744,6 @@ class AcdService
         if ( vmUser ) {
           LogFactory.getLog(this).debug("Removing vm user [${vmUser}] for skill [${skill.skillname}]")
           def userStatus = vmUser.acdUserStatus
-          LogFactory.getLog(this).debug("vmUser queue status [${userStatus.acdQueueStatus.toString()}]")
           vmUser.acdUserStatus.makeUnavailable()
           vmUser.acdUserStatus.merge(failonerror: true, flush: true)
           populateVoicemailUsers()

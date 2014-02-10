@@ -1,5 +1,8 @@
 use listen2;
 
+ALTER TABLE user_skill
+ADD COLUMN priority INT(11) NOT NULL default 0;
+
 DROP TABLE IF EXISTS `prompt_override`;
 CREATE TABLE `prompt_override` (
   `id` bigint(20) NOT NULL auto_increment,
