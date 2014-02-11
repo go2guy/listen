@@ -13,7 +13,6 @@ class UserSkill {
     static constraints = {
         user nullable: false
         skill nullable: false
-        priority nullable: true
         user(unique: ['skill'])
     }
     
