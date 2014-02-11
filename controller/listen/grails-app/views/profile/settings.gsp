@@ -52,7 +52,7 @@ fieldset {
                           <g:each in="${userSkills}" var="skill">
                               <tr>
                                   <td>${skill.skill.description}</td>
-                                  <td>${skill.priority != 6 ? skill.priority : ''}</td>
+                                  <td>${skill.priority != 6 ? skill.priority : 'Default'}</td>
                               </tr>
                           </g:each>
                           </tbody>

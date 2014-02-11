@@ -11,9 +11,8 @@
 
         .skillsDiv { padding-top: 20px; }
 
-        .priorityDropdown { width: 40px; }
+        .priorityDropdown { width: 100px; }
 
-        .priorityDropdown .hidden{ display: none; }
 
     </style>
   </head>
@@ -73,7 +72,7 @@
                          <td><g:select id="priority${skill.id}" name="priority${skill.id}"
                                        class="priorityDropdown"
                                        value="${skill.selected && skill.priority != "0" ? skill.priority : ''}"
-                                       noSelection="${['6':'']}"
+                                       noSelection="${['6':'Default']}"
                                        from="${1..5}"
                                        disabled="${!skill.selected}">
                          </g:select></td>
