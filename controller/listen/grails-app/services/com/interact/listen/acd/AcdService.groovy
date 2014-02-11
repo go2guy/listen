@@ -110,7 +110,7 @@ class AcdService
         DateTime agentTime = DateTime.now().minusSeconds(agentWaitTime);
 
         def userSkillCriteria = UserSkill.createCriteria();
-        def results = userSkillCriteria.list(max: 1) {
+        def results = userSkillCriteria.list() {
             eq("skill", requestedSkill)
             user {
                 acdUserStatus {
@@ -128,6 +128,7 @@ class AcdService
 
         if(results != null && results.size() > 0)
         {
+            results.sort{it.priority};
             returnVal = results.get(0).user;
         }
 
@@ -164,10 +165,10 @@ class AcdService
      * @param sessionId The sessionId of the call.
      * @param status The status to set the call to.
      */
-    def acdCallStatusUpdate(String sessionId, String thisStatus) throws ListenAcdException
+    def acdCallStatusUpdate(String sessionId, String thisStatus, String event) throws ListenAcdException
     {
         AcdCallStatus acdStatus = AcdCallStatus.valueOf(thisStatus);
-        return acdCallStatusUpdate(sessionId, acdStatus);
+        return acdCallStatusUpdate(sessionId, acdStatus, event);
     }
 
     /**
@@ -176,7 +177,19 @@ class AcdService
      * @param sessionId The sessionId of the call.
      * @param status The status to set the call to.
      */
-    def acdCallStatusUpdate(String sessionId, AcdCallStatus thisStatus) throws ListenAcdException
+    def acdCallStatusUpdate(String sessionId, String thisStatus) throws ListenAcdException
+    {
+        AcdCallStatus acdStatus = AcdCallStatus.valueOf(thisStatus);
+        return acdCallStatusUpdate(sessionId, acdStatus, null);
+    }
+
+    /**
+     * Update the status of an ACD Call in the queue.
+     *
+     * @param sessionId The sessionId of the call.
+     * @param status The status to set the call to.
+     */
+    def acdCallStatusUpdate(String sessionId, AcdCallStatus thisStatus, String event) throws ListenAcdException
     {
         AcdCall acdCall = AcdCall.findBySessionId(sessionId);
 
@@ -198,6 +211,9 @@ class AcdService
                     break;
                 case AcdCallStatus.WAITING:
                     acdCallWaiting(acdCall);
+                    break;
+                case AcdCallStatus.ENDED:
+                    acdCallEnded(acdCall, event);
                     break;
             }
         }
@@ -358,6 +374,25 @@ class AcdService
         catch(SpotCommunicationException sce)
         {
             log.error("Exception disconnecting call: " + sce, sce);
+        }
+
+        //Free up the agent
+        freeAgent(thisCall.user);
+
+        //Delete call from queue. Leave status since we don't really know what happened.
+        removeCall(thisCall, null);
+    }
+
+    public void acdCallEnded(AcdCall thisCall, String event)
+    {
+        //Send request to ivr
+        try
+        {
+            spotCommunicationService.sendAcdGenericEvent(thisCall.sessionId, event);
+        }
+        catch(SpotCommunicationException sce)
+        {
+            log.error("Exception sending generic event: " + sce, sce);
         }
 
         //Free up the agent

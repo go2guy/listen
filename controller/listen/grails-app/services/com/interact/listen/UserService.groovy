@@ -11,7 +11,8 @@ class UserService {
     def springSecurityService
     def licenseService
 
-    User update(User user, def params, boolean byOperator = false) {
+    User update(User user, def params, boolean byOperator = false)
+    {
         def originalEmailAddress = user.emailAddress
         def originalPassword = user.password
         def originalRealName = user.realName
@@ -31,7 +32,9 @@ class UserService {
         if(user.validate() && user.save()) {
             cloudToDeviceService.sendContactSync()
 
-            if (licenseService.canAccess(ListenFeature.ACD)) {
+            if (licenseService.canAccess(ListenFeature.ACD))
+            {
+/*
                 log.debug "User has been saved, lets save skills [${params.skillIds}]"
                 // We're going to make a list of our skills so we can work with it easier
                 def skillIds = []
@@ -42,15 +45,106 @@ class UserService {
                         skillIds << id
                     }
                 }
-                
-                log.debug "Params skill count [${skillIds}][${skillIds.size()}]"
-                // loop through existing user skills.  Remove skills that are no longer selected.  Remove skills that we aleady have from the skills list that we plan on adding
-                def existingUserSkills = UserSkill.findAllByUser(user)
-                def skillCnt = UserSkill.countByUser(user)
-                log.debug "Found [${skillCnt}] skills for this user"
-                existingUserSkills.each { existingUserSkill ->
-                    if ( skillIds.contains(existingUserSkill.skill.id.toString()) ) {
-                        log.debug "User [${user.username}] already has skill [${existingUserSkill.skill.skillname}] and we are keeping it"
+
+                if(log.isDebugEnabled())
+                {
+                    log.debug "Params skill count [${skillIds}][${skillIds.size()}]"
+                }
+*/
+                def organization = user.organization;
+                def orgSkills = Skill.findAllByOrganization(organization);
+                def existingUserSkills = UserSkill.findAllByUser(user);
+                List<UserSkill> newSkills = new ArrayList<UserSkill>();
+
+                for(Skill skill : orgSkills)
+                {
+                    int id = skill.id;
+                    String selected = params.get("selected" + id);
+                    String screenPriority = params.get("priority" + id);
+
+                    if(selected && selected.equals("true"))
+                    {
+                        //did they have this before, did the priority change?
+                        boolean existingSkill = false;
+
+                        for(UserSkill userSkill : existingUserSkills)
+                        {
+                            if(userSkill.skill.id == skill.id)
+                            {
+                                //Yes they did, did the priority change
+
+                                int newPriority = 0;
+                                if(screenPriority)
+                                {
+                                    newPriority = Integer.parseInt(screenPriority);
+                                }
+
+                                if(newPriority != userSkill.priority)
+                                {
+                                    if(log.isDebugEnabled())
+                                    {
+                                        log.debug("Setting priority for skill[" + userSkill.skill.description +
+                                                "] to [" + newPriority + "]");
+                                    }
+                                    userSkill.priority = newPriority;
+                                    userSkill.save(flush: true);
+                                }
+                                existingSkill = true;
+                                break;
+                            }
+                        }
+
+                        if(!existingSkill)
+                        {
+                            UserSkill newSkill = new UserSkill();
+                            newSkill.skill = skill;
+                            newSkill.priority =
+                                (screenPriority == null || screenPriority.isEmpty() ? 0 : Integer.parseInt(screenPriority));
+                            newSkill.user = user;
+                            newSkills.add(newSkill);
+                        }
+                    }
+                    else
+                    {
+                        //Did they use to have this skill?
+                        for(UserSkill userSkill : existingUserSkills)
+                        {
+                            if(userSkill.skill.id == skill.id)
+                            {
+                                //get rid of it
+                                userSkill.delete(flush: true);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                //Add the new skills
+                for(UserSkill newSkill : newSkills)
+                {
+                    if(log.isDebugEnabled())
+                    {
+                        log.debug("Adding new skill: " + newSkill.skill.description);
+                    }
+                    newSkill.insert(flush: true);
+                }
+
+                // loop through existing user skills.  Remove skills that are no longer selected.
+                // Remove skills that we already have from the skills list that we plan on adding
+
+
+/*
+
+                for(UserSkill existingUserSkill : existingUserSkills)
+                {
+                    if ( skillIds.contains(existingUserSkill.skill.id.toString()) )
+                    {
+                        if(log.isDebugEnabled())
+                        {
+                            log.debug "User [${user.username}] already has skill [${existingUserSkill.skill.skillname}]";
+                        }
+
+//                        if()
                         // we'll remove it from the skills list, since we already have it and don't need to add it to the db
                         skillIds.remove(existingUserSkill.skill.id.toString())
                     } else {
@@ -58,26 +152,39 @@ class UserService {
                         historyService.deletedUserSkill(existingUserSkill)
                         existingUserSkill.delete()
                     }
-                }
+                }*/
                         
-                // We should now be left with a list that has removed skills we already have, and we've deleted skills from the db that are no longer selected   
-                skillIds.each { skillId ->
-                    
-                    log.debug "Working to add skill [${skillId}]"
+                // We should now be left with a list that has removed skills we already have, and we've deleted skills
+                // from the db that are no longer selected
+/*
+                for(String skillId : skillIds)
+                {
+                    if(log.isDebugEnabled())
+                    {
+                        log.debug "Working to add skill [${skillId}]"
+                    }
                     def userskill = new UserSkill()
                     userskill.skill = Skill.findById(skillId.toInteger())
-                    log.debug "User [${user.username}] requires skill [${userskill.skill.skillname}]"
+                    if(log.isDebugEnabled())
+                    {
+                        log.debug "User [${user.username}] requires skill [${userskill.skill.skillname}]"
+                    }
     
                     userskill.user = user
                     
-                    if(userskill.validate() && userskill.save()) {
+                    if(userskill.validate() && userskill.save())
+                    {
                         historyService.addedUserSkill(userskill)
-                    } else {
+                    }
+                    else
+                    {
                         log.error "Failed to add skill [${userskill.skill.skillname}] to user [${user.username}]"
                     }
                 }
+                */
             }
-                
+
+
             if(originalEmailAddress != user.emailAddress) {
                 historyService.changedAccountEmailAddress(user, originalEmailAddress)
                 if(user.organization) {

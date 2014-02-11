@@ -7,13 +7,15 @@
     <meta name="tab" content="users"/>
     <meta name="button" content="edit"/>
     <meta name="page-header" content="${g.message(code: 'page.user.edit.header')}"/>
+    <style type="text/css">
 
-    <script type="text/javascript">
-      function togglePriority(skill) {
-        var input = $("#" + skill + "-priority");
-        input.attr('disabled') ? input.attr('disabled',false) : input.attr('disabled',true);
-      }
-    </script>
+        .skillsDiv { padding-top: 20px; }
+
+        .priorityDropdown { width: 40px; }
+
+        .priorityDropdown .hidden{ display: none; }
+
+    </style>
   </head>
   <body>
     <g:if test="${!user.enabled}">
@@ -47,24 +49,39 @@
         <label for="emailAddress"><g:message code="user.emailAddress.label"/></label>
         <g:textField name="emailAddress" value="${fieldValue(bean: user, field: 'emailAddress')}" class="${listen.validationClass(bean: user, field: 'emailAddress')}"/>
 
-        <g:if test="${acdLicense}">
-          <label for="skills"><g:message code="user.skills.label"/></label>
-          <table style="width: 305px;">
-            <thead>
-              <th>Skill</th>
-              <th>Selected</th>
-              <th>Priority</th>
-            </thead>
-            <tbody>
-              <g:each in="${userSkills}" var="skill">
-                <tr>
-                  <td>${skill.skillname}</td>
-                  <td><input id="${skill.skillname}-selected" type="checkbox" onchange="togglePriority('${skill.skillname}')" ${skill.selected ? 'selected' : ''}/></td>
-                  <td><input id="${skill.skillname}-priority" type="text" value="0" ${skill.selected ? 'disabled' : ''} style="width: 30px;"/></td>
-                </tr>
-              </g:each>
-            </tbody>
-          </table>
+        <g:if test="${userSkills}">
+          <div id="acdSkillsDiv" class="skillsDiv">
+          %{--<label for="skills"><g:message code="user.skills.label"/></label>--}%
+              <table style="width: 305px;">
+                <thead>
+                  <th></th>
+                  <th>ACD Skill</th>
+                  <th>Priority</th>
+                </thead>
+                <tbody>
+                  <g:each in="${userSkills}" var="skill">
+                    %{--<g:hiddenField name="skillId" value="${skill.id}"/>--}%
+                    <tr>
+                        <td><g:checkBox name="selected${skill.id}" value="${skill.selected ? "true" : "false"}"
+                                        checked="${skill.selected}"
+                                        onchange="togglePriority(this, ${skill.id})"/></td>
+
+                        <td>${skill.skillname}</td>
+%{--                        <td><g:textField id="priority${skill.id}" name="priority${skill.id}"
+                                         value="${skill.selected && skill.priority != "0" ? skill.priority : ''}"
+                                         maxlength="3" disabled="${!skill.selected}" style="width: 30px;"/></td>--}%
+                         <td><g:select id="priority${skill.id}" name="priority${skill.id}"
+                                       class="priorityDropdown"
+                                       value="${skill.selected && skill.priority != "0" ? skill.priority : ''}"
+                                       noSelection="${['6':'']}"
+                                       from="${1..5}"
+                                       disabled="${!skill.selected}">
+                         </g:select></td>
+                    </tr>
+                  </g:each>
+                </tbody>
+              </table>
+            </div>
         </g:if>
             
         <ul class="form-buttons">
@@ -74,9 +91,22 @@
       </fieldset>
     </g:form>
     <script type="text/javascript">
-$(document).ready(function() {
-    $('#username').focus();
-});
+        $(document).ready(function() {
+            $('#username').focus();
+        });
+
+        function togglePriority(element, skill_id) {
+            if(element.checked)
+            {
+                $("#" + "priority" + skill_id)[0].disabled = false;
+                element.value = "true";
+            }
+            else
+            {
+                $("#" + "priority" + skill_id)[0].disabled = true;
+                element.value = false;
+            }
+        };
     </script>
   </body>
 </html>

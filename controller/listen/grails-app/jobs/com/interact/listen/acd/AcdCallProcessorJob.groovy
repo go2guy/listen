@@ -17,6 +17,8 @@ class AcdCallProcessorJob
 
     def group = "acd"
 
+    def concurrent = false;
+
     def execute()
     {
         log.info("Beginning AcdCallProcessorJob")

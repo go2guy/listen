@@ -150,6 +150,28 @@ class SpotCommunicationService {
     }
 
     /**
+     * Send request to SPOT with a generic event
+     *
+     * @param sessionId The sessionId of the call.
+     * @param event The action to use
+     * @throws IOException If an IOException.
+     * @throws SpotCommunicationException If
+     */
+    def sendAcdGenericEvent(def sessionId, def event) throws IOException, SpotCommunicationException
+    {
+        if(log.isInfoEnabled())
+        {
+            log.info("Sending AcdGenericEvent, sessionId[" + sessionId + "], event[" + event + "]");
+        }
+
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        importedValue.put("application", "ACD");
+        importedValue.put("action", event);
+        importedValue.put("sessionId", sessionId);
+        buildAndSendRequest(importedValue);
+    }
+
+    /**
      * Send request to SPOT to connect a queued caller to voicemail.
      *
      * @param sessionId The sessionId of the call.

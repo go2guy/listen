@@ -160,7 +160,11 @@ class SpotApiController {
                 log.debug("UpdateAcdCall JSON: " + json);
             }
 
-            if(json.sessionId && json.status)
+            if(json.sessionId && json.status && json.event)
+            {
+                acdService.acdCallStatusUpdate(json.sessionId, json.status, json.event);
+            }
+            else if(json.sessionId && json.status)
             {
                 acdService.acdCallStatusUpdate(json.sessionId, json.status);
             }

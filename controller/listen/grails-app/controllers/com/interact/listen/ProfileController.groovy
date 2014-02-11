@@ -1,5 +1,6 @@
 package com.interact.listen
 
+import com.interact.listen.acd.UserSkill
 import com.interact.listen.history.ActionHistory
 import com.interact.listen.history.CallHistory
 import com.interact.listen.pbx.Extension
@@ -114,9 +115,21 @@ class ProfileController {
         redirect(action: 'phones')
     }
 
-    def settings = {
-        def user = authenticatedUser
-        render(view: 'settings', model: [user: user])
+    def settings =
+    {
+        User user = authenticatedUser;
+        List<UserSkill> userSkills = null;
+
+        if(user.hasRole("ROLE_ACD_USER"))
+        {
+            userSkills = UserSkill.findAllByUser(user);
+            if(userSkills == null)
+            {
+                userSkills = new ArrayList<UserSkill>(0);
+            }
+        }
+
+        render(view: 'settings', model: [user: user, userSkills: userSkills]);
     }
 
     def history = {

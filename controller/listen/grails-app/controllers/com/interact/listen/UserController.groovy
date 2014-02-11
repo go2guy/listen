@@ -60,7 +60,8 @@ class UserController {
         redirect(action: 'list')
     }
 
-    def edit = {
+    def edit =
+    {
         def user = User.get(params.id)
         if(!user) {
             flash.errorMessage = 'User not found'
@@ -68,38 +69,50 @@ class UserController {
             return
         }
 
-        log.debug "Lets edit user [${user.username}]"
-        
-        def organization = user.organization
-        log.debug "During edit, we'll check skills for organization [${organization.name}]"
-        def orgSkills = Skill.findAllByOrganization(organization, [sort: 'skillname', order: 'asc'])
-        orgSkills.each { skill ->
-            log.debug "During user edit, organization [${organization.name}] has [${skill}]"
+        if(log.isDebugEnabled())
+        {
+            log.debug "Lets edit user [${user.username}]"
         }
+
+        def userSkills;
         
-        def acdLicense = licenseService.canAccess(ListenFeature.ACD)
+        if(user.hasRole("ROLE_ACD_USER"))
+        {
+            Organization organization = user.organization;
+            def skillList = Skill.findAllByOrganization(organization, [sort: 'skillname', order: 'asc']);
+            def userSkills_ = UserSkill.findAllByUser(user)
 
-        def skillList = Skill.findAll()
-        def userSkills_ = UserSkill.findAllByUser(user)
+            def uSkill = [:]
+            userSkills = []
+            for(Skill skill : skillList)
+            {
+                uSkill = [:]
+                uSkill.user = user
+                uSkill.skillname = skill.skillname
+                uSkill.description = skill.description
+                uSkill.id = skill.id;
+                uSkill.selected = false;
+                uSkill.priority = "0";
 
-        def uSkill = [:]
-        def userSkills = []
-        skillList.each() { skill ->
-          uSkill = [:]
-          uSkill.user = user
-          uSkill.skillname = skill.skillname
-          uSkill.description = skill.description
-          userSkills_.each() { userSkill ->
-          if ( userSkill.skill == skill )
-            uSkill.selected = true
-          }
-          userSkills << uSkill
+                for(UserSkill userSkill : userSkills_)
+                {
+                    if(userSkill.skillId == skill.id )
+                    {
+                        uSkill.selected = true
+                        uSkill.priority = userSkill.priority.toString();
+                        if(log.isDebugEnabled())
+                        {
+                            log.debug("User has skill[" + skill.description + "], priority[" + userSkill.priority + "]");
+                        }
+                        break;
+                    }
+                }
+                userSkills.add(uSkill);
+            }
         }
         
         render(view: 'edit', 
             model: [user: user, 
-            acdLicense: acdLicense,
-            orgSkills: orgSkills,
             userSkills: userSkills])
     }
 
@@ -214,19 +227,29 @@ class UserController {
         }
     }
 
-    def update = {
-        log.debug "Update User params [${params}]"
+    def update =
+    {
+        if(log.isDebugEnabled())
+        {
+            log.debug "Update User params [${params}]"
+        }
+
         def user = User.get(params.id)
-        if(!user) {
+        if(!user)
+        {
             flash.errorMessage = 'User not found'
             redirect(action: 'list')
             return
         }
 
         user = userService.update(user, params, true)
-        if(user.hasErrors()) {
+
+        if(user.hasErrors())
+        {
             render(view: 'edit', model: [user: user])
-        } else {
+        }
+        else
+        {
             flash.successMessage = 'User updated'
             redirect(action: 'edit', params: [id: user.id])
         }
