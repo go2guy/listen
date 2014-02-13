@@ -1,5 +1,6 @@
 package com.interact.listen.acd
 
+import com.interact.listen.DirectInwardDialNumber
 import com.interact.listen.User
 import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdUserStatus
@@ -311,8 +312,25 @@ class AcdController
       def phoneNumbers = []
 
       // Get List of Agent's Available Contact Numbers
-      PhoneNumber.findAllByOwner(user).each() { number ->
-        phoneNumbers.add(number)
+      List<PhoneNumber> phoneNumberList = PhoneNumber.findAllByOwner(user);
+
+      for(PhoneNumber number : phoneNumberList)
+      {
+          if(number instanceof DirectInwardDialNumber)
+          {
+              if(log.isDebugEnabled())
+              {
+                log.debug("Not adding Direct Dial Number");
+              }
+          }
+          else
+          {
+               if(log.isDebugEnabled())
+               {
+                    log.debug("Adding number");
+               }
+                phoneNumbers.add(number)
+          }
       }
 
       // Get Agent's Skillset

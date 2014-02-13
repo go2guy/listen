@@ -191,35 +191,57 @@ class AcdService
      */
     def acdCallStatusUpdate(String sessionId, AcdCallStatus thisStatus, String event) throws ListenAcdException
     {
-        AcdCall acdCall = AcdCall.findBySessionId(sessionId);
-
-        if(acdCall != null)
+        if(event != null)
         {
-            switch(thisStatus)
+            if(log.isDebugEnabled())
             {
-                case AcdCallStatus.CONNECTED:
-                    //Call was connected
-                    acdCallConnected(acdCall);
-                    break;
-                case AcdCallStatus.COMPLETED:
-                case AcdCallStatus.DISCONNECTED:
-                case AcdCallStatus.VOICEMAIL:
-                    acdCallCompleted(acdCall, thisStatus);
-                    break;
-                case AcdCallStatus.CONNECT_FAIL:
-                    acdCallConnectFailed(acdCall);
-                    break;
-                case AcdCallStatus.WAITING:
-                    acdCallWaiting(acdCall);
-                    break;
-                case AcdCallStatus.ENDED:
-                    acdCallEnded(acdCall, event);
-                    break;
+                log.debug("Sending generic event back to IVR.");
             }
+
+            //if event's not null, we need to just fire back to the event
+            //Send request to ivr
+            try
+            {
+                spotCommunicationService.sendAcdGenericEvent(sessionId, event);
+            }
+            catch(SpotCommunicationException sce)
+            {
+                log.error("Exception sending generic event: " + sce, sce);
+            }
+
         }
         else
         {
-            throw new ListenAcdException("Unable to locate call sessionId[" + sessionId + "]");
+            AcdCall acdCall = AcdCall.findBySessionId(sessionId);
+
+            if(acdCall != null)
+            {
+                switch(thisStatus)
+                {
+                    case AcdCallStatus.CONNECTED:
+                        //Call was connected
+                        acdCallConnected(acdCall);
+                        break;
+                    case AcdCallStatus.COMPLETED:
+                    case AcdCallStatus.DISCONNECTED:
+                    case AcdCallStatus.VOICEMAIL:
+                        acdCallCompleted(acdCall, thisStatus);
+                        break;
+                    case AcdCallStatus.CONNECT_FAIL:
+                        acdCallConnectFailed(acdCall);
+                        break;
+                    case AcdCallStatus.WAITING:
+                        acdCallWaiting(acdCall);
+                        break;
+                    case AcdCallStatus.ENDED:
+                        acdCallEnded(acdCall, event);
+                        break;
+                }
+            }
+            else
+            {
+                throw new ListenAcdException("Unable to locate call sessionId[" + sessionId + "]");
+            }
         }
     }
 
@@ -732,11 +754,13 @@ class AcdService
      * Given an Acd Skill, return the associated voicemail user
      * @param skill: The associated skill
      */
-    public static User getVoicemailUserBySkillname(String skillname) {
-      if (skillVoicemailUsers.isEmpty()) {
-        this.populateVoicemailUsers()
-      }
-      return skillVoicemailUsers.get(skillname);
+    public static User getVoicemailUserBySkillname(String skillname)
+    {
+        if (skillVoicemailUsers.isEmpty())
+        {
+            this.populateVoicemailUsers()
+        }
+        return skillVoicemailUsers.get(skillname);
     }
 
     /**
@@ -790,7 +814,8 @@ class AcdService
      * Populates hash map associating skills with their respective
      * voicemail user.
      */
-    public static void populateVoicemailUsers() {
+    public static void populateVoicemailUsers()
+    {
         skillVoicemailUsers = [:]
         Skill.findAll().each() { skill ->
         UserSkill.findAllBySkill(skill).find { userSkill ->
