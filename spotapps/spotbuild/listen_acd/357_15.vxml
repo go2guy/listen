@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Next Path</log>
+	    <log target="status">Set Next Path Fail 1</log>
             <log>INFO: Entered assign-variable.vxml [357_15]</log>
             <log>INFO: Current value [<value expr="nxtPath"/>]</log>
 <assign name="nxtPath" expr="failedNxtPath+''" />

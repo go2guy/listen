@@ -5,7 +5,7 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'357_5'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'354_88'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
@@ -18,10 +18,10 @@
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get SessionId</log>
+            <log target="status">Get Agent SID</log>
             <log>INFO: Entered run-javascript.vxml [354_59]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_354_59(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="customerSID" expr="II_SB_userJava" />   
+            <assign name="agentSID" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>

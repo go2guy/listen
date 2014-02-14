@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Next Path</log>
+	    <log target="status">Set disconnect And hangUp</log>
             <log>INFO: Entered assign-variable.vxml [354_79]</log>
             <log>INFO: Current value [<value expr="successNxtPath"/>]</log>
 <assign name="successNxtPath" expr="'disconnectCall'+''" />

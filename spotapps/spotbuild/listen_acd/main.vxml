@@ -75,10 +75,14 @@
 	<var name="SB_UV_whichId"/>
 	<var name="SB_UV_customerNumber"/>
 	<var name="SB_UV_custConnected"/>
-	<var name="SB_UV_custConnID"/>
+	<var name="SB_UV_currentConnID"/>
 	<var name="SB_UV_agentSID"/>
 	<var name="SB_UV_confID"/>
 	<var name="SB_UV_confHoldMsg"/>
+	<var name="SB_UV_customerConnID"/>
+	<var name="SB_UV_agentConnID"/>
+	<var name="SB_UV_eventSID"/>
+	<var name="SB_UV_eventType"/>
 
     
     <form id="beginDocument">
@@ -91,7 +95,7 @@
             <assign name="II_SB_nextOpt" expr="II_SB_NEXT_OPTION"/>
 			<assign name="DNIS" expr="II_SB_local" />
 			<assign name="ANI" expr="II_SB_remote" />
-			<assign name="custConnID" expr="II_SB_connectionID" />
+			<assign name="currentConnID" expr="II_SB_connectionID" />
 			<assign name="line" expr="II_SB_line" />
 			<assign name="SID" expr="II_SB_sessionID" />
 			<assign name="passValues" expr="II_SB_importedValue" />
@@ -261,8 +265,8 @@
 			<if cond="SB_UV_custConnected != undefined">
 				<assign name="custConnected" expr="SB_UV_custConnected" />
 			</if>
-			<if cond="SB_UV_custConnID != undefined">
-				<assign name="custConnID" expr="SB_UV_custConnID" />
+			<if cond="SB_UV_currentConnID != undefined">
+				<assign name="currentConnID" expr="SB_UV_currentConnID" />
 			</if>
 			<if cond="SB_UV_agentSID != undefined">
 				<assign name="agentSID" expr="SB_UV_agentSID" />
@@ -272,6 +276,18 @@
 			</if>
 			<if cond="SB_UV_confHoldMsg != undefined">
 				<assign name="confHoldMsg" expr="SB_UV_confHoldMsg" />
+			</if>
+			<if cond="SB_UV_customerConnID != undefined">
+				<assign name="customerConnID" expr="SB_UV_customerConnID" />
+			</if>
+			<if cond="SB_UV_agentConnID != undefined">
+				<assign name="agentConnID" expr="SB_UV_agentConnID" />
+			</if>
+			<if cond="SB_UV_eventSID != undefined">
+				<assign name="eventSID" expr="SB_UV_eventSID" />
+			</if>
+			<if cond="SB_UV_eventType != undefined">
+				<assign name="eventType" expr="SB_UV_eventType" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -12,7 +12,7 @@
 	    <log target="status">Set Next Path</log>
             <log>INFO: Entered assign-variable.vxml [360_32]</log>
             <log>INFO: Current value [<value expr="nxtPath"/>]</log>
-<assign name="nxtPath" expr="failedNxtPath+''" />
+<assign name="nxtPath" expr="successNxtPath+''" />
 <log>INFO: Updated value [<value expr="nxtPath"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">

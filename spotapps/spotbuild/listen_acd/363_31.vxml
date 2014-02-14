@@ -9,20 +9,26 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Call Status if Not Connected</log>
-            <log>INFO: Entered assign-variable.vxml [363_17]</log>
-            <log>INFO: Current value [<value expr="callStatus"/>]</log>
-<assign name="callStatus" expr="'DISCONNECTED'+''" />
-<log>INFO: Updated value [<value expr="callStatus"/>]</log>
+	    <log target="status">Set Event Vars</log>
+            <log>INFO: Entered assign-variable.vxml [363_31]</log>
+            <log>INFO: Current value [<value expr="eventType"/>]</log>
+<assign name="eventType" expr="'DISC_LINE'+''" />
+<log>INFO: Updated value [<value expr="eventType"/>]</log>
 <log>INFO: Current value [<value expr="failedNxtPath"/>]</log>
 <assign name="failedNxtPath" expr="'endCall'+''" />
 <log>INFO: Updated value [<value expr="failedNxtPath"/>]</log>
 <log>INFO: Current value [<value expr="successNxtPath"/>]</log>
 <assign name="successNxtPath" expr="'endCall'+''" />
 <log>INFO: Updated value [<value expr="successNxtPath"/>]</log>
-<log>INFO: Current value [<value expr="eventType"/>]</log>
-<assign name="eventType" expr="''+''" />
-<log>INFO: Updated value [<value expr="eventType"/>]</log>
+<log>INFO: Current value [<value expr="callStatus"/>]</log>
+<assign name="callStatus" expr="'ENDED'+''" />
+<log>INFO: Updated value [<value expr="callStatus"/>]</log>
+<log>INFO: Current value [<value expr="ANI"/>]</log>
+<assign name="ANI" expr="''+''" />
+<log>INFO: Updated value [<value expr="ANI"/>]</log>
+<log>INFO: Current value [<value expr="DNIS"/>]</log>
+<assign name="DNIS" expr="''+''" />
+<log>INFO: Updated value [<value expr="DNIS"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

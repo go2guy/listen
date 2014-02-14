@@ -84,10 +84,14 @@
 	<var name="whichId" expr="''" />
 	<var name="customerNumber" expr="''" />
 	<var name="custConnected" expr="'0'" />
-	<var name="custConnID" expr="'connectionID'" />
+	<var name="currentConnID" expr="'connectionID'" />
 	<var name="agentSID" expr="''" />
 	<var name="confID" expr="''" />
 	<var name="confHoldMsg" expr="''" />
+	<var name="customerConnID" expr="''" />
+	<var name="agentConnID" expr="''" />
+	<var name="eventSID" expr="''" />
+	<var name="eventType" expr="''" />
 
 
     <!-- Conference Variables -->

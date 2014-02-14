@@ -12,7 +12,7 @@
 
     <var name="II_SB_valueToPass" expr="passValues"/>   <!-- Config: Name of file confrence creates -->
     <var name="II_SB_eventToPass" expr="eventName"/>
-    <var name="II_SB_sessionID" expr="customerSID"/>        <!-- Config: Session ID for the message to send -->
+    <var name="II_SB_sessionID" expr="eventSID"/>        <!-- Config: Session ID for the message to send -->
     <var name="II_SB_NEXT_OPTION_SUCCESS" expr="'357_17'"/>
     <var name="II_SB_NEXT_OPTION_FAILURE" expr="'357_15'"/>
     <var name="II_SB_nextOpt" expr="'357_5'"/>

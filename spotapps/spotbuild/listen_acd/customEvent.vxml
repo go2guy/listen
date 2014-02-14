@@ -23,6 +23,9 @@
             <assign name="II_SB_valueReceived" expr="getNextElement(1,II_SB_passValues,'|')"/>
             <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
 
+			<if cond="II_SB_eventReceived == 'DISC_LINE'">
+				<assign name="II_SB_assign_NxtOpt" expr="'363_46'"/>
+			</if>
 			<if cond="II_SB_eventReceived == 'DISCONNECT'">
 				<assign name="II_SB_assign_NxtOpt" expr="'354_77'"/>
 			</if>

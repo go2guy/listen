@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Call Status</log>
+	    <log target="status">Set Call Status if Connected</log>
             <log>INFO: Entered assign-variable.vxml [363_13]</log>
             <log>INFO: Current value [<value expr="callStatus"/>]</log>
 <assign name="callStatus" expr="'COMPLETED'+''" />
@@ -20,6 +20,9 @@
 <log>INFO: Current value [<value expr="successNxtPath"/>]</log>
 <assign name="successNxtPath" expr="'endCall'+''" />
 <log>INFO: Updated value [<value expr="successNxtPath"/>]</log>
+<log>INFO: Current value [<value expr="eventType"/>]</log>
+<assign name="eventType" expr="''+''" />
+<log>INFO: Updated value [<value expr="eventType"/>]</log>
 
             <if cond="II_SB_nxtOpt != ''">
                 <log>INFO: Next option [<value expr="II_SB_nxtOpt"/>.vxml]</log>

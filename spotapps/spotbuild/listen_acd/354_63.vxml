@@ -9,7 +9,7 @@
 
     <form id="beginDocument">
         <block>
-	    <log target="status">Set Next Path</log>
+	    <log target="status">Set getMbx And hangUp</log>
             <log>INFO: Entered assign-variable.vxml [354_63]</log>
             <log>INFO: Current value [<value expr="successNxtPath"/>]</log>
 <assign name="successNxtPath" expr="'getMbx'+''" />

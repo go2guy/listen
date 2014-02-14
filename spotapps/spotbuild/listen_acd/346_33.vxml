@@ -21,7 +21,7 @@
             <log target="status">Get SessionId</log>
             <log>INFO: Entered run-javascript.vxml [346_33]</log>
 	        <var name="II_SB_userJava" expr="II_SB_JS_function_346_33(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="customerSID" expr="II_SB_userJava" />   
+            <assign name="eventSID" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
