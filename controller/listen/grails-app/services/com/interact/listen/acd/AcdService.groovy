@@ -714,7 +714,7 @@ class AcdService
      *
      * @param user The user to set as available.
      */
-    private void freeAgent(User user)
+    private static void freeAgent(User user)
     {
         if(user != null)
         {
