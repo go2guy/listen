@@ -277,6 +277,10 @@ class AcdController
 
       json.calls = callJson
 
+      //Get Agent ACD Status
+      json.userStatus = user.acdUserStatus.AcdQueueStatus.toString();
+      json.userStatusTitle = message(code: 'page.acd.status.button.' + json.userStatus);
+
       render(contentType: 'application/json') {
         json
       }
@@ -461,6 +465,57 @@ class AcdController
             redirect(action: 'status')
             return
         }
+
+
+    def toggleAgentStatus =
+    {
+        if (log.isDebugEnabled())
+        {
+            log.debug "AcdController.toggleAgentStatus: params[${params}]"
+        }
+
+        def agent = User.get(params.agentId);
+        def acdUserStatus = AcdUserStatus.findByOwner(agent);
+        if (!acdUserStatus)
+        {
+            log.error "Failed to find acd user status, maybe not serious"
+            flash.errorMessage = message(code: 'page.acd.status.statusChange.failure.message', args: [params?.toggle_status])
+            redirect(action: 'status')
+            return
+        }
+
+        //Don't let them go available if contact number is null
+        if(acdUserStatus.AcdQueueStatus == AcdQueueStatus.Unavailable &&
+                acdUserStatus.contactNumber == null)
+        {
+            flash.errorMessage = message(code: 'page.acd.status.statusChange.noNumber.failure.message');
+        }
+        else
+        {
+            acdUserStatus.toggleStatus()
+            acdUserStatus.statusModified = DateTime.now()
+
+            if (log.isDebugEnabled())
+            {
+                log.debug "Updating user [${acdUserStatus.owner.username}] to status [${acdUserStatus.acdQueueStatus}]"
+            }
+
+            if (acdUserStatus.acdQueueStatus && acdUserStatus.validate() &&
+                    acdUserStatus.save(failOnError: true, flush: true))
+            {
+                historyService.toggleACDStatus(acdUserStatus)
+                flash.successMessage = message(code: 'page.acd.status.statusChange.successful.message', args: [acdUserStatus.acdQueueStatus])
+            }
+            else
+            {
+                log.error "Could not update user acd status."
+                flash.errorMessage = message(code: 'page.acd.status.statusChange.failure.message', args: [params?.toggle_status])
+            }
+        }
+
+        redirect(action: 'agentStatus')
+        return
+    }
 
     def updateNumber =
         {
@@ -1009,6 +1064,7 @@ class AcdController
                     continue;
                 }
 
+                userJson.agentId = thisUserSkill.user.id;
                 userJson.agent = thisUserSkill.user.realName;
                 userJson.status = thisUserSkill.user.acdUserStatus.AcdQueueStatus;
                 userJson.priority = thisUserSkill.priority;

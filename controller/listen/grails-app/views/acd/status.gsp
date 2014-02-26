@@ -260,7 +260,7 @@
         <div id="agent-status-toggle">
           <g:form controller="acd" action="toggleStatus" method="post">
           <g:set var="titleMessage" value="" />
-          <g:submitButton name="toggle_status" value="${status}" class="${status}"
+          <g:submitButton id="statusButton" name="toggle_status" value="${status}" class="statusButton ${status}"
                           title="${g.message(code: 'page.acd.status.button.' + status)}"
                           disabled="${statusDisabled}" />
           </g:form>
@@ -332,7 +332,8 @@
           dataType: 'json',
           cache: false,
           success: function(data) {
-            if ( data && data.calls.length > 0 ) {
+            if ( data && data.calls.length > 0 )
+            {
               // update agent call queue
               var tbody = $("#agent-queue > div > table > tbody");
               // tbody doesn't exist! (jquery has a weird way of checking this)
@@ -361,7 +362,8 @@
                 tbody.append(tr);
               });
             } // if ( data && ... )
-            else { // there were no calls in the queue
+            else
+            { // there were no calls in the queue
               var tbody = $("#agent-queue > div > table > tbody");
               // if there were previously calls ( aka tbody exists )
               if ( tbody.length > 0 ) {
@@ -370,7 +372,29 @@
                 div.empty();
                 div.append('<span>You have no waiting calls.</span>');
               } // if ( tbody.length > 0 ) ...
-            } // else
+            }
+
+            //Now Check for change in status
+            if(data && data.userStatus)
+            {
+                if($('#statusButton')[0].value != data.userStatus)
+                {
+                    $('#statusButton')[0].value = data.userStatus;
+
+                    if(data.userStatus == 'Unavailable')
+                    {
+                        $('.statusButton').removeClass('Available');
+                        $('.statusButton').addClass('Unavailable');
+                    }
+                    else
+                    {
+                        $('.statusButton').removeClass('Unavailable');
+                        $('.statusButton').addClass('Available');
+                    }
+
+                    $('#statusButton')[0].title = data.userStatusTitle;
+                }
+            }
           } // success
         }); // $.ajax
       } // agentStatus.poll
@@ -636,6 +660,8 @@
             return changed;
         }
     };
+
+
 
     $(document).ready(function()
     {

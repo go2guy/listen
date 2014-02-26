@@ -15,13 +15,14 @@
             }
 
             .statusColumn {
-                width: 120px;
+                width: 150px;
+                text-align: center;
             }
 
             .priorityColumn {
                 text-align: center;
-                width: 40px;
-                padding-right: 30px;
+                width: 30px;
+                /*padding-right: 30px;*/
             }
 
             .statusModifiedColumn {
@@ -58,7 +59,17 @@
                             <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}">
                                 <td class="agentColumn">${agent.agent}</td>
                                 <td class="priorityColumn">${agent.priority}</td>
-                                <td class="statusColumn">${agent.status}</td>
+                                %{--<td class="statusColumn">${agent.status}</td>--}%
+                                <td class="statusColumn">
+                                    <div id="agent-status-toggle">
+                                        <g:form controller="acd" action="toggleAgentStatus" method="post">
+                                            <g:hiddenField name="agentId" value="${agent.agentId}"/>
+                                            <g:submitButton id="statusButton" name="toggle_status"
+                                                   value="${agent.status}"
+                                                   class="statusButton ${agent.status}"/>
+                                        </g:form>
+                                    </div>
+                                </td>
                                 <td class="statusModifiedColumn">
                                     ${agent.statusModified ? agent.statusModified.toString("MM'/'dd'/'yyyy' 'HH':'mm':'ss") : ""}
                                     %{--<listen:prettytime date="${agent.statusModified}"/>--}%
@@ -76,5 +87,13 @@
                 </table>
             </g:each>
         </div>
+
+        <script type="text/javascript">
+
+
+            setTimeout(function(){
+                window.location.reload(1);
+            }, 5000);
+        </script>
     </body>
 </html>
