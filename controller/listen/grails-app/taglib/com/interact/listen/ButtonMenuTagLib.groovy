@@ -49,8 +49,13 @@ class ButtonMenuTagLib {
                          inboxMessageService.newAcdMessageCount() + '</span>' }
                   out << '</li>'
                 }
+
                 button(attrs.button == 'callHistory', 'acd', 'callHistory', 'button.menu.acd.callHistory')
 
+                if( SpringSecurityUtils.ifAnyGranted('ROLE_ORGANIZATION_ADMIN') )
+                {
+                    button(attrs.button == 'agentStatus', 'acd', 'agentStatus', 'button.menu.acd.agentStatus')
+                }
                 out << '</ul>'
 
                 break

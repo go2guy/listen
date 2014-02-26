@@ -236,6 +236,32 @@ class SpotCommunicationService {
         buildAndSendRequest(importedValue);
     }
 
+    /**
+     * Send request to SPOT to switch a callers ACD Queue.
+     *
+     * @param sessionId The sessionId of the call.
+     * @throws IOException If an IOException.
+     * @throws SpotCommunicationException If
+     */
+    def sendAcdSwitchQueueEvent(def sessionId, def onHoldMsg, def onHoldMusic, def connectMsg, def onHoldMsgExtended)
+        throws IOException, SpotCommunicationException
+    {
+        if(log.isInfoEnabled())
+        {
+            log.info("Sending Acd Switch Queue Event, sessionId[" + sessionId + "]");
+        }
+
+        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        importedValue.put("application", "ACD");
+        importedValue.put("action", "SWITCH_QUEUE");
+        importedValue.put("sessionId", sessionId);
+        importedValue.put("onHoldMsg", onHoldMsg);
+        importedValue.put("onHoldMusic", onHoldMusic);
+        importedValue.put("connectMsg", connectMsg);
+        importedValue.put("onHoldMsgExtended", onHoldMsgExtended);
+        buildAndSendRequest(importedValue);
+    }
+
 
     private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {
         Map<String, Object> importedValue = new TreeMap<String, Object>();

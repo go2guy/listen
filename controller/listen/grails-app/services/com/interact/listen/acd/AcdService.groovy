@@ -424,6 +424,56 @@ class AcdService
         removeCall(thisCall, null);
     }
 
+    /**
+     * Send the caller to another queue.
+     *
+     * @param thisCall The call.
+     * @param theSkill The skill of the other queue.
+     * @return boolean for succes
+     */
+    public boolean transferCallToQueue(AcdCall thisCall, Skill skill)
+    {
+        //Tell the IVR to switch the queue
+        boolean returnVal = false;
+        boolean success = false;
+
+        if (thisCall)
+        {
+            try
+            {
+                String artifactsDirectory = grailsApplication.config.com.interact.listen.artifactsDirectory;
+                String onHoldMsg = artifactsDirectory + '/acd/' + skill.organization.id + '/' + skill.onHoldMsg;
+                String onHoldMsgExtended = artifactsDirectory + '/acd/' + skill.organization.id  + '/' +
+                        skill.onHoldMsgExtended;
+                String onHoldMusic = artifactsDirectory + '/acd/' + skill.organization.id  + '/' + skill.onHoldMusic;
+                String connectMsg = artifactsDirectory + '/acd/' + skill.organization.id  + '/' + skill.connectMsg;
+
+                spotCommunicationService.sendAcdSwitchQueueEvent(thisCall.sessionId, onHoldMsg, onHoldMusic,
+                    connectMsg, onHoldMsgExtended,);
+                success = true;
+            }
+            catch (Exception e)
+            {
+                log.error("Exception sending switch queue event: " + e);
+            }
+        }
+
+        if (success && skill != null)
+        {
+            //Free up the agent
+            freeAgent(thisCall.user);
+
+            //Set the call in the other queue
+            thisCall.skill = skill;
+            thisCall.callStatus = AcdCallStatus.WAITING;
+            thisCall.user = null;
+            thisCall.save(flush: true);
+            returnVal = true;
+        }
+
+        return returnVal;
+    }
+
     public int getWaitingMax()
     {
         int returnVal;
@@ -642,7 +692,7 @@ class AcdService
 
         acdCall.callStatus = AcdCallStatus.WAITING;
 
-        freeAgent(acdCall.user);
+        disableAgent(acdCall.user);
 
         acdCall.user = null;
 
@@ -664,7 +714,7 @@ class AcdService
      *
      * @param user The user to set as available.
      */
-    private static void freeAgent(User user)
+    private void freeAgent(User user)
     {
         if(user != null)
         {
@@ -675,6 +725,28 @@ class AcdService
         else
         {
             LogFactory.getLog(this).warn("Attempted to free a non existent user.");
+        }
+    }
+
+    /**
+     * Set an agent unavailable.
+     *
+     * @param user The user to set as unavailable.
+     */
+    private static void disableAgent(User user)
+    {
+        if(user != null)
+        {
+            LogFactory.getLog(this).warn("Setting user[" + user.realName + "] unavailable due to connect failed.");
+
+            //Free the user
+            user.acdUserStatus.onACall = false;
+            user.acdUserStatus.AcdQueueStatus = AcdQueueStatus.Unavailable;
+            user.save(flush: true);
+        }
+        else
+        {
+            LogFactory.getLog(this).warn("Attempted to disable a non existent user.");
         }
     }
 
@@ -876,4 +948,5 @@ class AcdService
 
         return calls;
     }
+
 }

@@ -6,7 +6,7 @@ import com.interact.listen.acd.Skill
 class UserSkill {
     User user
     Skill skill
-    long priority
+    long priority = 6;
     
     static belongsTo = [ user: User, skill: Skill ]
     

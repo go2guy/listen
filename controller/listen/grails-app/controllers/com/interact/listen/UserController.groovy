@@ -92,7 +92,7 @@ class UserController {
                 uSkill.description = skill.description
                 uSkill.id = skill.id;
                 uSkill.selected = false;
-                uSkill.priority = "0";
+                uSkill.priority = "6";
 
                 for(UserSkill userSkill : userSkills_)
                 {

@@ -647,18 +647,33 @@ class AcdController
             boolean success = false;
 
             AcdCall thisCall = AcdCall.get(params.id);
-            User transferTo = User.get(params.userId);
 
-            if (thisCall && transferTo)
+            if(params.userId < 0)
             {
-                try
+                //This is a transfer to a queue
+                Skill theSkill = Skill.get(params.userId);
+                if(log.isDebugEnabled())
                 {
-                    acdService.connectCall(thisCall, transferTo);
-                    success = true;
+                    log.debug("Transferring call to queue[" + theSkill.skillname + "]");
                 }
-                catch (Exception e)
+
+                success = acdService.transferCallToQueue(thisCall, theSkill);
+            }
+            else
+            {
+                User transferTo = User.get(params.userId);
+
+                if (thisCall && transferTo)
                 {
-                    log.error("Exception sending transfer event to agent[" + transferTo.realName + "] : " + e);
+                    try
+                    {
+                        acdService.connectCall(thisCall, transferTo);
+                        success = true;
+                    }
+                    catch (Exception e)
+                    {
+                        log.error("Exception sending transfer event to agent[" + transferTo.realName + "] : " + e);
+                    }
                 }
             }
 
@@ -691,13 +706,27 @@ class AcdController
 
             def userJson = [];
 
+            //First add the other queues
+            List<Skill> skills = Skill.listOrderBySkillname();
+            for(Skill thisSkill : skills)
+            {
+                def c = [:];
+                c.id = -1 * thisSkill.id;
+                c.realName = thisSkill.description + " Queue";
+                c.type = 'queue';
+                userJson.add(c);
+            }
+
             for (User thisUser : users)
             {
                 def c = [:]
                 c.id = thisUser.id;
                 c.realName = thisUser.realName;
+                c.type = 'agent';
                 userJson.add(c);
             }
+
+
 
             json.users = userJson;
 
@@ -832,112 +861,186 @@ class AcdController
 
     def callHistory =
     {
-      if (!authenticatedUser) {
-        //Redirect to login
-        redirect(controller: 'login', action: 'auth');
-      }
-      def user = authenticatedUser
-
-      if (log.isDebugEnabled())
-      {
-          log.debug "AcdController.callHistory: params[${params}]";
-      }
-
-      log.debug "params.sort [${params.sort}]"
-      log.debug "params.order [${params.order}]"
-
-      params.sort = params.sort ?: 'enqueueTime'
-      params.order = params.order ?: 'desc'
-      params.max = params.max ?: '100'
-      params.offset = params.offset ?: '0'
-
-      log.debug "params.sort [${params.sort}]"
-      log.debug "params.order [${params.order}]"
-
-      DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
-      DateTime theStart = getStartDate(params.startDate);
-      DateTime theEnd = getEndDate(params.endDate);
-
-      def calls = []
-      if ( !user.hasRole( 'ROLE_ORGANIZATION_ADMIN' ) ) {
-        params.agent = params.agent ?: user.id
-      }
-      params.agent = params.agent ?: ""
-      calls = acdService.callHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
-                      params.agent.toString(), params.skill);
-      def callTotal = calls.totalCount;
-
-      def json = [:]
-      def callJson = []
-      for (AcdCallHistory call : calls)
-      {
-          def c = [:]
-          c.ani = call.ani
-          c.skill = call.skill.description
-          c.callStatus = call.callStatus.viewable()
-          c.callStart = call.callStart
-          c.callEnd = call.callEnd
-          c.enqueueTime = call.enqueueTime
-          c.dequeueTime = call.dequeueTime
-          c.user = ""
-          if (call.user != null)
-          {
-              c.user = call.user.realName
-          }
-          callJson.add(c)
-      }
-
-      json.calls = callJson
-      json.callTotal = callTotal
-      json.sort = params.sort
-      json.order = params.order
-      json.max = params.max
-      json.offset = params.offset
-      json.filtered = true
-      json.startDate =  dtf.print(theStart);
-      json.endDate = dtf.print(theEnd);
-      json.agent = params.agent;
-
-      def agentJson = [];
-      List<User> agents = []
-      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // find all agents
-        agents = acdService.acdAgentList;
-      }
-      else { // list only the current user
-        agents.add(user)
-      }
-      for (User agent : agents)
-      {
-          def d = [:]
-          d.id = agent.id;
-          d.realName = agent.realName;
-          agentJson.add(d);
-      }
-
-      json.skill = params.skill;
-
-      def skillJson = [];
-      List<Skill> skills = []
-      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // find all skills
-        skills = Skill.list(sort: "skillname");
-      }
-      else { // find only skills associated with current user
-        UserSkill.findAllByUser(user).each() { userSkill ->
-          skills.add(userSkill.skill)
+        if (!authenticatedUser) {
+            //Redirect to login
+            redirect(controller: 'login', action: 'auth');
         }
-      }
-      for (Skill skill : skills)
-      {
-          def e = [:]
-          e.id = skill.id;
-          e.skillname = skill.description;
-          skillJson.add(e);
-      }
+        def user = authenticatedUser
 
-      json.skillList = skillJson;
-      json.agentList = agentJson;
+        if (log.isDebugEnabled())
+        {
+            log.debug "AcdController.callHistory: params[${params}]";
+        }
 
-      render(view: 'callHistory', model: json)
+        log.debug "params.sort [${params.sort}]"
+        log.debug "params.order [${params.order}]"
+
+        params.sort = params.sort ?: 'enqueueTime'
+        params.order = params.order ?: 'desc'
+        params.max = params.max ?: '100'
+        params.offset = params.offset ?: '0'
+
+        log.debug "params.sort [${params.sort}]"
+        log.debug "params.order [${params.order}]"
+
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
+        DateTime theStart = getStartDate(params.startDate);
+        DateTime theEnd = getEndDate(params.endDate);
+
+        def calls = []
+        if ( !user.hasRole( 'ROLE_ORGANIZATION_ADMIN' ) ) {
+            params.agent = params.agent ?: user.id
+        }
+        params.agent = params.agent ?: ""
+        calls = acdService.callHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
+                params.agent.toString(), params.skill);
+        def callTotal = calls.totalCount;
+
+        def json = [:]
+        def callJson = []
+        for (AcdCallHistory call : calls)
+        {
+            def c = [:]
+            c.ani = call.ani
+            c.skill = call.skill.description
+            c.callStatus = call.callStatus.viewable()
+            c.callStart = call.callStart
+            c.callEnd = call.callEnd
+            c.enqueueTime = call.enqueueTime
+            c.dequeueTime = call.dequeueTime
+            c.user = ""
+            if (call.user != null)
+            {
+                c.user = call.user.realName
+            }
+            callJson.add(c)
+        }
+
+        json.calls = callJson
+        json.callTotal = callTotal
+        json.sort = params.sort
+        json.order = params.order
+        json.max = params.max
+        json.offset = params.offset
+        json.filtered = true
+        json.startDate =  dtf.print(theStart);
+        json.endDate = dtf.print(theEnd);
+        json.agent = params.agent;
+
+        def agentJson = [];
+        List<User> agents = []
+        if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // find all agents
+            agents = acdService.acdAgentList;
+        }
+        else { // list only the current user
+            agents.add(user)
+        }
+        for (User agent : agents)
+        {
+            def d = [:]
+            d.id = agent.id;
+            d.realName = agent.realName;
+            agentJson.add(d);
+        }
+
+        json.skill = params.skill;
+
+        def skillJson = [];
+        List<Skill> skills = []
+        if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // find all skills
+            skills = Skill.list(sort: "skillname");
+        }
+        else { // find only skills associated with current user
+            UserSkill.findAllByUser(user).each() { userSkill ->
+                skills.add(userSkill.skill)
+            }
+        }
+        for (Skill skill : skills)
+        {
+            def e = [:]
+            e.id = skill.id;
+            e.skillname = skill.description;
+            skillJson.add(e);
+        }
+
+        json.skillList = skillJson;
+        json.agentList = agentJson;
+
+        render(view: 'callHistory', model: json)
+    }
+
+    def agentStatus =
+    {
+        if (log.isDebugEnabled())
+        {
+            log.debug "AcdController.agentStatus: params[${params}]";
+        }
+
+        List<Skill> skills = Skill.listOrderBySkillname();
+
+        List<AcdCall> calls = AcdCall.list();
+        Map<User, AcdCall> callMap = new HashMap<User,AcdCall>();
+        for(AcdCall thisCall : calls)
+        {
+            if(thisCall != null && thisCall.user != null)
+            {
+                callMap.put(thisCall.user, thisCall);
+            }
+        }
+
+        def skillJson = [];
+
+        for(Skill thisSkill : skills)
+        {
+            def userSkill = [:];
+            def agents = [];
+
+            List<UserSkill> userSkills = thisSkill.userSkill.sort{it.user.realName};
+//            for(UserSkill thisUserSkill : thisSkill.userSkill)
+            for(UserSkill thisUserSkill : userSkills)
+            {
+                def userJson = [:];
+
+                //Don't include voicemailbox users
+                if(thisUserSkill.user.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox)
+                {
+                    continue;
+                }
+
+                userJson.agent = thisUserSkill.user.realName;
+                userJson.status = thisUserSkill.user.acdUserStatus.AcdQueueStatus;
+                userJson.priority = thisUserSkill.priority;
+                if(thisUserSkill.user.acdUserStatus.onacallModified != null)
+                {
+                    userJson.lastCall = thisUserSkill.user.acdUserStatus.onacallModified;
+                }
+                if(thisUserSkill.user.acdUserStatus.statusModified != null)
+                {
+                    userJson.statusModified = thisUserSkill.user.acdUserStatus.statusModified;
+                }
+                if(callMap && callMap.containsKey(thisUserSkill.user))
+                {
+                    AcdCall userCall = callMap.get(thisUserSkill.user);
+                    //Make sure the right skill
+                    if(userCall.skill == thisSkill)
+                    {
+                        userJson.callStart = userCall.callStart;
+                    }
+                }
+
+                agents.add(userJson);
+            }
+
+            userSkill.skill = thisSkill.description;
+            userSkill.agents = agents;
+            skillJson.add(userSkill);
+        }
+
+        def model = [
+                skills: skillJson
+        ]
+
+        render(view: 'agentStatus', model: model);
     }
 
     private def getStartDate(String inputStart)
