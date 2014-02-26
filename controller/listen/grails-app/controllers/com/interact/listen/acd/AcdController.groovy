@@ -648,11 +648,13 @@ class AcdController
 
             AcdCall thisCall = AcdCall.get(params.id);
 
-            if(params.userId < 0)
+            if(Integer.parseInt(params.userId) < 0)
             {
                 //This is a transfer to a queue
-                Skill theSkill = Skill.get(params.userId);
-                if(log.isDebugEnabled())
+                //Skill ID is the negation of the userid
+                int theSkillId = Integer.parseInt(params.userId) * -1;
+                Skill theSkill = Skill.get(theSkillId);
+                if(theSkill != null && log.isDebugEnabled())
                 {
                     log.debug("Transferring call to queue[" + theSkill.skillname + "]");
                 }
