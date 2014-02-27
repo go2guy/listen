@@ -83,6 +83,7 @@
 	<var name="SB_UV_agentConnID"/>
 	<var name="SB_UV_eventSID"/>
 	<var name="SB_UV_eventType"/>
+	<var name="SB_UV_queueInfo"/>
 
     
     <form id="beginDocument">
@@ -288,6 +289,9 @@
 			</if>
 			<if cond="SB_UV_eventType != undefined">
 				<assign name="eventType" expr="SB_UV_eventType" />
+			</if>
+			<if cond="SB_UV_queueInfo != undefined">
+				<assign name="queueInfo" expr="SB_UV_queueInfo" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

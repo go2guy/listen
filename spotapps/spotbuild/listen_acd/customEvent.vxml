@@ -23,12 +23,6 @@
             <assign name="II_SB_valueReceived" expr="getNextElement(1,II_SB_passValues,'|')"/>
             <log>INFO: eventReceived is - <value expr="II_SB_eventReceived"/></log>
 
-			<if cond="II_SB_eventReceived == 'DISC_LINE'">
-				<assign name="II_SB_assign_NxtOpt" expr="'363_46'"/>
-			</if>
-			<if cond="II_SB_eventReceived == 'DISCONNECT'">
-				<assign name="II_SB_assign_NxtOpt" expr="'354_77'"/>
-			</if>
 			<if cond="II_SB_eventReceived == 'JOIN_CONF'">
 				<assign name="II_SB_assign_NxtOpt" expr="'354_27'"/>
 				<assign name="passValues" expr="II_SB_valueReceived"/>
@@ -42,15 +36,25 @@
 			<if cond="II_SB_eventReceived == 'VOICEMAIL'">
 				<assign name="II_SB_assign_NxtOpt" expr="'354_65'"/>
 			</if>
-			<if cond="II_SB_eventReceived == 'CONNECT'">
-				<assign name="II_SB_assign_NxtOpt" expr="'354_45'"/>
-				<assign name="argList" expr="II_SB_valueReceived"/>
-			</if>
 			<if cond="II_SB_eventReceived == 'OFF_HOLD'">
 				<assign name="II_SB_assign_NxtOpt" expr="'356_21'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'HANG_UP'">
 				<assign name="II_SB_assign_NxtOpt" expr="'352_3'"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'SWITCH_QUEUE'">
+				<assign name="II_SB_assign_NxtOpt" expr="'371_4'"/>
+				<assign name="queueInfo" expr="II_SB_valueReceived"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'DISC_LINE'">
+				<assign name="II_SB_assign_NxtOpt" expr="'363_46'"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'DISCONNECT'">
+				<assign name="II_SB_assign_NxtOpt" expr="'354_77'"/>
+			</if>
+			<if cond="II_SB_eventReceived == 'CONNECT'">
+				<assign name="II_SB_assign_NxtOpt" expr="'354_45'"/>
+				<assign name="argList" expr="II_SB_valueReceived"/>
 			</if>
 
             <if cond="II_SB_assign_NxtOpt != ''">

@@ -92,6 +92,7 @@
 	<var name="agentConnID" expr="''" />
 	<var name="eventSID" expr="''" />
 	<var name="eventType" expr="''" />
+	<var name="queueInfo" expr="''" />
 
 
     <!-- Conference Variables -->
