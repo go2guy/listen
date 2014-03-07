@@ -18,7 +18,7 @@ class Menu {
         optionsPrompt: blank: false
     }
 
-    def toIvrCommand(String promptDirectory, String promptBefore) {
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory) {
         def args = [
             id: id,
             keyPresses: keypressActions.inject([]) { list, action ->
