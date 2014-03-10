@@ -1,7 +1,7 @@
 package com.interact.listen
 
-import com.interact.listen.acd.AcdService
-import com.interact.listen.acd.UserSkill
+import com.interact.listen.acd.*
+// import com.interact.listen.acd.UserSkill
 import com.interact.listen.voicemail.Voicemail
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
@@ -154,15 +154,39 @@ class MessagesController {
         }
 
         def user = authenticatedUser
-        if(message.owner != user) {
-            redirect(controller: 'login', action: 'denied')
-            return
+        // are they the voicemail owner?
+        def authorized = (user == message.owner)
+        def voicemailOwner = authorized
+
+        // Apparently they don't own the voicemail...
+        if (!voicemailOwner) {
+          // does the voicemail belong to a user designated as an acd skill voicemail user?
+          if ( message.owner.acdUserStatus.acdQueueStatus == AcdQueueStatus.VoicemailBox ) {
+            // is the current user associated with this voicemail user's skill?
+            def voicemailSkill = UserSkill.findByUser(message.owner).skill
+            UserSkill.findAllByUser(user)?.each() { userSkill ->
+              if ( userSkill.skill == voicemailSkill ) {
+                authorized = true
+              }
+            }
+          }
+        }
+
+        // if they're still not authorized, redirect to the login screen
+        if ( !authorized ) {
+          redirect(controller: 'login', action: 'denied')
+          return
         }
 
         inboxMessageService.delete(message)
 
         flash.successMessage = 'Message deleted'
-        redirect(action: 'inbox', params: preserve)
+        if ( voicemailOwner ) {
+          redirect(action: 'inbox', params: preserve)
+        }
+        else {
+          redirect(action: 'acdInbox', params: preserve)
+        }
     }
 
     // ajax
