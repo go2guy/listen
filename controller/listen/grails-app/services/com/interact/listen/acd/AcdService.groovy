@@ -3,6 +3,7 @@ package com.interact.listen.acd
 import com.interact.listen.PhoneNumber
 import com.interact.listen.User
 import com.interact.listen.exceptions.ListenAcdException
+import com.interact.listen.pbx.Extension
 import com.interact.listen.spot.SpotCommunicationException
 import com.interact.listen.acd.AcdUserStatus
 
@@ -359,6 +360,75 @@ class AcdService
             {
                 spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
                         agent.acdUserStatus.contactNumber.number);
+            }
+            catch(SpotCommunicationException sce)
+            {
+                //for now, we are going to assume this means that this session does not exist any longer
+                sessionExistsOnIvr = false;
+            }
+
+            if(sessionExistsOnIvr)
+            {
+                //Set call status to "ivrconnectRequested"
+                thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
+                thisCall.setUser(agent);
+                thisCall.save(flush: true);
+
+                //Now we just have to wait for the IVR to respond that it was connected
+            }
+            else
+            {
+                //Free up the agent
+                freeAgent(agent);
+
+                //Delete call from queue. Leave status since we don't really know what happened.
+                removeCall(thisCall, null);
+            }
+        }
+    }
+
+    public void transferCall(AcdCall thisCall, User agent) throws ListenAcdException
+    {
+        if(log.isDebugEnabled())
+        {
+            log.debug("Agent to connect to: " + agent.realName);
+        }
+
+        if(agent.acdUserStatus && agent.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox)
+        {
+            //Connecting to voicemail, use the voicemail logic
+            acdCallVoicemailPrivate(thisCall, agent.acdUserStatus.contactNumber.number);
+        }
+        else
+        {
+            boolean sessionExistsOnIvr = true;
+
+            //Determine Phone Number to which to send
+            String theNumber = null;
+
+            Set<PhoneNumber> numbers = agent.phoneNumbers;
+            if(numbers != null && !numbers.isEmpty())
+            {
+                for(PhoneNumber number : numbers)
+                {
+                    if(number != null && number instanceof Extension)
+                    {
+                        theNumber = number.number;
+                        break;
+                    }
+                }
+            }
+
+            if(theNumber == null)
+            {
+                throw new ListenAcdException("Unable to determine phone number for transfer");
+            }
+
+            //Send request to ivr
+            try
+            {
+                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
+                        theNumber);
             }
             catch(SpotCommunicationException sce)
             {

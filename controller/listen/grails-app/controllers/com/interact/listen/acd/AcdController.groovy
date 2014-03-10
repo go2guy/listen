@@ -724,7 +724,7 @@ class AcdController
                 {
                     try
                     {
-                        acdService.connectCall(thisCall, transferTo);
+                        acdService.transferCall(thisCall, transferTo);
                         success = true;
                     }
                     catch (Exception e)
