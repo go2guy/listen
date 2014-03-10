@@ -31,7 +31,7 @@
 				<assign name="II_SB_assign_NxtOpt" expr="'354_33'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'ON_HOLD'">
-				<assign name="II_SB_assign_NxtOpt" expr="'354_83'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'364_3'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'VOICEMAIL'">
 				<assign name="II_SB_assign_NxtOpt" expr="'354_65'"/>
