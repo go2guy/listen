@@ -1507,7 +1507,7 @@ class SpotApiController {
                 return
             }
 
-            def command = entry.menu.toIvrCommand(organization.attendantPromptDirectory(), '')
+            def command = entry.menu.toIvrCommand(organization.attendantPromptDirectory(), '', '')
             if(entry.override) {
                 command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/') + 1) + entry.override.optionsPrompt[0]
                 log.debug "Overrode default prompt with [${command.args.audioFile}]"
