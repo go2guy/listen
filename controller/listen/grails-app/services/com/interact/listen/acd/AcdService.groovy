@@ -406,15 +406,22 @@ class AcdService
             //Determine Phone Number to which to send
             String theNumber = null;
 
-            Set<PhoneNumber> numbers = agent.phoneNumbers;
-            if(numbers != null && !numbers.isEmpty())
+            if(agent.acdUserStatus != null && agent.acdUserStatus.contactNumber != null)
             {
-                for(PhoneNumber number : numbers)
+                theNumber = agent.acdUserStatus.contactNumber.number;
+            }
+            else
+            {
+                Set<PhoneNumber> numbers = agent.phoneNumbers;
+                if(numbers != null && !numbers.isEmpty())
                 {
-                    if(number != null && number instanceof Extension)
+                    for(PhoneNumber number : numbers)
                     {
-                        theNumber = number.number;
-                        break;
+                        if(number != null && number instanceof Extension)
+                        {
+                            theNumber = number.number;
+                            break;
+                        }
                     }
                 }
             }
