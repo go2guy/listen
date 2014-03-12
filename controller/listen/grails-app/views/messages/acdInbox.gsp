@@ -183,8 +183,7 @@
         visibleIds = visibleIds.substring(0, visibleIds.length - 1);
 
         $.ajax({
-          url: '${request.contextPath}/messages/acdPollingList?visibleIds=' + visibleIds + '${(request.queryString?.length() > 0) ? "&" + request.queryString : ""}' +
-                '&currentSkill=${currentSkill}&sort=${sort}&order=${order}&max=${max}',
+          url: '${request.contextPath}/messages/acdPollingList?visibleIds=' + visibleIds + '${(request.queryString?.length() > 0) ? "&" + request.queryString : ""}',
           dataType: 'json',
           cache: false,
           success: function(data, textStatus, xhr) {

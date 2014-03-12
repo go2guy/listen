@@ -143,6 +143,7 @@ class MessagesController {
         if(params.order) preserve.order = params.order
         if(params.offset) preserve.offset = params.offset
         if(params.max) preserve.max = params.max
+        preserve.currentSkill = params.currentSkill ?: null
 
         // TODO log errors
 
@@ -209,6 +210,7 @@ class MessagesController {
         if(params.order) preserve.order = params.order
         if(params.offset) preserve.offset = params.offset
         if(params.max) preserve.max = params.max
+        preserve.currentSkill = params.currentSkill ?: null
         def referer = request.getHeader('referer')
 
         // TODO log errors

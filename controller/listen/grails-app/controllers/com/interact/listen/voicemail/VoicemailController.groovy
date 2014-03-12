@@ -35,6 +35,7 @@ class VoicemailController {
         if(params.order) preserve.order = params.order
         if(params.offset) preserve.offset = params.offset
         if(params.max) preserve.max = params.max
+        preserve.currentSkill = params.currentSkill ?: null
 
         def voicemail = Voicemail.get(params.id)
         if(!voicemail) {
