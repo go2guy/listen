@@ -196,6 +196,7 @@ com.interact.listen.acd.agent.waitTime = 15
 com.interact.listen.acd.waiting.max = 300
 com.interact.listen.acd.connect_request.max = 20
 com.interact.listen.acd.enqueue.max = 300
+com.interact.listen.acd.disableOnFailedCall = false
 com.interact.listen.api.adminSignature = 'a80f3b59eec04c24abff14b8b2c8e93d'
 
 
