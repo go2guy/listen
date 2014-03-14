@@ -769,7 +769,7 @@ class AcdService
 
         acdCall.callStatus = AcdCallStatus.WAITING;
 
-        if ( grailsApplication.config.com.interact.listen.acd.disableOnFailedCall ) {
+        if ( grailsApplication.config.com.interact.listen.acd.disableOnFailedCall == "true" ) {
           disableAgent(acdCall.user);
         }
 
