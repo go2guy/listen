@@ -59,7 +59,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `user_role` WRITE;
-INSERT INTO `user_role` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1);
+INSERT INTO `user_role` VALUES (1,1);
 UNLOCK TABLES;
 
 LOCK TABLES `prompt_override` WRITE;
