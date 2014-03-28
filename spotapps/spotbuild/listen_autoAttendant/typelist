@@ -28,9 +28,9 @@ begin - begin
 170_56 - decision
 241_20 - audio-input
 262_13 - run-javascript
+262_11 - decision
 288_81 - assign-variable
 170_53 - run-javascript
-262_11 - decision
 288_84 - assign-variable
 288_83 - assign-variable
 243_25 - assign-variable
@@ -45,7 +45,9 @@ begin - begin
 241_36 - run-javascript
 241_34 - log
 170_46 - run-javascript
+262_26 - run-javascript
 241_30 - run-javascript
+262_27 - decision
 170_44 - run-javascript
 251_3 - end
 262_24 - run-javascript

@@ -90,6 +90,7 @@
 	<var name="SB_UV_Licenses"/>
 	<var name="SB_UV_callResult"/>
 	<var name="SB_UV_callStartTime"/>
+	<var name="SB_UV_acdArgs"/>
 
     
     <form id="beginDocument">
@@ -315,6 +316,9 @@
 			</if>
 			<if cond="SB_UV_callStartTime != undefined">
 				<assign name="callStartTime" expr="SB_UV_callStartTime" />
+			</if>
+			<if cond="SB_UV_acdArgs != undefined">
+				<assign name="acdArgs" expr="SB_UV_acdArgs" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>

@@ -99,6 +99,7 @@
 	<var name="Licenses" expr="''" />
 	<var name="callResult" expr="''" />
 	<var name="callStartTime" expr="''" />
+	<var name="acdArgs" expr="''" />
 
 
     <!-- Conference Variables -->
