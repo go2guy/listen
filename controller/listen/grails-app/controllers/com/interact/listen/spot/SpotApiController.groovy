@@ -1095,7 +1095,7 @@ class SpotApiController {
             result.greetingLocation = ''
             result.publicNumber = phoneNumber.isPublic
         } else {
-            result.greetingLocation = phoneNumber.greeting?.file?.toURI()?.toString() ?: ''
+            result.greetingLocation = phoneNumber?.greeting?.file?.toURI()?.toString() ?: ''
             if(phoneNumber.instanceOf(Extension)) {
                 result.forwardedTo = phoneNumber.forwardedTo ?: ''
                 result.publicNumber = true
