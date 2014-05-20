@@ -28,7 +28,7 @@
 				<assign name="passValues" expr="II_SB_valueReceived"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'RE_QUEUE'">
-				<assign name="II_SB_assign_NxtOpt" expr="'354_33'"/>
+				<assign name="II_SB_assign_NxtOpt" expr="'354_103'"/>
 			</if>
 			<if cond="II_SB_eventReceived == 'ON_HOLD'">
 				<assign name="II_SB_assign_NxtOpt" expr="'364_3'"/>

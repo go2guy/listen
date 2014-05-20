@@ -5,23 +5,23 @@
        *   @Name   runJavaScript.vxml
        *   @Desc   Executes a user defined Javascript function -->
 
-    <var name="II_SB_nxtOpt" expr="'348_34'"/> <!-- The next vxml template -->
+    <var name="II_SB_nxtOpt" expr="'361_29'"/> <!-- The next vxml template -->
 
     <script>    <!-- User's Javascript function will be written here -->
         <![CDATA[
-            function II_SB_JS_function_348_32(passValues)
+            function II_SB_JS_function_361_32(argList,passValues)
             {
-	            var tmpVal = getJsonVal(passValues, 'acdArgs');return tmpVal.onHoldMsgExtended;
+	            var newExt = getJsonVal(argList, 'number'); return extendJsonObject(passValues, 'toExt', newExt);
             }
         ]]>
     </script>
 
     <form id="beginDocument">
         <block>
-            <log target="status">Get Ext Hold Msg</log>
-            <log>INFO: Entered run-javascript.vxml [348_32]</log>
-	        <var name="II_SB_userJava" expr="II_SB_JS_function_348_32(passValues)"/>   <!-- Call Javascript funtion and store result -->
-            <assign name="extendedHoldMsg" expr="II_SB_userJava" />   
+            <log target="status">Save Mailbox 2</log>
+            <log>INFO: Entered run-javascript.vxml [361_32]</log>
+	        <var name="II_SB_userJava" expr="II_SB_JS_function_361_32(argList,passValues)"/>   <!-- Call Javascript funtion and store result -->
+            <assign name="passValues" expr="II_SB_userJava" />   
 	        <goto next="#exit"/>
         </block>
     </form>
