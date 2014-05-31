@@ -84,6 +84,7 @@
     <var name="OUTBOUND_PBX_CALLERID" expr="''"/>
     <var name="OUTSIDE_LINE" expr="'9'"/>
     <var name="callResult" expr="'No Answer'"/>
+	<var name="specialNumberList" expr="'911,411'"/>
 
     <!-- Dial Errors -->
     <var name="dialFailReason" expr="''"/>
@@ -222,6 +223,15 @@
                 }
                 return result;
             }
+			function sipDial(tmpANI, tmpDNIS, EXT_LENGTH, specialNumberList, callType) {
+				var result = false;
+				if(tmpANI.length && tmpANI.length < EXT_LENGTH) {
+					if(((tmpDNIS.length < EXT_LENGTH) && !(inString(tmpDNIS,specialNumberList,','))) || inString('*',tmpDNIS,'') || callType == 'extension') {
+						result = true;
+					}
+				}
+				return result;
+			}
         ]]>
     </script>
 
@@ -233,6 +243,7 @@
             <assign name="AUDIO_PATH" expr="APP_PATH+'audio/'"/>
             <assign name="TRANS_PATH" expr="APP_PATH+'transactions/'"/>
             <assign name="state" expr="'loaded'"/>
+			<assign name="specialNumberList" expr="getJsonVal(importedValue, 'specialNumberList')"/>
             <log>INFO: APP Path [<value expr="APP_PATH"/>]</log>
             <log>INFO: Audio Path [<value expr="AUDIO_PATH"/>]</log>
             <log>INFO: Destination [<value expr="DNIS"/>]</log>
@@ -469,7 +480,7 @@
             <var name="OBCALL.noproxy" expr="'false'"/>
             <log>INFO: DNIS Information[<value expr="tmpDNIS"/>]</log>
 
-            <if cond="tmpDNIS.length &lt; EXT_LENGTH"> <!-- Call to a PBX extension -->
+            <if cond="(tmpDNIS.length &lt; EXT_LENGTH) &amp;&amp; !(inString(tmpDNIS,specialNumberList,','))"> <!-- Call to a PBX extension -->
                 <if cond="ip.length &gt; 0">
                     <assign name="CALL_DNIS" expr="'sip:' + getJsonVal(importedValue, 'EXT_PREFIX') + tmpDNIS + '@' + ip"/>
                 <else/>
@@ -497,14 +508,18 @@
             </if>
             <log>INFO: CALL_DNIS Information[<value expr="CALL_DNIS"/>]</log>
 
-            <if cond="(tmpANI.length &gt; 0) &amp;&amp; ((tmpANI.length &lt; EXT_LENGTH) &amp;&amp; ((tmpDNIS.length &lt; EXT_LENGTH) || (inString('*',tmpDNIS,'')))) || (callType == 'extension')">
-                <assign name="CALL_ANI" expr="'sip:' + getJsonVal(importedValue, 'sipFrom') + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
+			<if cond="sipDial(tmpANI, tmpDNIS, EXT_LENGTH, specialNumberList, callType)">
+				<assign name="CALL_ANI" expr="'sip:' + getJsonVal(importedValue, 'sipFrom') + getJsonVal(importedValue, 'EXT_SUFFIX')"/>
             <else/>
-                <log>INFO: ANI for outbound call[<value expr="ANI"/>]</log>
+                <log>INFO: Original ANI for outbound call[<value expr="ANI"/>]</log>
                 <assign name="SIP_SERVER" expr="getJsonVal(importedValue, 'sipURL')"/>
 				<var name="pbxObCallerId" expr="getJsonVal(importedValue, 'pbxObCallerId')"/>
-                <assign name="CALL_ANI" expr="setANI(ANI, CALL_DNIS, pbxObCallerId, SIP_SERVER)"/> 
-                <log>INFO: Actual ANI for outbound call[<value expr="CALL_ANI"/>]</log>
+				<if cond="inString(tmpDNIS,specialNumberList,',')">
+					<assign name="CALL_ANI" expr="'sip:'+pbxObCallerId+'@'+SIP_SERVER"/>
+				<else/>
+					<assign name="CALL_ANI" expr="setANI(ANI, CALL_DNIS, pbxObCallerId, SIP_SERVER)"/>
+				</if>
+                <log>INFO: Updated ANI for outbound call[<value expr="CALL_ANI"/>]</log>
             </if>
 
             <if cond="CALL_DNIS.length &gt; 0">
@@ -1164,7 +1179,7 @@
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callResult', status)"/>
             	<assign name="importedValue" expr="extendJsonObject(importedValue, 'callType', callType)"/>
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
-            <elseif cond="((tmpDNIS.length &lt; EXT_LENGTH) || (isFwd == 'true') || (isDID == 'true') || (state == 'findMe'))"/>  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
+            <elseif cond="((tmpDNIS.length &lt; EXT_LENGTH &amp;&amp; !(inString(tmpDNIS,specialNumberList,','))) || (isFwd == 'true') || (isDID == 'true') || (state == 'findMe'))"/>  <!-- Caller tried to reach an IP PBX extension. Send call to voicemail app -->
                 <assign name="LISTEN_APP" expr="'listen_voicemail'"/>
                 <send data="'dialog.user.listenApp'" target="session.id" delay="'250ms'"/>
             <else/>

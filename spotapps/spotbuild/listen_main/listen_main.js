@@ -73,7 +73,7 @@ function getAppName(appName, jsonObj) {
     return appName;
 }
 
-function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,licenses,voipChannel,callerID,applicationLabel,faxGateway,pbxObCallerId) {
+function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,sysAccessTime,HTTPcontroller,sipURL,STATcontroller,artifactsDIR,EXT_LENGTH,pstnLength,EXT_PREFIX,EXT_SUFFIX,licenses,voipChannel,callerID,applicationLabel,faxGateway,pbxObCallerId,specialNumberList) {
     if ((typeof(passValues) == 'undefined') || (passValues.length == 0)) {
         var sipFrom = '';
         var tmpVal = callerID.split('<sip:');
@@ -81,7 +81,7 @@ function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,s
             sipFrom = tmpVal[1].split('@')[0];
         else
             sipFrom = tmpVal[0].replace(/"|\s$/g,'');
-        return "{\"application\":\""+appToAccess+"\", \"sipFrom\":\""+sipFrom+"\", \"licenses\":"+licenses+", \"applicationLabel\":\""+applicationLabel+"\", \"voipChannel\":\""+voipChannel+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"faxGateway \":\""+faxGateway+"\", \"pstnLength\": \""+pstnLength+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"organization\": \""+ organization+"\", \"pbxObCallerId\": \""+pbxObCallerId+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
+        return "{\"application\":\""+appToAccess+"\", \"sipFrom\":\""+sipFrom+"\", \"licenses\":"+licenses+", \"applicationLabel\":\""+applicationLabel+"\", \"voipChannel\":\""+voipChannel+"\", \"sysAccessTime\": \""+ sysAccessTime+"\", \"EXT_LENGTH\": \""+EXT_LENGTH+"\", \"EXT_PREFIX\": \""+EXT_PREFIX+"\", \"faxGateway \":\""+faxGateway+"\", \"pstnLength\": \""+pstnLength+"\", \"EXT_SUFFIX\": \""+EXT_SUFFIX+"\", \"sipURL\":\""+sipURL+"\", \"cntrlURL\":\""+cntrlURL+"/api\", \"hostName\":\""+hostName+"\", \"HTTPcontroller\": \""+ HTTPcontroller+"\", \"artifactsDIR\": \""+ artifactsDIR+"\", \"organization\": \""+ organization+"\", \"specialNumberList\": \""+specialNumberList+"\", \"pbxObCallerId\": \""+pbxObCallerId+"\", \"STATcontroller\": \""+ STATcontroller+"\"}";
     }
     else {
         var result = eval("("+passValues+")");
@@ -90,6 +90,7 @@ function extendAppObject(passValues,organization,appToAccess,cntrlURL,hostName,s
         result.sipURL = sipURL;
         result.faxGateway = faxGateway;
 		result.pbxObCallerId = pbxObCallerId;
+		result.specialNumberList = specialNumberList;
         if(!result.sysAccessTime) {        
             result.sysAccessTime = sysAccessTime;
         }

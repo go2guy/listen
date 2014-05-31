@@ -40,6 +40,7 @@
     <var name="LINE_NUMBER" expr="''"/>
     <var name="sessionID" expr="''"/>
     <var name="isDID" expr="'false'"/>
+	<var name="specialNumberList" expr="''"/>
     <!-- End global vars -->
 
     <!-- Constants -->
@@ -63,9 +64,10 @@
        	    <assign name="EXT_LENGTH" expr="getJsonVal(importedValue, 'EXT_LENGTH')"/>
             <assign name="LINE_NUMBER" expr="getNextElement(0,session.id,'.')"/>
 	    	<assign name="DNIS" expr="getJsonVal(importedValue, 'destination')"/> <!-- If call is from attendant or main app, we're trying to use dial logic -->
+			<assign name="specialNumberList" expr="getJsonVal(importedValue, 'specialNumberList')"/>
             <if cond="DNIS.length &gt; 0">
     	    	<assign name="tmpDNIS" expr="DNIS"/>
-                <if cond="tmpDNIS.length &lt; EXT_LENGTH">
+                <if cond="(tmpDNIS.length &lt; EXT_LENGTH) &amp;&amp; !(inString(tmpDNIS,specialNumberList,','))">
                     <assign name="callType" expr="'extension'"/>
                 <else/>
                     <assign name="callType" expr="'external'"/>
@@ -107,10 +109,10 @@
                 <send data="'dialog.user.forward'" target="session.id"/>
             <elseif cond="((tmpDNIS[0]+tmpDNIS[1]) == '#9') &amp;&amp; (tmpANI.length &lt; EXT_LENGTH)"/> <!-- Assume caller is trying to pick up a line that's on hold -->
                 <send data="'dialog.user.pickUpCall'" target="session.id"/>
-            <elseif cond="(tmpDNIS.length &lt; EXT_LENGTH) &amp;&amp; (tmpDNIS[0] != '9')"/>    <!-- Assume this is an internal call between extensions -->
+            <elseif cond="(((tmpDNIS.length &lt; EXT_LENGTH) &amp;&amp; (tmpDNIS[0] != '9')) &amp;&amp; !(inString(tmpDNIS,specialNumberList,',')))"/>    <!-- Assume this is an internal call between extensions -->
                 <assign name="callType" expr="'extension'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
-            <elseif cond="((tmpANI.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH))"/> <!-- Assume this is an external call from an extension -->
+            <elseif cond="(((tmpANI.length &gt; 0) &amp;&amp; (tmpANI.length &lt; EXT_LENGTH)) || (inString(tmpDNIS,specialNumberList,',')))"/> <!-- Assume this is an external call from an extension -->
                 <assign name="callType" expr="'external'"/>
                 <send data="'dialog.user.dial'" target="session.id"/>
             <else/> <!-- Checking if the call is a DID call -->

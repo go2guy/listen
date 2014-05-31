@@ -72,6 +72,7 @@
 	<var name="applicationLabel" expr="''" />
 	<var name="faxGateway" expr="''" /> <!-- Config Fax Server Name -->
 	<var name="pbxObCallerId" expr="''" /> <!-- Config Default Outbound Caller ID -->
+    <var name="specialNumberList" expr="'911,411'" /> <!-- Config Special Numbers -->
 
 
     <!-- Conference Variables -->

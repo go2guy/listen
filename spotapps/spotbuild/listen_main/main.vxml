@@ -63,6 +63,7 @@
 	<var name="SB_UV_applicationLabel"/>
 	<var name="SB_UV_faxGateway"/>
 	<var name="SB_UV_pbxObCallerId"/>
+	<var name="SB_UV_specialNumberList"/>
 
     
     <form id="beginDocument">
@@ -208,6 +209,9 @@
 			</if>
 			<if cond="SB_UV_pbxObCallerId != undefined">
 				<assign name="pbxObCallerId" expr="SB_UV_pbxObCallerId" />
+			</if>
+			<if cond="SB_UV_specialNumberList != undefined">
+				<assign name="specialNumberList" expr="SB_UV_specialNumberList" />
 			</if>
 
             <log>INFO: Completed global variable setup</log>
