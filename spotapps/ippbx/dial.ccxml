@@ -361,7 +361,7 @@
             <if cond="((iiNumber(tmpDNIS)) &amp;&amp; (tmpANI.length &gt; 0))">
                 <assign name="state" expr="'chkBlackList'"/>
                 <var name="destination" expr="tmpDNIS"/>
-                <if cond="tmpDNIS[0] == OUTSIDE_LINE">
+                <if cond="(tmpDNIS[0] == OUTSIDE_LINE) &amp;&amp; !(inString(tmpDNIS,specialNumberList,','))">
                     <assign name="destination" expr="iiSubstr(tmpDNIS,1,-1)"/>
                 </if>
                 <var name="accessNum" expr="tmpANI"/>
@@ -491,7 +491,7 @@
                     <assign name="TIME_OUT" expr="'60'"/>  <!-- Set time out for external non-findme calls -->
                 </if>
                 <if cond="iiNumber(tmpDNIS)">  <!-- Assume we are attempting to reach a pstn number through SIP Trunk -->
-                    <if cond="((tmpDNIS[0] == OUTSIDE_LINE) &amp;&amp; (state != 'findMe'))">
+                    <if cond="((tmpDNIS[0] == OUTSIDE_LINE) &amp;&amp; (state != 'findMe') &amp;&amp; !(inString(tmpDNIS,specialNumberList,',')))">
                         <assign name="tmpDNIS" expr="iiSubstr(tmpDNIS,1,-1)"/>  <!-- Strip off outside line prefix -->
                     </if>
                     <assign name="SIP_SERVER" expr="getJsonVal(importedValue, 'sipURL')"/>
