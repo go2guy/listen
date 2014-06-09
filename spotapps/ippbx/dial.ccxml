@@ -137,7 +137,7 @@
                     // We have a dnis, if the call is going outbound we'll use the caller id, otherwise use ani
                     var DNIS = tmpDnis[1].split('@')
                     if (DNIS.length == 2) {
-                        if (DNIS[0].length > 6) {
+                        if (DNIS[0].length > 7) {
                             // use caller id since we're going outbound
                             ani = 'sip:' + callerID + '@' + sipURL
                         }
