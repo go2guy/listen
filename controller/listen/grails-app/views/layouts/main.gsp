@@ -70,6 +70,41 @@ var listen = {
         }, 1000);
     }
 };
+
+
+    /*
+     @params required title, body
+    */
+    function dialogBox(event, title, body, width, height) {
+        // is there one already open?
+        var isOpen = false;
+        if ($( "#dialog" ).dialog( "isOpen" ) === true) {
+            isOpen = true;
+        }
+        
+        if (isOpen == false) {
+            // Get position
+            var posX = event.pageX-width/2;
+            var posY = event.pageY;
+
+            // Create dialog box
+            $('<div id="dialog" title="'+title+'">'+body+'</div>').appendTo('body');      
+            event.preventDefault();
+            dialogIsOpen = true;
+            $('#dialog').dialog({
+                width: width,
+                height: height,
+                position: [posX, posY],
+                modal: false,
+                resizable: true,
+                dialogClass: 'dialogStyle',
+                close: function(event, ui) {
+                    $('#dialog').remove();
+                    isOpen = false;
+                }
+            });
+        }
+    }
     </script>
 
     <link rel="stylesheet" type="text/css" href="${resource(dir: 'resources/jquery/skin/css/custom-theme', file: 'jquery-ui-1.8.2.custom.css')}">

@@ -4,6 +4,9 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
+import com.interact.listen.pbx.NumberRoute;
+
+
 
 @Secured(['ROLE_CONFERENCE_USER'])
 class ConferencingController {
@@ -202,15 +205,19 @@ class ConferencingController {
           // Create a standard conference - this should probably only be a temp fix for Mimio
           conference = userCreationService.createDefaultConference(user)
         }
-
+        
+        
+        
         params.sort = params.sort ?: 'ani'
         params.order = params.order ?: 'asc'
         params.max = 10
         params.offset = params.offset ?: 0
 
+        
         def participantList = Participant.findAllByConference(conference, params)
         def participantTotal = Participant.countByConference(conference)
-        render(view: 'manage', model: [conference: conference, participantList: participantList, participantTotal: participantTotal])
+        def numberRoutes = NumberRoute.findAllByOrganizationAndDestination(user.organization, "Conferencing")
+        render(view: 'manage', model: [conference: conference, participantList: participantList, participantTotal: participantTotal, numberRoutes: numberRoutes])
     }
 
     def muteCaller = {

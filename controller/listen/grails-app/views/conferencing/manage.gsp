@@ -54,7 +54,8 @@ tr.passive { color: #999999; }
 
 #pins,
 #outdialing,
-#recording {
+#recording,
+#numbers {
     background-color: #EBEEF5;
     border: 1px solid #6DACD6;
     float: right;
@@ -64,6 +65,37 @@ tr.passive { color: #999999; }
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
+}
+
+
+
+.dialogStyle.ui-dialog > .ui-widget-header {
+    background: #EBEEF5;
+    border: 0px;
+}
+
+.dialogStyle.ui-dialog {
+    background: #EBEEF5;
+    border: 1px solid #6DACD6;
+}
+
+#numbersDialog table {
+    border-collapse: separate;
+    border-spacing: 0 3px;
+}
+
+#numbersDialog table tr {
+    background-color: #F6F6F6;
+    border-spacing: 0 3px;
+}
+
+#numbersDialog table td {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+#numbersDialog .title {
+    font-weight:bold;
 }
 
 #pins table {
@@ -132,6 +164,13 @@ tr.passive { color: #999999; }
 #recording a:hover {
     color: #CCCCCC;
 }
+
+#numbers table {
+    margin-left: 65px;
+    margin-right: auto;
+}
+
+
 
 span.recording-status {
     display: inline-block;
@@ -232,7 +271,7 @@ span.recording-status.started {
     <!-- Perhaps the messages could "stack" and remain for about 5-10 seconds, so multiple events happening fast don't get missed -->
     <!-- These should still be written as histories, but perhaps as action histories now instead of having a separate conference history (maybe a subclass of action history that references the conference?)-->
     <!-- Messages could/should indicate channel, e.g. "Admin muted caller X via TUI" -->
-
+ 
     <div id="callers" class="panel">
       <table style="display: ${participantList?.size() > 0 ? 'table' : 'none'};">
         <thead>
@@ -295,6 +334,12 @@ span.recording-status.started {
             <tr><td>No pins configured</td></tr>
           </g:else>
         </tbody>
+      </table>
+    </div>
+    
+    <div id="numbers" class="panel">
+      <table>
+              <tr><td><input type="button" id="numberRoutesDialog" value="Conference Numbers"/></td></tr>
       </table>
     </div>
 
@@ -361,7 +406,7 @@ span.recording-status.started {
     </table>
 
     <script type="text/javascript">
-
+        
 var conference = {
     poll: function() {
         $.ajax({
@@ -550,10 +595,34 @@ var conference = {
         }
     }
 };
-
+ 
 $(document).ready(function() {
     setInterval(conference.poll, 1000);
-
+    
+    $('#numberRoutesDialog').click(function(){
+        var dialog = "<div id='numbersDialog' class='panel'>"+
+            "  <table>"+
+            "    <tbody>"+
+            "      <g:if test='${numberRoutes?.size() > 0}'>"+
+            "          <tr><td class='title'>Number</td><td class='title'>Label</td></tr>"+
+            "        <g:each in='${numberRoutes}' var='number'>"+
+            "          <tr><td>${number.pattern}</td><td>${number.label}</td></tr>"+
+            "        </g:each>"+
+            "      </g:if> <g:else>"+
+            "        <tr><td>No Numbers to Show</td></tr>"+
+            "      </g:else>"+
+            "    </tbody>"+
+            "  </table>"+
+            " </div>";
+        dialogBox(event,
+            '<g:message code="page.conferencing.manage.numberrouting.dialog.title"/>', // title
+            dialog, // body
+            288, // width
+            200 // height
+        );
+    });
+    
+    
     $('#onDemandNumber').keyup(function(e) {
         util.typewatch(function() {
             conference.toggleOutdialButton();
