@@ -776,14 +776,22 @@ class AcdController
 
             for (User thisUser : users)
             {
-                def c = [:]
-                c.id = thisUser.id;
-                c.realName = thisUser.realName;
-                c.type = 'agent';
-                userJson.add(c);
+                if(thisUser.enabled)
+                {
+                    log.debug "User [${thisUser.realName}] is enabled and put on transfer list"
+                    def c = [:]
+                    c.id = thisUser.id;
+                    c.realName = thisUser.realName;
+                    c.type = 'agent';
+                    userJson.add(c);
+                }
+                else
+                {
+                    log.debug "User [${thisUser.realName}] is disabled and excluded from transfer list"
+                }
+
             }
-
-
+}
 
             json.users = userJson;
 
@@ -1053,7 +1061,6 @@ class AcdController
             def agents = [];
 
             List<UserSkill> userSkills = thisSkill.userSkill.sort{it.user.realName};
-//            for(UserSkill thisUserSkill : thisSkill.userSkill)
             for(UserSkill thisUserSkill : userSkills)
             {
                 def userJson = [:];
@@ -1064,6 +1071,12 @@ class AcdController
                     continue;
                 }
 
+                //Don't include users if they are disabled
+                if(thisUserSkill.user.enabled == false)
+                {
+                    log.info("User [${thisUserSkill.user.username}] skipped because it's disabled")
+                    continue;
+                }
                 userJson.agentId = thisUserSkill.user.id;
                 userJson.agent = thisUserSkill.user.realName;
                 userJson.status = thisUserSkill.user.acdUserStatus.AcdQueueStatus;
