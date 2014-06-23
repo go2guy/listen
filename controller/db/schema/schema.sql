@@ -26,6 +26,8 @@ CREATE TABLE `organization` (
   `name` varchar(100) NOT NULL,
   `context_path` varchar(50) NOT NULL,
   `enabled` bit(1) NOT NULL default b'1',
+  `outbound_callid` VARCHAR(50) NOT NULL,
+  `outbound_callid_by_did` BIT(1) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `name_unique_1307548966223` (`name`),
