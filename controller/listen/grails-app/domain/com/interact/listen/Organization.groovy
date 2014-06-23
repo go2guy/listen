@@ -7,6 +7,8 @@ class Organization {
     boolean enabled = true
     Set enabledFeatures = []
     String name
+    String outboundCallid
+    boolean outboundCallidByDid = false
 
     static hasMany = [users: User, enabledFeatures: ListenFeature]
 
@@ -23,6 +25,7 @@ class Organization {
     static constraints = {
         contextPath blank: false, maxSize: 50, unique: true, matches: '^[a-z0-9_-]+$', notEqual: 'custodian'
         name blank: false, maxSize: 100, unique: true // TODO for max constraints, add maxlengths to the text fields on the views
+        outboundCallid blank: false, maxSize: 10, unique: false, matches: '^[0-9]+$'
     }
 
     String toString() {

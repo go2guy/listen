@@ -17,6 +17,12 @@
         <label for="contextPath"><g:message code="organization.contextPath.label"/></label>
         <g:textField name="contextPath" value="${fieldValue(bean: organization, field: 'contextPath')}" maxlength="50" class="${listen.validationClass(bean: organization, field: 'contextPath')}"/>
 
+        <label for="outboundCallid"><g:message code="organization.outboundCallid.label"/></label>
+        <g:textField name="outboundCallid" value="${fieldValue(bean: organization, field: 'outboundCallid')}" maxlength="10" class="${listen.validationClass(bean: organization, field: 'outboundCallid')}"/>
+        
+        <input type="checkbox" id="outboundCallidByDid" name="outboundCallidByDid" value="${true}" ${organization?.outboundCallidByDid ? "checked=checked" : ""}/>
+        <g:message code="organization.outboundCallidByDid.label"/>
+        
         <h3><g:message code="page.organization.create.features.header"/></h3>
 
         <g:each in="${enableableFeatures}" var="feature">

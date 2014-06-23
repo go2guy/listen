@@ -30,15 +30,17 @@ class CallRoutingController {
         def result = callRoutingService.routeCall(ani, dnis)
 
         if(!result) {
+            log.debug "route call without result"
             response.sendError(HSR.SC_NOT_FOUND)
-        }
-
-        log.debug "routeCall to [${result?.application}]"
-        
-        render(contentType: 'application/json') {
-            application = result.application
-            organization = {
-                id = result.organization.id
+            render(contentType: 'application/json') {}
+        } else {
+            log.debug "route call with result [${result}]"
+            
+            render(contentType: 'application/json') {
+                application = result?.application
+                organization = {
+                    id = result?.organization?.id
+                }
             }
         }
     }

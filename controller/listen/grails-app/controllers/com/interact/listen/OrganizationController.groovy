@@ -6,7 +6,7 @@ import com.interact.listen.pbx.NumberRoute
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
-//import grails.plugins.springsecurity.Secured
+import org.apache.log4j.Logger
 
 @Secured(['ROLE_CUSTODIAN'])
 class OrganizationController {
@@ -96,6 +96,7 @@ class OrganizationController {
     }
 
     def edit = {
+        log.debug "Edit organization entry"
         def organization = Organization.get(params.id)
         if(!organization) {
             flash.errorMessage = 'Organization not found'
@@ -103,6 +104,14 @@ class OrganizationController {
             return
         }
 
+        if(organization?.outboundCallidByDid)
+        {
+            log.debug "Allow DID call ID enabled for organization"
+        }
+        else
+        {
+            log.debug "DID call ID not enabled for organization"
+        }
         render(view: 'edit', model: [organization: organization, enableableFeatures: licenseService.enableableFeatures()])
     }
 
@@ -135,6 +144,7 @@ class OrganizationController {
     }
 
     def routing = {
+        log.debug "Routing organization entry"
         params.max = Math.min(params.max ? params.int('max') : 100, 100)
         params.sort = params.sort ?: 'organization'
         params.order = params.order ?: 'asc'
@@ -152,11 +162,21 @@ class OrganizationController {
     }
 
     def save = {
-        // TODO this should all probably be in a service
+        log.debug "Save organization entry"
+
         Organization.withTransaction { status ->
             def organization = new Organization()
-            organization.properties['name', 'contextPath'] = params
+            organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid'] = params
 
+            if(organization?.outboundCallidByDid){
+                log.debug "Outbound call id by DID checked"
+                organization.outboundCallidByDid=true
+            }
+            else {
+                log.debug "Outbound call id by DID not checked"
+                organization.outboundCallidByDid=false
+            }
+            
             params.each { k, v ->
                 if(k.startsWith("enabledFeature-")) {
                      organization.addToEnabledFeatures(ListenFeature.valueOf(v))
@@ -201,6 +221,7 @@ class OrganizationController {
     }
 
     def update = {
+        log.debug "Update organization entry [${params}]"
         def organization = Organization.get(params.id)
         if(!organization) {
             flash.errorMessage = 'Organization not found'
@@ -209,8 +230,21 @@ class OrganizationController {
         }
 
         // TODO check entity version?
-        organization.properties['name', 'contextPath'] = params
 
+        if(!params?.outboundCallidByDid){
+            organization.outboundCallidByDid=false
+        }
+
+        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid'] = params
+        
+        if(organization?.outboundCallidByDid){
+            log.debug "Outbound call id by DID checked [${organization?.outboundCallidByDid}]"
+            organization.outboundCallidByDid=true
+        }
+        else {
+            log.debug "Outbound call id by DID NOT checked [${organization?.outboundCallidByDid}]"
+            organization.outboundCallidByDid=false
+        }
         organization.enabledFeatures = []
         params.each { k, v ->
             if(k.startsWith("enabledFeature-")) {
@@ -250,3 +284,4 @@ class OrganizationController {
         }
     }
 }
+

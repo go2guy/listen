@@ -96,6 +96,7 @@ class SpotApiController {
     def messageLightService
     def statWriterService
     def voicemailNotificationService
+    def callRoutingService
 
     /**
      * Add an acd call to the queue.
@@ -684,8 +685,12 @@ class SpotApiController {
             return
         }
 
+        def outboundCallid = callRoutingService.determineOutboundCallId(user)
+        log.debug "Returned value from outbound callid check [${outboundCallid}]"
+        
         render(contentType: 'application/json') {
             delegate.canDial = user.canDial(destination)
+            delegate.outboundCallid = outboundCallid 
         }
     }
 
