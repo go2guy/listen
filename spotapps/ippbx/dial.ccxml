@@ -387,6 +387,7 @@
                 <assign name="promptList" expr="'PsorryExtension|V' + tmpANI +'|' + 'PisNotAssigned|'"/>
                 <dialogstart dialogid="dialogID" src="'file:'+APP_PATH+'playAudio.vxml'" namelist="promptList"/>
             <elseif cond="((evt.values.status == 'Failure') || (evt.values.result == 'true'))"/>
+				<assign name="OUTBOUND_PBX_CALLERID" expr="evt.values.outboundCallerId"/>
                 <send data="'dialog.user.call'" target="session.id"/>
                <!-- <if cond="((tmpDNIS &lt; EXT_LENGTH) &amp;&amp; (ip.length == 0))">
                      Assume this is a pbx call. Get the IP address associated with DNIS 
@@ -516,6 +517,8 @@
 				<var name="pbxObCallerId" expr="getJsonVal(importedValue, 'pbxObCallerId')"/>
 				<if cond="inString(tmpDNIS,specialNumberList,',')">
 					<assign name="CALL_ANI" expr="'sip:'+pbxObCallerId+'@'+SIP_SERVER"/>
+				<elseif cond="OUTBOUND_PBX_CALLERID.length &gt; 0"/>
+					<assign name="CALL_ANI" expr="'sip:'+OUTBOUND_PBX_CALLERID+'@'+SIP_SERVER"/>
 				<else/>
 					<assign name="CALL_ANI" expr="setANI(ANI, CALL_DNIS, pbxObCallerId, SIP_SERVER)"/>
 				</if>

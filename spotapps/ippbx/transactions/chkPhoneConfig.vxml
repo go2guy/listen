@@ -10,6 +10,7 @@
     <var name="accessNum"/>
     <var name="whichRsrc"/>
     <var name="destination"/>
+	<var name="outboundCallerId" expr="''"/>
 
 	<form id="beginDocument">
 		<block>
@@ -90,7 +91,9 @@
         <!-- Check Results -->
         <block>
             <log>INFO: Entered chkResult</log>
-            <assign name="result" expr="blkListResult(result)"/>
+			<var name="tmpVal" expr="result"/>
+            <assign name="result" expr="blkListResult(tmpVal)"/>
+			<assign name="outboundCallerId" expr="getObCallId(tmpVal)"/>
             <goto next="#exit"/>
         </block>
     </form>
@@ -110,7 +113,7 @@
 
     <form id="exit">
         <block>
-            <exit namelist="status result reason"/>
+            <exit namelist="status result outboundCallerId reason"/>
         </block>
     </form>
 
@@ -140,6 +143,15 @@
                 else
                     return 'false';
             }
+			
+			function getObCallId(jsonObj) {
+				var result = '';
+				var tmpVal = getJsonVal(jsonObj, 'canDial');
+				if(tmpVal) {
+					result = getJsonVal(jsonObj, 'outboundCallid');
+				}
+				return result;
+			}
 
             function getSubID(result) {
                 var tmpObj = getResultsKeyValue(result, 0, 'subscriber');
