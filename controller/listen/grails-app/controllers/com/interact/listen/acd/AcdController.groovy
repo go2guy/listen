@@ -791,7 +791,6 @@ class AcdController
                 }
 
             }
-}
 
             json.users = userJson;
 
