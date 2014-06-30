@@ -12,4 +12,8 @@ class Voicemail extends InboxMessage {
         ani nullable: true, blank: false
         audio nullable: true
     }
+    
+    static mapping = {
+        audio cascade: 'delete'
+    }
 }

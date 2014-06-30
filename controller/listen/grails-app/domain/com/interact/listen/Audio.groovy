@@ -19,8 +19,18 @@ class Audio {
     }
 
     def afterDelete() {
+        File mp3 = mp3File();
         if(!file.delete()) {
             log.error("Could not delete Audio [${file.absolutePath}] from disk")
+        } else {
+            log.debug("Audio file [${file.absolutePath}] successfully deleted from disk")
+            if (mp3.exists()) {
+                if (!mp3.delete()) {
+                    log.error("Could not delete Audio [${mp3.absolutePath}] from disk")
+                } else {
+                    log.debug("Audio file [${file.absolutePath}] successfully deleted from disk")
+                }
+            }
         }
     }
 
