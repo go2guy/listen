@@ -17,7 +17,7 @@ class Audio {
         description nullable: true, blank: false, maxSize: 200
         transcription blank: true, maxSize: 4000
     }
-
+    
     def afterDelete() {
         File mp3 = mp3File();
         if(!file.delete()) {
