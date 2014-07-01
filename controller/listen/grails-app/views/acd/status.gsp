@@ -108,7 +108,7 @@
             return 'N/A';
         }
         var startTime = new Date(start);
-        var endTime = new Date();
+        var endTime = new Date(end);
 
         difference = endTime.getTime() - startTime.getTime();
 
