@@ -19,7 +19,8 @@ final class FilterUtil
         if(controller.equals('administration') && action.equals('callsData')) {
             return false
         }
-        if(controller.equals('acd') && ['polledCalls', 'pollQueue', 'pollStatus'].contains(action)) {
+        if(controller.equals('acd') && ['polledCalls', 'pollQueue', 'pollStatus','agentStatus','status','callQueue','callHistory'].contains(action))
+        {
             return false
         }
         if(controller.equals('profile') && ['index', 'settings','phones'].contains(action)) {

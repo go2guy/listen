@@ -7,7 +7,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `organization` WRITE;
-INSERT INTO `organization` VALUES (1,0,'Mimio','mimio','');
+INSERT INTO `organization` (id,version,name,context_path,enabled,outbound_callid,outbound_callid_by_did) VALUES (1,0,'Mimio','mimio',1,'4024768786',1);
 UNLOCK TABLES;
 
 

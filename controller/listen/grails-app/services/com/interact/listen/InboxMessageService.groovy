@@ -37,8 +37,8 @@ class InboxMessageService {
         user = springSecurityService.getCurrentUser()
         UserSkill.findAllByUser(user).each() { userSkill ->
           voicemailUser = AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname)
-          if ( voicemailUser ) {
-            log.debug "InboxMessageService.newAcdMessageCount(): Getting new voicemail message count for user[${AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname).username}]"
+          if ( voicemailUser )
+          {
             count += InboxMessage.countByOwnerAndIsNew(AcdService.getVoicemailUserBySkillname(userSkill.skill.skillname), true)
           }
           else {
