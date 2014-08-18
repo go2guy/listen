@@ -296,7 +296,7 @@ class SpotCommunicationService
         params.put(CUSTOM_EVENT, event);
         if(sessionId != null)
         {
-            params.put(SESSION_ID, sessionId)
+            params.put(SESSION_ID, sessionId);
         }
         params.put(ORIGIN, LISTEN_ORIGIN);
         def argsJson = args as JSON
@@ -340,18 +340,19 @@ class SpotCommunicationService
         {
             def httpClient = new HttpClientImpl()
 
-            httpClient.post(thisSpotUrl, params);
+//            httpClient.post(thisSpotUrl, params);
+            httpClient.get(thisSpotUrl, params);
 
             status = httpClient.getResponseStatus();
             if(!isSuccessStatus(status))
             {
-                failed << it
+                failed << thisSpotUrl;
             }
         }
         if(failed.size() > 0)
         {
             throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System(s) at [" +
-                    (failed.collect { it.uri }.join(',')) + "]", status);
+                    (failed.join(',')) + "]", status);
         }
 
         if(log.isDebugEnabled())
