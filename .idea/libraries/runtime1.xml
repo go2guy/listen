@@ -1,0 +1,43 @@
+<component name="libraryTable">
+  <library name="runtime1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/hsqldb.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/log4j-1.2.16.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/antlr-2.7.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/liquibase-1.9.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/httpcore-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/httpclient-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/jta-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/slf4j-api-1.5.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/commons-io-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/commons-lang-2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/sitemesh-2.4.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/commons-pool-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/commons-dbcp-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/log4j-1.2.15.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/json_simple-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/license-client-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/commons-codec-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/hibernate3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/mail.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/realize-client-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/activation.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/httpmime-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/javassist-3.9.0.GA.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/slf4j-log4j12-1.5.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/mysql-connector-java-5.1.13-bin.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/joda-time-hibernate-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/dom4j-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/commons-collections-3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/httpcore-nio-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/joda-time-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/quartz-all-1.8.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/sqlitejdbc-v056.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/commons-logging-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/c3p0-0.9.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/runtime/jpa-api-2.0-cr-1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="lib-jetty">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib-jetty/jsp-api-2.1-glassfish-2.1.v20091210.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib-jetty/jsp-2.1-glassfish-2.1.v20091210.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib-jetty/servlet-api-2.5-20081211.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib-jetty/core-3.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib-jetty/jetty-util-6.1.24.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib-jetty/ant-1.6.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib-jetty/jetty-6.1.24.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

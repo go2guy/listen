@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="build1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/yuicompressor-2.4.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/jargs-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/junit-4.8.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/cobertura.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/findbugs.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/org.springframework.test-3.0.1.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/mockito-all-1.8.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/jakarta-oro-2.0.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/rhino-1.6R7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/org.springframework.core-3.0.1.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/checkstyle-all-5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/asm-3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/asm-tree-3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/lib/build/ant-contrib-1.0b3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

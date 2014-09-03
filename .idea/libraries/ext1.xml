@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="ext1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_tcp.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_junit.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_mail.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_ldap.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_components.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_report.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_functions.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_http.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_jms.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_core.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_java.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_monitors.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_jdbc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/ext/ApacheJMeter_ftp.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

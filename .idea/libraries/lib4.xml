@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="lib4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/controller/src/build/java/javancss/lib/ccl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/src/build/java/javancss/lib/javancss.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/src/build/java/javancss/lib/jhbasic.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
