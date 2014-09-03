@@ -25,6 +25,12 @@
       <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/background-thread-1.6/src/java" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/background-thread-1.6/grails-app/services" isTestSource="false" />
     </content>
+    <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/cache-1.0.1/grails-app/taglib" isTestSource="false" />
+    </content>
     <content url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/hibernate-3.6.10.4">
       <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/hibernate-3.6.10.4/src/java" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/hibernate-3.6.10.4/src/groovy" isTestSource="false" />
