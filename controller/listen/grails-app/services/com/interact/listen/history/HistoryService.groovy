@@ -99,6 +99,12 @@ class HistoryService {
               description: "Changed new conference PIN length from [${from}] to [${configuration.pinLength}]")
     }
 
+    void changedOrganizationExtLength(Organization organization, def from) {
+        write(action: Action.CHANGED_ORGANIZATION_EXT_LENGTH,
+                description: "Changed organization extension length from [${from}] to [${organization.extLength}]",
+                onOrganization: organization)
+    }
+
     void changedNewVoicemailEmailAddress(VoicemailPreferences preferences, def from) {
         write(action: Action.CHANGED_NEW_VOICEMAIL_EMAIL_ADDRESS,
               description: "Changed new voicemail email address from [${from}] to [${preferences.emailNotificationAddress}]",
@@ -551,7 +557,12 @@ class HistoryService {
         {
             def history = new ActionHistory(map)
             history.byUser = map.containsKey('byUser') ? map.byUser : currentUser()
-            history.organization = history.byUser?.organization ?: history.onUser?.organization
+            if (map.containsKey('onOrganization')){
+                history.organization = map.onOrganization
+            } else {
+                history.organization = history.byUser?.organization ?: history.onUser?.organization
+            }
+
             history.channel = currentChannel()
             if(!(history.validate() && history.save())) {
                 log.error('Unable to save ActionHistory: ' + history.errors.allErrors)

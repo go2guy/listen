@@ -13,7 +13,6 @@ import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import org.joda.time.LocalDateTime
 import org.joda.time.Period
-import org.apache.log4j.Logger
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
@@ -245,7 +244,7 @@ class AdministrationController {
             conferencing = new ConferencingConfiguration(organization: organization)
         }
 
-        render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
+        render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
     }
 
     def deleteDirectInwardDialNumber = {
@@ -666,6 +665,7 @@ class AdministrationController {
     }
 
     def saveConfiguration = {
+        log.debug "Saving administration configuration [${params}]"
         def organization = authenticatedUser.organization
 
         def transcription = TranscriptionConfiguration.findByOrganization(organization)
@@ -676,28 +676,29 @@ class AdministrationController {
         def oldTranscriptionIsEnabled = transcription.isEnabled
         def oldTranscriptionPhoneNumber = transcription.phoneNumber
         if(licenseService.canAccess(ListenFeature.VOICEMAIL) && licenseService.canAccess(ListenFeature.TRANSCRIPTION)) {
-            // using .properties = params['transcription'] didnt work here, resorting to bindData()
-            bindData(transcription, params['transcription'], 'isEnabled')
-            bindData(transcription, params['transcription'], 'phoneNumber')
+            bindData(transcription, params['transcription'], [include: ['isEnabled']])
+            bindData(transcription, params['transcription'], [include: ['phoneNumber']])
         }
-        
+
         def afterHours = AfterHoursConfiguration.findByOrganization(organization)
         if(!afterHours) {
             afterHours = new AfterHoursConfiguration(organization: organization)
         }
 
-        def originalMobilePhone = afterHours.mobilePhone
-        def originalAlternateNumber = afterHours.alternateNumber
-        def originalRealizeUrl = afterHours.realizeUrl
-        def originalRealizeAlertName = afterHours.realizeAlertName
-        if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
+        if(licenseService.canAccess(ListenFeature.AFTERHOURS)) {
+            log.debug "After hourse is licensed, saving configuration"
+            def originalMobilePhone = afterHours.mobilePhone
+            def originalAlternateNumber = afterHours.alternateNumber
+            def originalRealizeUrl = afterHours.realizeUrl
+            def originalRealizeAlertName = afterHours.realizeAlertName
+
             if(params['afterHours.mobilePhone.id'] == '') {
                 afterHours.mobilePhone = null
             } else {
-                bindData(afterHours, params['afterHours'], 'mobilePhone')
+                bindData(afterHours, params['afterHours'], [include: ['mobilePhone']])
             }
-            bindData(afterHours, params['afterHours'], 'realizeAlertName')
-            bindData(afterHours, params['afterHours'], 'realizeUrl')
+            bindData(afterHours, params['afterHours'], [include: ['realizeAlertName']])
+            bindData(afterHours, params['afterHours'], [include: ['realizeUrl']])
             if(params['afterHours'].alternateNumber?.trim() == '') {
                 afterHours.alternateNumber = ''
             } else {
@@ -712,16 +713,46 @@ class AdministrationController {
 
         def originalPinLength = conferencing.pinLength
         if(licenseService.canAccess(ListenFeature.CONFERENCING)) {
+            log.debug "Conferencing is licensed, saving configuration"
             if(params['conferencing'].pinLength == '' || !params['conferencing'].pinLength.matches('^[0-9]*$')) {
                 flash.errorMessage = message(code: 'conferencingConfiguration.pattern.matches.invalid')
-                render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])   
+                render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
             }
-            bindData(conferencing, params['conferencing'], 'pinLength')
+            bindData(conferencing, params['conferencing'], [include: ['pinLength']])
+        }
+
+        def originalExtLength = organization.extLength
+        if(licenseService.canAccess(ListenFeature.IPPBX)) {
+            log.debug "IPPBX is licensed, saving configuration [${params['organization'].extLength}]"
+            if(params['organization'].extLength == '' || !params['organization'].extLength.matches('^[0-9]*$')) {
+                flash.errorMessage = message(code: 'organizationConfiguration.extLength.pattern.matches.invalid')
+                render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
+            }
+            bindData(organization, params['organization'], [include: ['extLength']])
         }
 
         // TODO use a transaction
-        if(transcription.validate() && transcription.save() && afterHours.validate() && afterHours.save() && conferencing.validate() && conferencing.save()) {
+        if(licenseService.canAccess(ListenFeature.AFTERHOURS) && afterHours.validate() && afterHours.save()) {
+            log.debug "Saving after hourse configuration successful"
+            if(originalMobilePhone != afterHours.mobilePhone) {
+                historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
+            }
 
+            if(originalAlternateNumber != afterHours.alternateNumber) {
+                realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
+                historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
+            }
+
+            if(originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
+                historyService.changedRealizeConfiguration(afterHours)
+            }
+        } else if (licenseService.canAccess(ListenFeature.AFTERHOURS)) {
+            log.debug "Didn't save the after hours configuration"
+            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
+        }
+
+        if(transcription.validate() && transcription.save() && conferencing.validate() && conferencing.save() && organization.validate() && organization.save()) {
+            log.debug "Saving transcription, conferencing, and organization configuration successful"
             if(licenseService.canAccess(ListenFeature.VOICEMAIL) && licenseService.canAccess(ListenFeature.TRANSCRIPTION)) {
                 boolean wasJustEnabled = false
                 if(oldTranscriptionIsEnabled != transcription.isEnabled) {
@@ -738,31 +769,23 @@ class AdministrationController {
                 }
             }
 
-            if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
-                if(originalMobilePhone != afterHours.mobilePhone) {
-                    historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
-                }
-
-                if(originalAlternateNumber != afterHours.alternateNumber) {
-                    realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
-                    historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
-                }
-
-                if(originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
-                    historyService.changedRealizeConfiguration(afterHours)
-                }
-            }
-
             if(licenseService.canAccess(ListenFeature.CONFERENCING)) {
                 if(originalPinLength != conferencing.pinLength) {
                     historyService.changedNewConferencePinLength(conferencing, originalPinLength)
                 }
             }
 
-            flash.successMessage = message(code: 'default.saved.message')
+            if(licenseService.canAccess(ListenFeature.IPPBX)) {
+                if(originalExtLength != organization.extLength) {
+                    historyService.changedOrganizationExtLength(organization, originalExtLength)
+                }
+            }
+
+            flash.successMessage = message(code: 'organizationConfiguration.saved.message')
             redirect(action: 'configuration')
         } else {
-            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
+            log.debug "Didn't save any of the configuration"
+            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
         }
     }
 

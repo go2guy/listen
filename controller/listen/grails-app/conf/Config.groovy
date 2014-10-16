@@ -175,6 +175,7 @@ com.interact.listen.ivr = ''
 com.interact.listen.spotUrl = 'http://localhost/spot'
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
 com.interact.listen.conferencing.defaultPinLength = 6
+com.interact.listen.organization.defaultExtLength = 3
 
 // After Hours Configuration
 com.interact.listen.afterHours.username = 'After Hours'

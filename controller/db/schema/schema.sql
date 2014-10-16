@@ -28,6 +28,7 @@ CREATE TABLE `organization` (
   `enabled` bit(1) NOT NULL default b'1',
   `outbound_callid` VARCHAR(50) NOT NULL,
   `outbound_callid_by_did` BIT(1) NOT NULL,
+  `ext_length` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `name_unique_1307548966223` (`name`),
