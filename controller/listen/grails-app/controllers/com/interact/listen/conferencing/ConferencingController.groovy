@@ -5,8 +5,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
 import com.interact.listen.pbx.NumberRoute;
-
-
+import org.apache.log4j.Logger
 
 @Secured(['ROLE_CONFERENCE_USER'])
 class ConferencingController {
@@ -309,11 +308,15 @@ class ConferencingController {
     }
 
     def invite = {
+        log.debug "Save conferencing invite with params [${params}]"
+
         def invitation = invitationService.create(params)
         if(invitation.hasErrors()) {
+            log.debug "Invitation has errors, did not save"
             render(view: 'invitations', model: [scheduledConference: invitation, scheduleLists: scheduleLists()])
         } else {
             flash.successMessage = 'Conference has been scheduled and email invitations have been sent'
+            log.debug "Invitation was saved"
             redirect(action: 'invitations')
         }
     }
