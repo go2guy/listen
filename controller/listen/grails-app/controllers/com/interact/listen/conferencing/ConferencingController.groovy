@@ -177,8 +177,15 @@ class ConferencingController {
             return
         }
 
-        spotCommunicationService.dropParticipant(participant)
-        flash.successMessage = 'Caller dropped'
+        if(spotCommunicationService.dropParticipant(participant)){
+            flash.successMessage = 'Caller dropped'
+            log.debug("We've drop the participant [${participant.id}]")
+        } else {
+            // something went wrong and we couldn't drop the participant, go ahead and directly delete the entry from the database
+            log.error("We've failed to drop the participant [${participant.id}], directly delete from database.")
+            participant.delete()
+        }
+
         redirect(action: 'manage')
     }
 
