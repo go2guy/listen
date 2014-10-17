@@ -34,6 +34,7 @@ class ExtensionService {
         
         log.debug "Now actually create the extension for [${params}]"
         def extension = new Extension(params)
+        extension.extLength = params?.extLength
 
         if(extension.validate() && extension.save()) {
             log.debug "We've create a new extension now cloud to device"

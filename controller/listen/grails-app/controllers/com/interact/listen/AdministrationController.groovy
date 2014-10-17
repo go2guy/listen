@@ -165,6 +165,10 @@ class AdministrationController {
     }
 
     def addExtension = {
+        def organization = authenticatedUser.organization
+
+        params.extLength = organization.extLength
+
         def extension = extensionService.create(params)
         if(extension.hasErrors()) {
             def model = phonesModel()
@@ -932,7 +936,8 @@ class AdministrationController {
             redirect(action: 'phones')
             return
         }
-
+        def organization = authenticatedUser.organization
+        extension.extLength = organization.extLength
         extension = extensionService.update(extension, params)
         if(extension.hasErrors()) {
             def model = phonesModel()
