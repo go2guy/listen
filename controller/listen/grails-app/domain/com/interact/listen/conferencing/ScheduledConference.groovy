@@ -18,7 +18,7 @@ class ScheduledConference {
     int sequence = 0
 
     static constraints = {
-        activeCallerAddresses maxSize: 2048
+        activeCallerAddresses nullable: true, blank: true, maxSize: 2048
         emailBody maxSize: 2048
         emailSubject blank: false
         ends validator: { val, obj ->
@@ -27,7 +27,12 @@ class ScheduledConference {
             }
             return 'before.starts'
         }
-        passiveCallerAddresses maxSize: 2048
+        passiveCallerAddresses nullable: true, blank: true, maxSize: 2048, validator: {val, obj ->
+            if(obj.activeCallerAddresses == null && val == null){
+                return ['notAllNulls']
+            }
+        }
+
         uid nullable: true
     }
 
@@ -61,7 +66,7 @@ class ScheduledConference {
 
     private Set stringToSet(def commaDelimited, boolean includeOrganizer = true) {
         def s = [] as Set
-        commaDelimited.split(/[,\s]/).each {
+        commaDelimited?.split(/[,\s]/).each {
             def v = it.trim()
             if(v.length() > 0) {
                 if(includeOrganizer || v != scheduledBy.emailAddress) {

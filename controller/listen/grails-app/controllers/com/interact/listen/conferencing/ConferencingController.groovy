@@ -400,6 +400,7 @@ class ConferencingController {
     }
 
     def unmuteCaller = {
+        log.debug("Unmute caller")
         def participant = Participant.get(params.id)
         if(!participant) {
             flash.errorMessage = 'Participant not found'
@@ -430,6 +431,7 @@ class ConferencingController {
 
     def updateInvitation = {
         def invitation = ScheduledConference.get(params.id)
+
         if(!invitation) {
             flash.errorMessage = 'Invitation not found'
             redirect(action: 'invitations')

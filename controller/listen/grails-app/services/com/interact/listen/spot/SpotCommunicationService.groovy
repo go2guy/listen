@@ -17,7 +17,7 @@ class SpotCommunicationService {
     def dropParticipant(def participant) throws IOException, SpotCommunicationException {
         def success = false
         try {
-            log.error("Attempting to drop participant [${participant.id}]")
+            log.debug("Attempting to drop participant [${participant.id}]")
             sendConferenceParticipantEvent("DROP", participant);
             statWriterService.send(Stat.SPOT_CONF_EVENT_DROP)
             success = true
