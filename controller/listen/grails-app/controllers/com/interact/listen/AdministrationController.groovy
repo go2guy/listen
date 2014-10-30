@@ -9,6 +9,7 @@ import com.interact.listen.license.ListenFeature
 import com.interact.listen.acd.*
 import com.interact.listen.attendant.action.RouteToAnACDAction
 import com.interact.listen.pbx.Extension
+import com.interact.listen.pbx.SipPhone
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import org.joda.time.LocalDateTime
@@ -165,18 +166,35 @@ class AdministrationController {
     }
 
     def addExtension = {
+        log.debug "addExtension with params [${params}]"
         def organization = authenticatedUser.organization
 
-        params.extLength = organization.extLength
+        def extInfo = extensionService.create(params, organization)
 
-        def extension = extensionService.create(params)
-        if(extension.hasErrors()) {
+        if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
+            log.debug "addExtension failed to be added"
+            log.debug("extInfo extension errors [${extInfo?.extension?.getErrors()}]")
+            log.debug("extInfo sipPhone errors [${extInfo?.sipPhone?.getErrors()}]")
+
+            if(extInfo?.sipPhone){
+                log.debug("Extension has sipPhone parameters [${extInfo?.sipPhone?.username}]")
+            } else {
+                log.debug("Extension does not have sipPhone parameters, use params [${params?.username}]")
+                extInfo.sipPhone = new SipPhone(params)
+                extInfo.sipPhone.passwordConfirm = params?.passwordConfirm
+            }
+
             def model = phonesModel()
-            model.newExtension = extension
-            render(view: 'phones', model: model)
+            model.newExtension = extInfo.extension
+            model.newSipPhone = extInfo.sipPhone
+
+            render(view: 'listPhones', model: model)
+        } else if (!extInfo?.extension || !extInfo?.sipPhone) {
+            log.debug("Some error occurred while attempting to create extension")
         } else {
+            log.debug "addExtension was successfully added"
             flash.successMessage = message(code: 'extension.created.message')
-            redirect(action: 'phones')
+            redirect(action: 'listPhones')
         }
     }
 
@@ -309,13 +327,13 @@ class AdministrationController {
         def extension = Extension.get(params.id)
         if(!extension) {
             flash.errorMessage = message(code: 'extension.notFound.message')
-            redirect(action: 'phones')
+            redirect(action: 'listPhones')
             return
         }
 
         extensionService.delete(extension)
         flash.successMessage = message(code: 'extension.deleted.message')
-        redirect(action: 'phones')
+        redirect(action: 'listPhones')
     }
 
     def deleteRestriction = {
@@ -604,9 +622,13 @@ class AdministrationController {
     def outdialing = {
         render(view: 'outdialing', model: outdialingModel())
     }
-    
+
+    def listPhones = {
+        render(view: 'listPhones', model: phonesModel())
+    }
+
     def phones = {
-        render(view: 'phones', model: phonesModel())
+        render(view: 'listPhones', model: phonesModel())
     }
 
     // ajax
@@ -839,6 +861,28 @@ class AdministrationController {
         }
     }
 
+    def editExtension = {
+        log.debug "Edit extension with params [${params}]"
+
+        def extension = Extension.get(params?.id)
+        if (!extension) {
+            flash.errorMessage = message(code: 'extension.notFound.message')
+            redirect(action: 'listPhones')
+            return
+        }
+
+        log.debug("We want to edit extension number [${extension?.number}] id [${extension?.id}]")
+
+        def sipPhone = extension?.sipPhone
+        if (sipPhone) {
+            log.debug("Extension number [${extension.number}] has username [${sipPhone?.username}]")
+        } else {
+            log.debug("Extension number [${extension.number}] doesn't have sipPhone entry")
+        }
+
+        render(view: 'editPhone', model: [extension: extension, sipPhone: sipPhone ])
+    }
+
     def updateException = {
         def exception = OutdialRestrictionException.get(params.id)
         if(!exception) {
@@ -930,23 +974,32 @@ class AdministrationController {
     }
 
     def updateExtension = {
+        log.debug("updateExtension with params [${params}]")
         def extension = Extension.get(params.id)
         if(!extension) {
+            log.error("updateExtension with params failed [${params}]")
             flash.errorMessage = message(code: 'extension.notFound.message')
-            redirect(action: 'phones')
+            redirect(action: 'listPhones')
             return
         }
+
         def organization = authenticatedUser.organization
-        extension.extLength = organization.extLength
-        extension = extensionService.update(extension, params)
-        if(extension.hasErrors()) {
-            def model = phonesModel()
-            model.updatedExtension = extension
-            render(view: 'phones', model: model)
+        def extInfo = extensionService.update(params, extension, organization)
+        if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
+            log.debug "addExtension failed to be added"
+            log.debug("extInfo extension errors [${extInfo?.extension?.getErrors()}]")
+            log.debug("extInfo sipPhone errors [${extInfo?.sipPhone?.getErrors()}]")
+            def sipPhone = extInfo?.sipPhone
+            log.debug("extInfo extension ownerid [${extension.owner}]")
+            render(view: 'editPhone', model: [extension: extension, sipPhone: sipPhone ])
+            //render(view: 'editPhone', model: [extension: extInfo?.extension, sipPhone: extInfo?.sipPhone ])
         } else {
+            log.debug("updateExtension was successful")
             flash.successMessage = message(code: 'extension.updated.message')
-            redirect(action: 'phones')
+            redirect(action: 'listPhones')
         }
+
+        return
     }
 
     def updateRestriction = {
@@ -1010,6 +1063,13 @@ class AdministrationController {
                 eq('organization', organization)
             }
         }
+
+        extensionList.each { ext ->
+            ext.sipPhone.each { sipP ->
+                log.debug("Extension [${ext.number}] IP [${sipP?.ip}] Date Registered [${sipP?.dateRegistered}]")
+            }
+        }
+
         def extensionTotal = Extension.createCriteria().get {
             projections {
                 count('id')

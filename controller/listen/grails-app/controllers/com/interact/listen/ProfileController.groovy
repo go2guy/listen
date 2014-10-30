@@ -235,11 +235,12 @@ class ProfileController {
             redirect(action: 'phone')
             return
         }
+        def organization = authenticatedUser.organization
 
-        extension = extensionService.update(extension, params)
-        if(extension.hasErrors()) {
+        def extInfo = extensionService.update(params, extension, organization)
+        if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
             def model = phonesModel()
-            model.updatedExtension = extension
+            model.updatedExtension = extInfo.extension
             render(view: 'phones', model: model)
         } else {
             flash.successMessage = 'Extension updated'

@@ -15,7 +15,7 @@ class MessageLightService {
 
     void toggle(Extension extension) {
         boolean hasNew = Voicemail.countByOwnerAndIsNew(extension.owner, true) > 0
-        toggle(extension.number, extension.ip, hasNew)
+        toggle(extension.number, extension?.sipPhone.ip, hasNew)
     }
 
     void toggle(def number, def ip, boolean on) {

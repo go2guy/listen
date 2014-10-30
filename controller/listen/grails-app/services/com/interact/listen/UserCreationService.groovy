@@ -50,7 +50,7 @@ class UserCreationService {
                     owner: user
                 ]
                 log.debug "Calling extension service create"
-                def extension = extensionService.create(p, false)
+                def extension = extensionService.create(p, organization, false)
                 if(!extension.hasErrors()) {
                     log.debug "adding phone numbers"
                     user.addToPhoneNumbers(extension)

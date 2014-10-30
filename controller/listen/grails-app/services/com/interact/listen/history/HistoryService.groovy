@@ -162,7 +162,7 @@ class HistoryService {
 
     void createdExtension(Extension extension) {
         write(action: Action.CREATED_EXTENSION,
-              description: "Created extension [${extension.number}] with IP address [${extension.ip}]",
+              description: "Created extension [${extension.number}] with user name [${extension.sipPhone.username}]",
               onUser: extension.owner)
     }
 
