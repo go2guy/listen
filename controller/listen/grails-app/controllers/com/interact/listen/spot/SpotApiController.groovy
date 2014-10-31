@@ -2007,6 +2007,7 @@ class SpotApiController {
         def json = JSON.parse(request)
         def call = CallData.findBySessionId(json.sessionId)
         if(call) {
+            CallData.refresh( call )
             call.ended = new LocalDateTime()
             call.save(flush: true)
         }

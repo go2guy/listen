@@ -10,7 +10,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
@@ -45,21 +44,6 @@ public class HttpClientImpl implements HttpClient
     public void get(String uri) throws IOException
     {
         HttpGet request = new HttpGet(uri);
-        performRequest(request);
-    }
-
-    public void get(String uri, Map<String, String> params) throws IOException
-    {
-        uri = uri + "?" + buildQueryString(params);
-        HttpGet request = new HttpGet(uri);
-/*
-        HttpParams httpParams = new BasicHttpParams();
-        for(String theKey : params.keySet())
-        {
-            httpParams.setParameter(theKey, params.get(theKey));
-        }
-*/
-//        request.setParams(httpParams);
         performRequest(request);
     }
 

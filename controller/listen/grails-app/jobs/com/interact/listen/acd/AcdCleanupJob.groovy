@@ -71,7 +71,7 @@ class AcdCleanupJob
                        {
                            //Set back to waiting
                            log.error("AcdCall[" + thisCall.id + "] connect_requested beyond the maximum allowed time!");
-                           acdService.acdCallStatusUpdate(thisCall.sessionId, AcdCallStatus.WAITING.toString());
+                           acdService.acdCallStatusUpdate(thisCall.sessionId, AcdCallStatus.WAITING);
                        }
                        break;
                 }

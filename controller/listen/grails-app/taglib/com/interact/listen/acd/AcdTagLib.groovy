@@ -8,9 +8,9 @@ class AcdTagLib {
 
     def promptFileService
     def springSecurityService
-
+ 
     // TODO fix hard-coded path
-    static final File storageLocation = new File('/interact/listen/artifacts/acd')
+    static final File storageLocation = new File('/interact/users/1/public/prompts/Listen/onHoldMsgs')
     
     def acdPromptSelect = { attrs ->
         def value = attrs.value

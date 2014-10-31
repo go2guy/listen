@@ -519,11 +519,10 @@ class AcdService
             try
             {
                 String artifactsDirectory = grailsApplication.config.com.interact.listen.artifactsDirectory;
-                String onHoldMsg = artifactsDirectory + '/acd/' + skill.organization.id + '/' + skill.onHoldMsg;
-                String onHoldMsgExtended = artifactsDirectory + '/acd/' + skill.organization.id  + '/' +
-                        skill.onHoldMsgExtended;
-                String onHoldMusic = artifactsDirectory + '/acd/' + skill.organization.id  + '/' + skill.onHoldMusic;
-                String connectMsg = artifactsDirectory + '/acd/' + skill.organization.id  + '/' + skill.connectMsg;
+                String onHoldMsg = skill.onHoldMsg;
+                String onHoldMsgExtended = skill.onHoldMsgExtended;
+                String onHoldMusic = skill.onHoldMusic;
+                String connectMsg = skill.connectMsg;
 
                 spotCommunicationService.sendAcdSwitchQueueEvent(thisCall.sessionId, onHoldMsg, onHoldMusic,
                     connectMsg, onHoldMsgExtended,);
