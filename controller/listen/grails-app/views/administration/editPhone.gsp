@@ -71,7 +71,7 @@
             </tr>
             <tr>
                 <td class="col-password"><g:message code="page.administration.phones.column.passwordConfirm"/></td>
-                <td class="val-password"><g:passwordField name="passwordConfirm" value="${fieldValue(bean: sipPhone, field: 'passwordConfirm')}" class="${listen.validationClass(bean: sipPhone, field: 'passwordConfirm')}" placeholder="${g.message(code: 'page.administration.phones.passwordConfirm.placeholder')}" autocomplete="off"/></td>
+                <td class="val-password" onmouseover="tooltip.show('${sipPhone?.passwordConfirm}');" onmouseout="tooltip.hide();"><g:passwordField name="passwordConfirm" value="${fieldValue(bean: sipPhone, field: 'passwordConfirm')}" class="${listen.validationClass(bean: sipPhone, field: 'passwordConfirm')}" placeholder="${g.message(code: 'page.administration.phones.passwordConfirm.placeholder')}" autocomplete="off"/></td>
             </tr>
             <tr>
                 <td class="col-realname"><g:message code="page.administration.phones.column.realName"/></td>
@@ -88,7 +88,7 @@
             </tr>
             <tr>
                 <td class="col-datereg"><g:message code="page.administration.phones.column.dateRegistered"/></td>
-                <td class="col-datereg"><joda:format value="${sipPhone?.dateRegistered}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                <td class="col-datereg" onmouseover="tooltip.show('CSeq:${sipPhone?.cseq}');" onmouseout="tooltip.hide();"><joda:format value="${sipPhone?.dateRegistered}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             </tr>
             <tr>
                 <td class="col-ip"><g:message code="page.administration.phones.column.ip"/></td>

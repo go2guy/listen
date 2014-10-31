@@ -4,6 +4,7 @@
     <meta name="layout" content="main"/>
     <meta name="tab" content="administration"/>
     <meta name="button" content="phones"/>
+    <tooltip:resources/>
     <style type="text/css">
 table { margin-bottom: 10px; }
 
@@ -56,7 +57,7 @@ tbody .col-light { text-align: center; }
       <caption><g:message code="page.administration.phones.current.caption"/></caption>
       <thead>
         <g:sortableColumn property="number" title="${g.message(code: 'page.administration.phones.column.number')}" class="col-number"/>
-        <g:sortableColumn property="owner" title="${g.message(code: 'page.administration.phones.column.owner')}" class="col-owner"/>
+        <g:sortableColumn property="owner.realName" title="${g.message(code: 'page.administration.phones.column.owner')}" class="col-owner"/>
         <g:sortableColumn property="sipPhone.ip" title="${g.message(code: 'page.administration.phones.column.ip')}" class="col-ip"/>
         <g:sortableColumn property="sipPhone.dateRegistered" title="${g.message(code: 'page.administration.phones.column.dateRegistered')}" class="col-ip"/>
         <g:sortableColumn property="sipPhone.registered" title="${g.message(code: 'page.administration.phones.column.registered')}" class="col-ip"/>
@@ -70,10 +71,10 @@ tbody .col-light { text-align: center; }
                   <g:form controller="administration" action="editExtension" method="post">
                       <g:if test="${extension.sipPhone}">
                             <td class="col-number">${fieldValue(bean: extension, field: 'number')}</td>
-                            <td class="col-owner">${extension.owner.realName}</td>
+                            <td class="col-owner" onmouseover="tooltip.show('${extension.sipPhone?.realName}');" onmouseout="tooltip.hide();">${extension.owner.realName}</td>
                             <td class="col-ip">${extension.sipPhone.ip}</td>
                             <g:if test="${extension.sipPhone.dateRegistered}">
-                                <td class="col-datereg"><listen:prettytime date="${extension.sipPhone?.dateRegistered}"/></td>
+                                <td class="col-datereg" onmouseover="tooltip.show('<joda:format value="${extension.sipPhone?.dateRegistered}" pattern="yyyy-MM-dd HH:mm:ss"/>');" onmouseout="tooltip.hide();"><listen:prettytime date="${extension?.sipPhone?.dateRegistered}"/></td>
                             </g:if>
                             <g:else>
                                 <td class="col-datereg">${g.message(code: 'page.administration.phones.notRegistered.placeholder')}</td>
