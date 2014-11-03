@@ -17,6 +17,11 @@ table { margin-bottom: 10px; }
 #directInwardDial .col-forward { width: 55%; }
 #directInwardDial .col-button { width: 5%; }
 
+#directMessageNumber .col-number { width: 30%; }
+#directMessageNumber .col-public { width: 10%; }
+#directMessageNumber .col-forward { width: 55%; }
+#directMessageNumber .col-button { width: 5%; }
+
 .mobile-phones .col-number { width: 30%; }
 .mobile-phones .col-provider { width: 30%; }
 .mobile-phones .col-public { width: 26%; }
@@ -102,7 +107,34 @@ td.col-public {
           </tbody>
       </table>
     </g:if>
-    
+
+    <g:if test="${externalDMNList.size() > 0}">
+      <table id="directMessageNumber">
+          <caption><g:message code="page.profile.phones.caption.dmns"/></caption>
+          <thead>
+          <th class="col-number"><g:message code="dmn.number.label"/></th>
+          <th class="col-public"><g:message code="mobilePhone.isPublic.label"/></th>
+          <th class="col-forward"></th>
+          <th class="col-button"></th>
+          </thead>
+          <tbody>
+          <g:each in="${externalDMNList}" var="dmn" status="i">
+              <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
+                  <g:form controller="profile" action="updateDid" method="post">
+                      <td class="col-number">${fieldValue(bean: dmn, field: 'number')}</td>
+                      <td class="col-public"><listen:checkMark value="true"/></td>
+                      <td class="col-forward">
+                      </td>
+                      <td class="col-button">
+
+                      </td>
+                  </g:form>
+              </tr>
+          </g:each>
+          </tbody>
+      </table>
+    </g:if>
+
     <table class="mobile-phones">
       <caption><g:message code="page.profile.phones.caption.mobilePhones"/></caption>
       <thead>

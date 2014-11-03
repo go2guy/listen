@@ -321,13 +321,16 @@ class ProfileController {
         }
         def externalDIDList = DirectInwardDialNumber.withCriteria {
             eq('owner', user)
-        } 
-
+        }
+        def externalDMNList = DirectMessageNumber.withCriteria {
+            eq('owner', user)
+        }
         return [
             extensionList: extensionList,
             externalDIDList: externalDIDList,
             mobilePhoneList: mobilePhoneList,
-            otherPhoneList: otherPhoneList
+            otherPhoneList: otherPhoneList,
+            externalDMNList: externalDMNList
         ]
     }
 }
