@@ -1,8 +1,0 @@
-body { margin: 0; padding:0; }
-#content{ padding: 2em; }
-#headingContainer { position: relative; top: 0; left: 0; width: 100%; background-color: #102c54; height: 66px; margin: 0; padding: 0; text-align: center; }
-#header-navigation { padding: .25em 1em .2em 1em; text-align:right;}
-#logo { position: absolute; top:0; left: 0; }
-h1 { color: #fff; vertical-align: top; }
-.thinBluBrdr { border: 1px solid #102c54; }
-.message { color: red; font-weight: bold; margin: 2em;}
