@@ -64,8 +64,6 @@ BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
     # Install php scripts
     mkdir -p %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen
     cp %{STARTDIR}/scripts/*php %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen/
-    cp %{STARTDIR}/scripts/getPrompts.php %{buildroot}/var/www/html/interact/listen/
-    rm -rf %{buildroot}/interact/apps/spotbuild/lib/cgi-bin/listen/getPrompts.php
 
     rm -rf `find %{buildroot}/ -name ".svn" -type d`
 
