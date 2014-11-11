@@ -15,7 +15,6 @@ URL: http://www.newnet.com
 Packager: applications <applications@newnet.com>
 BuildArch: %{_arch}
 BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
-Requires:
 
 %define debug_package %{nil}
 
