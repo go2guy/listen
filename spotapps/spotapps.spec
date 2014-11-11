@@ -75,8 +75,6 @@ BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
     # This is to keep the package from colliding with the directories which are also delivered by spobtuild-vip
     %defattr(777,interact,operator)
     /interact/apps/spotbuild
-    /var/www/html/interact/listen
-    /var/www/html/ippbx
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
