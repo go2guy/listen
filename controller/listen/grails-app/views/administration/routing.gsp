@@ -23,13 +23,13 @@
 
     .col-destination { width: 275px; }
     .col-label, .col-label input {
-        width: 100px;
+        width: 200px;
     }
     #internal .col-label, #internal .col-label input {
         padding-right: 100px;
     }
     #external .col-label, #external .col-label input {
-        padding-right: 120px;
+        padding-right: 70px;
     }
     #directInwardDial .col-label, #directInwardDial .col-label input {
         padding-right: 180px;

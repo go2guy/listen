@@ -80,7 +80,7 @@ class ExtensionService {
 
             result.extension.sipPhone = result.sipPhone
             log.debug "Now actually create the extension for [${params}]"
-            if (result.extension.sipPhone.validate() && result.extension.validate() && result.extension.save()) {
+            if (result.extension.sipPhone.validate() && result.extension.validate() && result.extension.save(flush: true)) {
                 log.debug "We've create a new extension now cloud to device"
                 cloudToDeviceService.sendContactSync()
 
@@ -173,7 +173,7 @@ class ExtensionService {
                 result.extension.properties['forwardedTo', 'greeting'] = params
             }
 
-            if(result.sipPhone.validate() && result.extension.validate() && result.extension.save()) {
+            if(result.sipPhone.validate() && result.extension.validate() && result.extension.save(flush: true)) {
                 log.debug("Extension info successfully updated")
             } else {
                 log.error "Failed to update extension due to extension errors [${result.extension.errors}]"
@@ -219,6 +219,7 @@ class ExtensionService {
         log.debug("sipRegistration request for [${extIn?.number}]       with CSeq [${extIn?.sipPhone.cseq}]")
 
         def extension = Extension.findByNumber(extIn?.number)
+
         if (!extension) {
             log.debug("sipRegistration failed to find extension number [${extIn?.number}]")
             regResponse.extension = extIn
@@ -262,7 +263,7 @@ class ExtensionService {
 
         if(extension.sipPhone.cseq > extIn?.sipPhone?.cseq) {
             // the CSeq we're given seems to be old compared to the one we have
-            log.debug("sipRegistration CSeq provided is less than what we have in our db, do no db work")
+            log.debug("sipRegistration CSeq provided is less than what we have in our db, ignore at this time.")
             // TODO maybe do something different if the cseq number in is less than what we have in the db
         }
 
@@ -292,13 +293,15 @@ class ExtensionService {
 
         // Just to keep the domain validation happy
         extension.sipPhone.passwordConfirm = extension.sipPhone.password
+        extension.extLength = extension.sipPhone.organization.extLength
         log.debug("Extension sipPhone username before update [${extension.sipPhone.username}]")
-        if(extension.sipPhone.validate() && extension.sipPhone.save()) {
-            log.debug("Extension sipPhone info successfully updated")
+        log.debug("Extension extension before update [${extension.extLength}]")
+        log.debug("Extension sipPhone organization name [${extension.sipPhone?.organization?.name}]")
+        if(extension.sipPhone.validate() && extension.sipPhone.save(flush: true)) {
+            log.debug("sipDeregistration of extension [${extension?.number}] successfully updated in db")
             regResponse.returnCode = HSR.SC_OK
         } else {
-            log.error "Failed to update extension due to extension errors [${extension.errors}]"
-            log.error "Failed to update extension due to sipPhone errors [${extension.sipPhone.errors}]"
+            log.error "Failed to update extension [${extension?.number}] due to sipPhone errors [${extension.sipPhone.errors}]"
             regResponse.returnCode = HSR.SC_INTERNAL_SERVER_ERROR
         }
 
@@ -326,7 +329,7 @@ class ExtensionService {
         // Just to keep the domain validation happy
         extension.sipPhone.passwordConfirm = extension.sipPhone.password
 
-        if(extension.sipPhone.validate() && extension.sipPhone.save()) {
+        if(extension.sipPhone.validate() && extension.sipPhone.save(flush: true)) {
             log.debug("sipDeregistration of extension [${extension?.number}] successfully updated in db")
             regResponse.returnCode = HSR.SC_OK
         } else {
