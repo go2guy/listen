@@ -1,6 +1,7 @@
 package com.interact.listen
 
 import com.interact.listen.license.ListenFeature
+import grails.util.Holders
 
 class Organization {
     String contextPath
@@ -9,6 +10,7 @@ class Organization {
     String name
     String outboundCallid
     boolean outboundCallidByDid = false
+    int extLength = Holders.config.com.interact.listen.organization.defaultExtLength
 
     static hasMany = [users: User, enabledFeatures: ListenFeature]
 
@@ -26,6 +28,7 @@ class Organization {
         contextPath blank: false, maxSize: 50, unique: true, matches: '^[a-z0-9_-]+$', notEqual: 'custodian'
         name blank: false, maxSize: 100, unique: true // TODO for max constraints, add maxlengths to the text fields on the views
         outboundCallid blank: false, maxSize: 10, unique: false, matches: '^[0-9]+$'
+        extLength min: 2, max: 9
     }
 
     String toString() {

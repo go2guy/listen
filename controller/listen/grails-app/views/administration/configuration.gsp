@@ -53,14 +53,21 @@
     </listen:canAccess>
 
     <listen:canAccess feature="CONFERENCING">
-      <fieldset class="vertical">
-        <h3>Conferencing</h3>
-
-        <label for="conferencing.pinLength"><g:message code="conferencingConfiguration.pinLength.label"/></label>
-        <g:textField name="conferencing.pinLength" value="${fieldValue(bean: conferencing, field: 'pinLength')}" class="${listen.validationClass(bean: conferencing, field: 'pinLength')}" autocomplete="false"/>
-      </fieldset>
+        <fieldset class="vertical">
+            <h3>Conferencing</h3>
+            <label for="conferencing.pinLength"><g:message code="conferencingConfiguration.pinLength.label"/></label>
+            <g:textField name="conferencing.pinLength" value="${fieldValue(bean: conferencing, field: 'pinLength')}" class="${listen.validationClass(bean: conferencing, field: 'pinLength')}" autocomplete="false"/>
+        </fieldset>
    </listen:canAccess>
-        
+
+    <listen:canAccess feature="IPPBX">
+        <fieldset class="vertical">
+            <h3>IPPBX Extension Length</h3>
+            <label for="organization.extLength"><g:message code="organizationConfiguration.extLength.label"/></label>
+            <g:textField name="organization.extLength" value="${fieldValue(bean: organization, field: 'extLength')}" class="${listen.validationClass(bean: organization, field: 'extLength')}" autocomplete="false"/>
+        </fieldset>
+    </listen:canAccess>
+
       <ul class="form-buttons">
         <li><g:submitButton name="save" value="${g.message(code: 'default.button.save.label')}"/></li>
       </ul>

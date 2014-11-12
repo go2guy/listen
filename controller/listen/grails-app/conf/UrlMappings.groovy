@@ -1,6 +1,13 @@
 class UrlMappings {
 
     static mappings = {
+        "/api/sipRegister"(controller: 'spotApi')
+        {
+            action = [
+                    POST: 'sipRegister',
+            ]
+        }
+
         "/api/acdCall"(controller: 'spotApi')
         {
             action = [
@@ -86,7 +93,7 @@ class UrlMappings {
         "/meta/getMenuAction"(controller: 'spotApi', action: 'menuAction')
         "/meta/registerSpotSystem"(controller: 'spotApi', action: 'register')
         "/meta/setPhoneNumber"(controller: 'spotApi', action: 'setPhoneNumber')
-
+        "/meta/sipRegister1"(controller: 'spotApi', action: 'sipRegister')
         "/meta/audio/file/$id"(controller: 'spotApi', action: 'androidVoicemailDownload')
         "/meta/contacts/emailContacts"(controller: 'spotApi', action: 'androidEmailContacts')
         "/meta/contacts/emailContacts/$id"(controller: 'spotApi', action: 'androidEmailContact')

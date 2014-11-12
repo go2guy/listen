@@ -28,6 +28,7 @@ CREATE TABLE `organization` (
   `enabled` bit(1) NOT NULL default b'1',
   `outbound_callid` VARCHAR(50) NOT NULL,
   `outbound_callid_by_did` BIT(1) NOT NULL,
+  `ext_length` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `name_unique_1307548966223` (`name`),
@@ -589,14 +590,14 @@ DROP TABLE IF EXISTS `scheduled_conference`;
 CREATE TABLE `scheduled_conference` (
   `id` bigint(20) NOT NULL auto_increment,
   `version` bigint(20) NOT NULL,
-  `active_caller_addresses` longtext NOT NULL,
+  `active_caller_addresses` longtext default NULL,
   `date` date NOT NULL,
   `date_created` datetime NOT NULL,
   `email_body` longtext NOT NULL,
   `email_subject` varchar(255) NOT NULL,
   `ends` varchar(255) NOT NULL,
   `for_conference_id` bigint(20) NOT NULL,
-  `passive_caller_addresses` longtext NOT NULL,
+  `passive_caller_addresses` longtext default NULL,
   `scheduled_by_id` bigint(20) NOT NULL,
   `starts` varchar(255) NOT NULL,
   `uid` varchar(255) default NULL,
@@ -761,3 +762,25 @@ CREATE TABLE `acd_call_history` (
   `dequeue_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `sip_phone`;
+CREATE TABLE `sip_phone` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `registered` boolean default NULL,
+  `extension_id` bigint(20) NOT NULL,
+  `organization_id` bigint(20) NOT NULL,
+  `real_name` varchar(50) DEFAULT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `ip` varchar(50) default NULL,
+  `cseq` bigint(20) default NULL,
+  `date_registered` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `FKC5294l23B3209252` (`extension_id`),
+  KEY `FKC510738B56D05B56` (`organization_id`),
+  KEY `unique-username` (`organization_id`,`username`),
+  CONSTRAINT `sip_phone_extension_id_fk` FOREIGN KEY (`extension_id`) REFERENCES `phone_number` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `sip_phone_organization_id_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
+

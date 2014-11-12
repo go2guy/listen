@@ -172,9 +172,10 @@ grails.mail.default.from = 'listen@newnet.com'
 
 // Listen configuration
 com.interact.listen.ivr = ''
-com.interact.listen.spotUrl = 'http://localhost:3030/customEvent'
+com.interact.listen.spotUrl = 'http://testlisten1/spot'
 com.interact.listen.phoneNumber = '(402) 476-8786' // FIXME hard-coded number
 com.interact.listen.conferencing.defaultPinLength = 6
+com.interact.listen.organization.defaultExtLength = 3
 
 // After Hours Configuration
 com.interact.listen.afterHours.username = 'After Hours'
@@ -198,6 +199,7 @@ com.interact.listen.acd.connect_request.max = 20
 com.interact.listen.acd.enqueue.max = 300
 com.interact.listen.acd.disableOnFailedCall = false
 com.interact.listen.api.adminSignature = 'a80f3b59eec04c24abff14b8b2c8e93d'
+com.interact.listen.sip.expires = 3600
 
 
 // listen artifacts directory - not everything is using this at the moment

@@ -40,6 +40,7 @@ class CallRoutingController {
                 application = result?.application
                 organization = {
                     id = result?.organization?.id
+                    extLength = result?.organization?.extLength
                 }
             }
         }

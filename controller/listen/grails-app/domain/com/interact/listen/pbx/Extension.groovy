@@ -7,6 +7,10 @@ class Extension extends PhoneNumber {
     String forwardedTo
     Audio greeting
     String ip
+    int extLength
+
+    static hasOne = [sipPhone: SipPhone]
+    static transients = ['extLength']
 
     static constraints = {
         // TODO IP address validation
@@ -14,7 +18,6 @@ class Extension extends PhoneNumber {
         // all fields must be nullable since we extend PhoneNumber
         forwardedTo nullable: true, blank: false, maxSize: 50
         greeting nullable: true
-        // NOTE: ip cannot have a 'unique' constraint, it causes grails/hibernate to segfault. :(
-        ip nullable: true, blank: false, /*unique: true,*/ maxSize: 50
+        ip nullable: true, blank: false, unique: true, maxSize: 50
     }
 }

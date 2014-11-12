@@ -16,8 +16,16 @@ class SpotCommunicationService {
     def statWriterService
 
     def dropParticipant(def participant) throws IOException, SpotCommunicationException {
+        def success = false
+        try {
+            log.debug("Attempting to drop participant [${participant.id}]")
         sendConferenceParticipantEvent("DROP", participant);
         statWriterService.send(Stat.SPOT_CONF_EVENT_DROP)
+            success = true
+        } catch (Exception e) {
+            log.error("We've encounted an error attempting to drop participant [${participant.id}][${e}]")
+    }
+        return success
     }
 
     def muteParticipant(def participant) throws IOException, SpotCommunicationException {
@@ -354,13 +362,13 @@ class SpotCommunicationService {
             status = httpClient.getResponseStatus();
             if(!isSuccessStatus(status))
             {
-                failed << it
+                failed << thisSpotUrl
             }
         }
         if(failed.size() > 0)
         {
             throw new SpotCommunicationException("Received HTTP Status " + status + " from SPOT System(s) at [" +
-                    (failed.collect { it.uri }.join(',')) + "]", status);
+                    (failed.join(',')) + "]", status);
         }
 
         if(log.isDebugEnabled())

@@ -235,11 +235,12 @@ class ProfileController {
             redirect(action: 'phone')
             return
         }
+        def organization = authenticatedUser.organization
 
-        extension = extensionService.update(extension, params)
-        if(extension.hasErrors()) {
+        def extInfo = extensionService.update(params, extension, organization)
+        if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
             def model = phonesModel()
-            model.updatedExtension = extension
+            model.updatedExtension = extInfo.extension
             render(view: 'phones', model: model)
         } else {
             flash.successMessage = 'Extension updated'
@@ -320,13 +321,16 @@ class ProfileController {
         }
         def externalDIDList = DirectInwardDialNumber.withCriteria {
             eq('owner', user)
-        } 
-
+        }
+        def externalDMNList = DirectMessageNumber.withCriteria {
+            eq('owner', user)
+        }
         return [
             extensionList: extensionList,
             externalDIDList: externalDIDList,
             mobilePhoneList: mobilePhoneList,
-            otherPhoneList: otherPhoneList
+            otherPhoneList: otherPhoneList,
+            externalDMNList: externalDMNList
         ]
     }
 }

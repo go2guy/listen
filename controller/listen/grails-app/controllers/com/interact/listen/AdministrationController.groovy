@@ -9,11 +9,11 @@ import com.interact.listen.license.ListenFeature
 import com.interact.listen.acd.*
 import com.interact.listen.attendant.action.RouteToAnACDAction
 import com.interact.listen.pbx.Extension
+import com.interact.listen.pbx.SipPhone
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import org.joda.time.LocalDateTime
 import org.joda.time.Period
-import org.apache.log4j.Logger
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
@@ -166,14 +166,35 @@ class AdministrationController {
     }
 
     def addExtension = {
-        def extension = extensionService.create(params)
-        if(extension.hasErrors()) {
+        log.debug "addExtension with params [${params}]"
+        def organization = authenticatedUser.organization
+
+        def extInfo = extensionService.create(params, organization)
+
+        if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
+            log.debug "addExtension failed to be added"
+            log.debug("extInfo extension errors [${extInfo?.extension?.getErrors()}]")
+            log.debug("extInfo sipPhone errors [${extInfo?.sipPhone?.getErrors()}]")
+
+            if(extInfo?.sipPhone){
+                log.debug("Extension has sipPhone parameters [${extInfo?.sipPhone?.username}]")
+            } else {
+                log.debug("Extension does not have sipPhone parameters, use params [${params?.username}]")
+                extInfo.sipPhone = new SipPhone(params)
+                extInfo.sipPhone.passwordConfirm = params?.passwordConfirm
+            }
+
             def model = phonesModel()
-            model.newExtension = extension
-            render(view: 'phones', model: model)
+            model.newExtension = extInfo.extension
+            model.newSipPhone = extInfo.sipPhone
+
+            render(view: 'listPhones', model: model)
+        } else if (!extInfo?.extension || !extInfo?.sipPhone) {
+            log.debug("Some error occurred while attempting to create extension")
         } else {
+            log.debug "addExtension was successfully added"
             flash.successMessage = message(code: 'extension.created.message')
-            redirect(action: 'phones')
+            redirect(action: 'listPhones')
         }
     }
 
@@ -245,7 +266,7 @@ class AdministrationController {
             conferencing = new ConferencingConfiguration(organization: organization)
         }
 
-        render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
+        render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
     }
 
     def deleteDirectInwardDialNumber = {
@@ -306,13 +327,13 @@ class AdministrationController {
         def extension = Extension.get(params.id)
         if(!extension) {
             flash.errorMessage = message(code: 'extension.notFound.message')
-            redirect(action: 'phones')
+            redirect(action: 'listPhones')
             return
         }
 
         extensionService.delete(extension)
         flash.successMessage = message(code: 'extension.deleted.message')
-        redirect(action: 'phones')
+        redirect(action: 'listPhones')
     }
 
     def deleteRestriction = {
@@ -601,9 +622,13 @@ class AdministrationController {
     def outdialing = {
         render(view: 'outdialing', model: outdialingModel())
     }
-    
+
+    def listPhones = {
+        render(view: 'listPhones', model: phonesModel())
+    }
+
     def phones = {
-        render(view: 'phones', model: phonesModel())
+        render(view: 'listPhones', model: phonesModel())
     }
 
     // ajax
@@ -666,6 +691,7 @@ class AdministrationController {
     }
 
     def saveConfiguration = {
+        log.debug "Saving administration configuration [${params}]"
         def organization = authenticatedUser.organization
 
         def transcription = TranscriptionConfiguration.findByOrganization(organization)
@@ -676,28 +702,29 @@ class AdministrationController {
         def oldTranscriptionIsEnabled = transcription.isEnabled
         def oldTranscriptionPhoneNumber = transcription.phoneNumber
         if(licenseService.canAccess(ListenFeature.VOICEMAIL) && licenseService.canAccess(ListenFeature.TRANSCRIPTION)) {
-            // using .properties = params['transcription'] didnt work here, resorting to bindData()
-            bindData(transcription, params['transcription'], 'isEnabled')
-            bindData(transcription, params['transcription'], 'phoneNumber')
+            bindData(transcription, params['transcription'], [include: ['isEnabled']])
+            bindData(transcription, params['transcription'], [include: ['phoneNumber']])
         }
-        
+
         def afterHours = AfterHoursConfiguration.findByOrganization(organization)
         if(!afterHours) {
             afterHours = new AfterHoursConfiguration(organization: organization)
         }
 
-        def originalMobilePhone = afterHours.mobilePhone
-        def originalAlternateNumber = afterHours.alternateNumber
-        def originalRealizeUrl = afterHours.realizeUrl
-        def originalRealizeAlertName = afterHours.realizeAlertName
-        if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
+        if(licenseService.canAccess(ListenFeature.AFTERHOURS)) {
+            log.debug "After hourse is licensed, saving configuration"
+            def originalMobilePhone = afterHours.mobilePhone
+            def originalAlternateNumber = afterHours.alternateNumber
+            def originalRealizeUrl = afterHours.realizeUrl
+            def originalRealizeAlertName = afterHours.realizeAlertName
+
             if(params['afterHours.mobilePhone.id'] == '') {
                 afterHours.mobilePhone = null
             } else {
-                bindData(afterHours, params['afterHours'], 'mobilePhone')
+                bindData(afterHours, params['afterHours'], [include: ['mobilePhone']])
             }
-            bindData(afterHours, params['afterHours'], 'realizeAlertName')
-            bindData(afterHours, params['afterHours'], 'realizeUrl')
+            bindData(afterHours, params['afterHours'], [include: ['realizeAlertName']])
+            bindData(afterHours, params['afterHours'], [include: ['realizeUrl']])
             if(params['afterHours'].alternateNumber?.trim() == '') {
                 afterHours.alternateNumber = ''
             } else {
@@ -712,16 +739,46 @@ class AdministrationController {
 
         def originalPinLength = conferencing.pinLength
         if(licenseService.canAccess(ListenFeature.CONFERENCING)) {
+            log.debug "Conferencing is licensed, saving configuration"
             if(params['conferencing'].pinLength == '' || !params['conferencing'].pinLength.matches('^[0-9]*$')) {
                 flash.errorMessage = message(code: 'conferencingConfiguration.pattern.matches.invalid')
-                render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])   
+                render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
             }
-            bindData(conferencing, params['conferencing'], 'pinLength')
+            bindData(conferencing, params['conferencing'], [include: ['pinLength']])
+        }
+
+        def originalExtLength = organization.extLength
+        if(licenseService.canAccess(ListenFeature.IPPBX)) {
+            log.debug "IPPBX is licensed, saving configuration [${params['organization'].extLength}]"
+            if(params['organization'].extLength == '' || !params['organization'].extLength.matches('^[0-9]*$')) {
+                flash.errorMessage = message(code: 'organizationConfiguration.extLength.pattern.matches.invalid')
+                render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
+            }
+            bindData(organization, params['organization'], [include: ['extLength']])
         }
 
         // TODO use a transaction
-        if(transcription.validate() && transcription.save() && afterHours.validate() && afterHours.save() && conferencing.validate() && conferencing.save()) {
+        if(licenseService.canAccess(ListenFeature.AFTERHOURS) && afterHours.validate() && afterHours.save()) {
+            log.debug "Saving after hourse configuration successful"
+            if(originalMobilePhone != afterHours.mobilePhone) {
+                historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
+            }
 
+            if(originalAlternateNumber != afterHours.alternateNumber) {
+                realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
+                historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
+            }
+
+            if(originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
+                historyService.changedRealizeConfiguration(afterHours)
+            }
+        } else if (licenseService.canAccess(ListenFeature.AFTERHOURS)) {
+            log.debug "Didn't save the after hours configuration"
+            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
+        }
+
+        if(transcription.validate() && transcription.save() && conferencing.validate() && conferencing.save() && organization.validate() && organization.save()) {
+            log.debug "Saving transcription, conferencing, and organization configuration successful"
             if(licenseService.canAccess(ListenFeature.VOICEMAIL) && licenseService.canAccess(ListenFeature.TRANSCRIPTION)) {
                 boolean wasJustEnabled = false
                 if(oldTranscriptionIsEnabled != transcription.isEnabled) {
@@ -738,31 +795,23 @@ class AdministrationController {
                 }
             }
 
-            if(licenseService.canAccess(ListenFeature.VOICEMAIL)) {
-                if(originalMobilePhone != afterHours.mobilePhone) {
-                    historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
-                }
-
-                if(originalAlternateNumber != afterHours.alternateNumber) {
-                    realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
-                    historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
-                }
-
-                if(originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
-                    historyService.changedRealizeConfiguration(afterHours)
-                }
-            }
-
             if(licenseService.canAccess(ListenFeature.CONFERENCING)) {
                 if(originalPinLength != conferencing.pinLength) {
                     historyService.changedNewConferencePinLength(conferencing, originalPinLength)
                 }
             }
 
-            flash.successMessage = message(code: 'default.saved.message')
+            if(licenseService.canAccess(ListenFeature.IPPBX)) {
+                if(originalExtLength != organization.extLength) {
+                    historyService.changedOrganizationExtLength(organization, originalExtLength)
+                }
+            }
+
+            flash.successMessage = message(code: 'organizationConfiguration.saved.message')
             redirect(action: 'configuration')
         } else {
-            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing])
+            log.debug "Didn't save any of the configuration"
+            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
         }
     }
 
@@ -810,6 +859,29 @@ class AdministrationController {
             flash.successMessage = message(code: 'directMessageNumber.updated.message')
             redirect(action: 'routing')
         }
+    }
+
+    def editExtension = {
+        log.debug "Edit extension with params [${params}]"
+
+        def extension = Extension.get(params?.id)
+        if (!extension) {
+            flash.errorMessage = message(code: 'extension.notFound.message')
+            redirect(action: 'listPhones')
+            return
+        }
+
+        log.debug("We want to edit extension number [${extension?.number}] id [${extension?.id}]")
+
+        def sipPhone = extension?.sipPhone
+        if (sipPhone) {
+            log.debug("Extension number [${extension.number}] has username [${sipPhone?.username}]")
+            sipPhone.passwordConfirm = sipPhone?.password        // because we want the passwordConfirm on the edit screen to be available
+        } else {
+            log.debug("Extension number [${extension.number}] doesn't have sipPhone entry")
+        }
+
+        render(view: 'editPhone', model: [extension: extension, sipPhone: sipPhone ])
     }
 
     def updateException = {
@@ -903,22 +975,32 @@ class AdministrationController {
     }
 
     def updateExtension = {
+        log.debug("updateExtension with params [${params}]")
         def extension = Extension.get(params.id)
         if(!extension) {
+            log.error("updateExtension with params failed [${params}]")
             flash.errorMessage = message(code: 'extension.notFound.message')
-            redirect(action: 'phones')
+            redirect(action: 'listPhones')
             return
         }
 
-        extension = extensionService.update(extension, params)
-        if(extension.hasErrors()) {
-            def model = phonesModel()
-            model.updatedExtension = extension
-            render(view: 'phones', model: model)
+        def organization = authenticatedUser.organization
+        def extInfo = extensionService.update(params, extension, organization)
+        if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
+            log.debug "addExtension failed to be added"
+            log.debug("extInfo extension errors [${extInfo?.extension?.getErrors()}]")
+            log.debug("extInfo sipPhone errors [${extInfo?.sipPhone?.getErrors()}]")
+            def sipPhone = extInfo?.sipPhone
+            log.debug("extInfo extension ownerid [${extension.owner}]")
+            render(view: 'editPhone', model: [extension: extension, sipPhone: sipPhone ])
+            //render(view: 'editPhone', model: [extension: extInfo?.extension, sipPhone: extInfo?.sipPhone ])
         } else {
+            log.debug("updateExtension was successful")
             flash.successMessage = message(code: 'extension.updated.message')
-            redirect(action: 'phones')
+            redirect(action: 'listPhones')
         }
+
+        return
     }
 
     def updateRestriction = {
@@ -982,6 +1064,13 @@ class AdministrationController {
                 eq('organization', organization)
             }
         }
+
+        extensionList.each { ext ->
+            ext.sipPhone.each { sipP ->
+                log.debug("Extension [${ext.number}] IP [${sipP?.ip}] Date Registered [${sipP?.dateRegistered}]")
+            }
+        }
+
         def extensionTotal = Extension.createCriteria().get {
             projections {
                 count('id')

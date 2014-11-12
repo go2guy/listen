@@ -92,7 +92,7 @@ grails.project.dependency.resolution = {
         compile ':spring-security-core:1.2.7.3'
         compile ":spring-security-ldap:2.0-RC2"
         compile ":background-thread:1.6"
-
+        compile ":tooltip:0.8"
         runtime ":jquery:1.8.3"
         runtime ":resources:1.1.6"
     }

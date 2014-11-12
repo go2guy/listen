@@ -73,6 +73,7 @@ class SpotApiController {
         lookupAccessNumber: 'GET',
         menuAction: 'GET',
         register: 'POST',
+        sipRegister: 'POST',
         setPhoneNumber: 'POST',
         updateAcdCall: 'PUT',
         updateConference: 'PUT',
@@ -97,6 +98,7 @@ class SpotApiController {
     def statWriterService
     def voicemailNotificationService
     def callRoutingService
+    def extensionService
 
     /**
      * Add an acd call to the queue.
@@ -203,6 +205,7 @@ class SpotApiController {
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
 
+        log.debug("addCallHistory with json [${json}]")
         def callHistory = new CallHistory()
         callHistory.dateTime = formatter.parseDateTime(json.date)
         callHistory.ani = json.ani
@@ -1114,6 +1117,7 @@ class SpotApiController {
     }
 
     def getPin = {
+        log.debug("getPin with params [${params}]")
         if(!params.number) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
             return
@@ -1607,8 +1611,162 @@ class SpotApiController {
         response.flushBuffer()
     }
 
+    // Supports phone SIP registration requests
+    def sipRegister = {
+        log.debug "sipRegister request with params [${params}]"
+        if (!params.args) {
+            log.debug "sipRegister request missing param [args]"
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [args]')
+            return
+        }
+        def json = JSON.parse(params?.args)
+        if(!json.To) {
+            log.debug "sipRegister request missing param [args.To]"
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [args.To]')
+            return
+        }
+
+        if(!json.Contact) {
+            log.debug "sipRegister request missing param [args.Contact]"
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [args.Contact]')
+            return
+        }
+
+        def extension = new Extension()
+        extension.sipPhone = new SipPhone()
+        def deregister = false
+        def To = URLDecoder.decode(json?.To, 'UTF-8')
+        log.debug("sipRegister To [${To}]")
+
+        extension.sipPhone.realName = To.split("<")[0].replace("\"", "")
+        log.debug("sipRegister real name [${extension.sipPhone.realName}]")
+        def extNumber = To.split("sip:")[1].split("@")[0]
+        log.debug("sipRegister extNumber [${extNumber}]")
+
+        def expires = -1
+        if (json?.Expires){
+            expires = json.Expires
+            log.debug("sipRegister expires from main header [${expires}]")
+        }
+
+        def Contact = URLDecoder.decode(json?.Contact, 'UTF-8')
+        if (Contact.contains(";")){
+            log.debug("sipRegister Contact [${Contact}]")
+            def contactList = Contact.tokenize(';')
+            for ( int i = 0; i < contactList.size(); i++ ){
+                def tmpval = contactList[i]
+                log.debug("sipRegister contact list [${i}][${tmpval}]")
+                if (tmpval.contains('expires=')){
+                    expires = tmpval.split("expires=")[1]
+                    log.debug("sipRegister expires from contact header [${expires}]")
+                } else if (tmpval.contains('sip:') && (tmpval.contains('@'))){
+                    extension.sipPhone.ip = tmpval.split("@")[1]?.split(":")[0]
+                    log.debug("sipRegister ip address from conact header [${extension.sipPhone.ip}]")
+                }
+            }
+        } else if ((Contact == '*') && (expires == 0 )) {
+            // RFC 3261 section 10.2.2
+            log.debug("sipRegister Contact contains '*', deregister all contacts")
+            extension.sipPhone.ip = ''
+        } else {
+            log.error "sipRegister request param [args.Contact] improperly formatted"
+            response.sendError(HSR.SC_BAD_REQUEST, 'Improperly formatted parameter [args.Contact]')
+            return
+        }
+
+        if(json?.Authorization) {
+            def tmpAuthorization = URLDecoder.decode(json?.Authorization, 'UTF-8')
+            if (tmpAuthorization.contains("username=")) {
+                def tmpAuthorization1 = tmpAuthorization.split("username=")[1]
+                log.error "sipRegister tmpAuthorization1 [${tmpAuthorization1}]"
+                if (tmpAuthorization1.contains(",")) {
+                    def tmpAuth = tmpAuthorization1.split(",")[0]
+                    if (tmpAuth.contains("\"")){
+                        extension.sipPhone.username = tmpAuth.replaceAll("\"", "")
+                    } else {
+                        extension.sipPhone.username = tmpAuth
+                    }
+                }
+            } else {
+                log.error "sipRegister request param [args.Authorization] unexpected format [${tmpAuthorization}]"
+            }
+            log.debug("sipRegister Authorization resulted in username [${extension.sipPhone.username}]")
+        } else {
+            log.debug "sipRegister request param [args.Authorization] missing, set username to null"
+            extension.sipPhone.username = null
+        }
+
+        if (expires == "0") {
+            deregister = true
+            log.debug("sipRegister need to deregister [${extNumber}] [${expires}]")
+        }
+
+        if(json?.id) {
+            extension.number = URLDecoder.decode(json?.id, 'UTF-8')
+            log.debug("sipRegister id [${extension.number}]")
+        } else {
+            log.error "sipRegister request param [args.id] missing"
+            response.sendError(HSR.SC_BAD_REQUEST, 'sipRegister missing params [args.id]')
+            return
+        }
+
+        if(json?.CSeq){
+            def tmpCSeq = URLDecoder.decode(json?.CSeq, 'UTF-8')
+            if(tmpCSeq.contains(" ")){
+                extension.sipPhone.cseq = tmpCSeq.split(" ")[0].toInteger()
+            } else {
+                log.debug("sipRegister CSeq improperly formatted [${tmpCSeq}]")
+                extension.sipPhone.cseq = -1
+            }
+            log.debug("sipRegister CSeq [${extension.sipPhone.cseq}]")
+        }
+
+        def regResponse = new RegResponse()
+        if (deregister) {
+            log.debug("Call sipDeregistration service")
+            regResponse = extensionService.sipDeregistration(extension)
+            log.debug "sipDeregistration request [${regResponse.returnCode}]"
+        } else {
+            log.debug("Call sipRegistration service")
+            regResponse = extensionService.sipRegistration(extension)
+            log.debug "sipRegister request [${regResponse.returnCode}]"
+        }
+
+        def xmlResponse
+        def expireSeconds = grailsApplication.config.com.interact.listen.sip.expires
+
+        if ((regResponse.returnCode == HSR.SC_NOT_FOUND) && (!extension?.sipPhone?.username)) {
+            log.debug "sipRegister processing based upon ID, ID not found"
+            xmlResponse = "Id [${extension?.number}] not found"
+            response.status = HSR.SC_NOT_FOUND
+        } else if ((regResponse.returnCode == HSR.SC_NOT_FOUND) && (extension?.sipPhone?.username)) {
+            log.debug "sipRegister processing based upon auth username, username not found"
+            xmlResponse = "Id [${extension?.number}] auth username [${extension.sipPhone.username}] not found"
+            response.status = HSR.SC_NOT_FOUND
+        } else if ((regResponse.returnCode == HSR.SC_OK) && (!extension?.sipPhone?.username)) {
+            log.debug "sipRegister processing OK response based upon id [${extension.number}]"
+            xmlResponse = "<arcade><client id='${extension.number}' password='${regResponse.extension?.sipPhone?.password}' username='${extension.number}'/><expires seconds='${expireSeconds}'/>"
+            response.status = HSR.SC_OK
+        } else if ((regResponse.returnCode == HSR.SC_OK) && (extension?.sipPhone?.username)) {
+            log.debug "sipRegister processing OK response based upon username [${extension.sipPhone.username}]"
+            xmlResponse = "<arcade><client id='${extension.number}' password='${regResponse.extension?.sipPhone?.password}' username='${extension.sipPhone.username}'/><expires seconds='${expireSeconds}'/>"
+            response.status = HSR.SC_OK
+        } else {
+            log.error "sipRegister unexpected response code [${regResponse.returnCode}]"
+            xmlResponse = "sipRegister internal server error [${regResponse.returnCode}]"
+            response.status = HSR.SC_INTERNAL_SERVER_ERROR
+        }
+
+        log.debug "sipRegister request xmlResponse [${xmlResponse}]"
+        def xmlResponseEncoded = URLEncoder.encode(xmlResponse, 'UTF-8')
+        //log.debug "sipRegister request xmlResponse encoded [${xmlResponseEncoded}]"
+
+        response << xmlResponseEncoded
+        response.flushBuffer()
+    }
     // sets the SPOT system phone number (for display in notifications)
     def setPhoneNumber = {
+        log.debug "setPhoneNumber request with params [${params}]"
         // TODO phone number wont get persisted, and wont be available if application is restarted
         if(!params.phoneNumber) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [phoneNumber]')
@@ -2007,7 +2165,7 @@ class SpotApiController {
         def json = JSON.parse(request)
         def call = CallData.findBySessionId(json.sessionId)
         if(call) {
-            CallData.refresh( call )
+            call.refresh()
             call.ended = new LocalDateTime()
             call.save(flush: true)
         }

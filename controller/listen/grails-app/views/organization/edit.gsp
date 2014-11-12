@@ -23,6 +23,9 @@
         
         <input type="checkbox" id="outboundCallidByDid" name="outboundCallidByDid" value="${true}" ${organization?.outboundCallidByDid ? "checked=checked" : ""}/>
         <g:message code="organization.outboundCallidByDid.label"/>
+
+        <label for="extLength"><g:message code="organizationConfiguration.extLength.label"/></label>
+        <g:textField name="extLength" value="${fieldValue(bean: organization, field: 'extLength')}" class="${listen.validationClass(bean: organization, field: 'extLength')}"/>
     
         <h3><g:message code="page.organization.edit.features.header"/></h3>
 

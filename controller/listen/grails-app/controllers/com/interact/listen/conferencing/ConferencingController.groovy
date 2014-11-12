@@ -5,8 +5,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
 import com.interact.listen.pbx.NumberRoute;
-
-
+import org.apache.log4j.Logger
 
 @Secured(['ROLE_CONFERENCE_USER'])
 class ConferencingController {
@@ -178,8 +177,15 @@ class ConferencingController {
             return
         }
 
-        spotCommunicationService.dropParticipant(participant)
-        flash.successMessage = 'Caller dropped'
+        if(spotCommunicationService.dropParticipant(participant)){
+            flash.successMessage = 'Caller dropped'
+            log.debug("We've drop the participant [${participant.id}]")
+        } else {
+            // something went wrong and we couldn't drop the participant, go ahead and directly delete the entry from the database
+            log.error("We've failed to drop the participant [${participant.id}], directly delete from database.")
+            participant.delete()
+        }
+
         redirect(action: 'manage')
     }
 
@@ -309,11 +315,15 @@ class ConferencingController {
     }
 
     def invite = {
+        log.debug "Save conferencing invite with params [${params}]"
+
         def invitation = invitationService.create(params)
         if(invitation.hasErrors()) {
+            log.debug "Invitation has errors, did not save"
             render(view: 'invitations', model: [scheduledConference: invitation, scheduleLists: scheduleLists()])
         } else {
             flash.successMessage = 'Conference has been scheduled and email invitations have been sent'
+            log.debug "Invitation was saved"
             redirect(action: 'invitations')
         }
     }
@@ -390,6 +400,7 @@ class ConferencingController {
     }
 
     def unmuteCaller = {
+        log.debug("Unmute caller")
         def participant = Participant.get(params.id)
         if(!participant) {
             flash.errorMessage = 'Participant not found'
@@ -420,6 +431,7 @@ class ConferencingController {
 
     def updateInvitation = {
         def invitation = ScheduledConference.get(params.id)
+
         if(!invitation) {
             flash.errorMessage = 'Invitation not found'
             redirect(action: 'invitations')

@@ -1,6 +1,7 @@
 package com.interact.listen
 
 import com.interact.listen.license.ListenFeature
+import com.interact.listen.history.*
 import com.interact.listen.attendant.MenuGroup
 import com.interact.listen.pbx.NumberRoute
 import grails.converters.JSON
@@ -30,6 +31,7 @@ class OrganizationController {
     def applicationService
     def ldapService
     def licenseService
+    def historyService
     def userCreationService
 
     def index = {
@@ -231,11 +233,13 @@ class OrganizationController {
 
         // TODO check entity version?
 
+        def originalExtLength = organization.extLength
+
         if(!params?.outboundCallidByDid){
             organization.outboundCallidByDid=false
         }
 
-        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid'] = params
+        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'extLength'] = params
         
         if(organization?.outboundCallidByDid){
             log.debug "Outbound call id by DID checked [${organization?.outboundCallidByDid}]"
@@ -253,7 +257,14 @@ class OrganizationController {
         }
 
         if(!organization.hasErrors() && organization.save()) {
+            log.debug "We've saved the organization configuration for [${organization.name}]"
             flash.successMessage = 'Organization updated'
+
+            log.debug "Compare extension lengths [${originalExtLength}] [${organization.extLength}]"
+            if(originalExtLength != organization.extLength) {
+                log.debug "Saving history of ext lengths [${originalExtLength}] [${organization.extLength}]"
+                historyService.changedOrganizationExtLength(organization, originalExtLength)
+            }
             redirect(action: 'edit', params: [id: organization.id])
         } else {
             render(view: 'edit', model: [organization: organization, enableableFeatures: licenseService.enableableFeatures()])
