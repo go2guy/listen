@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="test1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/lib/junit/test.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

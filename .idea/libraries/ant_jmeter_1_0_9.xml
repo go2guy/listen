@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="ant-jmeter-1.0.9">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/controller/tools/jakarta-jmeter-2.3.4/extras/ant-jmeter-1.0.9.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
