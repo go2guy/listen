@@ -205,6 +205,7 @@ class SpotApiController {
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
 
+        log.debug("addCallHistory with json [${json}]")
         def callHistory = new CallHistory()
         callHistory.dateTime = formatter.parseDateTime(json.date)
         callHistory.ani = json.ani

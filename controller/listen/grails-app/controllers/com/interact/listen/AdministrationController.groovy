@@ -876,10 +876,11 @@ class AdministrationController {
         def sipPhone = extension?.sipPhone
         if (sipPhone) {
             log.debug("Extension number [${extension.number}] has username [${sipPhone?.username}]")
+            sipPhone.passwordConfirm = sipPhone?.password        // because we want the passwordConfirm on the edit screen to be available
         } else {
             log.debug("Extension number [${extension.number}] doesn't have sipPhone entry")
         }
-        sipPhone.passwordConfirm = sipPhone.password        // because we want the passwordConfirm on the edit screen to be available
+
         render(view: 'editPhone', model: [extension: extension, sipPhone: sipPhone ])
     }
 
