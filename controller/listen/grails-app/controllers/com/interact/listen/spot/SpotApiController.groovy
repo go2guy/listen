@@ -1678,7 +1678,7 @@ class SpotApiController {
             def tmpAuthorization = URLDecoder.decode(json?.Authorization, 'UTF-8')
             if (tmpAuthorization.contains("username=")) {
                 def tmpAuthorization1 = tmpAuthorization.split("username=")[1]
-                log.error "sipRegister tmpAuthorization1 [${tmpAuthorization1}]"
+                log.debug "sipRegister tmpAuthorization1 [${tmpAuthorization1}]"
                 if (tmpAuthorization1.contains(",")) {
                     def tmpAuth = tmpAuthorization1.split(",")[0]
                     if (tmpAuth.contains("\"")){
