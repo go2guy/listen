@@ -110,7 +110,7 @@ class ExtensionService {
             throw new AssertionError('Action not allowed')
         }
 
-        extension.delete()
+        extension.delete(flush: true)
         
         historyService.deletedExtension(extension)
         ldapService.removeExtension(extension.owner, extension.number)
@@ -267,14 +267,11 @@ class ExtensionService {
             // TODO maybe do something different if the cseq number in is less than what we have in the db
         }
 
+        def origIp
         if(extIn.sipPhone?.ip) {
-            def origIp = extension.sipPhone.ip
+            origIp = extension.sipPhone.ip
             extension.sipPhone.ip = extIn.sipPhone.ip
-            if (extension.sipPhone.ip != origIp) {
-                log.debug "sipRegistration, we have an IP lets notifiy of message light at [${extension.sipPhone.ip}]"
-                messageLightService.toggle(extension)
-            }
-            log.debug("sipRegistration request for [${extension?.number}]  to update IP [${extension.sipPhone.ip}]")
+            log.debug("sipRegistration request for [${extension?.number}] to update IP [${extension.sipPhone.ip}]")
         }
 
         if(extIn.sipPhone?.cseq) {
@@ -293,13 +290,14 @@ class ExtensionService {
 
         // Just to keep the domain validation happy
         extension.sipPhone.passwordConfirm = extension.sipPhone.password
-        extension.extLength = extension.sipPhone.organization.extLength
-        log.debug("Extension sipPhone username before update [${extension.sipPhone.username}]")
-        log.debug("Extension extension before update [${extension.extLength}]")
-        log.debug("Extension sipPhone organization name [${extension.sipPhone?.organization?.name}]")
+
         if(extension.sipPhone.validate() && extension.sipPhone.save(flush: true)) {
             log.debug("sipDeregistration of extension [${extension?.number}] successfully updated in db")
             regResponse.returnCode = HSR.SC_OK
+            if (extension.sipPhone.ip != origIp) {
+                log.debug "sipRegistration, we have a different IP lets notifiy of message light at [${extension.sipPhone.ip}]"
+                messageLightService.toggle(extension)
+            }
         } else {
             log.error "Failed to update extension [${extension?.number}] due to sipPhone errors [${extension.sipPhone.errors}]"
             regResponse.returnCode = HSR.SC_INTERNAL_SERVER_ERROR
