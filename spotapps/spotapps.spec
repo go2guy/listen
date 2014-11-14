@@ -6,7 +6,7 @@
 
 Summary: NewNet Communication Technologies Listen SPOT Applications package
 Name: listen-spotapps
-Version: 7.0
+Version: 2.0
 Release: %(svnversion | cut -d ':' -f 1)
 License: Copyright (c) NewNet Communication Technologies. All Rights Reserved.
 Group: Interact
