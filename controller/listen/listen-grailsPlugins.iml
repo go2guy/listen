@@ -140,7 +140,9 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/mariadb-client/mariadb-java-client/jars/mariadb-java-client-1.1.5.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ideaLibSources/tomcat-embed-core-7.0.47-sources.jar!/" />
+        </SOURCES>
         <jarDirectory url="file://$USER_HOME$/.grails/2.3.3/projects/listen/plugins/joda-time-1.4/lib" recursive="false" />
       </library>
     </orderEntry>
