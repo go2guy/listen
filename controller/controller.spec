@@ -6,7 +6,7 @@
 
 Summary: NewNet Listen Controller
 Name: listen-controller
-Version: %(echo "${VERSION}")
+Version: 7.0
 Release: %(echo "${RELEASE}")
 License: Copyright (c) NewNet Communication Technologies. All Rights Reserved.
 Group: Interact

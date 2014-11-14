@@ -6,6 +6,7 @@ import com.interact.listen.httpclient.HttpClientImpl
 import com.interact.listen.stats.Stat
 import grails.converters.JSON
 import org.joda.time.format.DateTimeFormat
+import java.net.URLEncoder;
 
 class SpotCommunicationService {
     static transactional = false
@@ -18,12 +19,12 @@ class SpotCommunicationService {
         def success = false
         try {
             log.debug("Attempting to drop participant [${participant.id}]")
-            sendConferenceParticipantEvent("DROP", participant);
-            statWriterService.send(Stat.SPOT_CONF_EVENT_DROP)
+        sendConferenceParticipantEvent("DROP", participant);
+        statWriterService.send(Stat.SPOT_CONF_EVENT_DROP)
             success = true
         } catch (Exception e) {
             log.error("We've encounted an error attempting to drop participant [${participant.id}][${e}]")
-        }
+    }
         return success
     }
 
@@ -128,11 +129,11 @@ class SpotCommunicationService {
             log.info("Sending AcdConnectEvent, sessionId[" + sessionId + "], number[" + number + "]")
         }
 
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, String> importedValue = new TreeMap<String, String>();
         importedValue.put("application", "ACD");
-        importedValue.put("action", "CONNECT");
-        importedValue.put("sessionId", sessionId);
-        importedValue.put("number", number);
+        importedValue.put("customEvent", "CONNECT");
+        importedValue.put("sessionId", sessionId.toString());
+        importedValue.put("number", number.toString());
         buildAndSendRequest(importedValue);
     }
 
@@ -150,10 +151,10 @@ class SpotCommunicationService {
             log.info("Sending AcdDisconnectEvent, sessionId[" + sessionId + "]");
         }
 
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, String> importedValue = new TreeMap<String, String>();
         importedValue.put("application", "ACD");
-        importedValue.put("action", "DISCONNECT");
-        importedValue.put("sessionId", sessionId);
+        importedValue.put("customEvent", "DISCONNECT");
+        importedValue.put("sessionId", sessionId.toString());
         buildAndSendRequest(importedValue);
     }
 
@@ -172,10 +173,10 @@ class SpotCommunicationService {
             log.info("Sending AcdGenericEvent, sessionId[" + sessionId + "], event[" + event + "]");
         }
 
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, String> importedValue = new TreeMap<String, String>();
         importedValue.put("application", "ACD");
-        importedValue.put("action", event);
-        importedValue.put("sessionId", sessionId);
+        importedValue.put("customEvent", event.toString());
+        importedValue.put("sessionId", sessionId.toString());
         buildAndSendRequest(importedValue);
     }
 
@@ -194,11 +195,11 @@ class SpotCommunicationService {
             log.info("Sending Acd Voicemail Event, sessionId[" + sessionId + "], number[" + number + "]")
         }
 
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, String> importedValue = new TreeMap<String, String>();
         importedValue.put("application", "ACD");
-        importedValue.put("action", "VOICEMAIL");
-        importedValue.put("sessionId", sessionId);
-        importedValue.put("number", number);
+        importedValue.put("customEvent", "VOICEMAIL");
+        importedValue.put("sessionId", sessionId.toString());
+        importedValue.put("number", number.toString());
         buildAndSendRequest(importedValue);
     }
 
@@ -216,10 +217,10 @@ class SpotCommunicationService {
             log.info("Sending Acd OnHold Event, sessionId[" + sessionId + "]");
         }
 
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, String> importedValue = new TreeMap<String, String>();
         importedValue.put("application", "ACD");
-        importedValue.put("action", "ON_HOLD");
-        importedValue.put("sessionId", sessionId);
+        importedValue.put("customEvent", "ON_HOLD");
+        importedValue.put("sessionId", sessionId.toString());
         buildAndSendRequest(importedValue);
     }
 
@@ -237,10 +238,10 @@ class SpotCommunicationService {
             log.info("Sending Acd OffHold Event, sessionId[" + sessionId + "]");
         }
 
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, String> importedValue = new TreeMap<String, String>();
         importedValue.put("application", "ACD");
-        importedValue.put("action", "OFF_HOLD");
-        importedValue.put("sessionId", sessionId);
+        importedValue.put("customEvent", "OFF_HOLD");
+        importedValue.put("sessionId", sessionId.toString());
         buildAndSendRequest(importedValue);
     }
 
@@ -259,28 +260,28 @@ class SpotCommunicationService {
             log.info("Sending Acd Switch Queue Event, sessionId[" + sessionId + "]");
         }
 
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, String> importedValue = new TreeMap<String, String>();
         importedValue.put("application", "ACD");
-        importedValue.put("action", "SWITCH_QUEUE");
-        importedValue.put("sessionId", sessionId);
-        importedValue.put("onHoldMsg", onHoldMsg);
-        importedValue.put("onHoldMusic", onHoldMusic);
-        importedValue.put("connectMsg", connectMsg);
-        importedValue.put("onHoldMsgExtended", onHoldMsgExtended);
+        importedValue.put("customEvent", "SWITCH_QUEUE");
+        importedValue.put("sessionId", sessionId.toString());
+        importedValue.put("onHoldMsg", onHoldMsg.toString());
+        importedValue.put("onHoldMusic", onHoldMusic.toString());
+        importedValue.put("connectMsg", connectMsg.toString());
+        importedValue.put("onHoldMsgExtended", onHoldMsgExtended.toString());
         buildAndSendRequest(importedValue);
     }
 
 
     private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {
-        Map<String, Object> importedValue = new TreeMap<String, Object>();
+        Map<String, String> importedValue = new TreeMap<String, String>();
         importedValue.put("application", "MSG_LIGHT"); // monosodium glutimate light, on!
-        importedValue.put("action", action);
-        importedValue.put("destination", number);
-        importedValue.put('ip', ip)
+        importedValue.put("customEvent", action.toString());
+        importedValue.put("destination", number.toString());
+        importedValue.put('ip', ip.toString())
         buildAndSendRequest(importedValue);
     }
 
-    private void buildAndSendRequest(Map<String, Object> importedValue) throws IOException, SpotCommunicationException
+    private void buildAndSendRequest(Map<String, String> importedValue) throws IOException, SpotCommunicationException
     {
         try
         {
@@ -301,13 +302,13 @@ class SpotCommunicationService {
 
         importedValue.put("initiatingChannel", Channel.GUI.toString());
 
-        Map<String, String> params = new TreeMap<String, String>();
-        params.put("uri", "/interact/apps/iistart.ccxml");
+        //Map<String, String> params = new TreeMap<String, String>();
+        //params.put("uri", "/interact/apps/iistart.ccxml");
 //        def json = importedValue.encodeAsJSON()
-        def theJson = importedValue as JSON
-        String json = theJson.toString(false);
-        params.put("II_SB_importedValue", json);
-        sendRequest(params);
+        //def theJson = importedValue as JSON
+        //String json = theJson.toString(false);
+        //params.put("II_SB_importedValue", json);
+        sendRequest(importedValue);
     }
 
     private void sendRequest(Map<String, String> params) throws IOException, SpotCommunicationException
@@ -344,8 +345,19 @@ class SpotCommunicationService {
         {
             def httpClient = new HttpClientImpl()
 
-            String uri = thisSpotUrl + "/ccxml/createsession";
-            httpClient.post(uri, params);
+            String base = thisSpotUrl + "/customEvent?sessionId=" + URLEncoder.encode(params.get('sessionId'), "UTF-8") + "&customEvent=" + URLEncoder.encode(params.get('customEvent'), "UTF-8") + "&";
+            /*
+            * sessionId
+            * customEvent (was "action" before)
+            * args = what we want to send...
+            * 
+            */
+            // create a JSON object from the map...
+            def theJson = params as JSON
+            String json = theJson.toString(false);
+            
+            def url = base + "args=" + URLEncoder.encode(json, "UTF-8");
+            httpClient.get(url);
 
             status = httpClient.getResponseStatus();
             if(!isSuccessStatus(status))
