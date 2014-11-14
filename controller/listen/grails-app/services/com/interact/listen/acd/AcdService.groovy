@@ -445,6 +445,9 @@ class AcdService
 
             if(sessionExistsOnIvr)
             {
+                //Free up the agent
+                freeAgent(thisCall.user);
+
                 //Set call status to "ivrconnectRequested"
                 thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
                 thisCall.setUser(agent);
