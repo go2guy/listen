@@ -25,7 +25,7 @@ class CloudToDeviceService {
         try {
             cloudToDeviceMessaging.enqueueDeviceSyncMessage(user.id, syncType, null)
         } catch (Exception e) {
-            log.error 'Failed Sending C2DM voicemail sync [${e}]'
+            log.error "Failed Sending C2DM voicemail sync [${e}]"
         }
     }
 
