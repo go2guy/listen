@@ -42,7 +42,7 @@ class SpotCommunicationService {
         importedValue.put("destination", numbers);
         importedValue.put("organization", "/organizations/${conference.owner.organization.id}")
         importedValue.put("ani", requestingNumber);
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
         statWriterService.send(Stat.SPOT_AUTO_DIAL_DIAL)
     }
 
@@ -55,7 +55,7 @@ class SpotCommunicationService {
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
         importedValue.put("organization", "/organizations/${conference.owner.organization.id}")
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
         statWriterService.send(Stat.SPOT_CONF_EVENT_BRIDGE_DIAL)
     }
 
@@ -70,7 +70,7 @@ class SpotCommunicationService {
     }
 
     def toggleMessageLight(def number, def ip, boolean on) throws IOException, SpotCommunicationException {
-        sendMessageLightEvent(on ? 'ON' : 'OFF', number, ip)
+        sendMessageLightEvent(on ? 'ON' : 'OFF', number, ip);
         statWriterService.send(on ? Stat.SPOT_MSG_LIGHT_ON : Stat.SPOT_MSG_LIGHT_OFF)
     }
 
@@ -84,7 +84,7 @@ class SpotCommunicationService {
         importedValue.put("application", "CONF_EVENT");
         importedValue.put("action", action);
         importedValue.put("sessionId", participant.sessionId);
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     def sendConferenceRecordingEvent(def action, def conference) throws IOException, SpotCommunicationException
@@ -98,7 +98,7 @@ class SpotCommunicationService {
         importedValue.put("recordingSessionId", conference.recordingSessionId);
         importedValue.put("arcadeId", conference.arcadeId);
         importedValue.put("description", conference.description);
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     def sendFax(def fax) throws IOException, SpotCommunicationException
@@ -111,7 +111,7 @@ class SpotCommunicationService {
         importedValue.put("ani", ""); //Will be implemented later, probably once sold and we know what to do
         importedValue.put("organization", "/organizations/${fax.sender.organization.id}");
         importedValue.put("id", fax.id)
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     /**
@@ -134,7 +134,7 @@ class SpotCommunicationService {
         importedValue.put("customEvent", "CONNECT");
         importedValue.put("sessionId", sessionId.toString());
         importedValue.put("number", number.toString());
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     /**
@@ -155,7 +155,7 @@ class SpotCommunicationService {
         importedValue.put("application", "ACD");
         importedValue.put("customEvent", "DISCONNECT");
         importedValue.put("sessionId", sessionId.toString());
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     /**
@@ -177,7 +177,7 @@ class SpotCommunicationService {
         importedValue.put("application", "ACD");
         importedValue.put("customEvent", event.toString());
         importedValue.put("sessionId", sessionId.toString());
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     /**
@@ -200,7 +200,7 @@ class SpotCommunicationService {
         importedValue.put("customEvent", "VOICEMAIL");
         importedValue.put("sessionId", sessionId.toString());
         importedValue.put("number", number.toString());
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     /**
@@ -221,7 +221,7 @@ class SpotCommunicationService {
         importedValue.put("application", "ACD");
         importedValue.put("customEvent", "ON_HOLD");
         importedValue.put("sessionId", sessionId.toString());
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     /**
@@ -242,7 +242,7 @@ class SpotCommunicationService {
         importedValue.put("application", "ACD");
         importedValue.put("customEvent", "OFF_HOLD");
         importedValue.put("sessionId", sessionId.toString());
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
     /**
@@ -268,27 +268,30 @@ class SpotCommunicationService {
         importedValue.put("onHoldMusic", onHoldMusic.toString());
         importedValue.put("connectMsg", connectMsg.toString());
         importedValue.put("onHoldMsgExtended", onHoldMsgExtended.toString());
-        buildAndSendRequest(importedValue);
+        buildAndSendVexRequest(importedValue);
     }
 
 
     private void sendMessageLightEvent(def action, def number, def ip) throws IOException, SpotCommunicationException {
         Map<String, String> importedValue = new TreeMap<String, String>();
-        importedValue.put("application", "MSG_LIGHT"); // monosodium glutimate light, on!
-        importedValue.put("customEvent", action.toString());
+        importedValue.put("app", "MSG_LIGHT");
+        importedValue.put("action", action);
+        importedValue.put("destination", number);
+        importedValue.put('customEvent', 'event.user.messagelightcontrol')
+        importedValue.put('uri', 'file:///interact/apps/iistart.ccxml')
         importedValue.put("destination", number.toString());
-        importedValue.put('ip', ip.toString())
-        buildAndSendRequest(importedValue);
+        log.debug "'BRIAN send message light event [' + importedValue + ']'"
+        buildAndSendSpotRequest(importedValue);
     }
 
-    private void buildAndSendRequest(Map<String, String> importedValue) throws IOException, SpotCommunicationException
+    private void buildAndSendSpotRequest(Map<String, String> importedValue) throws IOException, SpotCommunicationException
     {
         try
         {
             def user = springSecurityService.getCurrentUser()
             if(user)
             {
-                importedValue.put("initiatingSubscriber", "${user.id}");
+                importedValue.put("initiatingSubscriber", user.id.toString());
             }
         }
         catch(MissingPropertyException e)
@@ -302,16 +305,10 @@ class SpotCommunicationService {
 
         importedValue.put("initiatingChannel", Channel.GUI.toString());
 
-        //Map<String, String> params = new TreeMap<String, String>();
-        //params.put("uri", "/interact/apps/iistart.ccxml");
-//        def json = importedValue.encodeAsJSON()
-        //def theJson = importedValue as JSON
-        //String json = theJson.toString(false);
-        //params.put("II_SB_importedValue", json);
-        sendRequest(importedValue);
+        sendSpotRequest(importedValue);
     }
 
-    private void sendRequest(Map<String, String> params) throws IOException, SpotCommunicationException
+    private void sendSpotRequest(Map<String, String> params) throws IOException, SpotCommunicationException
     {
         List<String> spotUrls = new ArrayList<String>(1);
         if(grailsApplication.config.com.interact.listen.spotUrl != null &&
@@ -328,10 +325,10 @@ class SpotCommunicationService {
             }
         }
 
-        sendRequest(params, spotUrls);
+        sendSpotRequest(params, spotUrls);
     }
 
-    private void sendRequest(Map<String, String> params, List<String> spotUrls) throws IOException, SpotCommunicationException
+    private void sendSpotRequest(Map<String, String> params, List<String> spotUrls) throws IOException, SpotCommunicationException
     {
         if(log.isDebugEnabled())
         {
@@ -345,19 +342,9 @@ class SpotCommunicationService {
         {
             def httpClient = new HttpClientImpl()
 
-            String base = thisSpotUrl + "/customEvent?sessionId=" + URLEncoder.encode(params.get('sessionId'), "UTF-8") + "&customEvent=" + URLEncoder.encode(params.get('customEvent'), "UTF-8") + "&";
-            /*
-            * sessionId
-            * customEvent (was "action" before)
-            * args = what we want to send...
-            * 
-            */
-            // create a JSON object from the map...
-            def theJson = params as JSON
-            String json = theJson.toString(false);
-            
-            def url = base + "args=" + URLEncoder.encode(json, "UTF-8");
-            httpClient.get(url);
+            String uri = thisSpotUrl + "/spot/ccxml/createsession";
+            log.debug "Sending SPOT HTTP request to [${uri}]"
+            httpClient.post(uri, params);
 
             status = httpClient.getResponseStatus();
             if(!isSuccessStatus(status))
@@ -374,6 +361,88 @@ class SpotCommunicationService {
         if(log.isDebugEnabled())
         {
             log.debug "Completed sendRequest [${failed.size()}]"
+        }
+    }
+
+    private void buildAndSendVexRequest(Map<String, String> importedValue) throws IOException, SpotCommunicationException
+    {
+        try
+        {
+            def user = springSecurityService.getCurrentUser()
+            if(user)
+            {
+                importedValue.put("initiatingSubscriber", user.id.toString());
+            }
+        }
+        catch(MissingPropertyException e)
+        {
+            // handles a non-User principal
+            if(log.isDebugEnabled())
+            {
+                log.debug 'MissingPropertyException while building SPOT request, probably an API user'
+            }
+        }
+
+        importedValue.put("initiatingChannel", Channel.GUI.toString());
+
+        sendVexRequest(importedValue);
+    }
+
+    private void sendVexRequest(Map<String, String> params) throws IOException, SpotCommunicationException
+    {
+        List<String> vexUrls = new ArrayList<String>(1);
+        if(grailsApplication.config.com.interact.listen.vexUrl != null &&
+                !grailsApplication.config.com.interact.listen.vexUrl.isEmpty())
+        {
+            vexUrls.add(grailsApplication.config.com.interact.listen.vexUrl);
+        }
+
+        sendVexRequest(params, vexUrls);
+    }
+
+    private void sendVexRequest(Map<String, String> params, List<String> vexUrls) throws IOException, SpotCommunicationException
+    {
+        if(log.isDebugEnabled())
+        {
+            log.debug "Sending Vex HTTP request with params ${params} to ${vexUrls.size()} SPOT systems"
+        }
+
+        def failed = []
+        int status = -1
+
+        for(String thisVexUrl : vexUrls)
+        {
+            def httpClient = new HttpClientImpl()
+
+            String base = thisVexUrl + "/customEvent?sessionId=" + URLEncoder.encode(params.get('sessionId'), "UTF-8") + "&customEvent=" + URLEncoder.encode(params.get('customEvent'), "UTF-8") + "&";
+            /*
+            * sessionId
+            * customEvent (was "action" before)
+            * args = what we want to send...
+            * 
+            */
+            // create a JSON object from the map...
+            def theJson = params as JSON
+            String json = theJson.toString(false);
+            
+            def url = base + "args=" + URLEncoder.encode(json, "UTF-8");
+            httpClient.get(url);
+
+            status = httpClient.getResponseStatus();
+            if(!isSuccessStatus(status))
+            {
+                failed << thisVexUrl
+            }
+        }
+        if(failed.size() > 0)
+        {
+            throw new SpotCommunicationException("Received HTTP Status " + status + " from Vex System(s) at [" +
+                    (failed.join(',')) + "]", status);
+        }
+
+        if(log.isDebugEnabled())
+        {
+            log.debug "Completed sendVexRequest [${failed.size()}]"
         }
     }
 
