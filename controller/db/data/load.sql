@@ -7,7 +7,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `organization` WRITE;
-INSERT INTO `organization` (id,version,name,context_path,enabled,outbound_callid,outbound_callid_by_did) VALUES (1,0,'Mimio','mimio',1,'4024768786',1);
+INSERT INTO `organization` (id,version,name,context_path,enabled,outbound_callid,outbound_callid_by_did) VALUES (1,0,'NewNet','NewNet',1,'4024768786',1);
 UNLOCK TABLES;
 
 
@@ -30,7 +30,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `menu_group` WRITE;
-INSERT INTO `menu_group` VALUES (1,16,'','Mimio In Office',1);
+INSERT INTO `menu_group` VALUES (1,16,'','NewNet In Office',1);
 UNLOCK TABLES;
 
 
