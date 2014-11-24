@@ -2,8 +2,9 @@
 
 	//-------------------------
     // exitresult - return results and immediate exit
-	//-------------------------	 
+	//-------------------------
 	function exitresult($objname, $result, $reason="", $size="", $accessed="", $modified="", $changed="") {
+        header('Content-type: application/xml');
 		echo "<?xml version=\"1.0\"?>\n";
 		echo "<{$objname}>\n";
 		echo "  <Result>{$result}</Result>\n";
@@ -94,7 +95,7 @@
                 }
             }
 			break;
-                
+
 		default:
 			exitresult($OBJNAME, "Failure", "Uknown OPERATION [$OPERATION]");
             break;

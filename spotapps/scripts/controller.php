@@ -17,7 +17,7 @@
     if (strlen($data) == 0) {
         exitresult ($objName,$status,$string,"'params' argument missing from request");
     }
-    
+
     $ID         = @$_REQUEST['id']          or $ID="";
     $ContentType= @$_REQUEST['contentType'] or $ContentType="application/json";
     $destURL    = @$_REQUEST['cntrlURL']    or exitresult ($objName,$status,$string,"'cntrlURL' argument missing from request");
@@ -118,9 +118,10 @@
     $status = "Success";
     $string = htmlspecialchars($response);
     exitresult ($objName,$status,$string,$message);
-    
+
     #Exit php
     function exitresult ($objname, $status, $string, $reason="") {
+	header('Content-type: application/xml');
         echo "<?xml version=\"1.0\"?>\n";
         echo "<{$objname}>\n";
         echo "  <Status>$status</Status>\n";

@@ -1,6 +1,4 @@
 <?php
-    # This php script is intended to be utilized with the Nimblevox Engine V7 and Listen products to enable SIP phone registration
-
     #Global variables
     $objName = "apiObj";
     $status  = "Failure";
@@ -58,6 +56,7 @@
 
     $destURL       = @$_REQUEST['cntrlURL'];
     if (!$destURL) {
+        $destURL = 'http://10.10.123.51:8080/listen';
         $destURL = 'http://localhost:8080/listen-controller';
     }
 
