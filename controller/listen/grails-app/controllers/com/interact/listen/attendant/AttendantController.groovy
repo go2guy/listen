@@ -19,13 +19,11 @@ class AttendantController {
         save: 'POST'
     ]
 
+    def grailsApplication
     def menuGroupService
     def promptFileService
     def promptOverrideService
 
-    // TODO fix hard-coded path
-    static final File storageLocation = new File('/interact/listen/artifacts/attendant')
-    
     def index = {
         redirect(action: 'menu')
     }
@@ -201,6 +199,7 @@ class AttendantController {
         }
 
         def user = authenticatedUser
+        String storageLocation = grailsApplication.config.com.interact.listen.artifactsDirectory +  "/attendant";
         promptFileService.save(storageLocation, file, user.organization.id)
 
         render('Success')

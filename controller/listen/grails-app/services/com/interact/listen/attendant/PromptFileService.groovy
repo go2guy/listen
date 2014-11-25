@@ -2,10 +2,12 @@ package com.interact.listen.attendant
 
 import org.springframework.web.multipart.MultipartFile
 
-class PromptFileService {
+class PromptFileService
+{
     static transactional = false
     
-    File save(File storage, MultipartFile prompt, def organizationId) {
+    File save(File storage, MultipartFile prompt, def organizationId)
+    {
         def dir = new File(storage, "")
         log.debug("Path of file ${dir.absolutePath}");
         if(!dir.exists() && !dir.mkdirs()) {
@@ -21,6 +23,20 @@ class PromptFileService {
         def destination = new File(dir, prompt.originalFilename)
         prompt.transferTo(destination)
         return destination
+    }
+
+    /***
+     * Overridden save method to correct the old filthy code, which didn't even save in the organization's dir.
+     *
+     * @param storage Directory location
+     * @param prompt The prompt to save.
+     * @param organizationId Organization ID of the user
+     * @return The file that was saved.
+     */
+    File save(String storage, MultipartFile prompt, def organizationId)
+    {
+        File dir = new File(storage + File.separatorChar + organizationId, "")
+        return save(dir, prompt, organizationId);
     }
 
     def listNames(File storageLocation, def organizationId)
