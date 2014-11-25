@@ -5,6 +5,8 @@ import org.springframework.web.multipart.MultipartFile
 class PromptFileService
 {
     static transactional = false
+
+    def grailsApplication
     
     File save(File storage, MultipartFile prompt, def organizationId)
     {
@@ -35,7 +37,8 @@ class PromptFileService
      */
     File save(String storage, MultipartFile prompt, def organizationId)
     {
-        File dir = new File(storage + File.separatorChar + organizationId, "")
+        String fileName = buildFilename(storage, organizationId);
+        File dir = new File(fileName, "")
         return save(dir, prompt, organizationId);
     }
 
@@ -46,7 +49,14 @@ class PromptFileService
 
     def listNames(String storageLocation, def organizationId)
     {
-        File dir = new File(storageLocation + File.separatorChar + organizationId, "")
+        String fileName = buildFilename(storageLocation, organizationId);
+        File dir = new File(fileName, "")
         return listNames(dir, organizationId);
+    }
+
+    private String buildFilename(String storageLocation, def organizationId)
+    {
+        return grailsApplication.config.com.interact.listen.artifactsDirectory + File.separatorChar +
+                organizationId + File.separatorChar + storageLocation
     }
 }

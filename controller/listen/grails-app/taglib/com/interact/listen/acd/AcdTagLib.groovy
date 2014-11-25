@@ -9,14 +9,12 @@ class AcdTagLib {
     def promptFileService
     def springSecurityService
  
-    // TODO fix hard-coded path
-    static final File storageLocation = new File('/interact/users/1/public/prompts/Listen/onHoldMsgs')
-    
     def acdPromptSelect = { attrs ->
         def value = attrs.value
 
         def user = springSecurityService.getCurrentUser()
 
+        String storageLocation = "acd";
         def prompts = promptFileService.listNames(storageLocation, user.organization.id)
         out << '<select class="' + attrs.class + '" name="' + attrs.name + '">'
         out << '<option>-- No Prompt --</option>'

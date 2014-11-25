@@ -39,8 +39,7 @@ class AcdController
     def spotCommunicationService
     def acdService
 
-    // TODO fix hard-coded path
-    static final File storageLocation = new File('/interact/users/1/public/prompts/Listen/onHoldMsgs')
+    private static final String storageLocation = "acd";
 
     def index = {
         redirect(action: 'status')

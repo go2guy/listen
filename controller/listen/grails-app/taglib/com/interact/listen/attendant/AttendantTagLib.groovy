@@ -16,7 +16,7 @@ class AttendantTagLib {
 
         def user = springSecurityService.getCurrentUser()
 
-        String storageLocation = grailsApplication.config.com.interact.listen.artifactsDirectory +  "/attendant";
+        String storageLocation = "/attendant";
 
         def prompts = promptFileService.listNames(storageLocation, user.organization.id)
         out << '<select class="' + attrs.class + '">'
