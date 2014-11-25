@@ -2091,7 +2091,9 @@ class SpotApiController {
             }
         }
 
-        response.flushBuffer()
+	
+        renderVoicemailAsJson(voicemail)
+        // response.flushBuffer()
     }
 
     def getTranscriptionConfiguration = {
