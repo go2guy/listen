@@ -7,16 +7,16 @@ import org.apache.log4j.Logger
 class AttendantTagLib {
     static namespace = 'listen'
 
+    def grailsApplication
     def promptFileService
     def springSecurityService
-    
-    // TODO fix hard-coded path
-    static final File storageLocation = new File('/interact/listen/artifacts/attendant')
     
     def attendantPromptSelect = { attrs ->
         def value = attrs.value
 
         def user = springSecurityService.getCurrentUser()
+
+        String storageLocation = grailsApplication.config.com.interact.listen.artifactsDirectory +  "/attendant";
 
         def prompts = promptFileService.listNames(storageLocation, user.organization.id)
         out << '<select class="' + attrs.class + '">'

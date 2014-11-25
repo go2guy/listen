@@ -23,8 +23,14 @@ class PromptFileService {
         return destination
     }
 
-    def listNames(def storageLocation, def organizationId) {
-        def dir = new File(storageLocation, "")
+    def listNames(File storageLocation, def organizationId)
+    {
         return storageLocation.listFiles().collect { it.name }.sort(java.text.Collator.instance)
+    }
+
+    def listNames(String storageLocation, def organizationId)
+    {
+        File dir = new File(storageLocation + File.separatorChar + organizationId, "")
+        return listNames(dir, organizationId);
     }
 }

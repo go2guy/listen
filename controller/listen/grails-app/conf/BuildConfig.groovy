@@ -54,6 +54,7 @@ grails.project.dependency.resolution = {
         compile('license-client:license-client:1.0')
         compile('realize-client:realize-client:1.0')
         compile('apacheds:apacheds-core:1.5.4')
+        compile('apacheds:apacheds-core-entry:1.5.4')
         compile('apacheds:apacheds-protocol-shared:1.5.4')
         compile('shared-ldap:shared-ldap:0.9.12')
         compile('shared-ldap:shared-ldap-constants:0.9.12')
