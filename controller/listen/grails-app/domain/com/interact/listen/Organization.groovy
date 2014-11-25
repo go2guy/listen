@@ -35,8 +35,9 @@ class Organization {
         name
     }
 
-    def attendantPromptDirectory() {
-        return '/interact/listen/artifacts/attendant/' + id
+    def attendantPromptDirectory()
+    {
+        return '/interact/listen/artifacts/' + id + '/attendant/';
     }
 
     Set addToEnabledFeatures(def enabledFeature) {
