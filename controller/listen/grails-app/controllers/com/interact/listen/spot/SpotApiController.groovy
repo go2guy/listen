@@ -2034,8 +2034,11 @@ class SpotApiController {
         Voicemail.withTransaction { status ->
             def json = JSON.parse(request)
 
+			log.debug "request[${json}]"
+
             def originalIsNew = voicemail.isNew
             if(json.containsKey('isNew')) {
+				log.debug "Updating isNew to [${json.isNew}]"
                 voicemail.isNew = json.isNew
             }
 
