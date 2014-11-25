@@ -2065,7 +2065,13 @@ class SpotApiController {
                 return
             }
 
-            cloudToDeviceService.sendVoicemailSync(voicemail.owner)
+			// CloudToDeviceService.sendVoicemailSync will throw an exception because there is a missing service(CloudToDeviceMessaging)
+			try {
+				cloudToDeviceService.sendVoicemailSync(voicemail.owner)
+			}
+			catch(Exception e) {
+				log.error("Exception sending voicemail sync: " + e.getMessage(), e);
+			}
             messageLightService.toggle(voicemail.owner)
 
             if(originalIsNew != voicemail.isNew) {
