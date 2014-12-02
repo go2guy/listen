@@ -67,7 +67,8 @@ BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
 
     rm -rf `find %{buildroot}/ -name ".svn" -type d`
 
-    cp -r %{STARTDIR}/artifacts %{buildroot}/interact/listen
+    mkdir -p %{buildroot}/interact/listen/artifacts
+    cp -r %{STARTDIR}/artifacts %{buildroot}/interact/listen/artifacts
 
 #######################################################################
 # The files section lists all files included in the RPM
