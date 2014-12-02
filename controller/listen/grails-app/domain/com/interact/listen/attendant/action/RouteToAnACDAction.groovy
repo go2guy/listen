@@ -4,8 +4,12 @@ import com.interact.listen.acd.AcdQueueStatus
 import com.interact.listen.acd.UserSkill
 import com.interact.listen.attendant.Menu
 import com.interact.listen.acd.Skill
+import com.interact.listen.utils.ListenPromptUtil
 
-class RouteToAnACDAction extends Action {
+class RouteToAnACDAction extends Action
+{
+    def grailsApplication
+
     Skill skill
     
     static belongsTo = [ skill: Skill ]
@@ -14,16 +18,16 @@ class RouteToAnACDAction extends Action {
         skill nullable: true
     }
     
-    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory)
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, int organizationId)
     {
         def args = [
             applicationName: 'ACD',
             skillId: skill.id,
             skillname: skill.skillname,
-            onHoldMsg: skill.onHoldMsg,
-            onHoldMsgExtended: skill.onHoldMsgExtended,
-            onHoldMusic: skill.onHoldMusic,
-            connectMsg: skill.connectMsg
+            onHoldMsg: ListenPromptUtil.buildFileName(skill.onHoldMsg, ListenPromptUtil.ACD_LOCATION, organizationId),
+            onHoldMsgExtended: ListenPromptUtil.buildFileName(skill.onHoldMsgExtended, ListenPromptUtil.ACD_LOCATION, organizationId),
+            onHoldMusic: ListenPromptUtil.buildFileName(skill.onHoldMusic, ListenPromptUtil.ACD_LOCATION, organizationId),
+            connectMsg: ListenPromptUtil.buildFileName(skill.connectMsg, ListenPromptUtil.ACD_LOCATION, organizationId)
         ]
 
         //Determine voicemail extension for the selected skill

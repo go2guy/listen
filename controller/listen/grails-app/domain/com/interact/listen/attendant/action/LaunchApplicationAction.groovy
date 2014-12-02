@@ -1,13 +1,15 @@
 package com.interact.listen.attendant.action
 
-class LaunchApplicationAction extends Action {
+class LaunchApplicationAction extends Action
+{
     String applicationName
 
     static constraints = {
         applicationName nullable: true, blank: false, validator: { val -> return (val == null ? 'nullable' : true) }
     }
 
-    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory) {
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, int organizationId)
+    {
         def args = [
             applicationName: applicationName
         ]

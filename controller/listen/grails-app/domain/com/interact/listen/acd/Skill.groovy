@@ -1,9 +1,9 @@
 package com.interact.listen.acd
 
 import com.interact.listen.Organization
-import com.interact.listen.User
 
-class Skill {
+class Skill
+{
     String skillname
     Organization organization
     String description

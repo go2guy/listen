@@ -2,7 +2,8 @@ package com.interact.listen.attendant.action
 
 import com.interact.listen.attendant.Menu
 
-class GoToMenuAction extends Action {
+class GoToMenuAction extends Action
+{
 
     // TODO this has potential for bugs, since we arent referencing
     // the destination menu directly. however, for now, it makes it
@@ -11,4 +12,10 @@ class GoToMenuAction extends Action {
 
     String destinationMenuGroupName
     String destinationMenuName
+
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, int organizationId)
+    {
+        //Not implemented.
+        return null;
+    }
 }

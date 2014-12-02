@@ -1502,32 +1502,41 @@ class SpotApiController {
 
     def menuAction = {
         def id = params.menuId
-        if(!id) {
+        if(!id)
+        {
             // this is a request for the entry menu for a specific organization
-            if(!params.organization) {
+            if(!params.organization)
+            {
+                log.warn("Menu Action request missing required parameter [organization]");
                 response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [organization]')
                 return
             }
 
             def organization = Organization.get(getIdFromHref(params.organization))
             def entry = menuLocatorService.findEntryMenu(organization)
-            if(!entry.menu) {
+            if(!entry.menu)
+            {
+                log.warn("Menu not found for organization[" + organization.id + "]");
                 response.sendError(HSR.SC_NOT_FOUND)
                 return
             }
 
             def command = entry.menu.toIvrCommand(organization.attendantPromptDirectory(), '', '')
-            if(entry.override) {
+            if(entry.override)
+            {
                 command.args.audioFile = command.args.audioFile.substring(0, command.args.audioFile.lastIndexOf('/') + 1) + entry.override.optionsPrompt[0]
                 log.debug "Overrode default prompt with [${command.args.audioFile}]"
             }
-            log.debug "doAction [${command}]"
+
+            log.debug "MenuAction returning doAction [${command}]"
             render(command as JSON)
             return
         }
 
         def menu = Menu.get(id)
-        if(!menu) {
+        if(!menu)
+        {
+            log.warn("Menu Id not found[" + id + "]");
             response.sendError(HSR.SC_NOT_FOUND)
             return
         }
@@ -1535,15 +1544,19 @@ class SpotApiController {
         // only need keysPressed param if a menu id was provided
         def doAction
         def keysPressed = params.keysPressed
-        if(!keysPressed || keysPressed.trim() == '') {
+        if(!keysPressed || keysPressed.trim() == '')
+        {
             doAction = menu.timeoutAction
-        } else {
+        }
+        else
+        {
             def mappings = menu.keypressActions.inject([:]) { map, keypressAction ->
                 map[keypressAction.keysPressed] = keypressAction
                 return map
             }
             doAction = keypressToAction(mappings, keysPressed)
-            if(!doAction) {
+            if(!doAction)
+            {
                 doAction = menu.defaultAction
             }
         }
@@ -1559,14 +1572,18 @@ class SpotApiController {
             doAction = menu
         }
 
-        def command = doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore, grailsApplication.config.com.interact.listen.artifactsDirectory)
-        log.debug "doAction attendant [${command}]"
+        def command =
+            doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore,
+                    grailsApplication.config.com.interact.listen.artifactsDirectory);
+        log.debug "MenuAction returning doAction attendant [${command}]"
         render(command as JSON)
     }
 
-    private def keypressToAction(def mappings, def keysPressed) {
+    private def keypressToAction(def mappings, def keysPressed)
+    {
         // if we have a specific mapping for the number, simply return its action
-        if(mappings.containsKey(keysPressed)) {
+        if(mappings.containsKey(keysPressed))
+        {
             return mappings[keysPressed]
         }
 
