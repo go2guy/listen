@@ -1,4 +1,6 @@
-package com.interact.listen.utils;
+package com.interact.listen.utils
+
+import grails.util.Holders;
 
 import java.io.File;
 
@@ -13,14 +15,14 @@ public class ListenPromptUtil
 {
     public static String ACD_LOCATION = "acd";
 
-    public static String buildFilepath(String storageLocation, int organizationId)
+    public static String buildFilepath(String storageLocation, long organizationId)
     {
-        String baseDir = ListenControllerConfig.get("com.interact.listen.artifactsDirectory");
+        String baseDir = Holders.config.com.interact.listen.artifactsDirectory;
 
         return baseDir + File.separatorChar + organizationId + File.separatorChar + storageLocation;
     }
 
-    public static String buildFileName(String file, String storageLocation, int organizationId)
+    public static String buildFileName(String file, String storageLocation, long organizationId)
     {
         String baseDir = buildFilepath(storageLocation, organizationId);
 

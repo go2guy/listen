@@ -8,7 +8,7 @@ class DialNumberAction extends Action
         number nullable: true, blank: false, validator: { val -> return (val == null ? 'nullable' : true) }
     }
 
-    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, int organizationId)
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, long organizationId)
     {
         def args = [
             number: number

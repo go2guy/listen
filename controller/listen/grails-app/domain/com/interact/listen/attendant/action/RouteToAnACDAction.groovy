@@ -18,7 +18,7 @@ class RouteToAnACDAction extends Action
         skill nullable: true
     }
     
-    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, int organizationId)
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, long organizationId)
     {
         def args = [
             applicationName: 'ACD',

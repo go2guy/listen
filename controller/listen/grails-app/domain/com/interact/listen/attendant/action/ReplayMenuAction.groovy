@@ -4,7 +4,7 @@ class ReplayMenuAction extends Action
 {
     // has no attributes
 
-    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, int organizationId)
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, long organizationId)
     {
         //Not implemented.
         return null;

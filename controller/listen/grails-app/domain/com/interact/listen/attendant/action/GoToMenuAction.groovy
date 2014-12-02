@@ -13,7 +13,7 @@ class GoToMenuAction extends Action
     String destinationMenuGroupName
     String destinationMenuName
 
-    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, int organizationId)
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, long organizationId)
     {
         //Not implemented.
         return null;

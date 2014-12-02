@@ -15,5 +15,5 @@ abstract class Action
         keysPressed nullable: true, blank: false, matches: '^[0-9\\?\\*#]+$' // question mark is a single-character wildcard
     }
 
-    abstract toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, int organizationId);
+    abstract toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, long organizationId);
 }

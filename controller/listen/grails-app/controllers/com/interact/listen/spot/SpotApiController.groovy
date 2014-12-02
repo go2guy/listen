@@ -1542,7 +1542,7 @@ class SpotApiController {
         }
 
         // only need keysPressed param if a menu id was provided
-        def doAction
+        def doAction;
         def keysPressed = params.keysPressed
         if(!keysPressed || keysPressed.trim() == '')
         {
@@ -1562,19 +1562,19 @@ class SpotApiController {
         }
 
         def promptBefore = doAction.promptBefore
-        if(doAction.instanceOf(GoToMenuAction))
+        if(doAction instanceof GoToMenuAction)
         {
             def group = MenuGroup.findByName(doAction.destinationMenuGroupName)
             doAction = Menu.findByMenuGroupAndName(group, doAction.destinationMenuName)
         }
-        else if(doAction.instanceOf(ReplayMenuAction))
+        else if(doAction instanceof ReplayMenuAction)
         {
             doAction = menu
         }
 
         def command =
             doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore,
-                    grailsApplication.config.com.interact.listen.artifactsDirectory);
+                    grailsApplication.config.com.interact.listen.artifactsDirectory, menu.menuGroup.organization.id);
         log.debug "MenuAction returning doAction attendant [${command}]"
         render(command as JSON)
     }
