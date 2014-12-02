@@ -67,6 +67,8 @@ BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
 
     rm -rf `find %{buildroot}/ -name ".svn" -type d`
 
+    cp -r %{STARTDIR}/artifacts %{buildroot}/interact/listen
+
 #######################################################################
 # The files section lists all files included in the RPM
 #######################################################################
@@ -75,6 +77,7 @@ BuildRoot: %{STARTDIR}/BUILD/%{name}-%{version}-%{release}-buildroot
     # This is to keep the package from colliding with the directories which are also delivered by spobtuild-vip
     %defattr(777,interact,operator)
     /interact/apps/spotbuild
+    /interact/listen/artifacts
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
