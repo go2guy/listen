@@ -56,10 +56,21 @@ tr.disabled {
               </g:else>
             </td>
             <td class="col-button">
-              <g:form controller="user" action="edit" method="get">
-                <g:hiddenField name="id" value="${user.id}"/>
-                <g:submitButton name="edit" value="${g.message(code: 'default.button.edit.label')}"/>
-              </g:form>
+              
+                
+              <g:if test="${user.enabled}">
+                  <g:form controller="user" action="edit" method="get">
+                    <g:hiddenField name="id" value="${user.id}"/>
+                    <g:submitButton name="edit" value="${g.message(code: 'default.button.edit.label')}"/>
+                  </g:form>
+              </g:if>
+              <g:else>
+                <g:form controller="user" method="post">
+                  <g:hiddenField name="id" value="${user.id}"/>
+                  <g:actionSubmit class="delete" action="delete" value="${g.message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${g.message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                </g:form>
+              </g:else>
+              
             </td>
             <td class="col-button">
               <g:if test="${user.enabled}">

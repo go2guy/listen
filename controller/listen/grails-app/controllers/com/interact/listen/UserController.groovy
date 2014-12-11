@@ -15,6 +15,7 @@ class UserController {
         index: 'GET',
         create: 'GET',
         disable: 'POST',
+        delete: 'POST',
         edit: 'GET',
         list: 'GET',
         permissions: 'GET',
@@ -60,6 +61,32 @@ class UserController {
         redirect(action: 'list')
     }
 
+    def delete = {
+        def user = User.get(params.id)
+        if(!user) {
+            flash.errorMessage = 'User not found'
+            redirect(action: 'list')
+            return
+        }
+
+        def currentUser = authenticatedUser
+        if(user.id == currentUser.id) {
+            flash.errorMessage = 'You cannot delete your own account'
+            redirect(action: 'list')
+            return
+        }
+
+        if (userService.deleteUser(user)) {
+            userService.cleanUpAudio(user)
+            flash.successMessage = 'User deleted'
+        } else {
+            flash.errorMessage = 'An error occurred deleting the user'
+        }
+        
+        redirect(action: 'list')
+        return
+    }
+    
     def edit =
     {
         def user = User.get(params.id)

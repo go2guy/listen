@@ -3,6 +3,9 @@ import com.interact.listen.license.ListenFeature
 import com.interact.listen.acd.*
 import com.interact.listen.history.*
 import org.apache.log4j.Logger
+import java.sql.*
+import java.io.*
+import groovy.sql.Sql
 
 class UserService {
     def cloudToDeviceService
@@ -10,6 +13,7 @@ class UserService {
     def ldapService
     def springSecurityService
     def licenseService
+    def dataSource
 
     User update(User user, def params, boolean byOperator = false)
     {
@@ -217,6 +221,63 @@ class UserService {
             // TODO disable on ldap?
         }
         return user
+    }
+    
+    // AJB 11/24/2014 - Here is where we delete the user.
+    def deleteUser(User user) {
+        // set the user id to null in action_history
+        def db = new Sql(dataSource)
+        def sql_str
+        sql_str =  "update listen2.action_history set by_user_id = null where by_user_id = ${user.id}"
+        db.executeUpdate(sql_str)
+        sql_str =  "update listen2.action_history set on_user_id = null where on_user_id = ${user.id}"
+        db.executeUpdate(sql_str)
+        
+        // set the user id to null in call_history
+        sql_str =  "update listen2.call_history set from_user_id = null where from_user_id = ${user.id}"
+        db.executeUpdate(sql_str)
+        sql_str =  "update listen2.call_history set to_user_id = null where to_user_id = ${user.id}"
+        db.executeUpdate(sql_str)
+
+        // set the user id to null in inbox_message
+        sql_str =  "update listen2.inbox_message set forwarded_by_id = null where forwarded_by_id = ${user.id}"
+        db.executeUpdate(sql_str)
+        sql_str =  "update listen2.inbox_message set left_by_id = null where left_by_id = ${user.id}"
+        db.executeUpdate(sql_str)
+        
+        user.delete()
+        return true        
+    }
+    
+    // AJB 11/24/2014 - Here is where we clear the audio table and the physical files on the hard drive.
+    def cleanUpAudio(User user) {
+        def grailsApplication
+        
+        // set the user id to null in action_history
+        def db = new Sql(dataSource)
+        def sql_str
+        
+        // Now delete audio files.  What we are going to do is search for the user id in the path of the audio file.
+        // This is easier since it's one search. Otherwise we would have to do a combinded query of inbox_message, participant, phone_number & recording
+        // to get all the IDs of the audio files.
+        //sql_str =  "delete from audio where file like '%/${user.id}/%'"
+        StringBuffer sb = new StringBuffer("delete from audio where file like '%/")
+        sb.append(user.id)
+        sb.append("/%'" )
+        sql_str = sb.toString()
+        log.debug "User STRING : ${sql_str}"
+        db.executeUpdate(sql_str)
+        
+        // Let's delete the physical files. Then we are done.
+        //StringBuffer sb2 = new StringBuffer(grailsApplication.config.com.interact.listen.artifactsDirectory)
+        StringBuffer sb2 = new StringBuffer('/interact/listen/artifacts/')
+        sb2.append(user.id)
+        log.debug(sb2.toString())
+        def directory = new File(sb2.toString())
+        if (directory.deleteDir())
+            log.debug "Directory Deleted"
+        else
+            log.debug "Directory NOT Deleted"
     }
 
     User enable(User user) {

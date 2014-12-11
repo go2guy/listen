@@ -23,7 +23,8 @@ class User {
     String confirm
 
     /* ACD user settings */
-    static hasMany = [phoneNumbers: PhoneNumber, skills: Skill]
+    //static hasMany = [phoneNumbers: PhoneNumber, skills: Skill]
+    static hasMany = [phoneNumbers: PhoneNumber]
     static hasOne = [acdUserStatus: AcdUserStatus]
 
     static transients = ['pass', 'confirm', 'enabledForLogin']
@@ -44,32 +45,32 @@ class User {
             return ((val?.trim()?.length() > 0 || obj?.confirm?.trim()?.length() > 0) && val != obj.confirm) ? 'does.not.match' : true
         }
         confirm nullable: true, blank: true
-  }
+    }
 
-  static mapping = {
-    password column: '`password`'
-  }
-
-  Set<Role> getAuthorities() {
-    UserRole.findAllByUser(this).collect { it.role } as Set
-  }
-
+    static mapping = {
+        password column: '`password`'
+    }
+    
+    Set<Role> getAuthorities() {
+        UserRole.findAllByUser(this).collect { it.role } as Set
+    }
+    
     boolean hasRole(String authority) {
         def roleStrings = getAuthorities().collect { it.authority }
         return roleStrings.contains(authority)
     }
-
+    
     static def lookupByPhoneNumber(def number) {
         Extension.findByNumber(number)?.owner ?: MobilePhone.findByNumber(number)?.owner
     }
-
+    
     boolean canDial(def destination) {
         //Check global restrictions first, which do not have exceptions
         def globalRestrictions = GlobalOutdialRestriction.findAll().inject([:]) { globalMap, restriction ->
             globalMap[restriction.pattern] = restriction
             return globalMap
         }
-
+        
         def matcher = new WildcardNumberMatcher()
         def globalMatch = matcher.findMatch(destination, globalRestrictions)
         if(globalMatch) {
@@ -90,33 +91,33 @@ class User {
             map[restriction.pattern] = restriction
             return map
         }
-
+        
         def match = matcher.findMatch(destination, restrictions)
         if(!match) {
             // no restrictions, destination is okay
             log.debug "User [${this}] is allowed to dial [${destination}], no organization restrictions matched"
             return true
         }
-
+        
         // if exception found, allow; otherwise deny
         boolean hasException = OutdialRestrictionException.countByTargetAndRestriction(this, match) > 0
         if(!hasException) {
             log.warn "User [${this}] cannot dial [${destination}], matched organization restriction [${match.pattern}]"
             return false
         }
-
+        
         log.debug "User [${this}] is allowed to dial [${destination}], user has an exception for an organization restriction"
         return true
     }
-
+    
     def friendlyName() {
         realName ?: username
     }
-
+    
     def enabled() {
         enabled && (!organization || organization.enabled)
     }
-
+    
     // create a couple of 'fake' properties so our authentication can use them
     // to determine if the user is enabled, considering both the user and organization
     // 'enabled' values
@@ -124,7 +125,7 @@ class User {
     boolean getEnabledForLogin() {
         enabled()
     }
-
+    
     String toString() {
         username
     }
