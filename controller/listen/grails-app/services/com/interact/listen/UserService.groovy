@@ -1,4 +1,5 @@
 package com.interact.listen
+import com.interact.listen.httpclient.HttpClientImpl
 import com.interact.listen.license.ListenFeature
 import com.interact.listen.acd.*
 import com.interact.listen.history.*
@@ -280,7 +281,6 @@ class UserService {
         //    log.debug "Directory NOT Deleted"
             
         def url = "http://localhost/spot/cgi-bin/spotbuild/fileops.php"
-        
         def httpClient = new HttpClientImpl()
         httpClient.setSocketTimeout(3000)
         def params = [
