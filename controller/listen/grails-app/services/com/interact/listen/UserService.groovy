@@ -273,11 +273,21 @@ class UserService {
         StringBuffer sb2 = new StringBuffer('/interact/listen/artifacts/')
         sb2.append(user.id)
         log.debug(sb2.toString())
-        def directory = new File(sb2.toString())
-        if (directory.deleteDir())
-            log.debug "Directory Deleted"
-        else
-            log.debug "Directory NOT Deleted"
+        //def directory = new File(sb2.toString())
+        //if (directory.deleteDir())
+        //    log.debug "Directory Deleted"
+        //else
+        //    log.debug "Directory NOT Deleted"
+            
+        def url = "http://localhost/spot/cgi-bin/spotbuild/fileops.php"
+        
+        def httpClient = new HttpClientImpl()
+        httpClient.setSocketTimeout(3000)
+        def params = [
+            "FILE1" : sb2.toString(),
+            "OPERATION" : "delete"
+        ]
+        httpClient.post(url, params)
     }
 
     User enable(User user) {
