@@ -230,6 +230,7 @@ class SpotApiController {
     def addConferenceRecording = {
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
+        log.debug "addConferencingRecording request with params [${json}]"
 
         Recording.withTransaction { status ->
             def audio = new Audio()
@@ -266,13 +267,13 @@ class SpotApiController {
         
         log.debug "add conference participant json : [${json}]"
 
-        def conference = Conference.get(getIdFromHref(json.conference.href))
+        def conference = Conference.get(getIdFromHref(json?.conference?.href))
         if(!conference) {
-            response.sendError(HSR.SC_BAD_REQUEST, "Property [conference] with value [${params.conference.href}] references a non-existent entity")
+            response.sendError(HSR.SC_BAD_REQUEST, "Property [conference] with value [${params?.conference?.href}] references a non-existent entity")
             return
         }
 
-        if(!conference.owner.enabled()) {
+        if(!conference?.owner.enabled()) {
             response.sendError(HSR.SC_FORBIDDEN)
             return
         }
@@ -282,7 +283,7 @@ class SpotApiController {
             def audio = new Audio()
             audio.duration = new Duration(0)
             audio.transcription = ""
-            audio.file = new File(new URI(json.audioResource))
+            audio.file = new File(new URI(json?.audioResource))
 
             if(!(audio.validate() && audio.save())) {
                 status.setRollbackOnly()
@@ -307,12 +308,12 @@ class SpotApiController {
             }
             
             participant.conference = conference
-            participant.isAdmin = json.isAdmin
-            participant.isAdminMuted = json.isAdminMuted
-            participant.isMuted = json.isMuted
-            participant.isPassive = json.isPassive
+            participant.isAdmin = json?.isAdmin.toBoolean()
+            participant.isAdminMuted = json?.isAdminMuted.toBoolean()
+            participant.isMuted = json?.isMuted.toBoolean()
+            participant.isPassive = json?.isPassive.toBoolean()
             participant.recordedName = audio
-            participant.sessionId = json.sessionID
+            participant.sessionId = json?.sessionID
 
             log.debug "Attempt to save participant : [${participant.ani}]"
             
@@ -716,6 +717,7 @@ class SpotApiController {
     }
 
     def deleteParticipant = {
+        log.debug "delete conference participant params : [${params}]"
         def participant = Participant.get(params.id)
         if(!participant) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -972,6 +974,7 @@ class SpotApiController {
     }
 
     def getConference = {
+        log.debug("getConference with params [${params}]")
         def conference = Conference.get(params.id)
         if(!conference) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1028,6 +1031,7 @@ class SpotApiController {
     }
 
     def getParticipants = {
+        log.debug "getParticipants request with params [${params}]"
         if(!params.conference) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [conference]')
             return
@@ -1078,6 +1082,7 @@ class SpotApiController {
     }
 
     def getPhoneNumber = {
+        log.debug "getPhoneNumber request with params [${params}]"
         def phoneNumber = PhoneNumber.get(params.id)
         if(!phoneNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1146,6 +1151,7 @@ class SpotApiController {
     }
 
     def getUser = {
+        log.debug "getUser request with params [${params}]"
         def user = User.get(params.id)
         if(!user) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1806,6 +1812,7 @@ class SpotApiController {
     }
 
     def updateConference = {
+        log.debug "updateConference request with params [${params}]"
         def conference = Conference.get(params.id)
         if(!conference) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1818,6 +1825,7 @@ class SpotApiController {
         }
 
         def json = JSON.parse(request)
+        log.debug "updateConference request with request json [${json}]"
 
         if(json.arcadeId != conference.arcadeId) {
             conference.arcadeId = json.arcadeId
@@ -1828,21 +1836,26 @@ class SpotApiController {
         }
 
         if(!(conference.validate() && conference.save())) {
+            log.debug "updateConference - failed to save [${conference.errors}]"
             response.sendError(HSR.SC_BAD_REQUEST)
             return
         }
 
         boolean success = true
-        if(json.isStarted && !conference.isStarted) {
+        if(json.isStarted.toBoolean() && !conference.isStarted) {
+            log.debug "updateConference - start conference"
             success = conferenceService.startConference(conference)
-        } else if(!json.isStarted && conference.isStarted) {
+        } else if(!json.isStarted.toBoolean() && conference.isStarted) {
+            log.debug "updateConference - start conference"
             success = conferenceService.stopConference(conference)
         } else {
             // the second block above handles recording stopping when the conference stops
             // this case handles it if the conference 'isStarted' status didnt change
-            if(json.isRecording && !conference.isRecording) {
+            if(json.isRecording.toBoolean() && !conference.isRecording) {
+                log.debug "updateConference - start recording conference"
                 success = conferenceService.startRecordingConference(conference)
-            } else if(!json.isRecording && conference.isRecording) {
+            } else if(!json.isRecording.toBoolean() && conference.isRecording) {
+                log.debug "updateConference - stop recording conference"
                 success = conferenceService.stopRecordingConference(conference)
             }
         }
@@ -1856,6 +1869,7 @@ class SpotApiController {
     }
 
     def updateFindMeNumber = {
+        log.debug "updateFindMeNumber request with params [${params}]"
         def findMeNumber = FindMeNumber.get(params.id)
         if(!findMeNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1869,8 +1883,8 @@ class SpotApiController {
 
         def json = JSON.parse(request)
 
-        if(json.isEnabled != findMeNumber.isEnabled) {
-            findMeNumber.isEnabled = json.isEnabled
+        if(json.isEnabled.toBoolean() != findMeNumber.isEnabled) {
+            findMeNumber.isEnabled = json.isEnabled.toBoolean()
         }
 
         if(findMeNumber.validate() && findMeNumber.save()) {
@@ -1896,7 +1910,7 @@ class SpotApiController {
 
         def findMePreferences = FindMePreferences.findByUser(user)
         def json = JSON.parse(request)
-        if(json.isActivating) {
+        if(json.isActivating.toBoolean()) {
             findMePreferences.expires = new DateTime().plusDays(1)
         } else {
             findMePreferences.expires = new DateTime().minusMinutes(1)
@@ -1912,6 +1926,7 @@ class SpotApiController {
     }
 
     def updateParticipant = {
+        log.debug "updateParticipant request with params [${params}]"
         def participant = Participant.get(params.id)
         if(!participant) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1920,7 +1935,7 @@ class SpotApiController {
 
         def json = JSON.parse(request)
 
-        if(json.isAdminMuted != participant.isAdminMuted) {
+        if(json.isAdminMuted.toBoolean() != participant.isAdminMuted) {
             if(participant.isAdminMuted) {
                 conferenceService.unmuteCaller(participant)
             } else {
@@ -1928,7 +1943,7 @@ class SpotApiController {
             }
         }
 
-        participant.isMuted = json.isMuted
+        participant.isMuted = json.isMuted.toBoolean()
 
         if(participant.validate() && participant.save()) {
             response.status = HSR.SC_OK
@@ -2001,6 +2016,7 @@ class SpotApiController {
     }
 
     def updateUser = {
+        log.debug "updateUser request with params [${params}]"
         def user = User.get(params.id)
         if(!user) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -2055,8 +2071,8 @@ class SpotApiController {
 
             def originalIsNew = voicemail.isNew
             if(json.containsKey('isNew')) {
-				log.debug "Updating isNew to [${json.isNew}]"
-                voicemail.isNew = json.isNew
+				log.debug "Updating isNew to [${json.isNew.toBoolean()}]"
+                voicemail.isNew = json.isNew.toBoolean()
             }
 
             if(json.transcription) {
