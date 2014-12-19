@@ -552,7 +552,7 @@ CREATE TABLE `prompt_override` (
   `event_type` varchar(25),
   PRIMARY KEY  (`id`),
   KEY `FK90874447DD97B406` (`use_menu_id`),
-  CONSTRAINT `FK90874447DD97B406` FOREIGN KEY (`use_menu_id`) REFERENCES `menu_group` (`id`)
+  CONSTRAINT `FK90874447DD97B406` FOREIGN KEY (`use_menu_id`) REFERENCES `menu_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

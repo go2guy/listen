@@ -34,5 +34,7 @@ ALTER TABLE inbox_message DROP FOREIGN KEY voicemail_forwarded__fk;
 ALTER TABLE inbox_message DROP FOREIGN KEY voicemail_left_by_id_fk;
 ALTER TABLE recording DROP FOREIGN KEY recording_audio_id_fk;
 ALTER TABLE recording ADD CONSTRAINT recording_audio_id_fk FOREIGN KEY (audio_id)  REFERENCES audio (id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE prompt_override DROP FOREIGN KEY FK90874447DD97B406;
+ALTER TABLE prompt_override ADD CONSTRAINT FK90874447DD97B406 FOREIGN KEY (`use_menu_id`) REFERENCES `menu_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 commit work;
