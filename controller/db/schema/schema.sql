@@ -771,6 +771,7 @@ CREATE TABLE `sip_phone` (
   `ip` varchar(50) default NULL,
   `cseq` bigint(20) default NULL,
   `date_registered` datetime default NULL,
+  `date_expires` datetime default NULL,
   PRIMARY KEY  (`id`),
   KEY `FKC5294l23B3209252` (`extension_id`),
   KEY `FKC510738B56D05B56` (`organization_id`),

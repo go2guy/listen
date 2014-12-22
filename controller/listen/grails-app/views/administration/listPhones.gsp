@@ -79,7 +79,7 @@ tbody .col-light { text-align: center; }
                             <g:else>
                                 <td class="col-datereg">${g.message(code: 'page.administration.phones.notRegistered.placeholder')}</td>
                             </g:else>
-                            <td class="col-reg"><listen:checkMark value="${extension.sipPhone.registered}"/></td>
+                            <td class="col-reg" onmouseover="tooltip.show('<joda:format value="${extension.sipPhone?.dateExpires}" pattern="yyyy-MM-dd HH:mm:ss"/>');" onmouseout="tooltip.hide();"><listen:checkMark value="${extension.sipPhone.isRegistered()}"/></td>
                       </g:if>
                       <g:else>
                           <td class="col-number">${fieldValue(bean: extension, field: 'number')}</td>

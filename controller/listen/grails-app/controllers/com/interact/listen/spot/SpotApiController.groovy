@@ -283,7 +283,12 @@ class SpotApiController {
             def audio = new Audio()
             audio.duration = new Duration(0)
             audio.transcription = ""
-            audio.file = new File(new URI(json?.audioResource))
+            if(json?.audioResource.length() == "file:".length()) {
+                log.debug "No audio file is present"
+            } else {
+                audio.file = new File(new URI(json?.audioResource))
+            }
+            log.debug("audio.file [${audio?.file}]")
 
             if(!(audio.validate() && audio.save())) {
                 status.setRollbackOnly()
@@ -1666,10 +1671,10 @@ class SpotApiController {
         def extNumber = To.split("sip:")[1].split("@")[0]
         log.debug("sipRegister extNumber [${extNumber}]")
 
-        def expires = -1
+        extension.sipPhone.expires = -1
         if (json?.Expires){
-            expires = json.Expires
-            log.debug("sipRegister expires from main header [${expires}]")
+            extension.sipPhone.expires = json.Expires.toInteger()
+            log.debug("sipRegister expires from main header [${extension.sipPhone.expires}]")
         }
 
         def Contact = URLDecoder.decode(json?.Contact, 'UTF-8')
@@ -1680,14 +1685,14 @@ class SpotApiController {
                 def tmpval = contactList[i]
                 log.debug("sipRegister contact list [${i}][${tmpval}]")
                 if (tmpval.contains('expires=')){
-                    expires = tmpval.split("expires=")[1]
-                    log.debug("sipRegister expires from contact header [${expires}]")
+                    extension.sipPhone.expires = tmpval.split("expires=")[1].toInteger()
+                    log.debug("sipRegister expires from contact header [${extension.sipPhone.expires}]")
                 } else if (tmpval.contains('sip:') && (tmpval.contains('@'))){
                     extension.sipPhone.ip = tmpval.split("@")[1]?.split(":")[0]
                     log.debug("sipRegister ip address from conact header [${extension.sipPhone.ip}]")
                 }
             }
-        } else if ((Contact == '*') && (expires == 0 )) {
+        } else if ((Contact == '*') && (extension.sipPhone.expires == 0 )) {
             // RFC 3261 section 10.2.2
             log.debug("sipRegister Contact contains '*', deregister all contacts")
             extension.sipPhone.ip = ''
@@ -1719,9 +1724,9 @@ class SpotApiController {
             extension.sipPhone.username = null
         }
 
-        if (expires == "0") {
+        if (extension.sipPhone.expires == "0") {
             deregister = true
-            log.debug("sipRegister need to deregister [${extNumber}] [${expires}]")
+            log.debug("sipRegister need to deregister [${extNumber}] [${extension.sipPhone.expires}]")
         }
 
         if(json?.id) {
@@ -1744,19 +1749,28 @@ class SpotApiController {
             log.debug("sipRegister CSeq [${extension.sipPhone.cseq}]")
         }
 
+        def expireSeconds = grailsApplication.config.com.interact.listen.sip.expires.toInteger()
+        if ((extension.sipPhone.expires < expireSeconds) && (extension.sipPhone.expires > 0 )) {
+            expireSeconds = extension.sipPhone.expires
+            log.debug "sipRegister - setting expiration based upon network input [${expireSeconds}] over config [${grailsApplication.config.com.interact.listen.sip.expires.toInteger()}]"
+        } else {
+            extension.sipPhone.expires = expireSeconds
+            log.debug "sipRegister - setting expiration based upon config input [${expireSeconds}] over config [${extension.sipPhone.expires}]"
+        }
+
         def regResponse = new RegResponse()
         if (deregister) {
             log.debug("Call sipDeregistration service")
             regResponse = extensionService.sipDeregistration(extension)
             log.debug "sipDeregistration request [${regResponse.returnCode}]"
         } else {
+
             log.debug("Call sipRegistration service")
             regResponse = extensionService.sipRegistration(extension)
             log.debug "sipRegister request [${regResponse.returnCode}]"
         }
 
         def xmlResponse
-        def expireSeconds = grailsApplication.config.com.interact.listen.sip.expires
 
         if ((regResponse.returnCode == HSR.SC_NOT_FOUND) && (!extension?.sipPhone?.username)) {
             log.debug "sipRegister processing based upon ID, ID not found"
@@ -1846,7 +1860,7 @@ class SpotApiController {
             log.debug "updateConference - start conference"
             success = conferenceService.startConference(conference)
         } else if(!json.isStarted.toBoolean() && conference.isStarted) {
-            log.debug "updateConference - start conference"
+            log.debug "updateConference - stop conference"
             success = conferenceService.stopConference(conference)
         } else {
             // the second block above handles recording stopping when the conference stops

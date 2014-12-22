@@ -15,10 +15,13 @@ class SipPhone {
     String ip
     Integer cseq
     DateTime dateRegistered = null
+    DateTime dateExpires = null
+
+    Integer expires = 0
 
     static belongsTo = [extension: Extension, organization: Organization]
 
-    static transients = ['passwordConfirm']
+    static transients = ['passwordConfirm', 'expires']
 
     static constraints = {
         extension nullable: false
@@ -35,6 +38,14 @@ class SipPhone {
         }
         ip nullable: true, blank: false, unique: false, maxSize: 50
         dateRegistered nullable: true, unique: false
+    }
+
+    def isRegistered() {
+        def dateNow = new DateTime()
+        if ((registered == true) && (dateExpires > dateNow))
+            return true
+        else
+            return false
     }
 
     def friendlyName() {

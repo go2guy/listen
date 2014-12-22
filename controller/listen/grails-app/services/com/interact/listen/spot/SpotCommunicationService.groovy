@@ -19,24 +19,24 @@ class SpotCommunicationService {
         def success = false
         try {
             log.debug("Attempting to drop participant [${participant.id}]")
-        sendConferenceParticipantEvent("DROP", participant);
-        statWriterService.send(Stat.SPOT_CONF_EVENT_DROP)
+            sendConferenceParticipantEvent("LISTEN_CONF_DROP", participant);
+            statWriterService.send(Stat.SPOT_CONF_EVENT_DROP)
             success = true
         } catch (Exception e) {
             log.error("We've encounted an error attempting to drop participant [${participant.id}][${e}]")
-    }
+        }
         return success
     }
 
     def muteParticipant(def participant) throws IOException, SpotCommunicationException {
-        sendConferenceParticipantEvent("MUTE", participant);
+        sendConferenceParticipantEvent("LISTEN_CONF_MUTE", participant);
         statWriterService.send(Stat.SPOT_CONF_EVENT_MUTE)
     }
 
     def outdial(def numbers, def conference, def requestingNumber) throws IOException, SpotCommunicationException {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "AUTO_DIAL");
-        importedValue.put("action", "DIAL");
+        importedValue.put("customEvent", "DIAL");
         importedValue.put("sessionId", conference.firstAdminSessionId());
         importedValue.put("conferenceId", conference.id);
         importedValue.put("destination", numbers);
@@ -50,7 +50,7 @@ class SpotCommunicationService {
     {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "CONF_EVENT");
-        importedValue.put("action", "INTERACTIVE_DIAL");
+        importedValue.put("customEvent", "INTERACTIVE_DIAL");
         importedValue.put("sessionId", conference.firstAdminSessionId());
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
@@ -75,23 +75,23 @@ class SpotCommunicationService {
     }
 
     def unmuteParticipant(def participant) throws IOException, SpotCommunicationException {
-        sendConferenceParticipantEvent("UNMUTE", participant);
+        sendConferenceParticipantEvent("LISTEN_CONF_UNMUTE", participant);
         statWriterService.send(Stat.SPOT_CONF_EVENT_UNMUTE)
     }
 
-    def sendConferenceParticipantEvent(def action, def participant) throws IOException, SpotCommunicationException {
+    def sendConferenceParticipantEvent(def customEvent, def participant) throws IOException, SpotCommunicationException {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "CONF_EVENT");
-        importedValue.put("action", action);
+        importedValue.put("customEvent", customEvent);
         importedValue.put("sessionId", participant.sessionId);
         buildAndSendVexRequest(importedValue);
     }
 
-    def sendConferenceRecordingEvent(def action, def conference) throws IOException, SpotCommunicationException
+    def sendConferenceRecordingEvent(def customEvent, def conference) throws IOException, SpotCommunicationException
     {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "RECORD");
-        importedValue.put("action", action);
+        importedValue.put("customEvent", customEvent);
         importedValue.put("sessionId", conference.firstAdminSessionId());
         importedValue.put("conferenceId", conference.id);
         importedValue.put("startTime", DateTimeFormat.forPattern('yyyyMMddhhmmssSSS').print(conference.startTime));
@@ -105,7 +105,7 @@ class SpotCommunicationService {
     {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "Direct Message");
-        importedValue.put("action", "PDF_TO_TIFF");
+        importedValue.put("customEvent", "PDF_TO_TIFF");
         importedValue.put("artifact", fax.sourceFiles.collect{ it.file.absolutePath });
         importedValue.put("destination", fax.dnis);
         importedValue.put("ani", ""); //Will be implemented later, probably once sold and we know what to do
@@ -162,7 +162,7 @@ class SpotCommunicationService {
      * Send request to SPOT with a generic event
      *
      * @param sessionId The sessionId of the call.
-     * @param event The action to use
+     * @param event The customEvent to use
      * @throws IOException If an IOException.
      * @throws SpotCommunicationException If
      */
@@ -280,7 +280,7 @@ class SpotCommunicationService {
         importedValue.put('customEvent', 'event.user.messagelightcontrol')
         importedValue.put('uri', 'file:///interact/apps/iistart.ccxml')
         importedValue.put("destination", number.toString());
-        log.debug "'BRIAN send message light event [' + importedValue + ']'"
+        log.debug "'send message light event [' + importedValue + ']'"
         buildAndSendSpotRequest(importedValue);
     }
 
@@ -395,6 +395,8 @@ class SpotCommunicationService {
                 !grailsApplication.config.com.interact.listen.vexUrl.isEmpty())
         {
             vexUrls.add(grailsApplication.config.com.interact.listen.vexUrl);
+        } else {
+            log.error "No vexUrl has been configured"
         }
 
         sendVexRequest(params, vexUrls);
@@ -410,11 +412,14 @@ class SpotCommunicationService {
         def failed = []
         int status = -1
 
+        log.debug "Sending to Vex with params [${params}]"
+
         for(String thisVexUrl : vexUrls)
         {
             def httpClient = new HttpClientImpl()
 
             String base = thisVexUrl + "/customEvent?sessionId=" + URLEncoder.encode(params.get('sessionId'), "UTF-8") + "&customEvent=" + URLEncoder.encode(params.get('customEvent'), "UTF-8") + "&";
+            log.debug "Sending VEX HTTP request to [${base}]"
             /*
             * sessionId
             * customEvent (was "action" before)

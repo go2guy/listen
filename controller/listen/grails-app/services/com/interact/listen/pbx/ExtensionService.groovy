@@ -286,6 +286,11 @@ class ExtensionService {
 
         extension.sipPhone.dateRegistered = new DateTime()
         log.debug("sipRegistration request for [${extension?.number}] to update dateReg [${extension.sipPhone.dateRegistered}]")
+
+        log.debug("sipRegistration request for [${extension?.number}] to expire [${extIn.sipPhone?.expires}] from now")
+        extension.sipPhone.dateExpires = new DateTime().plusSeconds(extIn.sipPhone.expires)
+        log.debug("sipRegistration request for [${extension?.number}] to set expire date [${extension.sipPhone.dateExpires}]")
+
         extension.sipPhone.registered = true
 
         // Just to keep the domain validation happy
@@ -326,6 +331,9 @@ class ExtensionService {
         extension.sipPhone.cseq = 0
         // Just to keep the domain validation happy
         extension.sipPhone.passwordConfirm = extension.sipPhone.password
+
+        extension.sipPhone.dateExpires = new DateTime()
+        log.debug("sipRegistration request for [${extension?.number}] to set expire date [${extension.sipPhone.dateExpires}]")
 
         if(extension.sipPhone.validate() && extension.sipPhone.save(flush: true)) {
             log.debug("sipDeregistration of extension [${extension?.number}] successfully updated in db")
