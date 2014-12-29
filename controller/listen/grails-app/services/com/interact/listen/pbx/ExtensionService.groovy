@@ -65,6 +65,7 @@ class ExtensionService {
             result.sipPhone.passwordConfirm = params?.passwordConfirm
             result.sipPhone.ip = null
             result.sipPhone.dateRegistered = null
+            result.sipPhone.dateExpires = null
 
             log.debug "Now actually create the sipPhone extension for [${params}]"
             log.debug("sipPhone info Ext Test        [${result.extension.sipPhone?.username}]")
@@ -77,6 +78,7 @@ class ExtensionService {
             log.debug("sipPhone info ip              [${result.sipPhone?.ip}]")
             log.debug("sipPhone info cseq            [${result.sipPhone?.cseq}]")
             log.debug("sipPhone info date reg        [${result.sipPhone?.dateRegistered}]")
+            log.debug("sipPhone info date expires    [${result.sipPhone?.dateExpires}]")
 
             result.extension.sipPhone = result.sipPhone
             log.debug "Now actually create the extension for [${params}]"
@@ -137,6 +139,7 @@ class ExtensionService {
                 result.sipPhone.extension = extension
                 result.sipPhone.passwordConfirm = params?.passwordConfirm
                 result.sipPhone.dateRegistered = null
+                result.sipPhone.dateExpires = null
             } else {
                 if ((params?.password && params?.passwordConfirm) || (params?.password != result.sipPhone.password) ) {
                     log.debug("updateExtension, set password")
@@ -158,6 +161,7 @@ class ExtensionService {
             log.debug("sipPhone info ip              [${result.sipPhone.ip}]")
             log.debug("sipPhone info cseq            [${result.sipPhone.cseq}]")
             log.debug("sipPhone info date reg        [${result.sipPhone.dateRegistered}]")
+            log.debug("sipPhone info date expires    [${result.sipPhone?.dateExpires}]")
 
             // Now lets process the extension domain
             result.extension.sipPhone = result.sipPhone

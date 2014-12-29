@@ -38,6 +38,7 @@ class SipPhone {
         }
         ip nullable: true, blank: false, unique: false, maxSize: 50
         dateRegistered nullable: true, unique: false
+        dateExpires nullable: true, unique: false
     }
 
     def isRegistered() {
