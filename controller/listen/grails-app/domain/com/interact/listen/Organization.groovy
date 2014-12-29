@@ -35,9 +35,9 @@ class Organization {
         name
     }
 
-    def attendantPromptDirectory()
+    String attendantPromptDirectory()
     {
-        return '/interact/listen/artifacts/' + id + '/attendant/';
+        return "/interact/listen/artifacts/" + id + "/attendant/";
     }
 
     Set addToEnabledFeatures(def enabledFeature) {

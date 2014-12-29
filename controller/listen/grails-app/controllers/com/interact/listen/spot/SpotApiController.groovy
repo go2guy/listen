@@ -1572,7 +1572,7 @@ class SpotApiController {
             }
         }
 
-        def promptBefore = doAction.promptBefore
+        String promptBefore = doAction.promptBefore;
         if(doAction instanceof GoToMenuAction)
         {
             def group = MenuGroup.findByName(doAction.destinationMenuGroupName)
@@ -1585,8 +1585,9 @@ class SpotApiController {
 
         def command =
             doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore,
-                    grailsApplication.config.com.interact.listen.artifactsDirectory);
-        log.debug "MenuAction returning doAction attendant [${command}]"
+                    (String)grailsApplication.config.com.interact.listen.artifactsDirectory,
+                    menu.menuGroup.organization.getId());
+        log.debug "MenuAction returning doAction attendant [${command}]";
         render(command as JSON)
     }
 

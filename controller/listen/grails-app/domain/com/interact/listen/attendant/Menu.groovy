@@ -34,4 +34,9 @@ class Menu {
             args: args
         ]
     }
+
+    def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, long organizationId)
+    {
+        return toIvrCommand(promptDirectory, promptBefore, artifactsDirectory);
+    }
 }
