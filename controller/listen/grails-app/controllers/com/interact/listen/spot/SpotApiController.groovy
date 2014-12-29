@@ -1555,7 +1555,7 @@ class SpotApiController {
         // only need keysPressed param if a menu id was provided
         def doAction;
         def keysPressed = params.keysPressed
-        if(!keysPressed || keysPressed.trim() == '')
+        if(!keysPressed || keysPressed.trim() == '' || keysPressed.trim().equals('TIMEOUT'))
         {
             doAction = menu.timeoutAction
         }
@@ -1585,7 +1585,7 @@ class SpotApiController {
 
         def command =
             doAction.toIvrCommand(menu.menuGroup.organization.attendantPromptDirectory(), promptBefore,
-                    grailsApplication.config.com.interact.listen.artifactsDirectory, menu.menuGroup.organization.id);
+                    grailsApplication.config.com.interact.listen.artifactsDirectory);
         log.debug "MenuAction returning doAction attendant [${command}]"
         render(command as JSON)
     }

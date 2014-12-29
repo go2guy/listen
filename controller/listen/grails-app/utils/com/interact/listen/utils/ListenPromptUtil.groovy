@@ -24,8 +24,13 @@ public class ListenPromptUtil
 
     public static String buildFileName(String file, String storageLocation, long organizationId)
     {
-        String baseDir = buildFilepath(storageLocation, organizationId);
+        String returnVal = "";
+        if(file != null && !file.isEmpty())
+        {
+            String baseDir = buildFilepath(storageLocation, organizationId);
+            returnVal = baseDir + File.separatorChar + file;
+        }
 
-        return baseDir + File.separatorChar + file;
+        return returnVal;
     }
 }
