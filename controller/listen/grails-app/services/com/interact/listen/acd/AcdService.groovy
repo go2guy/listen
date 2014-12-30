@@ -41,24 +41,17 @@ class AcdService
      *
      * @return List of calls in waiting status, ordered by queued time.
      */
-    def listWaitingCalls()
+    def listWaitingCalls(String ivr)
     {
         def waitingList;
 
-        String ivr = getIvr();
         if(ivr != null)
         {
-            if(log.isDebugEnabled())
-            {
-                log.debug("Getting waiting calls using ivr[" + ivr + "]");
-            }
             waitingList = AcdCall.findAllByCallStatusAndIvr(AcdCallStatus.WAITING, ivr,
                     [sort: 'enqueueTime', order: 'asc']);
         }
         else
         {
-            log.warn("IVR not configured, getting waiting calls for any ivr.");
-
             waitingList = AcdCall.findAllByCallStatus(AcdCallStatus.WAITING, [sort: 'enqueueTime', order: 'asc']);
         }
 
@@ -891,7 +884,7 @@ class AcdService
      * Return the ivr for this controller
      * @return The Ivr.
      */
-    private String getIvr()
+    public String getIvr()
     {
         String returnVal = null;
 

@@ -23,8 +23,21 @@ class AcdCallProcessorJob
     {
         log.info("Beginning AcdCallProcessorJob")
 
+        String ivr = acdService.getIvr();
+        if(ivr != null)
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Getting waiting calls using ivr[" + ivr + "]");
+            }
+        }
+        else
+        {
+            log.warn("IVR not configured, getting waiting calls for any ivr.");
+        }
+
         //First get all waiting acd calls, ordered by oldest enqueue time
-        def waitingCalls = acdService.listWaitingCalls();
+        def waitingCalls = acdService.listWaitingCalls(ivr);
 
         log.info("Number of waiting calls: " + waitingCalls.size());
         for(AcdCall thisCall : waitingCalls)

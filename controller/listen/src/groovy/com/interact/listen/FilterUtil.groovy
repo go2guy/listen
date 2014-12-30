@@ -26,6 +26,10 @@ final class FilterUtil
         if(controller.equals('profile') && ['index', 'settings','phones'].contains(action)) {
             return false
         }
+        if(controller.equals('spotApi') && ['sipRegister'].contains(action))
+        {
+            return false
+        }
         return true
     }
 
