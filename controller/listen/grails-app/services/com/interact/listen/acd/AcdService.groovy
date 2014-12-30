@@ -769,6 +769,8 @@ class AcdService
           disableAgent(acdCall.user);
         }
 
+        freeAgent(acdCall.user);
+
         acdCall.user = null;
 
         if(acdCall.validate() && acdCall.save(flush: true))
