@@ -105,9 +105,8 @@ CREATE TABLE `acd_user_status` (
   `onacall_modified` datetime,
   `onacall` bit(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (owner_id) REFERENCES user (id),
+  FOREIGN KEY (owner_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (contact_number_id) REFERENCES phone_number (id) ON DELETE CASCADE,
-  CONSTRAINT `recording_audio_id_fk` FOREIGN KEY (audio_id)  REFERENCES audio (id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
