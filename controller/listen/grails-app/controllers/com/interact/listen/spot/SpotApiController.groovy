@@ -2017,6 +2017,10 @@ class SpotApiController {
                 phoneNumber.forwardedTo = json.forwardedTo.length() > 0 ? json.forwardedTo : null
             }
 
+            if(phoneNumber.instanceOf(Extension)) {
+                phoneNumber.extLength = phoneNumber.owner.organization.extLength
+            }
+
             if(phoneNumber.validate() && phoneNumber.save()) {
                 log.debug "We've saved the entire phone number record"
                 response.status = HSR.SC_OK
