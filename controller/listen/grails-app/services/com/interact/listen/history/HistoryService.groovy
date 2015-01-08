@@ -63,12 +63,6 @@ class HistoryService {
               onUser: invitation.scheduledBy)
     }
 
-    void changedExtensionIpAddress(Extension extension, def from) {
-        write(action: Action.CHANGED_EXTENSION_IP_ADDRESS,
-              description: "Changed extension IP address from [${from}] to [${extension.ip}]",
-              onUser: extension.owner)
-    }
-
     void changedFindMeExpiration(FindMePreferences preferences) {
         write(action: Action.CHANGED_FIND_ME_EXPIRATION,
               description: "Changed Find Me expiration to [${formatDateTime(preferences.expires)}]",

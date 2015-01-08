@@ -83,7 +83,6 @@ CREATE TABLE `phone_number` (
   `number` varchar(50) NOT NULL,
   `owner_id` bigint(20) NOT NULL,
   `class` varchar(255) NOT NULL,
-  `ip` varchar(50) default NULL,
   `sms_domain` varchar(50) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `ip` (`ip`),

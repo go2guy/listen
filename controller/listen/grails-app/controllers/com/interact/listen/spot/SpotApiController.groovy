@@ -682,6 +682,7 @@ class SpotApiController {
     }
 
     def canDial = {
+        log.debug("canDial invoked with params [${params}]")
         def user = User.get(getIdFromHref(params.subscriber))
         if(!user.enabled()) {
             response.sendError(HSR.SC_FORBIDDEN)
@@ -692,6 +693,46 @@ class SpotApiController {
         if(!destination) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [destination]')
             return
+        }
+
+        def callerIp = params.callerIp
+        if(!callerIp) {
+            log.debug "User [${user.username}] is missing [callerIp]"
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [callerIp]')
+            return
+        }
+
+        def number = params.number
+        if(!number) {
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
+            return
+        }
+
+        def phoneNumbers = PhoneNumber.withCriteria() {
+            eq('number', number)
+            owner {
+                eq('organization', user.organization)
+            }
+        }
+
+        def phoneNumber = phoneNumbers.size() > 0 ? phoneNumbers[0] : null
+
+        if (!phoneNumber) {
+            log.debug "User [${user.username}] is not assigned a phone number so they cannot make call"
+            response.sendError(HSR.SC_FORBIDDEN, 'User [${user.username}] is not assigned a phone number so they cannot make call')
+            return
+        }
+
+        if(phoneNumber.instanceOf(Extension)) {
+            if (callerIp == '0.0.0.0') {
+                log.debug "User [${user.username}] making request with no ip [${callerIp}], registered IP [${phoneNumber?.sipPhone?.ip}]"
+            } else if (phoneNumber?.sipPhone?.ip != callerIp) {
+                log.warn "User [${user.username}] is making request from non-registered IP [${callerIp}], registered IP [${phoneNumber?.sipPhone?.ip}]"
+                response.sendError(HSR.SC_FORBIDDEN, 'User [${user.username}] is making request from non-registered IP')
+                return
+            } else {
+                log.debug "User [${user.username}] making request from the registered ip [${callerIp}]"
+            }
         }
 
         def outboundCallid = callRoutingService.determineOutboundCallId(user)
@@ -1105,7 +1146,7 @@ class SpotApiController {
             number: phoneNumber.number,
             type: phoneNumber.type(),
             subscriber: "/subscribers/${phoneNumber.owner.id}",
-            ip: (phoneNumber.instanceOf(Extension) ? phoneNumber.ip : '')
+            ip: (phoneNumber.instanceOf(Extension) ? phoneNumber?.sipPhone?.ip : '')
         ]
 
         if(phoneNumber.instanceOf(MobilePhone)) {
@@ -1298,7 +1339,7 @@ class SpotApiController {
                 'href': "/accessNumbers/${it.id}",
                 'number': it.number,
                 'type': it.type(),
-                'ip': (it.instanceOf(Extension) ? it.ip : '')
+                'ip': (it.instanceOf(Extension) ? it?.sipPhone?.ip : '')
             ]
         }
 
@@ -1466,6 +1507,7 @@ class SpotApiController {
 
     // given an access number and an organization, looks up the user owning the number
     def lookupAccessNumber = {
+        log.debug "lookupAccessNumber request with params [${params}]"
         def number = params.number
         if(!number) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
@@ -1492,7 +1534,12 @@ class SpotApiController {
 
         def phoneNumber = phoneNumbers.size() > 0 ? phoneNumbers[0] : null
         if(phoneNumber && !phoneNumber.owner.enabled()) {
+            log.debug "Phone number [${number}] is not enabled"
             response.sendError(HSR.SC_FORBIDDEN)
+            return
+        } else if (!phoneNumber) {
+            log.info "Phone number [${number}] is not configured"
+            response.sendError(HSR.SC_NOT_FOUND)
             return
         }
 

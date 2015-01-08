@@ -6,7 +6,7 @@ import com.interact.listen.PhoneNumber
 class Extension extends PhoneNumber {
     String forwardedTo
     Audio greeting
-    String ip
+    //BRIAN REMOVE String ip
     int extLength
 
     static hasOne = [sipPhone: SipPhone]
@@ -18,6 +18,6 @@ class Extension extends PhoneNumber {
         // all fields must be nullable since we extend PhoneNumber
         forwardedTo nullable: true, blank: false, maxSize: 50
         greeting nullable: true
-        ip nullable: true, blank: false, unique: true, maxSize: 50
+        //BRIAN REMOVE ip nullable: true, blank: false, unique: true, maxSize: 50
     }
 }
