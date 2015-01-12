@@ -148,6 +148,7 @@ class SpotApiController {
      */
     def updateAcdCall =
     {
+	log.debug "updateAcdCall request[${request}] with params[${params}]"
         if(log.isDebugEnabled())
         {
             log.debug("Entering updateAcdCall");
@@ -359,6 +360,7 @@ class SpotApiController {
     }
 
     def addVoicemail = {
+	log.debug "addVoicemail request[${request}] with params[${params}]"
         def json = JSON.parse(request)
         response.status = HSR.SC_CREATED
 
@@ -1851,7 +1853,7 @@ class SpotApiController {
     }
     // sets the SPOT system phone number (for display in notifications)
     def setPhoneNumber = {
-        log.debug "setPhoneNumber request with params [${params}]"
+        log.debug "setPhoneNumber request[${request} with params [${params}]"
         // TODO phone number wont get persisted, and wont be available if application is restarted
         if(!params.phoneNumber) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [phoneNumber]')
@@ -1874,7 +1876,7 @@ class SpotApiController {
     }
 
     def updateConference = {
-        log.debug "updateConference request with params [${params}]"
+        log.debug "updateConference request[${request}] with params [${params}]"
         def conference = Conference.get(params.id)
         if(!conference) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1931,7 +1933,7 @@ class SpotApiController {
     }
 
     def updateFindMeNumber = {
-        log.debug "updateFindMeNumber request with params [${params}]"
+        log.debug "updateFindMeNumber request[${request}] with params [${params}]"
         def findMeNumber = FindMeNumber.get(params.id)
         if(!findMeNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -1988,7 +1990,7 @@ class SpotApiController {
     }
 
     def updateParticipant = {
-        log.debug "updateParticipant request with params [${params}]"
+        log.debug "updateParticipant request[${request}] with params [${params}]"
         def participant = Participant.get(params.id)
         if(!participant) {
             response.sendError(HSR.SC_NOT_FOUND)
@@ -2016,7 +2018,7 @@ class SpotApiController {
     }
 
     def updatePhoneNumber = {
-        log.debug "updatePhoneNumber with params [${params}]"
+        log.debug "updatePhoneNumber request[${request}] with params [${params}]"
         def phoneNumber = PhoneNumber.get(params.id)
         if(!phoneNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
