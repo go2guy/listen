@@ -25,6 +25,7 @@
     
     #Exit php
     function exitresult ($objName, $PCM, $MP3) {
+        header('Content-type: application/xml');
         echo "<?xml version=\"1.0\"?>\n";
         echo "<{$objName}>\n";
         echo "  <pcm>{$PCM}</pcm>\n";
