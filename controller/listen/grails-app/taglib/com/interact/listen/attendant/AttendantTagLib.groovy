@@ -10,13 +10,13 @@ class AttendantTagLib {
     def grailsApplication
     def promptFileService
     def springSecurityService
+
+    String storageLocation = "/attendant";
     
     def attendantPromptSelect = { attrs ->
         def value = attrs.value
 
         def user = springSecurityService.getCurrentUser()
-
-        String storageLocation = "/attendant";
 
         def prompts = promptFileService.listNames(storageLocation, user.organization.id)
         out << '<select class="' + attrs.class + '">'
