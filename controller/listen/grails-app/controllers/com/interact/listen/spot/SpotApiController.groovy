@@ -726,13 +726,21 @@ class SpotApiController {
         }
 
         if(phoneNumber.instanceOf(Extension)) {
-            if (callerIp == '0.0.0.0') {
+            if (callerIp == '0.0.0.0')
+            {
                 log.debug "User [${user.username}] making request with no ip [${callerIp}], registered IP [${phoneNumber?.sipPhone?.ip}]"
-            } else if (phoneNumber?.sipPhone?.ip != callerIp) {
+            }
+            else if(((String)callerIp).startsWith(String.valueOf(grailsApplication.config.com.interact.listen.allowedIpPrefix)))
+            {
+                log.debug "Request[${callerIp}] in allowed ip prefixes";
+            }
+            else if (phoneNumber?.sipPhone?.ip != callerIp) {
                 log.warn "User [${user.username}] is making request from non-registered IP [${callerIp}], registered IP [${phoneNumber?.sipPhone?.ip}]"
                 response.sendError(HSR.SC_FORBIDDEN, 'User [${user.username}] is making request from non-registered IP')
                 return
-            } else {
+            }
+            else
+            {
                 log.debug "User [${user.username}] making request from the registered ip [${callerIp}]"
             }
         }
