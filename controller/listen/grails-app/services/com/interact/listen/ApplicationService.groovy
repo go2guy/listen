@@ -31,10 +31,6 @@ class ApplicationService {
             applications << 'Direct Message'
         }
 
-        if(licenseService.canAccess(ListenFeature.FINDME, organization)) {
-            applications << 'Find Me Config'
-        }
-
         if(licenseService.canAccess(ListenFeature.IPPBX, organization)) {
             applications << 'IP PBX'
             applications << 'Direct Inward Dial'
