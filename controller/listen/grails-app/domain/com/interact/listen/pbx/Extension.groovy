@@ -6,7 +6,6 @@ import com.interact.listen.PhoneNumber
 class Extension extends PhoneNumber {
     String forwardedTo
     Audio greeting
-    //BRIAN REMOVE String ip
     int extLength
 
     static hasOne = [sipPhone: SipPhone]
