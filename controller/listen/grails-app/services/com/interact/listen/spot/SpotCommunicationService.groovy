@@ -280,7 +280,7 @@ class SpotCommunicationService {
         importedValue.put('customEvent', 'event.user.messagelightcontrol')
         importedValue.put('uri', 'file:///interact/apps/iistart.ccxml')
         importedValue.put("destination", number.toString());
-        log.debug "'send message light event [' + importedValue + ']'"
+        log.debug 'send message light event to [' + number.toString() + ']'
         buildAndSendSpotRequest(importedValue);
     }
 
