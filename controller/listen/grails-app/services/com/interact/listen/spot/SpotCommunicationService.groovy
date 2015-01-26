@@ -60,12 +60,12 @@ class SpotCommunicationService {
     }
 
     def startRecording(def conference) throws IOException, SpotCommunicationException {
-        sendConferenceRecordingEvent("START", conference);
+        sendConferenceRecordingEvent("LISTEN_CONF_START", conference);
         statWriterService.send(Stat.SPOT_RECORD_START)
     }
 
     def stopRecording(def conference) throws IOException, SpotCommunicationException {
-        sendConferenceRecordingEvent("STOP", conference);
+        sendConferenceRecordingEvent("LISTEN_CONF_STOP", conference);
         statWriterService.send(Stat.SPOT_RECORD_STOP)
     }
 
