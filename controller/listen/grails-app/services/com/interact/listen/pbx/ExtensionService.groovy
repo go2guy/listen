@@ -295,7 +295,7 @@ class ExtensionService {
         extension.sipPhone.dateExpires = new DateTime().plusSeconds(extIn.sipPhone.expires)
         log.debug("sipRegistration request for [${extension?.number}] to set expire date [${extension.sipPhone.dateExpires}]")
 
-        extension.sipPhone.registered = true
+        extension.sipPhone.registered = false
 
         // Just to keep the domain validation happy
         extension.sipPhone.passwordConfirm = extension.sipPhone.password
