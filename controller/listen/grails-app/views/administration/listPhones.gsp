@@ -60,7 +60,6 @@ tbody .col-light { text-align: center; }
         <g:sortableColumn property="owner.realName" title="${g.message(code: 'page.administration.phones.column.owner')}" class="col-owner"/>
         <g:sortableColumn property="sipPhone.ip" title="${g.message(code: 'page.administration.phones.column.ip')}" class="col-ip"/>
         <g:sortableColumn property="sipPhone.dateRegistered" title="${g.message(code: 'page.administration.phones.column.dateRegistered')}" class="col-ip"/>
-        <g:sortableColumn property="sipPhone.registered" title="${g.message(code: 'page.administration.phones.column.registered')}" class="col-ip"/>
         <th class="col-button"></th>
         <th class="col-button"></th>
       </thead>
@@ -77,16 +76,14 @@ tbody .col-light { text-align: center; }
                                 <td class="col-datereg" onmouseover="tooltip.show('<joda:format value="${extension.sipPhone?.dateRegistered}" pattern="yyyy-MM-dd HH:mm:ss"/>');" onmouseout="tooltip.hide();"><listen:prettytime date="${extension?.sipPhone?.dateRegistered}"/></td>
                             </g:if>
                             <g:else>
-                                <td class="col-datereg">${g.message(code: 'page.administration.phones.notRegistered.placeholder')}</td>
+                                <td class="col-datereg">${g.message(code: 'page.administration.phones.noSIPActivity.placeholder')}</td>
                             </g:else>
-                            <td class="col-reg" onmouseover="tooltip.show('<joda:format value="${extension.sipPhone?.dateExpires}" pattern="yyyy-MM-dd HH:mm:ss"/>');" onmouseout="tooltip.hide();"><listen:checkMark value="${extension.sipPhone.isRegistered()}"/></td>
                       </g:if>
                       <g:else>
                           <td class="col-number">${fieldValue(bean: extension, field: 'number')}</td>
                           <td class="col-owner">${extension.owner.realName}</td>
                           <td class="col-ip"></td>
-                          <td class="col-datereg">${g.message(code: 'page.administration.phones.notRegistered.placeholder')}</td>
-                          <td class="col-reg"></td>
+                          <td class="col-datereg">${g.message(code: 'page.administration.phones.noSIPActivity.placeholder')}</td>
                       </g:else>
 
                       <td class="col-button">

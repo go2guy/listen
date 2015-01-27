@@ -697,54 +697,6 @@ class SpotApiController {
             return
         }
 
-        def callerIp = params.callerIp
-        if(!callerIp) {
-            log.debug "User [${user.username}] is missing [callerIp]"
-            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [callerIp]')
-            return
-        }
-
-        def number = params.number
-        if(!number) {
-            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
-            return
-        }
-
-        def phoneNumbers = PhoneNumber.withCriteria() {
-            eq('number', number)
-            owner {
-                eq('organization', user.organization)
-            }
-        }
-
-        def phoneNumber = phoneNumbers.size() > 0 ? phoneNumbers[0] : null
-
-        if (!phoneNumber) {
-            log.debug "User [${user.username}] is not assigned a phone number so they cannot make call"
-            response.sendError(HSR.SC_FORBIDDEN, 'User [${user.username}] is not assigned a phone number so they cannot make call')
-            return
-        }
-
-        if(phoneNumber.instanceOf(Extension)) {
-            if (callerIp == '0.0.0.0')
-            {
-                log.debug "User [${user.username}] making request with no ip [${callerIp}], registered IP [${phoneNumber?.sipPhone?.ip}]"
-            }
-            else if(((String)callerIp).startsWith(String.valueOf(grailsApplication.config.com.interact.listen.allowedIpPrefix)))
-            {
-                log.debug "Request[${callerIp}] in allowed ip prefixes";
-            }
-            else if (phoneNumber?.sipPhone?.ip != callerIp) {
-                log.warn "User [${user.username}] is making request from non-registered IP [${callerIp}], registered IP [${phoneNumber?.sipPhone?.ip}]"
-                response.sendError(HSR.SC_FORBIDDEN, 'User [${user.username}] is making request from non-registered IP')
-                return
-            }
-            else
-            {
-                log.debug "User [${user.username}] making request from the registered ip [${callerIp}]"
-            }
-        }
-
         def outboundCallid = callRoutingService.determineOutboundCallId(user)
         log.debug "Returned value from outbound callid check [${outboundCallid}]"
         

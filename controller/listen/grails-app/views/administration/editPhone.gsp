@@ -78,21 +78,8 @@
                 <td class="val-realname">${sipPhone?.realName}</td>
             </tr>
             <tr>
-                <td class="col-reg"><g:message code="page.administration.phones.column.registered"/></td>
-                <g:if test="${sipPhone?.isRegistered() == true}">
-                    <td class="col-reg">Registered</td>
-                </g:if>
-                <g:else>
-                    <td class="col-reg">Not Registered</td>
-                </g:else>
-            </tr>
-            <tr>
                 <td class="col-datereg"><g:message code="page.administration.phones.column.dateRegistered"/></td>
                 <td class="col-datereg" onmouseover="tooltip.show('CSeq:${sipPhone?.cseq}');" onmouseout="tooltip.hide();"><joda:format value="${sipPhone?.dateRegistered}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-            </tr>
-            <tr>
-                <td class="col-dateexp"><g:message code="page.administration.phones.column.dateExpires"/></td>
-                <td class="col-dateexp"><joda:format value="${sipPhone?.dateExpires}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             </tr>
             <tr>
                 <td class="col-ip"><g:message code="page.administration.phones.column.ip"/></td>

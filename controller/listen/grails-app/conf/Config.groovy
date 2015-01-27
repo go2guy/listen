@@ -202,8 +202,6 @@ com.interact.listen.acd.disableOnFailedCall = false
 com.interact.listen.api.adminSignature = 'a80f3b59eec04c24abff14b8b2c8e93d'
 com.interact.listen.sip.expires = 3600
 
-com.interact.listen.allowedIpPrefix='127.0'
-
 // listen artifacts directory - not everything is using this at the moment
 com.interact.listen.artifactsDirectory = '/interact/listen/artifacts'
 
