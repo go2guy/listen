@@ -11,6 +11,7 @@ class ConferenceService {
 
     boolean dropCaller(Participant participant) {
         participant.delete()
+        participant.recordedName.delete()
         historyService.droppedConferenceCaller(participant)
         return true
     }
