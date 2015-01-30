@@ -21,7 +21,7 @@ class ButtonMenuTagLib {
 
                 out << '<ul class="button-menu">'
                 button(attrs.button == 'routing', 'administration', 'routing', 'button.menu.administration.routing')
-                button(attrs.button == 'listPhones', 'administration', 'listPhones', 'button.menu.administration.phones')
+                button(attrs.button == 'phones', 'administration', 'listPhones', 'button.menu.administration.phones')
                 button(attrs.button == 'outdialing', 'administration', 'outdialing', 'button.menu.administration.outdialing')
                 button(attrs.button == 'configuration', 'administration', 'configuration', 'button.menu.administration.configuration')
                 if(licenseService.canAccess(ListenFeature.ACD)) {
